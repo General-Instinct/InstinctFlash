@@ -7,11 +7,6 @@
 [![Website](https://img.shields.io/badge/Website-general--instinct.com-000000.svg)](https://general-instinct.com/)
 [![YC](https://img.shields.io/badge/Y%20Combinator-P26-orange.svg)](https://www.ycombinator.com/companies/general-instinct)
 
-| [**Website**](https://general-instinct.com/)
-| [**Blog**](https://general-instinct.com/blog)
-| [**Contact**](mailto:founders@general-instinct.com)
-|
-
 </div>
 
 ---
