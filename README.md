@@ -1,6 +1,5 @@
 <div align="center" id="instinctwm-top">
 <img src="assets/instinctwm_2.png" alt="InstinctWM Logo" width="400" margin="10px"></img>
-
 <h3 align="center">Inference Infrastructure for World Models</h3>
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
