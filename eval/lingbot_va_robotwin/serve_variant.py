@@ -57,6 +57,11 @@ def main() -> int:
              "withholds attn_caches from cross-attention, so the text K/V is re-projected on "
              "all 77 forwards; that is ~39%% of a control cycle's arithmetic, and 67.6%% of an "
              "action forward's layer FLOPs (32-token query vs 512-token text).")
+    ap.add_argument("--ring-kv", action="store_true",
+        help="Address the KV pool by ring interval instead of boolean mask. Removes the "
+             "per-layer-per-forward mask.nonzero() host sync and the full-pool advanced-index "
+             "gather (model.py:451-453); valid becomes a slice. Falls back to stock when the "
+             "interval wraps, so key order stays ascending and the pass stays bit-exact.")
     ap.add_argument(
         "--deterministic-seed", type=int, default=None,
         help="Seed torch before each chunk's noise draw. REQUIRED to compare two variants: "
@@ -98,6 +103,12 @@ def main() -> int:
 
         install_conditioning_prefill(S, S.VA_Server)
         applied.append("conditioning-prefill")
+
+    if getattr(args, "ring_kv", False):
+        sys.path.insert(0, "/home/ubuntu/InstinctWM")
+        from instinctwm.optimizer.passes.ring_kv import RingKVAddressing
+        RingKVAddressing().install(S, S.VA_Server)
+        applied.append("ring-kv")
 
     if args.deterministic_seed is not None:
         # Seed as a function of frame_st_id, not a constant: a constant would make every

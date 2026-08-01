@@ -178,3 +178,92 @@ overheads come off, the KV-dependent term dominates, and it keeps growing until 
 saturates around cycle 36. `model.py:452-453` re-gathers the entire valid KV pool into a fresh
 tensor per layer per forward (~240 MB/layer at saturation). That is now the prime suspect and
 the next pass.
+
+## 7. ring_kv_addressing — 1.43x, bit-exact (2026-08-01)
+
+First optimization done under the profile -> implement -> benchmark -> generalize cycle, and the
+first one aimed by a profile rather than by reading code.
+
+**Profile said:** gather/copy is 39.6% of GPU time and `aten::nonzero` fires 30 x 77 x 3 times per
+`_infer`, each a data-dependent shape and therefore a host round trip. Two lines cause both
+(`model.py:451-453`): `valid = mask.nonzero(...)` then `key_pool[:, valid]`.
+
+**Implemented:** the boolean mask was only ever encoding an interval. `allocate_slots` already
+takes the lowest free slots and evicts the oldest, so allocation is sequential-with-wraparound and
+the live set is always a ring interval. Track it as two host ints and `valid` becomes a *slice* —
+a view, not a copy. Fast path for contiguous intervals; falls back to stock when the interval
+wraps, so keys stay in ascending slot order and the pass stays bit-exact.
+
+**Benchmarked** (14 cycles, idle H100, both arms seeded, everything else held equal):
+
+| arm | cycle | rate | max abs delta |
+|---|---|---|---|
+| reference | 4277.3 ms | 7.5 Hz | — |
+| + ring_kv | **2982.3 ms** | **10.7 Hz** | **0.000e+00** |
+
+**1.43x, bit-exact.** Mechanism confirmed by re-profiling rather than assumed:
+
+| kernel, one `_infer` | before | after |
+|---|---|---|
+| `aten::nonzero` | 7,034 (65.3 ms) | 104 (0.0 ms) |
+| `aten::index` | 6,982 (168.1 ms) | 52 (0.1 ms) |
+| `aten::_index_put_impl_` | 13,852 (45.9 ms) | 52 (0.2 ms) |
+| total launches | 361,565 | 250,520 |
+| GPU time | 2402 ms | 1812 ms |
+
+`aten::copy_` is unchanged at ~48k. Those are the unfused transformer-block temporaries, which is
+the next pass, and the profile said so before this one was written.
+
+**Cumulative: 8881 -> 2982 ms, 2.98x, 3.6 -> 10.7 Hz, every step bit-exact.**
+
+Two honest caveats. The pool holds 9792 slots and grows 272 tokens/cycle, so it does not wrap
+until roughly cycle 36; a 14-cycle benchmark measures the fast path throughout and therefore
+*understates* the steady-state win, since the removed gather grows with occupancy. And the fast
+path does not maintain the `mask`/`id`/`is_pred` arrays, so the wrapped fallback currently reads
+stale bookkeeping — correct within a 36-cycle episode, wrong beyond it. Fixing that is the first
+follow-up, and it is a correctness bug, not a tuning issue.
+
+**What the correctness gate caught.** The first implementation set `pred = key_size` on a
+provisional commit. But `update_cache=1` fires *twice* per cycle (video last step at
+`wan_va_server.py:504`, action last step at `:544`) and stock `clear_pred_cache` drops every slot
+with `is_pred` set, i.e. both blocks. Overwriting instead of accumulating leaked the video block
+into the permanent cache. The gate reported `max|delta| = 1.22` against a chunk-to-chunk movement
+of 1.03 — larger than the signal, so unmistakably semantic rather than numeric. Two lines to fix.
+Without a bit-exactness gate this would have shipped as "1.43x with a small accuracy change".
+
+### 7b. Wraparound correctness, and the model that was wrong
+
+The first version fell back to stock code when the ring interval wrapped, but the fast path did not
+maintain `mask`/`id`/`is_pred`, so the fallback would have read stale bookkeeping. Correct within a
+36-cycle episode, wrong beyond it -- and RoboTwin episodes run 400-1700 steps, i.e. 12-53 cycles.
+
+Investigating it falsified the model. `tests/test_ring_allocator.py` exercises the REAL
+`WanAttention` allocator (constructed via `__new__`, no weights, so it crosses many wraps in
+seconds) and shows allocations are always a contiguous run, but the live set goes NON-CONTIGUOUS
+161 times in 600 allocations: after `clear_pred_cache` it is `live=9520, lo=0, hi=9791` -- the pool
+minus a hole in the middle. Stock presents that in ASCENDING SLOT INDEX order, which a
+chronological ring does not reproduce, and reordering keys changes the floating-point reduction.
+
+Rewritten so that the live set is read as slice-or-cat in ascending order, and `mask`/`id`/`is_pred`
+are maintained stock-exact BY SLICE -- predicted from the tracked interval rather than found with
+`nonzero`. There is no path left on which a stale mask can be observed.
+
+| gate | result |
+|---|---|
+| allocator parity vs stock, 200 cycles (~5.6 full wraps) | **800/800 checks, 0 mismatches**, identical indices in identical order |
+| bit-exactness, 40 cycles (past the wrap at ~36) | `max abs delta = 0.000e+00` |
+| long-horizon `put_bottles_dustbin`, 1700 steps ~= 53 cycles/episode, 3 pinned seeds | **3/3 bitwise-identical action streams**, outcomes 2/3 on both arms, McNemar p = 1.0 |
+
+Performance improved on the corrected version:
+
+| arm | cycle | rate | ramp over 14 cycles |
+|---|---|---|---|
+| reference | 3690.5 ms | 8.7 Hz | +7.9% |
+| + ring_kv | **2556.2 ms** | **12.5 Hz** | **-0.3%** |
+
+**1.44x.** The ramp collapsing from +7.9% to -0.3% is the more important number: the gather scaled
+with pool occupancy, so latency used to grow through an episode and now does not. That is what
+makes long-horizon tasks predictable, and it is independent evidence the mechanism is the intended
+one.
+
+**Cumulative: 8881 -> 2556 ms, 3.47x, 3.6 -> 12.5 Hz, every step bit-exact.**
