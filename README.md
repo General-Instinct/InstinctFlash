@@ -16,8 +16,8 @@
 
 *Latest News* 🔥
 
-- [2026/08] **First bit-exact speedup: 2.16x on LingBot-VA** (8881 to 4115 ms per control cycle, 3.6 to 7.8 Hz), verified at `max |delta action| = 0` on paired seeded rollouts.
-- [2026/08] **Profiled the remaining cost.** LingBot-VA is launch- and gather-bound, not compute-bound: the GPU is idle 51% of the cycle, real arithmetic is 8.5% of wall clock, and one control step issues 469,811 kernel launches.
+- [2026/08] **3.30x bit-exact on LingBot-VA** (8431 to 2554 ms per control cycle, 3.8 to 12.5 Hz), verified at `max |delta action| = 0` on paired seeded rollouts. Measured with a repeats-based protocol that discards the first run: single-run numbers on this box vary by up to 37% from cold start, and an earlier published 3.47x was an artefact of measuring one run per arm.
+- [2026/08] **Profiled the remaining cost.** LingBot-VA is launch- and gather-bound, not compute-bound: real arithmetic is 8.5% of wall clock, and one control step issued 469,811 kernel launches. After ring KV that is 379,314, the GPU is idle 58% of the cycle, and the next target is the unfused transformer block: elementwise/norm plus copy is 49% of GPU time and 324k of those launches.
 - [2026/08] **Canonical RoboTwin 2.0 baseline: 91.6% macro** across all 50 tasks and 2500 episodes, zero failures.
 - [2026/08] Optimizer skeleton landed. Passes fire from adapter declarations, not flags, and carry equivalence tiers that do not compose upward.
 - [2026/07] Evaluation pipeline for LingBot-VA on RoboTwin 2.0, including a prompt-parity gate that closes a silent train/serve mismatch nobody upstream was checking.

@@ -267,3 +267,63 @@ makes long-horizon tasks predictable, and it is independent evidence the mechani
 one.
 
 **Cumulative: 8881 -> 2556 ms, 3.47x, 3.6 -> 12.5 Hz, every step bit-exact.**
+
+
+---
+
+# 8. RESTATED under the fixed benchmark protocol (2026-08-01)
+
+Every latency number in sections 3, 4, 6 and 7 was measured with **one probe run per arm**. That
+is not a valid protocol on this box, and the numbers above are superseded by this section.
+
+## What was wrong
+
+The first probe run after a server starts is up to **37% slower** than steady state -- cuBLAS/cuDNN
+algorithm selection and allocator warm-up. `probe_latency` discarded cycle 0 but not the first
+*run*, so a single run silently mixes warm-up into the mean. The same configuration measured
+2556 ms and 3503 ms on consecutive days with identical flags.
+
+Two things it was NOT, both checked before concluding:
+
+| hypothesis | test | result |
+|---|---|---|
+| the harnesses disagree | in-process vs websocket, same config | 3517 vs 3503 ms, **0.4%** |
+| the GPUs differ | A/A: identical config on GPU 0 and GPU 1 | 3532.6 vs 3510.6 ms, **0.6%**, same clocks |
+
+A separate bug compounded it in the in-process profiler: `drive()` restarted its cycle counter on
+every call, so the "measured" cycle ran the cycle-0 workload (4 keyframes, cold VAE encode) and
+reported 4893 ms for a 3500 ms cycle.
+
+## The protocol, now the only accepted one
+
+`probe_latency.py --repeats N` (default 3). The first run is **discarded**; the rest are reported
+with their spread, and a spread above 5% prints a refusal to quote the number. Any latency claim
+must come from this path.
+
+## Restated numbers
+
+Four cumulative configs, one per GPU, probed sequentially, 10 cycles x 3 runs each.
+
+| config | cycle | spread | vs stock | control rate | step |
+|---|---|---|---|---|---|
+| stock | 8431.5 ms | 0.0% | 1.00x | 3.8 Hz | |
+| + substrate (fsdp, empty_cache, debug dumps) | 3994.0 ms | 0.4% | **2.11x** | 8.0 Hz | 2.11x |
+| + conditioning prefill | 3567.5 ms | 0.1% | 2.36x | 9.0 Hz | 1.12x |
+| + ring KV addressing | **2553.9 ms** | 0.7% | **3.30x** | **12.5 Hz** | 1.40x |
+
+## What changed versus what was published
+
+| claim | published | restated |
+|---|---|---|
+| stock cycle | 8881 ms | 8431.5 ms |
+| substrate passes | 1.92x | **2.11x** |
+| conditioning prefill | 1.05x | **1.12x** |
+| ring KV | 1.44x | **1.40x** |
+| **cumulative** | **3.47x** | **3.30x** |
+
+Two went up and one went down, which is the signature of noise rather than bias -- the old
+single-run numbers were not systematically flattering, they were just unreliable. The headline is
+lower: **3.30x, not 3.47x.**
+
+Unaffected: every correctness result. Bit-exactness, the 800/800 allocator parity checks, and the
+3/3 identical action streams on `put_bottles_dustbin` are equality tests, immune to timing noise.

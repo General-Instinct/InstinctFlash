@@ -38,15 +38,23 @@ Softmax attention is permutation-invariant over keys mathematically, but *not* i
 changing key order changes the reduction order. So this pass is only bit-exact if it presents keys
 in the same order the mask did, which is ascending slot index.
 
-A contiguous interval satisfies that. A wrapped interval does not: ascending index order is
-[0..end) then [start..total), whereas the ring's chronological order is the reverse. Rather than
-guess, the pass keeps a **fast path for contiguous intervals and falls back to the stock code when
-the interval wraps.** Correctness is then structural rather than hoped for.
+A contiguous interval satisfies that directly, as a single slice. A wrapped interval does NOT come
+out in ascending order if enumerated chronologically -- so the wrapped case is emitted as
+`cat([pool[:, :end], pool[:, start:]])`, which IS ascending index order and therefore order-exact.
+Neither path calls `nonzero`, and neither falls back to the stock code: the fallback in an earlier
+draft was unsafe, because the fast path did not maintain `mask`/`id`/`is_pred` and stock would have
+read stale bookkeeping. Those arrays are now maintained by slice on every path.
 
-Consequence for measurement, stated up front: the pool holds 9792 slots and grows 272 tokens per
-cycle, so it does not wrap until roughly cycle 36. A 12-cycle benchmark measures the fast path
-throughout and therefore *understates* the steady-state win, because the gather it removes grows
-with occupancy until saturation.
+Two properties worth knowing before changing this file:
+
+  * VALIDITY CONDITION: the ring-interval model holds only when the per-commit token count divides
+    the pool capacity. LingBot-VA satisfies it (9792 = 36 * 272). A capacity that is not a multiple
+    of the commit period makes the live set stop being a single interval, and the parity test in
+    tests/test_ring_allocator.py is what detects that.
+  * LAYOUT: the pool is [B=2, 9792, 24, 128], so a slice `kp[:, s:s+n]` is NOT contiguous, whereas
+    stock's advanced-index gather produced a contiguous tensor. Attention is bit-exact here as
+    measured, but a different attention backend could dispatch differently on a non-contiguous
+    input, so layout is part of what an equivalence check has to compare -- not just values.
 """
 
 from __future__ import annotations

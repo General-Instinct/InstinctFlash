@@ -63,6 +63,11 @@ def build_server(ckpt: str, no_fsdp: bool, prefill: bool):
         from instinctwm.runtime.lingbot_install import install_conditioning_prefill
         install_conditioning_prefill(S, S.VA_Server)
 
+    if os.environ.get("IWM_RING_KV") == "1":
+        sys.path.insert(0, "/home/ubuntu/InstinctWM")
+        from instinctwm.optimizer.passes.ring_kv import RingKVAddressing
+        RingKVAddressing().install(S, S.VA_Server)
+
     cfg = VA_CONFIGS["robotwin"]
     cfg.wan22_pretrained_model_name_or_path = ckpt
     cfg.rank = cfg.local_rank = 0
@@ -76,14 +81,32 @@ def build_server(ckpt: str, no_fsdp: bool, prefill: bool):
     return S.VA_Server(cfg), S
 
 
-def drive(srv, rng, cycles, prompt):
-    """One warm cycle then `cycles` measured ones, in real message order."""
+def drive(srv, rng, cycles, prompt, first_cycle_index=0, timings=None):
+    """`cycles` control steps in the real message order.
+
+    `first_cycle_index` matters: the keyframe count depends on whether this is the FIRST cycle of
+    an episode (4) or a later one (8), and an earlier version of this harness restarted that
+    counter on every call, so the measured cycle silently used a different workload from the warm
+    cycles and from probe_latency.
+    """
     first_obs = {"obs": make_obs(rng)}
     for c in range(cycles):
+        gi = first_cycle_index + c
+        t0 = time.perf_counter()
         srv._infer(first_obs, frame_st_id=srv.frame_st_id)
-        nkf = 4 if c == 0 else 8
-        srv._compute_kv_cache({"obs": [make_obs(rng) for _ in range(nkf)],
+        torch.cuda.synchronize()
+        t1 = time.perf_counter()
+        nkf = 4 if gi == 0 else 8
+        kfs = [make_obs(rng) for _ in range(nkf)]          # host-side obs build, NOT timed below
+        t2 = time.perf_counter()
+        srv._compute_kv_cache({"obs": kfs,
                                "state": np.zeros((16, 2, 16), dtype=np.float32)})
+        torch.cuda.synchronize()
+        t3 = time.perf_counter()
+        if timings is not None:
+            timings.append({"cycle": gi, "infer_ms": (t1 - t0) * 1e3,
+                            "obs_build_ms": (t2 - t1) * 1e3, "kv_ms": (t3 - t2) * 1e3,
+                            "nkf": nkf})
 
 
 def main() -> int:
@@ -104,22 +127,28 @@ def main() -> int:
     srv._reset(prompt=prompt)
 
     print(f"warming {args.warm_cycles} cycles (KV grows 272 tokens/cycle)...", flush=True)
-    drive(srv, rng, args.warm_cycles, prompt)
+    warm_t = []
+    drive(srv, rng, args.warm_cycles, prompt, first_cycle_index=0, timings=warm_t)
     torch.cuda.synchronize()
 
     # ---- wall clock reference for the same work we are about to profile -------------------
+    meas_t = []
     t0 = time.perf_counter()
-    drive(srv, rng, args.cycles, prompt)
+    drive(srv, rng, args.cycles, prompt, first_cycle_index=args.warm_cycles, timings=meas_t)
     torch.cuda.synchronize()
     wall_unprofiled = (time.perf_counter() - t0) * 1000
     print(f"unprofiled wall for {args.cycles} cycle(s): {wall_unprofiled:.1f} ms", flush=True)
+    print(f"{'cyc':>4s} {'infer_ms':>10s} {'obs_build':>10s} {'kv_ms':>8s} {'nkf':>4s}")
+    for r in warm_t + meas_t:
+        print(f"{r['cycle']:4d} {r['infer_ms']:10.1f} {r['obs_build_ms']:10.1f} "
+              f"{r['kv_ms']:8.1f} {r['nkf']:4d}")
 
     # ---- profiled run ---------------------------------------------------------------------
     from torch.profiler import ProfilerActivity, profile
     with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA],
                  record_shapes=False, with_stack=False) as prof:
         t0 = time.perf_counter()
-        drive(srv, rng, args.cycles, prompt)
+        drive(srv, rng, args.cycles, prompt, first_cycle_index=args.warm_cycles + args.cycles)
         torch.cuda.synchronize()
         wall = (time.perf_counter() - t0) * 1000
 

@@ -62,6 +62,28 @@ def pct(xs, q):
     return float(np.percentile(np.asarray(xs), q))
 
 
+def _one_run(cli, args) -> float:
+    """One full probe run; returns the steady-state full-cycle mean in ms."""
+    rng = np.random.default_rng(0)
+    cli.infer(dict(reset=True, prompt=args.prompt, save_visualization=False))
+    first_obs = make_obs(rng)
+    cycle_ms = []
+    for c in range(args.cycles):
+        t = time.perf_counter()
+        ret = cli.infer(dict(obs=first_obs, prompt=args.prompt, save_visualization=False))
+        d_infer = (time.perf_counter() - t) * 1000
+        action = ret["action"]
+        nkf = args.keyframes // 2 if c == 0 else args.keyframes
+        kfs = [make_obs(rng) for _ in range(nkf)]
+        t = time.perf_counter()
+        cli.infer(dict(obs=kfs, compute_kv_cache=True, imagine=False,
+                       save_visualization=False, state=action))
+        d_kv = (time.perf_counter() - t) * 1000
+        cycle_ms.append(d_infer + d_kv)
+    ss = cycle_ms[1:]                      # cycle 0 is cold: T5 + VAE encode + first kernels
+    return statistics.mean(ss) if ss else float("nan")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--host", default="0.0.0.0")
@@ -72,11 +94,36 @@ def main() -> int:
     ap.add_argument("--frame-chunk", type=int, default=2)
     ap.add_argument("--action-per-frame", type=int, default=16)
     ap.add_argument("--keyframes", type=int, default=8, help="real frames sent per compute_kv_cache")
+    ap.add_argument("--repeats", type=int, default=3,
+                    help="Full probe runs. The FIRST is discarded: measured on this box, the first "
+                         "run after a server starts is up to 37%% slower than steady state "
+                         "(cuBLAS/cuDNN algorithm selection, allocator warm-up), and probe_latency "
+                         "previously discarded only cycle 0, not the first run. Reporting a single "
+                         "run silently mixes warm-up into the number -- it is how a 1.39x was first "
+                         "recorded as 1.44x, and how the same config measured 2556 and 3503 ms.")
     args = ap.parse_args()
 
-    rng = np.random.default_rng(0)
     cli = WebsocketClientPolicy(host=args.host, port=args.port)
     print(f"connected to ws://{args.host}:{args.port}")
+
+    if args.repeats > 1:
+        run_means = []
+        for rep in range(args.repeats):
+            m = _one_run(cli, args)
+            tag = "DISCARDED (warm-up)" if rep == 0 else "kept"
+            print(f"  run {rep}: full-cycle mean {m:8.1f} ms   [{tag}]")
+            if rep > 0:
+                run_means.append(m)
+        lo, hi = min(run_means), max(run_means)
+        spread = 100 * (hi - lo) / lo if lo else 0.0
+        print(f"\nsteady-state mean over {len(run_means)} kept runs: "
+              f"{sum(run_means)/len(run_means):8.1f} ms  (spread {spread:.1f}%)")
+        if spread > 5.0:
+            print("  WARNING: kept runs disagree by more than 5%. Do not quote this number; "
+                  "the box is not in steady state.")
+        return 0
+
+    rng = np.random.default_rng(0)
 
     t0 = time.perf_counter()
     cli.infer(dict(reset=True, prompt=args.prompt, save_visualization=False))
