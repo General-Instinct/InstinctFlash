@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Run artifacts live outside the repo (/home/ubuntu/iwm_*), but guard against
+# anyone pointing IWM_RESULT_DIR / IWM_LOG_DIR at the working tree by accident.
+results/
+logs/
+*.npz
+*.qdstrm
+*.nsys-rep
+cycle_trace.json
+
+# Design docs stay local (not published)
+docs/
