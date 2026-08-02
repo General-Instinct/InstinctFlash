@@ -37,10 +37,15 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from pathlib import Path
 
-LINGBOT_ROOT = os.environ.get("LINGBOT_ROOT", "/home/ubuntu/lingbot-va")
-sys.path.insert(0, os.path.join(LINGBOT_ROOT, "wan_va"))
-sys.path.insert(0, LINGBOT_ROOT)
+# Repo root, derived from this file rather than written down. The tree has moved once already
+# (/home/ubuntu/InstinctWM -> /home/ubuntu/Code/InstinctWM), and the stale absolute path turned
+# --conditioning-prefill into an ImportError while every other variant kept working -- i.e. it
+# broke exactly one arm of an A/B comparison. IWM_ROOT still wins when it is set.
+IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
+if IWM_ROOT not in sys.path:
+    sys.path.insert(0, IWM_ROOT)
 
 
 def main() -> int:
@@ -96,48 +101,40 @@ def main() -> int:
              "disagree and any A/B on output values is meaningless without this.")
     args = ap.parse_args()
 
-    import torch
+    # Every variant below calls the SAME installer that `plan.serve()` calls. They used to be
+    # separate inline patches here, which meant an A/B could measure a patch that production
+    # never applied.
+    from instinctwm.runtime.lingbot_install import (
+        import_lingbot_server,
+        install_allocator_churn_elision,
+        install_conditioning_prefill,
+        install_debug_dump_elision,
+        install_deterministic_seed,
+        install_fsdp_elision,
+    )
 
-    import wan_va_server as S
+    S = import_lingbot_server()
 
     applied = []
 
     if args.no_fsdp:
-        # wan_va_server binds _configure_model at import time, so patch the BOUND name.
-        def _configure_model_nofsdp(model, shard_fn, param_dtype, device, eval_mode=True):
-            if eval_mode:
-                model.eval().requires_grad_(False)
-            model.to(param_dtype)
-            model.to(device)
-            return model
-
-        S._configure_model = _configure_model_nofsdp
-        applied.append("no-fsdp")
+        applied += install_fsdp_elision(S)
 
     if args.no_empty_cache:
-        # Patch on the torch module the server actually calls through.
-        torch.cuda.empty_cache = lambda *a, **k: None
-        applied.append("no-empty-cache")
+        applied += install_allocator_churn_elision(S)
 
     if args.no_debug_dump:
-        S.save_async = lambda obj, path: None
-        applied.append("no-debug-dump")
+        applied += install_debug_dump_elision(S)
 
     if getattr(args, "conditioning_prefill", False):
-        sys.path.insert(0, "/home/ubuntu/InstinctWM")
-        from instinctwm.runtime.lingbot_install import install_conditioning_prefill
-
-        install_conditioning_prefill(S, S.VA_Server)
-        applied.append("conditioning-prefill")
+        applied += install_conditioning_prefill(S, S.VA_Server)
 
     if getattr(args, "ring_kv", False):
-        sys.path.insert(0, "/home/ubuntu/InstinctWM")
         from instinctwm.optimizer.passes.ring_kv import RingKVAddressing
         RingKVAddressing().install(S, S.VA_Server)
         applied.append("ring-kv")
 
     if getattr(args, "hoist_casts", False):
-        sys.path.insert(0, "/home/ubuntu/InstinctWM")
         from instinctwm.optimizer.passes.hoist_invariant_casts import HoistInvariantCasts
         HoistInvariantCasts().install(S, S.VA_Server)
         applied.append("hoist-casts")
@@ -145,7 +142,6 @@ def main() -> int:
     _surface = []            # one-element cell: `global` cannot rebind a local of main()
     _hoist_g = _pools_g = None
     if getattr(args, "generic_passes", False):
-        sys.path.insert(0, "/home/ubuntu/InstinctWM")
         from instinctwm.adapter.lingbot import LingBotSurface
         from instinctwm.passes.hoist_invariant import HoistInvariant
         from instinctwm.passes.interface import run_pass
@@ -181,7 +177,6 @@ def main() -> int:
 
     _pools_pass = None
     if getattr(args, "stable_pools", False):
-        sys.path.insert(0, "/home/ubuntu/InstinctWM")
         from instinctwm.optimizer.passes.stable_pools import StableStatePools
         _pools_pass = StableStatePools()
         _pools_pass.install(S, S.VA_Server)
@@ -193,7 +188,6 @@ def main() -> int:
                   "mask.nonzero() per layer per forward, which is a data-dependent shape; "
                   "capture fails with cudaErrorStreamCaptureInvalidated.", flush=True)
             return 2
-        sys.path.insert(0, "/home/ubuntu/InstinctWM")
         from instinctwm.optimizer.passes.graph_capture import GraphBlockStack
         _graph_pass = GraphBlockStack()
         _graph_pass.install(S, S.VA_Server)
@@ -245,18 +239,7 @@ def main() -> int:
         S.VA_Server._infer = _infer_reporting
 
     if args.deterministic_seed is not None:
-        # Seed as a function of frame_st_id, not a constant: a constant would make every
-        # chunk in an episode start from the SAME noise, which is not the stock
-        # distribution and would itself change behaviour.
-        _orig_infer = S.VA_Server._infer
-
-        def _seeded_infer(self, obs, frame_st_id=0):
-            torch.manual_seed(args.deterministic_seed + frame_st_id)
-            torch.cuda.manual_seed_all(args.deterministic_seed + frame_st_id)
-            return _orig_infer(self, obs, frame_st_id=frame_st_id)
-
-        S.VA_Server._infer = _seeded_infer
-        applied.append(f"deterministic-seed={args.deterministic_seed}")
+        applied += install_deterministic_seed(S, args.deterministic_seed)
 
     print("=" * 72, flush=True)
     print(f"InstinctWM serve_variant: {applied if applied else ['STOCK BASELINE']}", flush=True)

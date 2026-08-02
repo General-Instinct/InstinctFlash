@@ -13,7 +13,62 @@ refuses to load.
 
 from __future__ import annotations
 
+import os
+import sys
+from typing import Callable, Sequence
+
 import torch
+
+
+# --- substrate passes -------------------------------------------------------------------
+# These three used to live as inline patches in eval/lingbot_va_robotwin/serve_variant.py.
+# They are here so the A/B harness and `plan.serve()` apply the SAME code: a measured
+# speedup that came from a different patch than the one production installs is not a
+# measurement of anything.
+
+
+def install_fsdp_elision(server_module, va_server_cls=None) -> list[str]:
+    """Do not shard across one GPU. See `passes/substrate.py:FSDPElision` for the cost.
+
+    `wan_va_server` binds `_configure_model` at import time, so the BOUND name is what has to
+    be replaced — patching `distributed.util` would be too late.
+    """
+
+    def _configure_model_nofsdp(model, shard_fn, param_dtype, device, eval_mode=True):
+        if eval_mode:
+            model.eval().requires_grad_(False)
+        model.to(param_dtype)
+        model.to(device)
+        return model
+
+    if not hasattr(server_module, "_configure_model"):
+        raise RuntimeError(
+            "fsdp_elision: wan_va_server has no _configure_model to replace. The upstream "
+            "server changed shape; refusing to report an optimization that was not applied."
+        )
+    server_module._configure_model = _configure_model_nofsdp
+    return ["fsdp_elision"]
+
+
+def install_allocator_churn_elision(server_module, va_server_cls=None) -> list[str]:
+    """Stop handing the caching allocator back to the driver between control steps.
+
+    Patched on `torch.cuda` rather than on the server module because the server calls through
+    to `torch.cuda.empty_cache` from two different sites (`wan_va_server.py:569`, `:603`).
+    """
+    torch.cuda.empty_cache = lambda *a, **k: None
+    return ["allocator_churn_elision"]
+
+
+def install_debug_dump_elision(server_module, va_server_cls=None) -> list[str]:
+    """Take the blocking device->host telemetry copy off the critical path."""
+    if not hasattr(server_module, "save_async"):
+        raise RuntimeError(
+            "debug_dump_elision: wan_va_server has no save_async to neuter. The upstream "
+            "server changed shape; refusing to report an optimization that was not applied."
+        )
+    server_module.save_async = lambda obj, path: None
+    return ["debug_dump_elision"]
 
 
 def install_conditioning_prefill(server_module, va_server_cls) -> list[str]:
@@ -154,3 +209,111 @@ class _NoopTextEmbedder(torch.nn.Module):
 
     def forward(self, x):
         return None
+
+
+# --- plan installation ------------------------------------------------------------------
+
+#: pass name -> installer. Every entry here changes the running server.
+INSTALLERS: dict[str, Callable[..., list[str]]] = {
+    "fsdp_elision": install_fsdp_elision,
+    "allocator_churn_elision": install_allocator_churn_elision,
+    "debug_dump_elision": install_debug_dump_elision,
+    "conditioning_prefill": install_conditioning_prefill,
+}
+
+#: pass name -> why this backend needs no runtime action for it. Separate from INSTALLERS on
+#: purpose: "we did nothing, here is why" and "we did something" are different claims, and a
+#: pass that quietly fell into neither bucket is the failure this split exists to prevent.
+NO_RUNTIME_ACTION: dict[str, str] = {
+    "obs_decode_elision": (
+        "the serving path never invokes the decoder — `_infer` returns latents the RoboTwin "
+        "client drops (wan_va_server.py:623-624) — so there is no execution to elide. The "
+        "residency win this pass describes is decided by the checkpoint loader, not by a "
+        "runtime patch, and is not available through this installer."
+    ),
+}
+
+
+def install_plan(server_module, va_server_cls, plan) -> list[str]:
+    """Apply every applied pass in `plan` to the imported upstream server.
+
+    Raises on any applied pass this backend cannot install. That is the point: a server whose
+    `plan.explain()` claims a pass fired, while the pass was silently skipped, invalidates
+    every number measured against it. The failure mode this framework sells against is
+    precisely a plausible wrong number.
+
+    The whole plan is checked BEFORE anything is patched, for the same reason
+    `populate_cross_cache` builds every layer before publishing any: a partial install leaves
+    the server module mutated in a state no plan describes, and the patches are monkeypatches
+    on an imported module, so there is nothing to roll back to.
+    """
+    unsupported = [
+        r.name for r in plan.applied
+        if r.name not in INSTALLERS and r.name not in NO_RUNTIME_ACTION
+    ]
+    if unsupported:
+        raise NotImplementedError(
+            f"the lingbot-va backend has no installer for {unsupported}. Either implement one "
+            f"in instinctwm/runtime/lingbot_install.py, or drop the pass from the plan with "
+            f"plan.without({', '.join(repr(n) for n in unsupported)}) — but do not serve a "
+            f"plan whose explain() output claims work that was never applied."
+        )
+
+    applied: list[str] = []
+    for result in plan.applied:
+        installer = INSTALLERS.get(result.name)
+        if installer is not None:
+            applied.extend(installer(server_module, va_server_cls))
+        else:
+            applied.append(f"{result.name} (no runtime action: {NO_RUNTIME_ACTION[result.name]})")
+    return applied
+
+
+def install_deterministic_seed(server_module, seed: int) -> list[str]:
+    """Seed the noise draw so two servers can be compared at all.
+
+    `_infer` draws `torch.randn` for the initial video latents and action tokens
+    (`wan_va_server.py:449-462`) with no seeding, so two *stock* servers already disagree and
+    any A/B on output values measures the noise draw rather than the variant.
+
+    Seeded as a function of `frame_st_id`, not a constant: a constant would start every chunk
+    in an episode from the SAME noise, which is not the stock distribution and would itself be
+    a behaviour change.
+    """
+    _orig_infer = server_module.VA_Server._infer
+
+    def _seeded_infer(self, obs, frame_st_id=0):
+        torch.manual_seed(seed + frame_st_id)
+        torch.cuda.manual_seed_all(seed + frame_st_id)
+        return _orig_infer(self, obs, frame_st_id=frame_st_id)
+
+    server_module.VA_Server._infer = _seeded_infer
+    return [f"deterministic_seed={seed}"]
+
+
+def resolve_lingbot_root(explicit: str | None = None) -> str:
+    """Locate the upstream lingbot-va tree, or say exactly what is missing.
+
+    Order: explicit argument, `LINGBOT_ROOT`, then the historical default. Raises rather than
+    letting `import wan_va_server` fail with a bare ModuleNotFoundError several frames later.
+    """
+    root = explicit or os.environ.get("LINGBOT_ROOT") or "/home/ubuntu/lingbot-va"
+    if not os.path.isdir(root):
+        raise FileNotFoundError(
+            f"lingbot-va checkout not found at {root!r}. Set LINGBOT_ROOT to the upstream "
+            f"tree (it provides wan_va/wan_va_server.py). InstinctWM patches that server at "
+            f"runtime rather than vendoring it, so the checkout is required to serve."
+        )
+    return root
+
+
+def import_lingbot_server(lingbot_root: str | None = None, extra_paths: Sequence[str] = ()):
+    """Put the upstream tree on `sys.path` and import its server module."""
+    root = resolve_lingbot_root(lingbot_root)
+    for entry in (os.path.join(root, "wan_va"), root, *extra_paths):
+        if entry not in sys.path:
+            sys.path.insert(0, entry)
+
+    import wan_va_server  # noqa: E402  (importable only after the sys.path insert above)
+
+    return wan_va_server
