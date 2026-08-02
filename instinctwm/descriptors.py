@@ -55,7 +55,25 @@ class ExecutionDescriptor:
     #: in their own code without naming it.
     prefill_boundary: str | None = None
     #: outputs the caller never reads. Cosmos3-Edge denoises 567 tokens and consumes 17.
+    #:
+    #: NOT a licence to elide the computation that produced them. See `elidable_computations`.
     dead_outputs: tuple[str, ...] = ()
+    #: computations whose ENTIRE contribution is their returned value -- no writes to shared
+    #: state, no effect on any later step. Only these may be removed.
+    #:
+    #: The split exists because LingBot-VA proved the two are different. Its action stream runs
+    #: `action_guidance_scale = 1` and takes `action_noise_pred[:1]`, so CFG branch 1's output is
+    #: discarded at the source level, and `guidance = {"action": POSITIVE_ONLY}` says so. But both
+    #: CFG branches write the SHARED ring KV pool, and the video stream (guidance_scale = 5) reads
+    #: branch 1. A two-axis liveness test measured branch 1 live on BOTH axes -- corrupting its
+    #: returned value moved the final actions by 5.64, and suppressing only its KV writes moved
+    #: them by 5.39, against a chunk-to-chunk movement of 1.03.
+    #:
+    #: So `dead_outputs` / `POSITIVE_ONLY` was a true statement about OUTPUT USAGE that would have
+    #: been a silent correctness bug if read as a statement about DEAD COMPUTE. An adapter must
+    #: assert this second property separately, and it must be earned by measurement: run the
+    #: liveness test, do not reason from the call site.
+    elidable_computations: tuple[str, ...] = ()
     #: False when the solver carries state across steps, which makes truncation illegal:
     #: UniPC's this_order depends on len(timesteps) and set_timesteps rebuilds the sigma table,
     #: so a truncated run is NOT a prefix of the full trajectory. True for 4 of 6, not all.
