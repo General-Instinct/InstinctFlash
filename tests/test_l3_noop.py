@@ -28,7 +28,7 @@ import sys
 # ModuleNotFoundError: No module named 'instinctwm'.
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from instinctwm.state.manifests import REGISTRY, gr00t_manifest
+from instinctwm.state.manifests import REGISTRY, UNVALIDATED_DESIGNS, gr00t_manifest
 from instinctwm.state.types import Capacity, Discovery, Scope, StateManifest, applies_to
 
 

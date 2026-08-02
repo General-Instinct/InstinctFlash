@@ -9,15 +9,16 @@
 </div>
 
 <p align="center">
-| <a href="#roadmap"><b>Roadmap</b></a> | <a href="eval/lingbot_va_robotwin/README.md"><b>Evaluation</b></a> | <a href="eval/lingbot_va_robotwin/RESULTS.md"><b>Results</b></a> |
+| <a href="#the-optimization-stack"><b>Optimization Stack</b></a> | <a href="eval/lingbot_va_robotwin/README.md"><b>Evaluation</b></a> | <a href="eval/lingbot_va_robotwin/RESULTS.md"><b>Results</b></a> |
 </p>
 
 ---
 
 *Latest News* 🔥
 
-- [2026/08] **3.30x bit-exact on LingBot-VA** (8431 to 2554 ms per control cycle, 3.8 to 12.5 Hz), verified at `max |delta action| = 0` on paired seeded rollouts. Measured with a repeats-based protocol that discards the first run: single-run numbers on this box vary by up to 37% from cold start, and an earlier published 3.47x was an artefact of measuring one run per arm.
-- [2026/08] **Profiled the remaining cost.** LingBot-VA is launch- and gather-bound, not compute-bound: real arithmetic is 8.5% of wall clock, and one control step issued 469,811 kernel launches. After ring KV that is 379,314, the GPU is idle 58% of the cycle, and the next target is the unfused transformer block: elementwise/norm plus copy is 49% of GPU time and 324k of those launches.
+- [2026/08] **3.38x bit-exact on LingBot-VA**, episode mode: 9585 to 2832 ms per control cycle over 45 consecutive cycles with a single reset, verified at `max |delta action| = 0` on paired seeded rollouts.
+  A short reset-based probe reports 6.96x on the same build. That protocol resets between repeats, which rewinds the KV ring so each repeat replays graphs the discarded first run captured — it converts a per-cycle cost into a warm-up cost and **overstates this chain by 2.13x**. Episode mode is the reporting standard; the short-horizon number is kept only for continuity with earlier posts.
+- [2026/08] **Profiled the remaining cost.** LingBot-VA *was* launch-bound: an aten op cost 6.2 us whether it touched 1 element or 1 MB, and 83.6% of that was `cudaLaunchKernel` itself. Graph capture moved the launches inside graphs, and the workload is now GPU-bound again — so the profile that motivated the launch work no longer describes the current default. Launch counts quoted from that era are pre-capture and should not be read as current.
 - [2026/08] **Canonical RoboTwin 2.0 baseline: 91.6% macro** across all 50 tasks and 2500 episodes, zero failures.
 - [2026/08] Optimizer skeleton landed. Passes fire from adapter declarations, not flags, and carry equivalence tiers that do not compose upward.
 - [2026/07] Evaluation pipeline for LingBot-VA on RoboTwin 2.0, including a prompt-parity gate that closes a silent train/serve mismatch nobody upstream was checking.
@@ -78,21 +79,27 @@ Every optimization is classified by how it is discovered:
 
 - **AUTO**, detected with no help from the module tree, a trace, a profile, or a differential test.
   This is the product.
-- **DECLARED**, needs a fact that cannot be safely inferred. Pi-0's fp32 keep-list is one: guess
-  wrong and you get silently wrong actions.
-- **CHECKPOINT**, needs new weights. DreamZero-Flash is a training recipe, `Beta(7,1)`
-  video-timestep sampling, not a runtime trick. We can host it; we cannot deliver it.
+- **DECLARED**, needs a fact that cannot be safely inferred. A dtype keep-list is one: guess wrong
+  and you get silently wrong actions.
+- **CHECKPOINT**, needs new weights, and is therefore something we can host but not deliver.
 
-The design is validated against six model families, chosen because they disagree with each other:
-LingBot-VA, DreamZero, Cosmos3-Edge, InternVLA-A1, GR00T N, and pi-0/pi-0.5. One finding reshaped
-the abstraction: **"stateless VLA versus stateful WAM" is a false dichotomy.** Pi-0 builds a prefix
-KV cache, commits it, reads it from all 10 denoise forwards, and drops it, which is structurally
-identical to LingBot-VA's episode-scoped stream. They differ only in **lifetime**. So KV persistence
-is a lifetime field (`none`, `chunk`, `window`, `episode`), not a boolean, and one runtime serves
-both with no `if is_vla` anywhere.
+### What is actually supported
 
-The cross-model derivation behind that abstraction, the full profile, and the prioritized
-low-level work are summarised in [Roadmap](#roadmap) below.
+Two models, both validated end to end on this hardware:
+
+| model | status |
+|---|---|
+| **LingBot-VA** | primary optimization target and evaluation benchmark. 3.38x bit-exact, episode mode. Full correctness gates: multi-episode bit-exactness, reset isolation, pointer stability. |
+| **Cosmos3-Edge** | second reference model, used to validate that the engine generalizes. One Plan runs under both executors with graph replay bit-exact against the eager oracle. **Plumbing only** — a torch-SDPA shim stands in for the served attention kernel, so no accuracy or speedup claim is made. |
+
+Everything else is **future work**. The state descriptors carry unvalidated design entries for
+other model families; those are design sketches, not support, and nothing has been measured on
+them. We would rather have two models fully verified than six partly claimed.
+
+One design finding does generalize and is worth keeping: **"stateless VLA versus stateful WAM" is
+a false dichotomy** — KV persistence is a lifetime field (`none`, `chunk`, `window`, `episode`),
+not a boolean. Cosmos3-Edge is the validated instance of the far end of that axis: it keeps no KV
+pool at all, and the same runtime serves it with no `if is_vla` anywhere.
 
 ### Getting started
 
@@ -123,45 +130,131 @@ closes it, and passes bit-exactly.
 The house rule follows: **a number you cannot defend is worse than no number.** Label plumbing as
 plumbing. Assert every knob you set. Read the server log.
 
-Good first work is in the [Roadmap](#roadmap) below. It is ordered by what each step *unlocks*,
-not by what it implements.
+Good first work is in [The optimization stack](#the-optimization-stack) below. It is organized by
+layer, and every item carries its status — shipped, partial, ruled out, or future — so it is clear
+what is real and what is only designed.
 
-## Roadmap
+## The optimization stack
 
-Ordered by measured cost reduction, not by layer. Two things we learned the hard way shape this
-list.
+InstinctWM is organized as six optimization layers, not as a list of tricks. A layer is defined by
+*what it changes*: Layer 1 changes the model, Layer 6 changes the hardware target, and correctness
+gets progressively harder to guarantee as you go up.
 
-**Rank by cost term, not by software layer.** Cosmos3-Edge measures `p99 = 94.6 ms FIXED +
-31.76 ms x NFE`. A stack organised purely by where code lives aims everything at the per-step
-term and silently has nothing to offer the one model with a measured deadline problem. So every
-pass declares whether it reduces the `FIXED` or the `PER_STEP` term, plus a cost formula, and the
-optimizer ranks by `delta_fixed + NFE * delta_step` against the deadline.
+Status is per-item and means exactly this:
 
-**Accuracy-neutral is necessary, not sufficient.** On pi-0's real shapes, swapping eager attention
-for SDPA while keeping the mask measures 133.5 to 144-184 us: a regression whose numerics an
-equivalence gate would happily certify. Every pass therefore also carries a measured cost delta on
-the target's real shapes, and a pass that does not improve its declared term is rejected whatever
-its tier.
+| | meaning |
+|---|---|
+| **shipped** | implemented, gated bit-exact, and measured end to end on LingBot-VA |
+| **partial** | implemented and measured, but not on the shipped path — reason given |
+| **ruled out** | tried or tested, and rejected *by measurement*. Kept so it is not re-proposed |
+| **future** | designed or surveyed only. Nothing implemented, nothing measured |
 
-| | work | attacks | tier |
-|---|---|---|---|
-| 1 | Paged KV with a device-resident block table; fused write-then-attend | 39.6% of GPU time in gather/copy, and the host syncs behind 51% GPU idle | `BITEXACT` |
-| 2 | CUDA-graph capture, gated on a static-shape predicate rather than pipeline position | 469,811 launches per control step at 6.2 us mean | `BEHAVIORAL` |
-| 3 | Triton fusion: norm + modulation + QKV + RoPE, and the FFN chain | 18.3% elementwise, 198 launches per layer per forward | `BITEXACT` |
-| 4 | Stream overlap and async closed-loop execution | residual idle; converts the deadline from control period to chunk expiry | `BITEXACT` |
-| 5 | Guidance branch elision | forwards computing a discarded negative branch | `NUMERIC` |
-| 6 | fp8 weights and KV | 17.4% of GPU time in GEMM | `NUMERIC` |
-| 7 | Adaptive NFE and velocity-cosine step caching | step count, the only order-of-magnitude lever | `BEHAVIORAL` |
+All measurements are LingBot-VA, episode mode (45 consecutive control cycles, one reset) unless
+noted. Cosmos3-Edge results are plumbing-only and never carry a speedup claim.
 
-Item 2 is not last. Capture needs static shapes, which for LingBot-VA means item 1 first, but that
-precondition is vacuous for models with no paged pool: measured unmodified, capture is worth 4.76x
-on GR00T's action head and 4.00x on pi-0's step body. Treating "capture last" as a pipeline
-invariant rather than a per-model predicate produced a 28:1 priority inversion in an earlier draft
-of this list.
+---
 
-The measurement that explains the whole ordering: 469,811 launches x 6.67 us of CPU enqueue is
-3134 ms, against 3031 ms of measured GPU idle. The idle *is* the enqueue. This is a launch
-elimination problem, not a kernel tuning problem.
+### Layer 1 — Model-level
+
+Changes what the model computes. The largest lever available and the only one that touches the
+NFE count, which the profile says is the dominant term. Nothing here is implemented.
+
+**Step reduction** — `future`
+Parallel Decoding Distillation · rCM · sCM · DMD2 · DreamZero-Flash
+
+**Latent compression** — `future`
+DC-AE / DC-VE · other latent tokenizer variants
+
+> Every item requires new weights, so none is behavior-preserving. Layer 1 is where the remaining
+> order-of-magnitude is, and also where the equivalence tier drops to `BEHAVIORAL` — it needs the
+> accuracy harness, not the bit-exact gate.
+
+---
+
+### Layer 2 — Graph-level
+
+Changes *when and how* work is issued, never what is computed. Everything shipped so far lives
+here, and it is the layer where bit-exactness is achievable.
+
+| item | status | evidence |
+|---|---|---|
+| Prefill extraction | **shipped** | P002: caches episode-constant cross-attention K/V for 30 layers, removes 89 of 226 TFLOP/cycle |
+| Execution graph rewrite | **shipped** | pass framework: `HoistInvariant`, `PromoteSmallOperand`, `ExplicitStepIndex` — adapters publish sites, passes decide |
+| Persistent state analysis | **shipped** | `engine/deps.py` derives external reads/writes, host mutations and graph-key fields by tracing. Found two dependency bugs inspection had missed twice |
+| Static memory planning | **shipped** | P006: reset clears logical state in place; pointer certificate fails closed |
+| CUDA Graph capture | **shipped** | P005: 1.21x whole-episode. **Caveat:** the key does not converge — ~6 captures/cycle indefinitely |
+| Prefill cache | **shipped** | same mechanism as prefill extraction |
+| CFG parallelization | **ruled out** | a two-axis liveness test found the action stream's CFG branch 1 live on *both* axes (output 5.64, shared-state 5.39, vs 1.03 movement). Output discarded, computation load-bearing |
+| Whole-cycle capture | **ruled out** | blocked structurally: the KV read extent grows 152 slots/cycle, so the graph key cannot converge without changing numerics |
+| Stream overlap | **future** | attacks the FIXED cost term; matters most at low NFE |
+
+---
+
+### Layer 3 — Cache
+
+Reuses computation across steps or episodes. Partly shipped.
+
+| item | status | evidence |
+|---|---|---|
+| KV reuse | **shipped** | P003 ring KV: replaces a per-layer `mask.nonzero()` gather with an interval slice. Largest single step in the chain, and what makes graph capture legal at all |
+| Cross-attention cache | **shipped** | P002 |
+| Episode-level cache | **shipped** | P006, with reset isolation verified against a fresh server |
+| TeaCache · XCache · SeaCache · energy-based cache | **future** | step-skipping caches; all trade behavior for speed and need the accuracy harness |
+| Window cache | **future** | |
+
+---
+
+### Layer 4 — Attention
+
+**Deprioritized by measurement, not by preference.** Attention is **7% of GPU busy** on the current
+default. It is the item intuition picks first and the profile ranks near-last.
+
+Sana-Video hybrid attention · LongSana · linear attention · Mamba / DeltaNet · FlashAttention ·
+FlashInfer kernels — all `future`.
+
+> FlashInfer's Init–Plan–Run split already shaped the engine's design (plan on the host into GPU
+> buffers, keep the run phase shape-static and capture-safe) even though no FlashInfer kernel is
+> integrated.
+
+---
+
+### Layer 5 — Kernel
+
+| item | status | evidence |
+|---|---|---|
+| Operator fusion framework | **shipped** | `kernels/`: fusible regions, tier derivation, PTX-level assertions. It rejected three of our own kernels |
+| Fused AdaLN (modulation) | **partial** | `PromoteSmallOperand` removes the 35.4 MB activation upcast per block, bit-exact. The full norm+modulation fusion is not done |
+| Triton kernels | **partial** | a bit-exact gated-residual kernel exists at 1.21–1.26x in a microbenchmark and is **not shipped**: it is launch-dominated, and Triton's Python launcher costs 11.0 us against PyTorch's 6.2 us dispatch |
+| Fused CFG · fused scheduler · fused VAE · paged-KV kernels | **future** | |
+
+> The measured lesson: after graph capture, a fused kernel competes against ~1.17 us of GPU-side
+> launch latency, not 6.2 us of dispatch. Fusion should be counted in *kernels removed inside the
+> graph*, and the copy audit puts the whole remaining copy traffic at a 1.07x ceiling.
+
+---
+
+### Layer 6 — Hardware
+
+Nothing implemented. All `future`.
+
+TensorRT · CUDA Graph backends beyond ours · FP8 · INT8 · INT4 · Jetson · Thor · Snapdragon
+
+> Quantization is Layer 6 and deliberately unprioritized: it attacks bytes and FLOPs, which the
+> profile puts at roughly 23% of the problem. It is not free either — everything here is
+> `NUMERIC` at best.
+
+---
+
+### What the stack says about what to do next
+
+The chain is **9585 → 2832 ms, 3.38x, every step bit-exact**, and all of it came from Layer 2 and
+Layer 3. Those layers are now largely exhausted at the current architecture: whole-cycle capture is
+structurally blocked, CFG elision is illegal here, copy elimination has a 1.07x ceiling, and
+attention is 7% of GPU busy.
+
+GEMM time is now the dominant term, and **nothing bit-exact on Layers 2–5 touches it.** That points
+at Layer 1 — fewer steps — which is why the next work is a Layer 1 design study rather than another
+runtime pass.
 
 ## Citation
 

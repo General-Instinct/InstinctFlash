@@ -80,6 +80,14 @@ def main() -> int:
              "--ring-kv: the stock mask.nonzero() is a data-dependent shape and capture of a "
              "stock block fails with cudaErrorStreamCaptureInvalidated. Measured per-op cost is "
              "6.2 us of which 83.6%% is cudaLaunchKernel; replay is ~1.17 us.")
+    ap.add_argument("--generic-only", default=None,
+        help="comma-separated subset of generic passes to APPLY: pools,hoist,promote,stepidx. "
+             "Sites are still enumerated for all of them, so the adapter's rewritable-site shims "
+             "are installed either way -- which is what lets shim cost be separated from rewrite "
+             "cost.")
+    ap.add_argument("--generic-dry-run", action="store_true",
+        help="Enumerate every site (installing all shims) and apply NO rewrites. Isolates the "
+             "eager tax of exposing a rewritable surface from the effect of rewriting it.")
     ap.add_argument("--legacy-passes", action="store_true",
         help="ORACLE/FALLBACK. Use the backend-specific P004/P006 install() functions instead of "
              "the pass framework. The generic path is the DEFAULT as of 2026-08-02: it measured "
@@ -169,10 +177,30 @@ def main() -> int:
                 _surface.append(LingBotSurface(self.transformer, server=self))
                 # ORDER MATTERS and is a real dependency: hoist caches the fp32 constant that
                 # the promotion rewrite then reuses instead of re-casting per call.
-                for p_ in (_pools_g, _hoist_g, _promote_g, _stepidx_g):
-                    print(f"[generic_passes] {run_pass(p_, _surface[0], None)}", flush=True)
-                    for d in getattr(p_, "declines", [])[:3]:
-                        print(f"[generic_passes]   decline {d}", flush=True)
+                named = (("pools", _pools_g), ("hoist", _hoist_g),
+                         ("promote", _promote_g), ("stepidx", _stepidx_g))
+                sel = (None if not getattr(args, "generic_only", None)
+                       else {x.strip() for x in args.generic_only.split(",")})
+                from instinctwm.passes.interface import SiteKind
+                if getattr(args, "generic_dry_run", False):
+                    # touch every site kind so all shims install, then apply nothing
+                    for k in SiteKind:
+                        list(_surface[0].sites(k))
+                    print("[generic_passes] DRY RUN: all shims installed, 0 rewrites applied",
+                          flush=True)
+                else:
+                    for nm, p_ in named:
+                        if sel is not None and nm not in sel:
+                            # still enumerate, so this pass's shim is installed and only its
+                            # REWRITE is withheld
+                            for k in p_.sites_required():
+                                list(_surface[0].sites(k))
+                            print(f"[generic_passes] {nm}: sites enumerated, rewrite withheld",
+                                  flush=True)
+                            continue
+                        print(f"[generic_passes] {run_pass(p_, _surface[0], None)}", flush=True)
+                        for d in getattr(p_, "declines", [])[:3]:
+                            print(f"[generic_passes]   decline {d}", flush=True)
                 # Seed the certificate from the buffers that exist RIGHT NOW, not from the first
                 # wrapped allocation. The passes install at the end of reset 1, so this episode's
                 # buffers pre-date stabilization; anything captured against them becomes stale at

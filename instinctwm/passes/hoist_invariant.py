@@ -25,7 +25,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from instinctwm.passes.interface import Rewrite, RewriteKind, Scope, Site, SiteKind
+from instinctwm.passes.interface import (
+    Executor, Profitability, Rewrite, RewriteKind, Scope, Site, SiteKind,
+)
 
 
 @dataclass
@@ -39,6 +41,22 @@ class Decline:
 
 class HoistInvariant:
     name = "hoist_invariant"
+
+    #: BITEXACT everywhere, PROFITABLE ONLY UNDER CAPTURE. Sequential A/B, 45-cycle episode mode:
+    #: applying this rewrite on top of StablePools moved late-episode latency 2758.9 -> 2892.3 ms.
+    #: The mechanism is not yet identified -- the adapter shim reproduces diffusers'
+    #: FP32LayerNorm.forward exactly, `.to(origin_dtype)` included, so an extra cast is ruled out.
+    #: Under GRAPH the added Python is captured away and the pass is part of a net-positive stack,
+    #: but it must not be admitted on an eager-only backend on the strength of its tier.
+    profitability = {
+        Executor.EAGER: Profitability(
+            Executor.EAGER, +133.4, "probe_episode 45 cycles, sequential A/B",
+            "mechanism unidentified; do not enable on eager-only backends"),
+        # Executor.GRAPH: DELIBERATELY ABSENT. The captured stack that includes this pass is
+        # net-positive, but this pass's graph-mode delta has not been ISOLATED, and inventing a
+        # number here would defeat the point of the split. Absent means unmeasured, and `admit`
+        # fails closed on unmeasured.
+    }
 
     def __init__(self, verbose: bool = False):
         self.verbose = verbose

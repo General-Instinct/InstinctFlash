@@ -147,8 +147,19 @@ def pi0_manifest() -> StateManifest:
     )
 
 
+#: SUPPORTED: validated end to end on real hardware with real weights.
+#:   lingbot-va    primary target; full correctness gates and episode-mode benchmarks
+#:   cosmos3-edge  second reference model; engine generality, plumbing only (SDPA shim)
+#:
+#: UNVALIDATED DESIGN ENTRIES: `gr00t` and `pi-0` below are design sketches written from published
+#: architecture descriptions. There are NO checkpoints for them on this box and NOTHING has been
+#: measured on them. They are kept because they shaped the lifetime abstraction, and they are
+#: segregated so nothing can mistake them for support. Do not cite them in a claim.
 REGISTRY = {
     "lingbot-va": lingbot_va_manifest,
+}
+
+UNVALIDATED_DESIGNS = {
     "gr00t": gr00t_manifest,
     "pi-0": pi0_manifest,
 }
