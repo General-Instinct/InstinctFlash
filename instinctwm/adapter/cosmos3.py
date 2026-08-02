@@ -173,3 +173,57 @@ def build_plan(layers, mask, pos, *, model_id="cosmos3-edge"):
         notes={"attention": "torch-SDPA SHIM -- plumbing/latency only, NOT served numerics",
                "state": "no KV pool; the SequencePack is the state"},
     )
+
+
+# =================================================================================================
+# AdapterSurface: what this model publishes to passes. Answers WHERE, never WHAT.
+# =================================================================================================
+
+class Cosmos3Surface:
+    """Site publisher for Cosmos3-Edge.
+
+    Note how little there is. The adapter's job is to point; it holds no optimization policy and
+    imports nothing from `instinctwm.passes` except the vocabulary.
+    """
+
+    model_id = "cosmos3-edge"
+
+    def __init__(self, layers, mask, pos):
+        self.layers, self.mask, self.pos = layers, mask, pos
+        self._wrapped = {}
+
+    def sites(self, kind):
+        from instinctwm.passes.interface import Site, SiteKind
+
+        if kind is SiteKind.CAPTURE_UNIT:
+            # The whole MoT stack is one unit. Cosmos keeps no KV pool and mutates no host state
+            # inside the layer, so there is no extent and no deferred commit to arrange.
+            yield Site(kind=kind, id="cosmos3.mot_stack",
+                       attrs={"capturable": True,
+                              "effect_roots": (self.layers,),
+                              "arity": 1,
+                              "note": "argument is a SequencePack (dict + host metadata)"})
+        elif kind is SiteKind.EXECUTION_REGION:
+            for i, _l in enumerate(self.layers):
+                yield Site(kind=kind, id=f"cosmos3.layer[{i}]", attrs={"index": i})
+        # STATE_ADDRESSING: none. Cosmos3 has no KV pool -- the SequencePack IS the state, and it
+        # is passed in, not addressed out of a resident buffer. A pass asking for these gets an
+        # honest empty answer rather than a missing symbol.
+        # INVARIANT_CONDITIONING / ALLOCATION: not yet published.
+
+    def apply(self, rewrite):
+        from instinctwm.passes.interface import RewriteKind
+
+        if rewrite.site_id != "cosmos3.mot_stack" or rewrite.kind is not RewriteKind.WRAP:
+            raise NotImplementedError(f"cosmos3 surface cannot apply {rewrite}")
+        self._wrapped["mot_stack"] = rewrite.payload(self._raw_stack)
+
+    def _raw_stack(self, pack):
+        x = pack
+        for l in self.layers:
+            x = l(x, self.mask, self.pos)[0]
+        return x
+
+    def stack(self, pack):
+        """The entry point a caller uses; rewritten in place by whatever passes fired."""
+        return self._wrapped.get("mot_stack", self._raw_stack)(pack)
