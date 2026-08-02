@@ -85,6 +85,31 @@ BASELINE = {
     #: P006 delivered the recapture gap P005 left open: graphs now survive resets.
     "protocol": "probe_latency.py --cycles 10 --repeats 3; first run discarded; "
                 "all spreads <= 0.7% (P005 arm: 0.5%)",
+    #: EPISODE MODE (probe_episode.py, 45 cycles, ONE reset). probe_latency resets between
+    #: repeats, which rewinds the ring to (0,0) so every repeat replays the keys the discarded
+    #: first run captured. That hides any per-cycle cost that depends on ring position -- and
+    #: graph capture has one, because the graph key contains (start, count).
+    #:
+    #: Restated under episode mode, current default:
+    #:                          pre-saturation   post-saturation   whole episode
+    #:   with graph capture        2925.4 ms        2302.8 ms        2800.8 ms
+    #:   without graph capture     3572.5 ms        2710.5 ms        3400.1 ms
+    #:
+    #: So graph capture is still a NET WIN (1.18x post-saturation, 1.21x whole episode) but far
+    #: from the 1.5-2x probe_latency implied. Captures never stop: 6.0/cycle even after the pool
+    #: saturates, 92.5% cache hit rate.
+    #:
+    #: OUTSTANDING: the stock and intermediate rows above are all probe_latency-protocol and have
+    #: NOT been restated in episode mode, so `cumulative_speedup` is not an episode-mode number.
+    "episode_mode": {
+        "protocol": "probe_episode.py --cycles 45 (one reset, ring never rewound)",
+        "default_whole_episode_ms": 2800.8,
+        "default_post_saturation_ms": 2302.8,
+        "no_graph_whole_episode_ms": 3400.1,
+        "no_graph_post_saturation_ms": 2710.5,
+        "captures_per_cycle_after_saturation": 6.0,
+        "graph_cache_hit_rate": 0.92457,
+    },
 }
 
 
