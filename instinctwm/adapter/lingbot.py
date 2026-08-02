@@ -55,6 +55,7 @@ class LingBotSurface:
         self.model = model
         self.cache_name = cache_name
         self._wrapped = {}
+        self._cast_sites: dict = {}
 
     # -- WHERE ------------------------------------------------------------------------------
     def sites(self, kind):
@@ -88,16 +89,81 @@ class LingBotSurface:
                                attrs={"addressing": "ring_interval",
                                       "scope": Scope.CYCLE, "evaluated_at": Scope.LAYER})
         elif kind is SiteKind.INVARIANT_CONDITIONING:
+            LN = self._install_producer_shim()
             for i, b in enumerate(blocks):
                 for name, mod in b.named_modules():
-                    for attr, src in (("_iwm_w32", "weight"), ("_iwm_b32", "bias"),
-                                      ("_iwm_sst32", "scale_shift_table")):
-                        if getattr(mod, attr, None) is not None:
-                            yield Site(kind=kind,
-                                       id=f"lingbot.hoisted[{i}].{name or 'block'}.{attr}",
-                                       attrs={"scope": Scope.MODEL,
-                                              "evaluated_at": Scope.LAYER,
-                                              "source": src})
+                    # ONLY modules whose consumer actually reads the producer. Publishing a site
+                    # the adapter cannot route means the pass installs a cache nothing calls and
+                    # then reports a rewrite that did nothing: an inflated count, and worse, a
+                    # correctness claim about a code path that never ran. An earlier version
+                    # published every weight/bias in the block and claimed 81 rewrites where only
+                    # the layer-norm ones were live.
+                    if not isinstance(mod, LN):
+                        continue
+                    for src in ("weight", "bias"):
+                        t = getattr(mod, src, None)
+                        if t is None or not hasattr(t, "float"):
+                            continue
+                        # A PARAMETER cast to fp32. The parameter does not change once the model is
+                        # loaded, so the cast is MODEL-scoped; the model performs it inside every
+                        # layer of every forward, i.e. at LAYER scope. 4,740 casts of a constant
+                        # per control cycle.
+                        yield Site(
+                            kind=kind, id=f"lingbot.cast[{i}].{name or 'block'}.{src}",
+                            attrs={"scope": Scope.MODEL, "evaluated_at": Scope.LAYER,
+                                   "pure": True, "dtype": "fp32",
+                                   "produce": self._remember(
+                                       f"lingbot.cast[{i}].{name or 'block'}.{src}", mod, src)})
+
+    # -- invariant-conditioning plumbing ----------------------------------------------------
+    # The adapter owns the mechanism; the pass owns the policy. `produce` computes the value,
+    # `install` puts whatever the pass hands back where the consumer will call it.
+
+    def _remember(self, site_id, mod, src):
+        """Record producer+installer for this site so `apply` can find them by id alone."""
+        produce, install = self._producer(mod, src), self._installer(mod, src)
+        self._cast_sites[site_id] = (produce, install)
+        return produce
+
+    @staticmethod
+    def _producer(mod, src):
+        def produce():
+            return getattr(mod, src).float()
+        return produce
+
+    @staticmethod
+    def _installer(mod, src):
+        def install(cached):
+            setattr(mod, f"_iwm_cast_{src}", cached)
+        return install
+
+    def _install_producer_shim(self):
+        """Make FP32LayerNorm read its fp32 params through a producer, so a pass can wrap it.
+
+        Without this the cast is buried inside `F.layer_norm(x.float(), ..., self.weight.float())`
+        and there is nothing for a generic pass to hold on to. Exposing it is the adapter's job:
+        the model must present a rewritable surface before anything can rewrite it.
+        """
+        import modules.model as M
+        LN = M.FP32LayerNorm
+        if getattr(LN, "_iwm_producer_shim", False):
+            return LN
+        import torch.nn.functional as F
+        _orig = LN.forward
+
+        def forward(self, inputs):
+            wc = getattr(self, "_iwm_cast_weight", None)
+            bc = getattr(self, "_iwm_cast_bias", None)
+            if wc is None and bc is None:
+                return _orig(self, inputs)
+            w = wc() if wc is not None else (None if self.weight is None else self.weight.float())
+            b = bc() if bc is not None else (None if self.bias is None else self.bias.float())
+            return F.layer_norm(inputs.float(), self.normalized_shape, w, b,
+                                self.eps).to(inputs.dtype)
+
+        LN.forward = forward
+        LN._iwm_producer_shim = True
+        return LN
 
     def _extent(self) -> int:
         blocks = getattr(self.model, "blocks", []) or []
@@ -113,6 +179,13 @@ class LingBotSurface:
 
         if rewrite.site_id == "lingbot.block_stack" and rewrite.kind is RewriteKind.WRAP:
             self._wrapped["block_stack"] = rewrite.payload(self._raw_stack)
+            return
+        if rewrite.site_id.startswith("lingbot.cast[") and rewrite.kind is RewriteKind.WRAP:
+            spec = self._cast_sites.get(rewrite.site_id)
+            if spec is None:
+                raise KeyError(f"unknown cast site {rewrite.site_id}")
+            produce, install = spec
+            install(rewrite.payload(produce))
             return
         raise NotImplementedError(f"lingbot surface cannot apply {rewrite}")
 
