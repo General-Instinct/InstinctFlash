@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "instinctwm"
+version = "0.1.0"
+description = "Load, optimize, and deploy world-action models"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "AGPL-3.0-or-later" }
+authors = [{ name = "General Instinct" }]
+keywords = ["world-action-model", "robotics", "inference", "optimization", "vla"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+# The core -- adapters, the optimizer, and every pass -- is dependency-free on purpose.
+# Deciding which optimizations are legal for a model must work on a laptop with no CUDA;
+# torch is only needed to APPLY a plan, which is what the `runtime` extra is for.
+dependencies = []
+
+[project.optional-dependencies]
+runtime = ["torch>=2.4"]
+eval = ["numpy>=1.21"]
+
+[project.urls]
+Homepage = "https://general-instinct.com/"
+Repository = "https://github.com/general-instinct/InstinctWM"
+
+[tool.setuptools.packages.find]
+include = ["instinctwm*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

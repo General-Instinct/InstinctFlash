@@ -41,6 +41,22 @@ print(plan.explain())                                  # what fired, and why
 server = plan.serve(model, port=29056)                 # deploy
 ```
 
+Everything above `serve()` is pure analysis — no torch, no checkpoint, no GPU, and a test
+enforces that. Working out which optimizations are legal for a model is something you should
+be able to do on a laptop; a framework that needs the weights loaded before it can tell you
+what it would do is a runtime wearing a framework's clothes. `serve()` is the line that needs
+the upstream checkout (`LINGBOT_ROOT`) and the weights.
+
+Pass a `DeploymentSpec` when the defaults (one GPU, actions only) are not true — the passes
+that guard on those facts will decline on their own:
+
+```python
+from instinctwm import DeploymentSpec
+plan = Optimizer().compile(model.spec(), DeploymentSpec(world_size=8, want_pixels=True))
+# fsdp_elision declines: sharding is doing real work
+# obs_decode_elision declines: caller requested predicted pixels
+```
+
 > Early. The eval pipeline, the measurement tooling, and the first optimizer passes are real and
 > reproducible. The kernel and compiler layers are designed and being built. Every number quoted
 > here is measured on our hardware and reproducible with the scripts in `eval/`.
@@ -82,6 +98,9 @@ low-level work are summarised in [Roadmap](#roadmap) below.
 
 ```bash
 git clone https://github.com/general-instinct/InstinctWM && cd InstinctWM
+pip install -e .                          # core is dependency-free; `.[runtime]` adds torch
+python tests/run_tests.py                 # runs without pytest, by design
+
 cd eval/lingbot_va_robotwin && source ./env.sh
 
 IWM_FA_SHIM=1 ./servers.sh start 8        # one policy server per GPU
