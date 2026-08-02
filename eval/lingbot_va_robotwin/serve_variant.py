@@ -75,6 +75,10 @@ def main() -> int:
              "--ring-kv: the stock mask.nonzero() is a data-dependent shape and capture of a "
              "stock block fails with cudaErrorStreamCaptureInvalidated. Measured per-op cost is "
              "6.2 us of which 83.6%% is cudaLaunchKernel; replay is ~1.17 us.")
+    ap.add_argument("--generic-passes", action="store_true",
+        help="MIGRATED PATH: run HoistInvariant and StablePools through the pass framework "
+             "(adapter publishes sites, pass decides) instead of the backend-specific P004/P006 "
+             "install() functions. Supersedes --hoist-casts and --stable-pools.")
     ap.add_argument("--stable-pools", action="store_true",
         help="E1: reset clears logical KV state in place instead of reallocating the pools, so "
              "captured graphs stay valid across episodes. Only has an effect with --graph-blocks, "
@@ -138,6 +142,43 @@ def main() -> int:
         HoistInvariantCasts().install(S, S.VA_Server)
         applied.append("hoist-casts")
 
+    _surface = []            # one-element cell: `global` cannot rebind a local of main()
+    _hoist_g = _pools_g = None
+    if getattr(args, "generic_passes", False):
+        sys.path.insert(0, "/home/ubuntu/InstinctWM")
+        from instinctwm.adapter.lingbot import LingBotSurface
+        from instinctwm.passes.hoist_invariant import HoistInvariant
+        from instinctwm.passes.interface import run_pass
+        from instinctwm.passes.stable_pools import StablePools
+
+        _hoist_g, _pools_g = HoistInvariant(), StablePools()
+
+        # The surface needs a live model, which only exists after the server builds it. Install on
+        # the first reset, then let the passes run against the sites the adapter publishes.
+        _orig_reset_gp = S.VA_Server._reset
+
+        def _reset_generic(self, prompt=None):
+            out = _orig_reset_gp(self, prompt=prompt)
+            if not _surface and hasattr(self, "transformer"):
+                _surface.append(LingBotSurface(self.transformer))
+                for p_ in (_pools_g, _hoist_g):
+                    print(f"[generic_passes] {run_pass(p_, _surface[0], None)}", flush=True)
+                    for d in getattr(p_, "declines", [])[:3]:
+                        print(f"[generic_passes]   decline {d}", flush=True)
+                # Seed the certificate from the buffers that exist RIGHT NOW, not from the first
+                # wrapped allocation. The passes install at the end of reset 1, so this episode's
+                # buffers pre-date stabilization; anything captured against them becomes stale at
+                # reset 2. Seeding here makes the check notice that once -- graphs drop, recapture
+                # against stable storage, and survive every reset after. Recording pointers at the
+                # first wrapped call instead reported "stable" while the graphs were already stale,
+                # which cost max|delta action| = 1.527.
+                _pools_g.pointers = {sid: _pools_g._ptrs(v)
+                                     for sid, v in _surface[0].pools().items()}
+            return out
+
+        S.VA_Server._reset = _reset_generic
+        applied.append("generic-passes")
+
     _pools_pass = None
     if getattr(args, "stable_pools", False):
         sys.path.insert(0, "/home/ubuntu/InstinctWM")
@@ -157,6 +198,20 @@ def main() -> int:
         _graph_pass = GraphBlockStack()
         _graph_pass.install(S, S.VA_Server)
         applied.append("graph-blocks")
+
+        if _pools_g is not None:
+            # DELIBERATELY NOT WIRED. Graph preservation across resets on the migrated path is
+            # measured WRONG: max|delta action| = 1.527 against a 1.031 chunk-to-chunk movement,
+            # deterministically, while the same passes WITHOUT graph capture are bit-exact
+            # (0.000e+00). So the passes are correct and their interaction with capture is not,
+            # and the cause is not yet identified -- seeding the certificate at pass-application
+            # time did not change the delta at all.
+            #
+            # Leaving `stability_check` unset makes the migrated path drop graphs at every reset:
+            # correct, and slower. The legacy --stable-pools path keeps its own verified
+            # preservation. Do not wire this until the generic path reproduces 0.000e+00 WITH
+            # capture enabled.
+            pass
 
         if _pools_pass is not None:
             # Bind the pools on first use, then let the graph pass consult them at every reset.
@@ -179,8 +234,12 @@ def main() -> int:
 
         def _infer_reporting(self, obs, frame_st_id=0):
             out = _orig_infer_g(self, obs, frame_st_id=frame_st_id)
-            print(f"[graph_block_stack] {_graph_pass.stats()}"
-                  + (f" | {_pools_pass.stats()}" if _pools_pass else ""), flush=True)
+            extra = ""
+            if _pools_pass:
+                extra = f" | {_pools_pass.stats()}"
+            elif _pools_g:
+                extra = f" | generic {_pools_g.stats()} | {_hoist_g.stats()}"
+            print(f"[graph_block_stack] {_graph_pass.stats()}{extra}", flush=True)
             return out
 
         S.VA_Server._infer = _infer_reporting

@@ -82,15 +82,28 @@ class StablePools:
                     "would return a buffer that does not fit the request")
         if a.get("allocate") is None:
             return "site exposes no allocator to wrap"
-        if a.get("clear") is None:
-            return ("no declared clear semantics; storage could be reused but the previous "
-                    "episode's contents would leak")
+        if a.get("clear") is None and a.get("copy_into") is None:
+            return ("no declared reset semantics; storage could be reused but the previous "
+                    "episode's contents would leak. Declare `clear` (reset to empty) or "
+                    "`copy_into` (recompute fresh contents into the same storage)")
         return None
 
     # ---- what to install ----------------------------------------------------------------------
     def _stabilize(self, site: Site):
+        """Two reset semantics, because storage reuse has two shapes.
+
+        CLEAR      the contents are logically empty after a reset, so wipe in place.
+                   (LingBot's KV pool: mask/id/is_pred reset, k/v left alone as unreachable.)
+        COPY_INTO  the contents are recomputed every episode but must land in the SAME storage.
+                   (P002's cross-attention K/V: new text, same buffers.)
+
+        The second only turned up when migrating the shipped server. A site model with only
+        `clear` would have forced cross-attention K/V to stay backend-specific, which is how
+        parallel implementations start.
+        """
         extent = site.attrs["extent"]
-        clear = site.attrs["clear"]
+        clear = site.attrs.get("clear")
+        copy_into = site.attrs.get("copy_into")
         engine = self
         sid = site.id
 
@@ -100,7 +113,10 @@ class StablePools:
             def stable(*a, **kw):
                 want = kw.get("extent", extent)
                 if "v" in box and box["extent"] == want:
-                    clear(box["v"])                      # logical reset, same storage
+                    if copy_into is not None:
+                        copy_into(box["v"], allocate(*a, **kw))   # fresh values, same storage
+                    else:
+                        clear(box["v"])                           # logical reset, same storage
                     engine.n_reuses += 1
                     return box["v"]
                 # first call, or the extent genuinely changed: allocate and re-record

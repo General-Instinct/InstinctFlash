@@ -57,6 +57,7 @@ class LingBotSurface:
         self._wrapped = {}
         self._cast_sites: dict = {}
         self._alloc_sites: dict = {}
+        self._cross_sites: dict = {}
 
     # -- WHERE ------------------------------------------------------------------------------
     def sites(self, kind):
@@ -116,6 +117,27 @@ class LingBotSurface:
                         # empty after a reset so they are unreachable.
                         "clear": self._pool_clear,
                     })
+
+            # P002's cross-attention K/V. Same physical lifetime, DIFFERENT reset semantics: the
+            # text changes every episode, so the contents are recomputed -- but they must land in
+            # the same storage or every captured graph reading them goes stale.
+            if hasattr(type(self.model), "populate_cross_cache"):
+                self._install_cross_shim()
+                for i, b in enumerate(blocks):
+                    kv = getattr(b.attn2, "_iwm_cross_kv", None)
+                    if kv is None:
+                        continue
+                    sid = f"lingbot.cross_kv[{i}]"
+                    self._cross_sites[sid] = b.attn2
+                    yield Site(
+                        kind=kind, id=sid,
+                        attrs={"physical_lifetime": Scope.MODEL,
+                               "logical_reset": Scope.EPISODE,
+                               "evaluated_at": Scope.EPISODE,
+                               "extent": tuple(tuple(t.shape) for t in kv),
+                               "ownership": f"attn2[{i}]",
+                               "allocate": self._cross_allocator(b.attn2),
+                               "copy_into": self._cross_copy})
 
         elif kind is SiteKind.INVARIANT_CONDITIONING:
             LN = self._install_producer_shim()
@@ -210,7 +232,44 @@ class LingBotSurface:
                                 kw["device"], kw["dtype"], kw["batch"])
 
     def pools(self) -> dict:
-        return {sid: a.attn_caches[self.cache_name] for sid, a in self._alloc_sites.items()}
+        out = {sid: a.attn_caches[self.cache_name] for sid, a in self._alloc_sites.items()}
+        out.update({sid: getattr(a2, "_iwm_cross_kv", None)
+                    for sid, a2 in self._cross_sites.items()})
+        return {k: v for k, v in out.items() if v is not None}
+
+    # -- cross-attention K/V plumbing -------------------------------------------------------
+
+    @staticmethod
+    def _cross_allocator(attn2):
+        def allocate(**kw):
+            return attn2._iwm_cross_fresh
+        return allocate
+
+    @staticmethod
+    def _cross_copy(dst, src):
+        for d, s_ in zip(dst, src):
+            d.copy_(s_)
+
+    def _install_cross_shim(self):
+        """Route cross-cache publication through the per-layer allocator the pass wraps."""
+        Model = type(self.model)
+        if getattr(Model, "_iwm_cross_shim", False):
+            return
+        _orig = Model.populate_cross_cache
+
+        def populate_cross_cache(self_m, text_emb):
+            _orig(self_m, text_emb)
+            for b in self_m.blocks:
+                fresh = getattr(b.attn2, "_iwm_cross_kv", None)
+                if fresh is None:
+                    continue
+                b.attn2._iwm_cross_fresh = fresh
+                alloc = getattr(b.attn2, "_iwm_cross_alloc", None)
+                if alloc is not None:
+                    b.attn2._iwm_cross_kv = alloc()      # stable storage, fresh values
+
+        Model.populate_cross_cache = populate_cross_cache
+        Model._iwm_cross_shim = True
 
     # -- invariant-conditioning plumbing ----------------------------------------------------
     # The adapter owns the mechanism; the pass owns the policy. `produce` computes the value,
@@ -280,6 +339,10 @@ class LingBotSurface:
         if rewrite.site_id.startswith("lingbot.kv_pool[") and rewrite.kind is RewriteKind.WRAP:
             a = self._alloc_sites[rewrite.site_id]
             a._iwm_pool_alloc = rewrite.payload(self._pool_allocator(a))
+            return
+        if rewrite.site_id.startswith("lingbot.cross_kv[") and rewrite.kind is RewriteKind.WRAP:
+            a2 = self._cross_sites[rewrite.site_id]
+            a2._iwm_cross_alloc = rewrite.payload(self._cross_allocator(a2))
             return
         if rewrite.site_id.startswith("lingbot.cast[") and rewrite.kind is RewriteKind.WRAP:
             spec = self._cast_sites.get(rewrite.site_id)
