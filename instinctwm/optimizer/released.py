@@ -56,6 +56,15 @@ RELEASED = (
               "replay. Requires P003, whose slice addressing is what makes the stack capturable "
               "at all -- a stock block raises cudaErrorStreamCaptureInvalidated"),
     Released(
+        pid="P006", name="stable_state_pools", version="1.0.0", tier=Tier.BITEXACT,
+        step_speedup=1.52,
+        gates="max|delta action| = 0 over 6 paired seeded cycles run AFTER 5 episode resets; "
+              "probe_reset_isolation = 0 (episode 2 bitwise identical to a fresh episode); "
+              "1842.0 -> 1211.3 ms, spread 0.0%. Reset clears logical KV state in place instead "
+              "of reallocating, so P005's graphs survive -- gated by a runtime pointer "
+              "certificate that fails closed",
+        ),
+    Released(
         pid="P003", name="ring_kv_addressing", version="1.0.0", tier=Tier.BITEXACT,
         step_speedup=1.40,
         gates="max|delta action| = 0 over 40 cycles past the wrap at ~36; 800/800 allocator "
@@ -71,12 +80,9 @@ BASELINE = {
     "P001+P002+P003": 2553.9,
     "P001+P002+P003+P004": 2539.9,
     "P001+P002+P003+P004+P005": 1842.0,
-    "cumulative_speedup": 4.58,
-    #: P005 recaptures every episode because `_reset` reallocates the KV pool, so a captured graph
-    #: would point at freed memory (measured: nan on episode 2). With graphs surviving resets the
-    #: same build measured 1208.2 ms -- that is the size of the prize for E1 (a stable arena), and
-    #: it is NOT claimable today because it is only correct with a stable pool.
-    "P005_with_persistent_pool_projected": 1208.2,
+    "P001+P002+P003+P004+P005+P006": 1211.3,
+    "cumulative_speedup": 6.96,
+    #: P006 delivered the recapture gap P005 left open: graphs now survive resets.
     "protocol": "probe_latency.py --cycles 10 --repeats 3; first run discarded; "
                 "all spreads <= 0.7% (P005 arm: 0.5%)",
 }
@@ -87,6 +93,6 @@ def summary() -> str:
     for r in RELEASED:
         out.append(f"  {r.pid} {r.name:22s} v{r.version}  {r.tier.name:9s} "
                    f"{r.step_speedup:.2f}x step")
-    out.append(f"  chain: {BASELINE['stock']:.0f} -> {BASELINE['P001+P002+P003+P004+P005']:.0f} ms "
+    out.append(f"  chain: {BASELINE['stock']:.0f} -> {BASELINE['P001+P002+P003+P004+P005+P006']:.0f} ms "
                f"= {BASELINE['cumulative_speedup']:.2f}x")
     return "\n".join(out)
