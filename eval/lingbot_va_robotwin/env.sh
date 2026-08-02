@@ -31,8 +31,19 @@ export LINGBOT_CKPT=${LINGBOT_CKPT:-/home/ubuntu/ckpt_lingbot/lingbot-va-posttra
 # The server needs torch 2.9 / diffusers 0.36; the client needs sapien 3.0.0b1 on
 # torch 2.4. They are dependency-incompatible, which is exactly why upstream put a
 # websocket between them. Never try to merge these.
-export IWM_SERVER_PY=${IWM_SERVER_PY:-/home/ubuntu/.venv-lingbot/bin/python}
+#
+# The server env is now pixi-managed: `[tool.pixi.feature.server]` in pyproject.toml
+# pins lingbot-va/requirements.txt and `pixi install -e server` materialises it here.
+# Build it with:  pixi install -e server
+# The pin lives in pyproject.toml, not in this file, so the lockfile is what makes a
+# rerun reproducible -- a hand-rolled venv could not be re-created from the repo.
+export IWM_SERVER_PY=${IWM_SERVER_PY:-${IWM_ROOT}/.pixi/envs/server/bin/python}
 export IWM_CLIENT_PY=${IWM_CLIENT_PY:-${ROBOTWIN_ROOT}/.venv/bin/python}
+
+if [ ! -x "$IWM_SERVER_PY" ]; then
+  echo "WARNING: IWM_SERVER_PY does not exist: $IWM_SERVER_PY" >&2
+  echo "         run 'pixi install -e server' from $IWM_ROOT" >&2
+fi
 
 # ---- flash-attn import shim -------------------------------------------------
 # wan_va/modules/model.py imports flash_attn unconditionally at module scope even

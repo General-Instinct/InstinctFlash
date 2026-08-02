@@ -35,3 +35,100 @@ include = ["instinctwm*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+# ---------------------------------------------------------------------------
+# pixi -- environment management
+#
+# The multi-environment model is not a convenience here, it enforces the
+# invariant the README states: analysis (adapters, Optimizer, every pass) must
+# work with no torch and no GPU. `default` has no torch IN IT, so
+# `pixi run test` fails loudly the day a pass grows a torch import, instead of
+# passing because torch happened to be in the one venv everybody used.
+#
+#   pixi run test        core only -- torch-dependent tests report SKIP
+#   pixi run test-all    -e dev, torch + numpy present, nothing should SKIP
+# ---------------------------------------------------------------------------
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+# osx-arm64 is listed on purpose: "you should be able to work out which
+# optimizations are legal on a laptop" is a design claim, and a lockfile that
+# only solves for linux-64 quietly stops testing it.
+platforms = ["linux-64", "osx-arm64"]
+
+[tool.pixi.dependencies]
+python = "3.10.*"
+
+[tool.pixi.pypi-dependencies]
+instinctwm = { path = ".", editable = true }
+
+# --- the LingBot-VA policy server ------------------------------------------
+# This is env.sh's IWM_SERVER_PY (formerly a hand-rolled /home/ubuntu/.venv-lingbot).
+# Versions are lingbot-va/requirements.txt exactly, because the server has to be
+# the upstream one -- InstinctWM patches it at runtime and measures the delta, so
+# a drifted baseline is a mismeasured optimization.
+#
+# TWO DELIBERATE OMISSIONS from that requirements.txt:
+#
+#  * flash_attn. RESULTS.md's appendix: with a real flash-attn wheel installed,
+#    diffusers detects it via package METADATA and routes autoencoder_kl_wan down
+#    a flash-attention path instead of SDPA, changing the VAE's numerics. The
+#    91.6% baseline was measured with no real flash-attn, so installing one is not
+#    a free environment change -- it invalidates the baseline. The transformer
+#    never calls it (attn_mode='torch' -> custom_sdpa); it is an unused
+#    module-scope import, which is what IWM_FA_SHIM=1 covers.
+#  * lerobot / scipy / wandb. requirements.txt marks these "# Post-training".
+#    Serving and evaluating never import them.
+[tool.pixi.feature.server.pypi-dependencies]
+torch = "==2.9.0"
+torchvision = "==0.24.0"
+torchaudio = "==2.9.0"
+diffusers = "==0.36.0"
+transformers = "==4.55.2"
+numpy = "==1.26.4"
+accelerate = "*"
+einops = "*"
+easydict = "*"
+tqdm = "*"
+imageio = { version = "*", extras = ["ffmpeg"] }
+websockets = "*"
+msgpack = "*"
+opencv-python = "*"
+matplotlib = "*"
+ftfy = "*"
+safetensors = "*"
+pillow = "*"
+
+# `runtime` and `eval` come from [project.optional-dependencies] above -- pixi
+# lifts every extra into a feature of the same name, so the dependency floors
+# are declared once and cannot drift between the two files.
+#
+# `server` gets its OWN solve group on purpose. It pins torch 2.9.0 while the
+# development envs float to current; putting them in one group would force a
+# single torch across both and reintroduce exactly the coupling that the
+# websocket in eval/ exists to prevent (see env.sh: "Never try to merge these").
+[tool.pixi.environments]
+default = { solve-group = "default" }
+runtime = { features = ["runtime"], solve-group = "default" }
+eval = { features = ["eval"], solve-group = "default" }
+dev = { features = ["runtime", "eval"], solve-group = "default" }
+server = { features = ["server"], solve-group = "server" }
+
+[tool.pixi.tasks]
+test = "python tests/run_tests.py"
+
+[tool.pixi.feature.runtime.tasks]
+test-all = "python tests/run_tests.py"
+gpu-check = "python -c \"import torch; print('torch', torch.__version__, '| cuda', torch.version.cuda, '| gpus', torch.cuda.device_count())\""
+
+# Server-env tasks source env.sh rather than restating LINGBOT_ROOT / the shim dir.
+# env.sh is the declared single source of truth for eval paths and it already had to
+# survive the tree moving once; a second copy of those paths here is precisely the
+# drift it was written to avoid.
+[tool.pixi.feature.server.tasks]
+# The 12-pass run: needs the lingbot-va checkout, so it exercises the real upstream
+# WanAttention allocator rather than a stand-in.
+test-lingbot = '''bash -c 'source eval/lingbot_va_robotwin/env.sh && export PYTHONPATH=$IWM_FA_SHIM_DIR && python tests/run_tests.py' '''
+# RESULTS.md 7b quotes 200 cycles / 800 checks; the file's own default is 120 / 480.
+# Pin the documented sweep so the published number is the one that gets reproduced.
+parity-allocator = '''bash -c 'source eval/lingbot_va_robotwin/env.sh && export PYTHONPATH=$IWM_FA_SHIM_DIR CYCLES=200 && python tests/test_ring_allocator.py' '''
+env-check = '''bash -c 'source eval/lingbot_va_robotwin/env.sh && echo "IWM_ROOT      $IWM_ROOT" && echo "LINGBOT_ROOT  $LINGBOT_ROOT" && echo "ROBOTWIN_ROOT $ROBOTWIN_ROOT" && echo "LINGBOT_CKPT  $LINGBOT_CKPT" && echo "IWM_SERVER_PY $IWM_SERVER_PY" && echo "IWM_CLIENT_PY $IWM_CLIENT_PY"' '''
