@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from typing import Callable, Protocol, Sequence
 
 from instinctwm.adapter.base import AdapterSpec
+from instinctwm.deployment import DeploymentSpec
 
 
 class Tier(enum.IntEnum):
@@ -46,8 +47,13 @@ class PassResult:
 class OptimizationPass(Protocol):
     name: str
 
-    def evaluate(self, spec: AdapterSpec) -> PassResult:
-        """Decide, from declarations alone, whether this pass is legal and profitable."""
+    def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
+        """Decide whether this pass is legal and profitable.
+
+        Both arguments are facts, never requests: `spec` is what the model declared about
+        itself, `deployment` is how this particular server is running it. A pass reads them
+        and decides; it never asks whether the user enabled it.
+        """
         ...
 
 
@@ -104,10 +110,17 @@ class Optimizer:
         self._passes = list(passes)
         self._ceiling = tier_ceiling
 
-    def compile(self, spec: AdapterSpec) -> Plan:
+    def compile(self, spec: AdapterSpec, deployment: DeploymentSpec | None = None) -> Plan:
+        """Evaluate every pass against one model's declarations and one server's situation.
+
+        `deployment` defaults to `DeploymentSpec()` — single GPU, actions only — because that
+        is the regime this framework targets. Pass one explicitly when it is not true; the
+        passes that care will decline on their own.
+        """
+        deployment = deployment if deployment is not None else DeploymentSpec()
         results: list[PassResult] = []
         for p in self._passes:
-            r = p.evaluate(spec)
+            r = p.evaluate(spec, deployment)
             if r.applies and r.tier > self._ceiling:
                 r = PassResult(
                     name=r.name, applies=False, tier=r.tier,

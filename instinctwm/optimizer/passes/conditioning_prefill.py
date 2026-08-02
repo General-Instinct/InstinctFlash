@@ -58,6 +58,7 @@ vLLM-Omni's `retain_cross_attention` vs `release_cross_attention` split
 from __future__ import annotations
 
 from instinctwm.adapter.base import AdapterSpec, KVLifetime
+from instinctwm.deployment import DeploymentSpec
 from instinctwm.optimizer.base import PassResult, Tier
 
 
@@ -66,7 +67,7 @@ class ConditioningPrefill:
 
     name = "conditioning_prefill"
 
-    def evaluate(self, spec: AdapterSpec) -> PassResult:
+    def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
         hoistable = [
             p for p in spec.purity
             if p.scope in (KVLifetime.EPISODE, KVLifetime.CHUNK)

@@ -54,13 +54,14 @@ recorded as such.
 from __future__ import annotations
 
 from instinctwm.adapter.base import AdapterSpec, GuidanceMode
+from instinctwm.deployment import DeploymentSpec
 from instinctwm.optimizer.base import PassResult, Tier
 
 
 class CFGBranchElision:
     name = "cfg_branch_elision"
 
-    def evaluate(self, spec: AdapterSpec) -> PassResult:
+    def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
         # Only meaningful if SOME stream forces the batch to be duplicated...
         forces_batch = [
             n for n, g in spec.guidance.items()
