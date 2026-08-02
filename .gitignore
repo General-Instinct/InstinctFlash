@@ -4,9 +4,10 @@ __pycache__/
 .venv/
 venv/
 
-# pixi materialises environments here; pixi.lock IS committed -- it is the artifact
-# that makes "the env that produced this number" reconstructable.
-.pixi/
+# uv materialises the three environments here (.venv core, .venv-dev, .venv-server);
+# uv.lock IS committed -- it is the artifact that makes "the env that produced this
+# number" reconstructable.
+.venv-*/
 
 # Run artifacts live outside the repo (/home/ubuntu/iwm_*), but guard against
 # anyone pointing IWM_RESULT_DIR / IWM_LOG_DIR at the working tree by accident.

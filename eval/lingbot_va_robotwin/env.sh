@@ -32,17 +32,23 @@ export LINGBOT_CKPT=${LINGBOT_CKPT:-/home/ubuntu/ckpt_lingbot/lingbot-va-posttra
 # torch 2.4. They are dependency-incompatible, which is exactly why upstream put a
 # websocket between them. Never try to merge these.
 #
-# The server env is now pixi-managed: `[tool.pixi.feature.server]` in pyproject.toml
-# pins lingbot-va/requirements.txt and `pixi install -e server` materialises it here.
-# Build it with:  pixi install -e server
-# The pin lives in pyproject.toml, not in this file, so the lockfile is what makes a
-# rerun reproducible -- a hand-rolled venv could not be re-created from the repo.
-export IWM_SERVER_PY=${IWM_SERVER_PY:-${IWM_ROOT}/.pixi/envs/server/bin/python}
+# The server env is uv-managed, from its OWN lock: server-requirements.in next to
+# this file, compiled to server-requirements.txt. It is deliberately not part of
+# pyproject.toml -- uv builds one universal lockfile, and sharing it would pin the
+# development envs to the server's torch. That header explains it in full.
+# Build it with:  ./scripts/task.sh test-lingbot   (which syncs it first)
+#          or:    uv venv .venv-server --python 3.10 \
+#                   && VIRTUAL_ENV=.venv-server uv pip sync \
+#                        eval/lingbot_va_robotwin/server-requirements.txt
+# The pins live in that file, not in this one, so the lock is what makes a rerun
+# reproducible -- a hand-rolled venv could not be re-created from the repo.
+export IWM_SERVER_PY=${IWM_SERVER_PY:-${IWM_ROOT}/.venv-server/bin/python}
 export IWM_CLIENT_PY=${IWM_CLIENT_PY:-${ROBOTWIN_ROOT}/.venv/bin/python}
 
 if [ ! -x "$IWM_SERVER_PY" ]; then
   echo "WARNING: IWM_SERVER_PY does not exist: $IWM_SERVER_PY" >&2
-  echo "         run 'pixi install -e server' from $IWM_ROOT" >&2
+  echo "         run './scripts/task.sh test-lingbot' from $IWM_ROOT, or see the" >&2
+  echo "         build command in $(basename "${BASH_SOURCE[0]}")" >&2
 fi
 
 # ---- flash-attn import shim -------------------------------------------------
