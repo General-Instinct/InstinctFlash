@@ -48,6 +48,9 @@ class StablePools:
         self.n_allocs = 0
         self.n_reuses = 0
         self.pointers: dict[str, tuple] = {}
+        #: sites allocated since the last `set_baseline`. Non-empty means some storage moved and
+        #: nothing has re-certified it yet, so `pointers_stable` must refuse.
+        self.pending: set[str] = set()
 
     def sites_required(self):
         return (SiteKind.ALLOCATION,)
@@ -123,7 +126,18 @@ class StablePools:
                 v = allocate(*a, **kw)
                 box["v"], box["extent"] = v, want
                 engine.n_allocs += 1
-                engine.pointers[sid] = engine._ptrs(v)
+                # NOTE the absence of `engine.pointers[sid] = ...` here.
+                #
+                # Recording the baseline at allocation time makes the check FAIL OPEN: a reset
+                # that reallocates refreshes the baseline before anyone compares against it, so
+                # `pointers_stable` returns True while every captured graph points at freed
+                # memory. That is exactly what happened -- max|delta action| = 1.527 with graph
+                # preservation on, while the same passes without preservation were bit-exact.
+                # It is also the SECOND time this class of bug appeared: the backend-specific
+                # P006 had it in `_record`, and the generic rewrite reintroduced it.
+                #
+                # The baseline moves only when someone explicitly calls `set_baseline`.
+                engine.pending.add(sid)
                 return v
 
             stable.iwm_site = sid
@@ -151,12 +165,27 @@ class StablePools:
         go(value)
         return tuple(out)
 
+    def set_baseline(self, current: dict[str, object]) -> None:
+        """Declare the CURRENT addresses to be the reference. The only way the baseline moves.
+
+        Callers do this once stabilization is genuinely in effect -- i.e. after the first wrapped
+        allocation of every site, not before.
+        """
+        self.pointers = {sid: self._ptrs(v) for sid, v in current.items()}
+        self.pending.clear()
+
     def pointers_stable(self, current: dict[str, object]) -> tuple[bool, str]:
         """Have the storages this pass stabilized stayed put?
 
         The pass made the claim, so the pass carries the check. A stale pointer does not raise --
         it returns plausible garbage -- so anything relying on stability must be able to ask.
         """
+        if self.pending:
+            return False, (f"{len(self.pending)} site(s) allocated since the last baseline "
+                           f"(e.g. {sorted(self.pending)[:2]}); storage moved and has not been "
+                           f"re-certified")
+        if not self.pointers:
+            return False, "no baseline recorded; refusing to certify stability"
         for sid, want in self.pointers.items():
             if sid not in current:
                 return False, f"{sid} is no longer present"

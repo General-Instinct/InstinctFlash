@@ -80,10 +80,13 @@ def main() -> int:
              "--ring-kv: the stock mask.nonzero() is a data-dependent shape and capture of a "
              "stock block fails with cudaErrorStreamCaptureInvalidated. Measured per-op cost is "
              "6.2 us of which 83.6%% is cudaLaunchKernel; replay is ~1.17 us.")
-    ap.add_argument("--generic-passes", action="store_true",
-        help="MIGRATED PATH: run HoistInvariant and StablePools through the pass framework "
-             "(adapter publishes sites, pass decides) instead of the backend-specific P004/P006 "
-             "install() functions. Supersedes --hoist-casts and --stable-pools.")
+    ap.add_argument("--legacy-passes", action="store_true",
+        help="ORACLE/FALLBACK. Use the backend-specific P004/P006 install() functions instead of "
+             "the pass framework. The generic path is the DEFAULT as of 2026-08-02: it measured "
+             "1213.6 ms vs legacy 1207.8 ms (within the protocol's resolution, legacy itself "
+             "spans 1207.8-1211.3) and is bit-exact across episodes. Kept so the two can be "
+             "diffed when a regression is suspected. Passing --hoist-casts or --stable-pools "
+             "also selects the legacy path.")
     ap.add_argument("--stable-pools", action="store_true",
         help="E1: reset clears logical KV state in place instead of reallocating the pools, so "
              "captured graphs stay valid across episodes. Only has an effect with --graph-blocks, "
@@ -140,14 +143,21 @@ def main() -> int:
         applied.append("hoist-casts")
 
     _surface = []            # one-element cell: `global` cannot rebind a local of main()
-    _hoist_g = _pools_g = None
-    if getattr(args, "generic_passes", False):
+    _hoist_g = _pools_g = _promote_g = None
+    _use_legacy = (getattr(args, "legacy_passes", False)
+                   or getattr(args, "hoist_casts", False)
+                   or getattr(args, "stable_pools", False))
+    if not _use_legacy:
         from instinctwm.adapter.lingbot import LingBotSurface
         from instinctwm.passes.hoist_invariant import HoistInvariant
         from instinctwm.passes.interface import run_pass
+        from instinctwm.passes.explicit_step_index import ExplicitStepIndex
+        from instinctwm.passes.promote_small_operand import PromoteSmallOperand
         from instinctwm.passes.stable_pools import StablePools
 
         _hoist_g, _pools_g = HoistInvariant(), StablePools()
+        _promote_g = PromoteSmallOperand()
+        _stepidx_g = ExplicitStepIndex()
 
         # The surface needs a live model, which only exists after the server builds it. Install on
         # the first reset, then let the passes run against the sites the adapter publishes.
@@ -156,8 +166,10 @@ def main() -> int:
         def _reset_generic(self, prompt=None):
             out = _orig_reset_gp(self, prompt=prompt)
             if not _surface and hasattr(self, "transformer"):
-                _surface.append(LingBotSurface(self.transformer))
-                for p_ in (_pools_g, _hoist_g):
+                _surface.append(LingBotSurface(self.transformer, server=self))
+                # ORDER MATTERS and is a real dependency: hoist caches the fp32 constant that
+                # the promotion rewrite then reuses instead of re-casting per call.
+                for p_ in (_pools_g, _hoist_g, _promote_g, _stepidx_g):
                     print(f"[generic_passes] {run_pass(p_, _surface[0], None)}", flush=True)
                     for d in getattr(p_, "declines", [])[:3]:
                         print(f"[generic_passes]   decline {d}", flush=True)
@@ -168,12 +180,14 @@ def main() -> int:
                 # against stable storage, and survive every reset after. Recording pointers at the
                 # first wrapped call instead reported "stable" while the graphs were already stale,
                 # which cost max|delta action| = 1.527.
-                _pools_g.pointers = {sid: _pools_g._ptrs(v)
-                                     for sid, v in _surface[0].pools().items()}
+                # Baseline is NOT set here: at this point the wrappers are installed but no
+                # wrapped allocation has happened yet, so the buffers in play still pre-date
+                # stabilization. `pending` stays non-empty until they are replaced, and
+                # `pointers_stable` refuses until someone re-certifies.
             return out
 
         S.VA_Server._reset = _reset_generic
-        applied.append("generic-passes")
+        applied.append("generic-passes(default)")
 
     _pools_pass = None
     if getattr(args, "stable_pools", False):
@@ -194,18 +208,41 @@ def main() -> int:
         applied.append("graph-blocks")
 
         if _pools_g is not None:
-            # DELIBERATELY NOT WIRED. Graph preservation across resets on the migrated path is
-            # measured WRONG: max|delta action| = 1.527 against a 1.031 chunk-to-chunk movement,
-            # deterministically, while the same passes WITHOUT graph capture are bit-exact
-            # (0.000e+00). So the passes are correct and their interaction with capture is not,
-            # and the cause is not yet identified -- seeding the certificate at pass-application
-            # time did not change the delta at all.
+            def _generic_stability():
+                if not _surface:
+                    return False, "surface not built yet"
+                tracked = dict(_surface[0].pools())
+                tracked.update(_hoist_g.hoisted_values())   # the 60 formerly-anonymous buffers
+                ok, why = _pools_g.pointers_stable(tracked)
+                if not ok and not _pools_g.pointers:
+                    _pools_g.set_baseline(tracked)          # first certification
+                    return False, "baseline established; graphs dropped once"
+                if not ok and _pools_g.pending:
+                    _pools_g.set_baseline(tracked)          # storage moved; re-certify from here
+                    return False, why
+                return ok, why
+
+            _graph_pass.stability_check = _generic_stability
+
+            # ROOT CAUSE, found by diffing derived dependency signatures across a reset
+            # (deps.py) rather than by inspection:
             #
-            # Leaving `stability_check` unset makes the migrated path drop graphs at every reset:
-            # correct, and slower. The legacy --stable-pools path keeps its own verified
-            # preservation. Do not wire this until the generic path reproduces 0.000e+00 WITH
-            # capture enabled.
-            pass
+            #   legacy   reads=873 unnamed=0   buffers MOVED across reset: 3 (test inputs only)
+            #   generic  reads=873 unnamed=60  buffers MOVED across reset: 210
+            #                                    kv        147
+            #                                    cross_kv   60
+            #
+            # Two defects, both now fixed:
+            #  1. StablePools recorded its baseline INSIDE the allocation path, so a reset that
+            #     reallocated refreshed the reference before anything compared against it --
+            #     fail-open. `set_baseline` is now the only door, and `pending` makes the check
+            #     refuse until storage is re-certified.
+            #  2. The generic hoist kept its caches in closures, invisible to build_name_map, so
+            #     60 of the region's reads were ANONYMOUS and no check could cover them.
+            #     `hoisted_values()` exposes them and they are tracked here.
+            #
+            # Both are the same failure class as the two that preceded them: a certificate that
+            # covers less than the region reads. The tracer is what makes that measurable.
 
         if _pools_pass is not None:
             # Bind the pools on first use, then let the graph pass consult them at every reset.
@@ -232,7 +269,8 @@ def main() -> int:
             if _pools_pass:
                 extra = f" | {_pools_pass.stats()}"
             elif _pools_g:
-                extra = f" | generic {_pools_g.stats()} | {_hoist_g.stats()}"
+                extra = (f" | generic {_pools_g.stats()} | {_hoist_g.stats()}"
+                         f" | {_promote_g.stats()} | {_stepidx_g.stats()}")
             print(f"[graph_block_stack] {_graph_pass.stats()}{extra}", flush=True)
             return out
 

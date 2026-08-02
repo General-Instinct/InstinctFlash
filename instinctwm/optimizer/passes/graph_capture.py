@@ -121,6 +121,9 @@ class GraphBlockStack:
         self.capture_ms = 0.0
         self.failed: str | None = None
         self.n_resets_survived = 0
+        #: every key ever captured. A high hit rate with a growing key set is not a warm cache,
+        #: it is an unbounded recapture stream -- the distinction episode mode exists to expose.
+        self.seen_keys: set = set()
         #: set by StableStatePools (E1). Returns (keep_graphs, why). Absent -> drop on every reset.
         self.stability_check = None
         #: called once, at the first capture, when lazily-created state (P004's fp32 casts) exists.
@@ -301,6 +304,7 @@ class GraphBlockStack:
 
     def stats(self) -> str:
         return (f"captures={self.n_captures} replays={self.n_replays} "
+                f"unique_keys={len(self.seen_keys)} "
                 f"held={len(self.graphs)} evicted={self.n_evicted} "
                 f"resets_survived={self.n_resets_survived} "
                 f"capture_total={self.capture_ms:.0f} ms "
