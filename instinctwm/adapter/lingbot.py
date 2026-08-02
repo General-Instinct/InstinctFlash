@@ -51,14 +51,17 @@ class LingBotSurface:
 
     model_id = "lingbot-va"
 
-    def __init__(self, model, cache_name="pos"):
+    def __init__(self, model, cache_name="pos", server=None):
         self.model = model
+        self._server_arg = server
         self.cache_name = cache_name
         self._wrapped = {}
         self._cast_sites: dict = {}
         self._alloc_sites: dict = {}
         self._cross_sites: dict = {}
         self._mod_sites: dict = {}
+        self._sched_sites: dict = {}
+        self._server = server
 
     # -- WHERE ------------------------------------------------------------------------------
     def sites(self, kind):
@@ -85,6 +88,20 @@ class LingBotSurface:
             for i, _b in enumerate(blocks):
                 yield Site(kind=kind, id=f"lingbot.block[{i}]", attrs={"index": i})
         elif kind is SiteKind.STATE_ADDRESSING:
+            # The solver's step index. Rediscovered per step by searching the schedule for the
+            # timestep value, at the cost of 3 host round trips -- while the caller is in
+            # `for i, t in enumerate(timesteps)` and already holds i.
+            for name, sched in self._schedulers().items():
+                self._install_step_shim(type(sched))
+                sid = f"lingbot.step_index[{name}]"
+                self._sched_sites[sid] = sched
+                yield Site(kind=kind, id=sid,
+                           attrs={"addressing": "index_by_search",
+                                  "monotonic_calls": True,     # one step() per timestep, in order
+                                  "syncs_per_call": 3,
+                                  "scope": Scope.PLAN, "evaluated_at": Scope.STEP,
+                                  "reset_hook": self._reset_hook(sched),
+                                  "note": "timestep.cpu() + argmin(table) + .item() comparison"})
             for i, b in enumerate(blocks):
                 r = (getattr(b.attn1, "attn_caches", None) or {}).get(self.cache_name, {})
                 if isinstance(r, dict) and "_ring" in r:
@@ -266,6 +283,65 @@ class LingBotSurface:
                     for sid, a2 in self._cross_sites.items()})
         return {k: v for k, v in out.items() if v is not None}
 
+    # -- solver step-index plumbing ----------------------------------------------------------
+
+    def _schedulers(self) -> dict:
+        srv = self._server
+        out = {}
+        if srv is None:
+            return out
+        for attr in ("scheduler", "action_scheduler"):
+            sc = getattr(srv, attr, None)
+            if sc is not None:
+                out[attr] = sc
+        return out
+
+    @staticmethod
+    def _reset_hook(sched):
+        def register(fn):
+            hooks = getattr(sched, "_iwm_reset_hooks", None)
+            if hooks is None:
+                hooks = sched._iwm_reset_hooks = []
+            hooks.append(fn)
+        return register
+
+    @staticmethod
+    def _install_step_shim(SchedCls):
+        """Route the index lookup through a replaceable hook, and rewind it per schedule.
+
+        The default hook reproduces the stock search exactly, so installing the shim alone changes
+        nothing; only a pass replacing it changes behaviour.
+        """
+        if getattr(SchedCls, "_iwm_step_shim", False):
+            return
+        import torch
+        _orig_step = SchedCls.step
+        _orig_set = SchedCls.set_timesteps
+
+        def default_resolve(self_s, timestep):
+            t = timestep.cpu() if isinstance(timestep, torch.Tensor) else timestep
+            return int(torch.argmin((self_s.timesteps - t).abs()))
+
+        def step(self_s, model_output, timestep, sample, to_final=False, **kw):
+            resolve = getattr(self_s, "_iwm_resolve_index", None)
+            idx = resolve() if resolve is not None else default_resolve(self_s, timestep)
+            sigma = self_s.sigmas[idx]                       # python int index: no host sync
+            if to_final or idx + 1 >= len(self_s.timesteps):
+                sigma_ = 1 if (self_s.inverse_timesteps or self_s.reverse_sigmas) else 0
+            else:
+                sigma_ = self_s.sigmas[idx + 1]
+            return sample + model_output * (sigma_ - sigma)
+
+        def set_timesteps(self_s, *a, **kw):
+            out = _orig_set(self_s, *a, **kw)
+            for fn in getattr(self_s, "_iwm_reset_hooks", ()):   # new schedule, rewind the counter
+                fn()
+            return out
+
+        SchedCls.step = step
+        SchedCls.set_timesteps = set_timesteps
+        SchedCls._iwm_step_shim = True
+
     # -- modulation combine plumbing ---------------------------------------------------------
 
     @staticmethod
@@ -442,6 +518,10 @@ class LingBotSurface:
         if rewrite.site_id.startswith("lingbot.cross_kv[") and rewrite.kind is RewriteKind.WRAP:
             a2 = self._cross_sites[rewrite.site_id]
             a2._iwm_cross_alloc = rewrite.payload(self._cross_allocator(a2))
+            return
+        if rewrite.site_id.startswith("lingbot.step_index[") and rewrite.kind is RewriteKind.WRAP:
+            sched = self._sched_sites[rewrite.site_id]
+            sched._iwm_resolve_index = rewrite.payload(None)
             return
         if rewrite.site_id.startswith("lingbot.cast[") and rewrite.kind is RewriteKind.WRAP:
             spec = self._cast_sites.get(rewrite.site_id)

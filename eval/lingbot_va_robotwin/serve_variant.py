@@ -155,11 +155,13 @@ def main() -> int:
         from instinctwm.adapter.lingbot import LingBotSurface
         from instinctwm.passes.hoist_invariant import HoistInvariant
         from instinctwm.passes.interface import run_pass
+        from instinctwm.passes.explicit_step_index import ExplicitStepIndex
         from instinctwm.passes.promote_small_operand import PromoteSmallOperand
         from instinctwm.passes.stable_pools import StablePools
 
         _hoist_g, _pools_g = HoistInvariant(), StablePools()
         _promote_g = PromoteSmallOperand()
+        _stepidx_g = ExplicitStepIndex()
 
         # The surface needs a live model, which only exists after the server builds it. Install on
         # the first reset, then let the passes run against the sites the adapter publishes.
@@ -168,10 +170,10 @@ def main() -> int:
         def _reset_generic(self, prompt=None):
             out = _orig_reset_gp(self, prompt=prompt)
             if not _surface and hasattr(self, "transformer"):
-                _surface.append(LingBotSurface(self.transformer))
+                _surface.append(LingBotSurface(self.transformer, server=self))
                 # ORDER MATTERS and is a real dependency: hoist caches the fp32 constant that
                 # the promotion rewrite then reuses instead of re-casting per call.
-                for p_ in (_pools_g, _hoist_g, _promote_g):
+                for p_ in (_pools_g, _hoist_g, _promote_g, _stepidx_g):
                     print(f"[generic_passes] {run_pass(p_, _surface[0], None)}", flush=True)
                     for d in getattr(p_, "declines", [])[:3]:
                         print(f"[generic_passes]   decline {d}", flush=True)
@@ -274,7 +276,7 @@ def main() -> int:
                 extra = f" | {_pools_pass.stats()}"
             elif _pools_g:
                 extra = (f" | generic {_pools_g.stats()} | {_hoist_g.stats()}"
-                         f" | {_promote_g.stats()}")
+                         f" | {_promote_g.stats()} | {_stepidx_g.stats()}")
             print(f"[graph_block_stack] {_graph_pass.stats()}{extra}", flush=True)
             return out
 
