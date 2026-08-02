@@ -147,7 +147,19 @@ class AdapterSpec:
         raise KeyError(name)
 
     def total_forwards(self) -> int:
+        """Every transformer forward in one control step, across all phases.
+
+        Note this is NOT the same number as the "77 forwards" quoted throughout the LingBot-VA
+        write-ups: that figure is the *denoise* loop alone (26 video + 51 action) and excludes
+        the 2 kv_refresh forwards. Both counts are correct for different questions, so anything
+        user-facing should say which one it means — `forwards_breakdown()` exists so a pass can
+        show its work instead of quoting a bare total that disagrees with the docs.
+        """
         return sum(p.nfe for p in self.phases)
+
+    def forwards_breakdown(self) -> str:
+        """`total_forwards()` with its per-phase terms, e.g. `kv_refresh=2 + video=26 + action=51`."""
+        return " + ".join(f"{p.name}={p.nfe}" for p in self.phases)
 
 
 class BackendAdapter(Protocol):

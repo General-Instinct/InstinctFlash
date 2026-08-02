@@ -84,7 +84,7 @@ class ConditioningPrefill:
             reason=(
                 f"{[p.artifact for p in hoistable]} declared pure in "
                 f"{sorted({p.scope.value for p in hoistable})} scope, but recomputed on all "
-                f"{n_fwd} forwards per control step"
+                f"{n_fwd} forwards per control step ({spec.forwards_breakdown()})"
             ),
             params={
                 "artifacts": [p.artifact for p in hoistable],

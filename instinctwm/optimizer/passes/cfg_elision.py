@@ -106,19 +106,26 @@ class CFGBranchElision:
 
         total = spec.total_forwards()
         share = total_elided / (2 * total)  # batch-2 forwards -> batch-1 on the elided ones
+        # Report per phase. A bare "N of {total_forwards()}" reads as a claim about the whole
+        # control step when it is really a claim about one phase, and its denominator would
+        # disagree with the 77-forward denoise count quoted in the write-ups.
+        per_phase = ", ".join(
+            f"{name}: {t['n_elided']} of {t['n_total']}" for name, t in sorted(targets.items())
+        )
         return PassResult(
             name=self.name,
             applies=True,
             tier=Tier.NUMERIC,
             reason=(
                 f"streams {sorted(wasteful)} discard their negative branch while {sorted(forces_batch)} "
-                f"force batch duplication; {total_elided} of {total} forwards can drop to batch 1 "
+                f"force batch duplication; forwards that can drop to batch 1 — {per_phase} "
                 f"(commit steps exempt: their K/V feeds the other stream's negative branch)"
             ),
             params={"targets": targets, "keep_streams": sorted(forces_batch)},
             expected_win=(
-                f"removes ~{share:.0%} of denoise batch-work; on a memory-bound batch-1 forward "
-                f"the realized win is bounded by the weight traffic that does NOT halve, so treat "
-                f"this as an upper bound until measured"
+                f"removes {total_elided} of the control step's {2 * total} branch-forwards "
+                f"(~{share:.0%}); on a memory-bound batch-1 forward the realized win is bounded "
+                f"by the weight traffic that does NOT halve, so treat this as an upper bound "
+                f"until measured"
             ),
         )
