@@ -109,6 +109,27 @@ BASELINE = {
         "no_graph_post_saturation_ms": 2710.5,
         "captures_per_cycle_after_saturation": 6.0,
         "graph_cache_hit_rate": 0.92457,
+        #: The FULL chain, 45 cycles, one reset, all six rungs. THIS is the long-horizon number.
+        #: `cumulative_speedup` above is probe_latency-protocol and overstates by 2.13x.
+        "chain_whole_episode_ms": {
+            "stock": 9585.1,
+            "P001": 5260.6,
+            "P001+P002": 5107.8,
+            "P001+P002+P003": 3330.8,
+            "+generic_passes": 3588.1,       # REGRESSION vs P003 without capture; see below
+            "+graph_capture(default)": 2832.1,
+        },
+        "chain_post_saturation_ms": {
+            "stock": 9486.3, "P001": 5195.1, "P001+P002": 5059.1,
+            "P001+P002+P003": 2635.7, "+generic_passes": 2966.7,
+            "+graph_capture(default)": 2298.7,
+        },
+        "cumulative_speedup_episode": 3.38,
+        #: The generic passes cost ~330 ms post-saturation WITHOUT capture (2966.7 vs 2635.7).
+        #: The adapter's rewritable-site shims add ~2,370 Python calls per cycle, which capture
+        #: hides and eager does not. Confirm sequentially before acting on it.
+        "generic_pass_eager_regression_ms": 331.0,
+        "evictions_per_episode": 204,
     },
 }
 
@@ -118,6 +139,20 @@ def summary() -> str:
     for r in RELEASED:
         out.append(f"  {r.pid} {r.name:22s} v{r.version}  {r.tier.name:9s} "
                    f"{r.step_speedup:.2f}x step")
-    out.append(f"  chain: {BASELINE['stock']:.0f} -> {BASELINE['P001+P002+P003+P004+P005+P006']:.0f} ms "
-               f"= {BASELINE['cumulative_speedup']:.2f}x")
+    # Episode mode leads, because it is the protocol that describes a real episode. probe_latency
+    # resets between repeats, which rewinds the ring and hides per-cycle recapture; it overstated
+    # this chain by 2.13x.
+    e = BASELINE["episode_mode"]
+    ch, cp = e["chain_whole_episode_ms"], e["chain_post_saturation_ms"]
+    out.append("  EPISODE MODE (45 cycles, one reset) -- the reporting standard:")
+    out.append(f"    whole episode  : {ch['stock']:.0f} -> {ch['+graph_capture(default)']:.0f} ms "
+               f"= {e['cumulative_speedup_episode']:.2f}x")
+    out.append(f"    post-saturation: {cp['stock']:.0f} -> "
+               f"{cp['+graph_capture(default)']:.0f} ms")
+    out.append(f"    captures {e['captures_per_cycle_after_saturation']:.1f}/cycle even AFTER "
+               f"saturation, {e['evictions_per_episode']} evictions: the cache does NOT converge")
+    out.append(f"  short-horizon (probe_latency, resets between repeats): "
+               f"{BASELINE['stock']:.0f} -> "
+               f"{BASELINE['P001+P002+P003+P004+P005+P006']:.0f} ms "
+               f"= {BASELINE['cumulative_speedup']:.2f}x  [OVERSTATES by 2.13x]")
     return "\n".join(out)
