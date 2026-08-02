@@ -176,5 +176,13 @@ class BackendAdapter(Protocol):
         deliberate and temporary: it keeps every pass verifiable against the existing
         bit-exactness gate before anything is rewritten, and it keeps the vendored upstream
         tree clean so `git diff` stays reviewable.
+
+        Returns what it actually applied, and raises on any applied pass it cannot install.
+        Reporting a pass as installed when it was skipped would invalidate every number
+        measured against the resulting server.
         """
+        ...
+
+    def serve(self, plan: "object", port: int, **kwargs) -> object:
+        """Import this model's server, install `plan`, and start serving on `port`."""
         ...
