@@ -133,3 +133,43 @@ def use_torch_sdpa():
     import cosmos_framework.model.generator.mot.attention as mot_attn
     mot_attn.attention = attention
     return "torch-sdpa (SHIM: not served numerics)"
+
+
+def state_roots(layers, pack=None, pos=None) -> dict:
+    """Adapter-supplied semantic roots for buffer naming.
+
+    Cosmos keeps no KV pool, so there is nothing analogous to LingBot's `attn_caches`. What it does
+    have is the SequencePack itself and the RoPE packs, which are read every layer.
+    """
+    roots: dict = {}
+    if pack is not None:
+        roots["pack"] = pack
+    if pos is not None:
+        roots["rope.cos"], roots["rope.sin"] = pos
+    for i, l in enumerate(layers):
+        roots[f"layer[{i}]"] = l
+    return roots
+
+
+def build_plan(layers, mask, pos, *, model_id="cosmos3-edge"):
+    """A Plan whose unit takes a SequencePack -- a dict of tensors plus host metadata.
+
+    Nothing here is engine-specific beyond naming the unit: the default `TreeBinder` flattens the
+    pack, and `mask`/`pos` ride along as captured constants because they do not change per call.
+    """
+    from instinctwm.engine.plan import CaptureUnit, Plan, PlanBuffer
+
+    def mot_stack(pack):
+        x = pack
+        for l in layers:
+            x = l(x, mask, pos)[0]
+        return x
+
+    return Plan(
+        model_id=model_id,
+        units=(CaptureUnit(name="mot_stack", fn=mot_stack, inputs=("pack",), output="pack_out"),),
+        buffers=(),                      # nothing to declare: the binder discovers the leaves
+        plan_buffer=PlanBuffer(fields=("actual_len",)),
+        notes={"attention": "torch-SDPA SHIM -- plumbing/latency only, NOT served numerics",
+               "state": "no KV pool; the SequencePack is the state"},
+    )

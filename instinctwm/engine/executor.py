@@ -19,6 +19,7 @@ from dataclasses import dataclass
 
 import torch
 
+from instinctwm.engine.binding import leaf_shapes, spec_key
 from instinctwm.engine.plan import Plan
 
 
@@ -35,7 +36,7 @@ class EagerExecutor:
     def prepare(self) -> None:
         pass
 
-    def run(self, unit_key: str, **inputs: torch.Tensor) -> torch.Tensor:
+    def run(self, unit_key: str, **inputs) -> object:
         u = self._unit(unit_key)
         with torch.no_grad():
             return u.fn(*(inputs[n] for n in u.inputs))
@@ -84,20 +85,25 @@ class GraphExecutor:
         self.graphs: dict[tuple[str, int], torch.cuda.CUDAGraph] = {}
         self.outputs: dict[tuple[str, int], torch.Tensor] = {}
         self.blockers: dict[str, str] = {}
+        self.stable: dict = {}
         self.n_captures = 0
 
     def prepare(self, warmup: int = 3, extent: int = 0) -> None:
+        """Declared buffers are optional now.
+
+        A unit's real bindable surface is whatever its binder flattens out of the arguments it is
+        actually called with, which cannot be known before the first call for a model whose unit
+        is a nested structure. So binding is lazy: `run` captures on first sight of a (spec,
+        shapes, extent) it has not seen.
+        """
         for b in self.plan.buffers:
             self.bound[b.name] = b.allocate(self.device)
         self.plan.plan_buffer.allocate(self.device)
-        for u in self.plan.units:
-            self._capture(u, self._bucket(extent), warmup)
 
     def _bucket(self, extent: int) -> int:
         return (extent // self.extent_bucket) * self.extent_bucket
 
-    def _capture(self, u, ext: int, warmup: int = 3):
-        args = [self.bound[n] for n in u.inputs]
+    def _capture(self, u, slot, args, warmup: int = 3):
         # Warm up on a side stream: cuBLAS workspace allocation, autotuning and lazy module init
         # all happen on first call and are NOT capturable.
         s = torch.cuda.Stream()
@@ -119,23 +125,58 @@ class GraphExecutor:
                 f"  The usual cause is a host synchronization or a data-dependent shape "
                 f"(nonzero/item/masked_select) somewhere inside the unit.") from ex
 
-        if len(self.graphs) >= self.max_graphs:            # bound the graph pool
+        while len(self.graphs) >= self.max_graphs:         # bound the graph pool
             oldest = next(iter(self.graphs))
-            del self.graphs[oldest], self.outputs[oldest]
-        self.graphs[(u.key, ext)] = g
-        self.outputs[(u.key, ext)] = out
+            del self.graphs[oldest], self.outputs[oldest], self.stable[oldest]
+        self.graphs[slot] = g
+        self.outputs[slot] = out
         self.n_captures += 1
         return out
 
-    def run(self, unit_key: str, extent: int = 0, **inputs: torch.Tensor) -> torch.Tensor:
+    # -- generic binding ------------------------------------------------------------------------
+
+    def _slots(self, u, ext, spec_sig):
+        return (u.key, ext, spec_sig)
+
+    def _bind_and_key(self, u, values):
+        """Flatten every argument, allocate stable leaves once, and build the graph key.
+
+        The key carries the SPEC of each argument (container shape plus every non-tensor value)
+        and the leaf shapes/dtypes. Both are frozen by capture, so both must key it. This is where
+        Cosmos3's `SplitInfo`, dict keys and `max_num_tokens` end up -- without the executor
+        knowing any of those names.
+        """
+        flat, specs = [], []
+        for v in values:
+            leaves, spec = u.binder.flatten(v)
+            flat.append((leaves, spec))
+            specs.append((spec_key(spec), leaf_shapes(leaves)))
+        return flat, tuple(specs)
+
+    def run(self, unit_key: str, extent: int = 0, **inputs) -> object:
         u = self._unit(unit_key)
         ext = self._bucket(extent)
-        if (u.key, ext) not in self.graphs:
-            self._capture(u, ext)
-        for n in u.inputs:
-            self.bound[n].copy_(inputs[n])          # bind by NAME, never by pointer
-        self.graphs[(u.key, ext)].replay()
-        return self.outputs[(u.key, ext)]
+        values = [inputs[n] for n in u.inputs]
+        flat, spec_sig = self._bind_and_key(u, values)
+        slot = self._slots(u, ext, spec_sig)
+
+        if slot not in self.graphs:
+            # Allocate a stable clone of every tensor leaf, rebuild the argument structure around
+            # those clones, and capture against it. The structure is rebuilt, not copied, so host
+            # metadata (dict keys, SplitInfo, ints) is carried through by the binder untouched.
+            stable = []
+            for leaves, spec in flat:
+                owned = [t.detach().clone() for t in leaves]
+                stable.append((owned, spec))
+            self.stable[slot] = stable
+            args = [u.binder.unflatten(o, sp) for o, sp in stable]
+            self._capture(u, slot, args)
+
+        for (leaves, _spec), (owned, _s2) in zip(flat, self.stable[slot]):
+            for dst, src in zip(owned, leaves):
+                dst.copy_(src)                       # bind by SLOT, never by pointer
+        self.graphs[slot].replay()
+        return self.outputs[slot]
 
     def _unit(self, key):
         for u in self.plan.units:

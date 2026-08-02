@@ -80,10 +80,12 @@ def main() -> int:
                 r[fieldname] = v
         return _set
 
+    from instinctwm.adapter.lingbot import state_roots
+    nr = state_roots(model)
+    nr.update({"in:hidden": h, "in:encoder": enc, "in:temb": temb, "in:rot": rot})
     sig = derive_signature(
-        stack, model=model,
+        stack, name_roots=nr,
         roots=[b.attn1.attn_caches for b in blocks],
-        extra_names={"in:hidden": h, "in:encoder": enc, "in:temb": temb, "in:rot": rot},
         host_fields={"ring.start": lambda: ring["start"], "ring.count": lambda: ring["count"],
                      "ring.next_id": lambda: ring["next_id"]},
         perturb={"ring.start": set_all("start"), "ring.count": set_all("count"),
@@ -121,7 +123,8 @@ def main() -> int:
 
     print("\n--- and with deferred commit, it should allow capture ---")
     type(blocks[0].attn1)._iwm_defer_commit = True
-    sig2 = derive_signature(stack, model=model, roots=[b.attn1.attn_caches for b in blocks])
+    sig2 = derive_signature(stack, name_roots=state_roots(model),
+                            roots=[b.attn1.attn_caches for b in blocks])
     cap2, why2 = sig2.capturable()
     ok &= cap2
     print(f"  {'OK  ' if cap2 else 'FAIL'} {why2}")

@@ -18,7 +18,9 @@ sys.path[:0] = [os.path.join(os.path.dirname(__file__), ".."), "/home/ubuntu/cos
 
 import torch
 
-from instinctwm.adapter.cosmos3 import build_pack, build_stack, use_torch_sdpa
+from instinctwm.adapter.cosmos3 import (
+    build_pack, build_plan, build_stack, state_roots, use_torch_sdpa,
+)
 from instinctwm.engine.deps import derive_signature
 from instinctwm.engine.effects import detect_host_effects
 from instinctwm.engine.executor import CaptureFailed, EagerExecutor, GraphExecutor
@@ -82,7 +84,8 @@ def main() -> int:
 
     # ---- 1. dependency derivation, unchanged from LingBot ---------------------------------
     print("\n=== 1. automatic dependency signature ===")
-    sig = derive_signature(lambda: stack(pack), model=model, roots=[pack, cos, sin])
+    sig = derive_signature(lambda: stack(pack), roots=[pack, cos, sin],
+                           name_roots=state_roots(layers, pack, pos))
     print(sig)
     ok = sig.n_ops > 0
     print(f"  {'OK  ' if ok else 'FAIL'} traced {sig.n_ops} ops on a model the tracer has never "
@@ -94,21 +97,49 @@ def main() -> int:
                         f"state shapes (attn_caches / _iwm_cross_kv / _iwm_*32). It needs to be "
                         f"adapter-supplied, not hard-coded in the engine.")
 
-    # ---- 2. can the engine's Plan express this unit? --------------------------------------
-    print("\n=== 2. Plan / CaptureUnit expressiveness ===")
-    try:
-        Plan(model_id="cosmos3-edge",
-             units=(CaptureUnit(name="mot_stack", fn=stack, inputs=("pack",), output="out"),),
-             buffers=(BufferSpec("pack", (sum(SAMPLE_LENS), cfg.hidden_size), DT),),
-             plan_buffer=PlanBuffer(fields=("actual_len",)))
-        print("  Plan constructed, but the types do not match reality:")
-    except Exception as e:
-        print(f"  Plan construction FAILED: {e}")
-    FINDINGS.append("CaptureUnit assumes inputs are named TENSORS and output is ONE tensor. "
-                    "Cosmos3's unit takes a SequencePack (dict of tensors + host metadata) and "
-                    "returns a 3-tuple. GraphExecutor.run does buf.copy_(inputs[n]), which cannot "
-                    "bind a dict. This is the first real expressiveness gap.")
-    print("  FINDING recorded (see summary)")
+    # ---- 2. THE SAME PLAN through BOTH executors ------------------------------------------
+    print("\n=== 2. one Plan, EagerExecutor and GraphExecutor ===")
+    plan = build_plan(layers, mask, pos)
+    print(plan.describe())
+    eager = EagerExecutor(plan, DEV)
+    graph = GraphExecutor(plan, DEV)
+    graph.prepare()
+
+    ref = get_all_seq(eager.run("mot_stack/default", pack=pack)).clone()
+    got = get_all_seq(graph.run("mot_stack/default", pack=pack))
+    nd = (got != ref).sum().item()
+    d = (got.float() - ref.float()).abs().max().item()
+    ok &= nd == 0
+    print(f"  {'OK  ' if nd == 0 else 'FAIL'} graph replay vs eager oracle: differing={nd} "
+          f"max|d|={d:.3e}   (captures={graph.n_captures})")
+
+    pack2 = build_pack(DEV, cfg.hidden_size, DT, tuple(SAMPLE_LENS), seed=7)
+    ref2 = get_all_seq(eager.run("mot_stack/default", pack=pack2)).clone()
+    got2 = get_all_seq(graph.run("mot_stack/default", pack=pack2))
+    nd2 = (got2 != ref2).sum().item()
+    ok &= nd2 == 0
+    print(f"  {'OK  ' if nd2 == 0 else 'FAIL'} second pack, same spec new values: differing={nd2}"
+          f"   captures still {graph.n_captures} (rebound, not recaptured)")
+
+    import time as _t
+
+    def bench(fn, it=30):
+        for _ in range(8):
+            fn()
+        torch.cuda.synchronize()
+        t0 = _t.perf_counter()
+        for _ in range(it):
+            fn()
+        enq = (_t.perf_counter() - t0) / it
+        torch.cuda.synchronize()
+        return enq * 1e3, (_t.perf_counter() - t0) / it * 1e3
+
+    e_enq, e_ms = bench(lambda: eager.run("mot_stack/default", pack=pack))
+    g_enq, g_ms = bench(lambda: graph.run("mot_stack/default", pack=pack))
+    print(f"  eager {e_ms:7.3f} ms (enqueue {e_enq:6.3f})   "
+          f"graph {g_ms:7.3f} ms (enqueue {g_enq:6.3f})   {e_ms/g_ms:.2f}x")
+    print("  [SHIMMED PLUMBING/LATENCY ONLY -- torch-SDPA stands in for the served attention "
+          "kernel, tiny config, no checkpoint. NOT a Cosmos speedup claim.]")
 
     # ---- 3. does it capture at all? -------------------------------------------------------
     print("\n=== 3. raw CUDA graph capture of the same region ===")

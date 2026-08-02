@@ -167,53 +167,75 @@ class DependencySignature:
         return "\n".join(L)
 
 
-def build_name_map(model, extra: Mapping[str, torch.Tensor] | None = None) -> dict[int, str]:
-    """storage base pointer -> a name a human can act on."""
+def build_name_map(roots: Mapping[str, Any], max_depth: int = 6) -> dict[int, str]:
+    """storage base pointer -> a name a human can act on.
+
+    ADAPTER-SUPPLIED ROOTS, not a hard-coded schema. The previous version knew LingBot's state by
+    name (`attn_caches`, `_iwm_cross_kv`, `_iwm_*32`) and therefore could not name anything in a
+    model that stores state differently: on Cosmos3-Edge it left 8 read buffers anonymous. An
+    anonymous read buffer is a buffer no stability check covers, which is precisely how the
+    cross-attention K/V was missed.
+
+    A root is any named object -- a module, a dict, a list, a tensor. The walk is generic:
+    parameters and buffers via `named_parameters`/`named_buffers` when present, then plain
+    attribute/'key' traversal. Names come out as paths, e.g. `kv[3].pos.k`.
+    """
     m: dict[int, str] = {}
+    seen: set[int] = set()
 
     def add(t, name):
         if isinstance(t, torch.Tensor) and t.device.type == "cuda" \
                 and t.untyped_storage().size() > 0:
             m.setdefault(t.untyped_storage().data_ptr(), name)
 
-    for n, p in getattr(model, "named_parameters", lambda: [])():
-        add(p, f"param:{n}")
-    for n, b in getattr(model, "named_buffers", lambda: [])():
-        add(b, f"buffer:{n}")
-    for i, blk in enumerate(getattr(model, "blocks", []) or []):
-        for attr in ("attn1", "attn2"):
-            a = getattr(blk, attr, None)
-            if a is None:
-                continue
-            for cname, c in (getattr(a, "attn_caches", None) or {}).items():
-                if isinstance(c, dict):
-                    for k, t in c.items():
-                        add(t, f"kv[{i}].{attr}.{cname}.{k}")
-            for j, t in enumerate(getattr(a, "_iwm_cross_kv", None) or ()):
-                add(t, f"cross_kv[{i}].{attr}[{j}]")
-        # P004 caches fp32 views of loop-invariant parameters on the modules themselves. They are
-        # read inside the captured region and `hoist_invariant_casts._reset` deletes them, so they
-        # are reallocated every episode. Naming them is what turned 90 anonymous addresses into an
-        # identified dependency.
-        for name, mod in (blk.named_modules() if hasattr(blk, "named_modules") else []):
-            for attr in ("_iwm_w32", "_iwm_b32", "_iwm_sst32"):
-                add(getattr(mod, attr, None), f"hoisted[{i}].{name or 'block'}.{attr}")
-    for k, t in (extra or {}).items():
-        add(t, k)
+    def walk(obj, path, depth):
+        if depth > max_depth or obj is None or id(obj) in seen:
+            return
+        seen.add(id(obj))
+        if isinstance(obj, torch.Tensor):
+            add(obj, path)
+            return
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                walk(v, f"{path}.{k}", depth + 1)
+            return
+        if isinstance(obj, (list, tuple)):
+            for i, v in enumerate(obj):
+                walk(v, f"{path}[{i}]", depth + 1)
+            return
+        if hasattr(obj, "named_parameters"):
+            for n, t in obj.named_parameters():
+                add(t, f"{path}.{n}")
+            for n, t in obj.named_buffers():
+                add(t, f"{path}.{n}")
+        d = getattr(obj, "__dict__", None)
+        if d:
+            for k, v in list(d.items()):
+                if k.startswith("__"):
+                    continue
+                if isinstance(v, (torch.Tensor, dict, list, tuple)):
+                    walk(v, f"{path}.{k}", depth + 1)
+
+    for name, root in roots.items():
+        walk(root, name, 0)
     return m
 
 
-def derive_signature(fn: Callable[[], Any], *, model, roots: Iterable[Any],
+def derive_signature(fn: Callable[[], Any], *, roots: Iterable[Any],
+                     name_roots: Mapping[str, Any] | None = None,
                      host_fields: Mapping[str, Callable[[], int]] | None = None,
-                     extra_names: Mapping[str, torch.Tensor] | None = None,
                      perturb: Mapping[str, Callable[[int], None]] | None = None,
+                     model=None,
                      ) -> DependencySignature:
     """Trace `fn` once, diff host state, and perturb candidate host fields to find key fields.
 
     `host_fields` maps a name to a getter; `perturb` maps the same name to a setter. A field is a
     key field iff changing it changes the structural trace signature.
     """
-    names = build_name_map(model, extra_names)
+    nr = dict(name_roots or {})
+    if model is not None:
+        nr.setdefault("model", model)
+    names = build_name_map(nr)
     roots = list(roots)
 
     before = snapshot_host_state(roots)

@@ -25,9 +25,11 @@ being required for capture to be *safe*:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Callable, Mapping
+from typing import Any, Callable, Mapping
 
 import torch
+
+from instinctwm.engine.binding import Binder, TreeBinder
 
 
 @dataclass(frozen=True)
@@ -45,15 +47,26 @@ class BufferSpec:
 class CaptureUnit:
     """One capturable region of execution.
 
-    `fn` takes the bound input tensors positionally and returns one tensor. It must not allocate
-    anything whose address the caller keeps, must not sync, and must not branch on data.
+    `fn` takes the unit's arguments positionally and returns any nested structure. Arguments and
+    return value may be tensors, tuples, lists, dicts, or non-tensor host metadata -- the `binder`
+    decides how to split them into bindable tensor leaves and a frozen spec.
+
+    `inputs` names the arguments. A name is a handle for binding, NOT a promise that the argument
+    is a single tensor: `CaptureUnit(inputs=("pack",))` is fine when `pack` is a dict of thirty
+    tensors plus host metadata, which is exactly Cosmos3-Edge's SequencePack.
+
+    The unit must not allocate anything whose address the caller keeps, must not sync, and must
+    not branch on data.
     """
     name: str
-    fn: Callable[..., torch.Tensor]
+    fn: Callable[..., Any]
     inputs: tuple[str, ...]
     output: str
     #: distinguishes graphs that differ only by shape (e.g. "video" vs "action")
     shape_key: str = "default"
+    #: how to flatten/unflatten this unit's arguments and result. Adapter-supplied; the default
+    #: tree walk covers tensors, tuples, lists and dicts.
+    binder: Binder = field(default_factory=TreeBinder)
 
     @property
     def key(self) -> str:
@@ -105,7 +118,8 @@ class Plan:
         raise KeyError(f"no buffer {name!r} in plan; declared: {[b.name for b in self.buffers]}")
 
     def describe(self) -> str:
-        out = [f"Plan[{self.model_id}]  {len(self.units)} units, {len(self.buffers)} buffers"]
+        out = [f"Plan[{self.model_id}]  {len(self.units)} units, "
+               f"{len(self.buffers)} declared buffers"]
         total = sum(
             torch.empty(0, dtype=b.dtype).element_size() * max(1, int(torch.tensor(b.shape).prod()))
             for b in self.buffers)
