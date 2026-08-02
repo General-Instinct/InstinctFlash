@@ -16,7 +16,11 @@
 set -u
 
 # ---- repos ------------------------------------------------------------------
-export IWM_ROOT=${IWM_ROOT:-/home/ubuntu/InstinctWM}
+# Derived from this file's own location rather than written down, because the tree has moved
+# once (/home/ubuntu/InstinctWM -> /home/ubuntu/Code/InstinctWM) and a stale IWM_ROOT breaks
+# only the arms that import instinctwm -- a broken A/B rather than a broken run.
+# BASH_SOURCE is the right variable here: this file is sourced, never executed.
+export IWM_ROOT=${IWM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}
 export ROBOTWIN_ROOT=${ROBOTWIN_ROOT:-/home/ubuntu/RoboTwin}
 export LINGBOT_ROOT=${LINGBOT_ROOT:-/home/ubuntu/lingbot-va}
 

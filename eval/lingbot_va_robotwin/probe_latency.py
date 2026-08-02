@@ -31,15 +31,15 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import os
 import statistics
 import sys
 import time
-from pathlib import Path
 
 import numpy as np
 
-LINGBOT_ROOT = Path(__file__).resolve()
-sys.path.insert(0, "/home/ubuntu/RoboTwin")  # so `evaluation.robotwin...` resolves
+# so `evaluation.robotwin...` resolves; env.sh exports ROBOTWIN_ROOT.
+sys.path.insert(0, os.environ.get("ROBOTWIN_ROOT", "/home/ubuntu/RoboTwin"))
 
 from evaluation.robotwin.websocket_client_policy import WebsocketClientPolicy  # noqa: E402
 

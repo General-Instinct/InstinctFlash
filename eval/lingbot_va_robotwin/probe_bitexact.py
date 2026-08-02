@@ -26,11 +26,13 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 
 import numpy as np
 
-sys.path.insert(0, "/home/ubuntu/RoboTwin")
+# env.sh exports ROBOTWIN_ROOT; honour it rather than pinning one box's layout.
+sys.path.insert(0, os.environ.get("ROBOTWIN_ROOT", "/home/ubuntu/RoboTwin"))
 from evaluation.robotwin.websocket_client_policy import WebsocketClientPolicy  # noqa: E402
 
 CAMS = [
