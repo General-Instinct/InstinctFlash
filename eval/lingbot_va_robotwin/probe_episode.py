@@ -34,7 +34,12 @@ from evaluation.robotwin.websocket_client_policy import WebsocketClientPolicy  #
 CAMS = ["observation.images.cam_high",
         "observation.images.cam_left_wrist",
         "observation.images.cam_right_wrist"]
-SLOTS_PER_CYCLE = 272          # video + action tokens committed per control cycle
+#: MEASURED, not assumed. An earlier version used 272 (video 240 + action 32) and put saturation
+#: at cycle 36. The ring actually advances 152 slots/cycle -- committed tokens, not attempted --
+#: so saturation is at cycle ~64 and NEITHER a 45-cycle probe NOR a ~53-cycle RoboTwin episode
+#: ever reaches it. Every "post-saturation" row printed with the old constant was mislabelled:
+#: it was late-episode with a warm graph cache, not steady state.
+SLOTS_PER_CYCLE = 152
 
 
 def make_obs(rng, h=240, w=320):
@@ -71,9 +76,13 @@ def main() -> int:
     args = ap.parse_args()
 
     sat = args.kv_slots // SLOTS_PER_CYCLE
+    saturates = sat < args.cycles
     c = WebsocketClientPolicy(host=args.host, port=args.port)
     print(f"episode mode: {args.cycles} cycles, ONE reset, ring never rewound")
     print(f"KV pool {args.kv_slots} slots / {SLOTS_PER_CYCLE} per cycle -> saturates ~cycle {sat}")
+    if not saturates:
+        print(f"NOTE: {args.cycles} cycles does NOT reach saturation. The split below is "
+              f"EARLY vs LATE episode (cold vs warm graph cache), not pre/post saturation.")
 
     before = len(read_captures(args.server_log))
     c.infer(dict(reset=True, prompt=args.prompt, save_visualization=False))
@@ -110,14 +119,17 @@ def main() -> int:
             print(f"{i:4d} {t:9.1f} {('-' if nc is None else nc):>9} {uk:10d} {hd:6d} "
                   f"{ev:8d} {rp:12d}")
 
-    pre = [t for i, t in enumerate(times) if i < sat]
-    post = [t for i, t in enumerate(times) if i >= sat]
+    split = sat if saturates else len(times) * 4 // 5     # last fifth when nothing saturates
+    pre = [t for i, t in enumerate(times) if i < split]
+    post = [t for i, t in enumerate(times) if i >= split]
     print("\n" + "=" * 62)
+    lbl_a = "pre-saturation " if saturates else "early episode  "
+    lbl_b = "post-saturation" if saturates else "late episode   "
     if pre:
-        print(f"pre-saturation  (cycles 0-{sat-1}) : mean {np.mean(pre):8.1f} ms  "
+        print(f"{lbl_a} (cycles 0-{split-1}) : mean {np.mean(pre):8.1f} ms  "
               f"min {np.min(pre):7.1f}  max {np.max(pre):7.1f}")
     if post:
-        print(f"post-saturation (cycles {sat}+)   : mean {np.mean(post):8.1f} ms  "
+        print(f"{lbl_b} (cycles {split}+)   : mean {np.mean(post):8.1f} ms  "
               f"min {np.min(post):7.1f}  max {np.max(post):7.1f}")
     print(f"whole episode                   : mean {np.mean(times):8.1f} ms")
     if per_cycle_caps:

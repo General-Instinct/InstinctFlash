@@ -90,24 +90,23 @@ BASELINE = {
     #: first run captured. That hides any per-cycle cost that depends on ring position -- and
     #: graph capture has one, because the graph key contains (start, count).
     #:
-    #: Restated under episode mode, current default:
-    #:                          pre-saturation   post-saturation   whole episode
-    #:   with graph capture        2925.4 ms        2302.8 ms        2800.8 ms
-    #:   without graph capture     3572.5 ms        2710.5 ms        3400.1 ms
+    #: Graph capture is a NET WIN in episode mode -- 1.21x whole episode -- but far from the
+    #: 1.5-2x probe_latency implied. Captures never stop: 6.0/cycle, 92.5% hit rate.
     #:
-    #: So graph capture is still a NET WIN (1.18x post-saturation, 1.21x whole episode) but far
-    #: from the 1.5-2x probe_latency implied. Captures never stop: 6.0/cycle even after the pool
-    #: saturates, 92.5% cache hit rate.
-    #:
-    #: OUTSTANDING: the stock and intermediate rows above are all probe_latency-protocol and have
-    #: NOT been restated in episode mode, so `cumulative_speedup` is not an episode-mode number.
+    #: WHY THE KEY NEVER CONVERGES, measured directly: the ring advances 152 slots/cycle and
+    #: `start` stays 0 for the whole episode (no wraparound), so `count` -- the attention KV
+    #: length -- grows every single cycle. The graph key follows the attention shape. Making the
+    #: WRITE offset device-resident would not help, because it is the READ EXTENT that moves.
+    #: Padding it to a fixed extent is ruled out: masked SDPA is not bit-exact. So the key cannot
+    #: converge within an episode without changing numerics -- a property of the model, not an
+    #: engineering gap.
     "episode_mode": {
         "protocol": "probe_episode.py --cycles 45 (one reset, ring never rewound)",
         "default_whole_episode_ms": 2800.8,
-        "default_post_saturation_ms": 2302.8,
+        "default_late_episode_ms": 2302.8,
         "no_graph_whole_episode_ms": 3400.1,
-        "no_graph_post_saturation_ms": 2710.5,
-        "captures_per_cycle_after_saturation": 6.0,
+        "no_graph_late_episode_ms": 2710.5,
+        "captures_per_cycle": 6.0,
         "graph_cache_hit_rate": 0.92457,
         #: The FULL chain, 45 cycles, one reset, all six rungs. THIS is the long-horizon number.
         #: `cumulative_speedup` above is probe_latency-protocol and overstates by 2.13x.
@@ -119,16 +118,28 @@ BASELINE = {
             "+generic_passes": 3588.1,       # REGRESSION vs P003 without capture; see below
             "+graph_capture(default)": 2832.1,
         },
-        "chain_post_saturation_ms": {
+        #: MISLABELLED WHEN WRITTEN. The ring advances 152 slots/cycle (measured), not 272, so
+        #: saturation is at cycle ~64 and a 45-cycle run never reaches it. These are LATE-EPISODE
+        #: numbers with a warm graph cache, not steady state. They are still the right rows to
+        #: compare against each other; they are not "post-saturation".
+        "chain_late_episode_ms": {
             "stock": 9486.3, "P001": 5195.1, "P001+P002": 5059.1,
             "P001+P002+P003": 2635.7, "+generic_passes": 2966.7,
             "+graph_capture(default)": 2298.7,
         },
         "cumulative_speedup_episode": 3.38,
-        #: The generic passes cost ~330 ms post-saturation WITHOUT capture (2966.7 vs 2635.7).
-        #: The adapter's rewritable-site shims add ~2,370 Python calls per cycle, which capture
-        #: hides and eager does not. Confirm sequentially before acting on it.
-        "generic_pass_eager_regression_ms": 331.0,
+        #: RETRACTED. The +331 ms "generic pass regression" came from six servers measured
+        #: CONCURRENTLY and does not reproduce. Sequential A/B (one server, one GPU, 45 cycles
+        #: each) gives, late-episode:
+        #:     p003_base 2728.9 | shims_only 2771.6 | +pools 2758.9
+        #:     +hoist 2892.3    | +promote 2857.2   | +stepidx 2702.4
+        #: The full generic stack is 26.5 ms FASTER than P003 alone. What survives: the adapter
+        #: shims cost ~43 ms (1.6%), and HoistInvariant costs +133 ms in eager mode -- real, but
+        #: more than repaid by ExplicitStepIndex at -155 ms.
+        "generic_stack_vs_p003_ms": -26.5,
+        "shim_cost_ms": 42.7,
+        "hoist_eager_cost_ms": 133.4,
+        "stepidx_gain_ms": -154.8,
         "evictions_per_episode": 204,
     },
 }
@@ -143,14 +154,14 @@ def summary() -> str:
     # resets between repeats, which rewinds the ring and hides per-cycle recapture; it overstated
     # this chain by 2.13x.
     e = BASELINE["episode_mode"]
-    ch, cp = e["chain_whole_episode_ms"], e["chain_post_saturation_ms"]
+    ch, cp = e["chain_whole_episode_ms"], e["chain_late_episode_ms"]
     out.append("  EPISODE MODE (45 cycles, one reset) -- the reporting standard:")
     out.append(f"    whole episode  : {ch['stock']:.0f} -> {ch['+graph_capture(default)']:.0f} ms "
                f"= {e['cumulative_speedup_episode']:.2f}x")
-    out.append(f"    post-saturation: {cp['stock']:.0f} -> "
+    out.append(f"    late episode   : {cp['stock']:.0f} -> "
                f"{cp['+graph_capture(default)']:.0f} ms")
-    out.append(f"    captures {e['captures_per_cycle_after_saturation']:.1f}/cycle even AFTER "
-               f"saturation, {e['evictions_per_episode']} evictions: the cache does NOT converge")
+    out.append(f"    captures {e['captures_per_cycle']:.1f}/cycle throughout, "
+               f"{e['evictions_per_episode']} evictions: the cache does NOT converge")
     out.append(f"  short-horizon (probe_latency, resets between repeats): "
                f"{BASELINE['stock']:.0f} -> "
                f"{BASELINE['P001+P002+P003+P004+P005+P006']:.0f} ms "
