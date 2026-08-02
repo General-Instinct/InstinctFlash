@@ -169,10 +169,15 @@ class RingKVAddressing:
             sl = slice(head, head + key_size)
             kvc["k"][:, sl] = key
             kvc["v"][:, sl] = value
-            kvc["mask"][sl] = True
-            kvc["id"][sl] = r["next_id"]
-            kvc["is_pred"][sl] = (update_cache == 1)
-            r["next_id"] += 1
+            if not self._iwm_defer_commit:
+                # DEFERRED-COMMIT MODE (set by the graph executor): everything below this line is
+                # host-side bookkeeping or small metadata writes, and CUDA graph replay does not
+                # re-execute host-side anything. Leaving it here froze the ring at its capture-time
+                # position and produced max|delta action| = 1.398. See engine/effects.py.
+                kvc["mask"][sl] = True
+                kvc["id"][sl] = r["next_id"]
+                kvc["is_pred"][sl] = (update_cache == 1)
+                r["next_id"] += 1
 
             # Read the live set WITHOUT nonzero and WITHOUT an advanced-index gather.
             # Measured ground truth (tests/test_ring_allocator.py, 120 cycles = 3.3 wraps):
@@ -195,6 +200,33 @@ class RingKVAddressing:
 
             hidden_states = self.attn_op(query, key_all, value_all)
 
+            if not self._iwm_defer_commit:
+                _commit(self, cache_name, key_size, update_cache)
+
+            hidden_states = hidden_states.flatten(2, 3).type_as(query)
+            return self.to_out[1](self.to_out[0](hidden_states))
+
+        def _commit(self, cache_name, key_size, update_cache):
+            """Advance the ring and write its metadata. NEVER call this inside a captured graph.
+
+            Split out of `forward` so the graph executor can run it on the host once per forward
+            per layer, after replay. In default (non-deferred) mode `forward` calls it inline and
+            the behaviour is byte-identical to v1.0.0.
+            """
+            r = _ring(self, cache_name)
+            kvc = self.attn_caches[cache_name]
+            total = r["total"]
+            head = (r["start"] + r["count"]) % total
+            sl = slice(head, head + key_size)
+            count = r["count"] + key_size
+
+            if self._iwm_defer_commit:
+                # these ran inline in non-deferred mode; do them here instead
+                kvc["mask"][sl] = True
+                kvc["id"][sl] = r["next_id"]
+                kvc["is_pred"][sl] = (update_cache == 1)
+                r["next_id"] += 1
+
             if update_cache == 0:
                 kvc["mask"][sl] = False                 # transient: roll the write back
                 kvc["id"][sl] = -1
@@ -213,8 +245,20 @@ class RingKVAddressing:
                     r["start"] = (r["start"] + (r["count"] - total)) % total
                     r["count"] = total
 
-            hidden_states = hidden_states.flatten(2, 3).type_as(query)
-            return self.to_out[1](self.to_out[0](hidden_states))
+        def ring_signature(self, cache_name):
+            """(start, count) -- the quantities a captured graph bakes in.
+
+            The graph key MUST include these: `start` fixes the read slice offset and the write
+            offset, `count` fixes the read extent's SHAPE. The first integration keyed on an
+            attribute that did not exist, captured 6 graphs where it needed many more, and replayed
+            stale ones.
+            """
+            r = _ring(self, cache_name)
+            return (None if r is None else (r["start"], r["count"]))
+
+        Attn._iwm_defer_commit = False          # opt-in; default path is v1.0.0 behaviour
+        Attn._iwm_commit = _commit
+        Attn._iwm_ring_signature = ring_signature
 
         Attn.init_kv_cache = init_kv_cache
         Attn.clear_pred_cache = clear_pred_cache

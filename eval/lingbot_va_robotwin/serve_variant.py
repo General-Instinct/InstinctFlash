@@ -57,11 +57,24 @@ def main() -> int:
              "withholds attn_caches from cross-attention, so the text K/V is re-projected on "
              "all 77 forwards; that is ~39%% of a control cycle's arithmetic, and 67.6%% of an "
              "action forward's layer FLOPs (32-token query vs 512-token text).")
+    ap.add_argument("--hoist-casts", action="store_true",
+        help="Cast loop-invariant constants once per episode instead of once per forward: "
+             "FP32LayerNorm's weight/bias (4,740 casts of a constant per cycle) and the block's "
+             "scale_shift_table, which lets the modulation add promote bf16->fp32 for free and "
+             "deletes a 35.4 MB materialization per block.")
     ap.add_argument("--ring-kv", action="store_true",
         help="Address the KV pool by ring interval instead of boolean mask. Removes the "
              "per-layer-per-forward mask.nonzero() host sync and the full-pool advanced-index "
              "gather (model.py:451-453); valid becomes a slice. Falls back to stock when the "
              "interval wraps, so key order stays ascending and the pass stays bit-exact.")
+    ap.add_argument("--graph-blocks", action="store_true",
+        help="[NOT SHIPPABLE -- 2.17x but NOT bit-exact, max|d action| 1.398 = 136%% of real "
+             "movement. The captured region mutates host-side ring bookkeeping that replay never "
+             "re-executes. See graph_capture.py. Kept for measurement only.] "
+             "Run the 30-block transformer stack from a captured CUDA graph (E3). Requires "
+             "--ring-kv: the stock mask.nonzero() is a data-dependent shape and capture of a "
+             "stock block fails with cudaErrorStreamCaptureInvalidated. Measured per-op cost is "
+             "6.2 us of which 83.6%% is cudaLaunchKernel; replay is ~1.17 us.")
     ap.add_argument(
         "--deterministic-seed", type=int, default=None,
         help="Seed torch before each chunk's noise draw. REQUIRED to compare two variants: "
@@ -109,6 +122,35 @@ def main() -> int:
         from instinctwm.optimizer.passes.ring_kv import RingKVAddressing
         RingKVAddressing().install(S, S.VA_Server)
         applied.append("ring-kv")
+
+    if getattr(args, "hoist_casts", False):
+        sys.path.insert(0, "/home/ubuntu/InstinctWM")
+        from instinctwm.optimizer.passes.hoist_invariant_casts import HoistInvariantCasts
+        HoistInvariantCasts().install(S, S.VA_Server)
+        applied.append("hoist-casts")
+
+    if getattr(args, "graph_blocks", False):
+        if not getattr(args, "ring_kv", False):
+            print("REFUSING: --graph-blocks requires --ring-kv. The stock KV path calls "
+                  "mask.nonzero() per layer per forward, which is a data-dependent shape; "
+                  "capture fails with cudaErrorStreamCaptureInvalidated.", flush=True)
+            return 2
+        sys.path.insert(0, "/home/ubuntu/InstinctWM")
+        from instinctwm.optimizer.passes.graph_capture import GraphBlockStack
+        _graph_pass = GraphBlockStack()
+        _graph_pass.install(S, S.VA_Server)
+        applied.append("graph-blocks")
+
+        # Report capture/replay counts at the end of each chunk so the recapture rate is visible
+        # rather than inferred -- if the key churns, the win evaporates and we need to know.
+        _orig_infer_g = S.VA_Server._infer
+
+        def _infer_reporting(self, obs, frame_st_id=0):
+            out = _orig_infer_g(self, obs, frame_st_id=frame_st_id)
+            print(f"[graph_block_stack] {_graph_pass.stats()}", flush=True)
+            return out
+
+        S.VA_Server._infer = _infer_reporting
 
     if args.deterministic_seed is not None:
         # Seed as a function of frame_st_id, not a constant: a constant would make every
