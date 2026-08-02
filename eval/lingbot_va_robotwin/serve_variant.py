@@ -75,10 +75,13 @@ def main() -> int:
              "--ring-kv: the stock mask.nonzero() is a data-dependent shape and capture of a "
              "stock block fails with cudaErrorStreamCaptureInvalidated. Measured per-op cost is "
              "6.2 us of which 83.6%% is cudaLaunchKernel; replay is ~1.17 us.")
-    ap.add_argument("--generic-passes", action="store_true",
-        help="MIGRATED PATH: run HoistInvariant and StablePools through the pass framework "
-             "(adapter publishes sites, pass decides) instead of the backend-specific P004/P006 "
-             "install() functions. Supersedes --hoist-casts and --stable-pools.")
+    ap.add_argument("--legacy-passes", action="store_true",
+        help="ORACLE/FALLBACK. Use the backend-specific P004/P006 install() functions instead of "
+             "the pass framework. The generic path is the DEFAULT as of 2026-08-02: it measured "
+             "1213.6 ms vs legacy 1207.8 ms (within the protocol's resolution, legacy itself "
+             "spans 1207.8-1211.3) and is bit-exact across episodes. Kept so the two can be "
+             "diffed when a regression is suspected. Passing --hoist-casts or --stable-pools "
+             "also selects the legacy path.")
     ap.add_argument("--stable-pools", action="store_true",
         help="E1: reset clears logical KV state in place instead of reallocating the pools, so "
              "captured graphs stay valid across episodes. Only has an effect with --graph-blocks, "
@@ -143,8 +146,11 @@ def main() -> int:
         applied.append("hoist-casts")
 
     _surface = []            # one-element cell: `global` cannot rebind a local of main()
-    _hoist_g = _pools_g = None
-    if getattr(args, "generic_passes", False):
+    _hoist_g = _pools_g = _promote_g = None
+    _use_legacy = (getattr(args, "legacy_passes", False)
+                   or getattr(args, "hoist_casts", False)
+                   or getattr(args, "stable_pools", False))
+    if not _use_legacy:
         sys.path.insert(0, "/home/ubuntu/InstinctWM")
         from instinctwm.adapter.lingbot import LingBotSurface
         from instinctwm.passes.hoist_invariant import HoistInvariant
@@ -183,7 +189,7 @@ def main() -> int:
             return out
 
         S.VA_Server._reset = _reset_generic
-        applied.append("generic-passes")
+        applied.append("generic-passes(default)")
 
     _pools_pass = None
     if getattr(args, "stable_pools", False):
