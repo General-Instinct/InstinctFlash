@@ -172,8 +172,10 @@ def main() -> int:
                 # against stable storage, and survive every reset after. Recording pointers at the
                 # first wrapped call instead reported "stable" while the graphs were already stale,
                 # which cost max|delta action| = 1.527.
-                _pools_g.pointers = {sid: _pools_g._ptrs(v)
-                                     for sid, v in _surface[0].pools().items()}
+                # Baseline is NOT set here: at this point the wrappers are installed but no
+                # wrapped allocation has happened yet, so the buffers in play still pre-date
+                # stabilization. `pending` stays non-empty until they are replaced, and
+                # `pointers_stable` refuses until someone re-certifies.
             return out
 
         S.VA_Server._reset = _reset_generic
@@ -200,18 +202,41 @@ def main() -> int:
         applied.append("graph-blocks")
 
         if _pools_g is not None:
-            # DELIBERATELY NOT WIRED. Graph preservation across resets on the migrated path is
-            # measured WRONG: max|delta action| = 1.527 against a 1.031 chunk-to-chunk movement,
-            # deterministically, while the same passes WITHOUT graph capture are bit-exact
-            # (0.000e+00). So the passes are correct and their interaction with capture is not,
-            # and the cause is not yet identified -- seeding the certificate at pass-application
-            # time did not change the delta at all.
+            def _generic_stability():
+                if not _surface:
+                    return False, "surface not built yet"
+                tracked = dict(_surface[0].pools())
+                tracked.update(_hoist_g.hoisted_values())   # the 60 formerly-anonymous buffers
+                ok, why = _pools_g.pointers_stable(tracked)
+                if not ok and not _pools_g.pointers:
+                    _pools_g.set_baseline(tracked)          # first certification
+                    return False, "baseline established; graphs dropped once"
+                if not ok and _pools_g.pending:
+                    _pools_g.set_baseline(tracked)          # storage moved; re-certify from here
+                    return False, why
+                return ok, why
+
+            _graph_pass.stability_check = _generic_stability
+
+            # ROOT CAUSE, found by diffing derived dependency signatures across a reset
+            # (deps.py) rather than by inspection:
             #
-            # Leaving `stability_check` unset makes the migrated path drop graphs at every reset:
-            # correct, and slower. The legacy --stable-pools path keeps its own verified
-            # preservation. Do not wire this until the generic path reproduces 0.000e+00 WITH
-            # capture enabled.
-            pass
+            #   legacy   reads=873 unnamed=0   buffers MOVED across reset: 3 (test inputs only)
+            #   generic  reads=873 unnamed=60  buffers MOVED across reset: 210
+            #                                    kv        147
+            #                                    cross_kv   60
+            #
+            # Two defects, both now fixed:
+            #  1. StablePools recorded its baseline INSIDE the allocation path, so a reset that
+            #     reallocated refreshed the reference before anything compared against it --
+            #     fail-open. `set_baseline` is now the only door, and `pending` makes the check
+            #     refuse until storage is re-certified.
+            #  2. The generic hoist kept its caches in closures, invisible to build_name_map, so
+            #     60 of the region's reads were ANONYMOUS and no check could cover them.
+            #     `hoisted_values()` exposes them and they are tracked here.
+            #
+            # Both are the same failure class as the two that preceded them: a certificate that
+            # covers less than the region reads. The tracer is what makes that measurable.
 
         if _pools_pass is not None:
             # Bind the pools on first use, then let the graph pass consult them at every reset.

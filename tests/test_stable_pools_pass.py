@@ -69,8 +69,10 @@ def lingbot_cases() -> bool:
 
     # --- 1. pointer stability across several resets ---
     surf.reallocate()                       # first realloc after the rewrite installs the pools
-    base = {sid: StablePools._ptrs(v) for sid, v in surf.pools().items()}
-    p.pointers = dict(base)
+    # `set_baseline` is the ONLY way the reference moves. Assigning `pointers` directly is what the
+    # fail-open bug did implicitly, so the test must use the same door callers do.
+    p.set_baseline(surf.pools())
+    base = dict(p.pointers)
     stable_all = True
     for ep in range(4):
         surf.reallocate()

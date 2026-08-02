@@ -92,6 +92,8 @@ class HoistInvariant:
 
             cached.iwm_scope = scope
             cached.iwm_invalidate = box.clear
+            cached.iwm_site = site.id
+            cached.iwm_value = lambda: box.get("v")
             self.caches.append(cached)
             return cached
 
@@ -110,6 +112,16 @@ class HoistInvariant:
                 c.iwm_invalidate()
                 n += 1
         return n
+
+    def hoisted_values(self) -> dict:
+        """site id -> the cached value, for anything that must track its address.
+
+        The generic rewrite hid these inside closures, so `build_name_map` could not see them and
+        60 of the captured region's read buffers came back ANONYMOUS -- a buffer no stability check
+        covers. Exposing them is not optional: an un-nameable read is the exact failure class that
+        produced the cross-attention K/V bug and then this one.
+        """
+        return {c.iwm_site: v for c in self.caches if (v := c.iwm_value()) is not None}
 
     def stats(self) -> str:
         return f"hoisted={len(self.caches)} declined={len(self.declines)}"
