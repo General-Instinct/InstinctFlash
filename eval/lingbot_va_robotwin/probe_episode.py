@@ -49,7 +49,12 @@ def read_captures(path):
         txt = open(path, errors="ignore").read()
     except OSError:
         return []
-    return [(int(a), int(b)) for a, b in
+    pat = (r"captures=(\d+) replays=(\d+) unique_keys=(\d+) held=(\d+) evicted=(\d+)")
+    rows = [tuple(int(x) for x in m) for m in re.findall(pat, txt)]
+    if rows:
+        return rows
+    # older stats line without unique_keys/held/evicted
+    return [(int(a), int(b), 0, 0, 0) for a, b in
             re.findall(r"captures=(\d+) replays=(\d+)", txt)]
 
 
@@ -93,11 +98,17 @@ def main() -> int:
         per_cycle_caps.append(cur - prev if prev is not None else cur)
         prev = cur
 
-    print(f"\n{'cyc':>4} {'ms':>9} {'new captures':>13} {'cum replays':>12}")
+    print(f"\n{'cyc':>4} {'ms':>9} {'new caps':>9} {'uniq keys':>10} {'held':>6} "
+          f"{'evicted':>8} {'cum replays':>12}")
     for i, t in enumerate(times):
         nc = per_cycle_caps[i] if i < len(per_cycle_caps) else None
-        rp = caps[i][1] if i < len(caps) else None
-        print(f"{i:4d} {t:9.1f} {('-' if nc is None else nc):>13} {('-' if rp is None else rp):>12}")
+        row = caps[i] if i < len(caps) else None
+        if row is None:
+            print(f"{i:4d} {t:9.1f} {'-':>9} {'-':>10} {'-':>6} {'-':>8} {'-':>12}")
+        else:
+            _c, rp, uk, hd, ev = row
+            print(f"{i:4d} {t:9.1f} {('-' if nc is None else nc):>9} {uk:10d} {hd:6d} "
+                  f"{ev:8d} {rp:12d}")
 
     pre = [t for i, t in enumerate(times) if i < sat]
     post = [t for i, t in enumerate(times) if i >= sat]
@@ -113,6 +124,8 @@ def main() -> int:
         tot = sum(x for x in per_cycle_caps if x is not None)
         steady = per_cycle_caps[sat:] if len(per_cycle_caps) > sat else []
         hit = 1.0 - (tot / max(1, caps[-1][1])) if caps else float("nan")
+        uk, hd, ev = caps[-1][2], caps[-1][3], caps[-1][4]
+        print(f"unique graph keys: {uk}   held at end: {hd}   evictions: {ev}")
         print(f"captures: {tot} over the episode, {np.mean(per_cycle_caps):.1f}/cycle"
               + (f", {np.mean(steady):.1f}/cycle after saturation" if steady else ""))
         print(f"graph cache hit rate (1 - captures/replays): {hit:.3%}")
