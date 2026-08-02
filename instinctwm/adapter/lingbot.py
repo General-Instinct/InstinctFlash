@@ -58,6 +58,7 @@ class LingBotSurface:
         self._cast_sites: dict = {}
         self._alloc_sites: dict = {}
         self._cross_sites: dict = {}
+        self._mod_sites: dict = {}
 
     # -- WHERE ------------------------------------------------------------------------------
     def sites(self, kind):
@@ -139,9 +140,37 @@ class LingBotSurface:
                                "allocate": self._cross_allocator(b.attn2),
                                "copy_into": self._cross_copy})
 
+        elif kind is SiteKind.DTYPE_PROMOTION:
+            import torch
+            self._install_modulate_shim()
+            for i, b in enumerate(blocks):
+                tbl = getattr(b, "scale_shift_table", None)
+                if tbl is None:
+                    continue
+                sid = f"lingbot.modulation[{i}]"
+                self._mod_sites[sid] = b
+                n_tok = getattr(b, "_iwm_last_temb_elems", None)
+                yield Site(
+                    kind=kind, id=sid,
+                    attrs={"narrow": torch.bfloat16, "wide": torch.float32,
+                           "constant_elems": tbl.numel(),
+                           # the activation is [B, N, 6, C]; measured at trace time, else assume
+                           # the video stream's 240 tokens x batch 2
+                           "activation_elems": n_tok or (2 * 240 * tbl.numel()),
+                           "constant": self._mod_constant(b),
+                           "note": "scale_shift_table + temb.float()"})
+
         elif kind is SiteKind.INVARIANT_CONDITIONING:
             LN = self._install_producer_shim()
             for i, b in enumerate(blocks):
+                if getattr(b, "scale_shift_table", None) is not None:
+                    # consumed by the modulation combine via `_iwm_cast_scale_shift_table`
+                    yield Site(kind=kind, id=f"lingbot.cast[{i}].block.scale_shift_table",
+                               attrs={"scope": Scope.MODEL, "evaluated_at": Scope.LAYER,
+                                      "pure": True, "dtype": "fp32",
+                                      "produce": self._remember(
+                                          f"lingbot.cast[{i}].block.scale_shift_table",
+                                          b, "scale_shift_table")})
                 for name, mod in b.named_modules():
                     # ONLY modules whose consumer actually reads the producer. Publishing a site
                     # the adapter cannot route means the pass installs a cache nothing calls and
@@ -236,6 +265,71 @@ class LingBotSurface:
         out.update({sid: getattr(a2, "_iwm_cross_kv", None)
                     for sid, a2 in self._cross_sites.items()})
         return {k: v for k, v in out.items() if v is not None}
+
+    # -- modulation combine plumbing ---------------------------------------------------------
+
+    @staticmethod
+    def _mod_constant(block):
+        """The wide constant, preferring a hoisted cache if HoistInvariant already made one.
+
+        This is where the two passes compose: hoist caches `scale_shift_table.float()` at MODEL
+        scope, and this returns that cache so the promotion rewrite does not redo the cast.
+        """
+        def constant():
+            cached = getattr(block, "_iwm_cast_scale_shift_table", None)
+            t = cached() if cached is not None else block.scale_shift_table.float()
+            return t[None]
+        return constant
+
+    def _install_modulate_shim(self):
+        """Route the block's modulation combine through a replaceable hook."""
+        import modules.model as M
+        Blk = M.WanTransformerBlock
+        if getattr(Blk, "_iwm_modulate_shim", False):
+            return
+        from einops import rearrange
+
+        def default_combine(self_b, temb):
+            self_b._iwm_last_temb_elems = temb.numel()
+            return self_b.scale_shift_table[None] + temb.float()
+
+        _orig = Blk.forward
+
+        def forward(self_b, hidden_states, encoder_hidden_states, temb, rotary_emb,
+                    update_cache=0, cache_name="pos"):
+            combine = getattr(self_b, "_iwm_modulate", None)
+            if combine is None:
+                return _orig(self_b, hidden_states, encoder_hidden_states, temb, rotary_emb,
+                             update_cache, cache_name)
+            self_b._iwm_last_temb_elems = temb.numel()
+            t = combine(temb)
+            shift_msa, scale_msa, gate_msa, c_shift_msa, c_scale_msa, c_gate_msa = \
+                rearrange(t, "b l n c -> b n l c").chunk(6, dim=1)
+            shift_msa, scale_msa, gate_msa = (x.squeeze(1) for x in
+                                              (shift_msa, scale_msa, gate_msa))
+            c_shift_msa, c_scale_msa, c_gate_msa = (x.squeeze(1) for x in
+                                                    (c_shift_msa, c_scale_msa, c_gate_msa))
+            norm_hidden_states = (self_b.norm1(hidden_states.float()) * (1. + scale_msa)
+                                  + shift_msa).type_as(hidden_states)
+            attn_output = self_b.attn1(norm_hidden_states, norm_hidden_states, norm_hidden_states,
+                                       rotary_emb, update_cache=update_cache,
+                                       cache_name=cache_name)
+            hidden_states = (hidden_states.float()
+                             + attn_output * gate_msa).type_as(hidden_states)
+            norm_hidden_states = self_b.norm2(hidden_states.float()).type_as(hidden_states)
+            attn_output = self_b.attn2(norm_hidden_states, encoder_hidden_states,
+                                       encoder_hidden_states, None, update_cache=0,
+                                       cache_name=cache_name)
+            hidden_states = hidden_states + attn_output
+            norm_hidden_states = (self_b.norm3(hidden_states.float()) * (1. + c_scale_msa)
+                                  + c_shift_msa).type_as(hidden_states)
+            ff_output = self_b.ffn(norm_hidden_states)
+            return (hidden_states.float()
+                    + ff_output.float() * c_gate_msa).type_as(hidden_states)
+
+        Blk.forward = forward
+        Blk._iwm_default_combine = default_combine
+        Blk._iwm_modulate_shim = True
 
     # -- cross-attention K/V plumbing -------------------------------------------------------
 
@@ -339,6 +433,11 @@ class LingBotSurface:
         if rewrite.site_id.startswith("lingbot.kv_pool[") and rewrite.kind is RewriteKind.WRAP:
             a = self._alloc_sites[rewrite.site_id]
             a._iwm_pool_alloc = rewrite.payload(self._pool_allocator(a))
+            return
+        if rewrite.site_id.startswith("lingbot.modulation[") and rewrite.kind is RewriteKind.WRAP:
+            blk = self._mod_sites[rewrite.site_id]
+            base = (lambda temb, _b=blk: _b.scale_shift_table[None] + temb.float())
+            blk._iwm_modulate = rewrite.payload(base)
             return
         if rewrite.site_id.startswith("lingbot.cross_kv[") and rewrite.kind is RewriteKind.WRAP:
             a2 = self._cross_sites[rewrite.site_id]

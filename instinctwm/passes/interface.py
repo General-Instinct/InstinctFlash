@@ -59,6 +59,9 @@ class SiteKind(Enum):
     STATE_ADDRESSING = "state_addressing"
     #: where device buffers are created, so their lifetime can be moved
     ALLOCATION = "allocation"
+    #: a binary combine where one operand is widened before the op. Which operand gets widened is
+    #: an implementation detail; which one SHOULD be is a size question.
+    DTYPE_PROMOTION = "dtype_promotion"
 
 
 class Scope(Enum):
