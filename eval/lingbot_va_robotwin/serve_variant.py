@@ -75,6 +75,16 @@ def main() -> int:
              "--ring-kv: the stock mask.nonzero() is a data-dependent shape and capture of a "
              "stock block fails with cudaErrorStreamCaptureInvalidated. Measured per-op cost is "
              "6.2 us of which 83.6%% is cudaLaunchKernel; replay is ~1.17 us.")
+    ap.add_argument("--stable-pools", action="store_true",
+        help="E1: reset clears logical KV state in place instead of reallocating the pools, so "
+             "captured graphs stay valid across episodes. Only has an effect with --graph-blocks, "
+             "which still verifies every pool pointer survived before keeping its graphs.")
+    ap.add_argument("--unsafe-keep-graphs", action="store_true",
+        help="UNPROVEN, DO NOT USE. Lets captured graphs survive an episode reset when "
+             "--stable-pools certifies pointer stability. Reaches 1211.2 ms (vs 1842.0) but "
+             "probe_reset_isolation reports max|d action| = 3.23 against a 1.03 chunk-to-chunk "
+             "movement: episode 2 differs from a fresh episode, so some device state read inside "
+             "the captured region is still episode-scoped and unaccounted for.")
     ap.add_argument(
         "--deterministic-seed", type=int, default=None,
         help="Seed torch before each chunk's noise draw. REQUIRED to compare two variants: "
@@ -129,6 +139,14 @@ def main() -> int:
         HoistInvariantCasts().install(S, S.VA_Server)
         applied.append("hoist-casts")
 
+    _pools_pass = None
+    if getattr(args, "stable_pools", False):
+        sys.path.insert(0, "/home/ubuntu/InstinctWM")
+        from instinctwm.optimizer.passes.stable_pools import StableStatePools
+        _pools_pass = StableStatePools()
+        _pools_pass.install(S, S.VA_Server)
+        applied.append("stable-pools")
+
     if getattr(args, "graph_blocks", False):
         if not getattr(args, "ring_kv", False):
             print("REFUSING: --graph-blocks requires --ring-kv. The stock KV path calls "
@@ -141,13 +159,28 @@ def main() -> int:
         _graph_pass.install(S, S.VA_Server)
         applied.append("graph-blocks")
 
+        if _pools_pass is not None:
+            # Bind the pools on first use, then let the graph pass consult them at every reset.
+            _orig_reset_bind = S.VA_Server._reset
+
+            def _reset_bind(self, prompt=None, _p=_pools_pass, _o=_orig_reset_bind):
+                out = _o(self, prompt=prompt)
+                if hasattr(self, "transformer"):
+                    _p.bind(self.transformer)
+                return out
+
+            S.VA_Server._reset = _reset_bind
+            if getattr(args, "unsafe_keep_graphs", False):
+                _graph_pass.stability_check = lambda: _pools_pass.pointers_stable()
+
         # Report capture/replay counts at the end of each chunk so the recapture rate is visible
         # rather than inferred -- if the key churns, the win evaporates and we need to know.
         _orig_infer_g = S.VA_Server._infer
 
         def _infer_reporting(self, obs, frame_st_id=0):
             out = _orig_infer_g(self, obs, frame_st_id=frame_st_id)
-            print(f"[graph_block_stack] {_graph_pass.stats()}", flush=True)
+            print(f"[graph_block_stack] {_graph_pass.stats()}"
+                  + (f" | {_pools_pass.stats()}" if _pools_pass else ""), flush=True)
             return out
 
         S.VA_Server._infer = _infer_reporting

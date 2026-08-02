@@ -26,8 +26,10 @@ both cheaper and exact.
 
 RESULT (2026-08-02), under the only accepted protocol:
 
-    probe_latency  : 2539.9 -> 1203.3 ms   = 2.11x   (repeats 3, first discarded, spread 0.1%)
-    probe_bitexact : max|delta action| = 0.000e+00 over 6 paired seeded cycles
+    probe_latency  : 2539.9 -> 1842.0 ms   = 1.38x   (repeats 3, first discarded, spread 0.5%)
+    probe_bitexact : max|delta action| = 0.000e+00 over 6 paired seeded cycles, with the gate run
+                     AFTER an episode reset -- the ordering that exposed a nan when graphs were
+                     wrongly kept across a pool reallocation
 
 WHAT THE FIRST ATTEMPT GOT WRONG, because it is the failure mode this whole layer exists to stop
 
@@ -65,9 +67,11 @@ COSTS, measured rather than assumed
     evicted exactly what was about to be reused -- 214 captures instead of 60, 1880.9 ms instead
     of 1203.3 ms.
   * Capture is not free at full model scale (~275 ms each, not the 29 ms an 8-block microbenchmark
-    suggested). It lands mostly in the discarded warm-up run here; over a real episode captures
-    continue until the KV pool saturates around cycle 36. The steady-state figure above is honest
-    for a warm engine and understates the first ~36 cycles of an episode.
+    suggested), and graphs are dropped at every reset because `_reset` reallocates the KV pool.
+    That recapture is the difference between 1842.0 ms and the 1208.2 ms the same build reaches
+    with graphs surviving resets. E1 (`stable_pools.py`) closes it by making the pools
+    address-stable; this pass then keeps its graphs, but ONLY when `stability_check` certifies
+    every pool pointer survived. Without that certificate the default stays drop-and-recapture.
 
 Tier: BITEXACT.
 """
@@ -116,6 +120,9 @@ class GraphBlockStack:
         self.n_replays = 0
         self.capture_ms = 0.0
         self.failed: str | None = None
+        self.n_resets_survived = 0
+        #: set by StableStatePools (E1). Returns (keep_graphs, why). Absent -> drop on every reset.
+        self.stability_check = None
 
     def applicability(self, spec, device: DeviceProfile) -> Applicability:
         return Applicability(
@@ -218,8 +225,22 @@ class GraphBlockStack:
         _orig_reset = server_cls._reset
 
         def _reset(self, prompt=None):
-            engine.drop_graphs("episode reset: KV pool reallocated")
-            return _orig_reset(self, prompt=prompt)
+            out = _orig_reset(self, prompt=prompt)
+            # Keep graphs ONLY if something has certified that every pool is still at the address
+            # it was captured with. Absent that certificate the safe behaviour -- drop and
+            # recapture -- is the default, because a stale graph does not raise, it returns
+            # plausible garbage.
+            keep, why = False, "no pool-stability certificate (E1 not installed)"
+            if engine.stability_check is not None:
+                keep, why = engine.stability_check()
+            if keep:
+                engine.n_resets_survived += 1
+                if engine.verbose:
+                    print(f"[graph_block_stack] kept {len(engine.graphs)} graph(s) across reset: "
+                          f"{why}", flush=True)
+            else:
+                engine.drop_graphs(f"reset: {why}")
+            return out
 
         server_cls._reset = _reset
         return ["graph_block_stack"]
@@ -276,6 +297,7 @@ class GraphBlockStack:
     def stats(self) -> str:
         return (f"captures={self.n_captures} replays={self.n_replays} "
                 f"held={len(self.graphs)} evicted={self.n_evicted} "
+                f"resets_survived={self.n_resets_survived} "
                 f"capture_total={self.capture_ms:.0f} ms "
                 f"{'FELL BACK: ' + self.failed if self.failed else ''}")
 
