@@ -56,6 +56,7 @@ class LingBotSurface:
         self.cache_name = cache_name
         self._wrapped = {}
         self._cast_sites: dict = {}
+        self._alloc_sites: dict = {}
 
     # -- WHERE ------------------------------------------------------------------------------
     def sites(self, kind):
@@ -88,6 +89,34 @@ class LingBotSurface:
                     yield Site(kind=kind, id=f"lingbot.kv_ring[{i}]",
                                attrs={"addressing": "ring_interval",
                                       "scope": Scope.CYCLE, "evaluated_at": Scope.LAYER})
+        elif kind is SiteKind.ALLOCATION:
+            self._install_alloc_shim()
+            for i, b in enumerate(blocks):
+                a = b.attn1
+                shape = getattr(a, "_iwm_pool_shape", None)
+                if shape is None:
+                    continue
+                sid = f"lingbot.kv_pool[{i}].{self.cache_name}"
+                self._alloc_sites[sid] = a
+                yield Site(
+                    kind=kind, id=sid,
+                    attrs={
+                        # storage is MODEL-scoped: shape depends only on config, never on the
+                        # episode. Contents are EPISODE-scoped. The model conflates them and
+                        # reallocates the pool on every reset, which invalidates any captured graph.
+                        "physical_lifetime": Scope.MODEL,
+                        "logical_reset": Scope.EPISODE,
+                        "evaluated_at": Scope.EPISODE,
+                        "extent": shape,
+                        "ownership": f"attn1[{i}]",
+                        "allocate": self._pool_allocator(a),
+                        # WHAT "logically clear" MEANS is the adapter's to declare: mask/id/is_pred
+                        # are reset because clear_pred_cache and the stock path read them; k/v are
+                        # deliberately NOT zeroed (3.5 GB of writes) because the ring live set is
+                        # empty after a reset so they are unreachable.
+                        "clear": self._pool_clear,
+                    })
+
         elif kind is SiteKind.INVARIANT_CONDITIONING:
             LN = self._install_producer_shim()
             for i, b in enumerate(blocks):
@@ -114,6 +143,74 @@ class LingBotSurface:
                                    "pure": True, "dtype": "fp32",
                                    "produce": self._remember(
                                        f"lingbot.cast[{i}].{name or 'block'}.{src}", mod, src)})
+
+    # -- allocation plumbing ----------------------------------------------------------------
+
+    @staticmethod
+    def _pool_allocator(attn):
+        def allocate(**kw):
+            return attn._iwm_raw_alloc(**kw)
+        return allocate
+
+    @staticmethod
+    def _pool_clear(pool):
+        pool["mask"].fill_(False)
+        pool["id"].fill_(-1)
+        pool["is_pred"].fill_(False)
+        r = pool.get("_ring")
+        if r is not None:
+            r.update(start=0, count=0, pred=0, next_id=0)
+
+    def _install_alloc_shim(self):
+        """Route pool creation through a wrappable allocator, and record the static extent.
+
+        `init_kv_cache` both allocates and publishes. Splitting the allocation out is what gives a
+        generic pass something to wrap; the adapter keeps the publishing.
+        """
+        import modules.model as M
+        Attn = M.WanAttention
+        cache_name = self.cache_name
+        if not getattr(Attn, "_iwm_alloc_shim", False):
+            _orig = Attn.init_kv_cache
+
+            def raw_alloc(self, **kw):
+                _orig(self, kw["cache_name"], kw["total"], kw["heads"], kw["head_dim"],
+                      kw["device"], kw["dtype"], kw["batch"])
+                return self.attn_caches[kw["cache_name"]]
+
+            def init_kv_cache(self, name, total, heads, head_dim, device, dtype, batch):
+                self._iwm_pool_shape = (batch, total, heads, head_dim)
+                self._iwm_alloc_kw = dict(cache_name=name, total=total, heads=heads,
+                                          head_dim=head_dim, device=device, dtype=dtype,
+                                          batch=batch)
+                alloc = getattr(self, "_iwm_pool_alloc", None) or self._iwm_raw_alloc
+                self.attn_caches[name] = alloc(**self._iwm_alloc_kw)
+
+            Attn._iwm_raw_alloc = raw_alloc
+            Attn.init_kv_cache = init_kv_cache
+            Attn._iwm_alloc_shim = True
+        # record the extent for pools already created before the shim went in
+        for b in getattr(self.model, "blocks", []) or []:
+            a = b.attn1
+            c = (getattr(a, "attn_caches", None) or {}).get(cache_name)
+            if c and getattr(a, "_iwm_pool_shape", None) is None and c.get("k") is not None:
+                a._iwm_pool_shape = tuple(c["k"].shape)
+                a._iwm_alloc_kw = dict(cache_name=cache_name, total=c["k"].shape[1],
+                                       heads=c["k"].shape[2], head_dim=c["k"].shape[3],
+                                       device=c["k"].device, dtype=c["k"].dtype,
+                                       batch=c["k"].shape[0])
+
+    def reallocate(self):
+        """Do what `_reset` does: ask every pool to be created again."""
+        for b in getattr(self.model, "blocks", []) or []:
+            a = b.attn1
+            if getattr(a, "_iwm_alloc_kw", None):
+                kw = a._iwm_alloc_kw
+                a.init_kv_cache(kw["cache_name"], kw["total"], kw["heads"], kw["head_dim"],
+                                kw["device"], kw["dtype"], kw["batch"])
+
+    def pools(self) -> dict:
+        return {sid: a.attn_caches[self.cache_name] for sid, a in self._alloc_sites.items()}
 
     # -- invariant-conditioning plumbing ----------------------------------------------------
     # The adapter owns the mechanism; the pass owns the policy. `produce` computes the value,
@@ -179,6 +276,10 @@ class LingBotSurface:
 
         if rewrite.site_id == "lingbot.block_stack" and rewrite.kind is RewriteKind.WRAP:
             self._wrapped["block_stack"] = rewrite.payload(self._raw_stack)
+            return
+        if rewrite.site_id.startswith("lingbot.kv_pool[") and rewrite.kind is RewriteKind.WRAP:
+            a = self._alloc_sites[rewrite.site_id]
+            a._iwm_pool_alloc = rewrite.payload(self._pool_allocator(a))
             return
         if rewrite.site_id.startswith("lingbot.cast[") and rewrite.kind is RewriteKind.WRAP:
             spec = self._cast_sites.get(rewrite.site_id)

@@ -1,0 +1,154 @@
+"""StablePools -- allocate storage once, clear it logically in place.
+
+Third true engine pass. Compare with `optimizer/passes/stable_pools.py`, which knows
+`WanAttention.init_kv_cache`, `clear_cache`, the keys `k`/`v`/`mask`/`id`/`is_pred`, the `_ring`
+dict, and P002's `populate_cross_cache`. None of that is about storage lifetime.
+
+THE DISTINCTION THE PASS IS BUILT ON
+
+A buffer has a PHYSICAL lifetime -- how long its storage must stay at one address -- and a LOGICAL
+reset scope -- how often its contents must be forgotten. Models routinely conflate them: LingBot
+reallocates its whole KV pool at every episode reset because the contents are episode-scoped, even
+though the storage is model-scoped. Anything holding a pointer into that storage (a captured CUDA
+graph) is silently invalidated.
+
+So the pass asks one question per site: is the physical lifetime coarser than the scope at which
+allocation currently happens? If yes, allocate once and let the adapter's declared `clear` handle
+the logical reset.
+
+WHY EXTENT MUST BE STATIC
+
+Reusing storage is only sound if the next request fits it exactly. A site that cannot state its
+extent might ask for a different shape next episode, and silently returning the old buffer would
+be a correctness bug, not a slow path. Undeclared extent is therefore a decline, not a guess.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from instinctwm.passes.interface import Rewrite, RewriteKind, Scope, Site, SiteKind
+
+
+@dataclass
+class Decline:
+    site_id: str
+    reason: str
+
+    def __str__(self) -> str:
+        return f"{self.site_id}: {self.reason}"
+
+
+class StablePools:
+    name = "stable_pools"
+
+    def __init__(self, verbose: bool = False):
+        self.verbose = verbose
+        self.declines: list[Decline] = []
+        self.n_allocs = 0
+        self.n_reuses = 0
+        self.pointers: dict[str, tuple] = {}
+
+    def sites_required(self):
+        return (SiteKind.ALLOCATION,)
+
+    # ---- decide -------------------------------------------------------------------------------
+    def plan_rewrites(self, sites, device) -> list[Rewrite]:
+        self.declines.clear()
+        out: list[Rewrite] = []
+        for site in sites.get(SiteKind.ALLOCATION, []):
+            why = self._why_not(site)
+            if why:
+                self.declines.append(Decline(site.id, why))
+                if self.verbose:
+                    print(f"[stable_pools] DECLINE {site.id}: {why}", flush=True)
+                continue
+            out.append(Rewrite(
+                site_id=site.id, kind=RewriteKind.WRAP, payload=self._stabilize(site),
+                note=(f"allocate once at {site.attrs['physical_lifetime'].name}, clear at "
+                      f"{site.attrs['logical_reset'].name}")))
+        return out
+
+    def _why_not(self, site: Site) -> str | None:
+        a = site.attrs
+        phys, ev = a.get("physical_lifetime"), a.get("evaluated_at")
+        if phys is None or ev is None:
+            return "no declared physical_lifetime / evaluated_at"
+        if not (phys < ev):
+            return (f"physical lifetime {phys.name} is not coarser than the scope allocation "
+                    f"happens at ({ev.name}) -- nothing to stabilize")
+        if a.get("extent") is None:
+            return ("extent is dynamic or undeclared; reusing storage across a shape change "
+                    "would return a buffer that does not fit the request")
+        if a.get("allocate") is None:
+            return "site exposes no allocator to wrap"
+        if a.get("clear") is None:
+            return ("no declared clear semantics; storage could be reused but the previous "
+                    "episode's contents would leak")
+        return None
+
+    # ---- what to install ----------------------------------------------------------------------
+    def _stabilize(self, site: Site):
+        extent = site.attrs["extent"]
+        clear = site.attrs["clear"]
+        engine = self
+        sid = site.id
+
+        def wrap(allocate):
+            box: dict = {}
+
+            def stable(*a, **kw):
+                want = kw.get("extent", extent)
+                if "v" in box and box["extent"] == want:
+                    clear(box["v"])                      # logical reset, same storage
+                    engine.n_reuses += 1
+                    return box["v"]
+                # first call, or the extent genuinely changed: allocate and re-record
+                v = allocate(*a, **kw)
+                box["v"], box["extent"] = v, want
+                engine.n_allocs += 1
+                engine.pointers[sid] = engine._ptrs(v)
+                return v
+
+            stable.iwm_site = sid
+            return stable
+
+        return wrap
+
+    # ---- verification the pass owns, because it made the claim ---------------------------------
+    @staticmethod
+    def _ptrs(value) -> tuple:
+        import torch
+
+        out = []
+
+        def go(v):
+            if isinstance(v, torch.Tensor):
+                out.append(v.untyped_storage().data_ptr())
+            elif isinstance(v, dict):
+                for k in sorted(v, key=str):
+                    go(v[k])
+            elif isinstance(v, (list, tuple)):
+                for x in v:
+                    go(x)
+
+        go(value)
+        return tuple(out)
+
+    def pointers_stable(self, current: dict[str, object]) -> tuple[bool, str]:
+        """Have the storages this pass stabilized stayed put?
+
+        The pass made the claim, so the pass carries the check. A stale pointer does not raise --
+        it returns plausible garbage -- so anything relying on stability must be able to ask.
+        """
+        for sid, want in self.pointers.items():
+            if sid not in current:
+                return False, f"{sid} is no longer present"
+            got = self._ptrs(current[sid])
+            if got != want:
+                return False, f"{sid} moved: {want[:2]} -> {got[:2]}"
+        return True, f"all {len(self.pointers)} stabilized site(s) at their original addresses"
+
+    def stats(self) -> str:
+        return (f"allocs={self.n_allocs} reuses={self.n_reuses} "
+                f"stabilized={len(self.pointers)} declined={len(self.declines)}")

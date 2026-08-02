@@ -50,6 +50,9 @@ class SyntheticSurface:
     def sites(self, kind):
         from instinctwm.passes.interface import Scope, Site, SiteKind
 
+        if kind is SiteKind.ALLOCATION:
+            yield from self.alloc_sites()
+            return
         if kind is not SiteKind.INVARIANT_CONDITIONING:
             return
         self._prod["episode_projection"] = self._episode_projection
@@ -60,6 +63,18 @@ class SyntheticSurface:
         yield Site(kind=kind, id="synthetic.per_step_noise",
                    attrs={"scope": Scope.STEP, "evaluated_at": Scope.STEP, "pure": True,
                           "produce": self._per_step_noise})
+
+    def alloc_sites(self):
+        """One ALLOCATION site whose extent is genuinely dynamic -- it must be declined."""
+        from instinctwm.passes.interface import Scope, Site, SiteKind
+
+        yield Site(kind=SiteKind.ALLOCATION, id="synthetic.growing_buffer",
+                   attrs={"physical_lifetime": Scope.MODEL, "logical_reset": Scope.EPISODE,
+                          "evaluated_at": Scope.EPISODE,
+                          "extent": None,          # grows with the episode; cannot be reused
+                          "ownership": "synthetic",
+                          "allocate": lambda **kw: torch.zeros(8, device=self.device),
+                          "clear": lambda t: t.zero_()})
 
     def apply(self, rewrite):
         from instinctwm.passes.interface import RewriteKind
