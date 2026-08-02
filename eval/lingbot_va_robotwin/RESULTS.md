@@ -327,3 +327,42 @@ lower: **3.30x, not 3.47x.**
 
 Unaffected: every correctness result. Bit-exactness, the 800/800 allocator parity checks, and the
 3/3 identical action streams on `put_bottles_dustbin` are equality tests, immune to timing noise.
+
+---
+
+# 9. copy_ breakdown — measured, and the reason not to pursue it (2026-08-02)
+
+Profiled before choosing cache reuse as the next optimization. **Recommendation: do not pursue.**
+
+```
+aten::copy_, one control cycle : 74,547 calls, 183.4 ms GPU, mean 2.46 us/call
+share of the 2832 ms episode-mode cycle : 6.5%
+```
+
+| shape | n | ms | ideal (HBM) | overhead | inferred source |
+|---|---|---|---|---|---|
+| (2, 32, 3072) | 17264 | 41.6 | 4.05 | **90%** | action hidden state |
+| (2, 240, 3072) | 8632 | 39.5 | 15.20 | 62% | video hidden state |
+| (2, 240, 24, 128) | 4680 | 28.1 | 8.24 | 71% | video q/k/v, head-split |
+| (2, 32, 24, 128) | 9360 | 27.1 | 2.20 | **92%** | action q/k/v, head-split |
+| (1, 8, 10) | 11712 | 13.7 | 0.00 | 100% | unexplained, tiny |
+| 5 more tiny families | 19936 | 26.9 | ~0.1 | ~100% | unexplained, tiny |
+
+**80% of copy time (147.1 ms) is per-kernel overhead, not bandwidth.** Only 36.3 ms is what moving
+the bytes costs. The lever is COUNT, not bytes — the opposite of how this was framed when it went
+on the ranking as "46,752 copies, 79 ms GPU".
+
+**Ceiling.** Every copy vanishing is 183.4 ms of 2832 ms = **1.069x**, unreachable by construction.
+The realistic target is the four large-tensor families: 136.3 ms, **4.8% of the cycle**, and
+capturing even half of it means fusing across rounding points that the block trace lists as
+semantic. The tiny tail is 47.1 ms (1.7%) spread over ~29k calls of 80–1280 elements.
+
+**Limits of this attribution, stated so it is not over-read.** `TorchDispatchMode` observed only
+4,817 of the 74,547 copies — the remainder are issued below the Python dispatch key — so the
+source column is inferred from shapes, not proven from call sites. The tiny families are genuinely
+unexplained: 11,712 copies of `[1, 8, 10]` per cycle is ~148 per forward and no block op has that
+shape. Not chased further, because 0.5% of a cycle cannot justify it.
+
+A first pass apportioned GPU time by bytes and was wrong: 5.92 GB over 183.3 ms is 32 GB/s, ~100x
+under HBM, which is precisely the signal that these copies are overhead-bound rather than
+bandwidth-bound.
