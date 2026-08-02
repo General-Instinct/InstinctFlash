@@ -16,8 +16,9 @@
 
 *Latest News* 🔥
 
-- [2026/08] **3.30x bit-exact on LingBot-VA** (8431 to 2554 ms per control cycle, 3.8 to 12.5 Hz), verified at `max |delta action| = 0` on paired seeded rollouts. Measured with a repeats-based protocol that discards the first run: single-run numbers on this box vary by up to 37% from cold start, and an earlier published 3.47x was an artefact of measuring one run per arm.
-- [2026/08] **Profiled the remaining cost.** LingBot-VA is launch- and gather-bound, not compute-bound: real arithmetic is 8.5% of wall clock, and one control step issued 469,811 kernel launches. After ring KV that is 379,314, the GPU is idle 58% of the cycle, and the next target is the unfused transformer block: elementwise/norm plus copy is 49% of GPU time and 324k of those launches.
+- [2026/08] **3.38x bit-exact on LingBot-VA**, episode mode: 9585 to 2832 ms per control cycle over 45 consecutive cycles with a single reset, verified at `max |delta action| = 0` on paired seeded rollouts.
+  A short reset-based probe reports 6.96x on the same build. That protocol resets between repeats, which rewinds the KV ring so each repeat replays graphs the discarded first run captured — it converts a per-cycle cost into a warm-up cost and **overstates this chain by 2.13x**. Episode mode is the reporting standard; the short-horizon number is kept only for continuity with earlier posts.
+- [2026/08] **Profiled the remaining cost.** LingBot-VA *was* launch-bound: an aten op cost 6.2 us whether it touched 1 element or 1 MB, and 83.6% of that was `cudaLaunchKernel` itself. Graph capture moved the launches inside graphs, and the workload is now GPU-bound again — so the profile that motivated the launch work no longer describes the current default. Launch counts quoted from that era are pre-capture and should not be read as current.
 - [2026/08] **Canonical RoboTwin 2.0 baseline: 91.6% macro** across all 50 tasks and 2500 episodes, zero failures.
 - [2026/08] Optimizer skeleton landed. Passes fire from adapter declarations, not flags, and carry equivalence tiers that do not compose upward.
 - [2026/07] Evaluation pipeline for LingBot-VA on RoboTwin 2.0, including a prompt-parity gate that closes a silent train/serve mismatch nobody upstream was checking.
@@ -62,21 +63,27 @@ Every optimization is classified by how it is discovered:
 
 - **AUTO**, detected with no help from the module tree, a trace, a profile, or a differential test.
   This is the product.
-- **DECLARED**, needs a fact that cannot be safely inferred. Pi-0's fp32 keep-list is one: guess
-  wrong and you get silently wrong actions.
-- **CHECKPOINT**, needs new weights. DreamZero-Flash is a training recipe, `Beta(7,1)`
-  video-timestep sampling, not a runtime trick. We can host it; we cannot deliver it.
+- **DECLARED**, needs a fact that cannot be safely inferred. A dtype keep-list is one: guess wrong
+  and you get silently wrong actions.
+- **CHECKPOINT**, needs new weights, and is therefore something we can host but not deliver.
 
-The design is validated against six model families, chosen because they disagree with each other:
-LingBot-VA, DreamZero, Cosmos3-Edge, InternVLA-A1, GR00T N, and pi-0/pi-0.5. One finding reshaped
-the abstraction: **"stateless VLA versus stateful WAM" is a false dichotomy.** Pi-0 builds a prefix
-KV cache, commits it, reads it from all 10 denoise forwards, and drops it, which is structurally
-identical to LingBot-VA's episode-scoped stream. They differ only in **lifetime**. So KV persistence
-is a lifetime field (`none`, `chunk`, `window`, `episode`), not a boolean, and one runtime serves
-both with no `if is_vla` anywhere.
+### What is actually supported
 
-The cross-model derivation behind that abstraction, the full profile, and the prioritized
-low-level work are summarised in [Roadmap](#roadmap) below.
+Two models, both validated end to end on this hardware:
+
+| model | status |
+|---|---|
+| **LingBot-VA** | primary optimization target and evaluation benchmark. 3.38x bit-exact, episode mode. Full correctness gates: multi-episode bit-exactness, reset isolation, pointer stability. |
+| **Cosmos3-Edge** | second reference model, used to validate that the engine generalizes. One Plan runs under both executors with graph replay bit-exact against the eager oracle. **Plumbing only** — a torch-SDPA shim stands in for the served attention kernel, so no accuracy or speedup claim is made. |
+
+Everything else is **future work**. The state descriptors carry unvalidated design entries for
+other model families; those are design sketches, not support, and nothing has been measured on
+them. We would rather have two models fully verified than six partly claimed.
+
+One design finding does generalize and is worth keeping: **"stateless VLA versus stateful WAM" is
+a false dichotomy** — KV persistence is a lifetime field (`none`, `chunk`, `window`, `episode`),
+not a boolean. Cosmos3-Edge is the validated instance of the far end of that axis: it keeps no KV
+pool at all, and the same runtime serves it with no `if is_vla` anywhere.
 
 ### Getting started
 
@@ -118,31 +125,38 @@ term and silently has nothing to offer the one model with a measured deadline pr
 pass declares whether it reduces the `FIXED` or the `PER_STEP` term, plus a cost formula, and the
 optimizer ranks by `delta_fixed + NFE * delta_step` against the deadline.
 
-**Accuracy-neutral is necessary, not sufficient.** On pi-0's real shapes, swapping eager attention
-for SDPA while keeping the mask measures 133.5 to 144-184 us: a regression whose numerics an
-equivalence gate would happily certify. Every pass therefore also carries a measured cost delta on
-the target's real shapes, and a pass that does not improve its declared term is rejected whatever
-its tier.
+**Accuracy-neutral is necessary, not sufficient.** Measured on LingBot-VA: `HoistInvariant` is
+bit-exact and costs **+133 ms per cycle under eager execution** while paying for itself under graph
+capture. A pass therefore carries a measured cost delta *per executor*, and correctness does not
+imply admission — a pass with no measurement on the target executor is not admitted, because
+"bit-exact" says nothing about whether it helps there.
 
 | | work | attacks | tier |
 |---|---|---|---|
 | 1 | Paged KV with a device-resident block table; fused write-then-attend | 39.6% of GPU time in gather/copy, and the host syncs behind 51% GPU idle | `BITEXACT` |
-| 2 | CUDA-graph capture, gated on a static-shape predicate rather than pipeline position | 469,811 launches per control step at 6.2 us mean | `BEHAVIORAL` |
+| 2 | CUDA-graph capture, gated on a static-shape predicate rather than pipeline position | pre-capture: ~250k dispatches/cycle at 6.2 us mean. **Done** — 1.21x whole-episode, bit-exact, but the key does not converge (~6 captures/cycle indefinitely) | `BITEXACT` |
 | 3 | Triton fusion: norm + modulation + QKV + RoPE, and the FFN chain | 18.3% elementwise, 198 launches per layer per forward | `BITEXACT` |
 | 4 | Stream overlap and async closed-loop execution | residual idle; converts the deadline from control period to chunk expiry | `BITEXACT` |
-| 5 | Guidance branch elision | forwards computing a discarded negative branch | `NUMERIC` |
+| ~~5~~ | ~~Guidance branch elision~~ **RULED OUT on this backend** | a two-axis liveness test found the action stream's CFG branch 1 live on both axes: corrupting its return moved the result 5.64, suppressing only its shared-KV writes moved it 5.39, against 1.03 chunk-to-chunk movement. Its output is discarded but the computation is load-bearing through shared state | — |
 | 6 | fp8 weights and KV | 17.4% of GPU time in GEMM | `NUMERIC` |
 | 7 | Adaptive NFE and velocity-cosine step caching | step count, the only order-of-magnitude lever | `BEHAVIORAL` |
 
-Item 2 is not last. Capture needs static shapes, which for LingBot-VA means item 1 first, but that
-precondition is vacuous for models with no paged pool: measured unmodified, capture is worth 4.76x
-on GR00T's action head and 4.00x on pi-0's step body. Treating "capture last" as a pipeline
-invariant rather than a per-model predicate produced a 28:1 priority inversion in an earlier draft
-of this list.
+Item 2 is not last: capture needs static shapes, which for LingBot-VA means item 1 first, but that
+precondition is a per-model predicate rather than a pipeline invariant.
 
-The measurement that explains the whole ordering: 469,811 launches x 6.67 us of CPU enqueue is
-3134 ms, against 3031 ms of measured GPU idle. The idle *is* the enqueue. This is a launch
-elimination problem, not a kernel tuning problem.
+The measurement that set this ordering: per-op cost is **6.2 us, of which 83.6% is
+`cudaLaunchKernel` itself**, and an `add_` costs the same on 1 element as on 1 MB. It was a launch
+elimination problem.
+
+**That is no longer the binding constraint.** With the launches inside captured graphs, GPU time
+binds again, and the ordering above is stale — see the current ranking, which is derived from a
+re-profile rather than from this list. Two things it now gets wrong: guidance elision is ruled out
+(above), and attention backend work is worth 7% of GPU busy, not a priority.
+
+Capture also does **not** converge on this model. The KV ring advances 152 slots/cycle and the read
+extent grows every cycle, so the graph key moves every cycle and ~6 graphs are captured per cycle
+indefinitely. Capture is still worth 1.21x whole-episode; it is not free, and whole-cycle capture is
+blocked structurally rather than pending.
 
 ## Citation
 

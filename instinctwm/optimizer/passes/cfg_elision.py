@@ -1,4 +1,21 @@
-"""CFGBranchElision — stop computing guidance branches whose output is discarded.
+"""RULED OUT ON LINGBOT-VA BY MEASUREMENT (2026-08-02). Do not enable.
+
+A two-axis liveness test (eval/lingbot_va_robotwin/probe_cfg_liveness.py) found the
+action stream's CFG branch 1 live on BOTH axes: corrupting its returned value moved the
+final actions by 5.64, and suppressing only its writes to the shared KV pool moved them by
+5.39, against a chunk-to-chunk movement of 1.03.
+
+The config genuinely discards that output -- `action_guidance_scale = 1` and the loop takes
+`action_noise_pred[:1]` -- so `guidance = {"action": POSITIVE_ONLY}` is a true statement
+about OUTPUT USAGE. It is not a statement about dead compute: both CFG branches write the
+shared ring KV pool, and the video stream at guidance_scale=5 reads branch 1.
+
+This is why ExecutionDescriptor separates `dead_outputs` from `elidable_computations`.
+Kept as the record of a ruled-out optimization, not as a pass to run.
+
+ORIGINAL DOCSTRING FOLLOWS.
+
+CFGBranchElision — stop computing guidance branches whose output is discarded.
 
 The opportunity, on LingBot-VA
 ------------------------------

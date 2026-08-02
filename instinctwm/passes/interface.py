@@ -101,6 +101,59 @@ class Site:
         return s is not None and e is not None and s < e
 
 
+class Executor(Enum):
+    """Which executor a profitability claim was measured under.
+
+    Correctness is executor-independent: a BITEXACT pass is bit-exact everywhere. PROFITABILITY IS
+    NOT. HoistInvariant is bit-exact and costs +133 ms per cycle under EAGER, while paying for
+    itself under GRAPH, where the Python it adds is captured away. Accepting a pass on every
+    backend because it is bit-exact conflates the two, and would silently pessimise any backend
+    that cannot capture.
+    """
+    EAGER = "eager"
+    GRAPH = "graph"
+    MEGAKERNEL = "megakernel"
+
+
+@dataclass(frozen=True)
+class Profitability:
+    """Measured effect on one executor. Absence of an entry means UNMEASURED, not neutral."""
+    executor: Executor
+    delta_ms_per_cycle: float          # negative is faster
+    protocol: str
+    note: str = ""
+
+    @property
+    def profitable(self) -> bool:
+        return self.delta_ms_per_cycle < 0
+
+    def __str__(self) -> str:
+        sign = "+" if self.delta_ms_per_cycle >= 0 else ""
+        return (f"{self.executor.value}: {sign}{self.delta_ms_per_cycle:.1f} ms/cycle "
+                f"({'profitable' if self.profitable else 'NOT profitable'}) [{self.protocol}]")
+
+
+#: NOT YET ENFORCED on the shipped path, and the reason is worth stating: enforcing it today
+#: would disable HoistInvariant under GRAPH, because that pass's graph-mode delta has never been
+#: isolated -- only the stack containing it has been measured, and that stack is net-positive.
+#: Failing closed on unmeasured is the right rule; applying it before the measurements exist would
+#: change the default on the strength of a gap rather than a finding. The unblocking work is a
+#: per-pass sequential A/B under GRAPH, mirroring the one already done under EAGER.
+def admit(profiles: dict, executor) -> tuple[bool, str]:
+    """Should this pass run on this executor?
+
+    Fails CLOSED on unmeasured: a pass with no measurement for the target executor is not admitted,
+    because "bit-exact" says nothing about whether it helps there.
+    """
+    p = profiles.get(executor)
+    if p is None:
+        return False, (f"no profitability measurement for {executor.value}; correctness does not "
+                       f"imply profitability, so this is not admitted by default")
+    if not p.profitable:
+        return False, f"measured NOT profitable on {executor.value}: {p}"
+    return True, str(p)
+
+
 class RewriteKind(Enum):
     WRAP = "wrap"           # wrap the site's callable: new = f(old)
     SET = "set"             # set a named property on the site
@@ -131,7 +184,12 @@ class AdapterSurface(Protocol):
 
 
 class EnginePass(Protocol):
-    """A pass: needs site kinds, returns rewrites, carries its own gates."""
+    """A pass: needs site kinds, returns rewrites, carries its own gates.
+
+    `profitability` maps Executor -> Profitability. It is separate from the equivalence tier on
+    purpose: the tier is a correctness claim and holds everywhere, the profitability is a
+    measurement and holds only where it was taken.
+    """
 
     name: str
 
