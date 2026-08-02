@@ -140,15 +140,32 @@ class HoistInvariantCasts:
         Blk.forward = blk_forward
         applied.append("modulation_constant_upcast")
 
-        # Casts are episode-scoped: a reset may reload or move weights, so drop them there.
+        # These caches are refreshed on reset, but REFRESHED IN PLACE -- never deleted.
+        #
+        # They used to be dropped with delattr, on the reasoning that a reset may reload or move
+        # weights. That is still handled (the values are recomputed), but delattr also reallocates
+        # them at NEW ADDRESSES, and they are read inside the region P005 captures. So every reset
+        # silently invalidated 90 buffers that no stability check covered, which is the third and
+        # last cause of the reset-isolation failure. It was found by `engine/deps.py`, not by
+        # inspection: 90 of the region's read buffers had no name, and 89 of them moved.
+        #
+        # `copy_` keeps the storage, so the graphs stay valid and a genuine weight change still
+        # propagates.
         _orig_reset = server_cls._reset
+        _SRC = {"_iwm_w32": "weight", "_iwm_b32": "bias", "_iwm_sst32": "scale_shift_table"}
 
         def _reset(self, prompt=None):
             if hasattr(self, "transformer"):
                 for m in self.transformer.modules():
-                    for attr in ("_iwm_w32", "_iwm_b32", "_iwm_sst32"):
-                        if hasattr(m, attr):
-                            delattr(m, attr)
+                    for attr, src in _SRC.items():
+                        cached = getattr(m, attr, None)
+                        p = getattr(m, src, None)
+                        if cached is None:
+                            continue
+                        if p is None or p.shape != cached.shape:
+                            delattr(m, attr)       # genuinely stale: let it rebuild
+                        else:
+                            cached.copy_(p.float())            # same storage, fresh values
             return _orig_reset(self, prompt=prompt)
 
         server_cls._reset = _reset

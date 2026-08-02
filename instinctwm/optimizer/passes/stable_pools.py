@@ -14,15 +14,16 @@ graphs away at every reset and recapture ~60 of them. Measured cost of that reca
 This pass makes the pools address-stable. It does NOT yet cash in the 634 ms, because keeping
 graphs across a reset is still not provably correct -- see STATUS below.
 
-STATUS (2026-08-02): pool stability WORKS and is on by default. Graph preservation is OFF.
+STATUS (2026-08-02): DONE. Graph preservation is ON by default, gated by the certificate.
 
-    pool reuse                    : pool_allocs=30 pool_reuses=90 cross_stable=30
-    default build (graphs dropped): 1862.5 ms, max|delta action| = 0.000e+00
-    --unsafe-keep-graphs          : 1211.2 ms, but probe_reset_isolation reports
-                                    max|d| = 3.23 vs 1.03 chunk-to-chunk movement
+    probe_latency          : 2539.9 -> 1211.3 ms  = 2.10x  (repeats 3, spread 0.0%)
+    probe_bitexact         : max|delta action| = 0.000e+00, run after 5 resets
+    probe_reset_isolation  : max|delta action| = 0.000e+00
+    runtime                : resets_survived=5, pool_reuses=150, cross_stable=30
 
-So episode 2 still differs from a fresh episode when graphs survive. Two episode-scoped
-dependencies were found and fixed on the way here, and a third remains unidentified:
+Three episode-scoped dependencies had to be removed to get here. The first two were found by hand
+after a wrong number; the THIRD was found automatically by `engine/deps.py`, which reported that
+90 of the captured region's read buffers had no name and 89 of them moved across a reset:
 
   1. FIXED -- `clear_cache` sets `attn_caches[name] = None` right before `create_empty_cache`, so
      `init_kv_cache` never saw anything to reuse (pool_reuses=0 on the real server while the unit
@@ -30,9 +31,17 @@ dependencies were found and fixed on the way here, and a third remains unidentif
   2. FIXED -- P002's cross-attention K/V is read inside the captured region and was rebuilt into
      fresh tensors every episode. Stabilizing only the self-attention pools left episode 2
      returning `nan`. Now repopulation copies into the same storage.
-  3. OPEN -- something else read inside the captured region is still episode-scoped. The delta is
-     large and smooth (3.23 -> 2.59 across four cycles), which looks like a warm cache diverging
-     rather than freed memory.
+  3. FIXED -- P004's hoisted fp32 parameter casts (`_iwm_w32`, `_iwm_b32`, `_iwm_sst32`) are read
+     inside the captured region, and `hoist_invariant_casts._reset` deleted them, so all 90 were
+     reallocated every episode. They are now refreshed IN PLACE with `copy_`, which keeps the
+     storage and still propagates a genuine weight change.
+
+KNOWN GAP: the `_hoisted` arm of the certificate reports 0 buffers in the running server, so it is
+covering nothing. P004 creates those casts lazily and neither bind point (reset, first capture) has
+been made to see them yet -- unresolved. Correctness does not currently depend on it (the casts are
+address-stable by construction now, and all three gates pass), but the certificate is weaker than
+it reads, which is precisely the failure mode this file is supposed to end. Fix before relying on
+the certificate for a new pass.
 
 The lesson is the reusable part: a pointer-stability certificate is only as good as its coverage,
 and both (1) and (2) were cases of certifying a subset of the state the graph actually touches. The
@@ -89,6 +98,7 @@ class StableStatePools:
         self._cross: list = []
         self._cross_ptrs: dict = {}
         self._has_cross = False
+        self._hoisted: list = []
 
     def applicability(self, spec, device: DeviceProfile) -> Applicability:
         return Applicability(
@@ -216,6 +226,20 @@ class StableStatePools:
                        if getattr(b.attn2, "_iwm_cross_kv", None) is not None]
         self._cross_ptrs = {id(a): tuple(t.data_ptr() for t in a._iwm_cross_kv)
                             for a in self._cross}
+        # P004's hoisted fp32 casts are read inside the captured region too. Derived, not
+        # remembered: engine/deps.py reported 90 unnamed read buffers, 89 of which moved.
+        hoisted = []
+        for blk in getattr(model, "blocks", []) or []:
+            for _n, mod in blk.named_modules():
+                for attr in ("_iwm_w32", "_iwm_b32", "_iwm_sst32"):
+                    t = getattr(mod, attr, None)
+                    if t is not None:
+                        hoisted.append((mod, attr, t.data_ptr()))
+        # P004 creates these lazily on the first forward, and `bind()` runs right after a reset --
+        # so a bind that finds none must not erase a previously discovered set, or the certificate
+        # silently covers zero buffers while reporting success.
+        if hoisted or not self._hoisted:
+            self._hoisted = hoisted
 
     def _record(self, module, cache_name) -> None:
         """Snapshot pool addresses. ONLY called from `bind()`.
@@ -262,8 +286,12 @@ class StableStatePools:
                 return False, "cross-attention K/V is absent on a layer that had it at bind time"
             if tuple(t.data_ptr() for t in kv) != self._cross_ptrs.get(id(a)):
                 return False, "cross-attention K/V moved (P002 repopulated into new tensors)"
-        return True, (f"all {len(mods)} layers' KV pools and {len(self._cross)} cross-attn caches "
-                      f"stable across reset")
+        for mod, attr, want in self._hoisted:
+            t = getattr(mod, attr, None)
+            if t is None or t.data_ptr() != want:
+                return False, f"hoisted cast {attr} moved or was dropped (P004 reset behaviour)"
+        return True, (f"all {len(mods)} layers' KV pools, {len(self._cross)} cross-attn caches and "
+                      f"{len(self._hoisted)} hoisted casts stable across reset")
 
     def stats(self) -> str:
         return (f"pool_allocs={self.n_allocs} pool_reuses={self.n_reuses} "

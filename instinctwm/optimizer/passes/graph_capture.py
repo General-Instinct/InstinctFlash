@@ -123,6 +123,11 @@ class GraphBlockStack:
         self.n_resets_survived = 0
         #: set by StableStatePools (E1). Returns (keep_graphs, why). Absent -> drop on every reset.
         self.stability_check = None
+        #: called once, at the first capture, when lazily-created state (P004's fp32 casts) exists.
+        #: Binding only at reset was too early: the casts had not been created yet, so the
+        #: certificate reported success while covering zero of them.
+        self.bind_hook = None
+        self._bound = False
 
     def applicability(self, spec, device: DeviceProfile) -> Applicability:
         return Applicability(

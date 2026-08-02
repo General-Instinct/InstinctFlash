@@ -79,12 +79,11 @@ def main() -> int:
         help="E1: reset clears logical KV state in place instead of reallocating the pools, so "
              "captured graphs stay valid across episodes. Only has an effect with --graph-blocks, "
              "which still verifies every pool pointer survived before keeping its graphs.")
-    ap.add_argument("--unsafe-keep-graphs", action="store_true",
-        help="UNPROVEN, DO NOT USE. Lets captured graphs survive an episode reset when "
-             "--stable-pools certifies pointer stability. Reaches 1211.2 ms (vs 1842.0) but "
-             "probe_reset_isolation reports max|d action| = 3.23 against a 1.03 chunk-to-chunk "
-             "movement: episode 2 differs from a fresh episode, so some device state read inside "
-             "the captured region is still episode-scoped and unaccounted for.")
+    ap.add_argument("--no-keep-graphs", action="store_true",
+        help="Drop captured graphs at every reset even when --stable-pools certifies pointer "
+             "stability. Preservation is ON by default and gated by that certificate; this is the "
+             "escape hatch if a new pass introduces episode-scoped device state the certificate "
+             "does not yet cover.")
     ap.add_argument(
         "--deterministic-seed", type=int, default=None,
         help="Seed torch before each chunk's noise draw. REQUIRED to compare two variants: "
@@ -170,7 +169,8 @@ def main() -> int:
                 return out
 
             S.VA_Server._reset = _reset_bind
-            if getattr(args, "unsafe_keep_graphs", False):
+            _graph_pass.bind_hook = _pools_pass.bind
+            if not getattr(args, "no_keep_graphs", False):
                 _graph_pass.stability_check = lambda: _pools_pass.pointers_stable()
 
         # Report capture/replay counts at the end of each chunk so the recapture rate is visible
