@@ -20,6 +20,7 @@ loop. That is exactly the regime a robot policy lives in, and exactly the regime
 from __future__ import annotations
 
 from instinctwm.adapter.base import AdapterSpec
+from instinctwm.deployment import DeploymentSpec
 from instinctwm.optimizer.base import PassResult, Tier
 
 
@@ -42,15 +43,15 @@ class FSDPElision:
 
     name = "fsdp_elision"
 
-    def evaluate(self, spec: AdapterSpec, world_size: int = 1) -> PassResult:
-        if world_size > 1:
+    def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
+        if deployment.world_size > 1:
             return PassResult(self.name, False, Tier.BITEXACT,
-                              f"world_size={world_size}: sharding is doing real work")
+                              f"world_size={deployment.world_size}: sharding is doing real work")
         return PassResult(
             self.name, True, Tier.BITEXACT,
             "world_size=1, so every FSDP all-gather is identity while still paying a "
             "flat-param copy and stream sync per unit per forward",
-            params={"world_size": world_size},
+            params={"world_size": deployment.world_size},
             expected_win="measured 1.75x standalone on LingBot-VA",
         )
 
@@ -68,7 +69,7 @@ class AllocatorChurnElision:
 
     name = "allocator_churn_elision"
 
-    def evaluate(self, spec: AdapterSpec) -> PassResult:
+    def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
         return PassResult(
             self.name, True, Tier.BITEXACT,
             "closed-loop serving has a stable working set, so releasing the pool between "
@@ -90,7 +91,7 @@ class DebugDumpElision:
 
     name = "debug_dump_elision"
 
-    def evaluate(self, spec: AdapterSpec) -> PassResult:
+    def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
         return PassResult(
             self.name, True, Tier.BITEXACT,
             "per-chunk tensor dumps do a synchronous D2H on the critical path and are not "
@@ -114,11 +115,11 @@ class ObsDecodeElision:
 
     name = "obs_decode_elision"
 
-    def evaluate(self, spec: AdapterSpec, want_pixels: bool = False) -> PassResult:
+    def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
         if not spec.obs_decode_modules:
             return PassResult(self.name, False, Tier.BITEXACT,
                               "model declares no observation-decode modules")
-        if want_pixels:
+        if deployment.want_pixels:
             return PassResult(self.name, False, Tier.BITEXACT,
                               "caller requested predicted pixels")
         return PassResult(

@@ -16,10 +16,14 @@ Run:  python tests/test_kernel_framework.py [--cuda]
 """
 from __future__ import annotations
 
+import os
 import sys
 import time
 
-sys.path.insert(0, "/home/ubuntu/InstinctWM")
+# Repo root from this file, matching the convention in test_deps.py. The absolute path
+# this replaced stopped resolving when the tree moved, and the only symptom was
+# ModuleNotFoundError: No module named 'instinctwm'.
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import torch  # noqa: E402
 

@@ -1,0 +1,50 @@
+# --- the LingBot-VA policy server -------------------------------------------
+# This is env.sh's IWM_SERVER_PY (formerly a hand-rolled /home/ubuntu/.venv-lingbot).
+# Versions are lingbot-va/requirements.txt exactly, because the server has to be
+# the upstream one -- InstinctWM patches it at runtime and measures the delta, so
+# a drifted baseline is a mismeasured optimization.
+#
+# WHY THIS IS A SEPARATE FILE AND NOT A pyproject.toml DEPENDENCY-GROUP.
+# uv builds one universal lockfile for the project. torch==2.9.0 below satisfies
+# the `runtime` extra's torch>=2.4, so if these pins lived in pyproject.toml uv
+# would resolve a single torch for both and the development environments would be
+# silently dragged down to the server's version (measured: runtime alone picks
+# 2.13.0; with the server in the same lock, 2.9.0). `[tool.uv] conflicts` does not
+# prevent this -- it constrains what may be INSTALLED together, not what is
+# RESOLVED together. Keeping the server in its own file, locked separately, is
+# what makes the two solves actually independent. See env.sh: "Never try to merge
+# these."
+#
+# Regenerate the lock after editing:
+#   ./scripts/task.sh lock-server
+#
+# TWO DELIBERATE OMISSIONS from lingbot-va/requirements.txt:
+#
+#  * flash_attn. RESULTS.md's appendix: with a real flash-attn wheel installed,
+#    diffusers detects it via package METADATA and routes autoencoder_kl_wan down
+#    a flash-attention path instead of SDPA, changing the VAE's numerics. The
+#    91.6% baseline was measured with no real flash-attn, so installing one is not
+#    a free environment change -- it invalidates the baseline. The transformer
+#    never calls it (attn_mode='torch' -> custom_sdpa); it is an unused
+#    module-scope import, which is what IWM_FA_SHIM=1 covers.
+#  * lerobot / scipy / wandb. requirements.txt marks these "# Post-training".
+#    Serving and evaluating never import them.
+
+torch==2.9.0
+torchvision==0.24.0
+torchaudio==2.9.0
+diffusers==0.36.0
+transformers==4.55.2
+numpy==1.26.4
+accelerate
+einops
+easydict
+tqdm
+imageio[ffmpeg]
+websockets
+msgpack
+opencv-python
+matplotlib
+ftfy
+safetensors
+pillow

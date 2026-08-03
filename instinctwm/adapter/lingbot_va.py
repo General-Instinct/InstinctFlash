@@ -1,11 +1,18 @@
-"""LingBot-VA backend adapter — declarations only.
+"""LingBot-VA backend adapter — declarations, plus the thin glue that serves them.
 
-Every field below is a fact read out of `/home/ubuntu/lingbot-va`, cited to `file:line`. Nothing
-here is an optimization; the optimizer derives those. If you find yourself wanting to add a
-`use_fast_path=True` field, it belongs in a pass instead.
+Every field in `lingbot_va_spec()` is a fact read out of the upstream lingbot-va tree (set
+`LINGBOT_ROOT`; the historical default is `/home/ubuntu/lingbot-va`), cited to `file:line`.
+Nothing there is an optimization; the optimizer derives those. If you find yourself wanting to
+add a `use_fast_path=True` field, it belongs in a pass instead.
+
+`LingBotVA` at the bottom is the `BackendAdapter` implementation: declarations, plus install
+and serve. It holds no optimization logic either — it maps pass names onto installers and
+refuses to serve a plan it could not fully apply.
 """
 
 from __future__ import annotations
+
+from typing import Sequence
 
 from instinctwm.adapter.base import (
     AdapterSpec, CommitMode, GuidanceMode, GuidanceRule, KVLifetime, KVStreamSpec,
@@ -114,3 +121,71 @@ def lingbot_va_spec() -> AdapterSpec:
             "known_gather": "model.py:452-453 key_pool[:, valid] re-gathers the whole pool",
         },
     )
+
+
+class LingBotVA:
+    """`BackendAdapter` for LingBot-VA posttrained on RoboTwin 2.0.
+
+    The upstream server is patched at runtime rather than forked. That keeps `git status` in
+    the lingbot-va checkout clean, keeps every variant one flag away from stock, and keeps the
+    bit-exactness gate (`eval/lingbot_va_robotwin/probe_bitexact.py`) meaningful.
+    """
+
+    model_id = "lingbot-va-posttrain-robotwin"
+
+    def __init__(self, lingbot_root: str | None = None):
+        #: None means "resolve from LINGBOT_ROOT at serve time", so constructing an adapter
+        #: never touches the filesystem — `spec()` must work on a box with no checkpoint.
+        self.lingbot_root = lingbot_root
+
+    def spec(self) -> AdapterSpec:
+        return lingbot_va_spec()
+
+    def install(self, server_module: object, plan) -> Sequence[str]:
+        # Imported here, not at module scope: the runtime layer needs torch, and reading a
+        # model's declarations must not.
+        from instinctwm.runtime.lingbot_install import install_plan
+
+        return install_plan(server_module, server_module.VA_Server, plan)
+
+    def serve(
+        self,
+        plan,
+        port: int,
+        config_name: str = "robotwin",
+        save_root: str | None = None,
+        deterministic_seed: int | None = None,
+    ):
+        """Import the upstream server, install `plan`, and run it on `port`.
+
+        Installation happens BEFORE `run()` because `run()` is what builds the model, and
+        `fsdp_elision` replaces the bound `_configure_model` the build calls through.
+        """
+        from instinctwm.runtime.lingbot_install import (
+            import_lingbot_server,
+            install_deterministic_seed,
+        )
+
+        server_module = import_lingbot_server(self.lingbot_root)
+        applied = list(self.install(server_module, plan))
+        if deterministic_seed is not None:
+            applied += install_deterministic_seed(server_module, deterministic_seed)
+
+        print("=" * 72, flush=True)
+        print(f"InstinctWM serving {self.model_id} on :{port}", flush=True)
+        print(f"  plan tier : {plan.tier().name}", flush=True)
+        print(f"  applied   : {applied if applied else ['STOCK BASELINE']}", flush=True)
+        print("=" * 72, flush=True)
+
+        args = _ServerArgs(config_name=config_name, port=port, save_root=save_root)
+        server_module.init_logger()
+        return server_module.run(args)
+
+
+class _ServerArgs:
+    """The three attributes upstream's `run()` reads off its argparse namespace."""
+
+    def __init__(self, config_name: str, port: int | None, save_root: str | None):
+        self.config_name = config_name
+        self.port = port
+        self.save_root = save_root

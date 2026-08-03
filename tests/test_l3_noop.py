@@ -20,9 +20,13 @@ Run:  python tests/test_l3_noop.py
 """
 from __future__ import annotations
 
+import os
 import sys
 
-sys.path.insert(0, "/home/ubuntu/InstinctWM")
+# Repo root from this file, matching the convention in test_deps.py. The absolute path
+# this replaced stopped resolving when the tree moved, and the only symptom was
+# ModuleNotFoundError: No module named 'instinctwm'.
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from instinctwm.state.manifests import REGISTRY, UNVALIDATED_DESIGNS, gr00t_manifest
 from instinctwm.state.types import Capacity, Discovery, Scope, StateManifest, applies_to

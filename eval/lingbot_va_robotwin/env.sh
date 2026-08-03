@@ -16,7 +16,11 @@
 set -u
 
 # ---- repos ------------------------------------------------------------------
-export IWM_ROOT=${IWM_ROOT:-/home/ubuntu/InstinctWM}
+# Derived from this file's own location rather than written down, because the tree has moved
+# once (/home/ubuntu/InstinctWM -> /home/ubuntu/Code/InstinctWM) and a stale IWM_ROOT breaks
+# only the arms that import instinctwm -- a broken A/B rather than a broken run.
+# BASH_SOURCE is the right variable here: this file is sourced, never executed.
+export IWM_ROOT=${IWM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}
 export ROBOTWIN_ROOT=${ROBOTWIN_ROOT:-/home/ubuntu/RoboTwin}
 export LINGBOT_ROOT=${LINGBOT_ROOT:-/home/ubuntu/lingbot-va}
 
@@ -27,8 +31,25 @@ export LINGBOT_CKPT=${LINGBOT_CKPT:-/home/ubuntu/ckpt_lingbot/lingbot-va-posttra
 # The server needs torch 2.9 / diffusers 0.36; the client needs sapien 3.0.0b1 on
 # torch 2.4. They are dependency-incompatible, which is exactly why upstream put a
 # websocket between them. Never try to merge these.
-export IWM_SERVER_PY=${IWM_SERVER_PY:-/home/ubuntu/.venv-lingbot/bin/python}
+#
+# The server env is uv-managed, from its OWN lock: server-requirements.in next to
+# this file, compiled to server-requirements.txt. It is deliberately not part of
+# pyproject.toml -- uv builds one universal lockfile, and sharing it would pin the
+# development envs to the server's torch. That header explains it in full.
+# Build it with:  ./scripts/task.sh test-lingbot   (which syncs it first)
+#          or:    uv venv .venv-server --python 3.10 \
+#                   && VIRTUAL_ENV=.venv-server uv pip sync \
+#                        eval/lingbot_va_robotwin/server-requirements.txt
+# The pins live in that file, not in this one, so the lock is what makes a rerun
+# reproducible -- a hand-rolled venv could not be re-created from the repo.
+export IWM_SERVER_PY=${IWM_SERVER_PY:-${IWM_ROOT}/.venv-server/bin/python}
 export IWM_CLIENT_PY=${IWM_CLIENT_PY:-${ROBOTWIN_ROOT}/.venv/bin/python}
+
+if [ ! -x "$IWM_SERVER_PY" ]; then
+  echo "WARNING: IWM_SERVER_PY does not exist: $IWM_SERVER_PY" >&2
+  echo "         run './scripts/task.sh test-lingbot' from $IWM_ROOT, or see the" >&2
+  echo "         build command in $(basename "${BASH_SOURCE[0]}")" >&2
+fi
 
 # ---- flash-attn import shim -------------------------------------------------
 # wan_va/modules/model.py imports flash_attn unconditionally at module scope even

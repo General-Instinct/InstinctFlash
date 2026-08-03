@@ -31,7 +31,17 @@ unverified, so the conservative conclusion stands. Anyone revisiting elision mus
     python probe_cfg_liveness.py
 """
 import os, sys
-sys.path.insert(0, "/home/ubuntu/InstinctWM"); sys.path.insert(0, "/home/ubuntu/InstinctWM/eval/lingbot_va_robotwin")
+from pathlib import Path
+
+# Resolved from this file rather than written down, matching serve_variant.py and
+# profile_cycle.py. The hardcoded /home/ubuntu/InstinctWM this replaced does not exist
+# any more -- the tree moved to /home/ubuntu/Code/InstinctWM -- so the import of
+# profile_cycle below could not have resolved. IWM_ROOT still wins when it is set.
+_HERE = Path(__file__).resolve().parent
+IWM_ROOT = os.environ.get("IWM_ROOT") or str(_HERE.parents[1])
+for _p in (IWM_ROOT, str(_HERE)):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 import numpy as np, torch
 from profile_cycle import build_server, drive
 

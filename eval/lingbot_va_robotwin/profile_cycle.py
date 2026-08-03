@@ -29,9 +29,15 @@ import collections
 import os
 import sys
 import time
+from pathlib import Path
 
 import numpy as np
 import torch
+
+# Repo root from this file, not hardcoded -- see the note in serve_variant.py.
+IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
+if IWM_ROOT not in sys.path:
+    sys.path.insert(0, IWM_ROOT)
 
 CAMS = ["observation.images.cam_high",
         "observation.images.cam_left_wrist",
@@ -43,28 +49,28 @@ def make_obs(rng, h=240, w=320):
 
 
 def build_server(ckpt: str, no_fsdp: bool, prefill: bool):
-    root = os.environ.get("LINGBOT_ROOT", "/home/ubuntu/lingbot-va")
-    sys.path.insert(0, os.path.join(root, "wan_va"))
-    sys.path.insert(0, root)
-    import wan_va_server as S
+    # Same installers `serve_variant.py` and `plan.serve()` use. A profile taken against a
+    # locally re-implemented patch profiles something nobody serves.
+    from instinctwm.runtime.lingbot_install import (
+        import_lingbot_server,
+        install_allocator_churn_elision,
+        install_conditioning_prefill,
+        install_debug_dump_elision,
+        install_fsdp_elision,
+    )
+
+    S = import_lingbot_server()
     from configs import VA_CONFIGS
 
     if no_fsdp:
-        def _cfg(model, shard_fn, param_dtype, device, eval_mode=True):
-            if eval_mode:
-                model.eval().requires_grad_(False)
-            return model.to(param_dtype).to(device)
-        S._configure_model = _cfg
-    S.save_async = lambda obj, path: None
-    torch.cuda.empty_cache = lambda *a, **k: None
+        install_fsdp_elision(S)
+    install_debug_dump_elision(S)
+    install_allocator_churn_elision(S)
 
     if prefill:
-        sys.path.insert(0, "/home/ubuntu/InstinctWM")
-        from instinctwm.runtime.lingbot_install import install_conditioning_prefill
         install_conditioning_prefill(S, S.VA_Server)
 
     if os.environ.get("IWM_RING_KV") == "1":
-        sys.path.insert(0, "/home/ubuntu/InstinctWM")
         from instinctwm.optimizer.passes.ring_kv import RingKVAddressing
         RingKVAddressing().install(S, S.VA_Server)
 

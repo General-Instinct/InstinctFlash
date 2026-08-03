@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "instinctwm"
+version = "0.1.0"
+description = "Load, optimize, and deploy world-action models"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "AGPL-3.0-or-later" }
+authors = [{ name = "General Instinct" }]
+keywords = ["world-action-model", "robotics", "inference", "optimization", "vla"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+# The core -- adapters, the optimizer, and every pass -- is dependency-free on purpose.
+# Deciding which optimizations are legal for a model must work on a laptop with no CUDA;
+# torch is only needed to APPLY a plan, which is what the `runtime` extra is for.
+dependencies = []
+
+[project.optional-dependencies]
+runtime = ["torch>=2.4"]
+eval = ["numpy>=1.21"]
+
+[project.urls]
+Homepage = "https://general-instinct.com/"
+Repository = "https://github.com/general-instinct/InstinctWM"
+
+[tool.setuptools.packages.find]
+include = ["instinctwm*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+# ---------------------------------------------------------------------------
+# uv -- environment management
+#
+# The environment split is not a convenience here, it enforces the invariant the
+# README states: analysis (adapters, Optimizer, every pass) must work with no
+# torch and no GPU. `dependencies = []` above means the DEFAULT environment has
+# no torch in it, so `./scripts/task.sh test` fails loudly the day a pass grows a
+# torch import, instead of passing because torch happened to be in the one venv
+# everybody used.
+#
+#   ./scripts/task.sh test       core only -- everything needing torch reports SKIP
+#   ./scripts/task.sh test-all   runtime + eval; the torch-dependent tests now run.
+#                                Tests needing diffusers or cosmos_framework still
+#                                SKIP -- those want the server env or an external
+#                                checkout, and no extra here supplies them.
+#
+# uv locks universally rather than per-platform, so the solve covers macOS arm64
+# without listing it. That matters: "you should be able to work out which
+# optimizations are legal on a laptop" is a design claim, and a lockfile that only
+# solved for linux-64 would quietly stop testing it.
+# ---------------------------------------------------------------------------
+
+# --- the LingBot-VA policy server is NOT in this file ------------------------
+# Its pins live in eval/lingbot_va_robotwin/server-requirements.in, locked to
+# server-requirements.txt, and are deliberately kept OUT of this project's
+# dependency graph. That is not tidiness, it is the one thing this layout has to
+# get right.
+#
+# The server pins torch==2.9.0; the `runtime` extra above floats on torch>=2.4.
+# Both constraints are satisfiable by a single torch 2.9.0, and uv builds ONE
+# universal lockfile -- so the moment the server enters uv.lock, uv unifies them
+# and the development environments get silently pinned to the server's torch
+# (measured: 2.13.0 alone, 2.9.0 once the server joins). `[tool.uv] conflicts`
+# does not help; it governs what may be INSTALLED together, not what gets
+# RESOLVED together.
+#
+# A single torch across both is precisely the coupling the websocket in eval/
+# exists to prevent -- see env.sh: "Never try to merge these". A second lockfile
+# is the price of keeping the two solves genuinely independent.

@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from typing import Callable, Protocol, Sequence
 
 from instinctwm.adapter.base import AdapterSpec
+from instinctwm.deployment import DeploymentSpec
 
 
 class Tier(enum.IntEnum):
@@ -46,8 +47,13 @@ class PassResult:
 class OptimizationPass(Protocol):
     name: str
 
-    def evaluate(self, spec: AdapterSpec) -> PassResult:
-        """Decide, from declarations alone, whether this pass is legal and profitable."""
+    def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
+        """Decide whether this pass is legal and profitable.
+
+        Both arguments are facts, never requests: `spec` is what the model declared about
+        itself, `deployment` is how this particular server is running it. A pass reads them
+        and decides; it never asks whether the user enabled it.
+        """
         ...
 
 
@@ -76,6 +82,34 @@ class Plan:
         """
         return Plan(self.model_id, [r for r in self.results if r.tier == Tier.BITEXACT])
 
+    def without(self, *names: str) -> "Plan":
+        """The same plan with the named passes demoted to skipped.
+
+        The named passes stay in `results` with `applies=False` and a reason, so `explain()`
+        still shows that they were legal and were dropped by hand. Silently deleting them
+        would make the plan indistinguishable from one where they never fired.
+        """
+        unknown = set(names) - {r.name for r in self.results}
+        if unknown:
+            raise KeyError(f"no such pass in this plan: {sorted(unknown)}")
+        return Plan(self.model_id, [
+            PassResult(name=r.name, applies=False, tier=r.tier,
+                       reason=f"dropped by caller via Plan.without(): {r.reason}",
+                       params=r.params, expected_win=r.expected_win)
+            if r.name in names else r
+            for r in self.results
+        ])
+
+    def serve(self, model, port: int, **kwargs):
+        """Install this plan on `model` and start serving it.
+
+        Deliberately thin: the plan knows which passes fired, the backend knows how to apply
+        them to its own server, and neither needs to know the other's internals. A backend
+        that cannot install an applied pass raises rather than serving a plan it did not
+        actually apply — the alternative is a server whose `explain()` output is a lie.
+        """
+        return model.serve(self, port=port, **kwargs)
+
     def explain(self) -> str:
         out = [f"InstinctWM plan for {self.model_id}", f"  plan tier: {self.tier().name}", ""]
         for r in self.results:
@@ -98,16 +132,33 @@ class Plan:
 class Optimizer:
     """Runs every registered pass against a model's declarations and produces a Plan."""
 
-    def __init__(self, passes: Sequence[OptimizationPass], tier_ceiling: Tier = Tier.BITEXACT):
+    def __init__(
+        self,
+        passes: Sequence[OptimizationPass] | None = None,
+        tier_ceiling: Tier = Tier.BITEXACT,
+    ):
         #: passes are evaluated in registration order; ordering matters where one pass is a
         #: precondition for another (sync elimination gates graph capture, for instance).
+        if passes is None:
+            # Imported lazily: the pass modules import this one, so a module-scope import
+            # here would be circular.
+            from instinctwm.optimizer.passes import default_passes
+
+            passes = default_passes()
         self._passes = list(passes)
         self._ceiling = tier_ceiling
 
-    def compile(self, spec: AdapterSpec) -> Plan:
+    def compile(self, spec: AdapterSpec, deployment: DeploymentSpec | None = None) -> Plan:
+        """Evaluate every pass against one model's declarations and one server's situation.
+
+        `deployment` defaults to `DeploymentSpec()` — single GPU, actions only — because that
+        is the regime this framework targets. Pass one explicitly when it is not true; the
+        passes that care will decline on their own.
+        """
+        deployment = deployment if deployment is not None else DeploymentSpec()
         results: list[PassResult] = []
         for p in self._passes:
-            r = p.evaluate(spec)
+            r = p.evaluate(spec, deployment)
             if r.applies and r.tier > self._ceiling:
                 r = PassResult(
                     name=r.name, applies=False, tier=r.tier,
