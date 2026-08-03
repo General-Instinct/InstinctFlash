@@ -42,6 +42,8 @@ def main() -> int:
         return 2
 
     print(cert)
+    print("\nper-task (a macro average can hide a task that collapsed):")
+    print(cert.per_task_table())
     with open(a.out, "w") as f:
         f.write(cert.to_json())
     print(f"\nwrote {a.out}")

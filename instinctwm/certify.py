@@ -64,6 +64,9 @@ class Certificate:
     harness: str
     recipe: str
     seeds: str
+    #: task -> (n, teacher successes, student successes). A macro number can hide a task that went
+    #: to zero while others improved, and for a policy that is the failure that matters.
+    per_task: Mapping[str, tuple] = field(default_factory=dict)
     notes: tuple[str, ...] = field(default_factory=tuple)
 
     @property
@@ -74,7 +77,18 @@ class Certificate:
         d = asdict(self)
         d["ci95"] = list(self.ci95)
         d["discordant"] = list(self.discordant)
+        d["per_task"] = {t: list(v) for t, v in self.per_task.items()}
         return json.dumps(d, indent=2, **kw)
+
+    def per_task_table(self) -> str:
+        if not self.per_task:
+            return "(no per-task breakdown)"
+        out = [f"  {'task':<26}{'n':>4}{'teacher':>9}{'student':>9}{'delta':>8}"]
+        for t, (n, tw, sw) in self.per_task.items():
+            dt = (sw - tw) / max(n, 1)
+            flag = "  <-- collapsed" if tw > 0 and sw == 0 else ""
+            out.append(f"  {t:<26}{n:>4}{tw / n:>9.2f}{sw / n:>9.2f}{dt:>+8.2f}{flag}")
+        return "\n".join(out)
 
     def __str__(self) -> str:
         b, c = self.discordant
@@ -190,6 +204,12 @@ def certify(teacher: Sequence[Outcome], student: Sequence[Outcome], *,
 
     pairs = [(ti[k].success, si[k].success) for k in common]
     n = len(pairs)
+    per_task: dict[str, list] = {}
+    for k in common:
+        row = per_task.setdefault(ti[k].task, [0, 0, 0])
+        row[0] += 1
+        row[1] += 1 if ti[k].success else 0
+        row[2] += 1 if si[k].success else 0
     t_rate = sum(1 for t, _ in pairs if t) / n
     s_rate = sum(1 for _, s in pairs if s) / n
     delta = s_rate - t_rate
@@ -218,7 +238,8 @@ def certify(teacher: Sequence[Outcome], student: Sequence[Outcome], *,
         teacher_hash=teacher_hash, student_hash=student_hash, n_pairs=n,
         teacher_success=t_rate, student_success=s_rate, delta=delta, ci95=(lo, hi),
         margin_declared=margin, verdict=verdict, p_value=p, discordant=(b, c),
-        harness=harness, recipe=recipe, seeds=seeds, notes=tuple(notes))
+        harness=harness, recipe=recipe, seeds=seeds,
+        per_task={t: tuple(v) for t, v in sorted(per_task.items())}, notes=tuple(notes))
 
 
 def load_jsonl(path: str) -> list[Outcome]:
