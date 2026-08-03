@@ -23,7 +23,7 @@ what each one cost in accuracy.
 > passes are real and reproducible. The kernel and hardware layers are designed and being built.
 > Every number here is measured on our own hardware with the scripts in [`eval/`](eval/).
 
-## What's New
+## What's New 🔥
 
 - **[2026/08]** 2/2-step inference passes paired non-inferiority on the *shipped* LingBot-VA
   checkpoint — **6.37× faster with no retraining**. 100 paired episodes, 10 tasks, pinned seeds.
