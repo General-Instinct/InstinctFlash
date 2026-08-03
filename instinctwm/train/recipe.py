@@ -120,6 +120,34 @@ class RecipeState:
     extra: dict[str, Any] = field(default_factory=dict)
 
 
+@dataclass
+class StepOutput:
+    """What one recipe step produces. Losses are TENSORS; the trainer owns backward.
+
+    The first cut of this interface returned `Mapping[str, float]`, which forced every recipe to
+    call `.backward()`, clip, step and zero its own optimizers. Two things were wrong with that.
+    Every recipe would reimplement the same twenty lines, and -- worse -- DMD2's two-time-scale
+    update (student, then fake score, then discriminator, at different rates) would have to
+    reimplement the *loop*, not just the step. That is trainer work leaking into recipes, which is
+    exactly the failure this framework is supposed to prevent.
+
+    So a recipe returns one loss per named update and the trainer drives them in
+    `RecipeState.update_order`. A single-objective recipe returns one entry and never thinks about
+    it; DMD2 returns three and gets alternating updates for free.
+
+    `metrics` is for anything worth logging that is not optimised.
+    """
+    losses: Mapping[str, Any]                 # update name -> scalar tensor requiring grad
+    metrics: Mapping[str, float] = field(default_factory=dict)
+
+    def loss_for(self, update: str):
+        if update not in self.losses:
+            raise KeyError(
+                f"recipe declared update_order entry {update!r} but step() returned no loss for "
+                f"it; losses present: {sorted(self.losses)}")
+        return self.losses[update]
+
+
 class Recipe(Protocol):
     name: str
 
@@ -129,7 +157,7 @@ class Recipe(Protocol):
 
     def build(self, model, env: Environment) -> RecipeState: ...
 
-    def step(self, batch, teacher, student, state: RecipeState) -> Mapping[str, float]: ...
+    def step(self, batch, teacher, student, state: RecipeState) -> StepOutput: ...
 
 
 class RecipeRejected(RuntimeError):
