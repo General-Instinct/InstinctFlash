@@ -32,8 +32,10 @@ InstinctWM determines which optimizations are legal, applies them, and reports w
 
 ## What's New 🔥
 
-- **[2026/08]** 2/2-step inference passes paired non-inferiority on the *shipped* LingBot-VA
-  checkpoint — **6.37× faster with no retraining**. 100 paired episodes, 10 tasks, pinned seeds.
+- **[2026/08]** Step-allocation response surface mapped over 7 operating points, 3500 paired
+  episodes, 50 tasks. The shipped LingBot-VA checkpoint sustains **3 video / 3 action steps at
+  4.79× with no retraining** — 0.910 vs a 0.926 teacher, passing non-inferiority at a −0.05 margin.
+  2/2 does *not* clear the margin at 50 tasks, though it did on a 10-task subset.
 - **[2026/08]** **3.38× bit-exact** on LingBot-VA in episode mode: 9585 → 2832 ms per control
   cycle, at `max |Δ action| = 0`. [Protocol and full chain →](eval/lingbot_va_robotwin/RESULTS.md)
 - **[2026/08]** Remaining cost profiled. LingBot-VA *was* launch-bound; after graph capture it is
@@ -46,11 +48,11 @@ InstinctWM determines which optimizations are legal, applies them, and reports w
 
 ## Optimization Stack
 
-InstinctWM organizes optimizations into six complementary layers, ordered by *what they change* —
-from the model itself to the hardware it runs on.
+Six layers, ordered by *what they change* — from the model itself down to the hardware it runs on.
 
 | **MODEL** | **GRAPH** | **CACHE** | **ATTENTION** | **KERNEL** | **HARDWARE** |
 |:--|:--|:--|:--|:--|:--|
+| *what it computes* | *when work is issued* | *what is recomputed* | *how tokens mix* | *how a kernel is written* | *what it executes on* |
 | Step Reduction | **Prefill Extraction** | **KV Reuse** | FlashAttention | **Operator Fusion** | TensorRT |
 | Parallel Decoding Distillation | **Execution Graph Rewrite** | **Cross-Attention Cache** | FlashInfer | *Fused AdaLN* | FP8 |
 | rCM | **CUDA Graph Capture** | **Episode Cache** | Sana-Video Hybrid | *Triton Kernels* | INT8 |
@@ -65,26 +67,8 @@ path · ~~struck~~ rejected *by measurement*, kept so it is not re-proposed · p
 
 **All 3.38× of measured speedup comes from GRAPH and CACHE.** The other four layers are either
 unbuilt or, in the case of attention, deprioritized *by profile* — it is 7% of GPU busy, the item
-intuition picks first and the measurement ranks near-last.
-
-### What is measured today
-
-| item | layer | status | evidence |
-|---|---|---|---|
-| Prefill extraction | graph | shipped | caches episode-constant cross-attention K/V for 30 layers; removes 89 of 226 TFLOP/cycle |
-| Execution graph rewrite | graph | shipped | adapters publish sites, passes decide: `HoistInvariant`, `PromoteSmallOperand`, `ExplicitStepIndex` |
-| CUDA Graph capture | graph | shipped | 1.21× whole-episode. The graph key does not converge — ~6 captures/cycle indefinitely |
-| Persistent state analysis | graph | shipped | traces external reads/writes and graph-key fields; found two dependency bugs inspection had missed |
-| Static memory planning | graph | shipped | reset clears logical state in place, behind a pointer certificate that fails closed |
-| KV reuse | cache | shipped | ring addressing replaces a per-layer `mask.nonzero()` gather with an interval slice — the largest single step in the chain, and what makes capture legal at all |
-| Episode cache | cache | shipped | reset isolation verified against a fresh server |
-| Operator fusion framework | kernel | shipped | fusible regions, tier derivation, PTX-level assertions. It rejected three of our own kernels |
-| Fused AdaLN | kernel | partial | removes the 35.4 MB activation upcast per block, bit-exact; the full norm+modulation fusion is not done |
-| Triton kernels | kernel | partial | a bit-exact gated-residual kernel reaches 1.21–1.26× in microbenchmark, but is launch-dominated |
-| CFG parallelization | graph | ruled out | the action stream's CFG branch is live on *both* liveness axes: output discarded, computation load-bearing |
-| Whole-cycle capture | graph | ruled out | the KV read extent grows 152 slots/cycle, so the graph key cannot converge without changing numerics |
-
-Measurements are LingBot-VA, episode mode: 45 consecutive control cycles, one reset.
+intuition picks first and the measurement ranks near-last. Per-pass measurements, protocols, and the
+full chain are in [Results](eval/lingbot_va_robotwin/RESULTS.md).
 
 ---
 
@@ -186,22 +170,6 @@ exactly that class of bug.
 | [`probe_cfg_liveness.py`](eval/lingbot_va_robotwin/probe_cfg_liveness.py) | Two-axis liveness test that ruled out CFG elision |
 | [`serve_variant.py`](eval/lingbot_va_robotwin/serve_variant.py) | A/B policy server; every variant applies the same installers production does |
 | [`certify_run.py`](eval/lingbot_va_robotwin/certify_run.py) | Paired non-inferiority certificate from per-episode JSONL |
-
----
-
-## Roadmap
-
-The chain is 9585 → 2832 ms, every step bit-exact, and all of it came from the graph and cache
-layers. Those are now largely exhausted at this architecture: whole-cycle capture is structurally
-blocked, CFG elision is illegal here, copy elimination has a 1.07× ceiling, and attention is 7% of
-GPU busy.
-
-GEMM time is now the dominant term, and **nothing bit-exact below the model layer touches it.** That
-points at step reduction, which is why the next work is there rather than another runtime pass. The
-2/2-step result suggests the capability boundary sits far from where the model runs today, so mapping
-that boundary comes before optimizing it.
-
-Current focus: model-layer step reduction, then the cache, kernel, and hardware layers.
 
 ---
 
