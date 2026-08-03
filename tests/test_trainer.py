@@ -6,15 +6,18 @@ Two separate claims, and they need separate evidence:
   1. THE FRAMEWORK CLAIM. Adding a method is adding a file. Tested by driving the trainer with a
      synthetic three-update recipe (the DMD2 shape: student + fake score + discriminator) and
      asserting all three optimisers stepped -- with zero trainer changes and no `if` on recipe name.
-  2. THE OBJECTIVE CLAIM. PDD's target is the MEAN velocity over an interval. Tested analytically:
-     for a teacher whose velocity is linear in time the midpoint rule is exact, so the computed
-     target must equal the closed-form mean to float tolerance. A "loss goes down" test would pass
-     for a wrong target; this one would not.
+  2. THE OBJECTIVE CLAIM. PDD's target is the mean velocity of the TEACHER'S OWN ODE trajectory
+     over an interval -- not the mean of the teacher's field along the straight data coupling, which
+     is what a first version of this file wrongly computed and what these tests now rule out.
+     Checked against two closed forms: a constant field (target == c exactly) and a linear ODE
+     (target -> x_t*(exp(a*d)-1)/d as sub-steps grow). A "loss goes down" test passes for a wrong
+     target; these do not.
 
     python tests/test_trainer.py
 """
 from __future__ import annotations
 
+import math
 import sys
 import tempfile
 from pathlib import Path
@@ -27,7 +30,6 @@ import torch.nn as nn  # noqa: E402
 from instinctwm.train.recipe import (  # noqa: E402
     Capabilities, DescriptorDelta, Environment, RecipeRejected, RecipeState, StepOutput,
 )
-from instinctwm.train.recipes import build as build_recipe  # noqa: E402
 from instinctwm.train.recipes.pdd import ParallelDecoding  # noqa: E402
 from instinctwm.train.trainer import CachedTeacher, TrainConfig, Trainer  # noqa: E402
 
@@ -59,15 +61,32 @@ class _Model:
         self.execution = _Exec()
 
 
-class LinearInTimeTeacher(nn.Module):
-    """v(x, u) = u * c, independent of x. Mean over [t,s] is c*(t+s)/2 in closed form."""
+class ConstantVelocityTeacher(nn.Module):
+    """v(x, sigma) = c. The ODE is exactly linear, so the mean velocity is c for ANY interval."""
 
     def __init__(self, c):
         super().__init__()
         self.register_buffer("c", c)
 
-    def forward(self, x, t, phase=None):
-        return t.reshape(-1, *([1] * (x.dim() - 1))) * self.c
+    def forward(self, x, t, phase=None, cond=None):
+        return self.c.expand_as(x)
+
+
+class LinearODETeacher(nn.Module):
+    """v(x, sigma) = a * x, so dx/dsigma = a x and x(sigma) = x_t * exp(a * (sigma - sigma_t)).
+
+    The mean velocity over [t, s] is therefore x_t * (exp(a*d) - 1) / d in closed form, with
+    d = s - t. This is the test that actually exercises the INTEGRATOR: a Euler scheme with K
+    sub-steps gives x_t * ((1 + a*d/K)^K - 1)/d, which converges to the closed form as K grows.
+    A single-point average of the field could not produce that.
+    """
+
+    def __init__(self, a: float):
+        super().__init__()
+        self.a = a
+
+    def forward(self, x, t, phase=None, cond=None):
+        return self.a * x
 
 
 class TinyNet(nn.Module):
@@ -75,32 +94,46 @@ class TinyNet(nn.Module):
         super().__init__()
         self.net = nn.Sequential(nn.Linear(d + 1, 32), nn.SiLU(), nn.Linear(32, d))
 
-    def forward(self, x, t, phase=None):
+    def forward(self, x, t, phase=None, cond=None):
         return self.net(torch.cat([x, t.reshape(-1, 1)], dim=-1))
 
 
 # -- 1. the objective is mathematically correct --------------------------------------------------
 
-def test_mean_velocity_is_exact_for_linear_teacher():
-    print("\n=== 1. PDD target == closed-form mean velocity (midpoint rule, linear in t) ===")
+def test_target_is_the_secant_of_the_teacher_trajectory():
+    print("\n=== 1. PDD target == mean velocity of the TEACHER'S ODE, not of the straight line ===")
     torch.manual_seed(0)
     d, B = 4, 8
-    c = torch.randn(d)
-    teacher = LinearInTimeTeacher(c)
     r = ParallelDecoding({"video": 2}, sub_intervals=4)
-    x0, x1 = torch.randn(B, d), torch.randn(B, d)
+    x_t = torch.randn(B, d)
 
-    for t, s in ((0.0, 0.5), (0.5, 1.0), (0.25, 0.75), (0.0, 1.0)):
-        got = r._target_mean_velocity(teacher, x0, x1, t, s, "video")
-        want = c.expand(B, d) * ((t + s) / 2.0)
-        err = float((got - want).abs().max())
-        check(err < 1e-5, f"interval [{t}, {s}] matches c*(t+s)/2", f"max|err| = {err:.3e}")
+    # (a) constant field: the mean velocity is c over any interval, exactly.
+    c = torch.randn(d)
+    for st, ss in ((1.0, 0.5), (0.5, 0.0), (0.8, 0.2)):
+        got = r._target_mean_velocity(ConstantVelocityTeacher(c), x_t, st, ss, "video")
+        err = float((got - c.expand(B, d)).abs().max())
+        check(err < 1e-5, f"constant field, sigma {st}->{ss}: target == c", f"max|err| = {err:.2e}")
 
-    # And it must NOT be the trivial endpoint answer, or the test would be vacuous.
-    got = r._target_mean_velocity(teacher, x0, x1, 0.0, 1.0, "video")
-    endpoint = c.expand(B, d) * 0.0
-    check(float((got - endpoint).abs().max()) > 1e-3,
-          "target differs from the left-endpoint value (test is not vacuous)")
+    # (b) linear ODE: Euler with K sub-steps must converge to the closed-form secant.
+    a, st, ss = 0.7, 1.0, 0.2
+    dsig = ss - st
+    closed = x_t * (math.exp(a * dsig) - 1.0) / dsig
+    errs = []
+    for K in (1, 4, 16, 64):
+        got = ParallelDecoding({"video": 2}, sub_intervals=max(2, K))._target_mean_velocity(
+            LinearODETeacher(a), x_t, st, ss, "video")
+        errs.append(float((got - closed).abs().max()))
+    check(errs[-1] < errs[0], "Euler target converges to the closed-form secant as K grows",
+          " -> ".join(f"{e:.2e}" for e in errs))
+    check(errs[-1] < 1e-2, "converged target is close to closed form", f"K=64 err {errs[-1]:.2e}")
+
+    # (c) the test is not vacuous: for a curved field the secant must DIFFER from the straight-line
+    # answer, which is what the first (wrong) implementation would have returned.
+    got = r._target_mean_velocity(LinearODETeacher(a), x_t, st, ss, "video")
+    straight = LinearODETeacher(a)(x_t, None)          # field at the left endpoint only
+    check(float((got - straight).abs().max()) > 1e-3,
+          "curved field: target differs from the left-endpoint field (not vacuous)",
+          f"max|diff| = {float((got - straight).abs().max()):.3e}")
 
 
 def test_sub_intervals_must_be_at_least_two():
@@ -128,7 +161,7 @@ def test_pdd_reduces_loss():
     print("\n=== 4. PDD drives the loss down on a learnable toy problem ===")
     torch.manual_seed(0)
     d, B = 4, 16
-    teacher = LinearInTimeTeacher(torch.randn(d))
+    teacher = LinearODETeacher(0.7)          # curved: a constant field has nothing to teach
     student = TinyNet(d)
     recipe = ParallelDecoding({"video": 2}, sub_intervals=4)
 
@@ -144,7 +177,9 @@ def test_pdd_reduces_loss():
     check(res.steps_done == 150, "ran all 150 steps")
     check(last < first * 0.5, "loss at least halved", f"{first:.4f} -> {last:.4f}")
     check(res.stopped_early is None, "no early stop")
-    check("video/vs_straight" in res.history[-1], "reports the straight-line reference metric")
+    check("video/curvature" in res.history[-1], "reports the trajectory-curvature metric")
+    check(res.history[-1]["video/curvature"] > 0, "the teacher trajectory is actually curved",
+          f'curvature={res.history[-1]["video/curvature"]:.4g}')
 
 
 # -- 5. the framework claim: N updates, no trainer changes --------------------------------------
@@ -186,7 +221,7 @@ def test_three_updates_all_step():
     torch.manual_seed(0)
     student = TinyNet(4)
     recipe = ThreeUpdateRecipe()
-    tr = Trainer(recipe, LinearInTimeTeacher(torch.randn(4)), student, _Model(),
+    tr = Trainer(recipe, ConstantVelocityTeacher(torch.randn(4)), student, _Model(),
                  config=TrainConfig(steps=20, log_every=0))
     before = {n: [p.detach().clone() for p in m.parameters()]
               for n, m in (("student", student), *tr.state.modules.items())}
@@ -208,28 +243,6 @@ def test_three_updates_all_step():
 
 # -- 6. fails closed ---------------------------------------------------------------------------
 
-def test_jvp_recipes_rejected_without_flash_attn():
-    print("\n=== 6. sCM and rCM are rejected on this box, before any GPU work ===")
-    env = Environment(n_gpus=1, has_jvp_attention=False)
-    for name in ("scm", "rcm"):
-        r = build_recipe(name, {"video": 2})
-        try:
-            Trainer(r, None, TinyNet(4), _Model(), env=env)
-            check(False, f"{name} rejected")
-        except RecipeRejected as e:
-            check("forward-mode AD" in str(e), f"{name} rejected for the right reason",
-                  str(e)[:70])
-
-
-def test_adversarial_rejected_when_disallowed():
-    print("\n=== 7. DMD2 is rejected where adversarial supervision is disallowed ===")
-    env = Environment(n_gpus=1, has_jvp_attention=True, allows_adversarial=False)
-    r = build_recipe("dmd2", {"video": 2})
-    try:
-        Trainer(r, None, TinyNet(4), _Model(), env=env)
-        check(False, "dmd2 rejected")
-    except RecipeRejected as e:
-        check("adversarial" in str(e), "dmd2 rejected for the right reason", str(e)[:70])
 
 
 def test_empty_delta_rejected():
@@ -299,7 +312,7 @@ def test_checkpoint_carries_the_descriptor_delta():
     import json
     student = TinyNet(4)
     recipe = ParallelDecoding({"video": 2, "action": 2}, sub_intervals=3)
-    tr = Trainer(recipe, LinearInTimeTeacher(torch.randn(4)), student, _Model(),
+    tr = Trainer(recipe, ConstantVelocityTeacher(torch.randn(4)), student, _Model(),
                  config=TrainConfig(steps=1, log_every=0))
     with tempfile.TemporaryDirectory() as td:
         p = tr.save(Path(td) / "ckpt")
@@ -331,13 +344,11 @@ def test_teacher_calls_are_cached_within_a_step():
 
 
 if __name__ == "__main__":
-    test_mean_velocity_is_exact_for_linear_teacher()
+    test_target_is_the_secant_of_the_teacher_trajectory()
     test_sub_intervals_must_be_at_least_two()
     test_bare_list_nfe_refused()
     test_pdd_reduces_loss()
     test_three_updates_all_step()
-    test_jvp_recipes_rejected_without_flash_attn()
-    test_adversarial_rejected_when_disallowed()
     test_empty_delta_rejected()
     test_wrong_return_type_rejected()
     test_nonfinite_loss_stops_the_run()

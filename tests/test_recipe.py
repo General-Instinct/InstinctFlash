@@ -134,19 +134,19 @@ def main() -> int:
     check("adversarial recipe refused where disallowed", not ok, why[:58])
 
     # PDD's objective used to be a stub and this group asserted that it raised. It is implemented
-    # now (see tests/test_trainer.py, which checks the mean-velocity target analytically), so the
-    # assertion that still earns its place is the opposite one: the recipes we have NOT implemented
-    # must keep refusing, and they must refuse loudly rather than returning a placeholder loss.
-    print("\n=== 5. unimplemented recipes still refuse, implemented ones do not ===")
-    from instinctwm.train.recipes import build as build_recipe, implemented
-    check("pdd is the only recipe claiming an implemented objective",
-          implemented() == ["pdd"], str(implemented()))
-    for name in ("scm", "rcm", "dmd2"):
-        try:
-            build_recipe(name, {"video": 1, "action": 2}).step(None, None, None, state)
-            check(f"{name} refuses to fake a loss", False, "did NOT raise")
-        except NotImplementedError as e:
-            check(f"{name} refuses to fake a loss", True, str(e)[:52])
+    # now (tests/test_trainer.py checks the mean-velocity target against two closed forms), so what
+    # earns a check here is the registry's scope: one recipe, deliberately. Declaration-only scm /
+    # rcm / dmd2 entries were removed rather than kept as future-proofing.
+    print("\n=== 5. the registry is scoped to what is implemented ===")
+    from instinctwm.train.recipes import REGISTRY, available, build as build_recipe
+    check("the registry holds exactly the implemented recipe",
+          available() == ["pdd"], str(available()))
+    try:
+        build_recipe("rcm", {"video": 1})
+        check("an unregistered recipe is a KeyError, not a silent no-op", False)
+    except KeyError as e:
+        check("an unregistered recipe is a KeyError, not a silent no-op", True, str(e)[:52])
+
     try:
         ParallelDecoding([1, 2])
         check("a bare list is rejected (would apply one NFE to both streams)", False)
