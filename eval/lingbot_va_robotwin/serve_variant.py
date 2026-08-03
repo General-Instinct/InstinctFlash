@@ -83,6 +83,11 @@ def main() -> int:
     ap.add_argument("--generic-dry-run", action="store_true",
         help="Enumerate every site (installing all shims) and apply NO rewrites. Isolates the "
              "eager tax of exposing a rewritable surface from the effect of rewriting it.")
+    ap.add_argument("--degrade-nfe", default=None,
+        help="VIDEO,ACTION denoise steps, e.g. '2,2'. Stands in for a distilled student until a "
+             "real one exists: it is the same descriptor delta a step-reduction recipe produces "
+             "(phases[].nfe), applied to the teacher weights. Used to prove the certification "
+             "workflow can REJECT a genuine regression, not just pass synthetic unit tests.")
     ap.add_argument("--legacy-passes", action="store_true",
         help="ORACLE/FALLBACK. Use the backend-specific P004/P006 install() functions instead of "
              "the pass framework. The generic path is the DEFAULT as of 2026-08-02: it measured "
@@ -112,6 +117,22 @@ def main() -> int:
     import wan_va_server as S
 
     applied = []
+
+    if getattr(args, "degrade_nfe", None):
+        v, ac = (int(x) for x in args.degrade_nfe.split(","))
+        _orig_run = S.run
+
+        def run_degraded(a_):
+            # VA_CONFIGS is the registry wan_va_server resolves --config-name against, so
+            # mutating the entry is the same descriptor delta a step-reduction recipe emits.
+            for cfg in S.VA_CONFIGS.values():
+                if hasattr(cfg, "num_inference_steps"):
+                    cfg.num_inference_steps = v
+                    cfg.action_num_inference_steps = ac
+            return _orig_run(a_)
+
+        S.run = run_degraded
+        applied.append(f"degrade-nfe={v},{ac}")
 
     if args.no_fsdp:
         # wan_va_server binds _configure_model at import time, so patch the BOUND name.

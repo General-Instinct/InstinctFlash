@@ -119,6 +119,28 @@ def _paired_delta_ci(pairs: Sequence[tuple[bool, bool]], z: float = 1.96) -> tup
     return (mean - half, mean + half)
 
 
+def required_pairs(pairs: Sequence[tuple[bool, bool]], margin: float, z: float = 1.96) -> int:
+    """How many paired episodes would be needed to decide non-inferiority at this margin.
+
+    Added after the first real run: 20 paired episodes produced a CI of [-0.12, +0.22] against a
+    -0.05 margin. The verdict was FAIL, which was correct, but "FAIL" alone conflates *we measured
+    a regression* with *we cannot tell yet* -- and those call for opposite responses. This turns
+    the second case into an actionable number.
+    """
+    n = len(pairs)
+    if n == 0:
+        return 0
+    d = [(1 if s else 0) - (1 if t else 0) for t, s in pairs]
+    mean = sum(d) / n
+    if n < 2:
+        return 0
+    var = sum((x - mean) ** 2 for x in d) / (n - 1)
+    slack = mean - margin                  # how much room between the estimate and the margin
+    if slack <= 0 or var == 0:
+        return 0                           # a point estimate already at/below the margin
+    return int(math.ceil(var * (z / slack) ** 2))
+
+
 def _index(outcomes: Sequence[Outcome], arm: str) -> dict[tuple[str, int], Outcome]:
     seen: dict[tuple[str, int], Outcome] = {}
     for o in outcomes:
@@ -178,9 +200,17 @@ def certify(teacher: Sequence[Outcome], student: Sequence[Outcome], *,
 
     if lo > margin:
         verdict = f"PASS non-inferiority at margin {margin:+.4f} (CI lower bound {lo:+.4f})"
+    elif hi < margin:
+        # the whole interval is below the margin: a regression, detected
+        verdict = (f"FAIL (regression detected) at margin {margin:+.4f}: the entire 95% CI "
+                   f"[{lo:+.4f}, {hi:+.4f}] lies below the margin")
     else:
-        verdict = (f"FAIL non-inferiority at margin {margin:+.4f}: CI lower bound {lo:+.4f} "
-                   f"does not exclude a loss worse than the margin")
+        # the interval straddles the margin: we cannot tell, and saying so is the honest answer
+        need = required_pairs(pairs, margin)
+        verdict = (f"FAIL (insufficient evidence) at margin {margin:+.4f}: CI [{lo:+.4f}, "
+                   f"{hi:+.4f}] straddles it. n={n} is too small to decide; "
+                   f"~{need} paired episodes are needed at the observed discordance rate")
+        notes.append(f"underpowered: {n} pairs, ~{need} needed for margin {margin:+.4f}")
     if b + c == 0:
         notes.append("zero discordant pairs: the arms agreed on every episode, so McNemar has no "
                      "information and p=1 by construction")
