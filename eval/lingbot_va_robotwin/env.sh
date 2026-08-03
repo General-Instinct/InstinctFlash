@@ -32,17 +32,28 @@ export LINGBOT_CKPT=${LINGBOT_CKPT:-/home/ubuntu/ckpt_lingbot/lingbot-va-posttra
 # torch 2.4. They are dependency-incompatible, which is exactly why upstream put a
 # websocket between them. Never try to merge these.
 #
-# The server env is uv-managed, from its OWN lock: server-requirements.in next to
-# this file, compiled to server-requirements.txt. It is deliberately not part of
-# pyproject.toml -- uv builds one universal lockfile, and sharing it would pin the
-# development envs to the server's torch. That header explains it in full.
-# Build it with:  ./scripts/task.sh test-lingbot   (which syncs it first)
+# A lock for the server env now exists -- server-requirements.in next to this file,
+# compiled to server-requirements.txt. It is deliberately not part of pyproject.toml:
+# uv builds one universal lockfile, and sharing it would pin the development envs to
+# the server's torch. That header explains it in full. Build it with:
+#                 ./scripts/task.sh test-lingbot   (which syncs it first)
 #          or:    uv venv .venv-server --python 3.10 \
 #                   && VIRTUAL_ENV=.venv-server uv pip sync \
 #                        eval/lingbot_va_robotwin/server-requirements.txt
-# The pins live in that file, not in this one, so the lock is what makes a rerun
-# reproducible -- a hand-rolled venv could not be re-created from the repo.
-export IWM_SERVER_PY=${IWM_SERVER_PY:-${IWM_ROOT}/.venv-server/bin/python}
+#
+# BUT THE DEFAULT BELOW IS STILL THE HAND-ROLLED VENV, ON PURPOSE.
+# /home/ubuntu/.venv-lingbot is the environment every frozen number was measured in --
+# P001's 2.11x through the 3.38x episode-mode chain -- including the deliberate removal
+# of flash-attn. A venv rebuilt from the lock is equivalent only if the lock reproduces
+# it exactly, and that is an empirical claim we have not tested. Flipping the default
+# first and checking later would silently re-measure the whole chain against a different
+# substrate.
+#
+# To migrate: build .venv-server, run probe_bitexact (max|delta action| = 0) and one
+# probe_episode arm against .venv-lingbot, and only then change this line. The lock is
+# the right destination -- a hand-rolled venv cannot be re-created from the repo -- but
+# the parity check comes before the switch, not after.
+export IWM_SERVER_PY=${IWM_SERVER_PY:-/home/ubuntu/.venv-lingbot/bin/python}
 export IWM_CLIENT_PY=${IWM_CLIENT_PY:-${ROBOTWIN_ROOT}/.venv/bin/python}
 
 if [ ! -x "$IWM_SERVER_PY" ]; then
