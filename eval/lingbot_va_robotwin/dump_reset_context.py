@@ -27,6 +27,10 @@ from pathlib import Path
 import numpy as np
 import yaml
 
+from description.utils.generate_episode_instructions import (  # noqa: E402
+    generate_episode_descriptions,
+)
+
 ROBOTWIN_ROOT = os.environ.get("ROBOTWIN_ROOT", "/home/ubuntu/RoboTwin")
 sys.path.insert(0, ROBOTWIN_ROOT)
 
@@ -96,6 +100,8 @@ def main() -> int:
     ap.add_argument("--episodes", type=int, default=1, help="resets per task")
     ap.add_argument("--seed", type=int, default=0, help="matches run_eval.sh's --seed 0")
     ap.add_argument("--task-config", default="demo_clean")
+    ap.add_argument("--instruction-type", default="seen",
+                    help="matches the eval client's instruction_type (:308)")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
 
@@ -110,13 +116,28 @@ def main() -> int:
         for ep in range(a.episodes):
             seed = st_seed + ep
             env.setup_demo(now_ep_num=ep, seed=seed, is_test=True, **args)
-            obs = env.get_obs()
-            try:
-                prompt = env.get_instruction()
-            except Exception:
-                prompt = getattr(env, "instruction", task.replace("_", " "))
+            # The instruction is NOT available straight after setup_demo -- get_instruction()
+            # returns None until one is set. The real client derives it from the episode info that
+            # play_once() produces, then set_instruction()s it (client :518, :554-557). Reproduced
+            # here, because text_emb is required conditioning for the video stream and a 'None'
+            # prompt would silently train against the wrong embedding.
+            # play_once() RUNS THE WHOLE DEMO, so the scene must be reset again afterwards or
+            # get_obs() would return the end-of-episode state instead of the reset state. The client
+            # does exactly this: play_once at :518, then a second setup_demo at :552 before any
+            # observation is read at :598.
+            episode_info = env.play_once()
+            results = generate_episode_descriptions(task, [episode_info["info"]], 1)
+            instruction = np.random.choice(results[0][a.instruction_type])
+            env.setup_demo(now_ep_num=ep, seed=seed, is_test=True, **args)   # back to the reset state
+            env.set_instruction(instruction=instruction)
+            prompt = env.get_instruction()
             if isinstance(prompt, (list, tuple)):
                 prompt = prompt[0]
+            if prompt in (None, "None", ""):
+                raise SystemExit(
+                    f"{task} ep{ep}: empty instruction after set_instruction. Refusing to write a "
+                    f"context with no prompt -- it would train against the wrong text embedding.")
+            obs = env.get_obs()
             f = format_obs(obs, prompt)
             path = out / f"{task}__ep{ep}__seed{seed}.npz"
             np.savez_compressed(
