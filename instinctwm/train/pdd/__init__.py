@@ -19,11 +19,12 @@ from instinctwm.train.pdd.core import (
 )
 from instinctwm.train.pdd.heads import MultiHeadStudent
 from instinctwm.train.pdd.protocols import MultiHeadVelocityModel, VelocityModel
+from instinctwm.train.pdd.rollout import Rollout
 from instinctwm.train.pdd.schedule import Grid, shift_time
 
 __all__ = [
     "Grid", "shift_time",
     "VelocityModel", "MultiHeadVelocityModel", "MultiHeadStudent",
-    "pdd_loss", "block_sample", "advance",
+    "pdd_loss", "block_sample", "advance", "Rollout",
     "mean_velocity_euler", "mean_velocity_midpoint", "SOLVERS",
 ]

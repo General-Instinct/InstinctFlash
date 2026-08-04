@@ -86,8 +86,12 @@ def test_grid_matches_the_sampler_convention():
 
     g = Grid.from_shift(n_intervals=8, block=4, shift=5.0, scale=1000.0)
     check(g.nfe == 2, "NFE = N/L", f"N={g.n_intervals} L={g.block} -> {g.nfe}")
-    check(abs(g.times[0] - 1000.0) < 1e-6 and abs(g.times[-1]) < 1e-6,
-          "grid runs from t_start*scale to 0", f"{g.times[0]:.1f} -> {g.times[-1]:.1f}")
+    check(abs(g.times[0] - 1.0) < 1e-9 and abs(g.times[-1]) < 1e-9,
+          "the ODE axis runs 1 -> 0 (sigma), unscaled", f"{g.times[0]:.3f} -> {g.times[-1]:.3f}")
+    check(abs(g.cond(0) - 1000.0) < 1e-6 and abs(g.cond(g.n_intervals)) < 1e-9,
+          "the conditioning axis is sigma * 1000", f"{g.cond(0):.1f} -> {g.cond(g.n_intervals):.1f}")
+    check(abs(g.h(0) + 1.0 / 8) < 1e-3 or abs(g.h(0)) < 1.0,
+          "interval widths are in sigma units, not conditioning units", f"h0 = {g.h(0):.4f}")
     check(all(g.h(k) < 0 for k in range(g.n_intervals)), "intervals are negative (noise -> data)")
     try:
         Grid.from_shift(n_intervals=9, block=4)

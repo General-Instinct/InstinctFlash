@@ -26,12 +26,31 @@ def shift_time(t: float, s: float) -> float:
 
 @dataclass(frozen=True)
 class Grid:
-    """N+1 times, ascending in the model's own convention, plus the block size L.
+    """N+1 times plus the block size L -- and TWO time axes, which is not a redundancy.
 
-    `times[i]` is what gets passed to the backbone. PDD never rescales it.
+    `times[i]` is the ODE variable: the thing the state is integrated against, so interval widths
+    `h` come from here and a step is `x + v * h`.
+
+    `cond(i)` is what the BACKBONE is conditioned on, which is not always the same number. LingBot-VA
+    integrates in sigma over [0, 1] -- `FlowMatchScheduler.step` computes
+    `sample + model_output * (sigma_next - sigma)` -- but conditions the transformer on
+    `sigma * num_train_timesteps`, i.e. sigma * 1000.
+
+    Collapsing the two is a 1000x error in every Euler step, and a silent one: training still runs,
+    the loss still moves, and only the samples are wrong. Keeping both axes on the grid is what makes
+    it impossible to use the wrong one by accident.
     """
     times: tuple[float, ...]
     block: int
+    time_scale: float = 1.0
+
+    def cond(self, i: int):
+        """The conditioning value for grid point i."""
+        return self.times[i] * self.time_scale
+
+    def cond_at(self, t: float):
+        """The conditioning value for an arbitrary ODE time (the midpoint solver needs this)."""
+        return t * self.time_scale
 
     def __post_init__(self):
         if len(self.times) < 2:
@@ -64,15 +83,15 @@ class Grid:
                    t_start: float = 1.0, t_end: float = 0.0, scale: float = 1.0) -> "Grid":
         """Build a shifted grid in the sampler's `shift` convention.
 
-        Defaults run 1 -> 0, the flow-matching noise-to-data direction. `scale` multiplies every
-        time at the end, for backbones conditioned on something other than raw sigma (LingBot-VA
-        wants sigma * 1000). Applying it here rather than inside the objective keeps the rule "PDD
-        passes times through untouched" true.
+        Defaults run 1 -> 0, the flow-matching noise-to-data direction. `scale` becomes
+        `time_scale`: the factor between the ODE variable and what the backbone is conditioned on.
+        It is deliberately NOT folded into `times`, because `times` is what interval widths are
+        measured in and the integrator steps by those widths. See the class docstring.
         """
         if n_intervals < 1:
             raise ValueError("n_intervals must be >= 1")
         raw = [i / n_intervals for i in range(n_intervals + 1)]
         if shift != 1.0:
             raw = [shift_time(u, 1.0 / shift) for u in raw]
-        times = tuple((t_start + (t_end - t_start) * u) * scale for u in raw)
-        return cls(times=times, block=block)
+        times = tuple(t_start + (t_end - t_start) * u for u in raw)
+        return cls(times=times, block=block, time_scale=scale)

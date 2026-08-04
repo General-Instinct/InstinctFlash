@@ -37,7 +37,7 @@ def mean_velocity_euler(teacher: VelocityModel, x: Any, grid: Grid, k: int, cond
     u_k(X_k) ~= v_{t_k}(X_k). Cheapest option, and what the paper uses for its N=256 grids -- with
     a fine grid the interval is short enough that first order is adequate.
     """
-    return teacher.velocity(x, grid.times[k], cond=cond)
+    return teacher.velocity(x, grid.cond(k), cond=cond)
 
 
 def mean_velocity_midpoint(teacher: VelocityModel, x: Any, grid: Grid, k: int, cond=None) -> Any:
@@ -47,9 +47,9 @@ def mean_velocity_midpoint(teacher: VelocityModel, x: Any, grid: Grid, k: int, c
     Euler's O(h), for twice the teacher cost -- the paper pairs this with a coarser N=128 grid.
     """
     h = grid.h(k)
-    v0 = teacher.velocity(x, grid.times[k], cond=cond)
+    v0 = teacher.velocity(x, grid.cond(k), cond=cond)
     x_mid = x + v0 * (0.5 * h)
-    return teacher.velocity(x_mid, grid.times[k] + 0.5 * h, cond=cond)
+    return teacher.velocity(x_mid, grid.cond_at(grid.times[k] + 0.5 * h), cond=cond)
 
 
 SOLVERS: dict[str, Callable[..., Any]] = {
@@ -83,13 +83,14 @@ def block_sample(student: MultiHeadVelocityModel, x: Any, grid: Grid, *, cond=No
     if grid.n_intervals % L:
         raise ValueError(f"block={L} does not divide {grid.n_intervals} intervals")
     for n in range(0, grid.n_intervals, L):
-        heads = student.heads(x, grid.times[n], cond=cond)
+        heads = student.heads(x, grid.cond(n), cond=cond)
         x = advance(x, heads, grid, n, n + L)
     return x
 
 
 def pdd_loss(student: MultiHeadVelocityModel, teacher: VelocityModel, x_n: Any, grid: Grid,
-             n: int, k: int, *, cond=None, solver: str = "euler", loss: str = "mse"):
+             n: int, k: int, *, cond=None, solver: str = "euler", loss: str = "mse",
+             heads: Any = None):
     """Algorithm 2 / Eq 11, for one sampled (n, k) pair.
 
         heads   = student(X_n, t_n)                     one forward, all heads
@@ -126,7 +127,13 @@ def pdd_loss(student: MultiHeadVelocityModel, teacher: VelocityModel, x_n: Any, 
             f"k - n = {k - n} exceeds block size {grid.block}; the supervised interval lies outside "
             f"the block this forward pass can predict.")
 
-    heads = student.heads(x_n, grid.times[n], cond=cond)
+    # `heads` may be supplied by the caller. The data-free rollout needs the SAME output both to
+    # compute the loss and to advance the trajectory -- the paper uses one parallel-decoder output
+    # "both for the optimization step and to advance X_bar_n to X_bar_{n+L}". Recomputing it would
+    # double the student cost per step, which on a 14B backbone is the difference between one
+    # forward and two.
+    if heads is None:
+        heads = student.heads(x_n, grid.cond(n), cond=cond)
     x_k = advance(x_n, heads, grid, n, k).detach()          # sg(X_k)
 
     with torch.no_grad():

@@ -1,110 +1,109 @@
-"""Parallel Decoding Distillation — the first real recipe.
+"""PDD as an InstinctWM Recipe: per-stream composition over the backbone-agnostic core.
 
-arXiv 2607.26004 (NVIDIA GenAIR). Chosen first for two reasons that are about the platform rather
-than the method:
+The algorithm lives in `instinctwm.train.pdd`, which knows nothing about world-action models and is
+destined to split out as `instinct-pdd`. THIS file is the orchestration half, and it owns exactly
+the three things the algorithm should not:
 
-  * it needs NO JVP kernel, so it does not collide with this box having no flash-attn
-  * it exercises per-phase NFE, which is the part of `DescriptorDelta` that matters most here
+  * running PDD over SEVERAL streams. LingBot-VA denoises video then action, on different SNR-shifted
+    grids. PDD is single-stream; applying it per phase is composition, not method.
+  * the `DescriptorDelta`, so the runtime can execute the student with no glue.
+  * the data-free rollout state per stream, which is stateful across optimisation steps.
 
-THE OBJECTIVE
-
-For a flow-matching teacher the sampler integrates dx/du = v(x_u, u). A few-step sampler cannot
-afford that, so what a student actually needs is the MEAN velocity over a whole interval:
-
-    V(x_t, t, s) = 1/(s-t) * integral_t^s v(x_u, u) du        so that   x_s = x_t + (s-t) V
-
-Consistency-style methods learn this by regressing the derivative of V, which needs a JVP through
-attention. PDD's contribution is that you do not have to: split [t, s] into K sub-intervals and the
-mean velocity of the whole is the mean of the parts,
-
-    V(t, s) = 1/K * sum_k V(u_k, u_{k+1})
-
-so the target is an AVERAGE OF TEACHER EVALUATIONS, with no derivative anywhere.
-
-WHY THE K TEACHER CALLS ARE ONE BATCHED CALL, NOT K SEQUENTIAL ONES -- this is the "parallel" in
-the name and the reason the recipe is affordable. Naively, evaluating the teacher at u_k requires
-x_{u_k}, which requires integrating from x_t: K sequential forwards, each depending on the last. But
-a flow-matching model is trained on the straight coupling x_u = (1-u) x_0 + u x_1 between noise and
-data, and we are training from a DATASET, so we have both endpoints. Every intermediate point is
-therefore available in closed form, all K of them can be stacked into one batch, and the sequential
-dependency disappears.
-
-WHAT THIS IMPLEMENTATION DOES NOT DO. The paper's student is conditioned on the interval (t, s) so
-that NFE can vary at sampling time. Doing that here would mean adding a conditioning input to the
-LingBot-VA backbone -- an architecture change, which is exactly the kind of thing that turns "add a
-recipe" into "modify the model". So `interval_conditioning="none"` (the default) trains the student
-on the FIXED schedule its target NFE will use, and the resulting student is a fixed-NFE student.
-`nfe_mutable` in the descriptor stays False, honestly. The variable-NFE variant is a follow-up that
-needs a backbone change, and it is flagged rather than quietly skipped.
+REPRODUCTION SETTINGS. Defaults follow the paper's primary configuration rather than anything tuned
+for this box: N = 256 intervals, Euler solver, uniform k within the block, MSE, no EMA, no loss
+weighting. The 2-NFE target gives L = 128. These are deliberately not tunable-by-accident -- a
+failed reproduction with altered hyperparameters is uninterpretable, so the knobs exist but the
+defaults are the paper's.
 """
 
 from __future__ import annotations
 
 from typing import Mapping, Sequence
 
+from instinctwm.train.pdd import Grid, Rollout, pdd_loss
 from instinctwm.train.recipe import (
     Capabilities, DescriptorDelta, Environment, RecipeState, StepOutput,
 )
 
+#: LingBot-VA's served guidance, from va_robotwin_cfg. PDD folds guidance into the teacher target,
+#: so the student learns already-guided trajectories and needs no CFG branch at inference. That
+#: fixes the scales at distillation time -- serving-time guidance becomes a property of the
+#: checkpoint, not a knob. Stated here because it is a real capability being traded away.
+DEFAULT_GUIDANCE = {"video": 5.0, "action": 1.0}
 
-def shifted_sigmas(nfe: int, shift: float,
-                   sigma_min: float = 0.003 / 1.002, sigma_max: float = 1.0) -> tuple[float, ...]:
-    """The sigma edges an `nfe`-step FlowMatchScheduler actually visits, ending at 0.
+#: FlowMatchScheduler shift per stream, also from va_robotwin_cfg (snr_shift / action_snr_shift).
+DEFAULT_SHIFTS = {"video": 5.0, "action": 1.0}
 
-    Reproduces `FlowMatchScheduler.set_timesteps` exactly, including the SNR shift, because the
-    student has to be trained on the intervals it will be asked to jump at serving time. Training on
-    a uniform linspace instead would put the training intervals in the wrong places -- and LingBot-VA
-    runs shift=5.0 on video against 1.0 on action, so "uniform" is wrong by a lot on one stream and
-    right by accident on the other.
 
-    The trailing 0 mirrors the server's `F.pad(timesteps, (0, 1), value=0)`: the last step lands on
-    clean data, and `FlowMatchScheduler.step` uses sigma_=0 there.
+def _for_phase(obj, phase: str, method: str):
+    """Resolve the per-stream oracle out of whatever container the caller used.
+
+    Deliberately duck-typed on the protocol method rather than on `isinstance(obj, Mapping)`. The
+    natural way to hold per-phase modules in torch is `nn.ModuleDict`, which supports `[]`, `keys()`
+    and iteration but is NOT a `collections.abc.Mapping` -- so a Mapping check silently passes the
+    whole container through as if it were a single model, and the failure surfaces much later as a
+    missing attribute. Checking for the method first makes a single shared model work too, which is
+    what a single-stream backbone wants.
     """
-    sig = [sigma_max + (sigma_min - sigma_max) * i / max(1, nfe - 1) for i in range(nfe)]
-    sig = [shift * s / (1.0 + (shift - 1.0) * s) for s in sig]
-    return tuple(sig) + (0.0,)
+    if hasattr(obj, method):
+        return obj
+    try:
+        return obj[phase]
+    except (KeyError, TypeError) as e:
+        raise TypeError(
+            f"cannot resolve the {phase!r} stream: {type(obj).__name__} has no .{method}() and is "
+            f"not indexable by phase name. Pass either one oracle exposing .{method}(), or a "
+            f"dict/ModuleDict keyed by phase.") from e
 
 
 class ParallelDecoding:
     name = "parallel_decoding_distillation"
 
-    def __init__(self, nfe: Mapping[str, int] | Sequence[int], *, sub_intervals: int = 4,
-                 interval_conditioning: str = "none", loss: str = "mse",
-                 shifts: Mapping[str, float] | None = None):
+    def __init__(self, nfe: Mapping[str, int] | Sequence[int], *,
+                 n_intervals: int = 256,
+                 solver: str = "euler",
+                 loss: str = "mse",
+                 shifts: Mapping[str, float] | None = None,
+                 guidance: Mapping[str, float] | None = None,
+                 time_scale: float = 1000.0,
+                 data_free: bool = True):
         """`nfe` maps phase name -> student NFE, e.g. {"video": 2, "action": 2}.
 
-        Per-phase because the modality-aware result matters: a single objective across both streams
-        collapses the action head (Flash-WAM measured 24% success with video quality intact). The
-        platform cannot prevent that mistake, but it can make the correct thing expressible.
+        Per-phase because the modality split is the one thing a WAM cannot get wrong: a single
+        objective across both streams is what collapses the action head while video quality holds.
+        The platform cannot prevent that mistake, but it can refuse to make it expressible only by
+        accident.
         """
         if not isinstance(nfe, Mapping):
             raise TypeError(
                 "nfe must map phase name -> steps, e.g. {'video': 2, 'action': 2}. A bare list "
                 "would silently apply one step count to both streams, which is the failure mode "
                 "this argument exists to prevent.")
-        if sub_intervals < 2:
-            raise ValueError(
-                f"sub_intervals={sub_intervals} makes the target a single teacher evaluation, which "
-                f"is ordinary velocity distillation, not a mean over the interval. Use >= 2.")
-        if interval_conditioning not in ("none", "delta"):
-            raise ValueError("interval_conditioning must be 'none' or 'delta'")
-        if loss not in ("mse", "huber"):
-            raise ValueError("loss must be 'mse' or 'huber'")
         self.nfe = dict(nfe)
-        self.sub_intervals = sub_intervals
-        self.interval_conditioning = interval_conditioning
+        self.n_intervals = n_intervals
+        self.solver = solver
         self.loss = loss
-        #: phase -> FlowMatchScheduler shift. Defaults are LingBot-VA's served values
-        #: (va_robotwin_cfg: snr_shift=5.0, action_snr_shift=1.0); `build()` refuses if a
-        #: phase is trained without one rather than assuming 1.0.
-        self._shifts = dict(shifts) if shifts is not None else {"video": 5.0, "action": 1.0}
+        self.time_scale = time_scale
+        self.data_free = data_free
+        self._shifts = dict(shifts) if shifts is not None else dict(DEFAULT_SHIFTS)
+        self._guidance = dict(guidance) if guidance is not None else dict(DEFAULT_GUIDANCE)
+
+        for ph, k in self.nfe.items():
+            if n_intervals % k:
+                raise ValueError(
+                    f"phase {ph!r}: NFE={k} does not divide N={n_intervals}, so the block size "
+                    f"L = N/NFE is not an integer and the last block would run off the grid. "
+                    f"The paper's N=256 admits NFE in {{1,2,4,8,...}}.")
+
+    # -- declarations the platform reads ---------------------------------------------------------
 
     def requires(self) -> Capabilities:
-        # K SEQUENTIAL teacher calls per phase: the target integrates the teacher's ODE, and each
-        # sub-step depends on the previous one. See `_target_mean_velocity` for why this cannot be
-        # collapsed into one batched call, which is what the first version wrongly did.
+        # No JVP (that is the point of choosing PDD over sCM/rCM on a box with no flash-attn) and no
+        # adversary. Teacher cost is one call per supervised interval for Euler, two for midpoint --
+        # per stream, per step.
+        per_call = 2 if self.solver == "midpoint" else 1
         return Capabilities(jvp_through_attention=False, adversarial=False,
-                            teacher_calls_per_step=self.sub_intervals * len(self.nfe),
+                            teacher_calls_per_step=per_call * len(self.nfe),
                             aux_modules=(), min_gpus=1)
 
     def descriptor_delta(self, model) -> DescriptorDelta:
@@ -114,128 +113,84 @@ class ParallelDecoding:
             raise ValueError(
                 f"nfe names phases {sorted(unknown)} that {model.execution.model_id!r} does not "
                 f"have; it has {sorted(known)}")
-        note = (f"PDD, {self.sub_intervals} sub-intervals, {self.loss} loss; "
-                f"fixed-schedule student (interval_conditioning={self.interval_conditioning!r})")
+        note = (f"PDD N={self.n_intervals} solver={self.solver} "
+                f"{'data-free' if self.data_free else 'data-based'}; guidance distilled in at "
+                + ", ".join(f"{k}={v}" for k, v in sorted(self._guidance.items())))
         return DescriptorDelta(nfe=dict(self.nfe), note=note)
 
     def build(self, model, env: Environment) -> RecipeState:
-        # No auxiliary networks -- the student is the only trainable module, which is what makes
-        # this the cheapest recipe to bring up first.
-        #
-        # Per-phase SNR shift is not cosmetic: LingBot-VA serves video at shift=5.0 and action at
-        # 1.0, so the two streams visit genuinely different sigma grids. Training both on one grid
-        # would teach the student to jump between points the sampler never visits.
         missing = [ph for ph in self.nfe if ph not in self._shifts]
         if missing:
             raise ValueError(
-                f"no SNR shift given for phase(s) {sorted(missing)}. Pass shifts={{'video': 5.0, "
-                f"'action': 1.0}} matching the served config's snr_shift / action_snr_shift; "
-                f"guessing would silently train on the wrong sigma grid.")
+                f"no SNR shift declared for phase(s) {sorted(missing)}. LingBot-VA serves video at "
+                f"shift=5.0 and action at 1.0, so the two streams visit different sigma grids; "
+                f"guessing 1.0 would train the student to jump between times the sampler never "
+                f"visits.")
+        grids = {
+            ph: Grid.from_shift(self.n_intervals, self.n_intervals // k,
+                                shift=self._shifts[ph], scale=self.time_scale)
+            for ph, k in self.nfe.items()
+        }
         return RecipeState(
             modules={}, optimizers={}, update_order=("student",),
-            extra={"sub_intervals": self.sub_intervals,
-                   "schedules": {ph: shifted_sigmas(n, self._shifts[ph])
-                                 for ph, n in self.nfe.items()},
-                   "shifts": dict(self._shifts),
-                   "interval_conditioning": self.interval_conditioning})
+            extra={"grids": grids, "rollouts": {}, "solver": self.solver, "loss": self.loss,
+                   "guidance": dict(self._guidance), "data_free": self.data_free})
 
-    # -- the objective ------------------------------------------------------------------------
-
-    def _target_mean_velocity(self, teacher, x_t, sigma_t, sigma_s, phase, cond=None):
-        """Mean velocity of the TEACHER'S OWN ODE trajectory from sigma_t to sigma_s.
-
-        WHY THIS IS SEQUENTIAL, AND WHY THE BATCHED VERSION WAS WRONG.
-
-        The first implementation stacked K points along the straight coupling
-        x_u = (1-u) x_data + u x_noise, evaluated the teacher at all of them in ONE batched call,
-        and averaged. That is much cheaper, and it is not the right target.
-
-        For a *given* (x_data, noise) pair the flow-matching training target is `noise - x_data`,
-        constant in sigma -- so averaging the teacher along that line converges to the straight-line
-        answer, which the student can get without a teacher at all. What a few-step student actually
-        has to reproduce is the many-step sampler, and the sampler follows the ODE of the LEARNED
-        field, which approximates E[noise - x_data | x_sigma] and is therefore curved. The gap
-        between the straight line and that curve is precisely why few-step sampling degrades, so a
-        target built on the straight line cannot teach the student to close it.
-
-        So: integrate the teacher, K Euler sub-steps, matching the sampler's own update rule
-        (`FlowMatchScheduler.step`: x <- x + v * (sigma_next - sigma)). Then the mean velocity over
-        the interval is the secant, (x_s - x_t) / (sigma_s - sigma_t), because that is exactly the
-        velocity a ONE-step jump would need to land where K steps landed.
-
-        The cost is K sequential teacher calls, not one batched call. That is the honest price of
-        the correct target, and `requires()` declares it.
-        """
-        import torch
-        K = self.sub_intervals
-        edges = [sigma_t + (sigma_s - sigma_t) * k / K for k in range(K + 1)]
-        x = x_t
-        with torch.no_grad():
-            for k in range(K):
-                sig, sig_next = edges[k], edges[k + 1]
-                v = teacher(x, self._sigma_to_timestep(sig, x), phase=phase, cond=cond)
-                x = x + v * (sig_next - sig)
-        return (x - x_t) / (sigma_s - sigma_t)
-
-    @staticmethod
-    def _sigma_to_timestep(sigma: float, like):
-        """The backbone is conditioned on sigma * num_train_timesteps, not on sigma.
-
-        `FlowMatchScheduler` sets `timesteps = sigmas * num_train_timesteps` (1000), and that scaled
-        value is what reaches the transformer. Passing sigma directly would silently condition the
-        model on a timestep ~1000x too small -- it would still train, just on the wrong thing.
-        """
-        import torch
-        return torch.full((like.shape[0],), float(sigma) * 1000.0,
-                          device=like.device, dtype=like.dtype)
-
-    def _loss(self, pred, target):
-        import torch
-        if self.loss == "huber":
-            return torch.nn.functional.huber_loss(pred, target, delta=1.0)
-        return torch.nn.functional.mse_loss(pred, target)
+    # -- the step --------------------------------------------------------------------------------
 
     def step(self, batch, teacher, student, state: RecipeState) -> StepOutput:
-        """One PDD step over every phase named in `nfe`.
+        """One optimisation step: one block per stream.
 
-        `batch` carries, per phase, the clean sample (`<phase>/x1`), optionally the noise that pairs
-        with it (`<phase>/x0`), and optionally whatever conditioning the backbone needs
-        (`<phase>/cond`, passed through opaquely -- the recipe never interprets it). The noise comes
-        from the batch when present so a step is reproducible from the dataloader alone, the same
-        reason `probe_bitexact` insists on `--deterministic-seed`.
+        `student` and `teacher` must be mappings phase -> velocity oracle, because LingBot-VA's two
+        streams are different entry points into one backbone (action_mode toggles which). Resolving
+        that here rather than in the core is what keeps the core backbone-agnostic.
         """
         import torch
+
+        grids = state.extra["grids"]
         losses, metrics = {}, {}
         total = None
-        schedules = state.extra["schedules"]
 
-        for phase, sched in schedules.items():
-            x_data = batch[f"{phase}/x1"]
-            noise = batch.get(f"{phase}/x0")
-            if noise is None:
-                noise = torch.randn_like(x_data)
+        for phase, grid in grids.items():
+            t_model = _for_phase(teacher, phase, "velocity")
+            s_model = _for_phase(student, phase, "heads")
             cond = batch.get(f"{phase}/cond")
 
-            # One interval per step, drawn from the schedule the deployed sampler will walk.
-            i = int(torch.randint(0, len(sched) - 1, (1,)).item())
-            sigma_t, sigma_s = sched[i], sched[i + 1]
+            if state.extra["data_free"]:
+                roll = state.extra["rollouts"].get(phase)
+                if roll is None:
+                    shape_src = batch[f"{phase}/noise_like"]
+                    roll = Rollout(grid, lambda s=shape_src: torch.randn_like(s))
+                    state.extra["rollouts"][phase] = roll
+                n, x_n = roll.begin_block()
+                k = roll.pick_k(n)
+            else:
+                # Algorithm 2: X_n from the interpolant against a real sample. Kept because a fixed
+                # batch makes the target deterministic, which is what an overfit test needs.
+                x_data = batch[f"{phase}/x1"]
+                noise = batch.get(f"{phase}/x0")
+                if noise is None:
+                    noise = torch.randn_like(x_data)
+                starts = grid.block_starts()
+                n = int(starts[torch.randint(0, len(starts), (1,)).item()])
+                sigma = grid.times[n]          # already the ODE variable, unscaled
+                x_n = (1.0 - sigma) * x_data + sigma * noise
+                k = int(torch.randint(n, min(n + grid.block, grid.n_intervals), (1,)).item())
 
-            # x_sigma = (1 - sigma) * data + sigma * noise, matching FlowMatchScheduler.add_noise.
-            x_t = (1.0 - sigma_t) * x_data + sigma_t * noise
-            pred = student(x_t, self._sigma_to_timestep(sigma_t, x_t), phase=phase, cond=cond)
-            target = self._target_mean_velocity(teacher, x_t, sigma_t, sigma_s, phase, cond=cond)
+            # ONE student forward per stream per step. The same head output is regressed against the
+            # teacher and used to advance the rollout, exactly as the paper prescribes; computing it
+            # twice would double the dominant cost of the step.
+            heads = s_model.heads(x_n, grid.cond(n), cond=cond)
+            value, m = pdd_loss(s_model, t_model, x_n, grid, n, k,
+                                cond=cond, solver=state.extra["solver"],
+                                loss=state.extra["loss"], heads=heads)
+            total = value if total is None else total + value
+            for key, v in m.items():
+                metrics[f"{phase}/{key.split('/', 1)[1]}"] = v
 
-            l = self._loss(pred, target)
-            total = l if total is None else total + l
-            metrics[f"{phase}/loss"] = float(l.detach())
-            metrics[f"{phase}/d_sigma"] = float(sigma_s - sigma_t)
-            # How far the teacher's trajectory bends away from the straight coupling over this
-            # interval. This is the quantity the student is actually being taught: if it were ~0 the
-            # target would be reachable with no teacher at all and the recipe would be pointless.
-            # Logged precisely because the first version of this objective got that wrong.
-            with torch.no_grad():
-                metrics[f"{phase}/curvature"] = float(
-                    torch.nn.functional.mse_loss(target, noise - x_data).detach())
+            if state.extra["data_free"]:
+                state.extra["rollouts"][phase].advance(heads.detach())
+                metrics[f"{phase}/traj"] = float(state.extra["rollouts"][phase].trajectories)
 
         losses["student"] = total
         return StepOutput(losses=losses, metrics=metrics)

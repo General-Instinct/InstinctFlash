@@ -81,8 +81,23 @@ class CachedTeacher:
     def __init__(self, teacher):
         self._teacher = teacher
         self._cache: dict[Any, Any] = {}
+        self._children: dict[Any, "CachedTeacher"] = {}
         self.calls = 0
         self.hits = 0
+
+    def __getitem__(self, key):
+        """Index through to a per-stream teacher, keeping each one cached.
+
+        A multi-stream recipe is handed a mapping of oracles, one per phase. `__getattr__` forwards
+        attribute access but NOT subscripting -- Python looks `__getitem__` up on the type, so it
+        never reaches the delegate -- which made wrapping a dict of teachers fail with "not
+        subscriptable" the moment a second stream existed. Wrapping each child rather than returning
+        it bare keeps per-stream caching, and `clear()` below resets the whole tree together so no
+        child can outlive a step.
+        """
+        if key not in self._children:
+            self._children[key] = CachedTeacher(self._teacher[key])
+        return self._children[key]
 
     def __call__(self, *args, **kwargs):
         key = (tuple(id(a) for a in args), tuple(sorted((k, id(v)) for k, v in kwargs.items())))
@@ -96,6 +111,16 @@ class CachedTeacher:
 
     def clear(self) -> None:
         self._cache.clear()
+        for child in self._children.values():
+            child.clear()
+
+    @property
+    def total_calls(self) -> int:
+        return self.calls + sum(c.total_calls for c in self._children.values())
+
+    @property
+    def total_hits(self) -> int:
+        return self.hits + sum(c.total_hits for c in self._children.values())
 
     def __getattr__(self, name):           # delegate anything else to the real teacher
         return getattr(self._teacher, name)
@@ -195,7 +220,8 @@ class Trainer:
 
             logged = self._apply(out)
             row = {"step": float(step), **logged, **{k: float(v) for k, v in out.metrics.items()},
-                   "teacher_calls": float(cached.calls), "teacher_hits": float(cached.hits)}
+                   "teacher_calls": float(cached.total_calls),
+                   "teacher_hits": float(cached.total_hits)}
             result.history.append(row)
             result.steps_done = step + 1
 
