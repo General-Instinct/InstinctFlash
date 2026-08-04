@@ -14,7 +14,21 @@ The observation format is `format_obs` from the real eval client, copied deliber
 imported: importing would drag in the whole evaluation module, and the point is to produce bytes the
 server already knows how to eat.
 
-    $IWM_CLIENT_PY dump_reset_context.py --tasks adjust_bottle --episodes 1 --out /tmp/ctx
+LAUNCH IT EXACTLY LIKE THIS. Two environment requirements, and each fails in a way that looks
+like the other's problem:
+
+    cd "$ROBOTWIN_ROOT" && env ROBOTWIN_ROOT="$ROBOTWIN_ROOT" PYTHONPATH="$ROBOTWIN_ROOT" \
+      PYTHONWARNINGS=ignore::UserWarning CUDA_VISIBLE_DEVICES=0 \
+      "$IWM_CLIENT_PY" -u <abs path>/dump_reset_context.py --tasks adjust_bottle --episodes 1 --out DIR
+
+  * CUDA_VISIBLE_DEVICES must be set. With all 8 GPUs visible, sapien/Vulkan initialisation HANGS
+    indefinitely -- no output, no error, no traceback. Thirty minutes of silence looks exactly like a
+    slow sim. run_eval.sh always sets it per worker, which is why the harness never hit this.
+  * PYTHONPATH must include ROBOTWIN_ROOT even when cwd is already ROBOTWIN_ROOT. Running a script by
+    ABSOLUTE path puts that script's directory on sys.path[0], not the working directory, so
+    RoboTwin's `description` package never resolves.
+
+With only the first fix it fails fast on the import; with only the second it hangs silently.
 """
 from __future__ import annotations
 
@@ -27,6 +41,7 @@ from pathlib import Path
 import numpy as np
 import yaml
 
+from envs.utils.create_actor import UnStableError  # noqa: E402
 from description.utils.generate_episode_instructions import (  # noqa: E402
     generate_episode_descriptions,
 )
@@ -103,6 +118,8 @@ def main() -> int:
     ap.add_argument("--instruction-type", default="seen",
                     help="matches the eval client's instruction_type (:308)")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--max-seed-skips", type=int, default=20,
+                    help="how many unstable seeds to skip before giving up on a task")
     a = ap.parse_args()
 
     out = Path(a.out)
@@ -113,9 +130,25 @@ def main() -> int:
     for task in a.tasks:
         args = build_args(task, a.task_config)
         env = class_decorator(task)
-        for ep in range(a.episodes):
-            seed = st_seed + ep
-            env.setup_demo(now_ep_num=ep, seed=seed, is_test=True, **args)
+        # SOME SEEDS ARE PHYSICALLY UNSTABLE and RoboTwin refuses them: `_base_task._init_task_env_`
+        # raises UnStableError when an object has not settled. That is not an error to propagate --
+        # the real eval client advances the seed and retries (eval_policy_client.py:396-403), and a
+        # collector that instead died would leave a task short and bias the context pool toward
+        # whatever tasks happened to have stable early seeds.
+        ep, seed, attempts = 0, st_seed, 0
+        max_attempts = a.episodes + a.max_seed_skips
+        while ep < a.episodes and attempts < max_attempts:
+            attempts += 1
+            try:
+                env.setup_demo(now_ep_num=ep, seed=seed, is_test=True, **args)
+            except UnStableError as e:
+                print(f"  {task} seed{seed}: unstable, skipping ({e})", flush=True)
+                try:
+                    env.close_env()
+                except Exception:
+                    pass
+                seed += 1
+                continue
             # The instruction is NOT available straight after setup_demo -- get_instruction()
             # returns None until one is set. The real client derives it from the episode info that
             # play_once() produces, then set_instruction()s it (client :518, :554-557). Reproduced
@@ -158,6 +191,15 @@ def main() -> int:
                 env.close_env()
             except Exception:
                 pass
+            ep += 1
+            seed += 1
+
+        if ep < a.episodes:
+            # Say so rather than exit 0 with a short pool. A context set that quietly covered 40 of
+            # 50 tasks would bias training toward whatever survived, and nothing downstream would
+            # report it.
+            print(f"  {task}: only {ep}/{a.episodes} after {attempts} attempts "
+                  f"({a.max_seed_skips} unstable-seed skips allowed)", flush=True)
     print(f"\nwrote {n} conditioning contexts to {out}")
     return 0
 
