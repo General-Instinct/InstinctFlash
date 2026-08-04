@@ -31,7 +31,14 @@ THREE THINGS THIS FILE EXISTS TO GET RIGHT, each of which is silent when wrong:
      in the wrong direction -- correct second grid point 991.7, re-derived 827.6 -- which clusters
      training steps at the data end while the sampler clusters them at the noise end.
 
-  4. THE TIME AXIS IS FLIPPED AT THIS BOUNDARY. instinct-pdd integrates t ascending 0 -> 1 (the paper's
+  4. THE ODE STATE IS FP32, THE BACKBONE IS BF16. PDD integrates up to 256 Euler steps, and bf16 has
+     an 8-bit mantissa -- eps is 1/128 at |x|~1. Measured on a [1,48,1,24,20] state with 256 steps:
+     accumulating in bf16 drifts 2.10% from an fp64 reference, against 0.00003% for fp32. That is a
+     floor under the headline metric AND a corruption of the teacher trajectory the student is
+     regressed onto. So states and velocities are carried in fp32 and cast to the server's dtype only
+     at the transformer input.
+
+  5. THE TIME AXIS IS FLIPPED AT THIS BOUNDARY. instinct-pdd integrates t ascending 0 -> 1 (the paper's
      convention); LingBot integrates sigma descending 1 -> 0. Since dt = -dsigma, a velocity is
      NEGATED on the way across, in `_Teacher.velocity` and `_Student.heads` and nowhere else. Both are
      negated, so the regression is unchanged -- but a single-sided flip would train against a target
@@ -116,10 +123,12 @@ class LingBotChunk0Video:
         return (1, self.LATENT_CHANNELS, self.n_denoise_frames,
                 int(self.S.latent_height), int(self.S.latent_width))
 
+    #: The ODE is integrated in fp32; see point 4 in the module docstring.
+    STATE_DTYPE = torch.float32
+
     def noise_like(self):
-        """A tensor of the ODE state's shape, for the recipe's `<phase>/noise_like` slot."""
-        import torch
-        return torch.zeros(self.state_shape(), dtype=self.S.dtype, device=self.S.device)
+        """A tensor of the ODE state's shape and dtype, for a recipe's `<phase>/noise_like` slot."""
+        return torch.zeros(self.state_shape(), dtype=self.STATE_DTYPE, device=self.S.device)
 
     # -- the grid ---------------------------------------------------------------------------------
 
@@ -205,7 +214,9 @@ class LingBotChunk0Video:
         writes frame 0 IN PLACE, which is why it is handed a detached throwaway.
         """
         import torch
-        full = torch.cat([ctx.latent_cond.to(x.dtype), x], dim=2)
+        # x is fp32 (the ODE state); the backbone is bf16. Cast HERE and only here.
+        full = torch.cat([ctx.latent_cond.to(self.S.dtype),
+                          x.to(self.S.dtype)], dim=2)
         d = self.S._prepare_latent_input(
             full.detach().clone(), None, sigma_cond, sigma_cond,
             ctx.latent_cond, None, frame_st_id=0, patch_size=self.patch_size)["latent_res_lst"]
@@ -271,8 +282,9 @@ class _Teacher:
             d = self.o._assemble(x, float(t), cond, batch=self.o.CFG_BATCH, uncond=True)
             pred = self.o._run(d, batch=self.o.CFG_BATCH)
             guided = self.o._guided(pred)
-        # Drop the clean conditioning frame, and flip sigma-velocity into t-velocity (dt = -dsigma).
-        return -guided[:, :, 1:]
+        # Drop the clean conditioning frame, flip sigma-velocity into t-velocity (dt = -dsigma),
+        # and hand back fp32 so the caller's Euler accumulation is not bf16-quantised.
+        return -guided[:, :, 1:].float()
 
 
 class _Student:
@@ -370,7 +382,7 @@ class _Student:
             # BEFORE returning is what keeps the student's output shape equal to the ODE state's.
             # Row 0 is the conditional branch (rows are identical here by construction). Negated for
             # the same reason as the teacher: this crosses into instinct-pdd's ascending-t convention.
-            out.append(-y[:1, :, 1:].to(x.dtype))            # row 0, denoisable frames only
+            out.append(-y[:1, :, 1:].float())                # row 0, denoisable frames, fp32
         return torch.stack(out, dim=0)
 
     def parameters(self, recurse: bool = True):

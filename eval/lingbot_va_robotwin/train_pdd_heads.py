@@ -1,0 +1,456 @@
+#!/usr/bin/env python3
+"""Heads-only PDD on LingBot-VA chunk-0 video. SERVER-SIDE, one rank per GPU.
+
+THE QUESTION THIS RUN ANSWERS, and it is deliberately narrow: can 256 repeated output heads absorb a
+2-step PDD target while the LingBot trunk stays frozen? Not "what is the best achievable accuracy".
+If heads-only works it is a strong result; if it plateaus we have a measured reason to unfreeze the
+backbone rather than paying for full fine-tuning by default.
+
+    CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY \\
+      -m torch.distributed.run --nproc_per_node 8 --master_port 29950 \\
+      train_pdd_heads.py --contexts /home/ubuntu/iwm_results/pdd_ctx50 --steps 20000
+
+WHAT IS TRAINABLE: 256 copies of `proj_out` (151.0 M parameters). Everything else -- 30 blocks, the
+VAE, the text encoder -- is frozen, and the trunk runs under `no_grad`, so no activation graph is
+built for it. That is what makes this cheap enough to be a first experiment.
+
+HOW THE RANKS COOPERATE. Each rank draws its OWN (context, n, k), so eight different heads are
+supervised per optimiser step and coverage advances eight times faster. Gradients are therefore
+naturally disjoint, and only the union of touched heads is all-reduced -- 8 heads of 0.6 M parameters
+instead of all 256, which is a 19 MB exchange rather than 604 MB. Each head's summed gradient is
+divided by the number of ranks that touched it, so a head's effective learning rate does not depend
+on how many ranks happened to pick it that step.
+
+HEAD COVERAGE IS A HARD GATE, not a metric. Each step supervises exactly ONE head out of 256, so a
+run that touched 60 of them still shows a falling loss and still writes a checkpoint that samples
+badly. `--min-updates-per-head` is enforced before anything is marked usable.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import random
+import sys
+import time
+from pathlib import Path
+
+IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
+if IWM_ROOT not in sys.path:
+    sys.path.insert(0, IWM_ROOT)
+
+import numpy as np  # noqa: E402
+import torch  # noqa: E402
+import torch.distributed as dist  # noqa: E402
+
+from instinctwm.adapter.lingbot_velocity import LingBotChunk0Video  # noqa: E402
+from instinctwm.runtime.lingbot_install import (  # noqa: E402
+    import_lingbot_server, install_fsdp_elision,
+)
+from instinct_pdd import DataFreeRollout, PDDConfig, advance, pdd_loss  # noqa: E402
+from instinct_pdd.solvers import get_solver  # noqa: E402
+
+
+def log(msg, rank=0):
+    if int(os.getenv("RANK", 0)) == rank:
+        print(msg, flush=True)
+
+
+# -- contexts -------------------------------------------------------------------------------------
+
+def load_context_files(root: str, heldout_from_ep: int):
+    """Split the pool by EPISODE index, not by task.
+
+    Holding out whole tasks would measure task generalisation; holding out scene instances measures
+    whether the heads generalise across the observations they will actually see, with every task
+    present in both halves. For a capacity question that is the right split -- a per-task holdout
+    would confound "the heads cannot fit this" with "this task was never trained".
+    """
+    files = sorted(Path(root).glob("*.npz"))
+    if not files:
+        raise SystemExit(f"no contexts in {root}; run collect_contexts.sh first")
+    train, held = [], []
+    for f in files:
+        ep = int(f.stem.split("__ep")[1].split("__")[0])
+        (held if ep >= heldout_from_ep else train).append(f)
+    if not train or not held:
+        raise SystemExit(
+            f"split produced train={len(train)} held={len(held)} from {len(files)} contexts; "
+            f"--heldout-from-ep={heldout_from_ep} does not partition this pool")
+    return train, held
+
+
+def read_context(path: Path, cam_keys):
+    z = np.load(path, allow_pickle=True)
+    short = {k.split(".")[-1]: k for k in cam_keys}
+    frame = {full: z[s] for s, full in short.items()}
+    return {"obs": [frame], "state": z["state"]}, str(z["prompt"]), str(z["task"])
+
+
+# -- validation -----------------------------------------------------------------------------------
+
+@torch.no_grad()
+def per_head_error(adapter, student, teacher, grid, ctx, cfg, *, rank, world, seed):
+    """PDD loss for EVERY head on one context, sharded across ranks by k.
+
+    One student forward per block yields all heads, so the cost is dominated by teacher evaluations:
+    L of them per block. Sharding by `k` mod world_size makes that 8x faster and costs nothing in
+    fidelity, since each k is independent.
+    """
+    N, L = grid.n_intervals, grid.block
+    out = torch.full((N,), float("nan"), device=adapter.S.device)
+    est = get_solver(cfg.solver)
+    # EVERY RANK MUST START FROM THE SAME x0. Ranks shard by k and the results are stitched back
+    # together, so a per-rank noise draw would assemble the per-head vector from 8 DIFFERENT
+    # trajectories -- aliasing the noise with k mod 8 and making one unlucky draw look like a
+    # periodic head pathology in exactly the 'worst heads' list the go/no-go is read from. Nothing
+    # seeds torch identically across processes (init_process_group does not, and the deterministic
+    # seed installer is not used here), so it is done explicitly.
+    g = torch.Generator(device=adapter.S.device).manual_seed(seed)
+    x0 = torch.randn(adapter.state_shape(), generator=g,
+                     dtype=adapter.STATE_DTYPE, device=adapter.S.device)
+    x_n = x0
+    for n in range(0, N, L):
+        heads = student.heads(x_n, grid.cond(n), cond=ctx)
+        for k in range(n, min(n + L, N)):
+            if k % world != rank:
+                continue
+            x_k = advance(x_n, heads, grid, n, k)
+            target = est(teacher, x_k, grid, k, ctx)
+            out[k] = torch.nn.functional.mse_loss(heads[k], target)
+        x_n = advance(x_n, heads, grid, n, min(n + L, N))
+    if world > 1:
+        # nan is the "not my shard" marker; nansum over ranks reassembles the full vector.
+        filled = torch.nan_to_num(out, nan=0.0)
+        dist.all_reduce(filled, op=dist.ReduceOp.SUM)
+        out = filled
+    return out
+
+
+@torch.no_grad()
+def endpoint_error(adapter, student, teacher, grid, ctx, cfg, *, seed):
+    """The end-to-end number: student at NFE=2 against the teacher integrated over the whole grid.
+
+    Both start from the SAME noise. The ODE is deterministic, so identical noise must reach the same
+    latent -- a distributional score would pass a student that produced plausible latents from the
+    wrong trajectories, which for a policy conditioned on those latents is not the same model.
+    """
+    g = torch.Generator(device=adapter.S.device).manual_seed(seed)
+    x0 = torch.randn(adapter.state_shape(), generator=g,
+                     dtype=adapter.STATE_DTYPE, device=adapter.S.device)
+    est = get_solver(cfg.solver)
+
+    x = x0                                          # teacher, all N intervals
+    for k in range(grid.n_intervals):
+        x = x + est(teacher, x, grid, k, ctx) * grid.h(k)
+    ref = x
+
+    x = x0                                          # student, N/L forwards
+    for n in range(0, grid.n_intervals, grid.block):
+        heads = student.heads(x, grid.cond(n), cond=ctx)
+        x = advance(x, heads, grid, n, min(n + grid.block, grid.n_intervals))
+    stu = x
+
+    l2 = float((stu - ref).float().pow(2).mean().sqrt())
+    scale = float(ref.float().pow(2).mean().sqrt())
+    return l2, scale, ref, stu
+
+
+def sigma_buckets(grid, values, n_buckets=8):
+    """Group per-head error by the sigma the head starts at.
+
+    The interesting failure mode is uneven: heads near sigma=1 see a nearly-pure-noise state, heads
+    near sigma=0 see nearly-clean data, and there is no reason a frozen trunk should serve both
+    equally well. A single mean would hide exactly that.
+    """
+    N = grid.n_intervals
+    rows = []
+    for b in range(n_buckets):
+        lo, hi = b * N // n_buckets, (b + 1) * N // n_buckets
+        ks = [k for k in range(lo, hi) if not np.isnan(values[k])]
+        if not ks:
+            continue
+        s_lo = grid.cond(lo) / grid.time_scale if grid.time_scale else grid.times[lo]
+        rows.append({
+            "k_range": [lo, hi - 1],
+            "sigma_range": [round(grid.cond(lo) / 1000.0, 4), round(grid.cond(hi - 1) / 1000.0, 4)],
+            "mean": float(np.mean([values[k] for k in ks])),
+            "max": float(np.max([values[k] for k in ks])),
+            "n_heads": len(ks),
+        })
+    return rows
+
+
+# -- main -----------------------------------------------------------------------------------------
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--contexts", required=True)
+    ap.add_argument("--out", default="/home/ubuntu/iwm_results/pdd_heads_run1")
+    ap.add_argument("--steps", type=int, default=20000)
+    ap.add_argument("--n-intervals", type=int, default=256)
+    ap.add_argument("--nfe", type=int, default=2)
+    ap.add_argument("--lr", type=float, default=1e-4)
+    ap.add_argument("--guidance", type=float, default=5.0)
+    ap.add_argument("--solver", default="euler")
+    ap.add_argument("--heldout-from-ep", type=int, default=8)
+    ap.add_argument("--min-updates-per-head", type=int, default=20,
+                    help="HARD GATE: no checkpoint is marked usable below this, on every head")
+    ap.add_argument("--val-every", type=int, default=2500)
+    ap.add_argument("--val-contexts", type=int, default=2)
+    ap.add_argument("--log-every", type=int, default=100)
+    a = ap.parse_args()
+
+    rank = int(os.getenv("RANK", 0))
+    local_rank = int(os.getenv("LOCAL_RANK", 0))
+    world = int(os.getenv("WORLD_SIZE", 1))
+
+    S = import_lingbot_server()
+    cfg_name = os.environ.get("IWM_CFG", "robotwin")
+    cfg = S.VA_CONFIGS[cfg_name]
+    cfg.save_root = "/tmp/iwm_pdd_train"
+    os.makedirs(cfg.save_root, exist_ok=True)
+    S.init_distributed(world, local_rank, rank)
+    cfg.rank, cfg.local_rank, cfg.world_size = rank, local_rank, world
+    install_fsdp_elision(S)                 # keeps every parameter local; see probe_pdd_e2e.py
+
+    log(f"building {world} server(s), one per rank (23 GB checkpoint each) ...")
+    server = S.VA_Server(cfg)
+    adapter = LingBotChunk0Video(server, guidance=a.guidance)
+    teacher = adapter.teacher()
+
+    L = a.n_intervals // a.nfe
+    grid = adapter.grid(a.n_intervals, L)
+    student = adapter.student(n_heads=grid.n_intervals)
+    pcfg = PDDConfig(solver=a.solver, l_min=L, l_max=L)
+    n_params = sum(p.numel() for p in student.parameters())
+    log(f"grid: N={grid.n_intervals} L={grid.block} NFE={grid.nfe}  "
+        f"cond {grid.cond(0):.1f} -> {grid.cond(grid.n_intervals):.1f}")
+    log(f"trainable: {n_params/1e6:.1f} M head parameters; trunk FROZEN")
+
+    train_files, held_files = load_context_files(a.contexts, a.heldout_from_ep)
+    log(f"contexts: {len(train_files)} train, {len(held_files)} held out "
+        f"({len(set(f.stem.split('__ep')[0] for f in train_files))} tasks)")
+
+    opt = torch.optim.AdamW([p for p in student.parameters() if p.requires_grad],
+                            lr=a.lr, betas=(0.9, 0.999), weight_decay=0.01)
+
+    # Per-rank RNG so ranks draw different (context, k) -- that is the whole point of the fan-out.
+    rng = random.Random(1234 + rank)
+    head_counts = torch.zeros(grid.n_intervals, dtype=torch.long, device=server.device)
+    out_dir = Path(a.out)
+    if rank == 0:
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+    ctx = None
+    ctx_cache = {}
+    rollout = None
+    history = []
+    t0 = time.time()
+
+    for step in range(a.steps):
+        # One context per trajectory. A trajectory is N/L blocks, so it naturally spans that many
+        # steps; re-encoding more often would pay a VAE forward and a T5 forward for nothing.
+        if rollout is None or rollout.n >= grid.n_intervals:
+            f = rng.choice(train_files)
+            obs, prompt, task = read_context(f, cfg.obs_cam_keys)
+            # encode_context runs _reset (which clears the KV and BOTH streaming VAE caches -- that
+            # clearing is required for correctness, so the reset cannot be skipped) and then a VAE
+            # forward. The reset is cheap; the VAE forward is not, and the pool has only a few
+            # hundred distinct contexts, so its result is cached and the encode is done once each.
+            ctx = ctx_cache.get(f)
+            if ctx is None:
+                ctx = adapter.encode_context(obs, prompt=prompt, task=task)
+                ctx_cache[f] = ctx
+            else:
+                adapter.S._reset(prompt=ctx.prompt)     # still required: clears KV + VAE caches
+            rollout = DataFreeRollout(grid, lambda: torch.randn(
+                adapter.state_shape(), dtype=server.dtype, device=server.device), block=L)
+
+        n, x_n = rollout.begin_block()
+        # NOT instinct_pdd.sample_k here, deliberately. It draws from the global torch RNG, which
+        # torch.distributed seeds identically on every rank -- so all eight ranks would supervise the
+        # SAME head every step, and the fan-out would buy nothing while looking like it worked.
+        # Coverage would still climb, just eight times slower than the logs suggest.
+        k = rng.randrange(n, min(n + L, grid.n_intervals))
+
+        heads = student.heads(x_n, grid.cond(n), cond=ctx)
+        out = pdd_loss(student, teacher, x_n, grid, n, k, cond=ctx, cfg=pcfg, heads=heads)
+
+        opt.zero_grad(set_to_none=False)        # grads must EXIST on every rank to be all-reduced
+        out.loss.backward()
+
+        if world > 1:
+            # Exchange only the union of touched heads: 8 x 0.6 M rather than 256 x 0.6 M.
+            ks = torch.full((world,), k, dtype=torch.long, device=server.device)
+            gathered = [torch.zeros_like(ks[:1]) for _ in range(world)]
+            dist.all_gather(gathered, ks[:1])
+            touched = sorted({int(g.item()) for g in gathered})
+            counts = {kk: sum(1 for g in gathered if int(g.item()) == kk) for kk in touched}
+            for kk in touched:
+                for p in student.head_list[kk].parameters():
+                    if p.grad is not None:
+                        dist.all_reduce(p.grad, op=dist.ReduceOp.SUM)
+                        # Divide by how many ranks touched THIS head, so its effective step size does
+                        # not depend on how many ranks happened to pick it.
+                        p.grad /= counts[kk]
+            for kk in touched:
+                head_counts[kk] += counts[kk]
+        else:
+            head_counts[k] += 1
+
+        # DROP THE ZERO GRADS BEFORE THE OPTIMISER SEES THEM. `student.heads()` evaluates all 256
+        # heads and `torch.stack` back-propagates an EXACT ZERO cotangent into every unsupervised
+        # one, so after backward all 512 head tensors have a defined .grad. AdamW then treats them
+        # as participating: decoupled weight decay fires on every head every step (measured: 0.9802
+        # total shrink over 20k steps instead of 0.9994), and exp_avg_sq is diluted by the ~97%
+        # zero-gradient steps so each real update is inflated by sqrt(1/duty) -- ~5.6x at world=8 and
+        # ~15x at world=1, which would make a single-GPU debug run a different experiment entirely.
+        # Setting grad=None makes AdamW skip them, which is the sparse-update semantics this needs.
+        keep = set(touched) if world > 1 else {k}
+        for kk in range(grid.n_intervals):
+            if kk not in keep:
+                for p_ in student.head_list[kk].parameters():
+                    p_.grad = None
+        torch.nn.utils.clip_grad_norm_(
+            [p for p in student.parameters() if p.requires_grad], 1.0)
+        opt.step()
+        rollout.advance(heads.detach())
+
+        if rank == 0 and a.log_every and step % a.log_every == 0:
+            cov = int((head_counts > 0).sum())
+            log(f"  step {step:>6}  n={n:<4} k={k:<4} loss={out.metrics['loss']:.6f}  "
+                f"heads touched {cov}/{grid.n_intervals}  {(time.time()-t0)/max(1,step+1):.2f}s/step")
+
+        if a.val_every and step and step % a.val_every == 0:
+            report = validate(adapter, student, teacher, grid, pcfg, held_files, cfg,
+                              rank=rank, world=world, n_contexts=a.val_contexts)
+            if rank == 0:
+                summarise(report, head_counts, grid, step, out_dir, a)
+                history.append(report)
+                # Checkpoint at every validation boundary. A 20k-step run over 8 GPUs is many
+                # GPU-hours; writing only at the end means any crash, preemption or OOM discards all
+                # of it. Optimiser state goes too, so a resume is a resume and not a restart.
+                ck = out_dir / f"step{step}"
+                ck.mkdir(parents=True, exist_ok=True)
+                torch.save({"heads": student.state_dict(), "opt": opt.state_dict(),
+                            "head_counts": head_counts.cpu(), "step": step}, ck / "ckpt.pt")
+
+    # -- final ------------------------------------------------------------------------------------
+    report = validate(adapter, student, teacher, grid, pcfg, held_files, cfg,
+                      rank=rank, world=world, n_contexts=max(a.val_contexts, 4))
+    # head_counts needs no all-reduce: every rank adds counts[kk] for every touched head, so all
+    # ranks already hold the same global histogram.
+    if rank == 0:
+        summarise(report, head_counts, grid, a.steps, out_dir, a, final=True)
+        save(student, grid, a, out_dir, head_counts, report)
+    if dist.is_initialized():
+        dist.barrier()
+    return 0
+
+
+def validate(adapter, student, teacher, grid, pcfg, held_files, cfg, *, rank, world, n_contexts):
+    """Per-head error and endpoint error on held-out contexts."""
+    per_head = torch.zeros(grid.n_intervals, device=adapter.S.device)
+    used = 0
+    eps, scales, tasks = [], [], []
+    # STRIDE, don't take the head of the sorted glob. held_files is sorted by filename, so the first
+    # two entries are two episodes of ONE task (alphabetically first) -- validation would report the
+    # heads' error on adjust_bottle and nothing else, while reading as a held-out number.
+    stride = max(1, len(held_files) // max(1, n_contexts))
+    chosen = held_files[::stride][:n_contexts]
+    for i, f in enumerate(chosen):
+        obs, prompt, task = read_context(f, cfg.obs_cam_keys)
+        ctx = adapter.encode_context(obs, prompt=prompt, task=task)
+        # Same seed on every rank, different per context.
+        seed = 20260804 + 1000 * i
+        per_head += per_head_error(adapter, student, teacher, grid, ctx, pcfg,
+                                   rank=rank, world=world, seed=seed)
+        e, s, _, _ = endpoint_error(adapter, student, teacher, grid, ctx, pcfg, seed=seed)
+        eps.append(e)
+        scales.append(s)
+        tasks.append(task)
+        used += 1
+    per_head /= max(1, used)
+    return {
+        "per_head": per_head.float().cpu().numpy().tolist(),
+        "endpoint_rmse": float(np.mean(eps)) if eps else float("nan"),
+        "endpoint_scale": float(np.mean(scales)) if scales else float("nan"),
+        "n_contexts": used,
+        "val_tasks": tasks,
+    }
+
+
+def summarise(report, head_counts, grid, step, out_dir, a, final=False):
+    v = np.asarray(report["per_head"], dtype=float)
+    hc = head_counts.cpu().numpy()
+    cov = int((hc > 0).sum())
+    gate_ok = bool((hc >= a.min_updates_per_head).all())
+    worst = np.argsort(-v)[:10]
+
+    print(f"\n{'=' * 78}")
+    print(f"{'FINAL' if final else 'VALIDATION'} at step {step}   "
+          f"({report['n_contexts']} held-out contexts)")
+    print(f"  head updates      min {int(hc.min())}  median {int(np.median(hc))}  "
+          f"max {int(hc.max())}   touched {cov}/{len(hc)}")
+    print(f"  COVERAGE GATE     >= {a.min_updates_per_head} updates on every head: "
+          f"{'PASS' if gate_ok else 'FAIL'}")
+    print(f"  per-head error    mean {v[~np.isnan(v)].mean():.6f}  "
+          f"max {np.nanmax(v):.6f}  min {np.nanmin(v):.6f}")
+    print(f"  endpoint RMSE     {report['endpoint_rmse']:.6f}  "
+          f"(reference scale {report['endpoint_scale']:.4f}, "
+          f"{100*report['endpoint_rmse']/max(1e-9,report['endpoint_scale']):.1f}% )")
+    print("\n  error by sigma range (the head's starting sigma):")
+    print(f"    {'heads':>12} {'sigma':>16} {'mean err':>11} {'max err':>11} {'min upd':>8}")
+    for row in sigma_buckets(grid, v):
+        lo, hi = row["k_range"]
+        s0, s1 = row["sigma_range"]
+        krange = f"{lo}-{hi}"
+        srange = f"{s0:.3f}-{s1:.3f}"
+        print(f"    {krange:>12} {srange:>16} {row['mean']:>11.6f} "
+              f"{row['max']:>11.6f} {int(hc[lo:hi + 1].min()):>8}")
+    print("\n  worst 10 heads:")
+    for k in worst:
+        print(f"    k={int(k):<4} sigma={grid.cond(int(k))/1000:.4f}  err={v[k]:.6f}  "
+              f"updates={int(hc[k])}")
+    print("=" * 78, flush=True)
+
+    (out_dir / f"report_step{step}.json").write_text(json.dumps({
+        "step": step, "per_head_error": v.tolist(), "head_updates": hc.tolist(),
+        "coverage": cov, "coverage_gate_pass": gate_ok,
+        "min_updates_required": a.min_updates_per_head,
+        "endpoint_rmse": report["endpoint_rmse"], "endpoint_scale": report["endpoint_scale"],
+        "sigma_buckets": sigma_buckets(grid, v),
+        "worst_heads": [{"k": int(k), "sigma": grid.cond(int(k)) / 1000.0,
+                         "error": float(v[k]), "updates": int(hc[k])} for k in worst],
+    }, indent=2))
+
+
+def save(student, grid, a, out_dir, head_counts, report):
+    """Write the heads, and refuse to call the checkpoint usable if the coverage gate failed."""
+    hc = head_counts.cpu().numpy()
+    gate_ok = bool((hc >= a.min_updates_per_head).all())
+    p = out_dir / ("final" if gate_ok else "final_GATE_FAILED")
+    p.mkdir(parents=True, exist_ok=True)
+    torch.save(student.state_dict(), p / "heads.pt")
+    (p / "delta.json").write_text(json.dumps({
+        "recipe": "parallel_decoding_distillation",
+        "trainable": "output heads only; trunk frozen",
+        "nfe": {"video": grid.nfe},
+        "n_intervals": grid.n_intervals, "block": grid.block,
+        "solver": a.solver, "guidance": {"video": a.guidance},
+        "coverage_gate_pass": gate_ok,
+        "min_updates_per_head": a.min_updates_per_head,
+        "head_updates_min": int(hc.min()),
+        "endpoint_rmse": report["endpoint_rmse"],
+        "note": ("chunk-0 video stream only; the action stream reads the KV the video stream commits "
+                 "and is a separate distillation stage"),
+    }, indent=2))
+    print(f"\nwrote {p}" + ("" if gate_ok else
+          "\nNOT USABLE: the coverage gate failed. Some heads are undertrained, which a falling "
+          "loss curve does not reveal. Raise --steps or lower --min-updates-per-head deliberately."),
+          flush=True)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
