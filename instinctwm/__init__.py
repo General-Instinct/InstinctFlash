@@ -15,6 +15,39 @@ what it would do is a runtime wearing a framework's clothes.
 
 from __future__ import annotations
 
+import os as _os
+import sys as _sys
+
+
+def _bootstrap_submodules() -> None:
+    """Make the vendored `instinct-pdd` submodule importable without an install step.
+
+    Layer 1's algorithm lives in its own repository (`instinct-pdd`), included here as a git
+    submodule so there is exactly one copy of it. Its package sits at `instinct-pdd/src/`, which is
+    not importable by default.
+
+    A FALLBACK, NOT A HIJACK: if `instinct_pdd` already imports -- because it was pip-installed, or
+    because a caller put it on the path deliberately -- this does nothing. That ordering matters,
+    since silently shadowing an installed release with whatever revision the submodule happens to be
+    pinned at is the kind of thing that makes a bug report unreproducible.
+
+    The alternative was `pip install -e ./instinct-pdd`, which is cleaner in principle but mutates a
+    deliberately pinned environment; see eval/lingbot_va_robotwin/env.sh on why that environment is
+    left alone. The alternative to THAT was a sys.path insert in every entry point, which is worse.
+    """
+    try:
+        import instinct_pdd  # noqa: F401
+        return
+    except ImportError:
+        pass
+    src = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))),
+                        "instinct-pdd", "src")
+    if _os.path.isdir(src) and src not in _sys.path:
+        _sys.path.insert(0, src)
+
+
+_bootstrap_submodules()
+
 from instinctwm.adapter.base import (
     AdapterSpec,
     BackendAdapter,

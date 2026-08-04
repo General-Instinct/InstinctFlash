@@ -1,8 +1,8 @@
 """PDD as an InstinctWM Recipe: per-stream composition over the backbone-agnostic core.
 
-The algorithm lives in `instinctwm.train.pdd`, which knows nothing about world-action models and is
-destined to split out as `instinct-pdd`. THIS file is the orchestration half, and it owns exactly
-the three things the algorithm should not:
+The algorithm lives in the `instinct-pdd` submodule -- its own repository, model-agnostic, with no
+knowledge of world-action models. THIS file is the orchestration half, and it owns exactly the three
+things the algorithm should not:
 
   * running PDD over SEVERAL streams. LingBot-VA denoises video then action, on different SNR-shifted
     grids. PDD is single-stream; applying it per phase is composition, not method.
@@ -20,7 +20,8 @@ from __future__ import annotations
 
 from typing import Mapping, Sequence
 
-from instinctwm.train.pdd import Grid, Rollout, pdd_loss
+from instinct_pdd import DataFreeRollout, Grid, PDDConfig, pdd_loss, shift_time
+from instinct_pdd.objective import sample_k
 from instinctwm.train.recipe import (
     Capabilities, DescriptorDelta, Environment, RecipeState, StepOutput,
 )
@@ -126,15 +127,33 @@ class ParallelDecoding:
                 f"shift=5.0 and action at 1.0, so the two streams visit different sigma grids; "
                 f"guessing 1.0 would train the student to jump between times the sampler never "
                 f"visits.")
-        grids = {
-            ph: Grid.from_shift(self.n_intervals, self.n_intervals // k,
-                                shift=self._shifts[ph], scale=self.time_scale)
-            for ph, k in self.nfe.items()
-        }
+        grids = {ph: self._synthetic_grid(self.n_intervals // k, self._shifts[ph])
+                 for ph, k in self.nfe.items()}
         return RecipeState(
             modules={}, optimizers={}, update_order=("student",),
             extra={"grids": grids, "rollouts": {}, "solver": self.solver, "loss": self.loss,
                    "guidance": dict(self._guidance), "data_free": self.data_free})
+
+    def _synthetic_grid(self, block: int, shift: float) -> Grid:
+        """A grid with LingBot's semantics but a synthetic uniform sigma base.
+
+        FOR A REAL RUN THE GRID COMES FROM THE LIVE SCHEDULER, through
+        `LingBotChunk0Video.grid()` -- re-deriving a schedule is how a training grid stops matching
+        the sampler. This path exists for synthetic phases in tests, and it is built to mirror the
+        adapter step for step so the two cannot disagree about conventions:
+
+          * warp SIGMA (the sampler's own axis), not t. Warping the ascending axis instead gives a
+            different curve, concentrating steps at the wrong end.
+          * then map t = 1 - sigma for instinct-pdd, which fixes t ascending 0 -> 1.
+          * and carry scale=-time_scale, offset=+time_scale, so `cond(i)` still reports
+            sigma_i * 1000 -- the value the backbone is actually conditioned on. Omitting the offset
+            leaves cond(0) at 0 instead of 1000, which trains the student at the wrong timestep
+            entirely.
+        """
+        sig = [shift_time(1.0 - i / self.n_intervals, 1.0 / shift)
+               for i in range(self.n_intervals + 1)]
+        return Grid.from_times([1.0 - s for s in sig], block=block,
+                               scale=-self.time_scale, offset=self.time_scale)
 
     # -- the step --------------------------------------------------------------------------------
 
@@ -160,10 +179,10 @@ class ParallelDecoding:
                 roll = state.extra["rollouts"].get(phase)
                 if roll is None:
                     shape_src = batch[f"{phase}/noise_like"]
-                    roll = Rollout(grid, lambda s=shape_src: torch.randn_like(s))
+                    roll = DataFreeRollout(grid, lambda s=shape_src: torch.randn_like(s))
                     state.extra["rollouts"][phase] = roll
                 n, x_n = roll.begin_block()
-                k = roll.pick_k(n)
+                k = sample_k(grid, PDDConfig(l_min=1, l_max=grid.block), n)
             else:
                 # Algorithm 2: X_n from the interpolant against a real sample. Kept because a fixed
                 # batch makes the target deterministic, which is what an overfit test needs.
@@ -181,12 +200,14 @@ class ParallelDecoding:
             # teacher and used to advance the rollout, exactly as the paper prescribes; computing it
             # twice would double the dominant cost of the step.
             heads = s_model.heads(x_n, grid.cond(n), cond=cond)
-            value, m = pdd_loss(s_model, t_model, x_n, grid, n, k,
-                                cond=cond, solver=state.extra["solver"],
-                                loss=state.extra["loss"], heads=heads)
+            step = pdd_loss(s_model, t_model, x_n, grid, n, k, cond=cond, heads=heads,
+                            cfg=PDDConfig(solver=state.extra["solver"],
+                                          loss=state.extra["loss"],
+                                          l_min=1, l_max=grid.block))
+            value, m = step.loss, dict(step.metrics, n=step.n, k=step.k)
             total = value if total is None else total + value
             for key, v in m.items():
-                metrics[f"{phase}/{key.split('/', 1)[1]}"] = v
+                metrics[f"{phase}/{key}"] = v
 
             if state.extra["data_free"]:
                 state.extra["rollouts"][phase].advance(heads.detach())

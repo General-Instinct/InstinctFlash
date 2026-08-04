@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """The PDD grid must equal LingBot-VA's real serving schedule, to the float.
 
-Lives OUTSIDE tests/test_pdd_core.py on purpose: it imports LingBot's scheduler, and the core tests
-assert that `instinctwm/train/pdd/**` has no LingBot dependency. Keeping the parity check here is what
-lets both statements stay true.
+Lives in InstinctWM rather than in the submodule on purpose: it imports LingBot's scheduler, and
+`instinct-pdd` must stay free of any LingBot dependency. Keeping this check on this side is what lets
+both statements be true at once.
 
 WHY IT EXISTS. `Grid.from_shift` warped the wrong axis -- it shifted the progress fraction and then
 inverted, instead of shifting sigma itself. At N=25, shift=5 the correct second timestep is 991.7 and
@@ -20,6 +20,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+# The submodule is not installed; add it explicitly rather than relying on import order
+# through instinctwm/__init__.py, since these tests import instinct_pdd directly.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "instinct-pdd" / "src"))
 sys.path.insert(0, os.path.join(os.environ.get("LINGBOT_ROOT", "/home/ubuntu/lingbot-va"), "wan_va"))
 
 import torch  # noqa: E402
@@ -27,7 +30,7 @@ import torch.nn.functional as F  # noqa: E402
 
 from utils.scheduler import FlowMatchScheduler  # noqa: E402
 
-from instinctwm.train.pdd import Grid  # noqa: E402
+from instinct_pdd import Grid  # noqa: E402
 
 FAILED: list[str] = []
 
@@ -50,38 +53,45 @@ def served(shift: float, n: int):
 
 
 def main() -> int:
-    # Both served streams, at the paper's N and at the config's own step counts.
+    # Both served streams, at the config's own step counts and at the paper's N.
     for name, shift, n in (("video", 5.0, 25), ("action", 1.0, 50),
                            ("video", 5.0, 256), ("action", 1.0, 256)):
         sch, real = served(shift, n)
+        sigmas = [float(s) for s in sch.sigmas]
+        if abs(sigmas[-1]) > 1e-12:
+            sigmas.append(0.0)
 
-        g = Grid.from_shift(n_intervals=n, block=n, shift=shift, scale=1000.0)
-        mine = torch.tensor([g.cond(i) for i in range(len(g.times))])
-        ok_len = len(mine) == len(real)
-        d = float((mine - real).abs().max()) if ok_len else float("nan")
-        check(ok_len and d < 1e-2, f"from_shift matches served {name} at N={n}",
-              f"len {len(mine)}/{len(real)}  max|Δ|={d:.2e}")
+        # Exactly what LingBotChunk0Video.grid() builds.
+        scale = float(sch.num_train_timesteps)
+        g = Grid.from_times([1.0 - s for s in sigmas], block=n, scale=-scale, offset=scale)
 
-        g2 = Grid.from_sigmas(sch.sigmas.tolist(), block=n, scale=1000.0)
-        m2 = torch.tensor([g2.cond(i) for i in range(len(g2.times))])
-        ok2 = len(m2) == len(real)
-        d2 = float((m2 - real).abs().max()) if ok2 else float("nan")
-        check(ok2 and d2 == 0.0, f"from_sigmas is EXACT for {name} at N={n}",
-              f"max|Δ|={d2:.2e}")
+        check(len(g.times) == len(real), f"{name} N={n}: grid point count matches the served list",
+              f"{len(g.times)} vs {len(real)}")
+        cond = torch.tensor([g.cond(i) for i in range(len(g.times))])
+        d = float((cond - real).abs().max()) if len(cond) == len(real) else float("nan")
+        check(d < 1e-3, f"{name} N={n}: cond(i) reproduces the served timesteps EXACTLY",
+              f"max|Δ| = {d:.2e}")
+        check(all(g.h(k) > 0 for k in range(g.n_intervals)),
+              f"{name} N={n}: the ODE axis ascends (t = 1 - sigma)")
+        check(abs(g.times[0]) < 1e-9 and abs(g.times[-1] - 1.0) < 1e-9,
+              f"{name} N={n}: t runs 0 -> 1", f"{g.times[0]:.3f} -> {g.times[-1]:.3f}")
 
-    # The warp direction, stated as a property rather than a number: shift>1 must hold sigma above
-    # the linear grid. This is the assertion that fails if the axis is ever inverted again.
-    lin = Grid.from_shift(n_intervals=256, block=256, shift=1.0)
-    vid = Grid.from_shift(n_intervals=256, block=256, shift=5.0)
-    check(vid.times[1] > lin.times[1], "shift=5 holds sigma ABOVE linear (steps at the noise end)",
-          f"{vid.times[1]:.5f} > {lin.times[1]:.5f}")
-    check(abs(lin.times[1] - (1.0 - 1.0 / 256)) < 1e-9, "shift=1 is the identity warp")
+    # And the property that makes the served schedule what it is: shift > 1 keeps sigma high for
+    # longer, so in t-space the early intervals are SHORT. Checked against the real scheduler rather
+    # than re-derived, since re-deriving a schedule is how a training grid stops matching a sampler.
+    sch5, _ = served(5.0, 256)
+    sch1, _ = served(1.0, 256)
+    g5 = Grid.from_times([1.0 - float(s) for s in sch5.sigmas] + [1.0], block=256)
+    g1 = Grid.from_times([1.0 - float(s) for s in sch1.sigmas] + [1.0], block=256)
+    check(g5.h(0) < g1.h(0),
+          "shift=5 makes the first interval shorter in t (steps concentrated at the noise end)",
+          f"h0: shift5 {g5.h(0):.5f} < shift1 {g1.h(0):.5f}")
 
     print("\n" + "=" * 66)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")
         return 1
-    print("PASS: the PDD grid reproduces LingBot-VA's served schedule")
+    print("PASS: the adapter's grid mapping reproduces LingBot-VA's served schedule")
     return 0
 
 

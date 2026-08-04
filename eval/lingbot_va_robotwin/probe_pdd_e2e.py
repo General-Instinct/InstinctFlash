@@ -35,7 +35,7 @@ from instinctwm.adapter.lingbot_velocity import LingBotChunk0Video  # noqa: E402
 from instinctwm.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_fsdp_elision,
 )
-from instinctwm.train.pdd import pdd_loss  # noqa: E402
+from instinct_pdd import pdd_loss  # noqa: E402
 
 FAILED: list[str] = []
 
@@ -107,8 +107,13 @@ def main() -> int:
     check(grid.nfe == a.nfe, f"NFE = N/L = {grid.nfe}", f"L={grid.block}")
     check(abs(grid.cond(0) - 1000.0) < 1.0, "first conditioning time is sigma*1000 = 1000",
           f"{grid.cond(0):.3f}")
-    check(abs(grid.times[-1]) < 1e-9, "grid terminates on clean data (sigma=0)")
-    check(all(grid.h(k) < 0 for k in range(grid.n_intervals)), "sigma descends")
+    # instinct-pdd's axis ascends t: 0 = noise, 1 = data. The adapter maps t = 1 - sigma, so the
+    # grid ENDS at t=1 and every width is positive, while cond() still reports sigma*1000.
+    check(abs(grid.times[-1] - 1.0) < 1e-9, "grid terminates at t=1 (clean data)",
+          f"times[-1]={grid.times[-1]:.6f}")
+    check(abs(grid.cond(grid.n_intervals)) < 1e-6, "and cond() there is sigma=0",
+          f"cond(N)={grid.cond(grid.n_intervals):.3e}")
+    check(all(grid.h(k) > 0 for k in range(grid.n_intervals)), "t ascends (widths positive)")
     # the schedule the server would actually use must be untouched afterwards
     check(len(server.scheduler.sigmas) != a.n_intervals or a.n_intervals == 25,
           "the server's own scheduler was restored", f"{len(server.scheduler.sigmas)} sigmas")
@@ -156,7 +161,8 @@ def main() -> int:
 
     print("\n=== 6. PDD loss on the real path ===")
     n, k = 0, min(3, grid.block - 1)
-    loss, m = pdd_loss(student, teacher, x, grid, n, k, cond=ctx, solver="euler", loss="mse")
+    _step = pdd_loss(student, teacher, x, grid, n, k, cond=ctx)
+    loss, m = _step.loss, _step.metrics
     check(torch.isfinite(loss), "loss is finite", f"loss = {float(loss):.6f}")
     check(float(loss) > 0, "loss is non-zero (student != teacher at init)")
     loss.backward()
@@ -182,8 +188,7 @@ def main() -> int:
         def loss_at(kk):
             with torch.no_grad():
                 pass
-            l, _ = pdd_loss(student, teacher, x, grid, n, kk, cond=ctx, solver="euler")
-            return l
+            return pdd_loss(student, teacher, x, grid, n, kk, cond=ctx).loss
 
         first = float(loss_at(k0).detach())
         for i in range(a.steps):

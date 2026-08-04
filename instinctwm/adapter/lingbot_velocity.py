@@ -1,7 +1,7 @@
 """LingBot-VA chunk-0 video stream, exposed as a PDD velocity oracle.
 
-Everything backbone-specific about PDD-on-LingBot lives here, so that `instinctwm/train/pdd/` stays
-a general single-stream algorithm. Every fact below is cited to the source map in
+Everything backbone-specific about PDD-on-LingBot lives here, so that the `instinct-pdd` submodule
+stays a general single-stream algorithm. Every fact below is cited to the source map in
 `docs/PDD_ADAPTER_SOURCE_MAP.raw.json`, which is the canonical reference and should not be
 regenerated.
 
@@ -26,10 +26,16 @@ THREE THINGS THIS FILE EXISTS TO GET RIGHT, each of which is silent when wrong:
      student sees a single conditional context. That is what "guidance distilled in" means, and it is
      what removes the batch-2 duplication at serving time.
 
-  3. THE GRID COMES FROM THE LIVE SCHEDULER, NOT FROM A RE-DERIVATION. `Grid.from_sigmas` is handed
-     `scheduler.sigmas` directly. An earlier version re-derived the schedule and warped sigma in the
-     wrong direction -- correct second grid point 991.7, re-derived 827.6 -- which clusters training
-     steps at the data end while the sampler clusters them at the noise end.
+  3. THE GRID COMES FROM THE LIVE SCHEDULER, NOT FROM A RE-DERIVATION. The scheduler's own sigmas are
+     handed straight to `Grid.from_times`. An earlier version re-derived the schedule and warped sigma
+     in the wrong direction -- correct second grid point 991.7, re-derived 827.6 -- which clusters
+     training steps at the data end while the sampler clusters them at the noise end.
+
+  4. THE TIME AXIS IS FLIPPED AT THIS BOUNDARY. instinct-pdd integrates t ascending 0 -> 1 (the paper's
+     convention); LingBot integrates sigma descending 1 -> 0. Since dt = -dsigma, a velocity is
+     NEGATED on the way across, in `_Teacher.velocity` and `_Student.heads` and nowhere else. Both are
+     negated, so the regression is unchanged -- but a single-sided flip would train against a target
+     pointing backwards along the trajectory. See `grid()` for the full map.
 """
 
 from __future__ import annotations
@@ -39,7 +45,7 @@ from typing import Any
 
 import torch
 
-from instinctwm.train.pdd import Grid, MultiHeadStudent
+from instinct_pdd import Grid, MultiHeadStudent
 
 
 @dataclass
@@ -118,11 +124,22 @@ class LingBotChunk0Video:
     # -- the grid ---------------------------------------------------------------------------------
 
     def grid(self, n_intervals: int, block: int) -> Grid:
-        """The exact sigma grid an `n_intervals`-step video sampler would walk.
+        """The exact sigma schedule an `n_intervals`-step video sampler walks, as an instinct-pdd Grid.
 
-        Taken off the live `FlowMatchScheduler` rather than recomputed. `set_timesteps` mutates the
-        scheduler, so the server's own inference schedule is restored afterwards -- leaving it set to
-        a training grid would silently change what a subsequent `_infer` does.
+        THE CONVENTION BRIDGE, and it belongs here rather than in the algorithm. instinct-pdd fixes
+        time ASCENDING from 0 (noise) to 1 (data), matching the paper's interpolant. LingBot-VA
+        integrates sigma DESCENDING 1 -> 0. The map is t = 1 - sigma, in the same index order, so:
+
+            times      = 1 - sigma            ascending, widths positive
+            cond(i)    = sigma_i * 1000       which is (1 - t_i) * 1000
+                       -> time_scale = -1000, time_offset = +1000
+
+        and because dt = -dsigma, every velocity crossing this boundary flips sign. That is done in
+        `_Teacher.velocity` and `_Student.heads`, once each, and nowhere else.
+
+        Sigmas are taken off the live scheduler rather than recomputed. `set_timesteps` mutates it, so
+        the server's own inference schedule is restored afterwards -- leaving it set to a training grid
+        would silently change what a subsequent `_infer` does.
         """
         sch = self.S.scheduler
         prev = getattr(sch, "sigmas", None)
@@ -135,9 +152,12 @@ class LingBotChunk0Video:
                 sch.sigmas = prev
                 sch.timesteps = prev * sch.num_train_timesteps
                 sch.training = prev_training
-        # The server pads a terminal 0 onto the timestep list (wan_va_server.py:473), so the grid
-        # ends on clean data; from_sigmas appends it when absent.
-        return Grid.from_sigmas(sigmas, block=block, scale=float(sch.num_train_timesteps))
+        # The server pads a terminal sigma=0 (wan_va_server.py:473), so the grid ends on clean data.
+        if abs(sigmas[-1]) > 1e-12:
+            sigmas.append(0.0)
+        scale = float(sch.num_train_timesteps)
+        return Grid.from_times([1.0 - s for s in sigmas], block=block,
+                               scale=-scale, offset=scale)
 
     # -- conditioning -----------------------------------------------------------------------------
 
@@ -251,7 +271,8 @@ class _Teacher:
             d = self.o._assemble(x, float(t), cond, batch=self.o.CFG_BATCH, uncond=True)
             pred = self.o._run(d, batch=self.o.CFG_BATCH)
             guided = self.o._guided(pred)
-        return guided[:, :, 1:]            # drop the clean conditioning frame
+        # Drop the clean conditioning frame, and flip sigma-velocity into t-velocity (dt = -dsigma).
+        return -guided[:, :, 1:]
 
 
 class _Student:
@@ -347,7 +368,9 @@ class _Student:
                                   batch_size=self.o.CFG_BATCH)
             # Row 0 is the conditional branch; rows are identical here by construction. Slicing
             # BEFORE returning is what keeps the student's output shape equal to the ODE state's.
-            out.append(y[:1, :, 1:].to(x.dtype))             # row 0, denoisable frames only
+            # Row 0 is the conditional branch (rows are identical here by construction). Negated for
+            # the same reason as the teacher: this crosses into instinct-pdd's ascending-t convention.
+            out.append(-y[:1, :, 1:].to(x.dtype))            # row 0, denoisable frames only
         return torch.stack(out, dim=0)
 
     def parameters(self, recurse: bool = True):

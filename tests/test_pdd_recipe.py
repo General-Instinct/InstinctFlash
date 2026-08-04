@@ -125,15 +125,17 @@ def test_streams_get_different_grids():
     gv, ga = st.extra["grids"]["video"], st.extra["grids"]["action"]
     check(gv.times != ga.times, "video and action grids differ")
     # action shift = 1.0 is the identity warp, so its grid must be exactly linear in t.
-    lin = [1.0 - i / 256 for i in range(257)]
+    # instinct-pdd's axis ascends: with shift=1 the identity warp leaves t = i/N.
+    lin = [i / 256 for i in range(257)]
     check(max(abs(a - b) for a, b in zip(ga.times, lin)) < 1e-6,
-          "action (shift 1.0) is the linear sigma grid", f"t1={ga.times[1]:.5f}")
-    # DIRECTION MATTERS. shift > 1 warps sigma UPWARD, holding the trajectory at high noise for more
-    # of the grid -- so video's second sigma sits ABOVE the linear one, not below. Checked against
-    # the real FlowMatchScheduler at N=25, shift=5: sigma_1 = 0.99174 against a linear 0.96.
-    # This assertion previously demanded the opposite and so encoded a warp that ran backwards.
-    check(gv.times[1] > ga.times[1] + 1e-3,
-          "video (shift 5.0) is warped ABOVE linear, concentrating steps at the noise end",
+          "action (shift 1.0) is the linear grid in t", f"t1={ga.times[1]:.5f}")
+    # DIRECTION MATTERS, and the sign of the comparison depends on which axis you read it in.
+    # shift > 1 warps SIGMA upward, holding the trajectory at high noise for more of the grid
+    # (FlowMatchScheduler at N=25, shift=5: sigma_1 = 0.99174 against a linear 0.96). Under
+    # t = 1 - sigma that same fact reads as a SHORTER first interval in t -- which is what
+    # "steps concentrated at the noise end" means on this axis.
+    check(gv.times[1] < ga.times[1] - 1e-4,
+          "video (shift 5.0) takes a shorter first step in t (steps at the noise end)",
           f"video t1={gv.times[1]:.5f} vs action {ga.times[1]:.5f}")
     check(abs(gv.cond(0) - 1000.0) < 1e-6,
           "but both still condition the backbone on sigma * 1000", f"cond0={gv.cond(0):.1f}")
