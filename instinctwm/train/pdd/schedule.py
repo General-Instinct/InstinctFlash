@@ -79,19 +79,46 @@ class Grid:
         return tuple(range(0, self.n_intervals, self.block))
 
     @classmethod
+    def from_sigmas(cls, sigmas, block: int, *, scale: float = 1.0,
+                    append_terminal: bool = True) -> "Grid":
+        """Build a grid from a sampler's OWN sigma list. Prefer this over `from_shift`.
+
+        Re-deriving a schedule is how a training grid silently stops matching the sampler's. If the
+        deployment scheduler can hand over its sigmas, take them: then there is nothing to get wrong.
+        `append_terminal` adds a trailing 0.0 when the list does not already end there, mirroring
+        samplers that pad a final step onto clean data.
+        """
+        vals = [float(s) for s in sigmas]
+        if not vals:
+            raise ValueError("sigmas is empty")
+        if append_terminal and abs(vals[-1]) > 1e-12:
+            vals.append(0.0)
+        return cls(times=tuple(vals), block=block, time_scale=scale)
+
+    @classmethod
     def from_shift(cls, n_intervals: int, block: int, *, shift: float = 1.0,
                    t_start: float = 1.0, t_end: float = 0.0, scale: float = 1.0) -> "Grid":
-        """Build a shifted grid in the sampler's `shift` convention.
+        """Build a shifted grid, warping the ODE VARIABLE -- not the progress fraction.
 
-        Defaults run 1 -> 0, the flow-matching noise-to-data direction. `scale` becomes
-        `time_scale`: the factor between the ODE variable and what the backbone is conditioned on.
-        It is deliberately NOT folded into `times`, because `times` is what interval widths are
-        measured in and the integrator steps by those widths. See the class docstring.
+        THE DIRECTION OF THE WARP IS THE WHOLE SUBTLETY, and getting it backwards is silent. The
+        first version of this method computed `shift(i/N)` and then mapped that through
+        `t_start -> t_end`, i.e. it warped the PROGRESS fraction and inverted. A sampler warps sigma
+        itself: `sigma <- shift*sigma / (1 + (shift-1)*sigma)` applied to the descending sigma list.
+
+        Those are different grids, not two spellings of one. Measured against LingBot-VA's real
+        FlowMatchScheduler at N=25, shift=5: the correct second grid point is sigma*1000 = 991.7,
+        the inverted one gives 827.6. The inverted grid clusters its steps at the DATA end while the
+        sampler clusters them at the NOISE end, so a student trained on it would be asked at serving
+        time to make jumps it had never practised -- and the loss curve would look fine throughout.
+
+        `t_start`/`t_end` bound the ODE variable (1 -> 0 for flow matching, noise to data). `scale`
+        becomes `time_scale`; see the class docstring for why it is not folded into `times`.
         """
         if n_intervals < 1:
             raise ValueError("n_intervals must be >= 1")
-        raw = [i / n_intervals for i in range(n_intervals + 1)]
+        # Uniform in the ODE variable first...
+        vals = [t_start + (t_end - t_start) * (i / n_intervals) for i in range(n_intervals + 1)]
+        # ...then warp each value in place. shift_time expects [0, 1]; sigma already is.
         if shift != 1.0:
-            raw = [shift_time(u, 1.0 / shift) for u in raw]
-        times = tuple(t_start + (t_end - t_start) * u for u in raw)
-        return cls(times=times, block=block, time_scale=scale)
+            vals = [shift_time(v, 1.0 / shift) for v in vals]
+        return cls(times=tuple(vals), block=block, time_scale=scale)

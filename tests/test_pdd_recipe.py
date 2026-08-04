@@ -128,8 +128,12 @@ def test_streams_get_different_grids():
     lin = [1.0 - i / 256 for i in range(257)]
     check(max(abs(a - b) for a, b in zip(ga.times, lin)) < 1e-6,
           "action (shift 1.0) is the linear sigma grid", f"t1={ga.times[1]:.5f}")
-    check(gv.times[1] < ga.times[1] - 1e-3,
-          "video (shift 5.0) is warped away from linear",
+    # DIRECTION MATTERS. shift > 1 warps sigma UPWARD, holding the trajectory at high noise for more
+    # of the grid -- so video's second sigma sits ABOVE the linear one, not below. Checked against
+    # the real FlowMatchScheduler at N=25, shift=5: sigma_1 = 0.99174 against a linear 0.96.
+    # This assertion previously demanded the opposite and so encoded a warp that ran backwards.
+    check(gv.times[1] > ga.times[1] + 1e-3,
+          "video (shift 5.0) is warped ABOVE linear, concentrating steps at the noise end",
           f"video t1={gv.times[1]:.5f} vs action {ga.times[1]:.5f}")
     check(abs(gv.cond(0) - 1000.0) < 1e-6,
           "but both still condition the backbone on sigma * 1000", f"cond0={gv.cond(0):.1f}")
