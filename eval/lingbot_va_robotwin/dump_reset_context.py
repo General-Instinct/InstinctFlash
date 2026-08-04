@@ -118,7 +118,7 @@ def main() -> int:
     ap.add_argument("--instruction-type", default="seen",
                     help="matches the eval client's instruction_type (:308)")
     ap.add_argument("--out", required=True)
-    ap.add_argument("--max-seed-skips", type=int, default=20,
+    ap.add_argument("--max-seed-skips", type=int, default=80,
                     help="how many unstable seeds to skip before giving up on a task")
     a = ap.parse_args()
 
@@ -139,10 +139,32 @@ def main() -> int:
         max_attempts = a.episodes + a.max_seed_skips
         while ep < a.episodes and attempts < max_attempts:
             attempts += 1
+            # TWO FAILURE CLASSES, both of which the real eval client skips past
+            # (eval_policy_client.py:396-413): UnStableError when the scene has not settled, and
+            # ANY other exception out of the expert planner -- `play_once` raises
+            # "target_pose cannot be None for move action" on seeds where no valid grasp is found.
+            # Measured on the first 50-task pass: 0 unstable seeds but 9 tasks short, entirely from
+            # the second class, which the first version did not catch. open_microwave got 1 of 10.
+            #
+            # play_once() is inside the try because the instruction is derived from the episode info
+            # it returns; a seed whose expert demo cannot be planned cannot yield a prompt, and a
+            # context without a prompt is useless (and refused below).
             try:
                 env.setup_demo(now_ep_num=ep, seed=seed, is_test=True, **args)
+                episode_info = env.play_once()
+                results = generate_episode_descriptions(task, [episode_info["info"]], 1)
+                instruction = np.random.choice(results[0][a.instruction_type])
             except UnStableError as e:
                 print(f"  {task} seed{seed}: unstable, skipping ({e})", flush=True)
+                try:
+                    env.close_env()
+                except Exception:
+                    pass
+                seed += 1
+                continue
+            except Exception as e:
+                print(f"  {task} seed{seed}: expert planning failed, skipping "
+                      f"({type(e).__name__}: {str(e)[:70]})", flush=True)
                 try:
                     env.close_env()
                 except Exception:
@@ -158,9 +180,6 @@ def main() -> int:
             # get_obs() would return the end-of-episode state instead of the reset state. The client
             # does exactly this: play_once at :518, then a second setup_demo at :552 before any
             # observation is read at :598.
-            episode_info = env.play_once()
-            results = generate_episode_descriptions(task, [episode_info["info"]], 1)
-            instruction = np.random.choice(results[0][a.instruction_type])
             env.setup_demo(now_ep_num=ep, seed=seed, is_test=True, **args)   # back to the reset state
             env.set_instruction(instruction=instruction)
             prompt = env.get_instruction()
