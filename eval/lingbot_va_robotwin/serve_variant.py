@@ -311,7 +311,13 @@ def main() -> int:
                   "capture fails with cudaErrorStreamCaptureInvalidated.", flush=True)
             return 2
         from instinctwm.optimizer.passes.graph_capture import GraphBlockStack
-        _graph_pass = GraphBlockStack()          # noqa: F841 -- rebinds the cell declared above
+        # IWM_MAX_GRAPHS exists because the default cap of 64 is not survivable on every run:
+        # a 50-task certification OOMed at held=64 evicted=400 on an 80 GB A100, since evicted
+        # graphs do not give their private memory pools back. Lower it to bound the pool. It is
+        # a knob, not a new default -- 64 is the measured working set and going under it trades
+        # memory for recapture (FIFO at 24 once measured 214 captures instead of 60).
+        _graph_pass = GraphBlockStack(          # noqa: F841 -- rebinds the cell declared above
+            max_graphs=int(os.environ.get("IWM_MAX_GRAPHS", "64")))
         _graph_pass.install(S, S.VA_Server)
         applied.append("graph-blocks")
 
