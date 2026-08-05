@@ -112,11 +112,11 @@ def main() -> int:
     ap.add_argument(
         "--fuse-residual", action="store_true",
         help="Fuse the block's two gated residuals into one Triton kernel "
-             "(model.py:543-544 and 563-564). 3 eager kernels -> 1, and 50.1 MB of traffic -> "
-             "14.8 MB per site. The kernel is bit-exact (enable_fp_fusion=False, asserted on "
-             "PTX) and the installer sweeps for the break-even element count on THIS box: on an "
-             "A100 it is 1.26x on the video stream and 0.93x on the action stream, so shapes "
-             "below the measured threshold stay eager.")
+             "(model.py:543-544 and 563-564). 3 eager kernels -> 1. Bit-exact "
+             "(enable_fp_fusion=False, asserted on PTX) and 3.0-7.6x on the region under graph "
+             "replay -- but MEASURED 0.994x END TO END on the shipped chain (RESULTS.md #10). "
+             "Kept opt-in for that reason: the win is real at region and block level and does "
+             "not survive into the control cycle.")
     ap.add_argument(
         "--deterministic-seed", type=int, default=None,
         help="Seed torch before each chunk's noise draw. REQUIRED to compare two variants: "
@@ -173,12 +173,27 @@ def main() -> int:
         # Installed BEFORE the block-rewriting passes below. Both of those route their residuals
         # through the same hook, so order does not change what runs -- but arming the hook first
         # means the sweep prints before the server's own startup noise.
+        from instinctwm.runtime.fused_residual import RESIDUAL
         from instinctwm.runtime.lingbot_install import install_operator_fusion
         # --graph-blocks decides which sweep gates the install, so it is read here rather than
         # defaulted. Under capture the Triton launcher cost is amortised away and the kernel
         # wins at both stream shapes; without capture it only wins on the video stream.
         applied += install_operator_fusion(
             S, S.VA_Server, graph_captured=getattr(args, "graph_blocks", False))
+
+        # Print what the hook actually did, once per reset. Without this, "the fusion is
+        # installed" and "the fusion ran" are indistinguishable from outside the process -- and
+        # they come apart quietly, because a shape below the break-even or a non-contiguous
+        # operand routes back to eager by design. An A/B whose treatment arm never fired looks
+        # exactly like an A/B with no effect.
+        _orig_reset_fr = S.VA_Server._reset
+
+        def _reset_report(self, prompt=None):
+            out = _orig_reset_fr(self, prompt=prompt)
+            print(f"[operator_fusion] {RESIDUAL.report()}", flush=True)
+            return out
+
+        S.VA_Server._reset = _reset_report
 
     if getattr(args, "ring_kv", False):
         from instinctwm.optimizer.passes.ring_kv import RingKVAddressing

@@ -36,6 +36,23 @@ not a hint; it selects which of the two sweeps decides. Both are measured and bo
 because the number that was not used is the one a reader will want to check.
 
 `min_numel` is not a tuning constant. It is a measurement, retaken on every install.
+
+WHAT THE SWEEP BELOW DOES NOT MEASURE
+--------------------------------------
+It is a REGION benchmark, and the region is not the deliverable. Measured end to end on the
+shipped chain with `--graph-blocks`, 8 measurements per arm, ABBA-ordered, fresh server each:
+
+    shipped chain              3198.8 ms   (stdev 17.0)
+    + --fuse-residual          3217.0 ms   (stdev 16.4)      0.994x
+
+A 0.57% REGRESSION, against 3.0x-7.6x on the region and 1.033x on a real block. The kernel was
+demonstrably running -- `fused=34560 below_threshold=0 bypassed=0` -- so this is not a treatment
+arm that failed to fire. See `eval/lingbot_va_robotwin/RESULTS.md` section 10.
+
+So the gate this file implements answers "which shapes", not "whether at all". The second
+question belongs to `harness.cycle_ms_before/after` per `optimizer/contract.py`, and until an
+installer runs that, arming here is a decision about shapes taken inside a decision nobody made.
+`--fuse-residual` stays opt-in for exactly that reason.
 """
 
 from __future__ import annotations

@@ -366,3 +366,87 @@ shape. Not chased further, because 0.5% of a cycle cannot justify it.
 A first pass apportioned GPU time by bytes and was wrong: 5.92 GB over 183.3 ms is 32 GB/s, ~100x
 under HBM, which is precisely the signal that these copies are overhead-bound rather than
 bandwidth-bound.
+
+---
+
+# 10. L5 operator fusion — measured at three scales, and rejected at the one that counts (2026-08-05)
+
+The kernel layer (`instinctwm/kernels/`) had no caller until now: regions were declared, kernels
+registered themselves, and nothing outside `tests/` imported either. `OperatorFusion` connects it
+to a plan, and `--fuse-residual` puts it on the serving path. This section is what that bought.
+
+**Recommendation: keep it opt-in. Do not add `--fuse-residual` to the shipped chain.**
+
+## What was fused
+
+`(hidden.float() + x * gate).type_as(hidden)`, the block's two gated residuals — the
+self-attention one (`model.py:543-544`) and the feed-forward one (`:563-564`). Pure elementwise,
+no reduction, so it is the one declared region where BITEXACT is reachable. 3 eager kernels -> 1.
+
+## Three measurements, two of which are encouraging and irrelevant
+
+| scale | what was measured | result |
+|---|---|---|
+| region, python launch | the expression alone, in a python loop | 0.73x–1.79x, size-dependent |
+| region, cuda-graph replay | the same, device time only | **3.0x–7.6x** |
+| one real block, graph replay | `WanTransformerBlock`, interleaved A/B | **1.033x**, `torch.equal` |
+| **full control cycle** | **shipped chain + `--graph-blocks`, ABBA** | **0.994x** |
+
+Region and block level say ship it. The cycle says otherwise, and the cycle is the number.
+
+## The end-to-end result
+
+8 measurements per arm, alternating ABBA, a **fresh server for every measurement** on the same
+GPU, chains differing by exactly one entry.
+
+| arm | mean | median | stdev | min | max |
+|---|---|---|---|---|---|
+| shipped chain | 3198.8 ms | 3198.9 ms | 17.0 | 3169.7 | 3216.4 |
+| + `--fuse-residual` | 3217.0 ms | 3215.2 ms | 16.4 | 3197.5 | 3241.9 |
+
+**0.994x — a 0.57% regression, t ≈ 2.2, borderline.** Paired per-measurement deltas are +14.0,
++40.8, +26.2, −8.3 ms: three of four against the fusion, one for it. The honest reading is *no
+gain, plausibly a small loss* — not a clean regression, and nowhere near the ~3% the block-level
+measurement predicts.
+
+The fusion was verifiably running. `RESIDUAL.report()` on every reset:
+`fused=34560 below_threshold=0 bypassed=0` — every residual site took the kernel, zero fallbacks.
+This is not a treatment arm that failed to fire.
+
+## Two confounds that produced wrong answers first, recorded so they are not repeated
+
+1. **Order bias.** The first design ran base then fusion every round. The box drifts *upward*
+   across a session — 3214 → 3730 → 3964 ms over three rounds — so "second" is systematically
+   slower, and the treatment arm was always second. ABBA fixes it.
+2. **Allocator carry-over.** `--no-empty-cache` means the caching allocator never returns
+   anything and each server sits at **81 GB on an 80 GB card**. Reusing a server across
+   measurements carries that state forward; the first attempt showed 46–52% spread between kept
+   runs and `probe_latency` correctly refused to quote it. A fresh server per measurement brings
+   within-measurement spread to 0.2–0.5%.
+
+A third, at block level: timing stock, then hooked, then armed *in that order* reported 1.24x for
+a configuration where the kernel had not been armed at all (`fused=0`). The whole difference was
+the A100 boosting its clocks during the ~2,000 warm-up launches in between. Interleave, or do not
+measure.
+
+## Why the block-level win does not survive
+
+Not established. What is established is that it does not, and the gap is large enough that the
+region-level break-even sweep the installer runs is **not predictive of the cycle**. That is a gap
+in this integration, not a property of this kernel: `optimizer/contract.py` says the performance
+gate is `harness.cycle_ms_before/after`, and the installer gates on a region microbenchmark
+instead. The region sweep is the right instrument for *which shapes*, and the wrong one for
+*whether at all*.
+
+The block-level probe also ran with a nearly-empty KV pool, where attention is cheap and the
+residual is a larger share of the block. The server runs a pool that grows 272 tokens per cycle.
+That direction is consistent with the gap but does not account for its size, so it is a
+hypothesis, not the finding.
+
+## What stays
+
+The pass, the kernel, the hook and the flag all stay. `OperatorFusion` remains in
+`default_passes()`, where it is self-gating: without `--graph-blocks` the break-even lands at
+1,966,080 elements, above both stream shapes, so `plan.serve()` arms nothing. The measurement is
+here so that "fuse the elementwise residuals" is not proposed a third time without a cycle-level
+gate attached to it.
