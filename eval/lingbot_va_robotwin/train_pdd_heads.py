@@ -77,7 +77,20 @@ def load_context_files(root: str, heldout_from_ep: int):
         raise SystemExit(
             f"split produced train={len(train)} held={len(held)} from {len(files)} contexts; "
             f"--heldout-from-ep={heldout_from_ep} does not partition this pool")
-    return train, held
+
+    # INTERLEAVE THE HELD-OUT SET BY TASK. `glob` returns name-sorted paths, so held[:2] would be
+    # adjust_bottle__ep8 and adjust_bottle__ep9 -- every validation pass would measure per-head error
+    # and endpoint error on ONE task out of fifty, and report it as the held-out number. Round-robin
+    # over tasks means held[:n] spans n different tasks for any n.
+    by_task = {}
+    for f in held:
+        by_task.setdefault(f.stem.split("__ep")[0], []).append(f)
+    interleaved, tasks = [], sorted(by_task)
+    for i in range(max(len(v) for v in by_task.values())):
+        for tk in tasks:
+            if i < len(by_task[tk]):
+                interleaved.append(by_task[tk][i])
+    return train, interleaved
 
 
 def read_context(path: Path, cam_keys):
@@ -88,6 +101,30 @@ def read_context(path: Path, cam_keys):
 
 
 # -- validation -----------------------------------------------------------------------------------
+
+#: Validation must be PAIRED across ranks. per_head_error shards by `k % world` and reassembles the
+#: pieces, so if each rank drew its own noise the assembled vector would stitch together eight
+#: unrelated trajectories and the per-head numbers would not describe any single rollout. Nothing
+#: seeds torch here -- `S.init_distributed` only calls `init_process_group` -- so two ranks really do
+#: draw different noise. Deriving the state from a fixed seed keyed on the CONTEXT makes it identical
+#: on every rank and reproducible between validation passes, so successive reports are comparable.
+VAL_SEED = 20260804
+
+
+def seed_state(adapter, ctx):
+    """The fp64 initial state for a validation rollout: identical on every rank, per context."""
+    key = VAL_SEED ^ (abs(hash((ctx.task, ctx.prompt))) % (2 ** 31))
+    g = torch.Generator(device="cpu").manual_seed(key)
+    x = torch.randn(adapter.state_shape(), generator=g, dtype=torch.float32)
+    return x.to(device=adapter.S.device, dtype=torch.float64)
+
+
+def advance_hp(x, heads, grid, start, stop):
+    """`instinct_pdd.advance` in fp64, for measurement rather than training."""
+    out = x
+    for l in range(start, stop):
+        out = out + heads[l].double() * grid.h(l)
+    return out
 
 @torch.no_grad()
 def per_head_error(adapter, student, teacher, grid, ctx, cfg, *, rank, world, seed):
@@ -277,43 +314,51 @@ def main() -> int:
         heads = student.heads(x_n, grid.cond(n), cond=ctx)
         out = pdd_loss(student, teacher, x_n, grid, n, k, cond=ctx, cfg=pcfg, heads=heads)
 
-        opt.zero_grad(set_to_none=False)        # grads must EXIST on every rank to be all-reduced
+        opt.zero_grad(set_to_none=True)
         out.loss.backward()
 
+        # WHY EVERY HEAD HAS A GRADIENT HERE, AND WHY THAT IS A PROBLEM.
+        # `student.heads()` stacks all 256 head outputs, so backward through that stack writes an
+        # EXACT ZERO gradient into every head the loss did not use. Verified on this interpreter:
+        # after a backward that touches head 3 only, `grad is None` is False for all six heads of a
+        # repro and the norms are [0, 0, 0, 0.4948, 0, 0].
+        #
+        # AdamW skips a parameter only when its grad is None -- so left alone it would apply weight
+        # decay and a momentum step to all 256 heads every iteration. Measured: an untouched head
+        # moves 4.8e-06 per step. With ~248 of 256 heads untouched each step, every head would be
+        # decayed roughly 19,000 times against ~78 real updates over this run, which is a systematic
+        # shrink dressed up as regularisation.
+        #
+        # So: all-reduce the touched heads, then NULL the rest, which makes AdamW ignore them.
         if world > 1:
-            # Exchange only the union of touched heads: 8 x 0.6 M rather than 256 x 0.6 M.
-            ks = torch.full((world,), k, dtype=torch.long, device=server.device)
-            gathered = [torch.zeros_like(ks[:1]) for _ in range(world)]
-            dist.all_gather(gathered, ks[:1])
-            touched = sorted({int(g.item()) for g in gathered})
-            counts = {kk: sum(1 for g in gathered if int(g.item()) == kk) for kk in touched}
-            for kk in touched:
-                for p in student.head_list[kk].parameters():
-                    if p.grad is not None:
-                        dist.all_reduce(p.grad, op=dist.ReduceOp.SUM)
-                        # Divide by how many ranks touched THIS head, so its effective step size does
-                        # not depend on how many ranks happened to pick it.
-                        p.grad /= counts[kk]
-            for kk in touched:
-                head_counts[kk] += counts[kk]
+            mine = torch.tensor([k], dtype=torch.long, device=server.device)
+            gathered = [torch.zeros_like(mine) for _ in range(world)]
+            dist.all_gather(gathered, mine)
+            ks = [int(g.item()) for g in gathered]
         else:
-            head_counts[k] += 1
+            ks = [k]
+        touched = sorted(set(ks))
+        counts = {kk: ks.count(kk) for kk in touched}
 
-        # DROP THE ZERO GRADS BEFORE THE OPTIMISER SEES THEM. `student.heads()` evaluates all 256
-        # heads and `torch.stack` back-propagates an EXACT ZERO cotangent into every unsupervised
-        # one, so after backward all 512 head tensors have a defined .grad. AdamW then treats them
-        # as participating: decoupled weight decay fires on every head every step (measured: 0.9802
-        # total shrink over 20k steps instead of 0.9994), and exp_avg_sq is diluted by the ~97%
-        # zero-gradient steps so each real update is inflated by sqrt(1/duty) -- ~5.6x at world=8 and
-        # ~15x at world=1, which would make a single-GPU debug run a different experiment entirely.
-        # Setting grad=None makes AdamW skip them, which is the sparse-update semantics this needs.
-        keep = set(touched) if world > 1 else {k}
-        for kk in range(grid.n_intervals):
-            if kk not in keep:
-                for p_ in student.head_list[kk].parameters():
-                    p_.grad = None
-        torch.nn.utils.clip_grad_norm_(
-            [p for p in student.parameters() if p.requires_grad], 1.0)
+        for idx, head in enumerate(student.head_list):
+            if idx not in touched:
+                for prm in head.parameters():
+                    prm.grad = None                 # AdamW will not touch it
+                continue
+            for prm in head.parameters():
+                if prm.grad is None:                # defensive: keep the collective symmetric
+                    prm.grad = torch.zeros_like(prm)
+                if world > 1:
+                    # Every rank iterates `sorted(touched)`, so the collectives are issued in the
+                    # same order on all ranks -- a rank-dependent order here would deadlock.
+                    dist.all_reduce(prm.grad, op=dist.ReduceOp.SUM)
+                    prm.grad /= counts[idx]
+            # Clip PER HEAD. A joint norm over the 7-8 touched heads would make each head's scale
+            # factor depend on the other ranks' gradients that step, reintroducing exactly the
+            # world-size coupling that dividing by counts[idx] was written to remove.
+            torch.nn.utils.clip_grad_norm_(head.parameters(), 1.0)
+            head_counts[idx] += counts[idx]
+
         opt.step()
         rollout.advance(heads.detach())
 
@@ -328,6 +373,9 @@ def main() -> int:
             if rank == 0:
                 summarise(report, head_counts, grid, step, out_dir, a)
                 history.append(report)
+                # Checkpoint at every validation. A 20k-step run is many GPU-hours, and an OOM or an
+                # NCCL watchdog abort at step 19,000 would otherwise leave nothing on disk.
+                save(student, grid, a, out_dir, head_counts, report, tag=f"step{step}")
                 # Checkpoint at every validation boundary. A 20k-step run over 8 GPUs is many
                 # GPU-hours; writing only at the end means any crash, preemption or OOM discards all
                 # of it. Optimiser state goes too, so a resume is a resume and not a restart.
@@ -338,7 +386,15 @@ def main() -> int:
 
     # -- final ------------------------------------------------------------------------------------
     report = validate(adapter, student, teacher, grid, pcfg, held_files, cfg,
-                      rank=rank, world=world, n_contexts=max(a.val_contexts, 4))
+                      rank=rank, world=world, n_contexts=a.val_contexts)
+    # NOT max(val_contexts, 4). validate() picks contexts by striding held_files by len//n, so
+    # changing n changes WHICH contexts are evaluated, not just how many: at n=3 the stride is 33
+    # and at n=4 it is 25, giving sets that overlap in one of four. The final report then looks like
+    # a large improvement over the last intermediate one -- measured on the run that produced this
+    # file, per-head error appeared to fall 0.520 -> 0.187 and the endpoint 17.9% -> 16.4%, purely
+    # from the swap. The reference scale moving (1.3139 -> 1.2767) is the tell, since scale is a
+    # property of the contexts. A larger final sample is worth having, but it has to be a SUPERSET
+    # reported alongside the tracked set, never a substitute for it.
     # head_counts needs no all-reduce: every rank adds counts[kk] for every touched head, so all
     # ranks already hold the same global histogram.
     if rank == 0:
@@ -426,11 +482,11 @@ def summarise(report, head_counts, grid, step, out_dir, a, final=False):
     }, indent=2))
 
 
-def save(student, grid, a, out_dir, head_counts, report):
+def save(student, grid, a, out_dir, head_counts, report, tag: str = "final"):
     """Write the heads, and refuse to call the checkpoint usable if the coverage gate failed."""
     hc = head_counts.cpu().numpy()
     gate_ok = bool((hc >= a.min_updates_per_head).all())
-    p = out_dir / ("final" if gate_ok else "final_GATE_FAILED")
+    p = out_dir / (tag if gate_ok else f"{tag}_GATE_FAILED")
     p.mkdir(parents=True, exist_ok=True)
     torch.save(student.state_dict(), p / "heads.pt")
     (p / "delta.json").write_text(json.dumps({
