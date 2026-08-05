@@ -47,14 +47,21 @@ RELEASED = (
               "removing 7,110 casts of a constant per control cycle. Cost model predicted 47.4 ms, "
               "measured 49.7 ms (6% error)"),
     Released(
-        pid="P005", name="graph_block_stack", version="1.0.0", tier=Tier.BITEXACT,
+        pid="P005", name="graph_block_stack", version="1.0.1", tier=Tier.BITEXACT,
         step_speedup=1.38,
         gates="max|delta action| = 0 over 6 paired seeded cycles, verified with the gate run AFTER "
               "an episode reset (the ordering that exposed a nan); 2539.9 -> 1842.0 ms under "
               "probe_latency --repeats 3, spread 0.5%. Runs the 30-block stack from a captured "
               "CUDA graph: per-op dispatch 6.2 us (83.6% of it cudaLaunchKernel) becomes ~1.17 us "
               "replay. Requires P003, whose slice addressing is what makes the stack capturable "
-              "at all -- a stock block raises cudaErrorStreamCaptureInvalidated"),
+              "at all -- a stock block raises cudaErrorStreamCaptureInvalidated. "
+              "v1.0.1: the eager FALLBACK did not advance the ring. `install` sets "
+              "_iwm_defer_commit permanently, so only _commit_all advances it, and both fallback "
+              "returns skipped that -- from the first capture failure onwards the ring froze, every "
+              "later forward rewrote the same slots, and attention read a stale window with no error "
+              "raised. A correctness bug, which is the only reason a frozen pass may change. No "
+              "reported number is affected: no log contains CAPTURE FAILED and no eval server ran "
+              "--graph-blocks"),
     Released(
         pid="P006", name="stable_state_pools", version="1.0.0", tier=Tier.BITEXACT,
         step_speedup=1.52,
@@ -71,6 +78,22 @@ RELEASED = (
               "parity checks across 5.6 full wraps; 3/3 bitwise-identical action streams on "
               "put_bottles_dustbin (1700 steps, ~53 cycles/episode)"),
 )
+
+#: MEASUREMENT PROTOCOL, and a caveat that applies to every number below.
+#:
+#: These were measured with SEQUENTIAL A/B ordering: baseline arm first, treatment arm second. PR #2
+#: showed that this box drifts UPWARD within a session -- 3214 -> 3730 -> 3964 ms across three rounds
+#: of the same configuration -- so whichever arm runs second is systematically penalised. Every number
+#: here is therefore PRE-ORDER-CONTROL: usable, and not equivalent to an ABBA-ordered measurement.
+#:
+#: The direction of the bias is knowable even if the size is not. Where the treatment ran second, its
+#: speedup is UNDERSTATED; where a regression was reported for a second-running arm, part of it may be
+#: drift. ABBA (base, treat, treat, base) is the default protocol from now on.
+#:
+#: THESE ARE ALSO QUALITY-PROFILE NUMBERS -- 25 video / 50 action steps, ~79 forwards per cycle. The
+#: shipped Fast profile runs 4 forwards, so the per-step term is ~20x smaller while the fixed term is
+#: unchanged. Do not quote any of this for the Fast profile; it is being re-measured.
+MEASUREMENT_PROTOCOL = "sequential A/B, pre-order-control; Quality profile (25/50)"
 
 #: The measured chain these produce together, under `probe_latency.py --repeats 3`.
 BASELINE = {

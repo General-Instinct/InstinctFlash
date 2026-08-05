@@ -182,9 +182,31 @@ class GraphBlockStack:
             for block in self_model.blocks:
                 block.attn1._iwm_commit(cache_name, key_size, update_cache)
 
+        def _eager(self_model, hidden, text, tproj, rot, update_cache, cache_name):
+            """The fallback path -- and it MUST still advance the ring.
+
+            `install` sets `_iwm_defer_commit = True` PERMANENTLY, so `WanAttention.forward` no
+            longer commits inline and the only thing that advances the ring is `_commit_all`. Both
+            fallback returns used to call `_stack` directly and skip it, which meant that from the
+            first capture failure onwards the ring FROZE: `count` stopped growing, every later
+            forward rewrote the same slots, and attention read a stale window. Nothing raised,
+            nothing logged. The actions stayed plausible and were wrong.
+
+            That is the worst shape a bug can have here. Capture failure is advertised as a SAFE
+            degradation -- fall back to eager, lose the speedup, keep the numerics -- and this was
+            the one path where "safe" meant "silently incorrect". The only symptom is a task success
+            rate that drifts, which is indistinguishable from a bad checkpoint.
+
+            Credit: found in PR #2 via an OOM during a 50-task certification run, i.e. exactly how
+            it would surface in production rather than in a test.
+            """
+            out = _stack(self_model, hidden, text, tproj, rot, update_cache, cache_name)
+            _commit_all(self_model, hidden, update_cache, cache_name)
+            return out
+
         def stack_graphed(self_model, hidden, text, tproj, rot, update_cache, cache_name):
             if engine.failed:
-                return _stack(self_model, hidden, text, tproj, rot, update_cache, cache_name)
+                return _eager(self_model, hidden, text, tproj, rot, update_cache, cache_name)
             k = _key(self_model, hidden, tproj, update_cache, cache_name)
             if k not in engine.graphs:
                 try:
@@ -195,7 +217,7 @@ class GraphBlockStack:
                     if engine.verbose:
                         print(f"[graph_block_stack] CAPTURE FAILED, falling back to eager for the "
                               f"rest of the run: {engine.failed}", flush=True)
-                    return _stack(self_model, hidden, text, tproj, rot,
+                    return _eager(self_model, hidden, text, tproj, rot,
                                   update_cache, cache_name)
             else:
                 engine._touch(k)                     # LRU: recently used keys survive eviction
