@@ -81,14 +81,42 @@ POST_ATTENTION = FusibleRegion(
 )
 
 
+#: The self-attention call itself. Declared as a region so the registry can weigh a replacement
+#: against it -- NOT because it is "fusible" in the elementwise sense.
+#:
+#: `gather` is the op that matters and it is why this region exists. After P003 the live set is a
+#: SLICE rather than a masked gather, which is cheap (measured 1.00x vs a contiguous copy on this
+#: box), but a slice still encodes its length as a shape, and that shape is what
+#: `graph_block_stack` has to put in its capture key. A kernel that takes the extent as a value
+#: removes it. `attention` is marked ATTENTION, so `derive_tier` treats any replacement as having
+#: its own reduction order and returns NUMERIC unless the kernel argues otherwise -- which is the
+#: correct default for anything that re-implements softmax.
+SELF_ATTENTION_RING = FusibleRegion(
+    name="self_attention_ring",
+    ops=(
+        OpSpec("gather", OpKind.RESHAPE, materializes_as=None, computes_in="bf16"),
+        OpSpec("attention", OpKind.ATTENTION, materializes_as="bf16", computes_in="fp32"),
+    ),
+    boundary_in=("query", "key_pool", "value_pool", "extent"),
+    boundary_out=("attn_output",),
+    phases=("kv_refresh", "video", "action"),
+    occurrences_per_forward=_LAYERS,
+    note="model.py:451-455 (stock: mask.nonzero + advanced index) / ring_kv.py (slice). The "
+         "extent reaches the op as a shape, which is what puts (start, count) in the capture key.",
+)
+
+
 def lingbot_fusion_descriptor() -> FusionDescriptor:
     return FusionDescriptor(
         model_id="lingbot-va-posttrain-robotwin",
-        regions=(PRE_ATTENTION, POST_ATTENTION),
+        regions=(PRE_ATTENTION, POST_ATTENTION, SELF_ATTENTION_RING),
         # measured from the post-ring-KV profile: elementwise/norm 160,225 launches and
         # gather/copy 163,596 launches per cycle, dominated by these two regions
         launches_per_region={
             "pre_attention_modulated_norm": 4,     # upcast, norm, scale+shift, type_as
             "post_attention_gated_residual": 3,    # upcast, gate-mul, add+type_as
+            # slice + transpose x3 + sdpa + transpose. Stock was 9 (nonzero, index x2, ...);
+            # P003 removed the gather, and what is left is mostly view bookkeeping.
+            "self_attention_ring": 6,
         },
     )
