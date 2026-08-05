@@ -118,6 +118,20 @@ def main() -> int:
              "Kept opt-in for that reason: the win is real at region and block level and does "
              "not survive into the control cycle.")
     ap.add_argument(
+        "--ring-attention", action="store_true",
+        help="Make the KV extent a device-resident VALUE instead of a tensor shape, so "
+             "(start, count) leaves the CUDA graph capture key. Requires --ring-kv. Measured on "
+             "this box: capture costs 172.0 ms, the key never converges (6/cycle, 20 distinct "
+             "`count` values in a 10-cycle run), and a capturing run costs ~1020 ms/cycle more "
+             "than a warm one. NUMERIC tier: the Triton kernel has its own reduction order.")
+    ap.add_argument(
+        "--attention-backend", action="store_true",
+        help="Pick the SDPA backend by MEASUREMENT on the served shapes instead of letting the "
+             "dispatcher's heuristic choose. On this box the dispatcher picks flash and cudnn is "
+             "faster on the video shape (0.285 -> 0.235 ms, 1.21x). NUMERIC tier: a different "
+             "backend is a different reduction order (max|d| 9.766e-04), so this arm needs a "
+             "paired non-inferiority certificate before it can ship.")
+    ap.add_argument(
         "--deterministic-seed", type=int, default=None,
         help="Seed torch before each chunk's noise draw. REQUIRED to compare two variants: "
              "_infer draws torch.randn for the initial video latents and action tokens "
@@ -205,8 +219,19 @@ def main() -> int:
         HoistInvariantCasts().install(S, S.VA_Server)
         applied.append("hoist-casts")
 
+    if getattr(args, "ring_attention", False):
+        # Strictly after --ring-kv: this overrides three of P003's seams (forward, _iwm_commit,
+        # _iwm_ring_signature) and cannot be installed before they exist.
+        if not getattr(args, "ring_kv", False):
+            print("REFUSING: --ring-attention requires --ring-kv. It rides on P003's ring "
+                  "bookkeeping; without it there is no interval to make device-resident.",
+                  flush=True)
+            return 2
+        from instinctwm.runtime.ring_attention_install import install_ring_attention
+        applied += install_ring_attention(S, S.VA_Server)
+
     _surface = []            # one-element cell: `global` cannot rebind a local of main()
-    _hoist_g = _pools_g = _promote_g = None
+    _hoist_g = _pools_g = _promote_g = _graph_pass = None
     _use_legacy = (getattr(args, "legacy_passes", False)
                    or getattr(args, "hoist_casts", False)
                    or getattr(args, "stable_pools", False))
@@ -286,7 +311,7 @@ def main() -> int:
                   "capture fails with cudaErrorStreamCaptureInvalidated.", flush=True)
             return 2
         from instinctwm.optimizer.passes.graph_capture import GraphBlockStack
-        _graph_pass = GraphBlockStack()
+        _graph_pass = GraphBlockStack()          # noqa: F841 -- rebinds the cell declared above
         _graph_pass.install(S, S.VA_Server)
         applied.append("graph-blocks")
 
@@ -358,6 +383,58 @@ def main() -> int:
             return out
 
         S.VA_Server._infer = _infer_reporting
+
+    if getattr(args, "attention_backend", False):
+        # Armed after the FIRST _infer, not after the first _reset, and that is forced by the
+        # pass rather than chosen here: it measures on the site's own query extent and REFUSES
+        # to guess one, so with no forward yet observed it declines with "site has not observed
+        # a query extent". The first cycle therefore runs stock and is not part of the arm.
+        from instinctwm.adapter.lingbot import LingBotSurface as _LBS
+        from instinctwm.passes.attention_backend import AttentionBackend
+        from instinctwm.passes.interface import SiteKind as _SiteKind, run_pass as _run_pass
+
+        _attn_g = AttentionBackend(min_speedup=1.05, verbose=True)
+        _armed: list = []
+
+        # ENUMERATE at reset, RUN after the first infer. Splitting the two is not tidiness, it
+        # is required: enumerating is what installs the adapter's recording wrapper, and the
+        # wrapper is what supplies the query extent the pass refuses to guess. Doing both after
+        # the first infer -- the first version of this -- installed the wrapper too late to have
+        # observed that infer, so the pass declined on all 30 layers with "no observed query
+        # extent" and the arm silently served the baseline. Same shape as the `--generic-only`
+        # path, which also enumerates sites it will not rewrite.
+        _orig_reset_a = S.VA_Server._reset
+
+        def _reset_attn(self, prompt=None):
+            out = _orig_reset_a(self, prompt=prompt)
+            if not _surface and hasattr(self, "transformer"):
+                _surface.append(_LBS(self.transformer, server=self))
+            if _surface:
+                list(_surface[0].sites(_SiteKind.ATTENTION_OP))
+            return out
+
+        S.VA_Server._reset = _reset_attn
+        _orig_infer_a = S.VA_Server._infer
+
+        def _infer_attn(self, obs, frame_st_id=0):
+            out = _orig_infer_a(self, obs, frame_st_id=frame_st_id)
+            if not _armed:
+                _armed.append(True)
+                if not _surface:
+                    _surface.append(_LBS(self.transformer, server=self))
+                print(f"[attention_backend] {_run_pass(_attn_g, _surface[0], None)}", flush=True)
+                for line in _attn_g.report().splitlines():
+                    print(f"[attention_backend] {line}", flush=True)
+                if _graph_pass is not None:
+                    # Every graph captured during that first cycle baked in the OLD attention
+                    # kernel. Replaying them would keep running it while `explain()` claimed the
+                    # swap had happened -- the exact silent-staleness failure this file's other
+                    # passes are gated against.
+                    _graph_pass.drop_graphs("attention_backend swapped the attention op")
+            return out
+
+        S.VA_Server._infer = _infer_attn
+        applied.append("attention-backend")
 
     if args.deterministic_seed is not None:
         applied += install_deterministic_seed(S, args.deterministic_seed)
