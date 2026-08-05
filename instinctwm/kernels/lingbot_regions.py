@@ -107,9 +107,18 @@ SELF_ATTENTION_RING = FusibleRegion(
 
 
 def lingbot_fusion_descriptor() -> FusionDescriptor:
+    # SELF_ATTENTION_RING is DELIBERATELY NOT LISTED. `FusionDescriptor` means "regions offered
+    # for operator fusion", and `OperatorFusion` takes every region in it whose admissible tier
+    # clears the ceiling. That region admits NUMERIC, so listing it made the fusion pass select
+    # it -- and the fusion installer cannot install it: it is a whole-op replacement that needs
+    # the device-resident extent `runtime/ring_attention_install.py` sets up, not a fused
+    # elementwise chain. A region containing an ATTENTION op is not an operator fusion.
+    #
+    # It stays a module-level declaration because `KernelRegistry` takes a region object
+    # directly, which is all the tier derivation and kernel selection need.
     return FusionDescriptor(
         model_id="lingbot-va-posttrain-robotwin",
-        regions=(PRE_ATTENTION, POST_ATTENTION, SELF_ATTENTION_RING),
+        regions=(PRE_ATTENTION, POST_ATTENTION),
         # measured from the post-ring-KV profile: elementwise/norm 160,225 launches and
         # gather/copy 163,596 launches per cycle, dominated by these two regions
         launches_per_region={
