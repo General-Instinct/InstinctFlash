@@ -127,7 +127,7 @@ def advance_hp(x, heads, grid, start, stop):
     return out
 
 @torch.no_grad()
-def per_head_error(adapter, student, teacher, grid, ctx, cfg, *, rank, world, seed):
+def per_head_error(adapter, student, teacher, grid, ctx, cfg, *, rank, world):
     """PDD loss for EVERY head on one context, sharded across ranks by k.
 
     One student forward per block yields all heads, so the cost is dominated by teacher evaluations:
@@ -135,61 +135,74 @@ def per_head_error(adapter, student, teacher, grid, ctx, cfg, *, rank, world, se
     fidelity, since each k is independent.
     """
     N, L = grid.n_intervals, grid.block
-    out = torch.full((N,), float("nan"), device=adapter.S.device)
+    dev, dt = adapter.S.device, adapter.S.dtype
     est = get_solver(cfg.solver)
-    # EVERY RANK MUST START FROM THE SAME x0. Ranks shard by k and the results are stitched back
-    # together, so a per-rank noise draw would assemble the per-head vector from 8 DIFFERENT
-    # trajectories -- aliasing the noise with k mod 8 and making one unlucky draw look like a
-    # periodic head pathology in exactly the 'worst heads' list the go/no-go is read from. Nothing
-    # seeds torch identically across processes (init_process_group does not, and the deterministic
-    # seed installer is not used here), so it is done explicitly.
-    g = torch.Generator(device=adapter.S.device).manual_seed(seed)
-    x0 = torch.randn(adapter.state_shape(), generator=g,
-                     dtype=adapter.STATE_DTYPE, device=adapter.S.device)
-    x_n = x0
+
+    # THREE VECTORS, NOT ONE OVERLOADED SENTINEL. An earlier version used NaN to mean "not my shard"
+    # and reassembled with nan_to_num(0.0) -- so a head whose loss actually WAS NaN (a diverged head)
+    # summed to 0.0 and reported as the BEST head in the table the go/no-go is read from.
+    out = torch.zeros(N, dtype=torch.float64, device=dev)
+    owned = torch.zeros(N, dtype=torch.float64, device=dev)
+    diverged = torch.zeros(N, dtype=torch.float64, device=dev)
+
+    # Every rank must start from the SAME x0: ranks shard by k and the pieces are stitched back
+    # together, so a per-rank draw would assemble the per-head vector out of 8 different
+    # trajectories, aliasing the noise with k mod 8 and making one unlucky draw look like a periodic
+    # head pathology. seed_state derives it from the context, so it is identical across ranks and
+    # stable across validation passes.
+    x_n = seed_state(adapter, ctx)
     for n in range(0, N, L):
-        heads = student.heads(x_n, grid.cond(n), cond=ctx)
+        heads = student.heads(x_n.to(dt), grid.cond(n), cond=ctx)
         for k in range(n, min(n + L, N)):
             if k % world != rank:
                 continue
-            x_k = advance(x_n, heads, grid, n, k)
-            target = est(teacher, x_k, grid, k, ctx)
-            out[k] = torch.nn.functional.mse_loss(heads[k], target)
-        x_n = advance(x_n, heads, grid, n, min(n + L, N))
+            x_k = advance_hp(x_n, heads, grid, n, k)
+            target = est(teacher, x_k.to(dt), grid, k, ctx)
+            val = torch.nn.functional.mse_loss(heads[k].float(), target.float()).double()
+            if torch.isfinite(val):
+                out[k] = val
+            else:
+                diverged[k] = 1.0
+            owned[k] = 1.0
+        x_n = advance_hp(x_n, heads, grid, n, min(n + L, N))
     if world > 1:
-        # nan is the "not my shard" marker; nansum over ranks reassembles the full vector.
-        filled = torch.nan_to_num(out, nan=0.0)
-        dist.all_reduce(filled, op=dist.ReduceOp.SUM)
-        out = filled
-    return out
+        for vec in (out, owned, diverged):
+            dist.all_reduce(vec, op=dist.ReduceOp.SUM)
+    missing = int((owned == 0).sum())
+    if missing:
+        raise RuntimeError(
+            f"per_head_error: {missing} heads owned by no rank -- the k % world sharding lost them, "
+            f"so the report would silently describe a subset")
+    res = out.clone()
+    res[diverged > 0] = float("nan")            # NaN now means diverged, and only that
+    return res.float()
 
 
 @torch.no_grad()
-def endpoint_error(adapter, student, teacher, grid, ctx, cfg, *, seed):
+def endpoint_error(adapter, student, teacher, grid, ctx, cfg):
     """The end-to-end number: student at NFE=2 against the teacher integrated over the whole grid.
 
     Both start from the SAME noise. The ODE is deterministic, so identical noise must reach the same
     latent -- a distributional score would pass a student that produced plausible latents from the
     wrong trajectories, which for a policy conditioned on those latents is not the same model.
     """
-    g = torch.Generator(device=adapter.S.device).manual_seed(seed)
-    x0 = torch.randn(adapter.state_shape(), generator=g,
-                     dtype=adapter.STATE_DTYPE, device=adapter.S.device)
+    dt = adapter.S.dtype
+    x0 = seed_state(adapter, ctx)
     est = get_solver(cfg.solver)
 
-    x = x0                                          # teacher, all N intervals
+    x = x0                                      # teacher, all N intervals, fp64 accumulator
     for k in range(grid.n_intervals):
-        x = x + est(teacher, x, grid, k, ctx) * grid.h(k)
+        x = x + est(teacher, x.to(dt), grid, k, ctx).double() * grid.h(k)
     ref = x
 
-    x = x0                                          # student, N/L forwards
+    x = x0                                      # student, N/L forwards
     for n in range(0, grid.n_intervals, grid.block):
-        heads = student.heads(x, grid.cond(n), cond=ctx)
-        x = advance(x, heads, grid, n, min(n + grid.block, grid.n_intervals))
+        heads = student.heads(x.to(dt), grid.cond(n), cond=ctx)
+        x = advance_hp(x, heads, grid, n, min(n + grid.block, grid.n_intervals))
     stu = x
 
-    l2 = float((stu - ref).float().pow(2).mean().sqrt())
-    scale = float(ref.float().pow(2).mean().sqrt())
+    l2 = float((stu - ref).pow(2).mean().sqrt())
+    scale = float(ref.pow(2).mean().sqrt())
     return l2, scale, ref, stu
 
 
@@ -236,6 +249,8 @@ def main() -> int:
     ap.add_argument("--val-every", type=int, default=2500)
     ap.add_argument("--val-contexts", type=int, default=2)
     ap.add_argument("--log-every", type=int, default=100)
+    ap.add_argument("--frozen-check-every", type=int, default=500,
+                    help="audit that heads with no new updates are bit-identical; 0 disables")
     a = ap.parse_args()
 
     rank = int(os.getenv("RANK", 0))
@@ -275,6 +290,35 @@ def main() -> int:
     # Per-rank RNG so ranks draw different (context, k) -- that is the whole point of the fan-out.
     rng = random.Random(1234 + rank)
     head_counts = torch.zeros(grid.n_intervals, dtype=torch.long, device=server.device)
+
+    # OPTIMISATION DIAGNOSTICS. Every one of these is a per-step quantity that cannot be recovered
+    # from a checkpoint afterwards, which is why they are accumulated as the run goes.
+    N = grid.n_intervals
+    dg = {
+        # clipping: how often the per-head clip engages, and how hard
+        "clip_n": torch.zeros(N, device=server.device),
+        "clip_hits": torch.zeros(N, device=server.device),
+        "prenorm_sum": torch.zeros(N, device=server.device),
+        "prenorm_max": torch.zeros(N, device=server.device),
+        # the counterfactual: what a JOINT norm over the touched heads would have been, which is
+        # what the pre-fix code clipped against. Reported so "before/after the per-head fix" is a
+        # measured comparison rather than an argument.
+        "joint_over_single_sum": torch.zeros(1, device=server.device),
+        "joint_batches": torch.zeros(1, device=server.device),
+        # effective step size actually taken, per head: ||p_after - p_before|| and its relative size
+        "step_sum": torch.zeros(N, device=server.device),
+        "step_max": torch.zeros(N, device=server.device),
+        "relstep_sum": torch.zeros(N, device=server.device),
+        # frozen-head audit
+        "frozen_violations": 0,
+        "frozen_checks": 0,
+    }
+    # Checksum per head, to prove an untouched head is bit-identical rather than merely "close".
+    def head_sig(idx):
+        with torch.no_grad():
+            return float(sum(float(q.double().sum()) for q in student.head_list[idx].parameters()))
+    last_sig = [head_sig(i) for i in range(N)]
+    last_counts = head_counts.clone()
     out_dir = Path(a.out)
     if rank == 0:
         out_dir.mkdir(parents=True, exist_ok=True)
@@ -283,6 +327,10 @@ def main() -> int:
     ctx_cache = {}
     rollout = None
     history = []
+    # Held-out error need not be monotone, so track the best pass separately. Reporting only the
+    # final step would conflate "stopped improving" with "got worse" -- different answers to the
+    # capacity question.
+    best = {"rmse": float("inf"), "step": -1}
     t0 = time.time()
 
     for step in range(a.steps):
@@ -340,6 +388,7 @@ def main() -> int:
         touched = sorted(set(ks))
         counts = {kk: ks.count(kk) for kk in touched}
 
+        prenorms, before_p = [], {}
         for idx, head in enumerate(student.head_list):
             if idx not in touched:
                 for prm in head.parameters():
@@ -356,11 +405,47 @@ def main() -> int:
             # Clip PER HEAD. A joint norm over the 7-8 touched heads would make each head's scale
             # factor depend on the other ranks' gradients that step, reintroducing exactly the
             # world-size coupling that dividing by counts[idx] was written to remove.
-            torch.nn.utils.clip_grad_norm_(head.parameters(), 1.0)
+            pre = float(torch.nn.utils.clip_grad_norm_(head.parameters(), 1.0))
+            dg["clip_n"][idx] += 1
+            dg["prenorm_sum"][idx] += pre
+            dg["prenorm_max"][idx] = max(float(dg["prenorm_max"][idx]), pre)
+            if pre > 1.0:
+                dg["clip_hits"][idx] += 1
+            prenorms.append(pre)
+            before_p[idx] = [q.detach().clone() for q in head.parameters()]
             head_counts[idx] += counts[idx]
 
         opt.step()
+
+        with torch.no_grad():
+            for idx, prev in before_p.items():
+                cur = list(student.head_list[idx].parameters())
+                d = float(torch.sqrt(sum((a - b).double().pow(2).sum() for a, b in zip(cur, prev))))
+                nrm = float(torch.sqrt(sum(a.double().pow(2).sum() for a in cur)))
+                dg["step_sum"][idx] += d
+                dg["step_max"][idx] = max(float(dg["step_max"][idx]), d)
+                dg["relstep_sum"][idx] += d / max(nrm, 1e-12)
+            if prenorms:
+                # A joint clip would have divided by sqrt(sum of squares) instead of each head's own
+                # norm, so this ratio is exactly the extra suppression the pre-fix code applied.
+                joint = sum(x * x for x in prenorms) ** 0.5
+                single = sum(prenorms) / len(prenorms)
+                dg["joint_over_single_sum"] += joint / max(single, 1e-12)
+                dg["joint_batches"] += 1
         rollout.advance(heads.detach())
+
+        if a.frozen_check_every and step and step % a.frozen_check_every == 0:
+            # An untouched head must be BIT-IDENTICAL, not merely close: weight decay or a momentum
+            # tail would show up as a tiny drift, which is exactly the defect Run 1 carried.
+            with torch.no_grad():
+                for i in range(N):
+                    if int(head_counts[i]) == int(last_counts[i]):
+                        s = head_sig(i)
+                        if s != last_sig[i]:
+                            dg["frozen_violations"] += 1
+                        dg["frozen_checks"] += 1
+                    last_sig[i] = head_sig(i)
+                last_counts = head_counts.clone()
 
         if rank == 0 and a.log_every and step % a.log_every == 0:
             cov = int((head_counts > 0).sum())
@@ -371,7 +456,13 @@ def main() -> int:
             report = validate(adapter, student, teacher, grid, pcfg, held_files, cfg,
                               rank=rank, world=world, n_contexts=a.val_contexts)
             if rank == 0:
-                summarise(report, head_counts, grid, step, out_dir, a)
+                if report["endpoint_rmse"] < best["rmse"]:
+                    best = {"rmse": report["endpoint_rmse"], "step": step}
+                    # Keep the best-by-endpoint weights separately. Held-out error need not be
+                    # monotone, and reporting only the final step would conflate "stopped improving"
+                    # with "got worse", which are different answers to the capacity question.
+                    save(student, grid, a, out_dir, head_counts, report, tag="best")
+                summarise(report, head_counts, grid, step, out_dir, a, dg=dg, best=best)
                 history.append(report)
                 # Checkpoint at every validation. A 20k-step run is many GPU-hours, and an OOM or an
                 # NCCL watchdog abort at step 19,000 would otherwise leave nothing on disk.
@@ -398,8 +489,15 @@ def main() -> int:
     # head_counts needs no all-reduce: every rank adds counts[kk] for every touched head, so all
     # ranks already hold the same global histogram.
     if rank == 0:
-        summarise(report, head_counts, grid, a.steps, out_dir, a, final=True)
+        if report["endpoint_rmse"] < best["rmse"]:
+            best = {"rmse": report["endpoint_rmse"], "step": a.steps}
+            save(student, grid, a, out_dir, head_counts, report, tag="best")
+        summarise(report, head_counts, grid, a.steps, out_dir, a, final=True, dg=dg, best=best)
         save(student, grid, a, out_dir, head_counts, report)
+        (out_dir / "history.json").write_text(json.dumps(
+            {"best": best, "passes": [{"step": h.get("step"), "endpoint_rmse": h["endpoint_rmse"],
+                                       "endpoint_scale": h["endpoint_scale"],
+                                       "tasks": h.get("tasks")} for h in history]}, indent=2))
     if dist.is_initialized():
         dist.barrier()
     return 0
@@ -418,17 +516,19 @@ def validate(adapter, student, teacher, grid, pcfg, held_files, cfg, *, rank, wo
     for i, f in enumerate(chosen):
         obs, prompt, task = read_context(f, cfg.obs_cam_keys)
         ctx = adapter.encode_context(obs, prompt=prompt, task=task)
-        # Same seed on every rank, different per context.
-        seed = 20260804 + 1000 * i
+        # Noise is derived from the CONTEXT inside seed_state: identical on every rank (so the
+        # k-sharded per-head vector describes one trajectory) and stable across validation passes
+        # (so successive reports are comparable). Nothing here needs to pass a seed.
         per_head += per_head_error(adapter, student, teacher, grid, ctx, pcfg,
-                                   rank=rank, world=world, seed=seed)
-        e, s, _, _ = endpoint_error(adapter, student, teacher, grid, ctx, pcfg, seed=seed)
+                                   rank=rank, world=world)
+        e, s, _, _ = endpoint_error(adapter, student, teacher, grid, ctx, pcfg)
         eps.append(e)
         scales.append(s)
         tasks.append(task)
         used += 1
     per_head /= max(1, used)
     return {
+        "tasks": tasks,
         "per_head": per_head.float().cpu().numpy().tolist(),
         "endpoint_rmse": float(np.mean(eps)) if eps else float("nan"),
         "endpoint_scale": float(np.mean(scales)) if scales else float("nan"),
@@ -437,7 +537,45 @@ def validate(adapter, student, teacher, grid, pcfg, held_files, cfg, *, rank, wo
     }
 
 
-def summarise(report, head_counts, grid, step, out_dir, a, final=False):
+def usage_histogram(hc, bins=10):
+    """How lopsided is head supervision? Flat is the goal; a long tail means some heads are
+    effectively untrained even when the min-updates gate passes.
+
+    Integer-aware: with a narrow range (early in a run, counts 0-2) float bin edges collapse to
+    nonsense like "0--1", so the bins become one-per-value until the range is wide enough to bucket.
+    """
+    lo, hi = int(hc.min()), int(hc.max())
+    span = hi - lo + 1
+    if span <= bins:
+        return [{"range": [v, v], "n_heads": int((hc == v).sum())}
+                for v in range(lo, hi + 1)]
+    width = -(-span // bins)                      # ceil, so the last bin is not overlong
+    rows = []
+    for b in range(bins):
+        a0 = lo + b * width
+        a1 = min(hi, a0 + width - 1)
+        if a0 > hi:
+            break
+        rows.append({"range": [a0, a1],
+                     "n_heads": int(((hc >= a0) & (hc <= a1)).sum())})
+    return rows
+
+
+def corr(x, y):
+    """Pearson and Spearman between update count and error. Spearman matters more here: the question
+    is whether MORE-updated heads do better at all, not whether the relation is linear."""
+    m = ~(np.isnan(x) | np.isnan(y))
+    x, y = x[m], y[m]
+    if len(x) < 3 or x.std() == 0 or y.std() == 0:
+        return float("nan"), float("nan")
+    pear = float(np.corrcoef(x, y)[0, 1])
+    rx = np.argsort(np.argsort(x)).astype(float)
+    ry = np.argsort(np.argsort(y)).astype(float)
+    spear = float(np.corrcoef(rx, ry)[0, 1])
+    return pear, spear
+
+
+def summarise(report, head_counts, grid, step, out_dir, a, final=False, dg=None, best=None):
     v = np.asarray(report["per_head"], dtype=float)
     hc = head_counts.cpu().numpy()
     cov = int((hc > 0).sum())
@@ -469,6 +607,45 @@ def summarise(report, head_counts, grid, step, out_dir, a, final=False):
     for k in worst:
         print(f"    k={int(k):<4} sigma={grid.cond(int(k))/1000:.4f}  err={v[k]:.6f}  "
               f"updates={int(hc[k])}")
+    pear, spear = corr(hc.astype(float), v)
+    print(f"\n  update-count vs error   Pearson {pear:+.4f}   Spearman {spear:+.4f}")
+    print("     (negative => more-updated heads do better; ~0 => updates are not the limiter)")
+    print("\n  head usage histogram:")
+    for row in usage_histogram(hc):
+        bar = "#" * max(0, int(40 * row["n_heads"] / max(1, len(hc))))
+        print(f"    {row['range'][0]:>5}-{row['range'][1]:<5} {row['n_heads']:>4} heads {bar}")
+
+    if dg is not None:
+        cn = dg["clip_n"].cpu().numpy()
+        ch = dg["clip_hits"].cpu().numpy()
+        pmax = dg["prenorm_max"].cpu().numpy()
+        psum = dg["prenorm_sum"].cpu().numpy()
+        ssum = dg["step_sum"].cpu().numpy()
+        rsum = dg["relstep_sum"].cpu().numpy()
+        tot = max(1.0, float(cn.sum()))
+        jb = float(dg["joint_batches"].item())
+        jr = float(dg["joint_over_single_sum"].item()) / max(1.0, jb)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            mean_pre = np.where(cn > 0, psum / np.maximum(cn, 1), np.nan)
+            mean_step = np.where(cn > 0, ssum / np.maximum(cn, 1), np.nan)
+            mean_rel = np.where(cn > 0, rsum / np.maximum(cn, 1), np.nan)
+        print("\n  optimisation diagnostics:")
+        print(f"    head-updates applied      {int(cn.sum())}")
+        print(f"    clip engaged              {100*ch.sum()/tot:.2f}% of head-updates")
+        print(f"    pre-clip grad norm        mean {np.nanmean(mean_pre):.4f}  "
+              f"max {np.nanmax(pmax):.4f}")
+        print(f"    joint/per-head norm ratio {jr:.3f}x   <- the extra suppression a JOINT clip")
+        print(f"                                          would have applied (Run 1's defect)")
+        print(f"    realised step ||dp||      mean {np.nanmean(mean_step):.3e}  "
+              f"max {np.nanmax(dg['step_max'].cpu().numpy()):.3e}")
+        print(f"    relative step ||dp||/||p||  mean {np.nanmean(mean_rel):.3e}  "
+              f"p5 {np.nanpercentile(mean_rel,5):.3e}  p95 {np.nanpercentile(mean_rel,95):.3e}")
+        print(f"    FROZEN AUDIT              {dg['frozen_violations']} violations "
+              f"in {dg['frozen_checks']} checks of untouched heads"
+              f"   {'PASS' if dg['frozen_violations'] == 0 else 'FAIL'}")
+    if best is not None:
+        print(f"\n  best endpoint so far      {best['rmse']:.6f} at step {best['step']} "
+              f"(current {report['endpoint_rmse']:.6f})")
     print("=" * 78, flush=True)
 
     (out_dir / f"report_step{step}.json").write_text(json.dumps({
@@ -479,6 +656,19 @@ def summarise(report, head_counts, grid, step, out_dir, a, final=False):
         "sigma_buckets": sigma_buckets(grid, v),
         "worst_heads": [{"k": int(k), "sigma": grid.cond(int(k)) / 1000.0,
                          "error": float(v[k]), "updates": int(hc[k])} for k in worst],
+        "usage_histogram": usage_histogram(hc),
+        "corr_updates_vs_error": {"pearson": pear, "spearman": spear},
+        "diagnostics": None if dg is None else {
+            "head_updates_applied": int(dg["clip_n"].sum().item()),
+            "clip_engaged_frac": float(dg["clip_hits"].sum().item() /
+                                       max(1.0, dg["clip_n"].sum().item())),
+            "prenorm_max": float(dg["prenorm_max"].max().item()),
+            "joint_over_per_head_ratio": float(dg["joint_over_single_sum"].item() /
+                                               max(1.0, dg["joint_batches"].item())),
+            "frozen_violations": int(dg["frozen_violations"]),
+            "frozen_checks": int(dg["frozen_checks"]),
+        },
+        "best": best,
     }, indent=2))
 
 
