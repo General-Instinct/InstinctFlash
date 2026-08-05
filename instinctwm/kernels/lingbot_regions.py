@@ -39,27 +39,45 @@ PRE_ATTENTION = FusibleRegion(
     boundary_in=("hidden_states", "scale_msa", "shift_msa"),
     boundary_out=("norm_hidden_states",),
     phases=("kv_refresh", "video", "action"),
-    occurrences_per_forward=_LAYERS,
-    note="model.py:533-535",
+    # Two sites per block, same as the residual: the pre-self-attention norm (model.py:533-535,
+    # norm1/scale_msa/shift_msa) and the pre-FFN norm (model.py:557-559, norm3/c_scale_msa/
+    # c_shift_msa). `norm2` is NOT one of them -- it is an unmodulated cross-attention norm.
+    occurrences_per_forward=2 * _LAYERS,
+    note="model.py:533-535 and 557-559",
 )
 
 POST_ATTENTION = FusibleRegion(
     name="post_attention_gated_residual",
     ops=(
         OpSpec("upcast", OpKind.ELEMENTWISE, materializes_as=None, computes_in="fp32"),
-        # CORRECTED. I first declared this materializes_as=None. It is wrong: `attn_out * gate`
-        # is bf16 x bf16 and lands in bf16 BEFORE the fp32 add, so it carries a rounding of its
-        # own. The framework's tier/measurement consistency check caught it -- a kernel derived
-        # BITEXACT measured max|d| = 6.25e-02.
-        OpSpec("gate", OpKind.ELEMENTWISE, materializes_as="bf16", computes_in="bf16"),
+        # RE-CORRECTED to materializes_as=None, which is what it originally said.
+        #
+        # The intervening "correction" claimed `attn_out * gate` is bf16 x bf16 and lands in
+        # bf16 before the fp32 add. That is not what the model does: `gate_msa` is a chunk of
+        # `self.scale_shift_table[None] + temb.float()` (model.py:524), so it is **fp32**, the
+        # product promotes to fp32, and nothing is materialised between the multiply and the add.
+        #
+        # The evidence that prompted the wrong correction was real -- a kernel deriving BITEXACT
+        # measured max|d| = 6.25e-02 -- but the cause was FP CONTRACTION, not a missing rounding:
+        # the backend fused the multiply-add into one FMA and skipped the *fp32* rounding of the
+        # product. `matches_reference_contraction` was added later and catches exactly that, so
+        # the three torch.compile variants derive NUMERIC for the right reason now. Leaving the
+        # region wrong as well meant two errors cancelling: the region over-declared a rounding
+        # point, and the Triton kernel over-declared reproducing it.
+        OpSpec("gate", OpKind.ELEMENTWISE, materializes_as=None, computes_in="fp32"),
         OpSpec("residual_add", OpKind.ELEMENTWISE, materializes_as="bf16", computes_in="fp32"),
     ),
     boundary_in=("hidden_states", "attn_output", "gate_msa"),
     boundary_out=("hidden_states",),
     phases=("kv_refresh", "video", "action"),
-    occurrences_per_forward=_LAYERS,
-    note="model.py:543-544 -- pure elementwise, NO reduction. This is the region where a "
-         "rounding-preserving kernel can legitimately reach BITEXACT.",
+    # TWO sites per block, not one: the self-attention residual (model.py:543-544) and the
+    # feed-forward residual (model.py:563-564). They differ only in an explicit `.float()` on
+    # the second operand, which is a no-op against an fp32 gate, so ONE kernel serves both and
+    # the occurrence count is 2 per layer. Counting one site per layer halved every launch
+    # estimate this region feeds.
+    occurrences_per_forward=2 * _LAYERS,
+    note="model.py:543-544 and 563-564 -- pure elementwise, NO reduction. This is the region "
+         "where a rounding-preserving kernel can legitimately reach BITEXACT.",
 )
 
 

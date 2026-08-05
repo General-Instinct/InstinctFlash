@@ -110,6 +110,14 @@ def main() -> int:
              "escape hatch if a new pass introduces episode-scoped device state the certificate "
              "does not yet cover.")
     ap.add_argument(
+        "--fuse-residual", action="store_true",
+        help="Fuse the block's two gated residuals into one Triton kernel "
+             "(model.py:543-544 and 563-564). 3 eager kernels -> 1, and 50.1 MB of traffic -> "
+             "14.8 MB per site. The kernel is bit-exact (enable_fp_fusion=False, asserted on "
+             "PTX) and the installer sweeps for the break-even element count on THIS box: on an "
+             "A100 it is 1.26x on the video stream and 0.93x on the action stream, so shapes "
+             "below the measured threshold stay eager.")
+    ap.add_argument(
         "--deterministic-seed", type=int, default=None,
         help="Seed torch before each chunk's noise draw. REQUIRED to compare two variants: "
              "_infer draws torch.randn for the initial video latents and action tokens "
@@ -160,6 +168,17 @@ def main() -> int:
 
     if getattr(args, "conditioning_prefill", False):
         applied += install_conditioning_prefill(S, S.VA_Server)
+
+    if getattr(args, "fuse_residual", False):
+        # Installed BEFORE the block-rewriting passes below. Both of those route their residuals
+        # through the same hook, so order does not change what runs -- but arming the hook first
+        # means the sweep prints before the server's own startup noise.
+        from instinctwm.runtime.lingbot_install import install_operator_fusion
+        # --graph-blocks decides which sweep gates the install, so it is read here rather than
+        # defaulted. Under capture the Triton launcher cost is amortised away and the kernel
+        # wins at both stream shapes; without capture it only wins on the video stream.
+        applied += install_operator_fusion(
+            S, S.VA_Server, graph_captured=getattr(args, "graph_blocks", False))
 
     if getattr(args, "ring_kv", False):
         from instinctwm.optimizer.passes.ring_kv import RingKVAddressing

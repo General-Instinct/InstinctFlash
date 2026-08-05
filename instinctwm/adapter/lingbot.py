@@ -365,11 +365,25 @@ class LingBotSurface:
             return
         from einops import rearrange
 
+        # Shared with the stock body and with hoist_invariant_casts; see runtime/fused_residual.py.
+        # Unarmed it is the eager expression, so this shim's numerics are unchanged.
+        from instinctwm.runtime.fused_residual import RESIDUAL
+
         def default_combine(self_b, temb):
             self_b._iwm_last_temb_elems = temb.numel()
             return self_b.scale_shift_table[None] + temb.float()
 
         _orig = Blk.forward
+        if not getattr(_orig, "_iwm_calls_residual", False):
+            # The un-rewritten fallback below delegates to whatever was installed before this
+            # shim. If that is the STOCK upstream body it contains the residual expression
+            # inline, so a kernel armed on the hook would reach the rewritten path and not the
+            # fallback — the fusion would apply or not depending on whether an unrelated pass
+            # happened to fire. Substitute the hooked copy of the stock body, which is
+            # byte-for-byte identical apart from the hook. Another InstinctWM body already
+            # carries the marker and is left alone.
+            from instinctwm.runtime.fused_residual import _block_forward_hooked
+            _orig = _block_forward_hooked
 
         def forward(self_b, hidden_states, encoder_hidden_states, temb, rotary_emb,
                     update_cache=0, cache_name="pos"):
@@ -390,8 +404,7 @@ class LingBotSurface:
             attn_output = self_b.attn1(norm_hidden_states, norm_hidden_states, norm_hidden_states,
                                        rotary_emb, update_cache=update_cache,
                                        cache_name=cache_name)
-            hidden_states = (hidden_states.float()
-                             + attn_output * gate_msa).type_as(hidden_states)
+            hidden_states = RESIDUAL(hidden_states, attn_output, gate_msa)
             norm_hidden_states = self_b.norm2(hidden_states.float()).type_as(hidden_states)
             attn_output = self_b.attn2(norm_hidden_states, encoder_hidden_states,
                                        encoder_hidden_states, None, update_cache=0,
@@ -400,9 +413,9 @@ class LingBotSurface:
             norm_hidden_states = (self_b.norm3(hidden_states.float()) * (1. + c_scale_msa)
                                   + c_shift_msa).type_as(hidden_states)
             ff_output = self_b.ffn(norm_hidden_states)
-            return (hidden_states.float()
-                    + ff_output.float() * c_gate_msa).type_as(hidden_states)
+            return RESIDUAL(hidden_states, ff_output, c_gate_msa)
 
+        forward._iwm_calls_residual = True
         Blk.forward = forward
         Blk._iwm_default_combine = default_combine
         Blk._iwm_modulate_shim = True
