@@ -88,6 +88,10 @@ def main() -> int:
     ap.add_argument("--generic-dry-run", action="store_true",
         help="Enumerate every site (installing all shims) and apply NO rewrites. Isolates the "
              "eager tax of exposing a rewritable surface from the effect of rewriting it.")
+    ap.add_argument("--pdd-heads", default=None,
+                    help="directory of a heads-only PDD student (heads.pt + delta.json). Serves its "
+                         "video stream at NFE=N/L through the server's own scheduler loop; the "
+                         "action stream is untouched because only video was distilled.")
     ap.add_argument("--degrade-nfe", default=None,
         help="VIDEO,ACTION denoise steps, e.g. '2,2'. Stands in for a distilled student until a "
              "real one exists: it is the same descriptor delta a step-reduction recipe produces "
@@ -132,6 +136,36 @@ def main() -> int:
     S = import_lingbot_server()
 
     applied = []
+
+    if getattr(args, "pdd_heads", None):
+        if getattr(args, "degrade_nfe", None):
+            raise SystemExit(
+                "--pdd-heads and --degrade-nfe both set the video step count; pick one. "
+                "--pdd-heads already reduces video NFE to N/L.")
+        from instinctwm.runtime.pdd_serve import install_pdd_video_heads
+        _pdd_dir = args.pdd_heads
+
+        _orig_run_pdd = S.run
+
+        def run_pdd(a_):
+            # The heads need the built server, which only exists inside run(); so install after the
+            # server is constructed. VA_Server is created by run(), so wrap the class instead.
+            _orig_cls = S.VA_Server
+
+            class _WithHeads(_orig_cls):
+                def __init__(self, *ar, **kw):
+                    super().__init__(*ar, **kw)
+                    for name in install_pdd_video_heads(S, self, _pdd_dir):
+                        print(f"InstinctWM pdd: {name}", flush=True)
+
+            S.VA_Server = _WithHeads
+            try:
+                return _orig_run_pdd(a_)
+            finally:
+                S.VA_Server = _orig_cls
+
+        S.run = run_pdd
+        applied.append(f"pdd-heads={_pdd_dir}")
 
     if getattr(args, "degrade_nfe", None):
         v, ac = (int(x) for x in args.degrade_nfe.split(","))

@@ -640,9 +640,18 @@ def summarise(report, head_counts, grid, step, out_dir, a, final=False, dg=None,
               f"max {np.nanmax(dg['step_max'].cpu().numpy()):.3e}")
         print(f"    relative step ||dp||/||p||  mean {np.nanmean(mean_rel):.3e}  "
               f"p5 {np.nanpercentile(mean_rel,5):.3e}  p95 {np.nanpercentile(mean_rel,95):.3e}")
-        print(f"    FROZEN AUDIT              {dg['frozen_violations']} violations "
-              f"in {dg['frozen_checks']} checks of untouched heads"
-              f"   {'PASS' if dg['frozen_violations'] == 0 else 'FAIL'}")
+        # ZERO CHECKS IS NOT A PASS. The audit only inspects heads whose update count did not change
+        # between checks, and with 8 heads/step over a 500-step window every head gets touched -- so
+        # the condition never fires and the audit is vacuous at that cadence. Printing PASS for it
+        # would claim evidence that was never gathered.
+        if dg["frozen_checks"] == 0:
+            print(f"    FROZEN AUDIT              NOT EVALUATED -- 0 untouched-head checks fired "
+                  f"(every head was updated within each {a.frozen_check_every}-step window; "
+                  f"lower --frozen-check-every to exercise it)")
+        else:
+            print(f"    FROZEN AUDIT              {dg['frozen_violations']} violations "
+                  f"in {dg['frozen_checks']} checks of untouched heads"
+                  f"   {'PASS' if dg['frozen_violations'] == 0 else 'FAIL'}")
     if best is not None:
         print(f"\n  best endpoint so far      {best['rmse']:.6f} at step {best['step']} "
               f"(current {report['endpoint_rmse']:.6f})")
@@ -667,6 +676,8 @@ def summarise(report, head_counts, grid, step, out_dir, a, final=False, dg=None,
                                                max(1.0, dg["joint_batches"].item())),
             "frozen_violations": int(dg["frozen_violations"]),
             "frozen_checks": int(dg["frozen_checks"]),
+            "frozen_verdict": ("NOT_EVALUATED" if dg["frozen_checks"] == 0
+                               else ("PASS" if dg["frozen_violations"] == 0 else "FAIL")),
         },
         "best": best,
     }, indent=2))
