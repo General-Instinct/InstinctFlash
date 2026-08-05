@@ -72,6 +72,7 @@ if HAVE_TRITON:
         BLOCK_N: tl.constexpr,
         D: tl.constexpr,
         FIXED_TRIP: tl.constexpr,
+        COUNT_EXTRA: tl.constexpr,
     ):
         pid_m = tl.program_id(0)
         pid_bh = tl.program_id(1)
@@ -79,7 +80,17 @@ if HAVE_TRITON:
         h = pid_bh % H
 
         start = tl.load(EXTENT + 0)
-        count = tl.load(EXTENT + 1)
+        # COUNT_EXTRA is the provisional block this forward just wrote. It is a CONSTEXPR, not a
+        # device value, because the number of tokens a forward commits is fixed by the phase and
+        # is already part of the graph's shape key -- so adding it here costs nothing and keeps
+        # the caller from having to materialise a second extent tensor inside the captured region.
+        #
+        # The CLAMP is load-bearing and its absence was a crash, not a slow path: once the pool
+        # is full `count` equals CAP, `count + COUNT_EXTRA` runs off the end of the allocation,
+        # and every masked-in lane reads unmapped memory. Measured: died at cycle 36, which is
+        # exactly 9792 / 272. P003 has the same clamp written as `if count >= total: use the
+        # whole pool`.
+        count = tl.minimum(tl.load(EXTENT + 1) + COUNT_EXTRA, CAP)
 
         offs_m = pid_m * BLOCK_M + tl.arange(0, BLOCK_M)
         offs_d = tl.arange(0, D)
@@ -103,7 +114,12 @@ if HAVE_TRITON:
         for start_n in range(0, n_end, BLOCK_N):
             offs_n = start_n + tl.arange(0, BLOCK_N)
             live = offs_n < count
-            pos = start + offs_n
+            # WRAP. Once the pool is full the live set is [start, CAP) ++ [0, start+count-CAP),
+            # so the position must come back round. Walking it chronologically is not ascending
+            # SLOT order, which is what P003 reproduces to stay bit-exact against stock -- this
+            # kernel is NUMERIC already, and softmax is permutation-invariant over keys, so
+            # chronological is semantically right and only reassociates the sum.
+            pos = (start + offs_n) % CAP
             k_ptrs = (K + b * stride_kb + pos[:, None] * stride_kn
                       + h * stride_kh + offs_d[None, :] * stride_kd)
             k = tl.load(k_ptrs, mask=live[:, None], other=0.0)
@@ -172,7 +188,8 @@ if HAVE_TRITON:
         return 128, 128, 8, 3           # measured at M=240
 
     def ring_attention(q: torch.Tensor, k_pool: torch.Tensor, v_pool: torch.Tensor,
-                       extent: torch.Tensor, *, fixed_trip: bool = False,
+                       extent: torch.Tensor, *, count_extra: int = 0,
+                       fixed_trip: bool = False,
                        block_m: int | None = None, block_n: int | None = None,
                        num_warps: int | None = None, num_stages: int | None = None,
                        allow_fma: bool = False) -> torch.Tensor:
@@ -209,6 +226,7 @@ if HAVE_TRITON:
             *q.stride(), *k_pool.stride(), *out.stride(),
             M, CAP,
             H=H, BLOCK_M=block_m, BLOCK_N=block_n, D=D, FIXED_TRIP=fixed_trip,
+            COUNT_EXTRA=count_extra,
             num_warps=num_warps, num_stages=num_stages,
             enable_fp_fusion=allow_fma,
         )

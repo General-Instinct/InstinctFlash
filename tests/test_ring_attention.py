@@ -171,6 +171,45 @@ def test_extent_is_read_on_device() -> bool:
     return tracked and moved and graph_ok
 
 
+def test_full_and_wrapped_pool() -> bool:
+    print("\n=== 4b. a FULL pool and a WRAPPED ring ===")
+    print("    (the first integration died here: illegal memory access at cycle 36,")
+    print("     which is exactly 9792 / 272 -- the moment the pool fills)")
+    k, v = _pools()
+    q = _q(240)
+    ok = True
+
+    # count + COUNT_EXTRA must be CLAMPED to capacity, not allowed to run off the allocation.
+    for extra in (0, 272):
+        out = ring_attention(q, k, v, _extent(0, CAP), count_extra=extra)
+        finite = bool(torch.isfinite(out.float()).all())
+        ok &= finite
+        print(f"  {'OK  ' if finite else 'FAIL'} full pool count={CAP} + extra={extra:3d} "
+              f"-> finite output, no OOB")
+    # and the clamp must make the extra a NO-OP once full: attending to the whole pool twice
+    # is not attending to more.
+    a = ring_attention(q, k, v, _extent(0, CAP), count_extra=0)
+    b = ring_attention(q, k, v, _extent(0, CAP), count_extra=272)
+    d = _delta(a, b)
+    good = d == 0.0
+    ok &= good
+    print(f"  {'OK  ' if good else 'FAIL'} extra beyond a full pool is a no-op: max|d| = {d:.3e}")
+
+    # WRAPPED: start != 0 means the live set is [start, CAP) ++ [0, start+count-CAP). Compare
+    # against an explicit gather of exactly those slots, in the same chronological order.
+    for start, count in ((9000, 1500), (5000, 9792), (9791, 2)):
+        got = ring_attention(q, k, v, _extent(start, count))
+        idx = (start + torch.arange(count, device=DEV)) % CAP
+        ref = torch.nn.functional.scaled_dot_product_attention(
+            q.transpose(1, 2), k[:, idx].transpose(1, 2), v[:, idx].transpose(1, 2)).transpose(1, 2)
+        d = _delta(got, ref)
+        good = d <= 8e-3 and torch.isfinite(got.float()).all()
+        ok &= good
+        print(f"  {'OK  ' if good else 'FAIL'} wrapped start={start:4d} count={count:4d} "
+              f"vs explicit gather: max|d| = {d:.3e}")
+    return ok
+
+
 def test_matches_sdpa_within_numeric() -> bool:
     print("\n=== 5. distance from the served path (NOT a bit-exactness gate) ===")
     k, v = _pools()
@@ -265,6 +304,7 @@ def main() -> int:
     print(f"device {torch.cuda.get_device_name(0)}  torch {torch.__version__}")
     for t in (test_fixed_trip_equals_live_trip, test_capacity_invariance,
               test_garbage_past_count_is_inert, test_extent_is_read_on_device,
+              test_full_and_wrapped_pool,
               test_matches_sdpa_within_numeric, test_speed, test_registered_tier):
         results.append(t())
     print(f"\n{'PASS' if all(results) else 'FAIL'}: {sum(results)}/{len(results)} groups")
