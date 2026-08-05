@@ -26,6 +26,14 @@ class Released:
     step_speedup: float
     gates: str
     frozen: bool = True
+    #: Set when a version has SHIPPED CODE but its gates have not been re-run yet. A frozen pass may
+    #: only change for a correctness bug, and the fix lands before the gate can run if the fleet is
+    #: busy -- so the honest state is "fixed, not yet re-verified", not "verified". Never leave this
+    #: set once the gates pass; never clear it without running them.
+    gates_owed: str = ""
+
+    def is_verified(self) -> bool:
+        return not self.gates_owed
 
 
 RELEASED = (
@@ -61,7 +69,11 @@ RELEASED = (
               "later forward rewrote the same slots, and attention read a stale window with no error "
               "raised. A correctness bug, which is the only reason a frozen pass may change. No "
               "reported number is affected: no log contains CAPTURE FAILED and no eval server ran "
-              "--graph-blocks"),
+              "--graph-blocks",
+        gates_owed="v1.0.1 OWED: max|delta action| = 0 over 6 paired seeded cycles, and the "
+                   "restated latency table under ABBA ordering. Deliberately NOT run under "
+                   "contention -- an eval fleet sharing the GPUs is what produced the +331 ms "
+                   "regression this project already retracted once. Queued for an idle fleet."),
     Released(
         pid="P006", name="stable_state_pools", version="1.0.0", tier=Tier.BITEXACT,
         step_speedup=1.52,
@@ -171,8 +183,13 @@ BASELINE = {
 def summary() -> str:
     out = ["Released passes (frozen)"]
     for r in RELEASED:
+        flag = "" if r.is_verified() else "   [GATES OWED]"
         out.append(f"  {r.pid} {r.name:22s} v{r.version}  {r.tier.name:9s} "
-                   f"{r.step_speedup:.2f}x step")
+                   f"{r.step_speedup:.2f}x step{flag}")
+    owed = [r.pid for r in RELEASED if not r.is_verified()]
+    if owed:
+        out.append(f"  NOT FULLY VERIFIED: {', '.join(owed)} shipped a fix whose gates have not "
+                   f"been re-run. See Released.gates_owed.")
     # Episode mode leads, because it is the protocol that describes a real episode. probe_latency
     # resets between repeats, which rewinds the ring and hides per-cycle recapture; it overstated
     # this chain by 2.13x.
