@@ -31,7 +31,7 @@ if IWM_ROOT not in sys.path:
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
-from instinctwm.adapters.lingbot_velocity import LingBotChunk0Video  # noqa: E402
+from instinctwm.train.oracles.lingbot_velocity import LingBotChunk0VideoOracle  # noqa: E402
 from instinctwm.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_fsdp_elision,
 )
@@ -87,7 +87,7 @@ def main() -> int:
 
     print("building the real server (loads the 23 GB checkpoint) ...", flush=True)
     server = S.VA_Server(cfg)
-    adapter = LingBotChunk0Video(server, guidance=a.guidance)
+    adapter = LingBotChunk0VideoOracle(server, guidance=a.guidance)
 
     print("\n=== 1. RoboTwin reset context -> real Wan VAE -> latent_cond ===")
     obs, prompt, task = load_ctx(a.ctx, cfg.obs_cam_keys)

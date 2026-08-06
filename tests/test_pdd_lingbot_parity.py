@@ -61,7 +61,7 @@ def main() -> int:
         if abs(sigmas[-1]) > 1e-12:
             sigmas.append(0.0)
 
-        # Exactly what LingBotChunk0Video.grid() builds.
+        # Exactly what LingBotChunk0VideoOracle.grid() builds.
         scale = float(sch.num_train_timesteps)
         g = Grid.from_times([1.0 - s for s in sigmas], block=n, scale=-scale, offset=scale)
 

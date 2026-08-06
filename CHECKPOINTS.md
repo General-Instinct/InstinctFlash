@@ -104,48 +104,84 @@ The runtime resolves it in this order, first hit wins:
 ```jsonc
 {
   "instinctwm_schema": 1,
-  "model_id": "lingbot-va-posttrain-robotwin",
-  "backbone": "wan-va",                  // which adapter publishes the sites
-  "param_bytes": 24696061952,
 
-  // The control step. This is the operating point, and it is the reason no
-  // "fast checkpoint" flag is needed: a reduced schedule IS a different phases block.
-  "phases": [
-    {"name": "kv_refresh", "nfe": 1},
-    {"name": "video",      "nfe": 25, "stream": "video"},
-    {"name": "action",     "nfe": 50, "stream": "action"}
-  ],
+  // ==========================================================================
+  // EXECUTION -- everything the runtime may read, and nothing else.
+  // Adding a key here requires naming the pass or planner that reads it.
+  // ==========================================================================
+  "execution": {
+    "model_id": "lingbot-va-robotwin-blockheads-2v4a",
+    "backbone": "wan-va",                  // which adapter publishes the sites
+    "param_bytes": 24696061952,
 
-  "streams": [
-    {"name": "video",  "kv_lifetime": "episode", "addressing": "ring", "commit": "once_per_cycle"},
-    {"name": "action", "kv_lifetime": "cycle",   "addressing": "dense"}
-  ],
+    // The control step. This IS the operating point: a reduced schedule is a
+    // different phases block, not a mode flag and not a second runtime.
+    "phases": [
+      {"name": "kv_refresh", "nfe": 1},
+      {"name": "video",  "nfe": 2, "stream": "video"},
+      {"name": "action", "nfe": 4, "stream": "action"}
+    ],
 
-  "guidance": {
-    "video":  {"mode": "cfg",           "scale": 5.0},
-    "action": {"mode": "positive_only"}
+    "streams": [
+      {"name": "video",  "kv_lifetime": "episode", "addressing": "ring", "commit": "once_per_cycle"},
+      {"name": "action", "kv_lifetime": "cycle",   "addressing": "dense"}
+    ],
+
+    "guidance": {
+      "video":  {"mode": "folded", "scale": 5.0},
+      "action": {"mode": "positive_only"}
+    },
+
+    "purity": [
+      {"key": "text_conditioning", "scope": "episode"},
+      {"key": "rope_tables",       "scope": "model"}
+    ],
+
+    "obs_decode_modules": ["vae_decoder", "obs_head"],
+
+    // Layer 4. A checkpoint-scoped fact: the runtime may choose any backend
+    // implementing THIS function and no other. See ATTENTION.md.
+    "attention": {"semantics": "softmax_full", "mask": "none", "layout": "bshd"},
+
+    // CAPABILITIES of the output projection -- what replaces "this is a PDD
+    // checkpoint". Any recipe producing per-interval velocity heads declares the
+    // same numbers and is served by the same code, with no runtime change.
+    "output_projection": {
+      "kind": "per_interval_velocity_heads",
+      "n_intervals": 256,
+      "block": 128,
+      "velocity_convention": "sigma_descending",
+      "foldable": true
+    },
+
+    // Fit to serve? A BOOLEAN, recipe-agnostic. `verify/` decides it, the
+    // publisher sets it, the runtime only refuses when it is false.
+    "servable": true
   },
 
-  "purity": [
-    {"key": "text_conditioning", "scope": "episode"},
-    {"key": "rope_tables",       "scope": "model"}
-  ],
-
-  "obs_decode_modules": ["vae_decoder", "obs_head"],
-
-  // Read by humans and tooling. NOT read by the runtime. A pass that consulted this
-  // block would be a bug, and the loader does not expose it to the planner.
+  // ==========================================================================
+  // PROVENANCE -- for humans, model cards, and reproduction.
+  // THE LOADER DOES NOT HAND THIS TO THE PLANNER. A pass that read it is a bug.
+  // ==========================================================================
   "provenance": {
-    "training_method": "pdd",
-    "teacher": "lingbot-va-posttrain-robotwin",
+    "training_method": "parallel_decoding_distillation",
     "recipe_repo": "https://github.com/General-Instinct/instinct-pdd",
-    "certified": {
-      "protocol": "paired non-inferiority, exact McNemar, ABBA latency",
-      "margin": -0.05,
-      "pairs": 566,
-      "teacher_success": 0.929,
-      "student_success": 0.910,
-      "p_value": 0.0085
+    "teacher": "lingbot-va-posttrain-robotwin",
+    "trainable": "output heads only; trunk frozen",
+    "solver": "euler",
+    "dataset": "robotwin-2.0-reset-contexts-50task",
+    "optimizer": {"name": "adamw", "lr": 1e-5, "weight_decay": 0.0},
+
+    "training_diagnostics": {
+      "coverage_gate_pass": true,
+      "min_updates_per_head": 1,
+      "endpoint_rmse": 0.153
+    },
+
+    "certification": {
+      "protocol": "paired non-inferiority, exact McNemar, identical seeds",
+      "margin": -0.05, "pairs": 566,
+      "reference_success": 0.929, "candidate_success": 0.910, "p_value": 0.0085
     }
   }
 }
@@ -153,6 +189,21 @@ The runtime resolves it in this order, first hit wins:
 
 Note where `training_method` sits: inside `provenance`, which the loader does not hand to the
 planner. The separation is structural, not a convention to remember.
+
+Three properties of this shape are load-bearing:
+
+1. **`output_projection.kind` is the capability that replaces the method name.** DMD2, LCM, or a recipe
+   nobody has written yet, producing per-interval velocity heads, declares the same numbers and is
+   served by the same code. That is the platform claim made concrete rather than asserted.
+2. **`servable` is a boolean, not a diagnostic.** The runtime asks one recipe-agnostic question. The
+   audit found the serving path reading PDD's `coverage_gate_pass` directly
+   ([AUDIT.md](AUDIT.md) F2) — right intent, wrong layer. The PDD-specific reason now lives under
+   `provenance.training_diagnostics`, where the runtime cannot reach it.
+3. **`velocity_convention` closes a real trap declaratively.** A double sign flip here once produced
+   0/100 on RoboTwin against a 92/100 control. It is currently a comment in
+   [`runtime/block_heads.py`](instinctwm/runtime/block_heads.py); a comment cannot be checked.
+
+The audit and the staged migration to this schema are in [AUDIT.md](AUDIT.md).
 
 ---
 

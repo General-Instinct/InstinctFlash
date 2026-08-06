@@ -38,7 +38,7 @@ if IWM_ROOT not in sys.path:
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
-from instinctwm.adapters.lingbot_velocity import LingBotChunk0Video  # noqa: E402
+from instinctwm.train.oracles.lingbot_velocity import LingBotChunk0VideoOracle  # noqa: E402
 from instinctwm.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_fsdp_elision,
 )
@@ -109,7 +109,7 @@ def main() -> int:
     install_fsdp_elision(S)
     server = S.VA_Server(cfg)
 
-    adapter = LingBotChunk0Video(server, guidance=5.0)
+    adapter = LingBotChunk0VideoOracle(server, guidance=5.0)
     grid = adapter.grid(a.n_intervals, a.n_intervals // a.nfe)
     student = adapter.student(n_heads=grid.n_intervals)
     label = "INIT (every head = a copy of proj_out)"

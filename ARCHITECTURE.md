@@ -25,6 +25,12 @@ Training recipes — PDD, DMD2, LCM, DreamZero, rCM, sCM — produce **different
 not produce different runtimes. There is exactly one InstinctWM runtime, and it serves every
 compatible checkpoint by reading what that checkpoint declares about itself.
 
+> **One exception, honestly:** serving a distilled checkpoint still imports a training library and
+> reads one training diagnostic, both inside 15 lines of
+> [`runtime/block_heads.py`](instinctwm/runtime/block_heads.py). No conditional anywhere branches on a
+> training method, and the rest of the runtime path is clean. See [AUDIT.md](AUDIT.md) F1 and F2 for
+> the fix, which is staged and small.
+
 ### There is no "Fast Runtime" and no "Quality Runtime"
 
 This is worth stating as a prohibition because we nearly built one.
@@ -210,6 +216,8 @@ cannot fail on the bug it is gating is worse than no gate, because it produces a
   deliberately absent from it
 - [ATTENTION.md](ATTENTION.md) — Layer 4: the attention backend abstraction. The same two seams
   applied to a layer whose candidates are exchangeable implementations of a declared function
+- [AUDIT.md](AUDIT.md) — the audit of this document's central claim against the code, with the two
+  places it is not yet true and the staged plan to make it so
 - [HISTORY.md](HISTORY.md) — P001–P006 implementation milestones
 - [eval/lingbot_va_robotwin/RESULTS.md](eval/lingbot_va_robotwin/RESULTS.md) — measured numbers and
   protocols

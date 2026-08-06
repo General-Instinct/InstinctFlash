@@ -90,7 +90,7 @@ class _CaptureProj(torch.nn.Module):
         return self.real(x)
 
 
-class LingBotChunk0Video:
+class LingBotChunk0VideoOracle:
     """Factory for the teacher oracle, the student, and the grid, over a reset server.
 
     `server` must be a built, reset `VA_Server`: reset is what allocates the KV cache and encodes the
@@ -270,7 +270,7 @@ class LingBotChunk0Video:
 class _Teacher:
     """`VelocityModel`: the frozen backbone, guided, returning only the denoisable frames."""
 
-    def __init__(self, owner: LingBotChunk0Video):
+    def __init__(self, owner: LingBotChunk0VideoOracle):
         self.o = owner
 
     def velocity(self, x, t, *, cond: VideoContext = None):
@@ -301,7 +301,7 @@ class _Student:
     being taught. See the module docstring.
     """
 
-    def __init__(self, owner: LingBotChunk0Video, n_heads: int):
+    def __init__(self, owner: LingBotChunk0VideoOracle, n_heads: int):
         import copy
         import torch
 

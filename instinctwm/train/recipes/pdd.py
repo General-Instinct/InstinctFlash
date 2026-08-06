@@ -138,7 +138,7 @@ class ParallelDecoding:
         """A grid with LingBot's semantics but a synthetic uniform sigma base.
 
         FOR A REAL RUN THE GRID COMES FROM THE LIVE SCHEDULER, through
-        `LingBotChunk0Video.grid()` -- re-deriving a schedule is how a training grid stops matching
+        `LingBotChunk0VideoOracle.grid()` -- re-deriving a schedule is how a training grid stops matching
         the sampler. This path exists for synthetic phases in tests, and it is built to mirror the
         adapter step for step so the two cannot disagree about conventions:
 

@@ -73,14 +73,14 @@ class _BlockHead(torch.nn.Module):
         super().__init__()
         self.folded = torch.nn.ModuleList(folded)
         self.register_buffer("starts", torch.tensor(cond_at_block_start, dtype=torch.float64))
-        self.fallback = fallback          # the teacher's own proj_out, for the action stream
+        self.fallback = fallback          # the checkpoint's own proj_out, for the action stream
         self.current_t = None
         self.misses = 0
 
     def set_timestep(self, t) -> None:
         """`None` means "the caller is not on a video step" -- the action loop calls
         _prepare_latent_input with latent_in=None, and float(None) would raise on the first action
-        step of the first chunk. Falling back to the teacher's proj_out is the correct behaviour
+        step of the first chunk. Falling back to the checkpoint's own proj_out is correct
         there anyway, since only the video stream was distilled."""
         self.current_t = None if t is None else float(t)
 
@@ -134,7 +134,7 @@ def install_block_velocity_heads(server_module, server, ckpt_dir: str) -> list[s
     the folded weights are negated back on the way in. Leaving it out would run the sampler backwards
     and produce noise, which is at least loud rather than subtle.
     """
-    from instinctwm.adapters.lingbot_velocity import LingBotChunk0Video
+    from instinctwm.train.oracles.lingbot_velocity import LingBotChunk0VideoOracle
 
     d = Path(ckpt_dir)
     meta = json.loads((d / "delta.json").read_text())
@@ -146,7 +146,7 @@ def install_block_velocity_heads(server_module, server, ckpt_dir: str) -> list[s
     n_intervals, block = int(meta["n_intervals"]), int(meta["block"])
     nfe = n_intervals // block
 
-    adapter = LingBotChunk0Video(server, guidance=float(meta["guidance"]["video"]))
+    adapter = LingBotChunk0VideoOracle(server, guidance=float(meta["guidance"]["video"]))
     grid = adapter.grid(n_intervals, block)
 
     sd = torch.load(d / "heads.pt", map_location="cpu")

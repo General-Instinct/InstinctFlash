@@ -146,7 +146,7 @@ the serving path. [The mechanism →](CHECKPOINTS.md)
 | model | status |
 |:--|:--|
 | **LingBot-VA** | Full runtime support. Primary optimization target and evaluation benchmark: 3.38× bit-exact in episode mode, with multi-episode bit-exactness, reset isolation, and pointer-stability gates. |
-| **Cosmos3-Edge** | Runtime support. One Plan runs under both executors, graph replay bit-exact against the eager oracle. **Plumbing only** — a torch-SDPA shim stands in for the served attention kernel, so no accuracy or speedup claim is made. |
+| **Cosmos3-Edge** | Runtime support. The same runtime and the same Plan, executed either eagerly or from a captured graph — graph replay is bit-exact against the eager oracle. **Plumbing only** — a torch-SDPA shim stands in for the served attention kernel, so no accuracy or speedup claim is made. |
 
 Additional world-action models will be added over time. We would rather have two models fully
 verified than six partly claimed.
@@ -162,6 +162,7 @@ verified than six partly claimed.
 | [**Architecture**](ARCHITECTURE.md) | How the repository is organized: training vs runtime, the two seams, and why there is only one runtime |
 | [**Checkpoints**](CHECKPOINTS.md) | What a checkpoint declares, the `instinctwm.json` schema, and why the training method is deliberately absent from it |
 | [**Attention Backends**](ATTENTION.md) | Layer 4: how a checkpoint avoids depending on any attention implementation. Architecture only — selection is not implemented |
+| [**Audit**](AUDIT.md) | Where the repository does and does not yet live up to *One Runtime, Many Checkpoints, Zero Runtime Forks* — findings, renames, migration plan |
 | [Results](eval/lingbot_va_robotwin/RESULTS.md) | Measured chain, per-pass numbers, protocols |
 | [Evaluation harness](eval/lingbot_va_robotwin/README.md) | Running the RoboTwin pipeline, and seven ways it can silently produce a plausible wrong number |
 

@@ -102,10 +102,13 @@ RELEASED = (
 #: speedup is UNDERSTATED; where a regression was reported for a second-running arm, part of it may be
 #: drift. ABBA (base, treat, treat, base) is the default protocol from now on.
 #:
-#: THESE ARE ALSO QUALITY-PROFILE NUMBERS -- 25 video / 50 action steps, ~79 forwards per cycle. The
-#: shipped Fast profile runs 4 forwards, so the per-step term is ~20x smaller while the fixed term is
-#: unchanged. Do not quote any of this for the Fast profile; it is being re-measured.
-MEASUREMENT_PROTOCOL = "sequential A/B, pre-order-control; Quality profile (25/50)"
+#: THESE ARE ALSO QUALITY-OPERATING-POINT NUMBERS -- 25 video / 50 action steps, ~79 forwards per cycle. The
+#: shipped Fast operating point runs 6 forwards, so the per-step term is ~20x smaller while the fixed term is
+#: unchanged. Do not quote any of this for the Fast operating point; it is being re-measured.
+#: 'Operating point', not 'profile': a profile sounds like a mode of the engine, and there is no
+#: such mode. It is a declared step schedule -- a descriptor delta -- and the planner re-derives
+#: the pass set from it. See AUDIT.md F6.
+MEASUREMENT_PROTOCOL = ("sequential A/B, pre-order-control; Quality operating point (25 video / 50 action)")
 
 #: The measured chain these produce together, under `probe_latency.py --repeats 3`.
 BASELINE = {
