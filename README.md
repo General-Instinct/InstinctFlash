@@ -2,8 +2,6 @@
 
 <img src="assets/instinctwm_2.png" alt="InstinctWM" width="360"/>
 
-# InstinctWM
-
 ### One runtime for robot world-action models
 
 [![License](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
