@@ -25,11 +25,13 @@ Training recipes — PDD, DMD2, LCM, DreamZero, rCM, sCM — produce **different
 not produce different runtimes. There is exactly one InstinctWM runtime, and it serves every
 compatible checkpoint by reading what that checkpoint declares about itself.
 
-> **One exception, honestly:** serving a distilled checkpoint still imports a training library and
-> reads one training diagnostic, both inside 15 lines of
-> [`runtime/block_heads.py`](instinctwm/runtime/block_heads.py). No conditional anywhere branches on a
-> training method, and the rest of the runtime path is clean. See [AUDIT.md](AUDIT.md) F1 and F2 for
-> the fix, which is staged and small.
+This is **enforced, not aspirational**. `tests/test_runtime_boundary.py` parses every module under
+`runtime/`, `planners/`, `executors/`, `descriptors/` and `backends/` and fails if any of them can
+reach `instinct_pdd` or `instinctwm.train` — transitively, and including function-local imports,
+because the violation it was written for was function-local. It also fails if any of them names a
+provenance key such as `coverage_gate_pass` as a live string. The gate is self-checking: it plants the
+original violation in a temporary module each run and confirms it is caught, because a gate that
+cannot fail on the bug it gates is worse than no gate.
 
 ### There is no "Fast Runtime" and no "Quality Runtime"
 

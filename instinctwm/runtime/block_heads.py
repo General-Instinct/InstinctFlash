@@ -35,7 +35,7 @@ sampler: run the server at `num_inference_steps = N/L` and have the video head r
 AND THE GRIDS LINE UP EXACTLY. The N=256 grid's block boundary is sigma_128 = shift(1 - 128/256) =
 shift(0.5) = 0.8333, and a 2-step scheduler's sigmas are shift([1.0, 0.5]) = [1.0, 0.8333]. Same
 numbers, because the shift is applied pointwise to a linspace that both share. Verified in
-tests/test_pdd_serve_parity.py rather than asserted.
+tests/test_serve_parity.py rather than asserted.
 
 THE HEADS COLLAPSE INTO ONE LINEAR PER BLOCK. Every head is a copy of `proj_out`, i.e. affine, so
 
@@ -53,11 +53,17 @@ explain the sign convention; it does not belong in a conditional.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
 import torch
+
+from instinctwm.descriptors.checkpoint import OutputProjection, load_declaration
+from instinctwm.runtime.schedule import (
+    block_start_timesteps,
+    block_weights,
+    sigmas_from_scheduler,
+)
 
 
 class _BlockHead(torch.nn.Module):
@@ -96,15 +102,20 @@ class _BlockHead(torch.nn.Module):
         return self.folded[i](x)
 
 
-def fold_heads(state_dict, grid, n_blocks: int, template: torch.nn.Linear):
-    """Collapse each block's L heads into one affine map, weighted by interval width."""
-    L = grid.block
+def fold_heads(state_dict, weights, block: int, n_blocks: int, template: torch.nn.Linear):
+    """Collapse each block's L heads into one affine map, weighted by interval width.
+
+    `weights` is one normalised list per block, from `runtime/schedule.block_weights`. It used to be an
+    `instinct_pdd.Grid`, which meant this function -- and therefore the whole serving path -- imported
+    the training library of one distillation method to obtain interval widths. See AUDIT.md F1.
+    """
+    L = block
     out = []
     for b in range(n_blocks):
         n = b * L
-        hs = list(range(n, min(n + L, grid.n_intervals)))
-        w = torch.tensor([grid.h(l) for l in hs], dtype=torch.float64)
-        w = w / w.sum()                                  # sum h_l cancels against the sampler's dsigma
+        hs = list(range(n, n + len(weights[b])))
+        w = torch.tensor(weights[b], dtype=torch.float64)
+        # Already normalised: sum h_l over the block cancels against the sampler's dsigma.
         lin = torch.nn.Linear(template.in_features, template.out_features,
                               bias=template.bias is not None)
         with torch.no_grad():
@@ -129,31 +140,35 @@ def fold_heads(state_dict, grid, n_blocks: int, template: torch.nn.Linear):
 def install_block_velocity_heads(server_module, server, ckpt_dir: str) -> list[str]:
     """Load per-interval velocity heads and serve the video stream at NFE = N/L.
 
-    THE SIGN FLIP IS UNDONE HERE. The adapter negates velocities to express LingBot's descending-sigma
-    field in instinct-pdd's ascending-t convention (dt = -dsigma). The server integrates in sigma, so
-    the folded weights are negated back on the way in. Leaving it out would run the sampler backwards
-    and produce noise, which is at least loud rather than subtle.
+    Chosen by CAPABILITY: any checkpoint declaring
+    `output_projection.kind == "per_interval_velocity_heads"` is served here, whatever recipe produced
+    it. Nothing below reads how it was trained.
     """
-    from instinctwm.train.oracles.lingbot_velocity import LingBotChunk0VideoOracle
-
     d = Path(ckpt_dir)
-    meta = json.loads((d / "delta.json").read_text())
-    if not meta.get("coverage_gate_pass", False):
+    # CAPABILITIES, not a recipe. `load_declaration` returns the execution block only -- it has nowhere
+    # to put a training method -- and `servable` is the recipe-agnostic successor to reading PDD's
+    # `coverage_gate_pass` here. See AUDIT.md F2, and descriptors/checkpoint.py.
+    decl = load_declaration(d)
+    decl.require_servable(str(d))
+    proj = decl.require_projection(OutputProjection.PER_INTERVAL_VELOCITY_HEADS, str(d))
+    n_intervals, block = proj.n_intervals, proj.block
+    nfe = proj.nfe()
+    if proj.velocity_convention != "sigma_descending":
         raise RuntimeError(
-            f"{d}: delta.json says the coverage gate FAILED, so some heads are undertrained. "
-            f"Refusing to serve it -- a checkpoint that cannot be defended should not produce a "
-            f"benchmark number.")
-    n_intervals, block = int(meta["n_intervals"]), int(meta["block"])
-    nfe = n_intervals // block
+            f"{d}: declares velocity_convention={proj.velocity_convention!r}. This serving path feeds "
+            f"the folded map straight to FlowMatchScheduler.step, which consumes a SIGMA velocity. "
+            f"Serving a t-ascending checkpoint here would integrate away from the data -- the failure "
+            f"that once measured 0/100 on RoboTwin against a 92/100 control.")
 
-    adapter = LingBotChunk0VideoOracle(server, guidance=float(meta["guidance"]["video"]))
-    grid = adapter.grid(n_intervals, block)
+    # The schedule comes from the server's own scheduler. No training package is involved.
+    sigmas = sigmas_from_scheduler(server.scheduler, n_intervals)
+    weights = block_weights(sigmas, block, nfe, n_intervals)
 
     sd = torch.load(d / "heads.pt", map_location="cpu")
     sd = {k.split("head_list.")[-1] if "head_list." in k else k: v for k, v in sd.items()}
 
     template = server.transformer.proj_out
-    folded = fold_heads(sd, grid, nfe, template)
+    folded = fold_heads(sd, weights, block, nfe, template)
     # NO SIGN FLIP HERE, and this is the subtle part. The adapter's `_Student.heads` returns `-y` so
     # that instinct-pdd sees an ascending-t velocity. The training loss therefore drove `-y` onto the
     # t-velocity, which means the head's RAW output y is already the SIGMA-velocity -- exactly what
@@ -161,7 +176,7 @@ def install_block_velocity_heads(server_module, server, ckpt_dir: str) -> list[s
     # v_t where v_sigma was wanted, integrating away from the data: 0/100 success on RoboTwin against
     # 92/100 for the untrained 2-step control.
 
-    starts = [grid.cond(b * block) for b in range(nfe)]
+    starts = block_start_timesteps(sigmas, block, nfe, server.scheduler.num_train_timesteps)
     head = _BlockHead(folded, starts, template).to(template.weight.device)
     server.transformer.proj_out = head
 

@@ -19,7 +19,7 @@ structural, are real. The rest is terminology.
 
 ## Findings
 
-### F1 — CRITICAL: the serving path imports a training library
+### F1 — CRITICAL: the serving path imports a training library — **RESOLVED (Stage 1)**
 
 `instinctwm/runtime/block_heads.py:137`
 
@@ -49,7 +49,7 @@ compute or the checkpoint can declare. Nothing about it requires PDD.
 future recipe cannot be served without `instinct_pdd` installed, which makes the training method a
 runtime dependency.
 
-### F2 — HIGH: the runtime refuses to serve based on a training diagnostic
+### F2 — HIGH: the runtime refuses to serve based on a training diagnostic — **RESOLVED (Stage 2)**
 
 `instinctwm/runtime/block_heads.py:141`
 
@@ -81,7 +81,7 @@ sitting in a Layer 2–6 concept directory, which is what let F1 look reasonable
 **Severity: high**, because the mislabelling is what hides F1. Moved in Stage 0 and the class renamed
 to `LingBotChunk0VideoOracle`; F1 itself is untouched by that and remains open.
 
-### F4 — HIGH: `delta.json` mixes execution facts with training provenance
+### F4 — HIGH: `delta.json` mixes execution facts with training provenance — **RESOLVED (Stage 2)**
 
 `eval/lingbot_va_robotwin/train_pdd_heads.py:693-706` and `instinctwm/train/trainer.py:261-264`
 
@@ -97,7 +97,7 @@ Because they share a namespace, F2 was a one-line mistake rather than a boundary
 
 **Severity: high.** This is the root cause of F2 and the thing the schema below fixes.
 
-### F5 — MEDIUM: `--pdd-heads` names a training method in a serving interface
+### F5 — MEDIUM: `--pdd-heads` names a training method in a serving interface — **RESOLVED (Stage 3)**
 
 `eval/lingbot_va_robotwin/serve_variant.py:91, 140, 146, 168`, and the internal `_pdd_dir`
 
@@ -345,18 +345,32 @@ before — it fails today, correctly.
 
 ## Scorecard
 
+**All stages applied 2026-08-06.** 22 passed, 4 skipped, 0 failed.
+
 | Area | State |
 |:--|:--|
 | Conditional branching on training method | **clean** — none anywhere |
 | Method names in `planners/`, `executors/`, `descriptors/`, `backends/` | **clean** — zero hits |
-| Method names in `runtime/` | **F1, F2** — one import, one metadata read |
-| Training modules in runtime concept dirs | **F3** — one file, moved in Stage 0 |
-| Checkpoint metadata vs provenance | **F4** — one flat namespace; schema proposed |
-| Docs implying multiple runtimes | **F7** — one line, reworded in Stage 0 |
-| Operating-point terminology | **F6** — "profile" used as a mode; reworded in Stage 0 |
+| Method names in `runtime/` | **clean** — F1 and F2 resolved; enforced by `tests/test_runtime_boundary.py` |
+| Training modules in runtime concept dirs | **clean** — moved in Stage 0 |
+| Checkpoint metadata vs provenance | **clean** — two namespaces, `load_declaration()` returns execution only |
+| Docs implying multiple runtimes | **clean** — reworded in Stage 0 |
+| Operating-point terminology | **clean** — "operating point" throughout |
 | Attention layer (Layer 4) | **clean** — semantics are checkpoint-declared by construction |
 
-After Stage 2 the claim *"the runtime never depends on how a checkpoint was trained"* is true of the
-code and not only of the documentation. Today it is true of everything except one import and one
-dictionary key — both in the same 15 lines of `block_heads.py`, both introduced before the principle
-was written down.
+The claim *"the runtime never depends on how a checkpoint was trained"* is now true of the code and
+not only of the documentation, and `tests/test_runtime_boundary.py` keeps it true.
+
+**One thing found while doing the work, worth recording.** `block_heads.py` claimed its grid
+equivalence was "verified in tests/test_pdd_serve_parity.py"; that file did not exist, and this
+document repeated the claim in its Stage 1 plan. The equivalence the entire serving path rests on was
+argued in a docstring and checked nowhere. `tests/test_serve_parity.py` now exists and holds it at
+`0.00e+00`.
+
+**And one arithmetic subtlety the gate caught.** The retired `Grid` computed widths as
+`(1 - sigma[l+1]) - (1 - sigma[l])`; the obvious replacement `sigma[l] - sigma[l+1]` is algebraically
+identical, cheaper, and slightly more accurate — and differs in fp64 at ~5.6e-16, because subtracting
+from 1.0 rounds. Every published number, including the Fast operating point's certification over 566
+matched pairs, was measured with the old form baked into the folded heads. `interval_widths()`
+therefore preserves it exactly. An improvement that silently invalidates "this refactor changed
+nothing" is not an improvement.

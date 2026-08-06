@@ -87,12 +87,13 @@ something they cannot know. Fields are added here only when a pass reads one.
 
 ## The serialized form
 
-> **Status: specified, not yet implemented.** Today `AdapterSpec` is constructed in Python by a
-> registered adapter (`instinctwm.register`), and the closest thing to a serialized declaration is the
-> `delta.json` that [`runtime/block_heads.py`](instinctwm/runtime/block_heads.py) reads — which
-> carries `n_intervals`, `block`, `guidance`, and a coverage gate, and is the prototype for the schema
-> below. The schema is written down here so that checkpoints published from now on declare the right
-> things; the loader path is not built. Nothing in this section should be read as a working feature.
+> **Status: implemented for the block-heads serving path; not yet for `AdapterSpec` as a whole.**
+> [`descriptors/checkpoint.py`](instinctwm/descriptors/checkpoint.py) reads this schema today:
+> `load_declaration()` returns the `execution` block **only** and has nowhere to put a training
+> method, `provenance_of()` is a separate deliberate call, and a provenance key found inside
+> `execution` is a load error. `runtime/block_heads.py` consumes it, and the LingBot heads trainer
+> writes it alongside the legacy `delta.json`. What is **not** built: Hub resolution by `model_id`,
+> and construction of a full `AdapterSpec` from the file — adapters are still registered in Python.
 
 For a checkpoint published on the Hub, the declaration ships as `instinctwm.json` beside the weights.
 The runtime resolves it in this order, first hit wins:

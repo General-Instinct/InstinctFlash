@@ -690,6 +690,46 @@ def save(student, grid, a, out_dir, head_counts, report, tag: str = "final"):
     p = out_dir / (tag if gate_ok else f"{tag}_GATE_FAILED")
     p.mkdir(parents=True, exist_ok=True)
     torch.save(student.state_dict(), p / "heads.pt")
+    # AUDIT.md Stage 2: write the two-namespace declaration ALONGSIDE the legacy delta.json.
+    # Additive on purpose -- delta.json keeps every existing checkpoint servable, and the runtime
+    # prefers instinctwm.json when it is present. Execution facts are CAPABILITIES: any recipe
+    # producing per-interval velocity heads writes the same execution block, and "PDD" appears only
+    # under provenance, which the runtime never reads.
+    (p / "instinctwm.json").write_text(json.dumps({
+        "instinctwm_schema": 1,
+        "execution": {
+            "model_id": f"lingbot-va-robotwin-blockheads-{grid.nfe}v",
+            "backbone": "wan-va",
+            "servable": gate_ok,
+            "guidance": {"video": a.guidance},
+            "nfe": {"video": grid.nfe},
+            "output_projection": {
+                "kind": "per_interval_velocity_heads",
+                "n_intervals": grid.n_intervals,
+                "block": grid.block,
+                # The adapter negates once during training, so the head's RAW output is already the
+                # sigma-velocity FlowMatchScheduler.step consumes. Declaring it turns the comment that
+                # used to guard this into a field the loader checks.
+                "velocity_convention": "sigma_descending",
+                "foldable": True,
+            },
+        },
+        "provenance": {
+            "training_method": "parallel_decoding_distillation",
+            "recipe_repo": "https://github.com/General-Instinct/instinct-pdd",
+            "trainable": "output heads only; trunk frozen",
+            "solver": a.solver,
+            "training_diagnostics": {
+                "coverage_gate_pass": gate_ok,
+                "min_updates_per_head": a.min_updates_per_head,
+                "head_updates_min": int(hc.min()),
+                "endpoint_rmse": report["endpoint_rmse"],
+            },
+            "note": ("chunk-0 video stream only; the action stream reads the KV the video stream "
+                     "commits and is a separate distillation stage"),
+        },
+    }, indent=2))
+
     (p / "delta.json").write_text(json.dumps({
         "recipe": "parallel_decoding_distillation",
         "trainable": "output heads only; trunk frozen",

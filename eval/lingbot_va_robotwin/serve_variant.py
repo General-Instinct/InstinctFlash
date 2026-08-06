@@ -88,10 +88,14 @@ def main() -> int:
     ap.add_argument("--generic-dry-run", action="store_true",
         help="Enumerate every site (installing all shims) and apply NO rewrites. Isolates the "
              "eager tax of exposing a rewritable surface from the effect of rewriting it.")
+    ap.add_argument("--block-heads", default=None,
+                    help="directory of a checkpoint declaring output_projection.kind == "
+                         "per_interval_velocity_heads (heads.pt + instinctwm.json, or a legacy "
+                         "delta.json). Chosen by CAPABILITY: no recipe is named or implied.")
     ap.add_argument("--pdd-heads", default=None,
-                    help="directory of a heads-only PDD student (heads.pt + delta.json). Serves its "
-                         "video stream at NFE=N/L through the server's own scheduler loop; the "
-                         "action stream is untouched because only video was distilled.")
+                    help="DEPRECATED alias for --block-heads. Names a training method in a serving "
+                         "interface (AUDIT.md F5); kept only until run_pdd_cert.sh and the queued "
+                         "chain scripts are updated.")
     ap.add_argument("--degrade-nfe", default=None,
         help="VIDEO,ACTION denoise steps, e.g. '2,2'. Stands in for a distilled student until a "
              "real one exists: it is the same descriptor delta a step-reduction recipe produces "
@@ -137,13 +141,21 @@ def main() -> int:
 
     applied = []
 
+    _heads_arg = getattr(args, "block_heads", None)
     if getattr(args, "pdd_heads", None):
+        if _heads_arg:
+            ap_err = "--block-heads and --pdd-heads are the same option; pass one."
+            raise SystemExit(ap_err)
+        print("WARNING: --pdd-heads is deprecated; use --block-heads. The serving path is selected "
+              "by declared capability, not by the recipe that produced the checkpoint.", flush=True)
+        _heads_arg = args.pdd_heads
+    if _heads_arg:
         if getattr(args, "degrade_nfe", None):
             raise SystemExit(
-                "--pdd-heads and --degrade-nfe both set the video step count; pick one. "
-                "--pdd-heads already reduces video NFE to N/L.")
+                "--block-heads and --degrade-nfe both set the video step count; pick one. "
+                "--block-heads already reduces video NFE to N/L.")
         from instinctwm.runtime.block_heads import install_block_velocity_heads
-        _pdd_dir = args.pdd_heads
+        _heads_dir = _heads_arg
 
         _orig_run_pdd = S.run
 
@@ -155,7 +167,7 @@ def main() -> int:
             class _WithHeads(_orig_cls):
                 def __init__(self, *ar, **kw):
                     super().__init__(*ar, **kw)
-                    for name in install_block_velocity_heads(S, self, _pdd_dir):
+                    for name in install_block_velocity_heads(S, self, _heads_dir):
                         print(f"InstinctWM pdd: {name}", flush=True)
 
             S.VA_Server = _WithHeads
@@ -165,7 +177,7 @@ def main() -> int:
                 S.VA_Server = _orig_cls
 
         S.run = run_pdd
-        applied.append(f"pdd-heads={_pdd_dir}")
+        applied.append(f"block-heads={_heads_dir}")
 
     if getattr(args, "degrade_nfe", None):
         v, ac = (int(x) for x in args.degrade_nfe.split(","))
