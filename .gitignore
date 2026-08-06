@@ -20,3 +20,10 @@ cycle_trace.json
 
 # Design docs stay local (not published)
 docs/
+
+# Generated certificates. A certificate is the OUTPUT of a certification run, not source: the two
+# that were committed by accident carried delta -0.030 and -0.040, both superseded by the 2V/4A
+# certificate at -0.019 over 566 pairs. A stale certificate in the tree is worse than none, because
+# it looks authoritative.
+certificate.json
+**/certificate.json
