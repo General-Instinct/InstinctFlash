@@ -161,6 +161,7 @@ verified than six partly claimed.
 |:--|:--|
 | [**Architecture**](ARCHITECTURE.md) | How the repository is organized: training vs runtime, the two seams, and why there is only one runtime |
 | [**Checkpoints**](CHECKPOINTS.md) | What a checkpoint declares, the `instinctwm.json` schema, and why the training method is deliberately absent from it |
+| [**Attention Backends**](ATTENTION.md) | Layer 4: how a checkpoint avoids depending on any attention implementation. Architecture only — selection is not implemented |
 | [Results](eval/lingbot_va_robotwin/RESULTS.md) | Measured chain, per-pass numbers, protocols |
 | [Evaluation harness](eval/lingbot_va_robotwin/README.md) | Running the RoboTwin pipeline, and seven ways it can silently produce a plausible wrong number |
 

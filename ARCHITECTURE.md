@@ -143,7 +143,7 @@ Six layers, ordered by *what they change*.
 | 1 | **MODEL** | what is computed — step reduction, distillation, latent compression |
 | 2 | **GRAPH** | when work is issued — prefill extraction, graph capture, memory planning |
 | 3 | **CACHE** | what is recomputed — KV reuse, cross-attention cache, episode cache |
-| 4 | **ATTENTION** | how tokens mix — FlashAttention, hybrid and linear attention |
+| 4 | **ATTENTION** | how tokens mix — FlashAttention, hybrid and linear attention ([design](ATTENTION.md)) |
 | 5 | **KERNEL** | how a kernel is written — operator fusion, Triton |
 | 6 | **HARDWARE** | what it executes on — TensorRT, FP8/INT8, Jetson, Thor |
 
@@ -208,6 +208,8 @@ cannot fail on the bug it is gating is worse than no gate, because it produces a
 
 - [CHECKPOINTS.md](CHECKPOINTS.md) — what a checkpoint declares, and why the training method is
   deliberately absent from it
+- [ATTENTION.md](ATTENTION.md) — Layer 4: the attention backend abstraction. The same two seams
+  applied to a layer whose candidates are exchangeable implementations of a declared function
 - [HISTORY.md](HISTORY.md) — P001–P006 implementation milestones
 - [eval/lingbot_va_robotwin/RESULTS.md](eval/lingbot_va_robotwin/RESULTS.md) — measured numbers and
   protocols
