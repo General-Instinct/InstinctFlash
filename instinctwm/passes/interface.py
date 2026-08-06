@@ -62,6 +62,10 @@ class SiteKind(Enum):
     #: a binary combine where one operand is widened before the op. Which operand gets widened is
     #: an implementation detail; which one SHOULD be is a size question.
     DTYPE_PROMOTION = "dtype_promotion"
+    #: an attention call, with the semantics it computes and the layout it computes over. The
+    #: adapter says WHAT function this is and over what shapes; it never names a backend. See
+    #: backends/attention/ for the vocabulary an ATTENTION site's attrs must carry.
+    ATTENTION = "attention"
 
 
 class Scope(Enum):
