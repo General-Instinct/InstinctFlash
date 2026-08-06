@@ -25,8 +25,8 @@ import torch
 import trace_block
 from trace_block import DIM, HEADS, TEXT_LEN
 
-from instinctwm.engine.deps import derive_signature
-from instinctwm.optimizer.passes.ring_kv import RingKVAddressing
+from instinctwm.planners.deps import derive_signature
+from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
 
 DEV, DT, KV, B, NL, N = torch.device("cuda"), torch.bfloat16, 2048, 2, 3, 32
 
@@ -80,7 +80,7 @@ def main() -> int:
                 r[fieldname] = v
         return _set
 
-    from instinctwm.adapter.lingbot import state_roots
+    from instinctwm.adapters.lingbot import state_roots
     nr = state_roots(model)
     nr.update({"in:hidden": h, "in:encoder": enc, "in:temb": temb, "in:rot": rot})
     sig = derive_signature(

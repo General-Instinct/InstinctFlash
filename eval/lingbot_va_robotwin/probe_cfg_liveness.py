@@ -47,7 +47,7 @@ from profile_cycle import build_server, drive
 
 CKPT, PROMPT = os.environ["LINGBOT_CKPT"], "Use the left arm to lift the plastic drink bottle head-up"
 srv, S = build_server(CKPT, no_fsdp=True, prefill=True)
-from instinctwm.optimizer.passes.ring_kv import RingKVAddressing
+from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
 RingKVAddressing().install(S, S.VA_Server)
 import modules.model as M
 

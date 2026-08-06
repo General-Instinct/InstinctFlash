@@ -31,7 +31,7 @@ from instinctwm import (  # noqa: E402  (importable only after the sys.path inse
     default_passes,
     load,
 )
-from instinctwm.optimizer.passes.cfg_elision import CFGBranchElision
+from instinctwm.passes.lingbot.cfg_elision import CFGBranchElision
 
 LINGBOT = load("lingbot-va-posttrain-robotwin").spec()
 SINGLE_GPU = DeploymentSpec()

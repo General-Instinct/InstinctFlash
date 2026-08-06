@@ -15,7 +15,7 @@ What survives, and needs to, is the INVARIANT it established: under
     dt = -dsigma    =>   v_t = -v_sigma
 
 a step in one convention equals a step in the other, because both the width and the velocity flip
-sign. `instinctwm/adapter/lingbot_velocity.py` relies on exactly this -- it maps the scheduler's
+sign. `instinctwm/adapters/lingbot_velocity.py` relies on exactly this -- it maps the scheduler's
 descending sigmas onto an ascending `Grid` and negates every velocity crossing the boundary. A
 one-sided flip would train against a target pointing backwards along the trajectory, and the loss
 would fall regardless.

@@ -1,0 +1,187 @@
+"""The optimization pass contract.
+
+Every optimization in InstinctWM is a pass, and every pass answers five questions. This module
+is the contract; `passes/lingbot/` are the implementations.
+
+    1. DETECTION      can the optimizer find the opportunity by itself?
+    2. APPLICABILITY  is it legal for this model, on this hardware, right now?
+    3. CORRECTNESS    what does it do to the outputs, and how is that proven?
+    4. PERFORMANCE    does it actually make this model faster, measured?
+    5. HARDWARE       where does it run?
+
+The two gates are separate on purpose, because they fail independently. A pass can be perfectly
+accuracy-neutral and still be a regression: on pi-0's real shapes, swapping eager attention for
+SDPA while keeping the mask measures 133.5 -> 144-184 us. A correctness-only gate certifies the
+numerics of the slower variant and ships it. So `verify()` and `benchmark()` are both required,
+and a pass that does not improve its declared cost term is rejected regardless of its tier.
+
+The cost model has two terms because ranking by software layer is wrong. Cosmos3-Edge measures
+p99 = 94.6 ms FIXED + 31.76 ms x NFE; a stack that only reduces per-step cost has nothing to
+offer the one model with a measured deadline problem, and will not say so unless the ranking
+function can see the difference. Hence `CostTerm` and `expected_delta_ms(nfe)`.
+"""
+
+from __future__ import annotations
+
+import enum
+from dataclasses import dataclass, field
+from typing import Protocol, runtime_checkable
+
+from instinctwm.adapters.base import AdapterSpec
+
+
+class Tier(enum.IntEnum):
+    """Ordered weakest-claim-last, so `max()` over a plan yields the plan's tier."""
+
+    BITEXACT = 0
+    NUMERIC = 1
+    BEHAVIORAL = 2
+
+
+class CostTerm(enum.Enum):
+    """Which term of `latency = fixed + nfe * per_step` a pass reduces."""
+
+    FIXED = "fixed"
+    PER_STEP = "per_step"
+    BOTH = "both"
+
+
+class Discovery(enum.Enum):
+    """How the opportunity is found. AUTO is the product; the others are honest fallbacks."""
+
+    AUTO = "auto"              # optimizer detects it: module tree, trace, profile, differential test
+    DECLARED = "declared"      # needs an adapter fact that cannot be safely inferred
+    CHECKPOINT = "checkpoint"  # needs new weights; the runtime can only host it
+
+
+@dataclass(frozen=True)
+class HardwareReq:
+    """Where a pass can run. Empty fields mean 'anywhere'."""
+
+    min_capability: tuple[int, int] | None = None   # e.g. (9, 0) for Hopper
+    requires: frozenset[str] = frozenset()          # 'fp8', 'nvfp4', 'cuda_graphs', 'triton'
+    excludes: frozenset[str] = frozenset()
+
+    def satisfied_by(self, device: "DeviceProfile") -> tuple[bool, str]:
+        if self.min_capability and device.capability < self.min_capability:
+            return False, f"needs sm_{self.min_capability[0]}{self.min_capability[1]}, " \
+                          f"device is sm_{device.capability[0]}{device.capability[1]}"
+        missing = self.requires - device.features
+        if missing:
+            return False, f"device lacks {sorted(missing)}"
+        clash = self.excludes & device.features
+        if clash:
+            return False, f"excluded on devices with {sorted(clash)}"
+        return True, "ok"
+
+
+@dataclass(frozen=True)
+class DeviceProfile:
+    """What the target can do. Probed once, cached."""
+
+    name: str
+    capability: tuple[int, int]
+    total_memory: int
+    features: frozenset[str]
+    #: measured, not assumed -- passes rank against these
+    launch_overhead_us: float = 0.0
+    hbm_bandwidth_gbps: float = 0.0
+
+    @staticmethod
+    def probe() -> "DeviceProfile":
+        import torch
+        i = torch.cuda.current_device()
+        p = torch.cuda.get_device_properties(i)
+        cap = (p.major, p.minor)
+        feats = {"cuda_graphs", "triton"}
+        if cap >= (8, 9):
+            feats.add("fp8")
+        if cap >= (10, 0):
+            feats.add("nvfp4")      # Blackwell only; the reason DreamZero's 38x does not port to H100
+        if cap >= (9, 0):
+            feats.add("wgmma")
+            feats.add("tma")
+        return DeviceProfile(name=p.name, capability=cap, total_memory=p.total_memory,
+                             features=frozenset(feats))
+
+
+@dataclass
+class VerifyResult:
+    """Outcome of the correctness gate."""
+
+    passed: bool
+    tier_achieved: Tier
+    max_abs_delta: float
+    detail: str = ""
+
+
+@dataclass
+class BenchResult:
+    """Outcome of the performance gate."""
+
+    passed: bool
+    before_ms: float
+    after_ms: float
+    detail: str = ""
+
+    @property
+    def speedup(self) -> float:
+        return self.before_ms / self.after_ms if self.after_ms else float("nan")
+
+
+@dataclass
+class Applicability:
+    """Why a pass will or will not fire."""
+
+    applies: bool
+    reason: str
+    discovery: Discovery = Discovery.DECLARED
+    cost_term: CostTerm = CostTerm.PER_STEP
+    claimed_tier: Tier = Tier.BITEXACT
+    params: dict = field(default_factory=dict)
+
+
+@runtime_checkable
+class OptimizationPass(Protocol):
+    """The five questions."""
+
+    name: str
+    hardware: HardwareReq
+
+    # 1 + 2. Detection and applicability, from declarations and the device alone.
+    def applicability(self, spec: AdapterSpec, device: DeviceProfile) -> Applicability: ...
+
+    # How much it should help, as a formula over the cost model rather than a hand-written rank.
+    def expected_delta_ms(self, spec: AdapterSpec, device: DeviceProfile) -> float: ...
+
+    # Apply to a live serving object.
+    def install(self, server_module, server_cls) -> None: ...
+
+    # 3. Correctness gate. Must be run against the real model, not asserted.
+    def verify(self, harness) -> VerifyResult: ...
+
+    # 4. Performance gate. A pass that does not improve its declared cost term is rejected.
+    def benchmark(self, harness) -> BenchResult: ...
+
+
+def gate(pass_: OptimizationPass, verify: VerifyResult, bench: BenchResult,
+         claimed_tier: Tier) -> tuple[bool, str]:
+    """Both gates, applied. Returns (accept, reason).
+
+    Ordering matters: a pass that is wrong is rejected before we care whether it is fast, and a
+    pass that is right but slower is still rejected. Neither gate is advisory.
+    """
+    if not verify.passed:
+        return False, (f"CORRECTNESS FAIL: max|delta| = {verify.max_abs_delta:.3e}, "
+                       f"achieved {verify.tier_achieved.name} < claimed {claimed_tier.name}. "
+                       f"{verify.detail}")
+    if verify.tier_achieved > claimed_tier:
+        return False, (f"TIER DOWNGRADE: claimed {claimed_tier.name}, achieved "
+                       f"{verify.tier_achieved.name}. Re-declare the tier or fix the pass.")
+    if not bench.passed:
+        return False, (f"PERFORMANCE FAIL: {bench.before_ms:.1f} -> {bench.after_ms:.1f} ms "
+                       f"({bench.speedup:.2f}x). Accuracy-neutral is necessary, not sufficient. "
+                       f"{bench.detail}")
+    return True, (f"accept: {bench.before_ms:.1f} -> {bench.after_ms:.1f} ms "
+                  f"({bench.speedup:.2f}x), {verify.tier_achieved.name}, "
+                  f"max|delta| = {verify.max_abs_delta:.3e}")

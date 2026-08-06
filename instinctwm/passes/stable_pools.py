@@ -1,6 +1,6 @@
 """StablePools -- allocate storage once, clear it logically in place.
 
-Third true engine pass. Compare with `optimizer/passes/stable_pools.py`, which knows
+Third true engine pass. Compare with `passes/lingbot/stable_pools.py`, which knows
 `WanAttention.init_kv_cache`, `clear_cache`, the keys `k`/`v`/`mask`/`id`/`is_pred`, the `_ring`
 dict, and P002's `populate_cross_cache`. None of that is about storage lifetime.
 

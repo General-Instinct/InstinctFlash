@@ -1,6 +1,6 @@
 """HoistInvariant -- evaluate a value at its declared scope instead of a tighter one.
 
-The second true engine pass. Compare with `optimizer/passes/hoist_invariant_casts.py`, which knows
+The second true engine pass. Compare with `passes/lingbot/hoist_invariant_casts.py`, which knows
 `FP32LayerNorm`, `scale_shift_table`, `_iwm_w32`, and rewrites `WanTransformerBlock.forward`. None
 of that is about hoisting.
 

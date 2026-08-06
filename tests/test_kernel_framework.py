@@ -27,14 +27,14 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import torch  # noqa: E402
 
-import instinctwm.kernels.torch_fused as _kernels  # noqa: F401,E402  (registers them)
-import instinctwm.kernels.triton_residual as _tri  # noqa: F401,E402  (registers the Triton one)
-from instinctwm.kernels.lingbot_regions import (  # noqa: E402
+import instinctwm.backends.torch_fused as _kernels  # noqa: F401,E402  (registers them)
+import instinctwm.backends.triton_residual as _tri  # noqa: F401,E402  (registers the Triton one)
+from instinctwm.backends.lingbot_regions import (  # noqa: E402
     POST_ATTENTION, PRE_ATTENTION, lingbot_fusion_descriptor)
-from instinctwm.kernels.registry import (  # noqa: E402
+from instinctwm.backends.registry import (  # noqa: E402
     REGISTRY, audit_tier, check_legality, derive_tier)
-from instinctwm.kernels.regions import FusibleRegion, OpKind, OpSpec  # noqa: E402
-from instinctwm.optimizer.contract import DeviceProfile, HardwareReq, Tier  # noqa: E402
+from instinctwm.backends.regions import FusibleRegion, OpKind, OpSpec  # noqa: E402
+from instinctwm.passes.contract import DeviceProfile, HardwareReq, Tier  # noqa: E402
 
 SHAPE = (2, 240, 3072)          # LingBot video-stream hidden states
 

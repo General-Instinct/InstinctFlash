@@ -43,7 +43,7 @@ import numpy as np  # noqa: E402
 import torch  # noqa: E402
 import torch.distributed as dist  # noqa: E402
 
-from instinctwm.adapter.lingbot_velocity import LingBotChunk0Video  # noqa: E402
+from instinctwm.adapters.lingbot_velocity import LingBotChunk0Video  # noqa: E402
 from instinctwm.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_fsdp_elision,
 )

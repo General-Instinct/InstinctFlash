@@ -51,7 +51,7 @@ def lingbot_cases() -> bool:
     print("\n=== LingBot-VA: real KV pools ===")
     import trace_block
     from trace_block import DIM, HEADS
-    from instinctwm.adapter.lingbot import LingBotSurface
+    from instinctwm.adapters.lingbot import LingBotSurface
 
     B, KV, NL = 2, 512, 3
     blocks = []
@@ -115,7 +115,7 @@ def lingbot_cases() -> bool:
 
 def decline_case() -> bool:
     print("\n=== synthetic: dynamic extent must be declined ===")
-    from instinctwm.adapter.synthetic import SyntheticSurface
+    from instinctwm.adapters.synthetic import SyntheticSurface
 
     surf = SyntheticSurface(DEV)
     p = StablePools()
@@ -130,7 +130,7 @@ def decline_case() -> bool:
 
 def noop_case() -> bool:
     print("\n=== Cosmos3-Edge: no persistent allocations at all ===")
-    from instinctwm.adapter.cosmos3 import Cosmos3Surface
+    from instinctwm.adapters.cosmos3 import Cosmos3Surface
 
     surf = Cosmos3Surface(layers=[], mask=None, pos=None)
     p = StablePools()

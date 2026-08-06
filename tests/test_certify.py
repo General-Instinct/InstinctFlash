@@ -13,7 +13,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from instinctwm.certify import NotCertifiable, Outcome, certify
+from instinctwm.verify.certify import NotCertifiable, Outcome, certify
 
 results = []
 

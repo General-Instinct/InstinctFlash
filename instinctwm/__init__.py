@@ -1,4 +1,4 @@
-"""InstinctWM — load, optimize, and deploy world-action models.
+"""InstinctWM — one runtime for robot world-action models.
 
     from instinctwm import load, Optimizer, Tier
 
@@ -7,8 +7,26 @@
     print(plan.explain())                                  # what fired, and why
     server = plan.serve(model, port=29056)                 # deploy
 
+ONE RUNTIME. MANY CHECKPOINTS. SHARED INFRASTRUCTURE.
+
+There is no "fast runtime" and no "quality runtime". There is one runtime, and it serves every
+compatible checkpoint by reading what that checkpoint declares. Training recipes -- PDD, DMD2, LCM,
+DreamZero -- produce different CHECKPOINTS, never different runtimes. Nothing below this line knows
+which recipe produced the weights it is serving, and nothing is allowed to ask: see
+`descriptors/` for the facts a checkpoint publishes and CHECKPOINTS.md for why the method name is
+deliberately absent from them.
+
+    descriptors/   what a checkpoint declares          (capabilities, not recipes)
+    adapters/      WHERE things are, per backbone      (publish sites)
+    passes/        WHAT to do there                    (consume sites, return rewrites)
+    planners/      which passes are legal + profitable (declarations only, no GPU)
+    executors/     apply a plan to a live server       (the only layer that touches the model)
+    backends/      kernels                             (triton / torch, chosen by measurement)
+    runtime/       load, install, serve
+    train/         Layer 1 -- recipes that MAKE checkpoints, not part of serving
+
 Everything above the `serve()` line is pure analysis: no torch, no checkpoint, no GPU. That is
-intentional — deciding which optimizations are legal for a model is something you should be
+intentional -- deciding which optimizations are legal for a model is something you should be
 able to do on a laptop, and a framework that needs the weights loaded before it can tell you
 what it would do is a runtime wearing a framework's clothes.
 """
@@ -48,7 +66,7 @@ def _bootstrap_submodules() -> None:
 
 _bootstrap_submodules()
 
-from instinctwm.adapter.base import (
+from instinctwm.adapters.base import (
     AdapterSpec,
     BackendAdapter,
     CommitMode,
@@ -59,16 +77,16 @@ from instinctwm.adapter.base import (
     PhaseSpec,
     PurityKey,
 )
-from instinctwm.deployment import DeploymentSpec
-from instinctwm.loader import available_models, load, register
-from instinctwm.optimizer.base import (
+from instinctwm.descriptors.deployment import DeploymentSpec
+from instinctwm.runtime.loader import available_models, load, register
+from instinctwm.planners.planner import (
     OptimizationPass,
     Optimizer,
     PassResult,
     Plan,
     Tier,
 )
-from instinctwm.optimizer.passes import default_passes
+from instinctwm.passes.lingbot import default_passes
 
 __version__ = "0.1.0"
 

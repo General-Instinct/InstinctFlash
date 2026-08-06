@@ -32,7 +32,8 @@ if IWM_ROOT not in sys.path:
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
-from instinctwm.optimizer.passes.graph_capture import GraphBlockStack  # noqa: E402
+from instinctwm.passes.lingbot.graph_capture import GraphBlockStack  # noqa: E402
+from instinctwm.passes.lingbot.ring_kv import RingKVAddressing  # noqa: E402
 from instinctwm.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_fsdp_elision,
 )
@@ -80,6 +81,13 @@ def main() -> int:
 
     print("building the real server ...", flush=True)
     server = S.VA_Server(cfg)
+
+    # ring_kv MUST go first. graph_block_stack refuses to install without it (it needs _iwm_commit /
+    # _iwm_ring_signature), and the first version of this probe skipped it -- so the gate exited 1 on a
+    # harness error and reported nothing about the fix it exists to defend. A gate that cannot run is
+    # indistinguishable from a gate that passes if you only read the exit code.
+    RingKVAddressing().install(S, type(server))
+    print("  installed ring_kv_addressing (prerequisite)", flush=True)
 
     gp = GraphBlockStack()
     for n in gp.install(S, type(server)):

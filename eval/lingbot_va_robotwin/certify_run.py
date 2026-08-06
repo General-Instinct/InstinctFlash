@@ -15,7 +15,7 @@ import sys
 
 sys.path.insert(0, "/home/ubuntu/InstinctWM")
 
-from instinctwm.certify import NotCertifiable, certify, load_jsonl
+from instinctwm.verify.certify import NotCertifiable, certify, load_jsonl
 
 
 def main() -> int:

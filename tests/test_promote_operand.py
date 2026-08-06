@@ -49,7 +49,7 @@ def case_a() -> bool:
     print("\n=== (a) LingBot-VA modulation combine ===")
     import trace_block
     from trace_block import DIM, HEADS, TEXT_LEN
-    from instinctwm.adapter.lingbot import LingBotSurface
+    from instinctwm.adapters.lingbot import LingBotSurface
     from instinctwm.passes.hoist_invariant import HoistInvariant
 
     B, N, KV, NL = 2, 240, 512, 3

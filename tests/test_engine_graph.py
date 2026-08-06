@@ -20,10 +20,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "eval", "lingbo
 
 import torch
 
-from instinctwm.engine.executor import (
+from instinctwm.executors.executor import (
     CaptureFailed, EagerExecutor, GraphExecutor, report, verify_and_bench,
 )
-from instinctwm.engine.plan import BufferSpec, CaptureUnit, Plan, PlanBuffer
+from instinctwm.planners.plan import BufferSpec, CaptureUnit, Plan, PlanBuffer
 from trace_block import DIM, HEADS, TEXT_LEN, build_block
 
 import modules.model as M
@@ -161,10 +161,29 @@ def main() -> int:
         print(f"  {'OK  ' if nd == 0 else 'FAIL'} cycle {cycle}  live={live:5d}  "
               f"differing={nd}  graphs held={len(ex.graphs)}  captures so far={ex.n_captures}")
 
-    ok = (all(r.bit_exact for r in res) and all(r.speedup > 1.0 for r in res) and grow_ok)
+    # Correctness is unconditional; SPEED is withheld on a contended box. This gate used to fail as
+    # "1/2 faster than eager" whenever a neighbour was running -- a latency ratio measured against 16
+    # foreign compute processes describes the neighbour, not the capture. The guard is shared with
+    # test_triton_residual.py rather than copied, because the copy is what let this test keep the bug
+    # after the other one was fixed.
+    from tests.perf_gate import device_busy
+
+    correctness_ok = all(r.bit_exact for r in res) and grow_ok
+    busy, why = device_busy()
+    n_fast = sum(r.speedup > 1.0 for r in res)
+    if busy:
+        speed = f"NOT EVALUATED ({why})"
+        speed_ok = True          # cannot fail a gate that did not run
+    else:
+        speed = f"{n_fast}/{len(res)} faster than eager"
+        speed_ok = n_fast == len(res)
+
+    ok = correctness_ok and speed_ok
     print(f"\n{'PASS' if ok else 'FAIL'}: {sum(r.bit_exact for r in res)}/{len(res)} bit-exact, "
-          f"{sum(r.speedup > 1.0 for r in res)}/{len(res)} faster than eager, "
-          f"growth {'clean' if grow_ok else 'BROKEN'}")
+          f"speed {speed}, growth {'clean' if grow_ok else 'BROKEN'}")
+    if busy:
+        print("  (correctness was checked unconditionally and is what this PASS refers to;"
+              " re-run on an idle fleet for a speed verdict)")
     return 0 if ok else 1
 
 

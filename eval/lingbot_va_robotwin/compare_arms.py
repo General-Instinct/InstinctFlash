@@ -138,6 +138,18 @@ def main() -> int:
     print(f"   McNemar exact p            : {mcnemar_exact(b, c):.4f}")
     print()
     print("=" * 66)
+    if n_pairs == 0:
+        # Zero paired episodes is not evidence of anything, but the code used to fall through to the
+        # "action streams DIFFER" verdict and print McNemar p = 1.0000 -- a confident-looking result
+        # computed from nothing. Same class of bug as the frozen audit printing PASS at zero checks.
+        print("NOT EVALUATED: 0 paired episodes.")
+        print(f"  ref = {args.ref}")
+        print(f"  opt = {args.opt}")
+        print("Expected per-task subdirectories containing seed_*.npz action dumps. Runs launched")
+        print("with --no-debug-dump do not write them, so action-stream identity cannot be checked")
+        print("for those arms; compare outcomes from the per-task logs instead. The McNemar p and")
+        print("the verdict above are vacuous and must not be quoted.")
+        return 2
     if bitexact:
         print("VERDICT: the engine did NOT change the policy. Every paired episode produced")
         print("a bitwise-identical action stream, so the trajectories are identical by")

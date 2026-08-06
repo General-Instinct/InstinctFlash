@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import torch
 
-from instinctwm.kernels.triton_residual import (
+from instinctwm.backends.triton_residual import (
     _gated_residual_kernel, gated_residual, gated_residual_eager,
 )
 
@@ -42,46 +42,12 @@ def _inputs(shape, seed=0, hscale=1.0, ascale=1.0):
     )
 
 
-#: ABBA repeats, and the within-arm spread above which no speed verdict is offered.
-REPEATS = 3
-MAX_SPREAD = 0.15
-#: Utilisation on ANY device above which the box counts as occupied. Deliberately low: a 48% neighbour
-#: was enough to turn a 1.20x measurement into a reported regression.
-BUSY_UTIL = 15
-
-
-def _spread(xs):
-    """Relative spread of a sample: (max-min)/mean. Cheap, and sensitive to the single slow outlier
-    that contention actually produces, which a standard deviation would dilute."""
-    m = sum(xs) / len(xs)
-    return (max(xs) - min(xs)) / m if m > 0 else float("inf")
-
-
-def _device_busy():
-    """Is anything else using the GPUs? Checked by utilisation AND by foreign compute processes.
-
-    Utilisation alone misses a neighbour that is between kernels; the process list alone misses a
-    busy device whose owner is not visible to us. Either signal is enough to withhold a verdict.
-    """
-    import os
-    import subprocess
-    try:
-        u = subprocess.run(["nvidia-smi", "--query-gpu=index,utilization.gpu",
-                            "--format=csv,noheader,nounits"],
-                           capture_output=True, text=True, timeout=15).stdout
-        hot = [ln for ln in u.strip().split("\n")
-               if ln.strip() and int(ln.split(",")[1]) >= BUSY_UTIL]
-        if hot:
-            return True, f"GPU utilisation {'; '.join(x.strip() for x in hot)}%"
-        pids = subprocess.run(["nvidia-smi", "--query-compute-apps=pid",
-                               "--format=csv,noheader"],
-                              capture_output=True, text=True, timeout=15).stdout.split()
-        foreign = [x for x in pids if x.strip() and x.strip() != str(os.getpid())]
-        if foreign:
-            return True, f"{len(foreign)} other compute process(es) on the GPUs"
-    except Exception as e:
-        return True, f"could not determine device state ({type(e).__name__}); withholding a verdict"
-    return False, ""
+# Measurement hygiene lives in tests/perf_gate.py so this file and test_engine_graph.py cannot drift
+# apart -- they already did once: the contention guard was fixed here and the copy in the graph gate
+# kept reporting a busy neighbour as a capture regression.
+from tests.perf_gate import BUSY_UTIL, MAX_SPREAD, REPEATS  # noqa: E402,F401
+from tests.perf_gate import device_busy as _device_busy  # noqa: E402
+from tests.perf_gate import spread as _spread  # noqa: E402
 
 
 def _bench(f, it=200):

@@ -27,8 +27,8 @@ import trace_block  # noqa: F401  (sets up the import path for modules.model)
 from trace_block import DIM, HEADS
 
 import modules.model as M
-from instinctwm.optimizer.passes.ring_kv import RingKVAddressing
-from instinctwm.optimizer.passes.stable_pools import StableStatePools
+from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+from instinctwm.passes.lingbot.stable_pools import StableStatePools
 
 DEV, DT, KV, B = torch.device("cuda"), torch.bfloat16, 2048, 2
 NL = 4

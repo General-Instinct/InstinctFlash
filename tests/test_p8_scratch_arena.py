@@ -28,9 +28,9 @@ sys.path.insert(0, "/home/ubuntu/cosmos-framework")
 
 import torch  # noqa: E402
 
-from instinctwm.optimizer.passes.forward_scratch import ForwardScratchArena  # noqa: E402
-from instinctwm.state.manifests import REGISTRY  # noqa: E402
-from instinctwm.state.scratch import ScratchArena, assert_distinct_within_scope  # noqa: E402
+from instinctwm.passes.lingbot.forward_scratch import ForwardScratchArena  # noqa: E402
+from instinctwm.runtime.state.manifests import REGISTRY  # noqa: E402
+from instinctwm.runtime.state.scratch import ScratchArena, assert_distinct_within_scope  # noqa: E402
 
 # Cosmos3-Edge served geometry
 N_UND, N_GEN = 111, 456

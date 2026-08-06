@@ -29,9 +29,9 @@ sys.path.insert(0, "/home/ubuntu/cosmos-framework")
 
 import torch  # noqa: E402
 
-from instinctwm.optimizer.contract import DeviceProfile, Tier, gate  # noqa: E402
-from instinctwm.optimizer.passes.static_partition_hoist import StaticPartitionHoist  # noqa: E402
-from instinctwm.state.manifests import REGISTRY  # noqa: E402
+from instinctwm.passes.contract import DeviceProfile, Tier, gate  # noqa: E402
+from instinctwm.passes.lingbot.static_partition_hoist import StaticPartitionHoist  # noqa: E402
+from instinctwm.runtime.state.manifests import REGISTRY  # noqa: E402
 
 # Cosmos3-Edge served geometry: one sample, und (text) + gen (video+action packed).
 SAMPLE_LENS = [567]
@@ -134,7 +134,7 @@ def main() -> int:
     before, after = test_performance(rt)
     StaticPartitionHoist.uninstall(rt)
 
-    from instinctwm.optimizer.contract import BenchResult, VerifyResult
+    from instinctwm.passes.contract import BenchResult, VerifyResult
     v = VerifyResult(passed=ok_corr, tier_achieved=Tier.BITEXACT if ok_corr else Tier.NUMERIC,
                      max_abs_delta=worst, detail="torch.equal + layout on every index tensor")
     b = BenchResult(passed=after < before, before_ms=before, after_ms=after)

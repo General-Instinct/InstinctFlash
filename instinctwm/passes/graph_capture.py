@@ -1,6 +1,6 @@
 """GraphCapture -- a generic pass. Captures whatever the adapter calls a capture unit.
 
-Compare with `optimizer/passes/graph_capture.py`, the LingBot version: that one imports
+Compare with `passes/lingbot/graph_capture.py`, the LingBot version: that one imports
 `modules.model`, reaches for `WanTransformer3DModel`, rewrites the source of its `forward` to find
 `for block in self.blocks:`, and knows the names `update_cache` and `cache_name`. None of that is
 about graph capture. It is about LingBot.
@@ -19,8 +19,8 @@ from __future__ import annotations
 
 import torch
 
-from instinctwm.engine.binding import TreeBinder, leaf_shapes, spec_key
-from instinctwm.engine.effects import detect_host_effects
+from instinctwm.executors.binding import TreeBinder, leaf_shapes, spec_key
+from instinctwm.planners.effects import detect_host_effects
 from instinctwm.passes.interface import Rewrite, RewriteKind, Site, SiteKind
 
 

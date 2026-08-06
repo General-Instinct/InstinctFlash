@@ -4,7 +4,7 @@
 `instinctwm/passes/graph_capture.py` contains no `import modules.model`, no class name, no
 `for block in self.blocks`. It asks each adapter for CAPTURE_UNIT sites and rewrites them.
 
-The comparison that matters is with `optimizer/passes/graph_capture.py`, the LingBot version,
+The comparison that matters is with `passes/lingbot/graph_capture.py`, the LingBot version,
 which imports the model module, reaches for `WanTransformer3DModel`, rewrites the SOURCE of its
 `forward`, and knows the argument names `update_cache` / `cache_name`.
 
@@ -58,7 +58,7 @@ def source_is_model_free() -> bool:
 
 def run_cosmos():
     print("\n=== Cosmos3-Edge (two-tower MoT, SequencePack) ===")
-    from instinctwm.adapter.cosmos3 import (
+    from instinctwm.adapters.cosmos3 import (
         Cosmos3Surface, build_pack, build_stack, use_torch_sdpa,
     )
     from cosmos_framework.data.generator.sequence_packing.runtime import get_all_seq, zeros_like
@@ -98,8 +98,8 @@ def run_lingbot():
     print("\n=== LingBot-VA (dual-stream DiT, ring KV) ===")
     import trace_block
     from trace_block import DIM, HEADS, TEXT_LEN
-    from instinctwm.adapter.lingbot import LingBotSurface
-    from instinctwm.optimizer.passes.ring_kv import RingKVAddressing
+    from instinctwm.adapters.lingbot import LingBotSurface
+    from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
 
     RingKVAddressing().install(None, type("S", (), {"_reset": lambda s, prompt=None: None}))
     B, N, KV, NL = 2, 32, 2048, 3

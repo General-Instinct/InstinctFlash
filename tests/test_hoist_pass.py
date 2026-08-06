@@ -51,7 +51,7 @@ def case_a_lingbot() -> bool:
     print("\n=== (a) LingBot-VA: real fp32 parameter casts ===")
     import trace_block
     from trace_block import DIM, HEADS, TEXT_LEN
-    from instinctwm.adapter.lingbot import LingBotSurface
+    from instinctwm.adapters.lingbot import LingBotSurface
 
     B, N, KV, NL = 2, 32, 2048, 3
     blocks = []
@@ -86,7 +86,7 @@ def case_a_lingbot() -> bool:
 
 def cases_bc_synthetic() -> bool:
     print("\n=== (b)+(c) synthetic adapter: one hoistable site, one that must not be ===")
-    from instinctwm.adapter.synthetic import SyntheticSurface
+    from instinctwm.adapters.synthetic import SyntheticSurface
 
     surf = SyntheticSurface(DEV)
     with torch.no_grad():

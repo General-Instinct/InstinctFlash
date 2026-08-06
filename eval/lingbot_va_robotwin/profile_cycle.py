@@ -71,7 +71,7 @@ def build_server(ckpt: str, no_fsdp: bool, prefill: bool):
         install_conditioning_prefill(S, S.VA_Server)
 
     if os.environ.get("IWM_RING_KV") == "1":
-        from instinctwm.optimizer.passes.ring_kv import RingKVAddressing
+        from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
         RingKVAddressing().install(S, S.VA_Server)
 
     cfg = VA_CONFIGS["robotwin"]

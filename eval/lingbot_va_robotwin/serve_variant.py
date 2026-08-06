@@ -142,7 +142,7 @@ def main() -> int:
             raise SystemExit(
                 "--pdd-heads and --degrade-nfe both set the video step count; pick one. "
                 "--pdd-heads already reduces video NFE to N/L.")
-        from instinctwm.runtime.pdd_serve import install_pdd_video_heads
+        from instinctwm.runtime.block_heads import install_block_velocity_heads
         _pdd_dir = args.pdd_heads
 
         _orig_run_pdd = S.run
@@ -155,7 +155,7 @@ def main() -> int:
             class _WithHeads(_orig_cls):
                 def __init__(self, *ar, **kw):
                     super().__init__(*ar, **kw)
-                    for name in install_pdd_video_heads(S, self, _pdd_dir):
+                    for name in install_block_velocity_heads(S, self, _pdd_dir):
                         print(f"InstinctWM pdd: {name}", flush=True)
 
             S.VA_Server = _WithHeads
@@ -196,12 +196,12 @@ def main() -> int:
         applied += install_conditioning_prefill(S, S.VA_Server)
 
     if getattr(args, "ring_kv", False):
-        from instinctwm.optimizer.passes.ring_kv import RingKVAddressing
+        from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
         RingKVAddressing().install(S, S.VA_Server)
         applied.append("ring-kv")
 
     if getattr(args, "hoist_casts", False):
-        from instinctwm.optimizer.passes.hoist_invariant_casts import HoistInvariantCasts
+        from instinctwm.passes.lingbot.hoist_invariant_casts import HoistInvariantCasts
         HoistInvariantCasts().install(S, S.VA_Server)
         applied.append("hoist-casts")
 
@@ -211,7 +211,7 @@ def main() -> int:
                    or getattr(args, "hoist_casts", False)
                    or getattr(args, "stable_pools", False))
     if not _use_legacy:
-        from instinctwm.adapter.lingbot import LingBotSurface
+        from instinctwm.adapters.lingbot import LingBotSurface
         from instinctwm.passes.hoist_invariant import HoistInvariant
         from instinctwm.passes.interface import run_pass
         from instinctwm.passes.explicit_step_index import ExplicitStepIndex
@@ -274,7 +274,7 @@ def main() -> int:
 
     _pools_pass = None
     if getattr(args, "stable_pools", False):
-        from instinctwm.optimizer.passes.stable_pools import StableStatePools
+        from instinctwm.passes.lingbot.stable_pools import StableStatePools
         _pools_pass = StableStatePools()
         _pools_pass.install(S, S.VA_Server)
         applied.append("stable-pools")
@@ -285,7 +285,7 @@ def main() -> int:
                   "mask.nonzero() per layer per forward, which is a data-dependent shape; "
                   "capture fails with cudaErrorStreamCaptureInvalidated.", flush=True)
             return 2
-        from instinctwm.optimizer.passes.graph_capture import GraphBlockStack
+        from instinctwm.passes.lingbot.graph_capture import GraphBlockStack
         _graph_pass = GraphBlockStack()
         _graph_pass.install(S, S.VA_Server)
         applied.append("graph-blocks")
