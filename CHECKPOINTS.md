@@ -87,6 +87,13 @@ something they cannot know. Fields are added here only when a pass reads one.
 
 ## The serialized form
 
+> **Status: specified, not yet implemented.** Today `AdapterSpec` is constructed in Python by a
+> registered adapter (`instinctwm.register`), and the closest thing to a serialized declaration is the
+> `delta.json` that [`runtime/block_heads.py`](instinctwm/runtime/block_heads.py) reads — which
+> carries `n_intervals`, `block`, `guidance`, and a coverage gate, and is the prototype for the schema
+> below. The schema is written down here so that checkpoints published from now on declare the right
+> things; the loader path is not built. Nothing in this section should be read as a working feature.
+
 For a checkpoint published on the Hub, the declaration ships as `instinctwm.json` beside the weights.
 The runtime resolves it in this order, first hit wins:
 
@@ -154,9 +161,14 @@ planner. The separation is structural, not a convention to remember.
 An operating point is a checkpoint declaration with a different `phases` block. Nothing else.
 
 ```python
-fast = spec.with_phases(video=2, action=4)     # same weights, different declared schedule
+fast = spec.with_phases(video=2, action=4)     # PROPOSED API -- not implemented yet
 plan = Optimizer(tier_ceiling=Tier.BEHAVIORAL).compile(fast, deployment)
 ```
+
+Today the same thing is expressed by `--degrade-nfe 2,4` on the eval server, which is how every Fast
+number in this repository was measured. `with_phases` is the shape it should take once operating
+points are first-class; the planner already computes profitability from `phases`, so the missing part
+is only the ergonomics of producing the delta.
 
 The planner re-derives which passes are legal *and profitable* from that. This is not theoretical
 tidiness — it is the only reason we caught the following.
