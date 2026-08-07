@@ -149,6 +149,15 @@ caught three bugs in the tool, each of which would have produced a believable wr
 6. **Gate with evidence matching the tier.** NUMERIC means a certificate, not a bit-exactness check.
 7. **Register it** in `verify/released.py` with the certificate, so `is_verified()` can refuse it.
 
+## The next decision
+
+[LAYER5_NEXT.md](LAYER5_NEXT.md) is the ranked proposal produced by this workflow, and it is also the
+first time the attribution gate changed an answer: `cat` was excluded at **121% coverage**. Coverage
+cannot exceed 100% for a stationary workload, so over-attribution means the operator's call count
+depends on state that advanced between the tool's two passes — the ring-wrap branch fires only during
+the wrap transition. `MIN_COVERAGE` alone did not catch it; `MAX_COVERAGE` now does. Without that,
+`cat` would have ranked 4th and 5th on a number describing one ring position.
+
 ## Current Layer 5 state
 
 | | ms/cycle | share of GPU busy |

@@ -164,7 +164,7 @@ verified than six partly claimed.
 | [**Architecture**](ARCHITECTURE.md) | How the repository is organized: training vs runtime, the two seams, and why there is only one runtime |
 | [**Checkpoints**](CHECKPOINTS.md) | What a checkpoint declares, the `instinctwm.json` schema, and why the training method is deliberately absent from it |
 | [**Attention Backends**](ATTENTION.md) | Layer 4: how a checkpoint avoids depending on any attention implementation. Architecture only — selection is not implemented |
-| [**Layer 5**](LAYER5.md) | Backend and layout selection before kernels — the flow every Layer 5 backend follows, with P007 as the reference implementation |
+| [**Layer 5**](LAYER5.md) | Backend and layout selection before kernels — the flow every Layer 5 backend follows, with P007 as the reference implementation. Next decision: [LAYER5_NEXT.md](LAYER5_NEXT.md) |
 | [**Profile**](PROFILE.md) | Where the Fast cycle actually goes — 81% forwards, 18% keyframe VAE encode — and the retraction of the cost model that said otherwise |
 | [**Audit**](AUDIT.md) | Where the repository does and does not yet live up to *One Runtime, Many Checkpoints, Zero Runtime Forks* — findings, renames, migration plan |
 | [Results](eval/lingbot_va_robotwin/RESULTS.md) | Measured chain, per-pass numbers, protocols |

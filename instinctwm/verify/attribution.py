@@ -48,6 +48,14 @@ from typing import Callable, Iterable
 
 #: Below this fraction of an operator's true call count, a callsite breakdown is not rankable.
 MIN_COVERAGE = 0.60
+#: ABOVE this, it is not rankable either, and the first version of this module missed that entirely.
+#: Coverage cannot exceed 100% for a stationary workload -- the attributed pass and the ground-truth
+#: pass run the same code. When it does, the two passes disagreed because the operator's call count
+#: DEPENDS ON STATE that advanced between them. `cat` measured 121%: the ring-wrap branch in
+#: ring_kv.py fires only during the wrap transition, so its count varies cycle to cycle, and a
+#: 2-cycle sample cannot characterise it. Over-coverage is a non-stationarity alarm, not a rounding
+#: artefact, and an operator that trips it must be re-measured over many cycles before it is ranked.
+MAX_COVERAGE = 1.10
 
 _SCOPE = re.compile(r"^iwm::(?P<op>[^@]+)@(?P<site>.+)$")
 _SELF = str(Path(__file__).resolve())
@@ -95,17 +103,29 @@ class Report:
         got = sum(r.calls for r in self.rows if r.operator == operator)
         return (got / true) if true else 0.0
 
+    def rankable(self, operator: str) -> bool:
+        return MIN_COVERAGE <= self.coverage(operator) <= MAX_COVERAGE
+
     def coverage_warnings(self) -> str:
-        bad = [(op, self.coverage(op)) for op in sorted(self.by_operator())
-               if self.coverage(op) < MIN_COVERAGE]
-        if not bad:
-            return "coverage: every reported operator is above the rankable threshold."
-        lines = [f"COVERAGE WARNING -- these operators are NOT rankable by callsite "
-                 f"(< {MIN_COVERAGE:.0%} of calls attributed):"]
-        for op, c in bad:
-            lines.append(f"  {op:<24} {c:6.1%} of {self.true_calls.get(op, 0)} calls attributed")
-        lines.append("  Do not choose a target from a partial sample. Widen `watch`, or accept that")
-        lines.append("  this operator's callsites are inside C++ and need a different instrument.")
+        under = [(op, self.coverage(op)) for op in sorted(self.by_operator())
+                 if self.coverage(op) < MIN_COVERAGE]
+        over = [(op, self.coverage(op)) for op in sorted(self.by_operator())
+                if self.coverage(op) > MAX_COVERAGE]
+        if not under and not over:
+            return "coverage: every reported operator is rankable."
+        lines = []
+        if under:
+            lines.append(f"PARTIAL -- not rankable (< {MIN_COVERAGE:.0%} of calls attributed):")
+            for op, c in under:
+                lines.append(f"  {op:<20} {c:6.1%} of {self.true_calls.get(op, 0)} calls. Its "
+                             f"callsites are likely inside C++; a different instrument is needed.")
+        if over:
+            lines.append(f"NON-STATIONARY -- not rankable (> {MAX_COVERAGE:.0%} attributed):")
+            for op, c in over:
+                lines.append(f"  {op:<20} {c:6.1%}. Coverage cannot exceed 100% for a stationary "
+                             f"workload, so this operator's call count depends on state that")
+                lines.append(f"  {'':<20} advanced between the two passes. Re-measure over many "
+                             f"cycles before ranking it; a short sample describes one ring position.")
         return "\n".join(lines)
 
     def format_table(self, top: int = 24) -> str:
@@ -116,7 +136,9 @@ class Report:
                                key=lambda kv: -sum(r.exclusive_us for r in kv[1])):
             cov = self.coverage(op)
             tot = sum(r.exclusive_us for r in rows) / 1000 / self.cycles
-            flag = "" if cov >= MIN_COVERAGE else "   [PARTIAL, NOT RANKABLE]"
+            flag = ("" if self.rankable(op) else
+                    "   [PARTIAL, NOT RANKABLE]" if cov < MIN_COVERAGE else
+                    "   [NON-STATIONARY, NOT RANKABLE]")
             out.append(f"{op:<18}{tot:>8.2f}{sum(r.calls for r in rows) / self.cycles:>10.0f}"
                        f"{sum(r.nbytes for r in rows) / 2**20 / self.cycles:>9.1f}"
                        f"{'':>7}  <all callsites>  coverage {cov:.0%}{flag}")
