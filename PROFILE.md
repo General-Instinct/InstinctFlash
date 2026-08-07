@@ -274,3 +274,86 @@ What the two clean measurements point at instead, in order:
    cost. Resolve against the graph-capture evidence before building anything.
 
 Attention (Layer 4) is 18.3% — better than the retracted 7%, still third.
+
+---
+
+# Layer 5, target 2: the VAE convolutions were on a fallback path
+
+Measured 2026-08-07, idle fleet. Probes:
+[`probe_vae_conv_backend.py`](eval/lingbot_va_robotwin/probe_vae_conv_backend.py),
+[`probe_vae_channels_last.py`](eval/lingbot_va_robotwin/probe_vae_channels_last.py).
+
+## The cause is memory layout, not a missing kernel
+
+`slow_conv_dilated3d` was 21.7 ms/cycle at 42 calls. The name is misleading: `WanCausalConv3d` sets
+`padding=(0,0,0)`, pads explicitly with `F.pad`, and never sets `dilation`, so nothing is dilated. It is
+simply where PyTorch lands when its 3D backends decline.
+
+Per-signature, in NCDHW vs NDHWC:
+
+| input | weight | as-is | channels_last_3d | |
+|:--|:--|--:|--:|--:|
+| (1,160,8,128,160) | (160,160,3,3,3) | 2.659 ms `slow_conv_dilated3d` | 0.581 ms `cudnn_convolution` | **4.58×** |
+| (1,320,8,64,80) | (320,320,3,3,3) | 2.702 ms | 0.540 ms | **5.00×** |
+| (1,12,8,128,160) | (160,12,3,3,3) | 1.336 ms | 0.307 ms | **4.35×** |
+| (1,160,8,64,80) | (320,160,3,3,3) | 2.593 ms | 0.358 ms | **7.24×** |
+
+Every 3×3×3 convolution in NCDHW falls back; every one of them reaches cuDNN in NDHWC. The 1×1×1
+convolution already reached cuDNN, which is why 16 of 62 convs were never on the slow path.
+
+**`cudnn.benchmark=True` changes nothing (1.00× on all four).** So this is not heuristic search failing
+— cuDNN has no NCDHW bf16 3D kernel for these shapes on H100 / torch 2.9 / cuDNN 9.10, and PyTorch
+falls back rather than transposing. That distinction matters: `benchmark` would have been a
+search-strategy flag with no arithmetic change and therefore BITEXACT-eligible. Layout is not.
+
+## At whole-encode scale it is much larger than the conv time
+
+Converting only the 62 Conv3d weights (`module.to(memory_format=...)` raises *"required rank 5 tensor"*
+on the rank-1 RMSNorm weights) and the input, once:
+
+| | fallback convs | cuDNN convs | conv time | **whole encode** |
+|:--|--:|--:|--:|--:|
+| NCDHW (as shipped) | 46 | 16 | 16.69 ms | **175.72 ms** |
+| NDHWC | **0** | 62 | 6.16 ms | **17.00 ms** |
+
+**10.34× on the whole encode**, transforms included, at 0.8–1.3% spread.
+
+The important part is the discrepancy: convolution time fell by 10.5 ms while the encode fell by
+**158.7 ms**. The fallback was not merely a slow kernel — it was generating an order of magnitude more
+surrounding work than it spent computing. `slow_conv_dilated3d` lowers via `vol2col`, materialising
+column buffers, and that is almost certainly a large share of the **34,710 `copy_` and 29,681 `fill_`
+calls per cycle** that four attribution attempts failed to place. The copy storm and the conv fallback
+look like one problem, not two.
+
+## What is NOT yet established
+
+**The cycle-level number.** This standalone encode measures 175.7 ms for ONE camera, while the in-cycle
+profile attributes 181.8 ms to `_encode_obs` for all THREE. Those cannot both describe the same work,
+so the standalone figure is not transferable: `clear_cache()` on every iteration forces a full
+recompute, and the chunk sequence differs from the real incremental one. **Do not quote 32.6%.** The
+defensible bound from the full-cycle profile is 21.7 ms (the conv line) up to ~88 ms (conv plus the
+copy/fill population it plausibly generates) — 4.5% to 18% of a 487 ms cycle. Only the cycle gate
+settles it.
+
+**The numerics.** `max|delta|` on the encoder output is 1.25e-01, relative 6.67e-03 — about 1.7× bf16
+resolution at that magnitude, so it is a real difference, not a rounding artefact. NDHWC changes the
+convolution's accumulation order. This is **NUMERIC tier**: it cannot ship under `max|Δ| = 0` and needs
+paired non-inferiority on pinned seeds. The encoded latents feed the KV cache, so it propagates to
+actions.
+
+## Also corrected
+
+PROFILE.md previously said the VAE chunk size was bound by cache state and that `_reset` "does not
+resynchronise" the two VAEs. The real rule is sharper and is a property of the architecture: the Wan
+causal VAE downsamples time by 4, so the **first** chunk after `clear_cache` must have `T = 4k+1` and
+every later chunk `T = 4k`. Feeding 8 frames as the first chunk raises *"size of tensor a (8) must match
+tensor b (4)"* inside the residual shortcut. That is exactly why the real flow works: `_infer` encodes
+one frame at `frame_st_id 0`, then `_compute_kv_cache` sends 4 and then 8.
+
+## Next
+
+1. **Cycle-level gate for the layout change**, at 2V/4A warm. It is the only number that decides.
+2. If it holds, it needs paired non-inferiority, not a bit-exactness gate — budget the episodes.
+3. The `cat` path (21.6 ms, 172 calls, 125.6 µs/call) and the remaining `copy_` population are both
+   still open, but the copy population should be re-profiled AFTER the layout fix: if `vol2col` was
+   generating most of it, a large part of that 66 ms disappears and the target list changes.
