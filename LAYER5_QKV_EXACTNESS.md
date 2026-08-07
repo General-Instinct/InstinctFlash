@@ -1,5 +1,11 @@
 # Fused QKV: theorem, accident, or something else?
 
+> **SETTLED BY IMPLEMENTATION.** The certificate found a counterexample on its first outing: **M=7
+> differs in 55 of 64,512 words** on this exact stack, today. So the `tile_k` invariant is genuinely not
+> universal, and "bit-exact at the three production shapes" was never going to generalise. The
+> fail-closed certificate is what makes the pass safe; a claim would have been wrong. Separately, the
+> pass **failed the cycle gate** (0.2% slower against 2.1% drift) and is not shipped.
+
 Measured 2026-08-07, H100 80GB, torch 2.9.0+cu126, cuDNN 9.10, warm 2V/4A with P007 applied.
 Probe: [`probe_qkv_exactness.py`](eval/lingbot_va_robotwin/probe_qkv_exactness.py).
 

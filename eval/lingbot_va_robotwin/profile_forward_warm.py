@@ -117,6 +117,8 @@ def main() -> int:
                     help="apply the conv backend plan: 'ndhwc' converts the VAE's Conv3d weights so "
                          "cuDNN serves them instead of slow_conv_dilated3d (NUMERIC tier)")
     ap.add_argument("--trace-cycles", type=int, default=3)
+    ap.add_argument("--fused-qkv", action="store_true",
+                    help="fuse Q/K/V into one GEMM where the per-shape certificate passes")
     ap.add_argument("--step-cast", action="store_true",
                     help="hoist the timestep cast from LAYER to STEP scope (BITEXACT)")
     a = ap.parse_args()
@@ -192,6 +194,11 @@ def main() -> int:
         _sc = StepScopeCastHoist()
         for n in _sc.install(S, type(server)):
             print(f"  installed {n}", flush=True)
+
+    if a.fused_qkv:
+        from instinctwm.passes.lingbot.fused_qkv import FusedQKVProjection
+        _fq = FusedQKVProjection()
+        _fq.install(S, server)
 
     ctx = sorted(Path("/home/ubuntu/iwm_results/pdd_ctx50").glob("*.npz"))
     if not ctx:
