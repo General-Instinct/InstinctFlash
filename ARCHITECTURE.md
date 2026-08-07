@@ -152,7 +152,7 @@ Six layers, ordered by *what they change*.
 | 2 | **GRAPH** | when work is issued — prefill extraction, graph capture, memory planning |
 | 3 | **CACHE** | what is recomputed — KV reuse, cross-attention cache, episode cache |
 | 4 | **ATTENTION** | how tokens mix — FlashAttention, hybrid and linear attention ([design](ATTENTION.md)) |
-| 5 | **KERNEL** | how a kernel is written — operator fusion, Triton |
+| 5 | **KERNEL** | how a kernel is written — backend/layout dispatch first, then fusion and Triton ([design](LAYER5.md)) |
 | 6 | **HARDWARE** | what it executes on — TensorRT, FP8/INT8, Jetson, Thor |
 
 Layer 1 is the training side of the seam. Layers 2–6 are the runtime.
@@ -226,6 +226,8 @@ cannot fail on the bug it is gating is worse than no gate, because it produces a
   applied to a layer whose candidates are exchangeable implementations of a declared function
 - [AUDIT.md](AUDIT.md) — the audit of this document's central claim against the code, with the two
   places it is not yet true and the staged plan to make it so
+- [LAYER5.md](LAYER5.md) — Layer 5's required flow (planner → backend → verification) and why
+  dispatch is tried before kernels: the same measured comparison twice favoured dispatch
 - [HISTORY.md](HISTORY.md) — P001–P006 implementation milestones
 - [eval/lingbot_va_robotwin/RESULTS.md](eval/lingbot_va_robotwin/RESULTS.md) — measured numbers and
   protocols

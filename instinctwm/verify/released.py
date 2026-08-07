@@ -32,8 +32,21 @@ class Released:
     #: set once the gates pass; never clear it without running them.
     gates_owed: str = ""
 
+    #: REQUIRED for any pass whose tier is not BITEXACT. A NUMERIC or BEHAVIORAL pass changes outputs,
+    #: so `max|delta action| = 0` is unavailable and the only defensible evidence is a paired
+    #: non-inferiority certificate. `is_verified()` refuses such a pass without one, because the
+    #: failure mode is a lossy pass inheriting the credibility of six bit-exact ones.
+    certificate: str = ""
+
     def is_verified(self) -> bool:
-        return not self.gates_owed
+        if self.gates_owed:
+            return False
+        if self.tier is not Tier.BITEXACT and not self.certificate:
+            return False
+        return True
+
+    def evidence_kind(self) -> str:
+        return "bit-exactness" if self.tier is Tier.BITEXACT else "paired non-inferiority"
 
 
 RELEASED = (
@@ -97,6 +110,37 @@ RELEASED = (
         gates="max|delta action| = 0 over 40 cycles past the wrap at ~36; 800/800 allocator "
               "parity checks across 5.6 full wraps; 3/3 bitwise-identical action streams on "
               "put_bottles_dustbin (1700 steps, ~53 cycles/episode)"),
+    Released(
+        pid="P007", name="conv_layout_ndhwc", version="1.0.0", tier=Tier.NUMERIC,
+        step_speedup=1.45,
+        gates="THE FIRST NON-BITEXACT RELEASE, and the first Layer 5 one. Every 3x3x3 convolution in "
+              "both observation VAEs was declining cuDNN in NCDHW and landing on "
+              "slow_conv_dilated3d; serving them in NDHWC reaches cudnn_convolution at 4.35-7.24x "
+              "per signature. NO KERNEL WAS WRITTEN -- this is backend/layout dispatch, chosen by "
+              "instinctwm/backends/conv/ and applied by backends/conv/apply.py to both "
+              "streaming_vae and streaming_vae_half (62 + 62 Conv3d weights; converting only the "
+              "first leaves the two wrist cameras on the fallback path). "
+              "cudnn.benchmark=True changes nothing (1.00x on all four signatures), so this is not "
+              "heuristic search: there is no NCDHW bf16 3D kernel for these shapes on H100 / "
+              "torch 2.9 / cuDNN 9.10. "
+              "LATENCY: episode mode, post-saturation steady state, ABBA-ordered -- 519.2 -> 358.8 "
+              "ms/cycle = 1.45x. Corroborated in-process at 490.4 -> 330.2 ms = 1.49x, two "
+              "independent harnesses. "
+              "SIDE EFFECT that explains an older mystery: aten::copy_ falls 34,710 -> 6,385 calls "
+              "and fill_ 29,681 -> 1,361, because 82% of the copy population was vol2col lowering "
+              "inside the fallback. copy_ was the largest line in the profile and a copy kernel "
+              "would have been wasted work.",
+        certificate="paired non-inferiority, margin -0.05 declared BEFORE the run, both arms 2V/4A "
+                    "on identical pinned seeds so only the layout differs. 555 paired episodes: "
+                    "baseline 506/555 = 0.9117, conv-layout 504/555 = 0.9081, delta -0.0036. "
+                    "Discordant 60 (31 baseline-only / 29 layout-only); exact McNemar two-sided "
+                    "p = 0.897 (no detectable difference); one-sided non-inferiority p = 0.00031. "
+                    "NON-INFERIOR. Required because NDHWC changes the convolution's accumulation "
+                    "order: max|delta| 1.25e-01 on the encoder output, relative 6.67e-03, ~1.7x bf16 "
+                    "resolution -- and the latents feed the KV cache, so it propagates to actions. "
+                    "max|delta action| = 0 is unavailable by construction, which is why the conv "
+                    "backend layer derives NUMERIC for this pair and refuses to select it without an "
+                    "explicit prefer_bitexact=False."),
 )
 
 #: MEASUREMENT PROTOCOL, and a caveat that applies to every number below.
@@ -196,11 +240,17 @@ def summary() -> str:
     for r in RELEASED:
         flag = "" if r.is_verified() else "   [GATES OWED]"
         out.append(f"  {r.pid} {r.name:22s} v{r.version}  {r.tier.name:9s} "
-                   f"{r.step_speedup:.2f}x step{flag}")
+                   f"{r.step_speedup:.2f}x step   [{r.evidence_kind()}]{flag}")
     owed = [r.pid for r in RELEASED if not r.is_verified()]
     if owed:
-        out.append(f"  NOT FULLY VERIFIED: {', '.join(owed)} shipped a fix whose gates have not "
-                   f"been re-run. See Released.gates_owed.")
+        out.append(f"  NOT FULLY VERIFIED: {', '.join(owed)}. Either gates are owed, or a "
+                   f"non-BITEXACT pass is missing its certificate. See Released.gates_owed / "
+                   f".certificate.")
+    lossy = [r.pid for r in RELEASED if r.tier is not Tier.BITEXACT]
+    if lossy:
+        out.append(f"  TIER: the chain is NOT bit-exact end to end -- {', '.join(lossy)} "
+                   f"{'is' if len(lossy) == 1 else 'are'} NUMERIC. A plan containing one of these "
+                   f"cannot claim max|delta action| = 0, however many BITEXACT passes sit beside it.")
     # Episode mode leads, because it is the protocol that describes a real episode. probe_latency
     # resets between repeats, which rewinds the ring and hides per-cycle recapture; it overstated
     # this chain by 2.13x.
