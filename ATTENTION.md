@@ -160,16 +160,14 @@ over 6.
 ### 2. Attention's share is small, and shrinks
 
 Attention is 7% of GPU-busy time at Quality. The measured warm cost model at Fast is
-`FIXED 1164 ms + 15.5 ms/forward` (R² = 0.994), so at 6 forwards/cycle **93% of latency is fixed
-overhead no attention kernel touches**. Attention is ≈2.2 ms per forward, so:
+**RETRACTED, and the retraction moves Layer 4 UP.** The figures previously here rested on a
+regression-derived `FIXED 1164 ms + 15.5 ms/forward`, which a direct phase decomposition contradicts:
+transformer forwards are **81% of the Fast cycle**, not 7%. See [PROFILE.md](PROFILE.md).
 
-| Operating point | attention/cycle | a backend that **halves** it wins |
-|:--|--:|--:|
-| Quality, 75 forwards | ~163 ms of 2325 ms | ~81 ms → **3.5%** |
-| Fast, 6 forwards | ~13 ms of 1257 ms | ~7 ms → **0.5%** |
-
-Both are real. Neither is what the layer's reputation suggests. This arithmetic belongs in the planner
-so it can stop a kernel being written, rather than in a retrospective.
+Attention's share *within* a forward is still the open question — the 7%-of-GPU-busy figure was
+measured separately and is not affected — but the denominator it multiplies is now the largest bucket
+in the cycle rather than the smallest. The profitability model in `backend.py` is unchanged and is what
+should decide this; only the numbers plugged into it were wrong.
 
 ### 3. A backend can be a net loss while being strictly faster at attention
 
@@ -248,8 +246,8 @@ When attention work does resume, the order this design implies is:
 2. Implement `measure()` for `adapter_native` and one challenger, and get a number on an idle fleet
 3. Only then implement `select()`, with ties going to the incumbent
 
-Step 2 is where the 3.5%-at-Quality / 0.5%-at-Fast arithmetic gets tested against reality. It may end
-the layer, and that would be a good outcome to reach cheaply.
+Step 2 is where attention's share of a forward gets measured against reality. Since forwards are 81%
+of the cycle, that share now matters more than the earlier arithmetic suggested.
 
 ## Further reading
 

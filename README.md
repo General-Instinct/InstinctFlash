@@ -84,8 +84,10 @@ path · ~~struck~~ rejected *by measurement*, kept so it is not re-proposed · p
 
 **All 3.38× of measured speedup comes from GRAPH and CACHE.** The other four layers are either
 unbuilt or deprioritized *by profile*. Priority comes from the measurement at the operating point:
-at Fast the warm cost model is `FIXED 1164 ms + 15.5 ms/forward` (R² = 0.994), so **93% of latency is
-fixed overhead** and per-forward work is 7% of the problem. Per-pass measurements, protocols, and the
+a direct phase decomposition at Fast attributes 99% of the cycle to two components — transformer
+forwards (81%) and the keyframe VAE encode (18%) — so those are the only two things worth optimizing.
+An earlier regression-derived cost model claimed 93% fixed overhead; it was wrong, and
+[PROFILE.md](PROFILE.md) says why. Per-pass measurements, protocols, and the
 full chain are in [Results](eval/lingbot_va_robotwin/RESULTS.md).
 
 ---
@@ -162,6 +164,7 @@ verified than six partly claimed.
 | [**Architecture**](ARCHITECTURE.md) | How the repository is organized: training vs runtime, the two seams, and why there is only one runtime |
 | [**Checkpoints**](CHECKPOINTS.md) | What a checkpoint declares, the `instinctwm.json` schema, and why the training method is deliberately absent from it |
 | [**Attention Backends**](ATTENTION.md) | Layer 4: how a checkpoint avoids depending on any attention implementation. Architecture only — selection is not implemented |
+| [**Profile**](PROFILE.md) | Where the Fast cycle actually goes — 81% forwards, 18% keyframe VAE encode — and the retraction of the cost model that said otherwise |
 | [**Audit**](AUDIT.md) | Where the repository does and does not yet live up to *One Runtime, Many Checkpoints, Zero Runtime Forks* — findings, renames, migration plan |
 | [Results](eval/lingbot_va_robotwin/RESULTS.md) | Measured chain, per-pass numbers, protocols |
 | [Evaluation harness](eval/lingbot_va_robotwin/README.md) | Running the RoboTwin pipeline, and seven ways it can silently produce a plausible wrong number |

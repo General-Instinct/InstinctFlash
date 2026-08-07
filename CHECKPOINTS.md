@@ -238,8 +238,14 @@ regression with the reason buried in a branch. Because profitability is computed
 `phases`, `admit()` answers it directly and the log says why.
 
 The same arithmetic explains why further step reduction is not worth pursuing at Fast. The warm cost
-model is `FIXED 1164 ms + 15.5 ms/forward` (R² = 0.994), so at 6 forwards **93% of latency is fixed
-overhead**. Cutting steps further optimizes 7% of the problem.
+decomposition puts 81% of the cycle in transformer forwards and 18% in the keyframe VAE encode. Step
+count multiplies the first of those, so it is still the strongest lever — but the last few steps buy
+little, and the encode is untouched by any step reduction. **RETRACTED — see [PROFILE.md](PROFILE.md).** A direct phase decomposition at 2V/4A attributes
+99.0% of the cycle to two components: transformer forwards (80.8%) and the VAE encode of the
+keyframe observations (17.7%). Everything else together is under 1%. There is no large unexplained
+fixed term; the 1164 ms intercept was an artifact of regressing cycle time on forward count across
+configurations where per-forward cost is not constant. Fast runs **10** forwards per cycle, not 6
+(each denoise loop runs one extra cache-only forward, plus 2 for the KV refresh: 3 + 5 + 2).
 
 ---
 

@@ -162,12 +162,18 @@ is Layer 4 and looks like the obvious first move; on our profile it is 7% of GPU
 Fast operating point the picture is starker — the warm cost model is
 
 ```
-FIXED 1164 ms  +  15.5 ms/forward        (R² = 0.994)
+transformer forwards   81%      10 forwards/cycle
+keyframe VAE encode    18%      one call
+everything else       < 1%      schedulers, prepare, pre/postprocess
 ```
 
-so at 6 forwards per cycle, **93% of latency is fixed overhead** and everything Layer 4 could win
-lives inside the other 7%. Priority comes from the profile at the operating point, never from the
-layer number.
+Priority comes from a decomposition at the operating point, never from the layer number — and never
+from a regression intercept. **RETRACTED — see [PROFILE.md](PROFILE.md).** A direct phase decomposition at 2V/4A attributes
+99.0% of the cycle to two components: transformer forwards (80.8%) and the VAE encode of the
+keyframe observations (17.7%). Everything else together is under 1%. There is no large unexplained
+fixed term; the 1164 ms intercept was an artifact of regressing cycle time on forward count across
+configurations where per-forward cost is not constant. Fast runs **10** forwards per cycle, not 6
+(each denoise loop runs one extra cache-only forward, plus 2 for the KV refresh: 3 + 5 + 2).
 
 ---
 

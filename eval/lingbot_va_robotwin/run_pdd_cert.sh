@@ -49,7 +49,7 @@ start_arm() {   # start_arm <label> <first_gpu> <n_gpus> <extra args...>
 
 echo "starting 4 control servers (untrained 2/50) and 4 student servers ..."
 start_arm control 0 4 --degrade-nfe 2,50
-start_arm student 4 4 --pdd-heads "$CKPT"
+start_arm student 4 4 --block-heads "$CKPT"
 
 for t in $(seq 1 90); do
   up=0
