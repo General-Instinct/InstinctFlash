@@ -112,7 +112,7 @@ RELEASED = (
               "put_bottles_dustbin (1700 steps, ~53 cycles/episode)"),
     Released(
         pid="P007", name="conv_layout_ndhwc", version="1.0.0", tier=Tier.NUMERIC,
-        step_speedup=1.45,
+        step_speedup=1.405,
         gates="THE FIRST NON-BITEXACT RELEASE, and the first Layer 5 one. Every 3x3x3 convolution in "
               "both observation VAEs was declining cuDNN in NCDHW and landing on "
               "slow_conv_dilated3d; serving them in NDHWC reaches cudnn_convolution at 4.35-7.24x "
@@ -123,9 +123,16 @@ RELEASED = (
               "cudnn.benchmark=True changes nothing (1.00x on all four signatures), so this is not "
               "heuristic search: there is no NCDHW bf16 3D kernel for these shapes on H100 / "
               "torch 2.9 / cuDNN 9.10. "
-              "LATENCY: episode mode, post-saturation steady state, ABBA-ordered -- 519.2 -> 358.8 "
-              "ms/cycle = 1.45x. Corroborated in-process at 490.4 -> 330.2 ms = 1.49x, two "
-              "independent harnesses. "
+              "LATENCY: episode mode, post-saturation steady state, ABBA-ordered (base, treat, "
+              "treat, base) -- baseline 519.2/522.7 -> mean 521.0 ms, conv-layout 358.8/382.8 -> "
+              "mean 370.8 ms = 1.405x, +150.2 ms/cycle. Drift on the repeated base arm 0.7%. "
+              "NOTE the asymmetry: the two treatment arms differ by 6.4% while the base arms differ "
+              "by 0.7%, so the conv-layout path is the noisier of the two -- plausibly cuDNN "
+              "re-selecting a kernel between runs. The ABBA mean is the number; 1.45x was an earlier "
+              "figure from the FIRST arm pair before the ordering completed, and quoting it would "
+              "have been picking the better of two treatment arms. "
+              "Corroborated in-process at 490.4 -> 330.2 ms = 1.49x by an independent harness; the "
+              "in-process figure runs slightly higher because it excludes websocket transport. "
               "SIDE EFFECT that explains an older mystery: aten::copy_ falls 34,710 -> 6,385 calls "
               "and fill_ 29,681 -> 1,361, because 82% of the copy population was vol2col lowering "
               "inside the fallback. copy_ was the largest line in the profile and a copy kernel "

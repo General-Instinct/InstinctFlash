@@ -8,7 +8,7 @@ attempts here say don't:
 | attempt | outcome |
 |:--|:--|
 | Fused RoPE Triton kernel — bit-exact, 1.10× at region scale | **rejected**: the region was 0.3% of the cycle |
-| Conv **layout dispatch** — no kernel written | **shipped as P007**: 1.45× end to end |
+| Conv **layout dispatch** — no kernel written | **shipped as P007**: 1.405× end to end |
 
 The difference was not skill or effort. The kernel was written against a callsite chosen from a sample
 covering 12% of the operator's calls; the dispatch fix was found by asking why an operator was on a
@@ -41,8 +41,18 @@ failing: there is no NCDHW bf16 3D kernel for these shapes on H100 / torch 2.9 /
 convolutions already reached cuDNN in either layout, which is why 16 of 62 were never slow — and why a
 summary that dropped the kernel size would have hidden the whole effect.
 
-**Result:** episode mode, post-saturation steady state, ABBA-ordered: **519.2 → 358.8 ms/cycle, 1.45×**.
-Corroborated in-process at 490.4 → 330.2 ms, 1.49×, by an independent harness.
+**Result:** episode mode, post-saturation steady state, **ABBA-ordered** (base, treat, treat, base):
+baseline 519.2 / 522.7 → **521.0 ms**, conv-layout 358.8 / 382.8 → **370.8 ms** = **1.405×**,
++150.2 ms/cycle. Drift on the repeated base arm 0.7%.
+
+Note the asymmetry, because it is a property of the change and not of the measurement: the two
+treatment arms differ by **6.4%** while the base arms differ by 0.7%, so the converted path is the
+noisier of the two — plausibly cuDNN re-selecting a kernel between runs. The ABBA mean is the number.
+An earlier 1.45× came from the first arm pair before the ordering completed; quoting it would have
+meant picking the better of two treatment arms.
+
+Corroborated in-process at 490.4 → 330.2 ms, 1.49×, by an independent harness — slightly higher there
+because it excludes websocket transport.
 
 **Side effect that closed an older mystery.** `aten::copy_` fell 34,710 → 6,385 calls and `fill_`
 29,681 → 1,361, because **82% of the copy population was `vol2col` lowering inside the fallback**.
