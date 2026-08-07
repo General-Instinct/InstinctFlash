@@ -70,10 +70,18 @@ RELEASED = (
               "raised. A correctness bug, which is the only reason a frozen pass may change. No "
               "reported number is affected: no log contains CAPTURE FAILED and no eval server ran "
               "--graph-blocks",
-        gates_owed="v1.0.1 OWED: max|delta action| = 0 over 6 paired seeded cycles, and the "
-                   "restated latency table under ABBA ordering. Deliberately NOT run under "
-                   "contention -- an eval fleet sharing the GPUs is what produced the +331 ms "
-                   "regression this project already retracted once. Queued for an idle fleet."),
+        gates_owed="",   # CLEARED 2026-08-07, all three on an idle fleet:
+        #   1. eager-fallback ring advance: 8160 slots/cycle on BOTH the captured and the forced
+        #      fallback path, identical rate (probe_graph_fallback.py). This gate reported 0 -> 0
+        #      twice before, because the probe read _iwm_count / _iwm_ring_count / kv_count, none of
+        #      which exist -- the accessor is _iwm_ring_signature(cache_name). A gate that cannot
+        #      read its own observable now raises RingUnreadable and reports NOT EVALUATED rather
+        #      than a number. Same bug class this file's own docstring records about the original
+        #      graph-capture integration ("keyed on an attribute that did not exist").
+        #   2. max|delta action| = 0 with --graph-blocks: exit 0.
+        #   3. latency under ABBA (base, treat, treat, base): 3417.7 -> 2836.1 ms = 1.205x, with
+        #      0.3% drift on the repeated base arm.
+        ),
     Released(
         pid="P006", name="stable_state_pools", version="1.0.0", tier=Tier.BITEXACT,
         step_speedup=1.52,

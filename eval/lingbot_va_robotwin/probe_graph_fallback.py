@@ -47,19 +47,39 @@ def check(cond, label, detail=""):
         FAILED.append(label)
 
 
-def ring_count(server) -> int:
-    """Total occupied KV slots across all blocks -- the thing the bug froze."""
-    tot = 0
+class RingUnreadable(RuntimeError):
+    """The ring counter could not be read. NOT EVALUATED -- never a pass, never a failure."""
+
+
+def ring_count(server, cache_name) -> int:
+    """Total occupied KV slots across all blocks -- the thing the bug froze.
+
+    READ THROUGH `_iwm_ring_signature`, which is the accessor `ring_kv` actually installs. The first
+    version of this probe guessed at `_iwm_count`, `_iwm_ring_count` and `kv_count`, none of which
+    exist, so it summed nothing and reported `0 -> 0` for both the captured and the fallback path --
+    which then FAILED the gate, as though the ring had frozen. It had not; the probe was blind.
+
+    That is exactly the failure mode ring_kv.py:250-253 records about the original graph-capture
+    integration: "The first integration keyed on an attribute that did not exist, captured 6 graphs
+    where it needed many more, and replayed stale ones." Second occurrence of the same bug class, so
+    this version refuses to return a number it could not read.
+    """
+    tot, seen = 0, 0
     for blk in server.transformer.blocks:
         a = blk.attn1
-        for attr in ("_iwm_count", "_iwm_ring_count"):
-            if hasattr(a, attr):
-                tot += int(getattr(a, attr))
-                break
-        else:
-            c = getattr(a, "kv_count", None)
-            if c is not None:
-                tot += int(c if not torch.is_tensor(c) else c.sum())
+        sig = getattr(a, "_iwm_ring_signature", None)
+        if sig is None:
+            continue
+        s = sig(cache_name)
+        if s is None:
+            continue
+        tot += int(s[1])            # (start, count)
+        seen += 1
+    if seen == 0:
+        raise RingUnreadable(
+            f"no block exposed a readable _iwm_ring_signature({cache_name!r}). Either ring_kv is not "
+            f"installed or its accessor was renamed. A gate that cannot read its own observable "
+            f"reports NOT EVALUATED; it does not report 0.")
     return tot
 
 
@@ -101,12 +121,17 @@ def main() -> int:
     obs = {"obs": [{full: z[s] for s, full in short.items()}], "state": z["state"]}
     prompt = str(z["prompt"])
 
+    cache_name = server.cache_name
     print("\n=== 1. captured path: the ring advances ===")
     one_cycle(server, obs, prompt, first=True)
-    c0 = ring_count(server)
+    try:
+        c0 = ring_count(server, cache_name)
+    except RingUnreadable as e:
+        print(f"\nNOT EVALUATED: {e}")
+        return 2
     for _ in range(3):
         one_cycle(server, obs, prompt, first=False)
-    c1 = ring_count(server)
+    c1 = ring_count(server, cache_name)
     per_cycle = (c1 - c0) / 3.0
     check(c1 > c0, "ring grows while capture succeeds", f"{c0} -> {c1} ({per_cycle:.0f}/cycle)")
     check(not gp.failed, "capture did not fail on its own", f"failed={gp.failed!r}")
@@ -115,10 +140,10 @@ def main() -> int:
     # The pass instance is the engine (`engine = self`), so this is exactly the state a real capture
     # failure leaves behind -- an OOM mid-run is how it was originally found.
     gp.failed = "forced by probe_graph_fallback"
-    c2 = ring_count(server)
+    c2 = ring_count(server, cache_name)
     for _ in range(3):
         one_cycle(server, obs, prompt, first=False)
-    c3 = ring_count(server)
+    c3 = ring_count(server, cache_name)
     per_cycle_fb = (c3 - c2) / 3.0
     check(c3 > c2, "ring STILL grows on the eager fallback path", f"{c2} -> {c3}")
     check(per_cycle_fb > 0.9 * per_cycle,

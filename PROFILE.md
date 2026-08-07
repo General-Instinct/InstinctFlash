@@ -137,3 +137,140 @@ Recorded because each produced a plausible wrong answer, and the first three all
 Defect 4 is the one worth generalizing: **measure through the entry point the system actually uses.**
 Calling the internals directly skipped invariants maintained between them, and the failure surfaced two
 layers away as an allocation error.
+
+---
+
+# Warm steady state, and the Layer 4/5 re-ranking
+
+Measured 2026-08-07, idle fleet, 2V/4A, in-process, one allocator state, **graph capture OFF** (a
+per-forward number for ranking should describe the model's compute, not the launch machinery).
+Probe: [`profile_forward_warm.py`](eval/lingbot_va_robotwin/profile_forward_warm.py).
+
+Convergence was demonstrated rather than assumed — the run reports NOT EVALUATED if the last two
+windows disagree by more than 5%:
+
+| cycles | median | free |
+|:--|--:|--:|
+| 1–15 | 1383.8 ms | 46.1 GiB |
+| 16–30 | 1387.6 ms | 46.1 GiB |
+| 31–45 | 497.0 ms | 46.1 GiB |
+| 46–60 | 485.5 ms | 46.1 GiB |
+| 61–75 | 492.7 ms | 46.1 GiB |
+| 76–90 | 487.3 ms | 46.1 GiB |
+
+**Converged: 1.8% apart, zero free-memory drift.** Reproduced twice across separate processes at
+487.3 / 489.2 / 496.0 ms.
+
+## The 30-cycle transient is not warmup, it is deployment
+
+Cycles 1–30 run at **1385 ms**; from cycle 31 onward, **490 ms**. A 2.8× step, with free memory flat
+throughout — so not allocator pressure. A real RoboTwin episode is ~53 cycles, so **more than half of
+every episode runs inside the transient.** This is why "whole episode" and "late episode" numbers
+differ by ~1.5× throughout our history (`fast_full`: 1835.7 whole vs 1226.1 late) and it is the largest
+single thing the regression intercept was absorbing. Both numbers are correct for different questions
+and neither should be quoted without saying which.
+
+## Per-forward, warm
+
+| phase | forwards/cycle | ms/forward | ms/cycle |
+|:--|--:|--:|--:|
+| kv_refresh | 1 | 29.79 | 29.8 |
+| video | 3 | 29.50 | 88.5 |
+| action | 6 | 29.38 | 176.3 |
+| **all forwards** | **10** | | **294.6** |
+| cycle total | | | 487.3 |
+| **forwards as share** | | | **60.5%** |
+
+**~29.5 ms/forward** — not the 15.5 ms the regression claimed, and not the 83 ms the
+capture-contaminated probe reported. Note the cost is *flat* across phases despite very different
+token counts, which is the signature of a per-call floor rather than compute.
+
+## GPU time by category — the re-ranking
+
+| category | ms/cycle | share |
+|:--|--:|--:|
+| **elementwise / layout (Layer 5)** | **112.0** | **45.9%** |
+| matmul / projections (Layer 5–6) | 60.4 | 24.7% |
+| attention (Layer 4) | 44.5 | 18.3% |
+| conv / VAE (Layer 5) | 14.0 | 5.7% |
+| normalisation (Layer 5) | 10.1 | 4.1% |
+| other | 3.1 | 1.3% |
+| **total GPU busy** | **244.0** | of a 487.3 ms cycle |
+
+Two results:
+
+**Layer 5 outranks Layer 4 by 2.5×.** Elementwise and layout kernels are 46% of GPU time — the single
+largest category, and larger than attention and matmul combined. `CatArrayBatchedCopy` alone is 16.6
+ms/cycle. Attention is 18.3%, which is real but is not where the mass is. The earlier 7% figure was
+too low and the roadmap's instinct to reach for attention first is still wrong, but for a different
+reason than the retracted model gave.
+
+**The GPU is idle for half the cycle.** 244 ms busy of 487 ms. Combined with the flat 29.5 ms/forward,
+this says the warm cycle is launch/dispatch-bound, not compute-bound — which is Layer 2 territory, and
+sits awkwardly beside the evidence that graph capture is unprofitable here. That tension is the next
+thing worth resolving, and it is a measurement, not a build.
+
+### Auditing this table took three attempts
+
+Recorded because each wrong version produced a confident number:
+
+1. `"mul" in name` matched **matmul**, filing every GEMM as elementwise. Matmul read 0.3% of a
+   transformer's GPU time — implausible, which is the only reason it was caught.
+2. Fixing that changed nothing, because the keys are raw CUDA kernel names and I was still guessing:
+   the GEMMs are `nvjet_tst_128x96_64x7_4x1_v_bz_bias_TNT`, which contains no `gemm` or `matmul`
+   substring at all. `"add_"` also matched `badd_` inside one, pulling a GEMM into elementwise.
+3. Only after printing the raw keys did the buckets become correct. The probe now always prints the
+   top 22 keys with their assigned bucket, because **a bucketing whose inputs are invisible cannot be
+   audited**, and an unauditable 46% is not a finding.
+
+---
+
+# The observation encode: the proposed optimization already exists
+
+Probe: [`probe_obs_encode.py`](eval/lingbot_va_robotwin/probe_obs_encode.py). Three cameras, 8
+keyframes, 256×320.
+
+**The incremental-reuse proposal is already implemented, upstream, and bit-exact.** `StreamingVAE`
+threads `feat_cache` through 26 `WanCausalConv3d` layers; after one encode, 10 of 26 slots hold
+temporal context. Prior frames are carried, never recomputed. And the real client
+(`eval_polict_client_openpi.py:655-662`) builds `key_frame_list` fresh each cycle from *new* simulator
+observations — it is not a sliding window, so there is nothing repeated to cache in the first place.
+
+**A content-keyed latent cache would be a correctness bug, not a missed optimization.** Since the
+encode is a function of (pixels, history), caching on pixel content returns a latent computed against
+the wrong temporal context.
+
+**The chunk size is not a free parameter.** Every attempt to vary it fails, and the failures are the
+finding: 2 frames gives *"padded input (2 × 16 × 20), kernel (3 × 1 × 1)"* — the causal conv needs a
+temporal extent of ≥ 3, so "encode one new frame per cycle" cannot exist. 4/8/16 give *"size of tensor
+a (n) must match tensor b (n/2)"*, because the full-res and half-res streaming VAEs carry independent
+caches that desynchronise when the chunk size changes. So "send fewer keyframes" is not a knob that
+turns in isolation.
+
+**And the host-side preprocessing is not the problem.** `_encode_obs` stacks, promotes to fp32 and
+bilinear-resizes on the CPU before uploading. Measured standalone: **4.7 ms**, against **1.6 ms** for
+uploading uint8 and resizing on the device. Real, but ~3 ms/cycle — 0.6% of a cycle. Not worth a
+NUMERIC-tier change (CPU and GPU bilinear are different reductions, so it would need the paired
+protocol).
+
+**So the 182 ms figure needs re-reading.** In the warm profile, conv/VAE GPU time is only 14.0
+ms/cycle. The encode's wall time is therefore mostly *not* GPU compute and *not* host preprocessing —
+it is launch overhead across 26 tiny causal convolutions × 3 cameras. That makes it the same problem as
+the 50%-idle finding above, not a separate one.
+
+## Revised recommendation
+
+The keyframe VAE encode was the previous recommendation; **it is withdrawn.** Nothing in it is
+cacheable, its chunk size is not adjustable, and its host half is worth 3 ms.
+
+What the two clean measurements point at instead, in order:
+
+1. **The 30-cycle transient (~900 ms/cycle for the first 30 cycles).** Largest single effect measured,
+   affects more than half of every real episode, and nothing in the stack targets it. Find out what
+   changes at cycle 31.
+2. **Elementwise/layout fusion (Layer 5), 46% of GPU time.** Concentrated enough to attack —
+   `CatArrayBatchedCopy` at 16.6 ms/cycle is one kernel.
+3. **The launch-bound half of the cycle (Layer 2).** 244 ms busy of 487 ms, with a flat per-forward
+   cost. Resolve against the graph-capture evidence before building anything.
+
+Attention (Layer 4) is 18.3% — better than the retracted 7%, still third.
