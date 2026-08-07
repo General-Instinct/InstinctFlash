@@ -117,6 +117,8 @@ def main() -> int:
                     help="apply the conv backend plan: 'ndhwc' converts the VAE's Conv3d weights so "
                          "cuDNN serves them instead of slow_conv_dilated3d (NUMERIC tier)")
     ap.add_argument("--trace-cycles", type=int, default=3)
+    ap.add_argument("--step-cast", action="store_true",
+                    help="hoist the timestep cast from LAYER to STEP scope (BITEXACT)")
     a = ap.parse_args()
 
     hot = [ln for ln in os.popen(
@@ -184,6 +186,12 @@ def main() -> int:
             for m in hc:
                 m.to(memory_format=plan.use_layout.torch_memory_format())
             print(f"    converted {len(hc)} Conv3d weights in the half-res VAE as well")
+
+    if a.step_cast:
+        from instinctwm.passes.lingbot.step_scope_cast import StepScopeCastHoist
+        _sc = StepScopeCastHoist()
+        for n in _sc.install(S, type(server)):
+            print(f"  installed {n}", flush=True)
 
     ctx = sorted(Path("/home/ubuntu/iwm_results/pdd_ctx50").glob("*.npz"))
     if not ctx:
