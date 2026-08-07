@@ -96,6 +96,10 @@ def main() -> int:
                     help="DEPRECATED alias for --block-heads. Names a training method in a serving "
                          "interface (AUDIT.md F5); kept only until run_pdd_cert.sh and the queued "
                          "chain scripts are updated.")
+    ap.add_argument("--conv-layout", action="store_true",
+                    help="apply the conv backend plan to every VAE subgraph: cuDNN in NDHWC instead "
+                         "of the slow_conv_dilated3d fallback. NUMERIC tier -- changes the "
+                         "convolution's accumulation order, so it needs paired non-inferiority.")
     ap.add_argument("--degrade-nfe", default=None,
         help="VIDEO,ACTION denoise steps, e.g. '2,2'. Stands in for a distilled student until a "
              "real one exists: it is the same descriptor delta a step-reduction recipe produces "
@@ -206,6 +210,33 @@ def main() -> int:
 
     if getattr(args, "conditioning_prefill", False):
         applied += install_conditioning_prefill(S, S.VA_Server)
+
+    if getattr(args, "conv_layout", False):
+        from instinctwm.backends.conv.apply import install_conv_layout
+
+        # Same shape as the block-heads install: the VAEs only exist once the server is built, so wrap
+        # the class rather than the module. BOTH VAEs are converted -- the full-res one for the head
+        # camera and the half-res one for the two wrist cameras. Converting only the first leaves two
+        # thirds of the observation encode on the fallback path.
+        _orig_run_cl = S.run
+
+        def run_conv_layout(a_):
+            _orig_cls = S.VA_Server
+
+            class _WithConvLayout(_orig_cls):
+                def __init__(self, *ar, **kw):
+                    super().__init__(*ar, **kw)
+                    for line in install_conv_layout(self):
+                        print(f"InstinctWM conv-layout: {line}", flush=True)
+
+            S.VA_Server = _WithConvLayout
+            try:
+                return _orig_run_cl(a_)
+            finally:
+                S.VA_Server = _orig_cls
+
+        S.run = run_conv_layout
+        applied.append("conv-layout=ndhwc")
 
     if getattr(args, "ring_kv", False):
         from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
