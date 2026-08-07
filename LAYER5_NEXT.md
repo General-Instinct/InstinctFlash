@@ -45,7 +45,7 @@ All at ≥99% coverage, ranked by exclusive device time. Every one is shape-stab
 | 1 | `addmm` @ `activations.py:88` — FFN up-proj + GELU | 14.18 | 300 | 25,613 | operator fusion |
 | 2 | `addmm` @ `attention.py:1741` — output projection | 13.66 | 300 | 27,092 | operator fusion |
 | 3 | `addmm` @ `ring_kv.py:146` — `to_q`/`to_k`/`to_v` | 12.01 | **900** | 17,420 | operator fusion |
-| 4 | `add` + `_to_copy` @ `model.py:524` — one line, two ops | **11.37** | 600 | 7,301 | **materialization removal** |
+| 4 | `add` + `_to_copy` @ `model.py:524` — one line, two ops | **11.37**<br>*(only 4.69 hoistable — see [correction](LAYER5_CAST_FAMILY.md))* | 600 | 7,301 | **materialization removal** |
 | 5 | `mul` + `_to_copy` @ `ring_kv.py:153-154` — RoPE | 8.25 | 1,800 | 5,357 | operator fusion |
 
 ### 1–2. FFN and output projections — `operator fusion`
@@ -77,6 +77,12 @@ three weight matrices at load time makes it one GEMM: **900 → 300 calls.**
   three ops into one with a new weight layout" has no existing home.
 
 ### 4. Hoist the timestep-modulation cast — `materialization removal`
+
+> **CORRECTED after the family analysis** ([LAYER5_CAST_FAMILY.md](LAYER5_CAST_FAMILY.md)): the `add` at
+> this line is **not** hoistable — `scale_shift_table` is a per-block `nn.Parameter`, so the sum differs
+> in every block. Only the cast of `temb` is redundant. Candidate 4 is **~4.5 ms = 1.4%** of the cycle,
+> not 3.4%. It still wins on tier and cost, but the margin over Candidate 3 is thin and the figure below
+> overstates it.
 
 ```python
 # model.py:524, executed once per block per forward

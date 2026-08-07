@@ -158,6 +158,20 @@ depends on state that advanced between the tool's two passes — the ring-wrap b
 the wrap transition. `MIN_COVERAGE` alone did not catch it; `MAX_COVERAGE` now does. Without that,
 `cat` would have ranked 4th and 5th on a number describing one ring position.
 
+### Was it a family?
+
+No. [LAYER5_CAST_FAMILY.md](LAYER5_CAST_FAMILY.md) tested whether Candidate 4 generalizes into a
+`StepInvariantCastHoisting` pass by measuring the value lifetime of every `_to_copy` callsite.
+**292 of 6,101 cast calls per cycle are removable and 290 are one site.** P004's weight-cast family has
+no activation-cast counterpart, and the reason is structural: a parameter is invariant by definition, an
+activation is variant by definition. The generic legality rule is recorded anyway — it is what makes the
+absence checkable — but an abstraction over one instance would be speculation.
+
+That analysis also caught a trap worth remembering: classifying redundancy by *storage* identity
+(`data_ptr`, shape, stride) overstated the removable population **15×**, because the caching allocator
+recycles a handful of addresses through dozens of genuinely different tensors. Only value identity
+establishes redundancy.
+
 ## Current Layer 5 state
 
 | | ms/cycle | share of GPU busy |
