@@ -113,6 +113,9 @@ def main() -> int:
     ap.add_argument("--video", type=int, default=2)
     ap.add_argument("--action", type=int, default=4)
     ap.add_argument("--graph", action="store_true", help="enable graph capture (default: off)")
+    ap.add_argument("--conv-layout", choices=["as-is", "ndhwc"], default="as-is",
+                    help="apply the conv backend plan: 'ndhwc' converts the VAE's Conv3d weights so "
+                         "cuDNN serves them instead of slow_conv_dilated3d (NUMERIC tier)")
     ap.add_argument("--trace-cycles", type=int, default=3)
     a = ap.parse_args()
 
@@ -148,6 +151,39 @@ def main() -> int:
         from instinctwm.passes.lingbot.graph_capture import GraphBlockStack
         for n in GraphBlockStack().install(S, type(server)):
             print(f"  installed {n}", flush=True)
+
+    # ---- apply the conv backend plan, through the dispatch layer ------------------------------
+    if a.conv_layout == "ndhwc":
+        from instinctwm.backends.conv import REGISTRY, ConvShape, register_declared
+        from instinctwm.backends.conv.semantics import ConvSemantics, MemoryLayout
+        register_declared(REGISTRY)
+        convs = [m for m in server.streaming_vae.vae.modules()
+                 if isinstance(m, torch.nn.Conv3d) and m.weight.dim() == 5]
+        # Ask the layer, with the measured encode-scale numbers, rather than asserting the answer.
+        plan = REGISTRY.select(
+            semantics=ConvSemantics.CAUSAL_TIME,
+            shape=ConvShape(160, 160, (3, 3, 3), spatial=(8, 128, 160), dtype="bfloat16"),
+            have_layout=MemoryLayout.NCDHW, subgraph_size=len(convs),
+            prefer_bitexact=False,
+            measured={("torch_fallback", MemoryLayout.NCDHW): 175.72,
+                      ("cudnn_conv3d", MemoryLayout.NDHWC): 17.00})
+        print(f"  conv plan: {plan.backend_name} / {plan.use_layout.value} "
+              f"[{plan.tier.name}] convert_subgraph={plan.convert_subgraph}")
+        print(f"    {plan.reason}")
+        if plan.convert_subgraph:
+            fmt = plan.use_layout.torch_memory_format()
+            for m in convs:
+                m.to(memory_format=fmt)
+            print(f"    converted {len(convs)} Conv3d weights; the encoder's activations follow")
+        # The half-res VAE serves the wrist cameras and must be converted too, or two thirds of the
+        # encode stays on the fallback path.
+        half = getattr(server, "streaming_vae_half", None)
+        if half is not None and plan.convert_subgraph:
+            hc = [m for m in half.vae.modules()
+                  if isinstance(m, torch.nn.Conv3d) and m.weight.dim() == 5]
+            for m in hc:
+                m.to(memory_format=plan.use_layout.torch_memory_format())
+            print(f"    converted {len(hc)} Conv3d weights in the half-res VAE as well")
 
     ctx = sorted(Path("/home/ubuntu/iwm_results/pdd_ctx50").glob("*.npz"))
     if not ctx:

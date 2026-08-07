@@ -357,3 +357,88 @@ one frame at `frame_st_id 0`, then `_compute_kv_cache` sends 4 and then 8.
 3. The `cat` path (21.6 ms, 172 calls, 125.6 µs/call) and the remaining `copy_` population are both
    still open, but the copy population should be re-profiled AFTER the layout fix: if `vol2col` was
    generating most of it, a large part of that 66 ms disappears and the target list changes.
+
+---
+
+# The conv dispatch layer, and the full-cycle result
+
+Backends: [`instinctwm/backends/conv/`](instinctwm/backends/conv/). Gate:
+[`tests/test_conv_backend.py`](tests/test_conv_backend.py). Cycle measurement:
+`profile_forward_warm.py --conv-layout ndhwc`.
+
+## Full 2V/4A cycle, warm, both arms converged
+
+| | cycle | GPU busy | forwards | transient (cycles 1-30) |
+|:--|--:|--:|--:|--:|
+| as shipped (NCDHW) | **490.4 ms** | 244.0 ms | 296.4 ms (60.4%) | 1391 ms |
+| conv dispatch (NDHWC) | **330.2 ms** | 191.7 ms | 288.6 ms (87.4%) | 1228 ms |
+| | **1.49×** | −52.3 ms | −7.8 ms | 1.13× |
+
+Convergence 1.2% and 2.1% between final windows, zero free-memory drift in both. **No kernel was
+written**; this is dispatch.
+
+**The cycle fell 160.2 ms while GPU-busy fell only 52.3 ms.** So two thirds of the win is host-side —
+kernel launches that no longer happen. That is the quantitative confirmation of the earlier suspicion
+that the fallback and the copy storm were one problem.
+
+## The copy population, finally explained — by removing it
+
+| operator | before | after | |
+|:--|--:|--:|:--|
+| `copy_` | 66.42 ms / **34,710** calls | 28.34 ms / **6,385** calls | −82% of calls |
+| `fill_` | 1.69 ms / **29,681** calls | 1.70 ms / **1,361** calls | −95% of calls |
+| `slow_conv_dilated3d` | 21.74 ms / 42 | **gone** | |
+| `vol2col_kernel` | 13.98 ms | **gone** | |
+| `cudnn_convolution` | 0.72 ms / 22 | 7.94 ms / 64 | now serves all 62 |
+| `addmm` | 52.21 ms | 52.48 ms | unchanged |
+| attention | 44.92 ms | 44.95 ms | unchanged |
+| `cat` | 21.60 ms / 172 | 19.68 ms / 172 | unchanged |
+
+**28,325 of the 34,710 `copy_` calls were the conv fallback's own `vol2col` lowering**, along with 95%
+of the `fill_` calls. Four attribution methods failed to place them; the answer was that they were not a
+target at all but a symptom. The per-call cost also rose from 1.9 µs to 4.4 µs, which is the signature
+of what remains being real data movement rather than a launch storm.
+
+This is the whole argument for optimizing the execution graph after dispatch rather than the largest
+operator in a trace. `copy_` was the biggest line in the profile and writing a copy kernel would have
+been wasted work: the fix was one layout decision two layers away.
+
+## Stabilized distribution, and what it says about the next target
+
+| category | ms/cycle | share of GPU busy |
+|:--|--:|--:|
+| elementwise / layout (L5) | 74.0 | 38.6% |
+| matmul / projections (L5-6) | 60.2 | 31.4% |
+| attention (L4) | 44.4 | 23.2% |
+| normalisation (L5) | 10.1 | 5.3% |
+| other | 2.9 | 1.5% |
+| **total GPU busy** | **191.7** | of a 330.2 ms cycle |
+
+Forwards are now **87.4%** of the cycle, up from 60.4% — the non-forward work collapsed. GPU busy is
+191.7 of 330.2 ms, so **42% of the cycle is still idle** and the remaining problem is launch-bound.
+
+By best-attributed contribution the next candidates are:
+
+1. **`cat`, 19.68 ms, 172 calls at 114.4 µs, one shape signature.** Unchanged by the layout fix and
+   still the most concentrated line in the profile. At ~114 µs per call it is moving real bytes —
+   consistent with assembling a 9792-token KV window per layer. The right move remains eliminating the
+   materialization or teaching the consumer to read segmented KV, not writing a faster `cat`.
+2. **`addmm`, 52.48 ms, 2,444 calls.** Already cuBLAS via `nvjet`; unlikely to beat, but it is now the
+   largest single operator and worth confirming it is on the best path — the same question that just
+   paid 1.49× for convolutions.
+3. **The 42% idle.** Launch-bound, which is Layer 2, and it sits against the graph-capture evidence.
+
+Attention is 23.2% of GPU busy — its share rose because everything around it shrank, not because it
+changed.
+
+## What still gates this
+
+**NUMERIC tier, not BITEXACT.** NDHWC changes the convolution's accumulation order:
+`max|delta|` 1.25e-01 on the encoder output, relative 6.67e-03, ~1.7× bf16 resolution. The latents feed
+the KV cache, so it propagates to actions. It **cannot** ship under `max|Δ action| = 0` and needs paired
+non-inferiority on pinned seeds. `select()` enforces this structurally: with the default ceiling it
+returns the incumbent even when handed measurements showing a 10× win, and only an explicit
+`prefer_bitexact=False` lets the NUMERIC pair through.
+
+**Also required:** the half-resolution VAE that serves the wrist cameras has its own 62 convolutions and
+must be converted too, or two thirds of the encode stays on the fallback path.
