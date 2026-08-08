@@ -167,8 +167,22 @@ class RingKVAddressing:
             head = (r["start"] + r["count"]) % total
             assert head + key_size <= total, "allocation wrapped; ring model violated"
             sl = slice(head, head + key_size)
-            kvc["k"][:, sl] = key
-            kvc["v"][:, sl] = value
+            if self._iwm_use_plan_buffer and r["count"] >= total:
+                # SATURATED REGIME ONLY. `count == total` means the read above already took the
+                # whole-pool branch, so `start` no longer appears in the read at all and the write
+                # offset is the last thing tying the captured graph to ring position. Writing through
+                # the Plan Buffer removes it: index_copy_ is byte-identical to the slice assignment
+                # (contiguous ascending index, disjoint destinations, no arithmetic) and its
+                # destination is read from device memory at replay.
+                #
+                # PRE-SATURATION IS UNTOUCHED. There `count` changes the read SHAPE every cycle, so no
+                # graph could survive anyway, and the slice write of v1.0.0 runs unchanged.
+                idx = _plan_buffer(self, cache_name, key_size)
+                kvc["k"].index_copy_(1, idx, key)
+                kvc["v"].index_copy_(1, idx, value)
+            else:
+                kvc["k"][:, sl] = key
+                kvc["v"][:, sl] = value
             if not self._iwm_defer_commit:
                 # DEFERRED-COMMIT MODE (set by the graph executor): everything below this line is
                 # host-side bookkeeping or small metadata writes, and CUDA graph replay does not
@@ -230,7 +244,7 @@ class RingKVAddressing:
             if update_cache == 0:
                 kvc["mask"][sl] = False                 # transient: roll the write back
                 kvc["id"][sl] = -1
-            else:
+            elif True:
                 r["count"] = count
                 if update_cache == 1:
                     # ACCUMULATE: update_cache=1 fires twice per cycle -- the video loop's last
@@ -245,6 +259,25 @@ class RingKVAddressing:
                     r["start"] = (r["start"] + (r["count"] - total)) % total
                     r["count"] = total
 
+            if self._iwm_use_plan_buffer:
+                # Point EVERY buffer for this cache at the head the next write will use.
+                #
+                # REFRESHING ONLY THIS COMMIT'S BUFFER WAS A BUG, and the bit-exactness gate localised
+                # it exactly: cycles 0-35 exact, 36-44 wrong, max|delta| 0.453. Buffers are keyed
+                # (cache_name, key_size) because their LENGTH differs -- 240 for a video write, 32 for
+                # an action write -- but `head` depends only on ring state and not on key_size at all.
+                # So after a video commit the 240-buffer was current and the 32-buffer still held the
+                # previous cycle's head; the next action write then landed on stale slots. One buffer
+                # refreshed is not "the buffer refreshed".
+                #
+                # Unconditional, including the update_cache == 0 rollback branch: that branch leaves
+                # count unchanged so the head is unchanged, and refreshing it anyway costs one small
+                # copy and removes a reachable stale state.
+                nxt = (r["start"] + r["count"]) % total
+                for (cn, ks) in list(getattr(self, "_iwm_plan_bufs", {})):
+                    if cn == cache_name and nxt + ks <= total:
+                        _iwm_refresh_plan(self, cn, ks, nxt)
+
         def ring_signature(self, cache_name):
             """(start, count) -- the quantities a captured graph bakes in.
 
@@ -255,6 +288,63 @@ class RingKVAddressing:
             """
             r = _ring(self, cache_name)
             return (None if r is None else (r["start"], r["count"]))
+
+        def _plan_buffer(self, cache_name, key_size):
+            """A stable device-resident int64 index buffer, allocated once per (layer, cache, size).
+
+            THIS IS THE WHOLE MECHANISM. A CUDA graph bakes the POINTER of an index tensor, not its
+            contents, so `index_copy_(1, buf, x)` captured once will write wherever `buf` points at
+            REPLAY time. Refreshing the contents between replays moves the write without recapture,
+            which is what lets one graph survive ring advancement.
+
+            The buffer must never be reallocated -- a new address invalidates every graph that baked
+            the old one, exactly as P006 guarantees for the pools themselves. Hence a dict keyed on
+            (cache_name, key_size) and `copy_` rather than assignment.
+            """
+            store = getattr(self, "_iwm_plan_bufs", None)
+            if store is None:
+                store = self._iwm_plan_bufs = {}
+            k = (cache_name, int(key_size))
+            buf = store.get(k)
+            if buf is None:
+                dev = self.attn_caches[cache_name]["k"].device
+                buf = store[k] = torch.empty(int(key_size), dtype=torch.int64, device=dev)
+                # Initialise to the CURRENT head, never 0. Buffers are created lazily on first write,
+                # so a buffer born mid-episode with zeros would send that write to slot 0 and corrupt
+                # the oldest live entries.
+                r = _ring(self, cache_name)
+                head0 = 0 if r is None else (r["start"] + r["count"]) % r["total"]
+                buf.copy_(torch.arange(int(key_size), dtype=torch.int64, device=dev) + int(head0))
+            return buf
+
+        def _iwm_refresh_plan(self, cache_name, key_size, head):
+            """Point the Plan Buffer at `head`. Runs on the HOST, outside any captured region.
+
+            Called after every commit for the NEXT forward's write. `arange` on the device would be a
+            launch per call; a cached ramp plus an in-place add is one small kernel, and the buffer
+            address is unchanged either way -- which is the property that matters.
+            """
+            buf = _plan_buffer(self, cache_name, key_size)
+            ramp = getattr(self, "_iwm_plan_ramp", None)
+            if ramp is None or ramp.numel() < int(key_size):
+                ramp = self._iwm_plan_ramp = torch.arange(
+                    int(key_size), dtype=torch.int64, device=buf.device)
+            buf.copy_(ramp[:int(key_size)])
+            buf.add_(int(head))
+            return buf
+
+        def _iwm_ring_total(self, cache_name):
+            """Pool capacity. Exposed so the graph key can ask "is this ring saturated?" without
+            reaching into the ring dict -- the same reason `_iwm_ring_signature` exists."""
+            r = _ring(self, cache_name)
+            return None if r is None else int(r["total"])
+
+        Attn._iwm_ring_total = _iwm_ring_total
+        Attn._iwm_plan_buffer = _plan_buffer
+        Attn._iwm_refresh_plan = _iwm_refresh_plan
+        #: Opt-in. OFF means the slice write of v1.0.0, byte for byte. Turned on only by a pass that
+        #: also drops `start` from the graph key, and only in the saturated regime.
+        Attn._iwm_use_plan_buffer = False
 
         Attn._iwm_defer_commit = False          # opt-in; default path is v1.0.0 behaviour
         Attn._iwm_commit = _commit

@@ -169,6 +169,27 @@ class GraphBlockStack:
             """
             a0 = self_model.blocks[0].attn1
             sig = a0._iwm_ring_signature(cache_name) if hasattr(a0, "_iwm_ring_signature") else None
+
+            # PERSISTENT KEY IN THE SATURATED REGIME. Measured ring progression (probe_graph_scope):
+            # `count` grows for 35 cycles and then pins at `total`; from cycle 36 `start` advances and
+            # is the ONLY thing that changes. At that point the read has already taken the
+            # `count >= total` branch -- the whole pool, fixed pointer, fixed shape, no reference to
+            # `start` -- so the sole remaining dependence is the write offset, and the Plan Buffer
+            # moves that into device memory. Collapsing the key to a constant here is what turns
+            # 6 captures/cycle-forever into zero.
+            #
+            # PRE-SATURATION IS UNCHANGED: `count` is the read EXTENT, a genuine shape, and no graph
+            # can absorb it. The full (start, count) signature stays in the key there.
+            if sig is not None and getattr(a0, "_iwm_use_plan_buffer", False):
+                r = a0.attn_caches[cache_name] if hasattr(a0, "attn_caches") else None
+                total = None
+                try:
+                    total = int(a0._iwm_ring_total(cache_name))
+                except Exception:
+                    total = None
+                start, count = sig
+                if total is not None and count >= total:
+                    sig = ("saturated", total)
             return (tuple(hidden.shape), tuple(tproj.shape), int(update_cache),
                     str(cache_name), sig)
 

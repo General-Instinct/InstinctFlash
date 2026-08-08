@@ -96,6 +96,9 @@ def main() -> int:
                     help="DEPRECATED alias for --block-heads. Names a training method in a serving "
                          "interface (AUDIT.md F5); kept only until run_pdd_cert.sh and the queued "
                          "chain scripts are updated.")
+    ap.add_argument("--persistent-graph", action="store_true",
+                    help="post-saturation Plan Buffer: the graph key drops `start` once "
+                         "count == total (BITEXACT)")
     ap.add_argument("--conv-layout", action="store_true",
                     help="apply the conv backend plan to every VAE subgraph: cuDNN in NDHWC instead "
                          "of the slow_conv_dilated3d fallback. NUMERIC tier -- changes the "
@@ -237,6 +240,27 @@ def main() -> int:
 
         S.run = run_conv_layout
         applied.append("conv-layout=ndhwc")
+
+    if getattr(args, "persistent_graph", False):
+        _orig_run_pg = S.run
+
+        def run_pg(a_):
+            _oc = S.VA_Server
+
+            class _WithPG(_oc):
+                def __init__(self, *ar, **kw):
+                    super().__init__(*ar, **kw)
+                    from instinctwm.passes.lingbot.persistent_graph import PersistentRingGraph
+                    PersistentRingGraph().install(S, self)
+
+            S.VA_Server = _WithPG
+            try:
+                return _orig_run_pg(a_)
+            finally:
+                S.VA_Server = _oc
+
+        S.run = run_pg
+        applied.append("persistent-graph")
 
     if getattr(args, "ring_kv", False):
         from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
