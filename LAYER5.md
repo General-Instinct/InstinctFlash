@@ -172,6 +172,21 @@ That analysis also caught a trap worth remembering: classifying redundancy by *s
 recycles a handful of addresses through dozens of genuinely different tensors. Only value identity
 establishes redundancy.
 
+## The critical path — read this before proposing anything
+
+[LAYER5_CRITICAL_PATH.md](LAYER5_CRITICAL_PATH.md) traced one saturated cycle on CPU and CUDA together.
+**The critical path is the host.** The cycle issues 105,130 dispatcher operations at ~3.2 us each, and
+**66% of them launch no kernel at all** — `as_strided`, `view`, `transpose`, `slice`, `empty`. Device work
+is 196 ms of a 338 ms cycle, so the device chain has 142 ms of slack.
+
+That yields a model which retrodicts every result this project has: **when host-bound, cycle time is
+(host op count) x ~3.2 us.** P007 removed ~56,600 dispatcher calls and measured 1.405x. The RoPE kernel
+and fused QKV removed none and measured nothing. The cast hoist removed 1,740 and measured 0.66%.
+
+So the ordering at the top of this document needs one amendment: **the classes are ranked by whether they
+remove host dispatch, not by whether they remove work in general.** A kernel that halves GPU time on a
+chain with 42% slack shortens nothing.
+
 ## Current Layer 5 state
 
 | | ms/cycle | share of GPU busy |
