@@ -184,11 +184,17 @@ dispatches bit-exactly made the cycle 3.4 ms *slower*, and the measured marginal
 Python-originated dispatch is **1.017 µs** with C++-internal redispatch costing approximately nothing
 ([LAYER6.md](LAYER6.md) sections H and I).
 
-**P007 does not belong to that model, and this is the correction that matters here.** Its 1.405× is
-accounted for by the layout/backend change on the device: 2.659 ms → 0.581 ms per convolution, ~2.1 ms
-saved on each of 62 ≈ 130 ms, against a measured +150 ms/cycle. The 56,600 vanished dispatcher calls were
-`vol2col` lowering disappearing with the fallback — a consequence of the layout decision, not its
-mechanism. **P007 is a Layer 5 backend/layout win, full stop**, which is exactly how it is registered.
+**P007's own attribution took three attempts and is now decomposed rather than labelled**
+([LAYER6_REGIMES.md](LAYER6_REGIMES.md)). A positive control toggling the layout in-process measured
+device busy 246.3 → 190.1 ms (**−56.2 ms**) and device events 46,992 → 18,603 (**−28,387 launches**),
+both off-arms agreeing to 0.04%. Against the published 160.2 ms in-process delta that is **~37% device
+time and ~63% removed launches** — so it is neither "host-op elimination" nor "device-side, full stop".
+The earlier ~130 ms device figure extrapolated the largest conv signature across all 62 and was too high.
+
+What P007 actually did is better than either label: **it moved the VAE encode across a regime boundary.**
+With `vol2col` the encode issued 46,992 tiny kernels and was host-bound; with cuDNN it issues large
+convolutions and is device-bound at slope ~1.09. It won on both terms because it changed which term
+binds — and that is why it remains the only pass in this project that has ever paid.
 
 So the ordering at the top of this document stands as written — dispatch, layout, materialization, fusion,
 kernel — and the amendment it briefly carried, that classes rank by host dispatch removed, is withdrawn.

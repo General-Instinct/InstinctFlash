@@ -102,14 +102,17 @@ for. Injecting no-kernel dispatches and fitting the derivative gives **1.017 µs
 ~1.02 µs and a C++-internal redispatch costs approximately nothing, and the profiler counts them
 identically.
 
-**P007's row is a misattribution, and it is the load-bearing one.** Its gain is accounted for by the
-device-side kernel change alone: `slow_conv_dilated3d` 2.659 ms → `cudnn_convolution` 0.581 ms, about
-2.1 ms saved on each of 62 convolutions ≈ **130 ms**, against a measured **+150 ms/cycle**. The 56,600
-vanished dispatcher calls were `vol2col` lowering disappearing along with the fallback path — a *side
-effect* of the layout decision, not its mechanism. The sentence that followed this table originally read
-"the gap being the device time it also saved, which was *not* the main effect." **The device time was the
-main effect.** P007 belongs to Layer 5 backend/layout selection, exactly where it is registered, and it is
-not evidence for a host-dispatch model.
+**P007's row is a misattribution, but not in the direction I first corrected it to.** Crediting its
+56,645 removed dispatches at 3.2 µs each gives 181 ms for a 150–160 ms effect, which only looked right
+because the rate was wrong. A positive control has since measured both terms directly
+([LAYER6_REGIMES.md](LAYER6_REGIMES.md)): device busy fell **56.2 ms** and device events fell **28,387**,
+which against the published 160.2 ms in-process delta is **~37% device / ~63% launches removed at
+~3.5 µs each**. Both terms are real and the launch term is the larger.
+
+The deeper point is that P007 **changed the regime**: with `vol2col` the VAE encode issued 46,992 tiny
+kernels and was host-bound; with cuDNN it is device-bound at slope ~1.09. A single-term attribution
+cannot describe an intervention that moves work across the boundary, which is why this row resisted two
+attempts to label it.
 
 So the model retrodicted five results because op count and device time happened to move together in all of
 them, and it has since made three prospective predictions and missed all three. The decisive one had no
