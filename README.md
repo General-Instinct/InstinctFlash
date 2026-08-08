@@ -165,6 +165,7 @@ verified than six partly claimed.
 | [**Checkpoints**](CHECKPOINTS.md) | What a checkpoint declares, the `instinctwm.json` schema, and why the training method is deliberately absent from it |
 | [**Attention Backends**](ATTENTION.md) | Layer 4: how a checkpoint avoids depending on any attention implementation. Architecture only — selection is not implemented |
 | [**Layer 5**](LAYER5.md) | Backend and layout selection before kernels — the flow every Layer 5 backend follows, with P007 as the reference implementation. Next decision: [LAYER5_NEXT.md](LAYER5_NEXT.md) |
+| [**Graph persistence**](LAYER5_GRAPH_PERSISTENCE.md) | The design that follows: one captured graph surviving ring advancement, and why `start` is the only blocker after cycle 36 |
 | [**Critical path**](LAYER5_CRITICAL_PATH.md) | Why three region-level wins moved nothing: the cycle is host-dispatch bound, and 66% of the path launches no kernel |
 | [**Profile**](PROFILE.md) | Where the Fast cycle actually goes — 81% forwards, 18% keyframe VAE encode — and the retraction of the cost model that said otherwise |
 | [**Audit**](AUDIT.md) | Where the repository does and does not yet live up to *One Runtime, Many Checkpoints, Zero Runtime Forks* — findings, renames, migration plan |

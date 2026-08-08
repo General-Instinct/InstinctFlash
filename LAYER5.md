@@ -187,6 +187,16 @@ So the ordering at the top of this document needs one amendment: **the classes a
 remove host dispatch, not by whether they remove work in general.** A kernel that halves GPU time on a
 chain with 42% slack shortens nothing.
 
+## Graph persistence, not kernels
+
+[LAYER5_GRAPH_PERSISTENCE.md](LAYER5_GRAPH_PERSISTENCE.md) is the design that follows from the
+critical-path result. P005 was rejected at Fast as a device optimization; it is really a host-dispatch
+elimination mechanism, and **94.3% of the cycle's dispatcher operations occur inside the region a graph
+replaces**. The blocker is one quantity: `count` changes the read SHAPE until the ring saturates at
+cycle 36, and `start` — which changes only ADDRESSING — is the sole reason captures never stop after
+that. Moving the write offset into a device-resident buffer takes post-saturation captures from 6/cycle
+to zero, at a 1.72x per-cycle ceiling.
+
 ## Current Layer 5 state
 
 | | ms/cycle | share of GPU busy |
