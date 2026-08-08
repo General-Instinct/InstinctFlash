@@ -174,18 +174,24 @@ establishes redundancy.
 
 ## The critical path — read this before proposing anything
 
-[LAYER5_CRITICAL_PATH.md](LAYER5_CRITICAL_PATH.md) traced one saturated cycle on CPU and CUDA together.
-**The critical path is the host.** The cycle issues 105,130 dispatcher operations at ~3.2 us each, and
-**66% of them launch no kernel at all** — `as_strided`, `view`, `transpose`, `slice`, `empty`. Device work
-is 196 ms of a 338 ms cycle, so the device chain has 142 ms of slack.
+[LAYER5_CRITICAL_PATH.md](LAYER5_CRITICAL_PATH.md) traced one saturated cycle on CPU and CUDA together. The
+cycle issues 105,130 dispatcher operations, **66% of them launching no kernel at all** — `as_strided`,
+`view`, `transpose`, `slice`, `empty` — and device work is 196 ms of a 338 ms cycle.
 
-That yields a model which retrodicts every result this project has: **when host-bound, cycle time is
-(host op count) x ~3.2 us.** P007 removed ~56,600 dispatcher calls and measured 1.405x. The RoPE kernel
-and fused QKV removed none and measured nothing. The cast hoist removed 1,740 and measured 0.66%.
+That inventory is sound. **The conclusion drawn from it was not.** "Cycle time ≈ (host op count) × 3.2 µs"
+was arithmetic, not a measurement — 338 ms divided by 105,130 — and it is now refuted: removing 12,190
+dispatches bit-exactly made the cycle 3.4 ms *slower*, and the measured marginal cost of a
+Python-originated dispatch is **1.017 µs** with C++-internal redispatch costing approximately nothing
+([LAYER6.md](LAYER6.md) sections H and I).
 
-So the ordering at the top of this document needs one amendment: **the classes are ranked by whether they
-remove host dispatch, not by whether they remove work in general.** A kernel that halves GPU time on a
-chain with 42% slack shortens nothing.
+**P007 does not belong to that model, and this is the correction that matters here.** Its 1.405× is
+accounted for by the layout/backend change on the device: 2.659 ms → 0.581 ms per convolution, ~2.1 ms
+saved on each of 62 ≈ 130 ms, against a measured +150 ms/cycle. The 56,600 vanished dispatcher calls were
+`vol2col` lowering disappearing with the fallback — a consequence of the layout decision, not its
+mechanism. **P007 is a Layer 5 backend/layout win, full stop**, which is exactly how it is registered.
+
+So the ordering at the top of this document stands as written — dispatch, layout, materialization, fusion,
+kernel — and the amendment it briefly carried, that classes rank by host dispatch removed, is withdrawn.
 
 ## Graph persistence: tried, and frozen as a negative result
 

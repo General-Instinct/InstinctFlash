@@ -651,7 +651,13 @@ alone.
 1. **`modulation_unbind` and `dropout_elision` are still worth their price.** Both are BITEXACT, both are
    trivial, together they are worth ~3–4 ms (~1%), and `dropout_elision` in particular is deleting a
    provable no-op from an inference path. That is small but honest, and neither needs new infrastructure.
-2. **The premise that sent the work here was that the host is the clock, and it is now measured not to be.**
+2. **The remaining ~139 ms is now measured too — see [LAYER6_GAPS.md](LAYER6_GAPS.md).** It is 18,589
+   inter-kernel gaps averaging 7.5 µs, 95.4% inside the transformer stack, with synchronization at 2.2%, the
+   allocator at 0%, dependency stalls at 4.8%, and only 33 gaps in the whole cycle above 100 µs. **Diffuse:
+   the eager-runtime floor.** That pass also corrects the Python-originated dispatch count from the ~55,072
+   cProfile estimate below to a measured **34,635**, lowering this layer's ceiling from ~56 ms to ~35 ms.
+
+3. **The premise that sent the work here was that the host is the clock, and it is now measured not to be.**
    The instruction for this layer was to eliminate dispatch rather than accelerate kernels, on the strength of
    the critical-path analysis. That analysis divided where it should have differentiated. With the host
    capped at ~56 ms, a 351 ms cycle, and 196 ms of device work, the remaining 155 ms is neither host

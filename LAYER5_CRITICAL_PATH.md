@@ -3,10 +3,15 @@
 Measured 2026-08-08, one saturated cycle (warm 70, past ring saturation), 2V/4A, P007 applied, H100.
 Probe: [`probe_critical_path.py`](eval/lingbot_va_robotwin/probe_critical_path.py).
 
-**The critical path is the host, not the device.** The cycle issues **105,130 dispatcher operations** at
-~3.2 µs each — and **66% of them launch no GPU kernel at all.** Device work is 196 ms of a 338 ms cycle;
-host work is essentially the whole 338 ms. Three region-level wins failed because they all shortened the
-shorter chain.
+> **PARTIALLY RETRACTED (2026-08-08).** The inventory in sections 1–3 stands. **Section 4's model is
+> refuted and its P007 row is a misattribution** — see [LAYER6.md](LAYER6.md) sections H and I, and
+> [LAYER6_GAPS.md](LAYER6_GAPS.md) for what the ~155 ms actually is. The corrected marginal cost is
+> **1.017 µs** per *Python-originated* dispatch, measured as a slope; C++-internal redispatch is free.
+
+The cycle issues **105,130 dispatcher operations** and **66% of them launch no GPU kernel at all.** Device
+work is 196 ms of a 338 ms cycle. This document concluded from that arithmetic that the host was the
+critical path; the conclusion did not survive a direct test, and the ~155 ms difference turned out to be
+neither host dispatch throughput nor kernel duration.
 
 ---
 
@@ -70,24 +75,51 @@ fast enough, not because it is blocked at barriers.
 `empty` — 69,601 operations per cycle that move no bytes and compute nothing, each costing ~3.2 µs of
 dispatcher time on the chain that determines when the cycle finishes.
 
-## 4. The model, and it retrodicts every result we have
+## 4. The model — RETRACTED, see LAYER6.md sections H and I
 
-> **When host-bound, cycle time ≈ (host op count) × ~3.2 µs.** The lever is the *number* of dispatcher
+> **RETRACTION (2026-08-08).** The model below was refuted by direct measurement, and P007's attribution
+> here is wrong. Read [LAYER6.md](LAYER6.md) sections H and I before using anything in this section. The
+> gap inventory in sections 1–3 stands; the causal claim in this section does not.
+
+The model as originally stated:
+
+> When host-bound, cycle time ≈ (host op count) × ~3.2 µs. The lever is the *number* of dispatcher
 > operations, not the GPU time they represent.
 
-| change | host ops removed | model predicts | measured |
+| change | host ops removed | model predicted | measured |
 |:--|--:|--:|:--|
-| **P007** conv layout | **56,645** | **35%** (1.54×) | **1.405×** |
+| **P007** conv layout | 56,645 | 35% (1.54×) | **1.405×** |
 | cast hoist (Candidate 4) | 1,740 | 1.6% | 0.66% |
 | fused QKV (Candidate 3) | ~0 net | 0% | 0.2% *slower* |
 | RoPE kernel | 0 | 0% | 0.3% |
 
-P007 is not an outlier, it is the only one that removed host operations. Its 34,710 → 6,385 `copy_` and
-29,681 → 1,361 `fill_` reduction is ~56,600 dispatcher calls, and the model puts that at 1.54× against a
-measured 1.405× — the gap being the device time it also saved, which was *not* the main effect.
+**Two things are wrong with this table.**
 
-The three failures are not three coincidences and not a measurement problem. **All three shortened the
-device chain, which was never the binding one.**
+**The `3.2 µs` was never measured.** It was obtained by dividing 338 ms by 105,130 operations, which
+presumes the cycle is the sum of per-operation host costs — the claim the table was offered as evidence
+for. Injecting no-kernel dispatches and fitting the derivative gives **1.017 µs/op**, 3.1× lower
+(LAYER6.md section I). Worse, the population is not homogeneous: a Python-originated dispatch costs
+~1.02 µs and a C++-internal redispatch costs approximately nothing, and the profiler counts them
+identically.
+
+**P007's row is a misattribution, and it is the load-bearing one.** Its gain is accounted for by the
+device-side kernel change alone: `slow_conv_dilated3d` 2.659 ms → `cudnn_convolution` 0.581 ms, about
+2.1 ms saved on each of 62 convolutions ≈ **130 ms**, against a measured **+150 ms/cycle**. The 56,600
+vanished dispatcher calls were `vol2col` lowering disappearing along with the fallback path — a *side
+effect* of the layout decision, not its mechanism. The sentence that followed this table originally read
+"the gap being the device time it also saved, which was *not* the main effect." **The device time was the
+main effect.** P007 belongs to Layer 5 backend/layout selection, exactly where it is registered, and it is
+not evidence for a host-dispatch model.
+
+So the model retrodicted five results because op count and device time happened to move together in all of
+them, and it has since made three prospective predictions and missed all three. The decisive one had no
+confound: `prebound_projection` removed 12,190 operations bit-exactly, with no artefact built, no kernel
+changed and no shape changed, and the cycle got 3.4 ms **slower** — because it traded 12,190 free
+C++-internal redispatches for 4,888 Python-level ones.
+
+**What survives from this document:** the gap inventory. Device work is 196 ms of a 338 ms cycle and the
+~155 ms difference is real. It is neither host dispatch throughput (capped at ~56 ms) nor kernel duration.
+[LAYER6_GAPS.md](LAYER6_GAPS.md) measures what it actually is.
 
 ## 5. Why each expensive off-path operator cannot help
 

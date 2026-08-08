@@ -136,7 +136,14 @@ RELEASED = (
               "SIDE EFFECT that explains an older mystery: aten::copy_ falls 34,710 -> 6,385 calls "
               "and fill_ 29,681 -> 1,361, because 82% of the copy population was vol2col lowering "
               "inside the fallback. copy_ was the largest line in the profile and a copy kernel "
-              "would have been wasted work.",
+              "would have been wasted work. "
+              "ATTRIBUTION, stated explicitly because it was got wrong once: this speedup is "
+              "DEVICE-SIDE. 62 convolutions x ~2.1 ms saved each is ~130 ms against the measured "
+              "+150.2 ms/cycle, so the kernel change accounts for the gain on its own. The ~56,600 "
+              "dispatcher calls that vanished with vol2col are a CONSEQUENCE of the layout decision, "
+              "not its mechanism, and LAYER5_CRITICAL_PATH.md section 4 briefly credited them as the "
+              "main effect -- that claim is retracted there. P007 is a backend/layout win and is not "
+              "evidence for any host-dispatch model.",
         certificate="paired non-inferiority, margin -0.05 declared BEFORE the run, both arms 2V/4A "
                     "on identical pinned seeds so only the layout differs. 555 paired episodes: "
                     "baseline 506/555 = 0.9117, conv-layout 504/555 = 0.9081, delta -0.0036. "
