@@ -10,32 +10,60 @@ past ring saturation, shipped stack, keyframes pre-generated, **no profiler in a
 
 ## The measurement
 
-Inject one dummy GPU kernel per site and vary only its duration, holding launch count constant by
-fitting against a `side=128` reference arm that also launches. Then read
-`d(cycle) / d(injected device time)`.
+Inject one dummy GPU kernel per site, vary only its duration, hold launch count constant by fitting
+against a `side=128` arm that also launches. Read `d(cycle)/d(injected device time)` **between
+consecutive arms** — the marginal slope, not a least-squares line, because the response is a hinge and a
+line through a hinge is meaningless.
 
-| region | injection sites/cycle | injected device ms | cycle delta ms | **slope** |
-|:--|--:|--:|--:|--:|
-| **transformer blocks** | 300 | 4.1 / 19.8 / 51.6 | +2.2 / −4.2 / −2.5 | **−0.067** |
-| **observation VAEs** | 81 | 13.3 / 50.9 / 122.6 | +16.3 / +57.5 / +133.0 | **+1.093** |
+**Transformer blocks** (300 sites/cycle):
 
-Per-point slopes in the VAE: 1.223, 1.130, 1.085 — linear and converging. In the transformer every
-point sits inside the noise floor.
+| injected ms | Δcycle ms | **marginal slope** | device time absorbed |
+|--:|--:|--:|--:|
+| 50.2 | +10.4 | **0.207** | 39.8 ms |
+| 187.2 | +38.4 | **0.204** | 148.8 ms |
+| 454.3 | +292.0 | **0.949** | 162.3 ms |
 
-> **A millisecond of device time in the VAE costs a millisecond of cycle. A millisecond of device time
-> in the transformer costs nothing.**
+**Observation VAEs** (81 sites/cycle):
+
+| injected ms | Δcycle ms | **marginal slope** | absorbed |
+|--:|--:|--:|--:|
+| 13.3 | +16.3 | **1.226** | −3.0 ms |
+| 50.9 | +57.5 | **1.096** | −6.6 ms |
+| 122.6 | +133.0 | **1.053** | −10.4 ms |
+
+> **The transformer absorbs ~150 ms of added device work and then pays 1:1. The VAE absorbs nothing and
+> pays 1:1 from the first millisecond.**
+
+### The absorption capacity is the gap time, measured twice
+
+The transformer's absorption saturates at **148.8 → 162.3 ms**. The gap inventory, measured by an
+entirely different instrument (device-busy union subtracted from the unprofiled cycle), puts the total
+device idle at **138.9 ms** ([LAYER6_GAPS.md](LAYER6_GAPS.md)). Two independent measurements of the same
+physical quantity, agreeing within ~10%. That is the strongest single piece of evidence for the model
+below, and neither measurement was designed to check the other.
 
 ### Controls
 
 | control | transformer | VAE |
 |:--|--:|--:|
-| dummy's effect on the **real** kernels (device busy, dummy subtracted) | −2.4 ms (−1.2%) | +2.3 ms (+1.2%) |
-| `k=0` baseline spread across the sweep | 1.6% | 2.0% |
-| SM clock across arms | 1980 MHz throughout | 1980 → 1950 MHz at the two largest arms |
+| dummy's effect on the **real** kernels (device busy, dummy subtracted) | −0.5% | +1.2% |
+| `k=0` baseline spread across the sweep | 1.7% | 2.0% |
+| SM clock / power at the largest arm | 1920 MHz, 656 W | 1950 MHz, 415 W |
 
-The dummy adds device time and nothing else: it does not slow the real kernels in either region. The
-VAE's mild clock droop at the largest arms is the likely reason its slope reads 1.09 rather than 1.00 —
-the reading is "≈1", not "1.09 exactly".
+The dummy adds device time and nothing else. **But the largest transformer arm drew 656 W and dropped
+to 1920 MHz** (−3% from 1980), so its 0.949 is an over-estimate of the true above-knee slope; read it as
+"≈1", and treat the VAE's 1.05–1.23 the same way.
+
+### A correction to my own first reading
+
+An earlier sweep over smaller sizes reported a transformer slope of **−0.067** and I wrote it up as
+"device time in the transformer costs nothing". At the same injection level this sweep reads **+0.207**.
+The difference is reference-arm noise of ~6 ms on a ~10 ms effect: the two runs bracket the truth rather
+than contradicting it, and the honest statement is **"≤0.2 ms per ms below the knee, consistent with
+zero, and certainly not 1"** — not "nothing".
+
+The probe still prints a least-squares slope through the origin. **Do not quote it.** For the
+transformer it reads 0.575, which is an average across the hinge and describes no regime that exists.
 
 ## Why a single global slope was never going to work
 
@@ -64,7 +92,8 @@ of affine functions of `α`, hence **convex**, and it is non-decreasing since `D
 | device per block/site | ~0.64 ms | milliseconds |
 | **bound by** | **the host** | **the device** |
 | share of the cycle's gap time | 95.4% | 2.1% |
-| slope | **−0.07** | **+1.09** |
+| marginal slope | **≤0.2 below the knee, ≈1 above** | **≈1 everywhere** |
+| absorption capacity | **~150 ms** (= the gap time) | **~0 ms** |
 | lever that works | fewer Python-originated dispatches (~35 ms total, capped) | faster/fewer device kernels, pays ~1:1 |
 | lever that does nothing | any kernel or layout change | dispatch tidying |
 
@@ -118,9 +147,9 @@ edges. The regime moved during the intervention, which is exactly what makes a c
 impossible.
 
 **Every failed Layer 5 kernel attempt was in the wrong regime.** The RoPE kernel, fused QKV, and every
-proposed transformer fusion targeted device time in the region where the slope is zero. They were not
-too small; they were in the wrong place. `attention` at 44.4 ms and `cat` at 19.7 ms of device time are
-*unreachable* — not merely low-value.
+proposed transformer fusion targeted device time where the marginal slope is ≤0.2. They were not too
+small; they were in the wrong place. `attention` at 44.4 ms and `cat` at 19.7 ms of device time return
+**at most ~9 ms and ~4 ms** of cycle even if reduced to zero — and plausibly nothing.
 
 **The Layer 6 dispatch work was in the right regime but is capped.** 34,635 Python-originated
 dispatches × 1.017 µs ≈ 35 ms, nearly all inside the transformer, which is exactly where host work
@@ -134,12 +163,18 @@ of transformer kernels attacks it; making them faster does not.
 
 | | ms | regime | reducible by |
 |:--|--:|:--|:--|
-| VAE device work | ~36 *(inferred: 190.1 total − ~156 transformer)* | device-bound, slope 1.09 | kernels, layout, backends — pays ~1:1 |
-| transformer device work | ~156 | host-bound, slope ~0 | **nothing on the device side** |
+| VAE device work | ~36 *(inferred: 190.1 total − ~156 transformer)* | device-bound, above its knee | kernels, layout, backends — pays ~1:1 |
+| transformer device work | ~156 | host-bound, ~150 ms below its knee | **≤0.2 ms per ms, i.e. ~31 ms if it all vanished** |
 | transformer host issue | ~139 | the eager floor | fewer kernels, or fewer Python dispatches (≤35 ms) |
 
-P007 already took the large win in the only region where device work pays, and it took it by a factor
-of 4.35–7.24× on those convolutions. What remains there is ~36 ms.
+P007 already took the large win in the only region where device work pays fully, and it took it by a
+factor of 4.35–7.24× on those convolutions. What remains there is ~36 ms.
+
+**And the transformer's regime does not change at Quality.** At 25V/50A the block executes 79 times per
+cycle instead of 10, but the per-block balance — ~1.10 ms of host issue against ~0.64 ms of device — is
+unchanged, because the denoise-step count scales both terms equally and the token count per block does
+not change. The ratio is what sets the regime, so Quality is host-bound in the transformer too and the
+rejected kernels stay rejected there. This follows from the ratio and has not been measured at Quality.
 
 ## What this does not settle
 
@@ -153,6 +188,10 @@ of 4.35–7.24× on those convolutions. What remains there is ~36 ms.
   columns are used because they agree to 0.04% across repeats; its cycle column is not used at all, and
   the 160.2 ms comes from P007's published certificate instead. A clean in-process cycle A/B would need
   either far longer settling after each `memory_format` toggle or one arm per process.
+- **The knee is bracketed, not located.** The marginal slope is 0.20 at 187 ms injected and 0.95 at
+  454 ms, so the transition lies between them; no arm sits inside it. And it is not a single knee —
+  the 300 sites have different local balances (a 32-token action block and a 512-token video block do
+  not saturate together), so the true response is a smooth curve through a distribution of knees.
 - **Only two regions were probed.** `_infer`, `prepare_latent_input`, the schedulers and
   `postprocess_action` together hold ~2.5% of gap time and were not measured; they are too small to
   matter but their slopes are unknown.
