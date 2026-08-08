@@ -92,10 +92,24 @@ class Report:
     cycles: int = 1
 
     def by_operator(self) -> dict[str, list[Row]]:
+        """Callsites per operator, most significant first.
+
+        Ranked by exclusive device time -- EXCEPT when the operator has none. A metadata operator
+        (`view`, `t`, `squeeze`, `as_strided`) launches no kernel, so every one of its callsites scores
+        0.00 ms and sorting by time leaves the printed "top N" in insertion order: arbitrary rows
+        presented where the dominant ones belong. Those operators are exactly Layer 6's targets, and
+        their significance is call count, not time. So fall back to calls when the operator is
+        time-free.
+        """
         out = collections.defaultdict(list)
         for r in self.rows:
             out[r.operator].append(r)
-        return {k: sorted(v, key=lambda r: -r.exclusive_us) for k, v in out.items()}
+        ranked = {}
+        for k, v in out.items():
+            timeless = sum(r.exclusive_us for r in v) <= 0.0
+            ranked[k] = sorted(v, key=(lambda r: -r.calls) if timeless
+                               else (lambda r: -r.exclusive_us))
+        return ranked
 
     def coverage(self, operator: str) -> float:
         """Attributed calls / calls the profiler saw. The number attempt 4 did not compute."""
@@ -132,8 +146,11 @@ class Report:
         out = [f"{'operator':<18}{'ms/cyc':>8}{'calls/cyc':>10}{'MiB/cyc':>9}"
                f"{'shapes':>7}  callsite"]
         out.append("-" * 118)
+        # Operators ordered by device time, then by calls -- the second term is what orders the
+        # metadata operators, which all score 0.00 ms and would otherwise print in dict order.
         for op, rows in sorted(self.by_operator().items(),
-                               key=lambda kv: -sum(r.exclusive_us for r in kv[1])):
+                               key=lambda kv: (-sum(r.exclusive_us for r in kv[1]),
+                                               -sum(r.calls for r in kv[1]))):
             cov = self.coverage(op)
             tot = sum(r.exclusive_us for r in rows) / 1000 / self.cycles
             flag = ("" if self.rankable(op) else

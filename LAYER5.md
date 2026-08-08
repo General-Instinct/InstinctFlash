@@ -187,15 +187,22 @@ So the ordering at the top of this document needs one amendment: **the classes a
 remove host dispatch, not by whether they remove work in general.** A kernel that halves GPU time on a
 chain with 42% slack shortens nothing.
 
-## Graph persistence, not kernels
+## Graph persistence: tried, and frozen as a negative result
 
-[LAYER5_GRAPH_PERSISTENCE.md](LAYER5_GRAPH_PERSISTENCE.md) is the design that follows from the
-critical-path result. P005 was rejected at Fast as a device optimization; it is really a host-dispatch
-elimination mechanism, and **94.3% of the cycle's dispatcher operations occur inside the region a graph
-replaces**. The blocker is one quantity: `count` changes the read SHAPE until the ring saturates at
-cycle 36, and `start` — which changes only ADDRESSING — is the sole reason captures never stop after
-that. Moving the write offset into a device-resident buffer takes post-saturation captures from 6/cycle
-to zero, at a 1.72x per-cycle ceiling.
+[LAYER5_GRAPH_PERSISTENCE.md](LAYER5_GRAPH_PERSISTENCE.md) is the design that followed from the
+critical-path result: P005 read not as a device optimization but as host-dispatch elimination, since
+**94.3% of the cycle's dispatcher operations occur inside the region a graph replaces**. The blocker was one
+quantity — `count` changes the read SHAPE until the ring saturates at cycle 36, while `start` changes only
+ADDRESSING — so moving the write offset into a device-resident buffer should have taken post-saturation
+captures to zero at a **1.72× ceiling**.
+
+It was implemented. **Every correctness gate passed and the latency gate refused it**: 503.5 ms against
+351.4 ms with capture off, i.e. **1.43× slower**, because 5.3 surviving captures at ~111 ms each exceed the
+whole cycle. [LAYER5_GRAPH_PERSISTENCE_RESULT.md](LAYER5_GRAPH_PERSISTENCE_RESULT.md) records the outcome.
+
+The lesson generalised, and it is what Layer 6 is built on: graph capture and `torch.compile` both eliminate
+dispatch by **building a persistent artefact**, and construction is charged to the same budget as the
+dispatch it removes. Prefer removing work to replacing it.
 
 ## Current Layer 5 state
 
@@ -207,12 +214,20 @@ to zero, at a 1.72x per-cycle ceiling.
 | normalisation | 10.1 | 5.3% |
 | **GPU busy** | **191.7** | of a 330.2 ms cycle → **42% idle** |
 
-Forwards are now 87.4% of the cycle, up from 60.4%. The next candidate is `cat` — 19.68 ms, 172 calls,
-114.4 µs each, one shape signature, unchanged by P007 — and per step 1 it does not get touched until
-its callsite distribution is measured with adequate coverage.
+Forwards are now 87.4% of the cycle, up from 60.4%.
+
+**Layer 5 is paused here, and the table above says why.** GPU busy is 191.7 ms of a 330.2 ms cycle, so the
+device chain carries ~42% idle. Every remaining line in that table — `cat` at 19.68 ms included — is a
+device-side cost on a chain with slack, which is the precise shape of the three region-scale wins that
+measured nothing at cycle scale. `cat` keeps its coverage gate (121%, `[NON-STATIONARY, NOT RANKABLE]`) and
+is not a target until the host stops being the constraint.
+
+**The work moved to [LAYER6.md](LAYER6.md)**, which attacks the host chain instead: 105,123 aten events per
+cycle, 66% launching no kernel, ranked by operations removed rather than by GPU time.
 
 ## Further reading
 
+- [LAYER6.md](LAYER6.md) — where the current work is, and the ranked proposal
 - [ARCHITECTURE.md](ARCHITECTURE.md) — the two seams this layer sits on
 - [PROFILE.md](PROFILE.md) — the measurements, and the retractions behind them
 - [ATTENTION.md](ATTENTION.md) — Layer 4, same planner/backend shape

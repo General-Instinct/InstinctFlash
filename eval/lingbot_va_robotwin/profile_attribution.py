@@ -36,14 +36,29 @@ from instinctwm.verify.attribution import attribute  # noqa: E402
 
 #: The operators the warm profile shows as dominant. Watching everything would work and be very slow;
 #: these are the ones a Layer 5 decision would be made about.
-WATCH = ("copy_", "cat", "addmm", "add", "mul", "fill_", "clone", "contiguous", "_to_copy",
-         "empty", "index_put_", "slice", "select", "view", "reshape")
+WATCH_SETS = {
+    # The Layer 5 set: operators that move or compute bytes.
+    "device": ("copy_", "cat", "addmm", "add", "mul", "fill_", "clone", "contiguous", "_to_copy",
+               "empty", "index_put_", "slice", "select", "view", "reshape"),
+    # The Layer 6 set: operators that launch NO kernel and exist only to describe a tensor. This is
+    # the largest population in the cycle by count (47,020 of 105,123 aten events, 44.7%) and the
+    # same rule applies to it as to any other -- a callsite distribution before a decision.
+    "metadata": ("as_strided", "view", "transpose", "slice", "reshape", "t", "narrow", "squeeze",
+                 "unsqueeze", "flatten", "unflatten", "expand", "permute", "select", "detach"),
+    # Allocation: 4.0 us/op, the most expensive class after real kernels.
+    "allocation": ("empty", "empty_strided", "empty_like", "lift_fresh", "clone", "zeros",
+                   "ones", "full", "scalar_tensor", "_to_copy"),
+}
+WATCH = WATCH_SETS["device"]
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--warm", type=int, default=70, help="past ring saturation (~cycle 64)")
     ap.add_argument("--repeats", type=int, default=2)
+    ap.add_argument("--watch-set", choices=sorted(WATCH_SETS), default="device",
+                    help="'device' moves bytes (Layer 5); 'metadata' launches no kernel (Layer 6); "
+                         "'allocation' creates storage")
     ap.add_argument("--conv-layout", choices=["as-is", "ndhwc"], default="ndhwc")
     ap.add_argument("--video", type=int, default=2)
     ap.add_argument("--action", type=int, default=4)
@@ -107,9 +122,10 @@ def main() -> int:
     for _ in range(a.warm):
         cycle()
 
-    print(f"attributing {a.repeats} warm cycles across {len(WATCH)} watched operators ...",
-          flush=True)
-    rep = attribute(cycle, watch=WATCH, repeats=a.repeats)
+    watch = WATCH_SETS[a.watch_set]
+    print(f"attributing {a.repeats} warm cycles across {len(watch)} watched operators "
+          f"(set={a.watch_set}) ...", flush=True)
+    rep = attribute(cycle, watch=watch, repeats=a.repeats)
 
     print(f"\n{'=' * 118}\nOPERATOR x CALLSITE  (2V/4A warm, conv-layout={a.conv_layout})\n"
           f"{'=' * 118}")

@@ -135,6 +135,44 @@ def test_unwatched_operators_are_untouched():
           str(sorted(rep.by_operator())))
 
 
+def test_timeless_operators_rank_by_calls():
+    """A metadata operator has no device time, so ranking its callsites by time is ranking by nothing.
+
+    This is Layer 6's whole target class -- `view`, `t`, `squeeze`, `as_strided` launch no kernel. Every
+    callsite scores 0.00 ms, so a time-only sort left the printed rows in insertion order and presented
+    arbitrary callsites where the dominant ones belong. Same failure shape as attempt 4: a confident
+    table that is wrong in a way that looks plausible.
+    """
+    print("\n=== 6. a no-kernel operator ranks by calls, not by its (zero) device time ===")
+    rep = Report(
+        rows=[
+            # insertion order deliberately INVERTED against call count
+            Row(operator="t", callsite="[x] rare.py:1 f", calls=3, nbytes=0, exclusive_us=0.0),
+            Row(operator="t", callsite="[x] mid.py:2 f", calls=300, nbytes=0, exclusive_us=0.0),
+            Row(operator="t", callsite="[x] dominant.py:3 f", calls=2450, nbytes=0, exclusive_us=0.0),
+        ],
+        true_calls={"t": 2753}, true_us={"t": 0.0},
+    )
+    order = [r.callsite for r in rep.by_operator()["t"]]
+    check(order[0].endswith("dominant.py:3 f"),
+          "the dominant callsite sorts first despite being inserted last", str(order))
+    check([r.calls for r in rep.by_operator()["t"]] == [2450, 300, 3],
+          "and the whole ordering is by calls descending")
+    top1 = rep.format_table(top=1)
+    check("dominant.py:3 f" in top1 and "rare.py:1 f" not in top1,
+          "so format_table(top=1) prints the dominant row, not an arbitrary one")
+    # and a timed operator must NOT be re-sorted by calls
+    rep2 = Report(
+        rows=[Row(operator="cat", callsite="[x] many_cheap.py:1 f", calls=900, nbytes=0,
+                  exclusive_us=10.0),
+              Row(operator="cat", callsite="[x] few_slow.py:2 f", calls=4, nbytes=0,
+                  exclusive_us=9000.0)],
+        true_calls={"cat": 904}, true_us={"cat": 9010.0},
+    )
+    check(rep2.by_operator()["cat"][0].callsite.endswith("few_slow.py:2 f"),
+          "a timed operator still ranks by device time, not by calls")
+
+
 def main() -> int:
     print(f"device: {DEV}")
     test_callsites_are_separated()
@@ -142,6 +180,7 @@ def main() -> int:
     test_shapes_are_recorded()
     test_coverage_is_computed_and_gates_ranking()
     test_unwatched_operators_are_untouched()
+    test_timeless_operators_rank_by_calls()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")
