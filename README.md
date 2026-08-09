@@ -314,6 +314,10 @@ verified than six partly claimed.
 
 ## Documentation
 
+> **Next milestone:** [PRODUCTIZATION.md](PRODUCTIZATION.md) — a proposal for the
+> `Runtime.from_pretrained()` facade, a multi-component package layout, and a
+> first-class LingBot-VA model card, informed by a study of Hugging Face LeRobot.
+
 **Start here:**
 
 | | |
