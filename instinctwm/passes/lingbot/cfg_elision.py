@@ -66,6 +66,12 @@ reduction order. That is a bounded, structurally-justified difference rather tha
 approximation, which is exactly what the NUMERIC tier is for. `probe_bitexact.py` settles it
 empirically: if it reports 0, the pass is promoted to BITEXACT for this model+hardware and
 recorded as such.
+
+STATUS: NEGATIVE RESULT
+Branch 1 is LIVE on both axes -- 5.64 corrupting its returned value, 5.39 suppressing
+only its writes to the shared KV pool, against a chunk-to-chunk movement of 1.03. `action_guidance_scale=1`
+makes `dead_outputs` a true statement about OUTPUT USAGE; it is not a statement about dead compute.
+See HISTORICAL.md.
 """
 
 from __future__ import annotations

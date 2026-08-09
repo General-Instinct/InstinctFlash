@@ -1,5 +1,10 @@
 # Fast profile decomposition — and a retraction
 
+> **PARTIALLY SUPERSEDED.** The measurements stand; several conclusions drawn from them do not.
+> The `~3.2 µs/op` host model is retracted ([LAYER6.md](LAYER6.md) §H/§I — the measured figure is
+> **1.017 µs** for a *Python-originated* dispatch, and C++-internal redispatch is free), and device
+> time is priced by regime rather than globally ([LAYER6_REGIMES.md](LAYER6_REGIMES.md)).
+
 Measured 2026-08-07 on an idle 8×H100 box, LingBot-VA at the Fast operating point (2 video / 4 action),
 in-process on one GPU with the shipped pass chain: substrate elision, conditioning prefill, ring KV,
 graph capture. Probe: [`eval/lingbot_va_robotwin/profile_fixed_term.py`](eval/lingbot_va_robotwin/profile_fixed_term.py).

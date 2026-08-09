@@ -2,6 +2,11 @@
 
 Audit of `main` at `456f91b`, 2026-08-09. Three categories, one rule each:
 
+> **The findings below are recorded AS FOUND.** All of them were resolved in the commit *Make the
+> repository internally consistent*; see [Status of this audit's recommended actions](#status-of-this-audits-recommended-actions)
+> at the end. The shipped configuration today is derived from `verify/released.py` and enforced by
+> `tests/test_shipped_config.py`. Kept unedited because the finding is the value.
+
 - **SHIPS** — runtime code with an active, certified effect on served behaviour.
 - **INFRASTRUCTURE** — reusable instruments and framework. No effect on serving; used to decide.
 - **HISTORICAL EVIDENCE** — kept so a rejected idea is not re-proposed. Must default off and say so.
@@ -17,6 +22,7 @@ and `run_sweep.sh` — is:
 ```
 --no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv
 ```
+*(as found — `--conv-layout` has since been added, see the status section)*
 
 That enables **P001, P002, P003 and nothing else.** Every pass in `serve_variant.py` is opt-in
 (`action="store_true"`); there is no default-on set. So:
@@ -29,7 +35,7 @@ That enables **P001, P002, P003 and nothing else.** Every pass in `serve_variant
 | P004 `hoist_invariant_casts` | released 1.020× | `--hoist-casts` | no |
 | P005 `graph_block_stack` | released 1.380× | `--graph-blocks` | no |
 | P006 `stable_state_pools` | released 1.520× | `--stable-pools` | no |
-| **P007** `conv_layout_ndhwc` | released **1.405×**, NUMERIC, 555-episode certificate | `--conv-layout` | **no** |
+| **P007** `conv_layout_ndhwc` | released **1.405×**, NUMERIC, 555-episode certificate | `--conv-layout` | **no** → **yes, fixed** |
 
 Two consequences, and the second is the one to act on.
 
@@ -43,7 +49,8 @@ reset ("Only has an effect with `--graph-blocks`"), so it has no served effect e
 
 **P007 — the only pass that measurably moves the current cycle — is wired into no launch script.**
 `--conv-layout` appears in `serve_variant.py`'s flag list and in documentation, and in no `.sh`. The
-one certified win is not in the default run. That is the single actionable gap this audit found.
+one certified win is not in the default run. That was the single actionable gap this audit found, and
+it is now closed.
 
 ---
 
@@ -60,10 +67,10 @@ Runtime code, active in the certified launch line, gated at `max |Δ action| = 0
 | `adapters/`, `descriptors/`, `executors/`, `planners/` | the One Runtime spine: capabilities in, no branching on training method |
 | `verify/released.py`, `verify/certify.py` | the release registry and the certificate gate |
 
-**Should ship and does not yet: P007 `conv_layout_ndhwc`** — `backends/conv/` plus
+**P007 `conv_layout_ndhwc` — now shipped** — `backends/conv/` plus
 `--conv-layout`. NUMERIC, certified on 555 paired episodes (delta −0.0036, exact McNemar p = 0.897,
-non-inferiority p = 0.00031), 1.405× measured under ABBA. Add `--conv-layout` to `run_pdd_cert.sh`
-and `run_sweep.sh`, or state explicitly why the certified configuration is not the served one.
+non-inferiority p = 0.00031), 1.405× measured under ABBA. `--conv-layout` is now in both launch
+scripts, and the served chain is therefore **NUMERIC** rather than bit-exact end to end.
 
 ## B. Infrastructure
 
@@ -99,7 +106,7 @@ Exists so it is not re-proposed. Every item defaults off and carries its own ref
 
 **Superseded documents that still read as current** — `LAYER5_NEXT.md` (a ranked proposal whose
 ranking term was later refuted), `LAYER5_CRITICAL_PATH.md` §4 (retracted in place, correctly), and
-`AUDIT.md`/`PROFILE.md` (pre-Layer-6). These need a header pointing forward, not deletion.
+`AUDIT.md`/`PROFILE.md` (pre-Layer-6). ~~These need a header pointing forward, not deletion.~~ **Done.**
 
 ---
 
@@ -144,12 +151,22 @@ unshippable — distinct from the latency reason. It should not be cited as supp
 
 ---
 
-## Recommended actions, smallest first
+## Status of this audit's recommended actions
 
-1. **Wire `--conv-layout` into `run_pdd_cert.sh` and `run_sweep.sh`**, or record why the certified
-   configuration is not the served one. This is the only gap where something certified is not running.
-2. **Reconcile P005/P006 in `released.py`** with the `--graph-blocks` help text and the 1.43× result.
-   Their registered speedups describe an operating point that no longer exists. A frozen pass changes
-   only for a correctness bug — a registry that contradicts the measured runtime is that bug.
-3. **Add forward-pointing headers** to `LAYER5_NEXT.md`, `AUDIT.md`, `PROFILE.md`.
-4. **Drop item 2 from [SALVAGE_PR2.md](SALVAGE_PR2.md)** — `IWM_MAX_GRAPHS` is documentation, not a PR.
+All four are done, in commit `Make the repository internally consistent`:
+
+1. ~~Wire `--conv-layout` into the launch scripts~~ — **done.** `shipped_configuration()` is now the
+   single source of truth and both `run_pdd_cert.sh` and `run_sweep.sh` derive from it. The served
+   chain is P001+P002+P003+**P007**, tier **NUMERIC**.
+2. ~~Reconcile P005/P006 in `released.py`~~ — **done**, without rewriting history. `RELEASED` is
+   untouched and remains the ledger; a new `DISPOSITIONS` table states what should run today, with the
+   measurement behind it. P005 and P006 are `NOT_RECOMMENDED`.
+3. ~~Forward-pointing headers~~ — **done** on `LAYER5_NEXT.md`, `AUDIT.md`, `PROFILE.md`.
+4. ~~Drop `IWM_MAX_GRAPHS` from the salvage plan~~ — **done**; three PRs, not four.
+
+Enforced by [`tests/test_shipped_config.py`](tests/test_shipped_config.py), which fails if the
+registry, either launch script, `serve_variant.py` or the README disagree, and if a pass module is
+neither registry-backed nor declares a `STATUS:` line.
+
+The historical split is [HISTORICAL.md](HISTORICAL.md): **negative results** (tested and refuted) versus
+**archived implementations** (correct, not enabled). They are kept for opposite reasons.

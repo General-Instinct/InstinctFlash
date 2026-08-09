@@ -39,6 +39,12 @@ Correctness
 BITEXACT by construction: a memoized pure function returns the identical tensors. The gate is not
 "the outputs look the same" -- it is `torch.equal` on every returned index tensor against a freshly
 computed one, plus the layout check (I4), run on the real function.
+
+STATUS: NEGATIVE RESULT
+Obsolete. Upstream implemented it: `init_sequence_pack` became
+`SequencePackMetadata` + `prepare_sequence_pack_metadata` + a `prepared_metadata=` parameter, and
+`cosmos3_vfm_network.py:1017` passes it on the served path. The win is already taken.
+See HISTORICAL.md.
 """
 
 from __future__ import annotations

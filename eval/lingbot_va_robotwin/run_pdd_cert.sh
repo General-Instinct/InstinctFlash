@@ -37,12 +37,14 @@ start_arm() {   # start_arm <label> <first_gpu> <n_gpus> <extra args...>
   local label=$1 g0=$2 n=$3; shift 3
   for i in $(seq 0 $((n - 1))); do
     local gpu=$((g0 + i)) port=$((29056 + g0 + i))
+    # SHIPPED CONFIGURATION -- must equal instinctwm.verify.released.shipped_configuration().
+    # tests/test_shipped_config.py fails if it drifts. Do not edit here alone.
     ( cd "$LINGBOT_ROOT" && nohup env CUDA_VISIBLE_DEVICES=$gpu PYTHONPATH="$IWM_FA_SHIM_DIR" \
         LINGBOT_CKPT="$LINGBOT_CKPT" setsid "$IWM_SERVER_PY" -m torch.distributed.run \
         --nproc_per_node 1 --master_port $((29800 + g0 + i)) \
         "$IWM_ROOT/eval/lingbot_va_robotwin/serve_variant.py" --config-name robotwin \
         --port $port --save_root /home/ubuntu/iwm_vis/pdd_cert \
-        --no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv \
+        --no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout \
         "$@" > "$LOGD/${label}_$port.log" 2>&1 & )
   done
 }

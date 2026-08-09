@@ -64,6 +64,12 @@ directly. A frozen pass may only change for a correctness bug, so this fuses UND
 computes the fused GEMM and hands back its own slice while stashing the other two, and `to_k`/`to_v`
 consume the stash. The stash is single-use and keyed on tensor identity, so any call pattern other than
 the expected three-in-a-row misses it and falls back.
+
+STATUS: NEGATIVE RESULT
+1.9% predicted, 0.2% SLOWER measured. Its own per-shape certificate disproved the
+invariant it was built on: M=7 differs in 55 of 64,512 words, so cuBLAS tile_k invariance is not universal
+across the served envelope.
+See HISTORICAL.md.
 """
 
 from __future__ import annotations

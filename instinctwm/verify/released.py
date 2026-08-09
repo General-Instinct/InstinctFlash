@@ -254,17 +254,128 @@ BASELINE = {
 }
 
 
+# ---------------------------------------------------------------------------------------------------
+# CURRENT DISPOSITION -- separate from the historical record above, deliberately.
+#
+# `RELEASED` is a LEDGER: what was released, at what tier, on what evidence, at the time. It is frozen
+# and nothing below rewrites it. But "was released" and "should run today" drifted apart, and the
+# repository asserted both at once -- P005 was registered as shipping at 1.380x while serve_variant's
+# own --graph-blocks help called it NOT SHIPPABLE and a later measurement put capture 1.43x SLOWER.
+#
+# So the ledger keeps history and this table states the recommendation, with the measurement that
+# justifies it. A pass can be released and not recommended; those are different facts and conflating
+# them is what produced the inconsistency.
+#
+# THIS TABLE IS THE SINGLE SOURCE OF TRUTH FOR THE SHIPPED CONFIGURATION. The launch scripts, the
+# README and tests/test_shipped_config.py all derive from `shipped_configuration()`; if they disagree
+# the test fails. Add a flag here, not in four places.
+# ---------------------------------------------------------------------------------------------------
+
+SERVED = "SERVED"                    # in the default serving path
+AVAILABLE = "AVAILABLE"              # released and correct; opt-in, not in the default path
+NOT_RECOMMENDED = "NOT_RECOMMENDED"  # released historically; current measurement says do not enable
+
+
+@dataclass(frozen=True)
+class Disposition:
+    pid: str
+    status: str
+    #: CLI flags on serve_variant.py that enable it. Empty for a pass with no serving flag.
+    serving_flags: tuple[str, ...]
+    #: Why it holds this status TODAY, with the measurement. Not a summary of `gates`.
+    note: str
+
+
+DISPOSITIONS = (
+    Disposition("P001", SERVED, ("--no-fsdp", "--no-empty-cache", "--no-debug-dump"),
+                "Bit-exact, no counter-indication."),
+    Disposition("P002", SERVED, ("--conditioning-prefill",),
+                "Bit-exact, no counter-indication."),
+    Disposition("P003", SERVED, ("--ring-kv",),
+                "Bit-exact. Also load-bearing beyond its own speedup: the interval addressing is what "
+                "makes the block capturable AND compilable at all -- without it dynamo reports 10 "
+                "graphs and 9 breaks on mask.nonzero()."),
+    Disposition("P004", AVAILABLE, ("--hoist-casts",),
+                "Bit-exact and correct, but never in a launch script and its 1.02x was measured on a "
+                "~2.5 s cycle. Enabling it is a behaviour change that needs its own gate re-run at the "
+                "current operating point; not done, so it stays opt-in rather than being switched on "
+                "during a consistency cleanup."),
+    Disposition("P005", NOT_RECOMMENDED, ("--graph-blocks",),
+                "DO NOT ENABLE at the Fast operating point. Registered 1.380x was measured on a ~2.5 s "
+                "cycle. Today: capture ON + plan buffer 503.5 ms against capture OFF 351.4 ms -- 1.43x "
+                "SLOWER, because 5.3 surviving captures at ~111 ms each exceed the whole cycle "
+                "(LAYER5_GRAPH_PERSISTENCE_RESULT.md). A second, independent reason: graph eviction "
+                "does not return its private pool, so a 50-task run climbs to the 80 GB ceiling and "
+                "OOMs. The pass is correct; the mechanism does not pay here."),
+    Disposition("P006", NOT_RECOMMENDED, ("--stable-pools",),
+                "Exists only so P005's graphs survive a reset -- serve_variant: 'Only has an effect "
+                "with --graph-blocks'. With P005 not recommended this has no served effect. Not "
+                "refuted on its own; simply has nothing to do."),
+    Disposition("P007", SERVED, ("--conv-layout",),
+                "The only pass that measurably moves the current cycle: 1.405x under ABBA, certified "
+                "NUMERIC on 555 paired episodes (delta -0.0036, exact McNemar p = 0.897, one-sided "
+                "non-inferiority p = 0.00031). Enabling it makes the served chain NUMERIC rather than "
+                "bit-exact end to end -- that is the certificate's purpose and summary() says so."),
+)
+
+_BY_PID = {d.pid: d for d in DISPOSITIONS}
+
+
+def disposition_of(pid: str) -> Disposition:
+    return _BY_PID[pid]
+
+
+def shipped_configuration() -> list[str]:
+    """The serve_variant.py flags that constitute the default serving path.
+
+    Every launch script and the README must match this exactly; test_shipped_config.py enforces it.
+    """
+    out: list[str] = []
+    for r in RELEASED:                      # RELEASED order, so the list is stable and reviewable
+        d = _BY_PID[r.pid]
+        if d.status == SERVED:
+            out.extend(d.serving_flags)
+    return out
+
+
+def shipped_pids() -> list[str]:
+    return [r.pid for r in RELEASED if _BY_PID[r.pid].status == SERVED]
+
+
+def served_tier() -> Tier:
+    """The tier of the SERVED chain as a whole -- the weakest link, not the best one."""
+    tiers = [r.tier for r in RELEASED if _BY_PID[r.pid].status == SERVED]
+    if any(t is Tier.BEHAVIORAL for t in tiers):
+        return Tier.BEHAVIORAL
+    if any(t is Tier.NUMERIC for t in tiers):
+        return Tier.NUMERIC
+    return Tier.BITEXACT
+
+
 def summary() -> str:
     out = ["Released passes (frozen)"]
     for r in RELEASED:
         flag = "" if r.is_verified() else "   [GATES OWED]"
+        d = _BY_PID[r.pid]
+        mark = {SERVED: "SERVED         ", AVAILABLE: "available      ",
+                NOT_RECOMMENDED: "NOT RECOMMENDED"}[d.status]
         out.append(f"  {r.pid} {r.name:22s} v{r.version}  {r.tier.name:9s} "
-                   f"{r.step_speedup:.2f}x step   [{r.evidence_kind()}]{flag}")
+                   f"{r.step_speedup:.2f}x step   {mark} [{r.evidence_kind()}]{flag}")
     owed = [r.pid for r in RELEASED if not r.is_verified()]
     if owed:
         out.append(f"  NOT FULLY VERIFIED: {', '.join(owed)}. Either gates are owed, or a "
                    f"non-BITEXACT pass is missing its certificate. See Released.gates_owed / "
                    f".certificate.")
+    out.append("")
+    out.append(f"  SHIPPED CONFIGURATION ({', '.join(shipped_pids())}), tier "
+               f"{served_tier().name} -- this is the single source of truth:")
+    out.append(f"    {' '.join(shipped_configuration())}")
+    notrec = [r.pid for r in RELEASED if _BY_PID[r.pid].status == NOT_RECOMMENDED]
+    if notrec:
+        out.append(f"  NOT RECOMMENDED: {', '.join(notrec)} -- released historically, and current "
+                   f"measurement says do not enable. The ledger above is the record of what was "
+                   f"released; Disposition.note is why it should not run today.")
+    out.append("")
     lossy = [r.pid for r in RELEASED if r.tier is not Tier.BITEXACT]
     if lossy:
         out.append(f"  TIER: the chain is NOT bit-exact end to end -- {', '.join(lossy)} "

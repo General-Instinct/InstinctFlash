@@ -1,5 +1,10 @@
 # Repository audit: One Runtime, Many Checkpoints, Zero Runtime Forks
 
+> **HISTORICAL.** This is the One Runtime audit that produced the reorganization, and its migration
+> plan is complete. For the current state of the tree see [INVENTORY.md](INVENTORY.md); for the
+> shipped configuration see the README section of that name, which is derived from
+> `verify/released.py`.
+
 Audited 2026-08-06 against one principle:
 
 > **There is only one InstinctWM Runtime. Different models are different checkpoints. Every checkpoint

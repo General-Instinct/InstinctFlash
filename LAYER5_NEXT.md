@@ -1,5 +1,11 @@
 # Layer 5, next decision: a ranked proposal
 
+> **SUPERSEDED.** This ranked the next Layer 5 decision by exclusive device time. That ranking
+> term was later refuted: device time in the transformer returns **0.145 ms of cycle per ms**
+> ([LAYER6_REGIMES.md](LAYER6_REGIMES.md)), so the ordering here does not price anything. Layer 5 is
+> closed — see [LAYER5_COMPLETE.md](LAYER5_COMPLETE.md). Kept for the attribution method and the
+> coverage gate that excluded `cat` at 121%.
+
 Source: `profile_attribution.py`, 2V/4A warm past ring saturation, conv-layout=ndhwc (P007 applied).
 Method per [LAYER5.md](LAYER5.md): attribute → exclude the unrankable → classify → estimate → pick one.
 

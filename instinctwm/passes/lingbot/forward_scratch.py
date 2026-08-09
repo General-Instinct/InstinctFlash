@@ -18,6 +18,12 @@ arguments of one attention() call, so a naive shared buffer would alias them and
 attention against the wrong values. `ScratchArena` makes that impossible structurally: its bump
 pointer only advances within a scope and resets only at a scope boundary, so two acquires in one
 scope can never return the same storage. There is no capacity to size wrong and no wraparound.
+
+STATUS: NEGATIVE RESULT
+Struck on Cosmos3-Edge, the model it was written for: removing all 896 allocations
+and the whole 0.97 GiB buys 1.010x on eager and 1.000x on the shipped (graph) path. Capture already bakes
+the allocations into its private pool, so this is not merely small -- it is subsumed.
+See HISTORICAL.md.
 """
 
 from __future__ import annotations

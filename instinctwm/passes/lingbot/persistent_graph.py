@@ -58,6 +58,12 @@ and are out of scope.
 Measured basis (LAYER5_GRAPH_PERSISTENCE.md): the ring saturates at cycle 36 of a ~53-cycle episode;
 94.3% of the cycle's 38,442 dispatcher operations occur inside the region a replay covers; a fully
 replayed cycle should reach the device-bound floor of 196 ms, 1.72x.
+
+STATUS: NEGATIVE RESULT
+Every correctness gate passes and the latency gate refuses it: 503.5 ms against
+351.4 ms with capture off -- 1.43x SLOWER. The plan buffer recovers 432 of the 585 ms capture penalty and
+it does not matter, because 5.3 surviving captures at ~111 ms each exceed the whole cycle.
+See HISTORICAL.md.
 """
 
 from __future__ import annotations

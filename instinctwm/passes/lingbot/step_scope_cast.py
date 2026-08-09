@@ -40,6 +40,13 @@ WHY A COUNTER AND NOT A VALUE CACHE. The obvious implementation memoises `temb.f
 allocator hands the same address to later tensors, so a pointer-keyed cache can serve a stale cast. The
 counter is bumped by the transformer's own forward, so it changes exactly once per forward and cannot
 alias.
+
+STATUS: ARCHIVED IMPLEMENTATION
+Correct and BITEXACT -- 1,740 casts removed per cycle, `temb.float()` restored to
+per-forward scope. Not enabled because the cycle effect is 0.66% and one ABBA arm failed convergence at
+6.4%. Nothing is wrong with it; it is not worth a gate. Kept in case a future operating point makes
+per-forward cast scope matter again.
+See HISTORICAL.md.
 """
 
 from __future__ import annotations

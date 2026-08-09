@@ -116,7 +116,7 @@ def main() -> int:
              "diffed when a regression is suspected. Passing --hoist-casts or --stable-pools "
              "also selects the legacy path.")
     ap.add_argument("--stable-pools", action="store_true",
-        help="E1: reset clears logical KV state in place instead of reallocating the pools, so "
+        help="[NOT RECOMMENDED -- P006 exists only so P005's graphs survive a reset, and P005 is not recommended at the Fast operating point (capture measures 1.43x SLOWER; see LAYER5_GRAPH_PERSISTENCE_RESULT.md). With --graph-blocks off this has nothing to do. Not refuted on its own.] E1: reset clears logical KV state in place instead of reallocating the pools, so "
              "captured graphs stay valid across episodes. Only has an effect with --graph-blocks, "
              "which still verifies every pool pointer survived before keeping its graphs.")
     ap.add_argument("--no-keep-graphs", action="store_true",

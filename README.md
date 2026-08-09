@@ -92,6 +92,39 @@ full chain are in [Results](eval/lingbot_va_robotwin/RESULTS.md).
 
 ---
 
+## Shipped Configuration
+
+**Single source of truth: `instinctwm.verify.released.shipped_configuration()`.** The launch scripts,
+this table and `serve_variant.py` all derive from it, and `tests/test_shipped_config.py` fails if they
+drift apart. Add a flag there, not in four places.
+
+```
+--no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout
+```
+
+Served chain tier: **NUMERIC** — the weakest link, not the best member. P007 is NUMERIC, so
+the chain is *not* bit-exact end to end; that is what its 555-episode non-inferiority certificate is
+for.
+
+| pass | name | tier | disposition | flags |
+|:--|:--|:--|:--|:--|
+| P001 | `substrate_elision` | BITEXACT | **shipped** | `--no-fsdp --no-empty-cache --no-debug-dump` |
+| P002 | `conditioning_prefill` | BITEXACT | **shipped** | `--conditioning-prefill` |
+| P004 | `hoist_invariant_casts` | BITEXACT | available | `--hoist-casts` |
+| P005 | `graph_block_stack` | BITEXACT | **not recommended** | `--graph-blocks` |
+| P006 | `stable_state_pools` | BITEXACT | **not recommended** | `--stable-pools` |
+| P003 | `ring_kv_addressing` | BITEXACT | **shipped** | `--ring-kv` |
+| P007 | `conv_layout_ndhwc` | NUMERIC | **shipped** | `--conv-layout` |
+
+Historical material is split in [HISTORICAL.md](HISTORICAL.md): **negative results** (tested and refuted) versus **archived implementations** (correct, not enabled).
+
+**Released is not the same as recommended.** `RELEASED` is a ledger of what shipped, at what tier, on
+what evidence, at the time — it is frozen and never rewritten. `DISPOSITIONS` states what should run
+*today*, with the measurement behind it. P005 and P006 are the case that forced the distinction: both
+were released and verified, and at the current operating point CUDA graph capture measures **1.43×
+slower** than not capturing ([LAYER5_GRAPH_PERSISTENCE_RESULT.md](LAYER5_GRAPH_PERSISTENCE_RESULT.md)),
+so they are kept in the ledger and marked not recommended.
+
 ## Quick Start
 
 ```bash
