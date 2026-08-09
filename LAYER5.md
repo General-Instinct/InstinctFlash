@@ -234,12 +234,23 @@ device-side cost on a chain with slack, which is the precise shape of the three 
 measured nothing at cycle scale. `cat` keeps its coverage gate (121%, `[NON-STATIONARY, NOT RANKABLE]`) and
 is not a target until the host stops being the constraint.
 
-**The work moved to [LAYER6.md](LAYER6.md)**, which attacks the host chain instead: 105,123 aten events per
-cycle, 66% launching no kernel, ranked by operations removed rather than by GPU time.
+**Layer 5 is now closed at this operating point.** [LAYER5_COMPLETE.md](LAYER5_COMPLETE.md) is the
+screen: a kernel census found **zero** operators on a library fallback path — the question that produced
+P007, asked again, returns nothing — and 148.8 of 195.8 ms of device time is already on cuBLASLt, cuDNN or
+cuDNN-flash. The binding reason is not that the kernels are good; it is that the exchange rate has moved.
+Device time in the transformer returns **0.145 ms of cycle per ms**, so the ceiling on *all* remaining
+device-side work is **42.6 ms of a 331 ms cycle** — against a 100 ms bar. CFG elision, the one candidate
+that could have removed ~100 ms, is ruled out by a liveness measurement.
+
+**The work moved to [LAYER6.md](LAYER6.md)** and then to [LAYER6_REGIMES.md](LAYER6_REGIMES.md), which
+establishes why: the cycle is a sum of per-segment maxima, and Layer 5 operates on a term that no longer
+binds.
 
 ## Further reading
 
-- [LAYER6.md](LAYER6.md) — where the current work is, and the ranked proposal
+- [LAYER5_COMPLETE.md](LAYER5_COMPLETE.md) — the completeness screen and its ceiling arithmetic
+- [LAYER6_REGIMES.md](LAYER6_REGIMES.md) — the two regimes and the exchange rates
+- [LAYER6.md](LAYER6.md) — the host-dispatch inventory and its refutation
 - [ARCHITECTURE.md](ARCHITECTURE.md) — the two seams this layer sits on
 - [PROFILE.md](PROFILE.md) — the measurements, and the retractions behind them
 - [ATTENTION.md](ATTENTION.md) — Layer 4, same planner/backend shape

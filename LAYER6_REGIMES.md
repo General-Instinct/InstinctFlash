@@ -34,7 +34,7 @@ line through a hinge is meaningless.
 > **The transformer absorbs ~150 ms of added device work and then pays 1:1. The VAE absorbs nothing and
 > pays 1:1 from the first millisecond.**
 
-### The absorption capacity is the gap time, measured twice
+### The absorption capacity, and how it relates to the gap time
 
 The transformer's absorption saturates at **148.8 → 162.3 ms**. The gap inventory, measured by an
 entirely different instrument (device-busy union subtracted from the unprofiled cycle), puts the total
@@ -54,16 +54,45 @@ The dummy adds device time and nothing else. **But the largest transformer arm d
 to 1920 MHz** (−3% from 1980), so its 0.949 is an over-estimate of the true above-knee slope; read it as
 "≈1", and treat the VAE's 1.05–1.23 the same way.
 
-### A correction to my own first reading
+### Re-measured clean: the matmul dummy was inflating the deltas
 
-An earlier sweep over smaller sizes reported a transformer slope of **−0.067** and I wrote it up as
-"device time in the transformer costs nothing". At the same injection level this sweep reads **+0.207**.
-The difference is reference-arm noise of ~6 ms on a ~10 ms effect: the two runs bracket the truth rather
-than contradicting it, and the honest statement is **"≤0.2 ms per ms below the knee, consistent with
-zero, and certainly not 1"** — not "nothing".
+Both sweeps above ran their profiled contamination control BEFORE the timed arms, and a `torch.profiler`
+CUDA context leaves permanent per-launch residue after it exits. Their `k=0` arms read **390–403 ms**
+where the same cycle reads 330.7 ms unprofiled. An adversarial review of the design caught this and
+measured the residue at ~0.92 µs per launch, ~17 ms per cycle.
 
-The probe still prints a least-squares slope through the origin. **Do not quote it.** For the
-transformer it reads 0.575, which is an average across the hinge and describes no regime that exists.
+[`probe_slope_clean.py`](eval/lingbot_va_robotwin/probe_slope_clean.py) re-runs the transformer arm with
+no profiler anywhere, a `torch.cuda._sleep` dummy (one launch, duration exactly linear in clock cycles,
+no memory traffic, no L2 footprint, no power ramp), a reference arm that also launches, arms
+counterbalanced forward and reverse, and a hard gate that the `k=0` baseline match the known unprofiled
+cycle.
+
+**Gate: `k=0` = 330.1 ms against the 330.7 ms reference, +0.2%.** Ten `k=0` arms, spread 2.3%.
+
+| injected ms | Δcycle ms | **marginal slope** | absorbed |
+|--:|--:|--:|--:|
+| 59.7 | +8.6 | **0.145** | 51.1 ms |
+| 149.7 | +48.3 | 0.440 | 101.4 ms |
+| 299.7 | +198.6 | **1.002** | 101.1 ms |
+| 449.7 | +352.0 | **1.023** | 97.7 ms |
+
+Three things change:
+
+1. **The slope at the operating point is 0.145, not 0.207** — *lower*, not higher. The review predicted
+   the residue would bias it down and that removing it would raise the slope. It did the opposite,
+   because the dominant bias was not the residue: the matmul dummy's 96–384 MB footprint was polluting L2
+   and slowing the real kernels, inflating the deltas. `_sleep` has no footprint. The review's diagnosis
+   of the contamination was right; its prediction of the sign was wrong.
+2. **Absorption capacity is ~100 ms, not ~150 ms** — 101.4 / 101.1 / 97.7 across three arms. The gap
+   inventory's 138.9 ms is the *total* device idle; the dummy sits once per block and can only absorb the
+   slack downstream of it inside its own block, so ~100 ms is the reachable fraction of ~133 ms of
+   in-transformer idle. The two measurements are consistent, not identical, and the earlier claim that
+   they matched at ~150 ms was flattering the contaminated number.
+3. **The above-knee slope is 1.002 and 1.023** against the 1.0 the max-plus model predicts. That is the
+   sharpest confirmation the model has, and it comes from the clean instrument.
+
+The earlier figures (−0.067 and +0.207) are superseded. Both were below the knee and both said "small";
+the clean value says **0.145**.
 
 ## Why a single global slope was never going to work
 
@@ -92,8 +121,8 @@ of affine functions of `α`, hence **convex**, and it is non-decreasing since `D
 | device per block/site | ~0.64 ms | milliseconds |
 | **bound by** | **the host** | **the device** |
 | share of the cycle's gap time | 95.4% | 2.1% |
-| marginal slope | **≤0.2 below the knee, ≈1 above** | **≈1 everywhere** |
-| absorption capacity | **~150 ms** (= the gap time) | **~0 ms** |
+| marginal slope | **0.145 below the knee, ≈1.0 above** | **≈1 everywhere** |
+| absorption capacity | **~100 ms** | **~0 ms** |
 | lever that works | fewer Python-originated dispatches (~35 ms total, capped) | faster/fewer device kernels, pays ~1:1 |
 | lever that does nothing | any kernel or layout change | dispatch tidying |
 
