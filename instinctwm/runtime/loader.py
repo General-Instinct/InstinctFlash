@@ -58,7 +58,11 @@ def _register_builtins() -> None:
     """
     from instinctwm.adapters.lingbot_va import LingBotVA
 
-    register(LingBotVA.model_id, LingBotVA)
+    # The BACKBONE id is what a checkpoint declares; many checkpoints share one backbone. The old
+    # registration used a CHECKPOINT id as a backbone id, which is the conflation the platform claim
+    # forbids -- it is kept as an alias so nothing that names it breaks.
+    register(LingBotVA.BACKBONE, LingBotVA)
+    register(LingBotVA.model_id, LingBotVA)          # deprecated alias
 
 
 _register_builtins()

@@ -38,7 +38,17 @@ from instinctwm.descriptors.checkpoint import (
 REQUIRED = ("instinctwm.json", "config.json")
 
 #: One of these must be present. A sharded checkpoint declares its shards in the index.
-WEIGHTS_ANY = ("model.safetensors", "model.safetensors.index.json", "diffusion_pytorch_model.safetensors")
+#:
+#: The diffusers-named INDEX was missing from this list until the first real export tripped over it:
+#: a sharded diffusers checkpoint has `diffusion_pytorch_model-0000N-of-0000M.safetensors` plus
+#: `diffusion_pytorch_model.safetensors.index.json`, and only the unsharded name was listed. The
+#: docstring already promised "or a sharded set + index"; the enumeration just did not match it.
+WEIGHTS_ANY = (
+    "model.safetensors",
+    "model.safetensors.index.json",
+    "diffusion_pytorch_model.safetensors",
+    "diffusion_pytorch_model.safetensors.index.json",
+)
 
 #: Encouraged, never required, never read by the runtime.
 OPTIONAL = ("README.md", "LICENSE", "tokenizer", "scheduler", "vae")

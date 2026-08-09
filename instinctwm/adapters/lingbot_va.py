@@ -182,6 +182,124 @@ class LingBotVA:
         return server_module.run(args)
 
 
+    # -- placement hooks, read by instinctwm.runtime.execution ------------------------------------
+    #
+    # These are OPTIONAL methods that `Runtime` looks up with getattr. They are not part of the
+    # `BackendAdapter` Protocol and adding them here does not widen it: an adapter without them
+    # simply cannot offer that placement, and the facade says so in a message that explains the fix.
+
+    BACKBONE = "wan_va"
+
+    #: The subdirectories this backbone's loader expects. The package supplies the trainable one;
+    #: the rest come from `execution.base_weights`.
+    TRAINABLE_COMPONENT = "transformer"
+    FROZEN_COMPONENTS = ("vae", "text_encoder", "tokenizer")
+
+    @classmethod
+    def materialize(cls, checkpoint) -> str:
+        """Compose a loadable checkpoint tree from the package plus its `base_weights` pointer.
+
+        This is what makes "reference the frozen stack by repo id" work in practice. The published
+        package carries the trainable transformer flat at its root; the upstream loader wants
+        `transformer/ vae/ text_encoder/ tokenizer/`. So compose a directory of SYMLINKS -- no bytes
+        are copied, and the 14.2 GB frozen stack is shared by every checkpoint that points at it.
+
+        Knowing that this backbone wants those four subdirectories is ADAPTER knowledge. The runtime
+        only knows there is a pointer; it has no idea what a VAE is, and must not.
+        """
+        import os
+        from pathlib import Path
+
+        pkg = Path(checkpoint.path)
+        base = (checkpoint.execution.extra or {}).get("base_weights")
+        base = os.environ.get("LINGBOT_CKPT") or base
+        if not base:
+            raise RuntimeError(
+                f"{checkpoint.model_id}: execution.base_weights is not declared and LINGBOT_CKPT is "
+                f"unset, so the frozen stack cannot be resolved. This backbone needs "
+                f"{', '.join(cls.FROZEN_COMPONENTS)} in addition to the packaged transformer.")
+        basep = Path(base)
+        if not basep.exists():
+            from huggingface_hub import snapshot_download
+            basep = Path(snapshot_download(str(base)))
+
+        composed = pkg / ".instinctwm_composed"
+        tdir = composed / cls.TRAINABLE_COMPONENT
+        tdir.mkdir(parents=True, exist_ok=True)
+        for f in list(pkg.glob("*.safetensors")) + list(pkg.glob("*.index.json")) + [pkg / "config.json"]:
+            link = tdir / f.name
+            if not link.exists():
+                link.symlink_to(f.resolve())
+        for comp in cls.FROZEN_COMPONENTS:
+            src = basep / comp
+            link = composed / comp
+            if src.exists() and not link.exists():
+                link.symlink_to(src.resolve(), target_is_directory=True)
+        return str(composed)
+
+    def build_in_process(self, checkpoint, plan, *, device=None, nfe=None):
+        """Build the server in THIS process and return it. Used when placement is in-process."""
+        import os
+
+        from instinctwm.runtime.lingbot_install import import_lingbot_server
+
+        os.environ["LINGBOT_CKPT"] = self.materialize(checkpoint)
+        S = import_lingbot_server(self.lingbot_root)
+        cfg = S.VA_CONFIGS[os.environ.get("IWM_CFG", "robotwin")]
+        cfg.save_root = os.environ.get("IWM_SAVE_ROOT", "/tmp/iwm_runtime")
+        os.makedirs(cfg.save_root, exist_ok=True)
+        S.init_distributed(int(os.getenv("WORLD_SIZE", 1)), int(os.getenv("LOCAL_RANK", 0)),
+                           int(os.getenv("RANK", 0)))
+        cfg.rank = cfg.local_rank = 0
+        cfg.world_size = 1
+
+        n = dict(nfe or checkpoint.execution.nfe or {})
+        if n:
+            cfg.num_inference_steps = int(n.get("video", cfg.num_inference_steps))
+            cfg.action_num_inference_steps = int(n.get("action", cfg.action_num_inference_steps))
+
+        # the plan must be installed BEFORE the model is built: fsdp_elision replaces the bound
+        # _configure_model that the build calls through.
+        applied = list(self.install(S, plan))
+        server = S.VA_Server(cfg)
+        print(f"InstinctWM in-process: applied {applied or ['STOCK BASELINE']}", flush=True)
+        return server
+
+    def worker_command(self, checkpoint, plan, *, port, python, device=None, nfe=None):
+        """How to start this model as a managed worker. Returns (argv, env-overrides).
+
+        Reuses `serve_variant.py` -- the entry point the project already gates and measures -- rather
+        than adding a second serving path that would need its own bit-exactness evidence. The flags
+        come from `shipped_configuration()`, so the worker runs exactly what the registry says ships.
+        """
+        import os
+        from pathlib import Path
+
+        from instinctwm.verify.released import shipped_configuration
+
+        iwm_root = Path(__file__).resolve().parents[2]
+        serve = iwm_root / "eval" / "lingbot_va_robotwin" / "serve_variant.py"
+        argv = [python, "-u", str(serve), "--config-name", "robotwin",
+                "--port", str(port), *shipped_configuration()]
+
+        n = dict(nfe or {})
+        if n:
+            # an explicit override of a DECLARED field, passed through as the harness spells it.
+            argv += ["--degrade-nfe", f"{n.get('video', 2)},{n.get('action', 4)}"]
+
+        env = {"PYTHONUNBUFFERED": "1"}
+        shim = os.environ.get("IWM_FA_SHIM_DIR")
+        if shim:
+            env["PYTHONPATH"] = shim + os.pathsep + os.environ.get("PYTHONPATH", "")
+        base = (checkpoint.execution.extra or {}).get("base_weights")
+        if base:
+            # the frozen stack lives in another repo; the server resolves it from here
+            env["LINGBOT_CKPT"] = str(base)
+        if device:
+            env["CUDA_VISIBLE_DEVICES"] = device.split(":")[-1] if ":" in device else device
+        return argv, env
+
+
 class _ServerArgs:
     """The three attributes upstream's `run()` reads off its argparse namespace."""
 

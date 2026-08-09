@@ -87,10 +87,18 @@ from instinctwm.planners.planner import (
     Tier,
 )
 from instinctwm.passes.lingbot import default_passes
+from instinctwm.runtime.facade import Runtime, UnknownBackboneError, describe
+from instinctwm.descriptors.package import from_pretrained
+
 
 __version__ = "0.1.0"
 
 __all__ = [
+    # --- the public API. Everything else is one import deeper and rarely needed.
+    "Runtime",
+    "from_pretrained",
+    "describe",
+    "UnknownBackboneError",
     # entry points
     "load",
     "register",
