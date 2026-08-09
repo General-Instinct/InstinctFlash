@@ -166,7 +166,7 @@ class Runtime:
         model_id_or_path: str | Path,
         *,
         revision: str | None = None,        # commit / branch / tag -- reproducibility
-        operating_point: str | None = None, # "fast" | "quality" | None = the declared default
+        nfe: Mapping[str, int] | None = None,  # explicit override of a DECLARED field; see below
         device: str | None = None,          # None -> cuda if available, else cpu
         strict: bool = True,                # False downgrades refusals to warnings, for inspection
     ) -> "Runtime": ...
@@ -213,11 +213,24 @@ Worked example: examples/tiny_wam/adapter.py
 Why this is required, and what would remove the requirement: CHECKPOINTS.md, "Scope".
 ```
 
-### Operating points belong here
+### Operating points: what I proposed, and why it was wrong
 
-Operating points are already descriptor deltas, not code paths. `operating_point="fast"` is the
-natural product surface for that, and the declaration already carries `nfe` per stream. This adds a
-*name* for something that exists; it does not add a mode flag or a second runtime.
+I first proposed `operating_point="fast" | "quality"`. **Do not build that.** `grep -rn
+operating_point instinctwm/` returns nothing: Fast and Quality are not declared execution facts, they
+are `--degrade-nfe 2,50` flags in the eval harness. A named preset resolved inside `Runtime` would put
+a per-checkpoint tuning table *in the runtime* — precisely the branch that
+`checkpoint → declaration → capabilities → planner` exists to prevent, and it would have been a
+platform violation shipped inside the usability milestone.
+
+The honest forms, both of which keep the declaration authoritative:
+
+- **publish a second checkpoint** whose `execution.nfe` is the reduced schedule — an operating point
+  *is* a descriptor delta, so it is a different declaration, not a mode flag; or
+- **`nfe={"video": 2, "action": 4}`** as an explicit, visible override of a field the checkpoint
+  already declares.
+
+If presets are wanted later they belong in the *declaration* — e.g. an `execution.operating_points`
+map the author publishes — never as a table inside `Runtime`.
 
 ### What breaks
 
@@ -377,8 +390,22 @@ at line 100, "Quick Start" at 252).
 | 7 | Documentation | keep, now the gateway to everything below |
 | 8 | Citation / License | keep |
 
-**Moved out of the README entirely:** Optimization Stack, Shipped Configuration, Scope, How a new
-recipe plugs in → `ARCHITECTURE.md` and `CHECKPOINTS.md`, linked from §7. Retire "What's New 🔥".
+**Moved out of the README entirely:** Optimization Stack, Scope, How a new recipe plugs in →
+`ARCHITECTURE.md` and `CHECKPOINTS.md`, linked from §7. Retire "What's New 🔥".
+
+**Shipped Configuration must NOT simply move.** `README.md` is the only place that states the served
+chain is **NUMERIC, not bit-exact end to end** — `served_tier()` returns `Tier.NUMERIC` because P007 is
+served — and the only place naming the 555-episode certificate and the two NOT RECOMMENDED passes.
+Deleting it and leaving "3.38× bit-exact" anywhere near the first screen would be a false claim with
+its correction moved somewhere nobody in the quick-start path looks. That is the certificate gate
+turned into a facade, which is the one thing this milestone must not do. Replace it with a short
+generated block in **Results**:
+
+> Shipped chain: P001 P002 P003 P007 · tier **NUMERIC** (P007 conv layout; 555-episode paired
+> non-inferiority certificate) · the other three are bit-exact · 3.38× end-to-end in episode mode.
+
+and repoint `test_shipped_config.py` at `README.md ∪ docs/models/lingbot_va.md`, adding an assertion
+that the literal `served_tier().name` appears in the README.
 
 Note `tests/test_shipped_config.py` asserts the README lists the shipped flags and mentions P005/P006.
 Moving Shipped Configuration means **updating that test to assert against the new home**, not deleting
@@ -429,6 +456,26 @@ Items 1–2 are independent and can go first. Item 5 depends on 2 and 3. Item 4 
 headline and depends on 3.
 
 ---
+
+## 8b. Two design rules the adversarial review produced
+
+Both are general, and both cost nothing to follow.
+
+**A closed vocabulary can legalize the complement of a forbidden key.** A reviewer proposed a
+per-component `frozen: true` flag. `trainable` is already in `FORBIDDEN_IN_EXECUTION` — and "which
+components were frozen" is the same training fact stated the other way round. The reader would raise
+on one word and accept its complement, and the byte-identical-plan test could not catch it because
+that test varies only *provenance*. **Rule: before adding an `execution` key, check whether its
+negation is already forbidden.** If a planner genuinely needs the fact later, it arrives as a
+capability token plus a test that two checkpoints differing *only* in that field produce **different**
+plans — proving it is live rather than decorative.
+
+**Do not promote a coincidence to an invariant.** `adapters/lingbot_va.py:36` declares
+`param_bytes=10_179_017_396`, commented "transformer safetensors, bf16". That is the *file* size and
+it matches the diffusers index `total_size` exactly; actual tensor-data bytes are 10,178,931,132, the
+86,264-byte difference being the safetensors header. The number is fine as a file size, the field name
+implies parameters, and any future check written against the apparent equality would break the first
+time the transformer is re-sharded.
 
 ## 9. Risks and open questions
 
