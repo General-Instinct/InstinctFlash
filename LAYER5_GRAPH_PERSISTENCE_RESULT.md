@@ -105,6 +105,33 @@ bucketing, no NUMERIC behaviour.
   already-patched forward and raises. One arm per process, always.
 - The saturation check read `total` before the ring dict existed, comparing against a sentinel.
 
+## A second, independent reason: capture does not survive a 50-task run
+
+The 1.43× is a latency argument. There is an operational one, from the pre-reorg `--graph-blocks`
+fleet runs recorded in PR #2, and it is worth separating because it does not depend on the cycle time
+at all.
+
+**Evicting a captured graph does not return its private memory pool.** Over a 50-task run the teacher
+servers climbed from 24 GB to the 80 GB ceiling and all 8 OOMed. `IWM_MAX_GRAPHS` was added to bound
+the held set and the experiment falsified the idea:
+
+```
+cap=32 -> gpu0: captures=523 replays=20881 held=32 evicted=461 fallbacks=1   (all 8 still OOMed)
+```
+
+461 evictions for 523 captures. Capping the *held* set does not help when the leak is in *eviction* —
+it only raises the eviction count. One A100 entered `GPU requires reset` and was lost for the session.
+
+**The contrast that matters, and it is a memory claim, not a latency one:** the `--ring-attention`
+arm, which holds 6 graphs and evicts none, ran the same workload at a flat **41–42 GB with zero
+fallbacks**. That is the only surviving argument for the ring-attention branch, and it should never be
+cited as support for its 1.32×/episode latency figure, which is stale (see
+[SALVAGE_PR2.md](SALVAGE_PR2.md)).
+
+So capture fails twice over, for unrelated reasons: it is slower at this operating point, and a
+non-converging capture key cannot finish a 50-task evaluation on this box. *(Fleet numbers collected
+pre-reorganization on 8×A100; the mechanism claim stands, the hardware context is dated.)*
+
 ## Why this is frozen rather than parked
 
 Resuming would require one of: a mechanism whose per-capture cost is not ~111 ms, or an operating point

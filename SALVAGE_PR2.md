@@ -61,25 +61,19 @@ served shapes, and a NUMERIC certificate: PR #2 measured cuDNN differing from fl
 left is per-shape selection — FLASH split-KV for the 180 `Sq=32` action calls, cuDNN for `Sq=240` —
 which the Layer 5 screen priced at **1.5–1.7 ms of cycle**, below the 10 ms bar.
 
-## PR 2 — `IWM_MAX_GRAPHS`
+## ~~PR 2 — `IWM_MAX_GRAPHS`~~ — WITHDRAWN, documentation only
 
-**Scope.** The environment-variable cap on the graph cache, defaulting to 64, plus the finding that
-motivated it.
+**Revised by [INVENTORY.md](INVENTORY.md): this is not a PR.** The reusable half is already on main —
+`passes/lingbot/graph_capture.py` carries the `max_graphs` parameter and the
+`captures=/replays=/held=/evicted=` counters. PR #2 adds only the environment-variable override, three
+lines in `serve_variant.py`, and its own experiment falsified it: at a cap of 32,
+`captures=523 replays=20881 held=32 evicted=461 fallbacks=1` and all 8 servers OOMed anyway, because
+graph eviction does not return its private pool and capping the *held* set only raises the *eviction*
+count.
 
-**This knob is a documented negative result, and it should land as one.** Its own experiment
-falsified the idea: at a cap of 32, `captures=523 replays=20881 held=32 evicted=461 fallbacks=1`, and
-all 8 servers OOMed anyway. Graph eviction does not return its private memory pool, so capping the
-*held* set only increases the *eviction* count. One A100 entered `GPU requires reset` and was lost
-for the session.
-
-**Why it is still worth landing.** It is an independent, operational reason capture is unshippable at
-scale — distinct from the latency reason already recorded. `LAYER5_GRAPH_PERSISTENCE_RESULT.md` says
-capture is 1.43× slower; this says it also cannot finish a 50-task evaluation. Both belong in the
-record.
-
-**Re-measurement.** None required for the knob itself. The OOM evidence is a *mechanism* claim, not a
-latency claim, but it was collected on an 8×A100 fleet pre-reorg and must be dated as such in the PR
-body rather than presented as current.
+The knob would only matter if graph capture were served, and it is not. The finding belongs in
+[LAYER5_GRAPH_PERSISTENCE_RESULT.md](LAYER5_GRAPH_PERSISTENCE_RESULT.md) as a second, independent
+reason capture is unshippable — an operational one, distinct from the 1.43× latency reason.
 
 ## PR 3 — vLLM-Omni evaluation arm
 
@@ -118,10 +112,11 @@ clear the bar. Re-land it to close the question, not to reopen it.
 
 ## Order and rationale
 
-1. **PR 2 (`IWM_MAX_GRAPHS`)** — smallest, no measurement dependency, purely additive.
-2. **PR 1 (attention wiring)** — architecture only, unblocks Layer 4 without claiming anything.
-3. **PR 4 (fusion + rejection)** — closes a question; predicted outcome already known.
-4. **PR 3 (vLLM-Omni)** — largest surface and the only one that touches environment setup.
+1. **PR 1 (attention wiring)** — architecture only, unblocks Layer 4 without claiming anything.
+2. **PR 4 (fusion + rejection)** — closes a question; predicted outcome already known.
+3. **PR 3 (vLLM-Omni)** — largest surface and the only one that touches environment setup.
+
+~~PR 2 (`IWM_MAX_GRAPHS`)~~ withdrawn — documentation, not code. Three PRs, not four.
 
 ## What is deliberately not salvaged
 
