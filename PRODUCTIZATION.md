@@ -45,12 +45,14 @@ $ python -m instinctwm.descriptors.package /home/ubuntu/ckpt_lingbot/lingbot-va-
   PROBLEM  no declaration: this directory is not a checkpoint
 ```
 
-`package.py` requires a root `config.json` and a root weights file. That assumption came from writing
-the validator against a single-component example. Real world models are multi-component, and the one
-checkpoint this project exists to serve is the counter-example.
+`package.py` requires a root `config.json` and a root weights file, and this directory has neither.
+
+**The fix is not to widen the validator** — see §5. LeRobot publishes this same model flat, as a single
+10.2 GB file plus a repo-id pointer to the frozen stack. The 23 GB directory is a *training output*,
+not a published package, and treating it as one is the actual mistake.
 
 So the gap is not subtle and it is not architectural. **The pipeline works; the front door is
-missing**, and the flagship package does not fit through it.
+missing**, and nobody has yet converted the flagship weights into something to put through it.
 
 ---
 
@@ -70,6 +72,12 @@ produces, and the concrete InstinctWM change.
 | **Separate preprocessor/postprocessor artefacts** (`policy_preprocessor.json` + `.safetensors`) rather than baking normalization into the weights | the transform is inspectable and swappable | Not needed today, but it is the right precedent if LingBot-VA ever ships normalization stats: a sibling artefact, not a new `execution` key |
 | **`model-index`** in front-matter, parsed by the Hub into an eval widget ([Hub model-card docs](https://huggingface.co/docs/hub/en/model-cards)) | benchmark results render natively | Carry the RoboTwin success rate here. This is how the benchmark becomes first-class instead of buried in `eval/` |
 | **`base_model` + `base_model_relation`** (`finetune` / `quantized` / `adapter` / `merge`) | lineage is Hub-native and filterable | Declare the teacher here — **card metadata, not `execution`**. Lineage becomes visible without the runtime being able to read it |
+| **The model card is GENERATED** from a Jinja template at publish time (`generate_model_card()`), from the config alone | cards never drift from the artifact | Generate the InstinctWM card from `instinctwm.json`. We already generate nothing and hand-write everything |
+| The generated card ships Evaluation as an **explicit honest hole**: `_No evaluation results have been provided._` | absence is visible rather than implied | Exactly this project's `NOT EVALUATED` discipline, applied to the card |
+| **Metadata fetchable without weights** — `config.json` alone via `hf_hub_download` | inspect before you download 10 GB | `describe(repo)`, see §5 |
+| **Typed migration errors carrying the exact fix command** (`ProcessorMigrationError`) | a format change is a one-liner, not an archaeology exercise | Adopt the pattern for any future `instinctwm_schema` bump |
+| **Third-party policies discovered by distribution-name prefix** (`lerobot_policy_*`), no entry points, no core PR | an outside author ships a package, not a patch | Consider `instinctwm_backbone_*` later; `instinctwm.register` already covers the near term |
+| `lerobot.__all__ == ["__version__", "available_extras"]` — the top level exports **almost nothing** | no vocabulary to learn before the first call | Shrink `__all__` to `Runtime`, `from_pretrained`, `describe`, `register`, `__version__`. The other fourteen move behind `instinctwm.advanced` |
 
 ### The one LeRobot solves that we should copy wholesale: failure that teaches
 
@@ -213,66 +221,87 @@ natural product surface for that, and the declaration already carries `nfe` per 
 
 ### What breaks
 
-Nothing. `Runtime` is additive. The existing exports stay for the people who want them — but
-`__all__` is reordered so `Runtime` and `from_pretrained` come first, and the implementation
-vocabulary moves behind a documented "advanced" heading.
+Nothing. `Runtime` is additive. But `__all__` should also SHRINK, following LeRobot's two-name top level:
+export `Runtime`, `from_pretrained`, `describe`, `register`, `__version__`, and move the other
+fourteen to `instinctwm.advanced` with a one-line re-export shim so nothing existing breaks.
 
 ---
 
 ## 5. The package layout
 
-### Revised rules
+**This section was rewritten after the study. My first answer was wrong, and the evidence is a repo
+that already exists.**
 
-The current rules assume one component. Replace with:
+### LeRobot already solved this, with our checkpoint, and did not widen its loader
 
-```python
-REQUIRED_ROOT = ("instinctwm.json",)          # the declaration is the only unconditional file
+`lerobot/lingbot_va_robotwin` is on the Hub. It is the same model as our 23 GB multi-folder directory,
+and it is published **flat**:
 
-# a package is EITHER single-component OR multi-component; both are first class
-SINGLE_COMPONENT = root has config.json AND one of WEIGHTS_ANY
-MULTI_COMPONENT  = execution.components names >= 1 subdirectory, each of which
-                   has config.json AND one of WEIGHTS_ANY
+```
+lerobot/lingbot_va_robotwin/
+  config.json                                              2.67 kB
+  model.safetensors                                        10.2 GB    <- ONE file, not three folders
+  policy_preprocessor.json / policy_postprocessor.json
+  policy_postprocessor_step_0_unnormalizer_processor.safetensors
+  README.md   assets/
 ```
 
-and add one optional key to `execution` — the only schema change this proposal makes:
+and its `config.json` contains:
 
 ```jsonc
-"components": {
-  "transformer":   "transformer",
-  "vae":           "vae",
-  "text_encoder":  "text_encoder",
-  "tokenizer":     "tokenizer"
+"type": "lingbot_va",
+"wan_pretrained_path": "robbyant/lingbot-va-posttrain-robotwin",   // a REPO ID, not a subfolder
+"pretrained_path": null
+```
+
+So the frozen stack — VAE, text encoder, tokenizer — is **referenced by repo id, not vendored**. The
+servable artifact is the trainable part alone, 10.2 GB instead of 23 GB. They also never shard:
+`_SINGLE_FILE_SHARD_SIZE = "1TB"` is passed as `max_shard_size` to every save, deliberately.
+
+**This is better than the subdirectory map I proposed, for three reasons.** The published artifact is
+less than half the size. Ten fine-tunes of the same backbone reference one upstream copy of the frozen
+stack instead of each duplicating it. And the loader stays simple — no component-walking, no
+per-component validation.
+
+### Revised proposal: convert at publish time, point at the rest
+
+Keep `REQUIRED = ("instinctwm.json", "config.json")` and a root weights file. Add **one** optional
+`execution` key — a pointer, not a map:
+
+```jsonc
+"execution": {
+  "backbone": "wan_va",
+  "base_weights": "robbyant/lingbot-va-posttrain-robotwin",   // frozen stack, resolved at load
+  ...
 }
 ```
 
-**Why this is an execution key and not provenance:** which subdirectory holds which component is a
-fact the runtime needs in order to load the weights. It says nothing about training. It passes the
-`FORBIDDEN_IN_EXECUTION` test by construction.
+**Why this is an execution key:** the runtime cannot load the model without it. It names weights, not
+a recipe, and passes `FORBIDDEN_IN_EXECUTION` by construction.
 
-**Why declare it rather than infer it:** inference by globbing would make the layout an accident of
-directory naming. This project's own history says a fact worth depending on should be declared and
-checkable, not guessed — the same argument that put `velocity_convention` in the schema.
+**What this makes the LingBot-VA work:** a *conversion*, not a validator change. Produce a flat
+servable package — trainable weights in one `model.safetensors`, `instinctwm.json`, `config.json`,
+card — that points at the upstream repo for the frozen stack. That is a script in `eval/` or
+`examples/`, and it is the honest scope of "make LingBot-VA a first-class package".
 
-`validate_package` then reports per component, and `publishability()` is unchanged.
+**What I got wrong and why it matters:** I proposed widening `validate_package` to walk declared
+subdirectories. That would have made every published LingBot-VA fine-tune carry its own 13 GB copy of
+frozen weights, and added a component-validation path to the loader for a problem that publish-time
+conversion removes. The study found the counter-example by looking at what LeRobot actually shipped
+for this exact checkpoint.
 
-### What LingBot-VA specifically needs
+### Fetch metadata without the weights
 
-To become a first-class package, added to the existing 23 GB directory:
+`PreTrainedConfig.from_pretrained` downloads only `config.json` via `hf_hub_download`. Nobody should
+pull 10 GB to find out whether a checkpoint is servable. Add:
 
-| file | content |
-|:--|:--|
-| `instinctwm.json` | `execution`: `model_id`, `backbone: "wan_va"`, `servable: true`, `guidance {video: cfg, action: positive_only}`, `nfe {video: 2, action: 4}`, `components {...}`. `provenance`: optional |
-| `README.md` | model card, front-matter below, body in LeRobot's order |
-| `LICENSE` | explicit |
-| `instinctwm_benchmark.json` | *optional* — RoboTwin success, protocol, seeds |
-| `instinctwm_certificate.json` | *optional* — the NUMERIC certificate for P007 |
+```python
+from instinctwm import describe
+describe("general-instinct/lingbot-va")   # execution declaration + capabilities, no weights
+```
 
-And one adapter change: `backbone: "wan_va"` must resolve. Today the registered id is
-`lingbot-va-posttrain-robotwin` — a *checkpoint* id used as a *backbone* id. That conflation is
-exactly what the platform claim forbids, and it should be fixed by registering the backbone under
-`wan_va` and letting many checkpoints declare it.
-
----
+backed by a single `hf_hub_download(repo_id, "instinctwm.json")`. This is a small function and it is
+the highest ratio of usefulness to effort in the whole proposal.
 
 ## 6. Publishing and the model card
 
@@ -403,11 +432,22 @@ headline and depends on 3.
 
 ## 9. Risks and open questions
 
-- **`library_name: instinctwm` is not a Hub-registered library.** The docs say an unregistered
-  `library_name` still displays and filters, but the auto-generated "Use this model" snippet comes
-  from Hub-side library integration. Getting that requires a PR to `huggingface/hub-docs`. Until then
-  the card's Quick Start section carries the snippet manually. *Unverified: whether the Hub currently
-  accepts new library registrations for niche robotics libraries.*
+**One recommendation in this document was already revised by its own research.** §5 originally
+proposed widening `validate_package` to walk declared subdirectories. A parallel study of what LeRobot
+actually shipped for *this exact checkpoint* found `lerobot/lingbot_va_robotwin` — flat, 10.2 GB, with
+the frozen stack referenced by repo id — which is strictly better, and §5 now says so. That is the
+process working, and it is a reason to check the remaining unverified items below before building.
+
+
+- **`library_name: instinctwm` is not a Hub-registered library — but the path is now known.**
+  `lerobot` is registered in `huggingface.js`, `packages/tasks/src/model-libraries`, so registration is
+  a PR to that repo rather than an unknown. Worth knowing before relying on it: the study found
+  LeRobot's own Hub snippet is stale and only fires for one model family, so the auto-snippet is a
+  nice-to-have, not the reason to register. Carry the snippet in the card body meanwhile.
+- **`model-index` may not be the current mechanism.** The study found `.eval_results/*.yaml` files in
+  `lerobot/pi05_base` — a newer, decentralized eval-results format. Both appear to work. *Decide which
+  before writing the card; I verified `model-index` in the Hub docs but did not verify which the Hub
+  now prefers.*
 - **`Runtime.predict()` for LingBot-VA is not obviously in-process.** Today LingBot-VA serves over a
   websocket with a separate client interpreter (deliberately — the two envs are
   dependency-incompatible). `predict()` may have to be a thin client, or `serve()` may be the honest
