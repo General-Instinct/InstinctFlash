@@ -13,6 +13,13 @@ read" needs no baseline run -- the action output becomes NaN. Three arms:
           Those are read by all five action forwards -- that is the architecture -- so this arm
           MUST go NaN. If it does not, the poison is not landing and the `action` arm proves
           nothing.
+
+REFUTED 2026-08-09, see LAYER5_COMPLETE.md section 4b and probe_terminal_forward.py.
+The terminal action forward is NOT dead. It is dead for the first ~38 cycles and LIVE thereafter:
+max|delta action| = 0 pre-saturation, then 0.0297 / 0.0234 / 0.266 / 0.406 / 0.266 / 0.102 once the
+ring wraps. clear_pred_cache rolls the COUNT back (ring_kv.py:132) but the write has already EVICTED
+the oldest slot and advanced start (ring_kv.py:258-259), and that is not rolled back. Any run of this
+probe that stops before cycle ~38 will report the candidate alive and be wrong.
 """
 from __future__ import annotations
 

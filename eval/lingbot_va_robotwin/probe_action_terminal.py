@@ -20,6 +20,13 @@ ON arm, so this UNDERSTATES the full elision by ~0.4 ms.
 
     CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY -u \
         -m torch.distributed.run --nproc_per_node 1 --master_port 29971 probe_action_terminal.py
+
+REFUTED 2026-08-09, see LAYER5_COMPLETE.md section 4b and probe_terminal_forward.py.
+The terminal action forward is NOT dead. It is dead for the first ~38 cycles and LIVE thereafter:
+max|delta action| = 0 pre-saturation, then 0.0297 / 0.0234 / 0.266 / 0.406 / 0.266 / 0.102 once the
+ring wraps. clear_pred_cache rolls the COUNT back (ring_kv.py:132) but the write has already EVICTED
+the oldest slot and advanced start (ring_kv.py:258-259), and that is not rolled back. Any run of this
+probe that stops before cycle ~38 will report the candidate alive and be wrong.
 """
 from __future__ import annotations
 
