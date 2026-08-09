@@ -18,6 +18,24 @@ interpreter and it resolves to a worker. Same three calls either way.
 
     PYTHONPATH=. $IWM_SERVER_PY tools/lingbot_end_to_end.py --package /home/ubuntu/hub/lingbot-va
     PYTHONPATH=. $IWM_SERVER_PY tools/lingbot_end_to_end.py --package ... --placement worker
+
+STATUS OF THE FINAL STEP, 2026-08-09. Steps 1-3 pass on the real 10.2 GB package and the real weights
+LOAD from it -- the loader reports reading `.instinctwm_composed/transformer`. Step 4 is
+NOT EVALUATED, not failing: every GPU on this box is held by an unrelated `lerobot-train` job
+(~58 GB of 80 GB each, 2h47m elapsed and counting), and the model needs
+
+    transformer 10.18 + vae 0.51 + text_encoder 11.36 = 22.05 GB of weights resident
+
+against ~23.4 GB free, leaving 1.35 GB for activations, CUDA context and the KV pool. Two attempts
+OOMed at 22.3 GB, one of them with expandable_segments, so this is capacity and not fragmentation.
+Killing someone else's training run to claim a green tick would be the wrong trade.
+
+Re-run it on a GPU with >= ~30 GB free; an idle H100-80GB is ample:
+
+    CUDA_VISIBLE_DEVICES=<free> PYTHONPATH=$IWM_FA_SHIM_DIR:. MASTER_ADDR=127.0.0.1 \
+      MASTER_PORT=29854 WORLD_SIZE=1 RANK=0 LOCAL_RANK=0 $IWM_SERVER_PY \
+      tools/lingbot_end_to_end.py --package /home/ubuntu/hub/lingbot-va \
+      --base-weights /home/ubuntu/ckpt_lingbot/lingbot-va-posttrain-robotwin
 """
 
 from __future__ import annotations
