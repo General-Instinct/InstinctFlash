@@ -1,0 +1,29 @@
+{
+  "instinctwm_schema": 1,
+  "execution": {
+    "model_id": "example-org/tiny-wam-2v2a",
+    "backbone": "tiny-wam",
+    "servable": true,
+    "guidance": {
+      "video": "cfg",
+      "action": "positive_only"
+    },
+    "nfe": {
+      "video": 2,
+      "action": 2
+    },
+    "output_projection": {
+      "kind": "per_interval_velocity_heads",
+      "n_intervals": 8,
+      "block": 4,
+      "velocity_convention": "sigma_descending",
+      "foldable": true
+    },
+    "param_bytes": 323008
+  },
+  "provenance": {
+    "training_method": "none -- weights are seeded random",
+    "seed": 0,
+    "note": "This block is FOR HUMANS. Delete it and the checkpoint still serves; publishability() verifies exactly that."
+  }
+}

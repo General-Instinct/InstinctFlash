@@ -99,6 +99,13 @@ full chain are in [Results](eval/lingbot_va_robotwin/RESULTS.md).
 
 ## Serve a checkpoint
 
+A complete, runnable example — real weights, third-party adapter, one real inference — is in
+[`examples/tiny_wam/`](examples/tiny_wam/):
+
+```bash
+PYTHONPATH=. python examples/tiny_wam/run_end_to_end.py
+```
+
 ```python
 from instinctwm.descriptors.package import from_pretrained
 
@@ -154,6 +161,31 @@ error telling you where to move them.
 **You can delete `provenance` entirely and the checkpoint still serves.** `publishability()` verifies
 exactly that, by stripping the block and re-loading. If it fails, something the runtime needs is in
 the wrong namespace — which is the mistake the split exists to catch.
+
+## Scope: many checkpoints today, arbitrary backbones later
+
+Two claims that are easy to conflate, stated separately because only one of them is true today.
+
+**Supported now — many checkpoints per backbone.** Publish as many checkpoints as you like against a
+backbone that has a registered `Adapter`. Different operating points, different distillation recipes,
+different fine-tunes, different output projections: they declare capabilities, the runtime plans from
+those capabilities, and **no runtime code changes**. `examples/tiny_wam/` proves this end to end on
+real weights, with an adapter that lives outside `instinctwm/` and is registered at call time.
+
+**Not yet — an arbitrary new backbone with no Adapter.** `execution.backbone` must resolve to a
+registered adapter or the checkpoint is not servable, however well it declares itself. The adapter
+supplies what the declaration cannot: the shape of a control step — streams and their lifetimes,
+phases and their forward counts, guidance per stream — and today that is Python, not JSON.
+
+Writing one is a contained job: implement `spec()`, `install()`, `serve()`, call
+`instinctwm.register(...)`. It requires no change to InstinctWM, and
+[`examples/tiny_wam/adapter.py`](examples/tiny_wam/adapter.py) is a complete worked one. But it is
+*code*, so "arbitrary checkpoint" is true and "arbitrary backbone, declaration only" is not.
+
+Deriving a full `AdapterSpec` from `instinctwm.json` would close that gap. It is deliberately not
+built: the declaration would have to grow enough expressiveness to describe an execution graph, and
+that is a much larger contract to freeze than the one in place. Stated here rather than implied, so
+nobody plans around a capability that does not exist.
 
 ## How a new recipe plugs in
 

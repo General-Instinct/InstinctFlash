@@ -102,6 +102,19 @@ something they cannot know. Fields are added here only when a pass reads one.
 > registered in Python, so `backbone` selects an adapter rather than describing one. A checkpoint for
 > a backbone with no registered adapter is not servable, however well it declares itself.
 
+### Scope: many checkpoints today, arbitrary backbones later
+
+**Supported now.** Many checkpoints per backbone, where the backbone has a registered `Adapter`.
+Different operating points, recipes, fine-tunes and output projections all declare capabilities and
+plan from them, with no runtime change. [`examples/tiny_wam/`](examples/tiny_wam/) demonstrates the
+whole workflow on real weights with an adapter defined outside `instinctwm/`.
+
+**Not yet.** An arbitrary new backbone with no adapter. `execution.backbone` must resolve to a
+registered adapter; the adapter supplies the shape of a control step, which the declaration cannot
+currently express. Writing one requires no change to InstinctWM, but it is code rather than JSON.
+Deriving a full `AdapterSpec` from the declaration would close the gap and is deliberately not built —
+the schema would have to describe an execution graph, which is a much larger contract to freeze.
+
 ### The published package
 
 ```
