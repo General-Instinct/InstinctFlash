@@ -103,7 +103,8 @@ interval rather than the whole 9,792-slot pool — is *already* what P003 does. 
 decomposed. The RoPE `float64` round trip was already investigated and its whole region measured 0.3% of
 the cycle. Nothing is silently decomposed into elementwise chains that a library would take.
 
-**Duplicated execution.** CFG is the big one and it is dead — see §4. Beyond it: the 2,720
+**Duplicated execution.** Two candidates, both refuted by measurement: CFG (§4) and the terminal action
+forward (§4b), the latter dead for 38 cycles and live thereafter. Beyond them: the 2,720
 `direct_copy_kernel_cuda` launches (14.7 ms → 2.1 ms of cycle) are the largest remaining duplication-shaped
 item and are below the bar by 5×.
 
@@ -120,6 +121,44 @@ moved them by **5.39**, against a chunk-to-chunk movement of **1.03**. Both CFG 
 ring KV pool and the video stream at scale 5 reads branch 1. `dead_outputs` is a true statement about
 output usage; `elidable_computations` is not. Recorded in `passes/lingbot/cfg_elision.py`, kept as a
 ruled-out optimization rather than a pass.
+
+## 4b. The one candidate that cleared the bar, and why it died
+
+An independent search (5 parallel lenses over the source and the census) reached the same COMPLETE
+verdict, and surfaced one item I had missed that **did** clear the 10 ms bar: the **terminal action
+forward**.
+
+Both denoise loops pad a terminal timestep `t=0` (`wan_va_server.py:473`, `:478`) and run one more
+transformer forward at it with `update_cache=1`. On that iteration the output is *provably* discarded —
+`if not last_step` guards every use (`:548` action, `:508` video) — so the forward's only possible effect
+is its write to the shared ring KV pool. And `_compute_kv_cache` calls `clear_pred_cache` as its **first**
+statement (`:574`), with no transformer running in between. It reads as 1 of 10 forwards, ~1,860 launches
+and ~10,500 aten events, worth **~30 ms of cycle** — and because it deletes a whole host-bound segment
+rather than device time, it is worth ~30 ms rather than the ~2 ms a device-only change of that size buys.
+
+**It is not dead.** [`probe_terminal_forward.py`](eval/lingbot_va_robotwin/probe_terminal_forward.py),
+45 seeded cycles spanning ring saturation:
+
+| cycles | `max |Δ action|` |
+|:--|:--|
+| 0 – ~38, pre-saturation | **0** — genuinely dead |
+| last 6, post-saturation | 0.0297, 0.0234, 0.266, **0.406**, 0.266, 0.102 |
+
+Against a chunk-to-chunk movement of 1.03, the worst is ~40% of a real movement.
+
+**The mechanism is the ring wrap.** `clear_pred_cache` rolls the count back (`ring_kv.py:132`,
+`r["count"] -= r["pred"]`), which is why the write is invisible before saturation. But once
+`count > total` the write has already **evicted** the oldest slot and advanced the interval
+(`ring_kv.py:258–259`, `r["start"] = (r["start"] + (r["count"] - total)) % total`), and *that* is not
+rolled back. The forward's effect on ring *state* outlives the rollback of its ring *contents*.
+
+**A 12-cycle gate would have reported `max|Δ| = 0` and shipped it.** This is the third time in this
+project that spanning the saturation transition has been the difference between a correct result and a
+confident wrong one.
+
+The video terminal forward was tested in the same run as a control and is live at **1.3086**, as
+predicted — its KV writes *are* read, by the action loop that follows it. The predicted asymmetry between
+the two loops is real; it just does not reach as far as "dead".
 
 ## 5. The structural reason, not just the empirical one
 
