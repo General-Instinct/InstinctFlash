@@ -52,10 +52,10 @@ Nothing above is LingBot-VA-specific once the model has declared
     guidance = {"video": GuidanceRule(CFG, 5.0), "action": GuidanceRule(POSITIVE_ONLY)}
     phases   = (..., PhaseSpec("action", nfe=51, commit_step=50, writes={"action"}), ...)
 
-The pass reads those two declarations and derives the elision. It fires on any future model that
-declares a POSITIVE_ONLY stream, and correctly declines for DreamZero (whose action stream also
-takes the positive branch only, but which runs branches as *separate* forwards rather than a
-duplicated batch, so there is nothing to elide — see `batchable`).
+The pass reads those two declarations and derives the elision. It fires on any model that declares
+a POSITIVE_ONLY stream, and declines when a stream declares `batchable=false` -- taking the positive
+branch only but running branches as *separate* forwards leaves nothing to elide. That is a
+CAPABILITY distinction, decided from `batchable`, not from which model or recipe produced it.
 
 Accuracy tier
 -------------

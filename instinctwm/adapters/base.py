@@ -10,12 +10,12 @@ pure function of the instruction". They do not write "skip the negative branch" 
 cross-attention K/V" — the optimizer derives those. That is the difference between a runtime
 you configure and a framework that makes your model fast because it understands it.
 
-The declarations below were chosen by diffing the per-control-step execution graphs of six
-model families (LingBot-VA, DreamZero, Cosmos3-Edge, InternVLA-A1, GR00T, pi-0/pi-0.5); see
-`docs/EXECUTION_GRAPH.md`. Two findings shaped them:
+The declarations below were chosen by diffing the per-control-step execution graphs of several
+world-action model families during design. **Only LingBot-VA and Cosmos3-Edge are supported**; the
+others informed the shape of these fields and are not claimed as working. Two findings shaped them:
 
-  * KV persistence is a LIFETIME, not a boolean. pi-0 builds a prefix cache, commits it, reads
-    it from all 10 denoise forwards and drops it — structurally identical to LingBot-VA's
+  * KV persistence is a LIFETIME, not a boolean. A prefix cache built once, committed, read from
+    every denoise forward and dropped is structurally identical to LingBot-VA's
     episode-scoped stream, differing only in how long it lives. A boolean `is_stateful` would
     have excluded Cosmos3-Edge (chunk-scoped) and every VLA.
   * The clean seam is `commit_context`: everything above it is prefill, everything below is

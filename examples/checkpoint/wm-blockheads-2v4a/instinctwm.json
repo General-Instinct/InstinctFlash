@@ -1,0 +1,34 @@
+{
+  "instinctwm_schema": 1,
+
+  "execution": {
+    "model_id": "example-org/wm-blockheads-2v4a",
+    "backbone": "wan_va",
+    "servable": true,
+
+    "guidance": {
+      "video": "cfg",
+      "action": "positive_only"
+    },
+    "nfe": {
+      "video": 2,
+      "action": 4
+    },
+
+    "output_projection": {
+      "kind": "per_interval_velocity_heads",
+      "n_intervals": 8,
+      "block": 4,
+      "velocity_convention": "sigma_descending",
+      "foldable": true
+    }
+  },
+
+  "provenance": {
+    "training_method": "<your recipe name -- the runtime never reads this>",
+    "teacher": "example-org/wm-base-50step",
+    "dataset": "<your data>",
+    "optimizer": "adamw",
+    "notes": "Everything in this block is FOR HUMANS. Delete it entirely and the checkpoint still serves; see `publishability()`."
+  }
+}

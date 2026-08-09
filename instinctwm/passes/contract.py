@@ -97,7 +97,7 @@ class DeviceProfile:
         if cap >= (8, 9):
             feats.add("fp8")
         if cap >= (10, 0):
-            feats.add("nvfp4")      # Blackwell only; the reason DreamZero's 38x does not port to H100
+            feats.add("nvfp4")      # Blackwell only -- a pass gated on it does not apply on H100
         if cap >= (9, 0):
             feats.add("wgmma")
             feats.add("tma")

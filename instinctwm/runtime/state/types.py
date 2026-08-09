@@ -31,7 +31,7 @@ class Scope(enum.Enum):
 
     FORWARD = "forward"    # one network forward; LingBot has 79 per control step
     STEP = "step"          # one control step / chunk
-    WINDOW = "window"      # N frames, hard reset at a boundary (DreamZero)
+    WINDOW = "window"      # N frames, hard reset at a boundary
     EPISODE = "episode"    # one rollout (LingBot's KV pool)
     SESSION = "session"    # across episodes (weights-adjacent caches)
 
@@ -43,7 +43,7 @@ class Addressing(enum.Enum):
     DENSE = "dense"                 # the whole buffer is live
     PREFIX = "prefix"               # [0, n) with n a host int (pi-0's VLM prefix)
     RING_INTERVAL = "ring"          # [start, start+count) mod capacity (LingBot)
-    PAGED = "paged"                 # block table (DreamZero)
+    PAGED = "paged"                 # block table
     STATIC_PARTITION = "partition"  # fixed index sets from declared geometry (Cosmos3 und/gen)
 
 
@@ -79,7 +79,7 @@ class Discovery(enum.Enum):
     D1_BOOLEAN_SCAN = "d1"           # (~mask).nonzero / mask.any / argsort        -- LingBot
     D2_GROWING_CAT = "d2"            # torch.cat rebuilds the set on the read path -- pi-0, Cosmos3
     D3_STATIC_INDEX = "d3"           # index rebuilt per forward from host data    -- Cosmos3 GEN
-    D4_METADATA_REBUILD = "d4"       # per-forward metadata reconstruction         -- DreamZero
+    D4_METADATA_REBUILD = "d4"       # per-forward metadata reconstruction
     NONE = "none"
 
 

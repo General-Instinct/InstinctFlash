@@ -18,8 +18,13 @@
 ---
 
 InstinctWM is an open platform for **world-action models** — robot policies that predict what
-happens next *and* what to do about it in one model. You describe a model once; InstinctWM determines
-which optimizations are legal for it, applies them, and reports what each one cost.
+happens next *and* what to do about it in one model.
+
+**If you have trained a checkpoint, this runtime will serve it.** You publish weights plus a short
+declaration of what those weights *are*; the runtime reads the declaration, works out which
+optimizations are legal, applies them, and reports what each one cost. You do not publish your
+recipe, your dataset, or your training code — and there is no place in the runtime where they could
+be read even if you did.
 
 ## One Runtime. Many Checkpoints. Shared Infrastructure.
 
@@ -91,6 +96,93 @@ An earlier regression-derived cost model claimed 93% fixed overhead; it was wron
 full chain are in [Results](eval/lingbot_va_robotwin/RESULTS.md).
 
 ---
+
+## Serve a checkpoint
+
+```python
+from instinctwm.descriptors.package import from_pretrained
+
+ckpt = from_pretrained("example-org/wm-blockheads-2v4a")   # Hub id, or a local path
+print(ckpt.capabilities())
+# frozenset({'servable', 'backbone:wan_va',
+#            'output_projection:per_interval_velocity_heads',
+#            'output_projection:foldable',
+#            'guidance:video=cfg', 'guidance:action=positive_only'})
+```
+
+Those tokens are **the only thing the planner is told about your checkpoint.** A pass is admitted when
+the capabilities it requires are declared, and skipped when they are not. A pass that requires nothing
+composes with every checkpoint — which is the default, and the reason adding a checkpoint does not
+mean re-testing the optimization stack.
+
+## Publish a checkpoint
+
+```
+my-checkpoint/
+  instinctwm.json          REQUIRED  the declaration — two namespaces, below
+  config.json              REQUIRED  your backbone's own config
+  model.safetensors        REQUIRED  or a sharded set + model.safetensors.index.json
+  README.md                optional  model card
+```
+
+The minimal `execution` block is three fields — `model_id`, `backbone`, `servable`. Everything else
+has a defensible default. A complete worked example is in
+[`examples/checkpoint/wm-blockheads-2v4a/`](examples/checkpoint/wm-blockheads-2v4a/).
+
+Check it before you push:
+
+```bash
+python -m instinctwm.descriptors.package my-checkpoint/
+#   servable package: YES
+#   publishable without training internals: YES
+```
+
+### Two namespaces, and the runtime only ever sees one
+
+```jsonc
+{
+  "instinctwm_schema": 1,
+  "execution":  { /* what the runtime may read: capabilities and structure */ },
+  "provenance": { /* how it was trained. FOR HUMANS. Never returned to the runtime. */ }
+}
+```
+
+`load_declaration()` parses `provenance` only to drop it. Keys like `recipe`, `teacher`, `dataset`,
+`optimizer` or `coverage_gate_pass` are **rejected at load** if they appear under `execution`, with an
+error telling you where to move them.
+
+**You can delete `provenance` entirely and the checkpoint still serves.** `publishability()` verifies
+exactly that, by stripping the block and re-loading. If it fails, something the runtime needs is in
+the wrong namespace — which is the mistake the split exists to catch.
+
+## How a new recipe plugs in
+
+Suppose you distil with DMD2, LCM, consistency training, or something not yet written. **No
+infrastructure changes.** You declare what your weights *are*, not how they were made:
+
+```jsonc
+"output_projection": {
+  "kind": "per_interval_velocity_heads",
+  "n_intervals": 8, "block": 4,
+  "velocity_convention": "sigma_descending",
+  "foldable": true
+}
+```
+
+That says: *L linear heads per block over an N-interval grid, emitting velocity in the σ-descending
+convention, foldable into one affine map at load.* Every one of those is checkable by looking at the
+weights. A DMD2 checkpoint and an LCM checkpoint that both produce that shape declare the same four
+values and take the same code path.
+
+If your recipe produces a genuinely new output structure, you add a **capability** — a new
+`output_projection.kind` and the code that consumes it — and every existing pass keeps working, because
+none of them asked what recipe you used. What you never add is a branch on the method name.
+
+> **Why the method name is poison.** `if recipe == "pdd"` is a runtime that supports one recipe and
+> claims to support many. It cannot be tested against a recipe that does not exist yet, and the next
+> author has to send a PR to the runtime instead of publishing a checkpoint.
+> `tests/test_checkpoint_platform.py` asserts the property directly: two checkpoints with identical
+> `execution` and opposite `provenance` produce a **byte-identical plan**.
 
 ## Shipped Configuration
 
@@ -181,7 +273,7 @@ the serving path. [The mechanism →](CHECKPOINTS.md)
 | model | status |
 |:--|:--|
 | **LingBot-VA** | Full runtime support. Primary optimization target and evaluation benchmark: 3.38× bit-exact in episode mode, with multi-episode bit-exactness, reset isolation, and pointer-stability gates. |
-| **Cosmos3-Edge** | Runtime support. The same runtime and the same Plan, executed either eagerly or from a captured graph — graph replay is bit-exact against the eager oracle. **Plumbing only** — a torch-SDPA shim stands in for the served attention kernel, so no accuracy or speedup claim is made. |
+| **Cosmos3-Edge** | Runtime support, measured at the shipped geometry against a fresh upstream checkout: 5,320 ops, 624 external reads, **0 unnamed**, capturable. GraphExecutor is **2.33× bit-exact** on the control step (2.30–2.36× over five runs), with an EagerExecutor control at 1.002× showing the engine's own dispatch costs nothing. Real cuDNN attention on both paths, no shim. **No accuracy claim** — random weights, no checkpoint. [Results](eval/cosmos3_edge/RESULTS.md) |
 
 Additional world-action models will be added over time. We would rather have two models fully
 verified than six partly claimed.

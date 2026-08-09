@@ -148,16 +148,37 @@ class Optimizer:
         self._passes = list(passes)
         self._ceiling = tier_ceiling
 
-    def compile(self, spec: AdapterSpec, deployment: DeploymentSpec | None = None) -> Plan:
+    def compile(self, spec: AdapterSpec, deployment: DeploymentSpec | None = None,
+                capabilities: frozenset[str] | None = None) -> Plan:
         """Evaluate every pass against one model's declarations and one server's situation.
 
         `deployment` defaults to `DeploymentSpec()` — single GPU, actions only — because that
         is the regime this framework targets. Pass one explicitly when it is not true; the
         passes that care will decline on their own.
+
+        `capabilities` is `Checkpoint.capabilities()` — tokens derived from the checkpoint's
+        EXECUTION block and nothing else. A pass that declares `requires_capabilities` is skipped
+        unless every token it needs is present. Passing `None` means "do not filter", which is the
+        behaviour every existing pass has always had: an empty requirement composes with every
+        checkpoint, and that is the default on purpose.
+
+        THERE IS NO ARGUMENT HERE THAT CARRIES A TRAINING METHOD, and there is no way to add one
+        without changing this signature. `capabilities` cannot smuggle one either: it is built by
+        `Checkpoint.capabilities()` from the execution block, which `load_declaration` populates
+        without ever parsing provenance. tests/test_checkpoint_platform.py asserts the resulting
+        plan is invariant to provenance.
         """
         deployment = deployment if deployment is not None else DeploymentSpec()
         results: list[PassResult] = []
         for p in self._passes:
+            need = frozenset(getattr(p, "requires_capabilities", ()) or ())
+            if need and capabilities is not None and not need <= capabilities:
+                results.append(PassResult(
+                    name=getattr(p, "name", type(p).__name__), applies=False, tier=Tier.BITEXACT,
+                    reason=f"checkpoint does not declare {sorted(need - capabilities)}; the pass is "
+                           f"not applicable to it. This is a CAPABILITY decision, not a recipe one.",
+                ))
+                continue
             r = p.evaluate(spec, deployment)
             if r.applies and r.tier > self._ceiling:
                 r = PassResult(

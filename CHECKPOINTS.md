@@ -87,13 +87,42 @@ something they cannot know. Fields are added here only when a pass reads one.
 
 ## The serialized form
 
-> **Status: implemented for the block-heads serving path; not yet for `AdapterSpec` as a whole.**
-> [`descriptors/checkpoint.py`](instinctwm/descriptors/checkpoint.py) reads this schema today:
+> **Status: the declaration and the package layer are implemented; full `AdapterSpec` construction is
+> not.** [`descriptors/checkpoint.py`](instinctwm/descriptors/checkpoint.py) reads this schema:
 > `load_declaration()` returns the `execution` block **only** and has nowhere to put a training
 > method, `provenance_of()` is a separate deliberate call, and a provenance key found inside
-> `execution` is a load error. `runtime/block_heads.py` consumes it, and the LingBot heads trainer
-> writes it alongside the legacy `delta.json`. What is **not** built: Hub resolution by `model_id`,
-> and construction of a full `AdapterSpec` from the file — adapters are still registered in Python.
+> `execution` is a load error. [`descriptors/package.py`](instinctwm/descriptors/package.py) adds the
+> published form — `from_pretrained()` (local path, or Hub repo id when `huggingface_hub` is
+> installed), `validate_package()`, `publishability()` and `migrate_legacy()`, with a CLI at
+> `python -m instinctwm.descriptors.package <dir>`. `Checkpoint.capabilities()` is what the planner
+> receives; `Optimizer.compile(..., capabilities=...)` admits a pass only if the tokens it requires
+> are declared.
+>
+> What is **still not** built: construction of a full `AdapterSpec` from the file — adapters are
+> registered in Python, so `backbone` selects an adapter rather than describing one. A checkpoint for
+> a backbone with no registered adapter is not servable, however well it declares itself.
+
+### The published package
+
+```
+my-checkpoint/
+  instinctwm.json          REQUIRED   the declaration
+  config.json              REQUIRED   the backbone's own config, as its modelling library expects it
+  model.safetensors        REQUIRED   or a sharded set + model.safetensors.index.json
+  README.md                optional   model card
+  tokenizer/ scheduler/ …  optional   whatever the backbone needs
+```
+
+**Minimal serving metadata** is three fields — `model_id`, `backbone`, `servable`. Everything else has
+a defensible default, and a checkpoint declaring only those three is servable if an adapter exists for
+its backbone.
+
+**Publishing without training internals** is a property you can check rather than a promise:
+`publishability()` strips the `provenance` block, re-loads the declaration, and confirms the runtime
+would still serve it. If that fails, a fact the runtime needs is in the wrong namespace. A complete
+worked example lives in [`examples/checkpoint/wm-blockheads-2v4a/`](examples/checkpoint/wm-blockheads-2v4a/),
+and `tests/test_checkpoint_platform.py` validates that directory rather than a fixture invented inside
+the test.
 
 For a checkpoint published on the Hub, the declaration ships as `instinctwm.json` beside the weights.
 The runtime resolves it in this order, first hit wins:

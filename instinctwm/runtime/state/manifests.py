@@ -149,7 +149,8 @@ def pi0_manifest() -> StateManifest:
 
 #: SUPPORTED: validated end to end on real hardware with real weights.
 #:   lingbot-va    primary target; full correctness gates and episode-mode benchmarks
-#:   cosmos3-edge  second reference model; engine generality, plumbing only (SDPA shim)
+#:   cosmos3-edge  second reference model; engine generality. Real cuDNN attention, no shim;
+#:                 GraphExecutor 2.33x bit-exact. No accuracy claim -- random weights.
 #:
 #: UNVALIDATED DESIGN ENTRIES: `gr00t` and `pi-0` below are design sketches written from published
 #: architecture descriptions. There are NO checkpoints for them on this box and NOTHING has been
