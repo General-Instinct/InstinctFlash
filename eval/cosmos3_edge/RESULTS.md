@@ -129,3 +129,67 @@ assert-only product it feeds (`:245`) are still there.
 
 Both of the passes written specifically for Cosmos3-Edge are dead, and the one that generalized
 from LingBot-VA is the one that paid. That is the opposite of what the manifest predicted.
+
+---
+
+## 6. Where the 28.4 ms goes (measured 2026-08-10)
+
+`profile_stack.py` on an idle box, same substrate as section 3. Section 3 established that graph
+replay lands this stack GPU-bound; this is what the GPU is doing.
+
+### Floors, so a candidate is ranked against what is physically available
+
+| | ms / forward |
+|:--|--:|
+| memory floor (7.22 GiB weights @ 2039 GB/s) | 3.80 |
+| **compute floor** (2.20 TFLOP @ 312 TFLOPS bf16) | **7.04** |
+| measured, graph replay | 28.36 |
+
+**4.0× above the binding floor**, which is *compute*, not memory: MFU 24.8%, HBM 13.4%. This is the
+opposite of LingBot-VA, which is overhead- and bandwidth-bound. Cosmos3-Edge has only 4× of headroom
+and the floor itself moves only if the arithmetic changes.
+
+### Kernel self-time by bucket
+
+Summed kernel self-time is 28.91 ms against 28.36 ms wall (101.9%), i.e. kernels run back to back
+and the remainder is inter-kernel gaps.
+
+| bucket | ms/fwd | % GPU | kernels/fwd | × NFE 16 |
+|:--|--:|--:|--:|--:|
+| GEMM | 16.02 | **55.4%** | 420 | 256.3 ms |
+| copy/cast | 6.95 | **24.0%** | 1631 | 111.2 ms |
+| elementwise | 2.92 | 10.1% | 1064 | 46.7 ms |
+| reduce | 1.33 | 4.6% | 224 | 21.3 ms |
+| attention | 1.01 | **3.5%** | 56 | 16.2 ms |
+| scatter/idx | 0.62 | 2.1% | 112 | 9.8 ms |
+| other | 0.06 | 0.2% | 28 | 0.9 ms |
+
+3535 kernels per forward over 28 layers = **126.2 per layer**, 56,560 per control step, **mean
+duration 8.2 µs**.
+
+Three GEMM shapes are 47% of all GPU time:
+
+| ms/fwd | % GPU | calls/fwd | kernel |
+|--:|--:|--:|:--|
+| 6.152 | 21.3% | 56 | `ampere_bf16_s16816gemm_256x128_ldg8_f2f_stages_32x3_tn` |
+| 4.825 | 16.7% | 140 | `ampere_bf16_s16816gemm_128x128_ldg8_f2f_stages_64x3_tn` |
+| 2.589 | 9.0% | 28 | `ampere_bf16_s16816gemm_256x128_ldg8_f2f_stages_64x3_tn` |
+| 2.052 | 7.1% | 448 | `elementwise_kernel<128, 4, ...>` |
+
+### Three things this changes
+
+**Attention is 3.5%, in eighth place.** The cuDNN SDPA kernel costs 1.015 ms of 28.36. This is the
+second model to rank attention near-last by measurement after intuition ranked it first — LingBot-VA
+measured 7% of GPU busy. One model's profile is an anecdote; two is a reason to keep the ATTENTION
+layer deprioritised.
+
+**The GEMM count carries the two-tower tax.** 420 GEMM kernels / 28 layers = **15 per layer**,
+against ~7 for a dense layer. `unified_mot.py:611-618` applies every projection twice, on disjoint
+row slices of the pack — `q_proj(get_und_seq(pack))` over 111 rows and `q_proj_moe_gen(get_gen_seq(pack))`
+over 456. The und-tower matmuls are 111-row, which is far too narrow to fill an A100.
+
+**copy/cast is the largest non-arithmetic bucket, and it is a COUNT problem.** 1631 kernels per
+forward, 58 per layer, at a mean of 8.2 µs. This is §9 of the LingBot-VA results arriving from a
+different direction: the lever is the number of kernels, not the bytes. Note this is *not* what
+L3-P8 attacked — that was the 896 scratch allocations in the scatter/idx bucket, 2.1%, and already
+subsumed by capture.
