@@ -193,3 +193,69 @@ forward, 58 per layer, at a mean of 8.2 µs. This is §9 of the LingBot-VA resul
 different direction: the lever is the number of kernels, not the bytes. Note this is *not* what
 L3-P8 attacked — that was the 896 scratch allocations in the scatter/idx bucket, 2.1%, and already
 subsumed by capture.
+
+---
+
+## 7. The shipped backbone, measured — and it moves the ranking (2026-08-10)
+
+Sections 3 and 6 profiled a stack built from `Qwen3VLTextConfig` +
+`LayerTypes("qwen3_vl_dense")`. That is **not** the shipped structure. The checkpoint's own
+`transformer/config.json` declares `backbone_type = "cosmos3_edge_nemotron_dense"`,
+`hidden_act = "relu2"`, `qk_norm_for_text = false`, `use_und_k_norm_for_gen = true`, and its
+weights carry `mlp.up_proj` + `mlp.down_proj` with **no `gate_proj`** in either tower. Qwen3VL's
+MLP is SwiGLU, so the proxy adds a projection per tower per layer that the real model does not
+have, and swaps the RMSNorm and the rotary as well.
+
+`probe_mot_stack.build_stack` now takes `backbone=`; the default stays `qwen3_vl_dense` so the
+numbers above keep their substrate. Both columns below are `profile_stack.py`, same harness, same
+pack, one variable.
+
+| bucket | proxy `qwen3_vl_dense` | | shipped `nemotron_dense` | | Δ ms |
+|:--|--:|--:|--:|--:|--:|
+| | ms/fwd | kernels | ms/fwd | kernels | |
+| GEMM | 16.02 (55.4%) | 420 | **11.95 (46.4%)** | 364 | **−4.07** |
+| copy/cast | 6.95 (24.0%) | 1631 | **8.30 (32.2%)** | 2107 | **+1.35** |
+| elementwise | 2.92 (10.1%) | 1064 | 2.62 (10.2%) | 1036 | −0.30 |
+| reduce | 1.33 (4.6%) | 224 | 1.22 (4.8%) | 196 | −0.11 |
+| attention | 1.01 (3.5%) | 56 | **1.01 (3.9%)** | 56 | **0.00** |
+| scatter/idx | 0.62 (2.1%) | 112 | 0.62 (2.4%) | 112 | 0.00 |
+| **wall** | **28.36** | 3535 | **25.17** | 3899 | −3.19 |
+
+Shipped floors: memory 2.76 ms (5.25 GiB), compute **5.12 ms** (1.60 TFLOP). Control step
+25.17 × 16 = **402.7 ms**.
+
+### Four things this changes
+
+**GEMM is no longer the majority.** 55.4% → **46.4%**. The 4.07 ms that leaves is exactly the
+SwiGLU third projection the proxy invented.
+
+**copy/cast goes UP, in both share and absolute time**: 24.0% → **32.2%**, 6.95 → 8.30 ms, and
+1631 → **2107 kernels (+29%)**. The ReLU² MLP trades a GEMM for more data movement. This was
+predicted the wrong way round — the expectation was that every bucket would shrink with the
+GEMM count. With elementwise, non-arithmetic work is now **10.92 ms, 42.4%** of GPU, within
+striking distance of GEMM. **On the shipped structure, fusion outranks GEMM work, not the reverse.**
+
+**The gap to the floor widens.** 4.0× → **4.9×** above the binding compute floor; MFU 24.8% →
+**20.3%**, HBM 13.4% → 11.0%. The floor fell faster (7.04 → 5.12 ms) than the wall clock did
+(28.36 → 25.17), so the shipped model wastes a *larger* fraction than the proxy did.
+
+**Attention does not move at all**: 1.01 ms on both, and its share *rises* to 3.9%. Third
+independent confirmation that this layer ranks near-last by measurement — LingBot-VA 7% of GPU
+busy, proxy 3.5%, shipped 3.9%.
+
+Kernels are also smaller and more numerous: 3535 → **3899 per forward**, 139.2 per layer, 62,384
+per control step, mean duration 8.2 → **6.6 µs**. The count problem is worse on the real structure,
+which raises the value of fusion again.
+
+### One number not accounted for
+
+A `nemotron_dense` layer holds exactly **12** `nn.Linear` modules (4 attention + 2 MLP, per tower),
+but the profile counts 364/28 = **13** GEMM kernels per layer. The top-18 list accounts for 12 of
+them; the remaining one per layer sits below the reporting cutoff and has not been chased. Stated
+rather than rounded away.
+
+### Still to do before any of this is quoted as the model's cost
+
+This is the shipped *structure* with random weights, at the shipped geometry. It is not the DROID
+policy end to end: the real control step also runs a vision encoder, a VAE and the action heads,
+none of which are in this stack. What is claimed here is bucket attribution for the MoT trunk.
