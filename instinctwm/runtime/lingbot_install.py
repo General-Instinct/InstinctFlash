@@ -294,17 +294,61 @@ def install_deterministic_seed(server_module, seed: int) -> list[str]:
 def resolve_lingbot_root(explicit: str | None = None) -> str:
     """Locate the upstream lingbot-va tree, or say exactly what is missing.
 
-    Order: explicit argument, `LINGBOT_ROOT`, then the historical default. Raises rather than
-    letting `import wan_va_server` fail with a bare ModuleNotFoundError several frames later.
+    Order: explicit argument, `LINGBOT_ROOT`, a cache directory, then this machine's historical
+    default. Raises rather than letting `import wan_va_server` fail with a bare ModuleNotFoundError
+    several frames later.
+
+    The message matters more than the lookup. An external user following the README had no way to
+    learn this dependency existed: the old error named `LINGBOT_ROOT` without saying what to put in
+    it or where to get it, and the fallback path was one developer's home directory. Serving a
+    backbone must not require guessing.
     """
-    root = explicit or os.environ.get("LINGBOT_ROOT") or "/home/ubuntu/lingbot-va"
-    if not os.path.isdir(root):
-        raise FileNotFoundError(
-            f"lingbot-va checkout not found at {root!r}. Set LINGBOT_ROOT to the upstream "
-            f"tree (it provides wan_va/wan_va_server.py). InstinctWM patches that server at "
-            f"runtime rather than vendoring it, so the checkout is required to serve."
-        )
-    return root
+    cache = os.path.join(os.environ.get("XDG_CACHE_HOME") or
+                         os.path.join(os.path.expanduser("~"), ".cache"), "instinctwm", "lingbot-va")
+    candidates = [c for c in (explicit, os.environ.get("LINGBOT_ROOT"), cache,
+                              "/home/ubuntu/lingbot-va") if c]
+    for root in candidates:
+        if os.path.isdir(root):
+            return root
+    raise FileNotFoundError(
+        f"The wan_va backbone needs the upstream LingBot-VA serving code, which is not vendored "
+        f"here. Get it once:\n\n"
+        f"    git clone https://github.com/robbyant/lingbot-va {cache}\n\n"
+        f"or point LINGBOT_ROOT at an existing checkout:\n\n"
+        f"    export LINGBOT_ROOT=/path/to/lingbot-va\n\n"
+        f"It provides wan_va/wan_va_server.py, which InstinctWM patches at runtime instead of "
+        f"copying, so that the optimizations stay verifiable against the upstream implementation.\n"
+        f"Looked in: {', '.join(candidates)}")
+
+
+def _ensure_flash_attn_importable() -> bool:
+    """Make `import flash_attn` succeed when the real wheel is absent. Returns True if stubbed.
+
+    `wan_va/modules/model.py` imports `flash_attn_func` at module scope, so the server cannot be
+    imported at all without *some* `flash_attn` -- even though the shipped path never calls it. Both
+    the checkpoint (`attn_mode: torch`) and the server select `custom_sdpa`, i.e.
+    `scaled_dot_product_attention`; `flash_attn_func` is bound only when `attn_mode == 'flashattn'`.
+
+    This used to live in a directory the caller had to put on PYTHONPATH, which meant serving
+    LingBot-VA required knowing about a file no document mentioned. It is in the package now.
+
+    The stub RAISES if it is ever called, which is the point: it cannot change any numbers, and if
+    some path does reach flash attention the run dies loudly instead of quietly producing a result
+    under a different attention kernel.
+    """
+    import importlib.util
+    if importlib.util.find_spec("flash_attn") is not None:
+        return False                                             # a real wheel always wins
+
+    # A directory on sys.path, not a synthesised module: `transformers` calls
+    # `importlib.util.find_spec("flash_attn")`, which raises `ValueError: flash_attn.__spec__ is
+    # None` for a hand-built ModuleType. Shipping the shim as a real package keeps the import
+    # machinery happy and reproduces the configuration this project has always run under.
+    shims = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_shims")
+    if shims not in sys.path:
+        sys.path.insert(0, shims)
+    importlib.invalidate_caches()
+    return True
 
 
 def import_lingbot_server(lingbot_root: str | None = None, extra_paths: Sequence[str] = ()):
@@ -313,6 +357,10 @@ def import_lingbot_server(lingbot_root: str | None = None, extra_paths: Sequence
     for entry in (os.path.join(root, "wan_va"), root, *extra_paths):
         if entry not in sys.path:
             sys.path.insert(0, entry)
+
+    if _ensure_flash_attn_importable():
+        print("InstinctWM: flash-attn not installed; using the import-only stub "
+              "(this serving path runs attn_mode='torch' and never calls it).", flush=True)
 
     import wan_va_server  # noqa: E402  (importable only after the sys.path insert above)
 

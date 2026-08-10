@@ -1,5 +1,7 @@
 [build-system]
-requires = ["setuptools>=61"]
+# >=64, not >=61: PEP 660 `build_editable` landed in 64, and the README's `pip install -e .` fails
+# with "build backend is missing the 'build_editable' hook" on anything older.
+requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]

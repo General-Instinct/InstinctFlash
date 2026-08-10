@@ -80,14 +80,25 @@ def main() -> int:
         return 0 if ok == a.loops else 1
 
 
-def _observation():
+CAMERAS = ("cam_high", "cam_left_wrist", "cam_right_wrist")
+
+
+def _observation(n_frames: int = 8):
+    """`n_frames` real recorded frames of the SAME task.
+
+    HONESTY NOTE. Each recorded npz is the FIRST observation of a distinct episode, so a stack of
+    them is not a trajectory. This exercises the control-cycle state machine -- does repeated
+    predict() work through the public API -- and says nothing about whether a rollout succeeds. Task
+    success lives in the RoboTwin evaluation, which needs the simulator.
+    """
     import numpy as np
     ctx = sorted(Path("/home/ubuntu/iwm_results/pdd_ctx50").glob("*.npz"))
-    z = np.load(ctx[0], allow_pickle=True)
-    cams = ("cam_high", "cam_left_wrist", "cam_right_wrist")
-    prompt = str(z["prompt"])
-    obs = [{f"observation.images.{c}": z[c] for c in cams if c in z.files}]
-    return {"obs": obs, "prompt": prompt, "save_visualization": False}, prompt
+    task = ctx[0].name.split("__")[0]
+    same = [p for p in ctx if p.name.startswith(task)][:max(n_frames, 1)]
+    zs = [np.load(p, allow_pickle=True) for p in same]
+    prompt = str(zs[0]["prompt"])
+    frames = [{f"observation.images.{c}": z[c] for c in CAMERAS if c in z.files} for z in zs]
+    return {"obs": frames, "prompt": prompt, "save_visualization": False}, prompt
 
 
 if __name__ == "__main__":

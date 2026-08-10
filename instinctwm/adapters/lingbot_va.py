@@ -123,6 +123,94 @@ def lingbot_va_spec() -> AdapterSpec:
     )
 
 
+class _ControlLoop:
+    """One loopable control cycle over wan_va's two-call server protocol.
+
+    The server wants `infer(obs)` to get an action, then a second `infer(compute_kv_cache=True,
+    state=<executed action>, obs=<frames observed while it executed>)` to advance the KV ring. Call
+    `infer` twice without the commit and the ring never moves, so the third temporal tap is missing
+    and the model raises a conv-size error several frames later. That protocol is real, and it is
+    also nobody's business but this adapter's -- which is why it stops here.
+
+    THE COMMIT IS DEFERRED, and that is physics rather than convenience. The ring is advanced with
+    the frames observed *while the action chunk was executing*, so those frames do not exist yet when
+    the action is produced. The runtime hands us the action through `commit()`; we hold it, and fold
+    it in on the next `predict()` when the caller brings the frames that resulted from it.
+
+    So a caller loops:
+
+        while not done:
+            action = runtime.predict({"obs": frames_observed_since_last_call, "prompt": task})
+
+    and never learns that a KV ring exists.
+    """
+
+    #: Frames the ring consumes per cycle. `FIRST` is halved because cycle 0 prepends `init_latent`,
+    #: which every profiling harness in `eval/` also does. Adapter knowledge, deliberately not in the
+    #: checkpoint declaration: it describes how this backbone consumes observations, not an
+    #: execution fact a planner could act on.
+    FRAMES_PER_CYCLE = 8
+    FRAMES_FIRST_CYCLE = 4
+
+    def __init__(self, server, cameras: tuple[str, ...]):
+        self._server, self._cameras = server, cameras
+        self._pending_action = None
+        self._cycles = 0
+
+    # -- what the runtime calls -------------------------------------------------------------------
+    def reset(self, **conditioning):
+        self._server.infer(dict(reset=True, prompt=conditioning.get("prompt"),
+                                save_visualization=False))
+        self._pending_action = None
+        self._cycles = 0
+
+    def predict(self, observation):
+        frames = self._frames(observation)
+        if self._pending_action is not None:
+            self._advance_ring(frames, self._pending_action)
+            self._pending_action = None
+        # The two calls want DIFFERENT observations and conflating them is a real error: the ring
+        # advance encodes the whole window of frames observed during execution, while the action
+        # forward conditions on the CURRENT frame only. Feeding the window to both makes the VAE
+        # fail with "size of tensor a (8) must match tensor b (4)", because its temporal shortcut is
+        # built for a single frame here.
+        payload = dict(observation)
+        if frames:
+            payload["obs"] = frames[-1:]
+        out = self._server.infer(payload)
+        self._cycles += 1
+        return out
+
+    def commit(self, observation, action):
+        """Remember the executed action. It is folded in on the next `predict`; see the class note."""
+        self._pending_action = action
+
+    def close(self):
+        self._server = None
+
+    # -- private ----------------------------------------------------------------------------------
+    def _frames(self, observation) -> list:
+        obs = observation.get("obs") if isinstance(observation, dict) else observation
+        if obs is None:
+            return []
+        return list(obs) if isinstance(obs, (list, tuple)) else [obs]
+
+    def _advance_ring(self, frames: list, action) -> None:
+        need = self.FRAMES_FIRST_CYCLE if self._cycles <= 1 else self.FRAMES_PER_CYCLE
+        if len(frames) < need:
+            raise ValueError(
+                f"cycle {self._cycles + 1} of this episode needs at least {need} observed frames to "
+                f"advance the model's state, but the observation carried {len(frames)}.\n\n"
+                f"A {self.__class__.__name__} control cycle consumes the frames observed WHILE the "
+                f"previous action chunk was executing. Pass them as a list:\n\n"
+                f"    runtime.predict({{'obs': [frame_1, ..., frame_{need}], 'prompt': task}})\n\n"
+                f"where each frame is a dict keyed by {list(self._cameras)}. Padding or repeating "
+                f"frames here would keep the shapes legal and silently corrupt the episode, so this "
+                f"raises instead.")
+        self._server.infer(dict(obs=frames[-need:], compute_kv_cache=True, imagine=False,
+                                save_visualization=False, state=action))
+
+
 class LingBotVA:
     """`BackendAdapter` for LingBot-VA posttrained on RoboTwin 2.0.
 
@@ -260,14 +348,25 @@ class LingBotVA:
         return str(composed)
 
     def build_in_process(self, checkpoint, plan, *, device=None, nfe=None):
-        """Build the server in THIS process and return it. Used when placement is in-process."""
+        """Build the server in THIS process and return a loopable control loop over it."""
         import os
 
         from instinctwm.runtime.lingbot_install import import_lingbot_server
 
-        os.environ["LINGBOT_CKPT"] = self.materialize(checkpoint)
+        composed = self.materialize(checkpoint)
+        os.environ["LINGBOT_CKPT"] = composed
         S = import_lingbot_server(self.lingbot_root)
         cfg = S.VA_CONFIGS[os.environ.get("IWM_CFG", "robotwin")]
+
+        # Point the upstream config at the weights EXPLICITLY. Setting LINGBOT_CKPT alone worked only
+        # because this machine's checkout had been hand-edited to read that variable; a clean `git
+        # clone` has `wan22_pretrained_model_name_or_path = "/path/to/pretrained/model"` hardcoded,
+        # so a first user got `OSError: ... /path/to/pretrained/model/vae is not the path to a
+        # directory containing a config.json` after a 20 GB download. Depending on a local edit to a
+        # third-party tree is not a dependency anyone can satisfy from the documentation.
+        for attr in ("wan22_pretrained_model_name_or_path", "pretrained_model_name_or_path"):
+            if hasattr(cfg, attr):
+                setattr(cfg, attr, composed)
         cfg.save_root = os.environ.get("IWM_SAVE_ROOT", "/tmp/iwm_runtime")
         os.makedirs(cfg.save_root, exist_ok=True)
         S.init_distributed(int(os.getenv("WORLD_SIZE", 1)), int(os.getenv("LOCAL_RANK", 0)),
@@ -285,7 +384,7 @@ class LingBotVA:
         applied = list(self.install(S, plan))
         server = S.VA_Server(cfg)
         print(f"InstinctWM in-process: applied {applied or ['STOCK BASELINE']}", flush=True)
-        return server
+        return _ControlLoop(server, tuple(cfg.obs_cam_keys))
 
     def worker_command(self, checkpoint, plan, *, port, python, device=None, nfe=None):
         """How to start this model as a managed worker. Returns (argv, env-overrides).

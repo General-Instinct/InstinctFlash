@@ -4,7 +4,7 @@
 WHY THIS IS THE GOVERNING QUESTION. Device work is 191.8 ms of a 330.7 ms cycle. Layer 5 kernel work was
 abandoned on the argument that "the device chain has ~155 ms of slack, so a faster kernel shortens
 nothing." That argument assumed the 138.9 ms of device-timeline gaps was device SLACK. It is not -- it is
-host issue cost between kernels (LAYER6_GAPS.md). So the premise is void and the question is open:
+host issue cost between kernels (docs/research/docs/research/LAYER6_GAPS.md). So the premise is void and the question is open:
 
     slope ~ 1.0  device time is fully on the critical path; the 191.8 ms is directly reducible
     slope ~ 0    the host genuinely runs ahead; device work cannot help

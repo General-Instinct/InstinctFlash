@@ -3,7 +3,7 @@
 **One Runtime. Many Checkpoints. Shared Infrastructure.**
 
 This document describes how InstinctWM is organized and why. It is about the architecture, not the
-order in which the pieces were built — for that see [HISTORY.md](HISTORY.md).
+order in which the pieces were built — for that see HISTORY.md.
 
 ---
 
@@ -151,8 +151,8 @@ Six layers, ordered by *what they change*.
 | 1 | **MODEL** | what is computed — step reduction, distillation, latent compression |
 | 2 | **GRAPH** | when work is issued — prefill extraction, graph capture, memory planning |
 | 3 | **CACHE** | what is recomputed — KV reuse, cross-attention cache, episode cache |
-| 4 | **ATTENTION** | how tokens mix — FlashAttention, hybrid and linear attention ([design](ATTENTION.md)) |
-| 5 | **KERNEL** | how a kernel is written — backend/layout dispatch first, then fusion and Triton ([design](LAYER5.md)) |
+| 4 | **ATTENTION** | how tokens mix — FlashAttention, hybrid and linear attention (design) |
+| 5 | **KERNEL** | how a kernel is written — backend/layout dispatch first, then fusion and Triton (design) |
 | 6 | **HARDWARE** | what it executes on — TensorRT, FP8/INT8, Jetson, Thor |
 
 Layer 1 is the training side of the seam. Layers 2–6 are the runtime.
@@ -168,7 +168,7 @@ everything else       < 1%      schedulers, prepare, pre/postprocess
 ```
 
 Priority comes from a decomposition at the operating point, never from the layer number — and never
-from a regression intercept. **RETRACTED — see [PROFILE.md](PROFILE.md).** A direct phase decomposition at 2V/4A attributes
+from a regression intercept. **RETRACTED — see PROFILE.md.** A direct phase decomposition at 2V/4A attributes
 99.0% of the cycle to two components: transformer forwards (80.8%) and the VAE encode of the
 keyframe observations (17.7%). Everything else together is under 1%. There is no large unexplained
 fixed term; the 1164 ms intercept was an artifact of regressing cycle time on forward count across
@@ -222,12 +222,41 @@ cannot fail on the bug it is gating is worse than no gate, because it produces a
 
 - [CHECKPOINTS.md](CHECKPOINTS.md) — what a checkpoint declares, and why the training method is
   deliberately absent from it
-- [ATTENTION.md](ATTENTION.md) — Layer 4: the attention backend abstraction. The same two seams
+- ATTENTION.md — Layer 4: the attention backend abstraction. The same two seams
   applied to a layer whose candidates are exchangeable implementations of a declared function
-- [AUDIT.md](AUDIT.md) — the audit of this document's central claim against the code, with the two
+- AUDIT.md — the audit of this document's central claim against the code, with the two
   places it is not yet true and the staged plan to make it so
-- [LAYER5.md](LAYER5.md) — Layer 5's required flow (planner → backend → verification) and why
+- LAYER5.md — Layer 5's required flow (planner → backend → verification) and why
   dispatch is tried before kernels: the same measured comparison twice favoured dispatch
-- [HISTORY.md](HISTORY.md) — P001–P006 implementation milestones
+- HISTORY.md — P001–P006 implementation milestones
 - [eval/lingbot_va_robotwin/RESULTS.md](eval/lingbot_va_robotwin/RESULTS.md) — measured numbers and
   protocols
+
+## Shipped configuration
+
+`instinctwm.verify.released.shipped_configuration()` is the single source of truth. The launch
+scripts, `serve_variant.py` and this table all derive from it, and `tests/test_shipped_config.py`
+fails if they drift apart. Add a flag there, not in four places.
+
+```
+--no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout
+```
+
+The served chain is **NUMERIC** — the weakest link, not the best member. `conv_layout_ndhwc` is
+NUMERIC, so the chain is not bit-exact end to end; its non-inferiority certificate over 555 episodes
+is what backs it.
+
+| pass | tier | disposition | flags |
+|:--|:--|:--|:--|
+| `substrate_elision` | BITEXACT | shipped | `--no-fsdp --no-empty-cache --no-debug-dump` |
+| `conditioning_prefill` | BITEXACT | shipped | `--conditioning-prefill` |
+| `ring_kv_addressing` | BITEXACT | shipped | `--ring-kv` |
+| `conv_layout_ndhwc` | NUMERIC | shipped | `--conv-layout` |
+| `hoist_invariant_casts` | BITEXACT | available | `--hoist-casts` |
+| `graph_block_stack` (P005) | BITEXACT | not recommended | `--graph-blocks` |
+| `stable_state_pools` (P006) | BITEXACT | not recommended | `--stable-pools` |
+
+Released is not the same as recommended. `RELEASED` is a frozen ledger of what shipped, at what tier,
+on what evidence. `DISPOSITIONS` states what should run today. P005 and P006 forced the distinction:
+both were released and verified, and at the current operating point CUDA graph capture measures 1.43×
+*slower* than not capturing, so they stay in the ledger and are marked not recommended.

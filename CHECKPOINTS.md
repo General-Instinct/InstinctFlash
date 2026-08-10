@@ -240,13 +240,13 @@ Three properties of this shape are load-bearing:
    served by the same code. That is the platform claim made concrete rather than asserted.
 2. **`servable` is a boolean, not a diagnostic.** The runtime asks one recipe-agnostic question. The
    audit found the serving path reading PDD's `coverage_gate_pass` directly
-   ([AUDIT.md](AUDIT.md) F2) — right intent, wrong layer. The PDD-specific reason now lives under
+   (AUDIT.md F2) — right intent, wrong layer. The PDD-specific reason now lives under
    `provenance.training_diagnostics`, where the runtime cannot reach it.
 3. **`velocity_convention` closes a real trap declaratively.** A double sign flip here once produced
    0/100 on RoboTwin against a 92/100 control. It is currently a comment in
    [`runtime/block_heads.py`](instinctwm/runtime/block_heads.py); a comment cannot be checked.
 
-The audit and the staged migration to this schema are in [AUDIT.md](AUDIT.md).
+The audit and the staged migration to this schema are in AUDIT.md.
 
 ---
 
@@ -282,7 +282,7 @@ regression with the reason buried in a branch. Because profitability is computed
 The same arithmetic explains why further step reduction is not worth pursuing at Fast. The warm cost
 decomposition puts 81% of the cycle in transformer forwards and 18% in the keyframe VAE encode. Step
 count multiplies the first of those, so it is still the strongest lever — but the last few steps buy
-little, and the encode is untouched by any step reduction. **RETRACTED — see [PROFILE.md](PROFILE.md).** A direct phase decomposition at 2V/4A attributes
+little, and the encode is untouched by any step reduction. **RETRACTED — see PROFILE.md.** A direct phase decomposition at 2V/4A attributes
 99.0% of the cycle to two components: transformer forwards (80.8%) and the VAE encode of the
 keyframe observations (17.7%). Everything else together is under 1%. There is no large unexplained
 fixed term; the 1164 ms intercept was an artifact of regressing cycle time on forward count across

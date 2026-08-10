@@ -26,7 +26,7 @@ Both arms measure BOTH quantities on the same footing:
   cycle wall   unprofiled, median over N cycles, ABBA-ordered (base, treat, treat, base)
   device busy  interval union from a CUDA-activities-only profile. That instrument inflates WALL time
                by ~1.29x but leaves device busy alone (190.9-191.8 ms across three instruments in
-               LAYER6_GAPS.md), so it is used for device busy and never for wall.
+               docs/research/LAYER6_GAPS.md), so it is used for device busy and never for wall.
 
     CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY -u \\
         -m torch.distributed.run --nproc_per_node 1 --master_port 29981 probe_p007_passthrough.py
