@@ -366,3 +366,80 @@ shape. Not chased further, because 0.5% of a cycle cannot justify it.
 A first pass apportioned GPU time by bytes and was wrong: 5.92 GB over 183.3 ms is 32 GB/s, ~100x
 under HBM, which is precisely the signal that these copies are overhead-bound rather than
 bandwidth-bound.
+
+---
+
+# 10. Reproduced on A100 — the chain holds, the multiplier does not (2026-08-10)
+
+Everything above was measured on **8× H100 80GB / torch 2.9.0+cu126**. This section is the same
+cumulative chain re-measured on a **different box**, and it is filed separately rather than merged
+into section 8 because the two are not interchangeable.
+
+| | this section | sections 1-9 |
+|---|---|---|
+| GPU | 8× **A100**-SXM4-80GB | 8× **H100** 80GB |
+| torch | 2.9.0+**cu128** (from `server-requirements.txt`) | 2.9.0+**cu126** |
+| server interpreter | `$IWM_ROOT/.venv-server`, built from the lock | `/home/ubuntu/.venv-lingbot`, hand-rolled |
+
+The interpreter difference matters as much as the GPU: `.venv-lingbot` is the environment every
+frozen number was measured in and it cannot be rebuilt from this repo, which is why `env.sh` still
+defaults to it. **Numbers here are a new baseline, not a reproduction of the numbers above.**
+
+## Protocol
+
+Section 8's protocol, unchanged: `probe_latency.py --cycles 10 --repeats 3`, first run discarded.
+Arm A is the **upstream** `wan_va_server.py`, not `serve_variant.py` — the latter applies
+`generic-passes` by default and is therefore not a stock baseline. Arms B-D are `serve_variant.py`,
+all under `--deterministic-seed 1234`.
+
+## Cumulative chain
+
+| config | cycle | spread | vs stock | step | control rate |
+|---|---|---|---|---|---|
+| stock | 10637.4 ms | 0.2% | 1.00x | | 3.01 Hz |
+| + substrate (fsdp, empty_cache, debug dumps) | 5563.1 ms | 0.3% | **1.91x** | 1.912x | 5.75 Hz |
+| + conditioning prefill | 5305.7 ms | 0.1% | 2.00x | 1.049x | 6.03 Hz |
+| + ring KV | **3895.6 ms** | 0.4% | **2.73x** | 1.362x | **8.21 Hz** |
+
+Both new passes were re-gated on this box, paired and seeded, `probe_bitexact.py --cycles 6`:
+
+| pass | arms | max abs delta action | verdict |
+|---|---|---|---|
+| `conditioning_prefill` | B vs C | **0.000000e+00** | BIT-EXACT |
+| `ring_kv` | C vs D | **0.000000e+00** | BIT-EXACT |
+
+Reference chunk-to-chunk movement is 1.055, so zero is not "small relative to noise" — it is no
+change at all.
+
+## What this says
+
+**The chain reproduces; the multiplier shrinks.** 3.30x on H100 becomes 2.73x on A100, and the gap
+widens monotonically as passes are added:
+
+| config | A100 vs H100 |
+|---|---|
+| stock | +26.2% slower |
+| + substrate | +39.3% |
+| + conditioning prefill | +48.7% |
+| + ring KV | **+52.5%** |
+
+That ordering is the result, not noise. These passes remove **overhead that is largely
+GPU-independent** — FSDP's ~9,300 shard/unshard round trips at world_size=1, the per-chunk
+`cudaMalloc` churn, the blocking D2H in `save_async`, the `nonzero()` host sync. Strip the overhead
+and what remains is arithmetic and bandwidth, where A100 is simply weaker (HBM 2.04 vs 3.35 TB/s).
+So **the same optimization buys a smaller multiple on a slower card** — not because it works less
+well, but because the overhead it deletes is a smaller share of the total.
+
+Per-forward, dividing the full cycle by 77: 138.2 ms -> 50.6 ms. Against an A100 roofline of
+10.2 GB / 2.04 TB/s = 5.0 ms, that is 28x off roofline down to **10x** off.
+
+## One measurement was thrown away, and why
+
+The first attempt at the ring-KV arm returned 4879.3 ms at **spread 26.7%**, and `probe_latency`
+refused it: *"kept runs disagree by more than 5%. Do not quote this number."* The cause was ours —
+a `probe_bitexact` run was driving two other arms on the same host at the same time. Re-measured on
+an idle box it returned 3895.6 ms at 0.4%.
+
+This is exactly the failure section 8 was written about, and it is recorded here because the guard
+only pays for itself if the times it fires are visible. **Arms on one box must be measured serially**,
+even when the arms sit on different GPUs: the contention is host-side, not device-side.
