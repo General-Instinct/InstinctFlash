@@ -223,18 +223,34 @@ class LingBotVA:
             from huggingface_hub import snapshot_download
             basep = Path(snapshot_download(str(base)))
 
-        composed = pkg / ".instinctwm_composed"
+        # NOT inside the package. The package may be a Hugging Face snapshot directory, which is a
+        # shared read-only-by-convention cache; writing a composed tree into it pollutes every other
+        # consumer of that snapshot. It is also actively harmful for round-tripping: an earlier
+        # version wrote `<pkg>/.instinctwm_composed/`, and a subsequent `hf upload` of that directory
+        # published a SECOND 10 GB copy of the transformer into the repo, as symlink targets
+        # resolved to real bytes. The composed tree is a local build artifact, so it belongs in a
+        # cache keyed by what it was composed FROM.
+        import hashlib
+        key = hashlib.sha1(f"{pkg.resolve()}\x00{basep.resolve()}".encode()).hexdigest()[:16]
+        root = Path(os.environ.get("IWM_CACHE") or
+                    Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "instinctwm")
+        composed = root / "composed" / key
+
+        def link_to(link: Path, target: Path, *, is_dir: bool = False) -> None:
+            if link.is_symlink() or link.exists():
+                if link.is_symlink() and link.resolve() == target:
+                    return
+                link.unlink()                       # stale, or pointing somewhere else now
+            link.symlink_to(target, target_is_directory=is_dir)
+
         tdir = composed / cls.TRAINABLE_COMPONENT
         tdir.mkdir(parents=True, exist_ok=True)
         for f in list(pkg.glob("*.safetensors")) + list(pkg.glob("*.index.json")) + [pkg / "config.json"]:
-            link = tdir / f.name
-            if not link.exists():
-                link.symlink_to(f.resolve())
+            link_to(tdir / f.name, f.resolve())
         for comp in cls.FROZEN_COMPONENTS:
             src = basep / comp
-            link = composed / comp
-            if src.exists() and not link.exists():
-                link.symlink_to(src.resolve(), target_is_directory=True)
+            if src.exists():
+                link_to(composed / comp, src.resolve(), is_dir=True)
         return str(composed)
 
     def build_in_process(self, checkpoint, plan, *, device=None, nfe=None):

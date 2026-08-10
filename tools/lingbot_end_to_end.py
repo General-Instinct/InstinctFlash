@@ -19,23 +19,28 @@ interpreter and it resolves to a worker. Same three calls either way.
     PYTHONPATH=. $IWM_SERVER_PY tools/lingbot_end_to_end.py --package /home/ubuntu/hub/lingbot-va
     PYTHONPATH=. $IWM_SERVER_PY tools/lingbot_end_to_end.py --package ... --placement worker
 
-STATUS OF THE FINAL STEP, 2026-08-09. Steps 1-3 pass on the real 10.2 GB package and the real weights
-LOAD from it -- the loader reports reading `.instinctwm_composed/transformer`. Step 4 is
-NOT EVALUATED, not failing: every GPU on this box is held by an unrelated `lerobot-train` job
-(~58 GB of 80 GB each, 2h47m elapsed and counting), and the model needs
-
-    transformer 10.18 + vae 0.51 + text_encoder 11.36 = 22.05 GB of weights resident
-
-against ~23.4 GB free, leaving 1.35 GB for activations, CUDA context and the KV pool. Two attempts
-OOMed at 22.3 GB, one of them with expandable_segments, so this is capacity and not fragmentation.
-Killing someone else's training run to claim a green tick would be the wrong trade.
-
-Re-run it on a GPU with >= ~30 GB free; an idle H100-80GB is ample:
+STATUS, 2026-08-10. All four steps pass against a real Hugging Face repo id on an idle H100-80GB.
+Needs a GPU with >= ~30 GB free: the resident set is transformer 10.18 + vae 0.51 + text_encoder
+11.36 = 22.05 GB before activations, and it OOMs on a card with only ~23.4 GB free.
 
     CUDA_VISIBLE_DEVICES=<free> PYTHONPATH=$IWM_FA_SHIM_DIR:. MASTER_ADDR=127.0.0.1 \
-      MASTER_PORT=29854 WORLD_SIZE=1 RANK=0 LOCAL_RANK=0 $IWM_SERVER_PY \
-      tools/lingbot_end_to_end.py --package /home/ubuntu/hub/lingbot-va \
+      MASTER_PORT=29854 WORLD_SIZE=1 RANK=0 LOCAL_RANK=0 HF_TOKEN=... $IWM_SERVER_PY \
+      tools/lingbot_end_to_end.py --package GM717/lingbot-va \
       --base-weights /home/ubuntu/ckpt_lingbot/lingbot-va-posttrain-robotwin
+
+PROTOCOL: `predict()` IS NOT A WHOLE CONTROL CYCLE, AND THAT IS A KNOWN FACADE GAP. For wan_va a
+cycle is two server calls -- the action prediction, then a KV-commit carrying observed frames plus
+the executed action, which is what advances the ring. `Runtime.predict()` currently maps to the
+first only, so the obvious user loop
+
+    while True:
+        action = runtime.predict(obs)          # <-- second iteration raises
+
+dies on the second iteration with "Calculated padded input size per channel: (2 x 32 x 40). Kernel
+size: (3 x 1 x 1)" -- the ring never advanced, so the third temporal tap is missing. One call after
+one reset is correct and is what this script exercises; a closed loop is not yet expressible through
+the public API. Closing it means teaching the facade that a cycle can be multi-phase, which is a
+deliberate design decision and not a bug fix, so it is recorded here rather than patched around.
 """
 
 from __future__ import annotations
@@ -117,13 +122,17 @@ def main() -> int:
         FAILED.append("no observation")
         return 1
     z = np.load(ctx[0], allow_pickle=True)
-    import json as _json
-    cfg_keys = _json.loads((Path(a.package) / "instinctwm.json").read_text())
-    del cfg_keys
-    # the observation as the served path expects it: one frame per camera, plus the prompt
-    cams = [k for k in z.files if k.endswith(("cam_high", "cam_left_wrist", "cam_right_wrist"))]
-    short = {c.split(".")[-1]: c for c in cams}
-    obs = [{c: z[s] for s, c in short.items()}] if short else None
+    # The observation schema is the BACKBONE's contract, not InstinctWM's -- `predict` passes the
+    # mapping through untouched. wan_va uses the LeRobot camera convention, and the recorded npz
+    # stores the short names, so the prefix is applied here rather than assumed on either side.
+    # An earlier version of this script fed the short names straight through and got
+    # KeyError: 'observation.images.cam_high' from inside the model.
+    CAMERAS = ("cam_high", "cam_left_wrist", "cam_right_wrist")
+    obs = [{f"observation.images.{c}": z[c] for c in CAMERAS if c in z.files}]
+    if not obs[0]:
+        print("  recorded context has no camera frames; cannot run a real step")
+        FAILED.append("no camera frames")
+        return 1
     prompt = str(z["prompt"]) if "prompt" in z.files else "put the bottle in the dustbin"
 
     try:
@@ -134,13 +143,43 @@ def main() -> int:
             t0 = time.time()
             out = runtime.predict({"obs": obs, "prompt": prompt, "save_visualization": False})
             dt = time.time() - t0
+            # Input-dependence, via a fresh EPISODE rather than a second step. A wan_va control
+            # cycle is two server calls -- the action prediction, then a KV-commit that feeds back
+            # observed frames plus the executed action -- so calling predict() twice in a row skips
+            # the commit, the ring never advances, and the next call dies on a missing third
+            # temporal tap. Two clean episodes test the same thing without pretending one call is a
+            # whole cycle. See the PROTOCOL note in the module docstring.
+            arr2 = None
+            if len(ctx) > 1:
+                z2 = np.load(ctx[1], allow_pickle=True)
+                obs2 = [{f"observation.images.{c}": z2[c] for c in CAMERAS if c in z2.files}]
+                p2 = str(z2["prompt"]) if "prompt" in z2.files else prompt
+                runtime.reset(prompt=p2)
+                o2 = runtime.predict({"obs": obs2, "prompt": p2, "save_visualization": False})
+                arr2 = np.asarray(o2["action"] if isinstance(o2, dict) and "action" in o2 else o2)
         act = out["action"] if isinstance(out, dict) and "action" in out else out
         arr = np.asarray(act)
         print(f"  predict in {dt * 1000:.0f} ms")
         print(f"  action {arr.shape} dtype={arr.dtype}")
         print(f"  first row {[round(float(v), 4) for v in arr.reshape(-1)[:6]]} ...")
+        print(f"  range [{arr.min():.4f}, {arr.max():.4f}]  std {arr.std():.4f}  "
+              f"unique {np.unique(arr).size}/{arr.size}")
         check(arr.size > 0, "an action came back")
         check(bool(np.isfinite(arr).all()), "and it is finite")
+
+        # "an action came back" is NOT "the model ran". A constant tensor is finite, correctly
+        # shaped, and completely meaningless -- and the first run printed six identical leading
+        # values, which is exactly what a degenerate output looks like. Two gates close that:
+        check(float(arr.std()) > 1e-6, "the action VARIES -- not a constant tensor",
+              f"std={arr.std():.5f}")
+
+        # ... and the output must actually depend on the input. Second observation, same episode:
+        # if the model is genuinely conditioning on pixels these cannot be equal.
+        if arr2 is not None:
+            d = float(np.abs(arr - arr2).max())
+            check(d > 1e-6, "a DIFFERENT episode gives a different action", f"max|Δ|={d:.5f}")
+        else:
+            print("  only one recorded context; input-dependence not checked")
     except Exception as e:                                     # noqa: BLE001
         print(f"  RAISED {type(e).__name__}: {e}")
         FAILED.append(f"inference raised: {type(e).__name__}")

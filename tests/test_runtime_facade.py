@@ -119,6 +119,45 @@ def test_no_fast_quality_presets():
     check("nfe" in params, "from_pretrained takes nfe=", str(list(params)))
 
 
+def test_composed_tree_never_lands_inside_the_package():
+    print("\n=== 7. the composed tree is a cache artifact, not a package member ===")
+    # REGRESSION. materialize() used to write `<pkg>/.instinctwm_composed/`. A package directory can
+    # be a shared Hugging Face snapshot, and `hf upload` of one that had been loaded once published
+    # a SECOND 10 GB copy of the transformer -- the symlinks resolved to real bytes on the way up.
+    import os
+    from instinctwm.adapters.lingbot_va import LingBotVA
+    with tempfile.TemporaryDirectory() as td:
+        pkg = _pkg(Path(td) / "pkg", backbone="wan_va")
+        base = Path(td) / "base"
+        for comp in LingBotVA.FROZEN_COMPONENTS:
+            (base / comp).mkdir(parents=True, exist_ok=True)
+        cache = Path(td) / "cache"
+        os.environ["IWM_CACHE"] = str(cache)
+        os.environ["LINGBOT_CKPT"] = str(base)
+        try:
+            class _Ck:
+                path = str(pkg)
+                model_id = "example-org/x"
+                class execution:                       # noqa: N801
+                    extra = {"base_weights": str(base)}
+            composed = Path(LingBotVA.materialize(_Ck()))
+            # idempotent: loading twice must not raise on the links the first call created
+            again = Path(LingBotVA.materialize(_Ck()))
+        finally:
+            os.environ.pop("IWM_CACHE", None)
+            os.environ.pop("LINGBOT_CKPT", None)
+
+        check(not (pkg / ".instinctwm_composed").exists(),
+              "nothing was written inside the package")
+        check(cache in composed.parents, "the composed tree lives under the cache", str(composed))
+        check((composed / "transformer" / "config.json").is_symlink(),
+              "the trainable side is symlinked, not copied")
+        check(set(p.name for p in pkg.iterdir()) ==
+              {"instinctwm.json", "config.json", "model.safetensors"},
+              "the package directory is byte-for-byte what it was before loading")
+        check(again == composed, "materialize() is idempotent")
+
+
 def main() -> int:
     test_public_api_is_small()
     test_describe_reads_no_provenance_and_no_weights()
@@ -126,6 +165,7 @@ def main() -> int:
     test_unservable_is_refused()
     test_placement_is_a_deployment_choice_not_a_model_property()
     test_no_fast_quality_presets()
+    test_composed_tree_never_lands_inside_the_package()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")

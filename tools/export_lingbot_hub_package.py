@@ -166,6 +166,19 @@ runtime.reset(prompt="put the bottle in the dustbin")
 action = runtime.predict(observation)
 ```
 
+`observation` is a mapping in the backbone's own schema — for this checkpoint, one frame per camera
+under the LeRobot key convention:
+
+```python
+observation = {{"obs": [{{"observation.images.cam_high": frame, ...}}],
+               "prompt": "put the bottle in the dustbin"}}
+```
+
+**One prediction per `reset()` today.** A wan_va control cycle is two phases — the action
+prediction, then a KV-commit that advances the ring — and the public API currently expresses only
+the first, so a closed `while True: runtime.predict(...)` loop is not yet supported. Start a new
+episode for each prediction until multi-phase cycles land.
+
 Inspect it first, without downloading {ex.get('param_bytes', 0) / 1e9:.1f} GB of weights:
 
 ```python
