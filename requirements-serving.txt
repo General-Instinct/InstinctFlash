@@ -1,0 +1,40 @@
+# What a machine needs to SERVE a wan_va checkpoint through the InstinctWM public API.
+#
+# Derived by building this environment from scratch on a clean 4x H100 box (2026-08-10) and running
+# tools/lingbot_end_to_end.py until it passed. Every version here is the one that combination was
+# verified with, not the newest that might work.
+#
+#   python3 -m venv ~/.venv-lingbot
+#   ~/.venv-lingbot/bin/pip install -r requirements-serving.txt \
+#       --extra-index-url https://download.pytorch.org/whl/cu126
+#
+# NOT installable from here, and both are required:
+#   * the upstream lingbot-va checkout, pointed at by LINGBOT_ROOT (default /home/ubuntu/lingbot-va)
+#   * a `flash_attn` shim on PYTHONPATH if real flash-attn is not built for this box
+#
+# The weights are NOT a dependency. `Runtime.from_pretrained` fetches the package, and the frozen
+# stack resolves from the checkpoint's own `execution.base_weights` pointer.
+
+torch==2.9.0
+torchvision==0.24.0
+
+diffusers==0.36.0
+transformers==4.55.2
+accelerate==1.14.0
+safetensors==0.8.0
+huggingface_hub==0.36.2
+tokenizers==0.21.4
+
+numpy==2.2.6
+einops==0.8.2
+ftfy==6.3.1
+imageio==2.37.4
+msgpack==1.2.1
+websockets==17.0.1
+
+# Imported by the upstream serving code rather than by InstinctWM, and undeclared upstream: a clean
+# box gets ModuleNotFoundError at the first real inference, AFTER the checkpoint has loaded and a
+# plan has been compiled. That is the worst possible place to find out, hence this block.
+easydict
+opencv-python
+matplotlib

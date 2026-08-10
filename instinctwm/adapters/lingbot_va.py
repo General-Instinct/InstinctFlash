@@ -221,7 +221,13 @@ class LingBotVA:
         basep = Path(base)
         if not basep.exists():
             from huggingface_hub import snapshot_download
-            basep = Path(snapshot_download(str(base)))
+            # ONLY the frozen components. The base repo also carries its own `transformer/`, which
+            # this package REPLACES -- fetching it costs a consumer 9.5 GB they will never load.
+            # Measured on a clean box: 23 GB pulled where 13 GB was needed. `allow_patterns` is
+            # what keeps "reference the frozen stack by repo id" cheaper than vendoring it, which
+            # is the entire argument for the pointer.
+            basep = Path(snapshot_download(
+                str(base), allow_patterns=[f"{c}/*" for c in cls.FROZEN_COMPONENTS]))
 
         # NOT inside the package. The package may be a Hugging Face snapshot directory, which is a
         # shared read-only-by-convention cache; writing a composed tree into it pollutes every other
