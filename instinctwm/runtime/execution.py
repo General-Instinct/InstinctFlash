@@ -88,8 +88,38 @@ class InProcessBackend:
             self._impl = build(self._checkpoint, self._plan, device=self._device, nfe=self._nfe)
         return self._impl
 
-    def predict(self, observation):
-        return self._ensure().infer(dict(observation))
+    def predict(self, observation, *, executed_action=None):
+        """One control cycle. Every internal phase the model needs happens inside this call.
+
+        THE IMPL CONTRACT, which used to be `infer(dict)` and nothing else. `infer` is LingBot-VA's
+        *server* verb, and hardcoding it meant an external adapter that implemented the obvious
+        `predict` got `AttributeError: '_Impl' object has no attribute 'infer'` from inside the
+        runtime -- with nothing in the documented adapter protocol to predict that. `predict` is now
+        preferred and `infer` is the compatibility path, so a new model family implements the verb
+        the rest of the API already uses.
+
+        `commit` is optional and private to the model. A model whose control cycle updates state
+        after producing an action (LingBot-VA advances a KV ring; an autoregressive model may append
+        tokens) implements it and the runtime drives it here. That is what makes `predict` loopable
+        WITHOUT the caller learning that phases exist.
+        """
+        impl = self._ensure()
+        fn = getattr(impl, "predict", None) or getattr(impl, "infer", None)
+        if fn is None:
+            raise NotImplementedError(
+                f"the object returned by build_in_process for "
+                f"{self._checkpoint.execution.backbone!r} implements neither predict(observation) "
+                f"nor infer(dict). One of them is how a control cycle runs.")
+        out = fn(dict(observation))
+
+        commit = getattr(impl, "commit", None)
+        if commit is not None:
+            action = out.get("action") if isinstance(out, dict) else out
+            # `executed_action` is what the robot ACTUALLY did -- a safety filter or a low-level
+            # controller may not have executed what we predicted. Defaulting to the prediction is
+            # the honest fallback, not a claim that they are always equal.
+            commit(dict(observation), executed_action if executed_action is not None else action)
+        return out
 
     def reset(self, **conditioning):
         impl = self._ensure()

@@ -43,6 +43,16 @@ class FSDPElision:
 
     name = "fsdp_elision"
 
+    #: These three passes PATCH THE LINGBOT-VA SERVER OBJECT -- they elide its FSDP wrapping, its
+    #: `empty_cache` calls and its per-chunk debug dumps. None of that exists in a model that is not
+    #: this server, so without a gate they were reported as APPLY for every checkpoint in the
+    #: ecosystem: an external toy GRU got a plan promising "measured 1.75x standalone on LingBot-VA".
+    #: The plan is a claim about what will happen to THIS model, so a pass that cannot touch it must
+    #: decline. Gating on the backbone is honest rather than lazy here -- these passes live in
+    #: `passes/lingbot/` because that is genuinely what they know how to rewrite.
+    requires_capabilities = frozenset({"backbone:wan_va"})
+
+
     def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
         if deployment.world_size > 1:
             return PassResult(self.name, False, Tier.BITEXACT,
@@ -69,6 +79,9 @@ class AllocatorChurnElision:
 
     name = "allocator_churn_elision"
 
+    requires_capabilities = frozenset({"backbone:wan_va"})   # see fsdp_elision above
+
+
     def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
         return PassResult(
             self.name, True, Tier.BITEXACT,
@@ -90,6 +103,9 @@ class DebugDumpElision:
     """
 
     name = "debug_dump_elision"
+
+    requires_capabilities = frozenset({"backbone:wan_va"})   # see fsdp_elision above
+
 
     def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
         return PassResult(

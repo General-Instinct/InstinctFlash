@@ -20,6 +20,46 @@
 InstinctWM is an open platform for **world-action models** — robot policies that predict what
 happens next *and* what to do about it in one model.
 
+## Run a policy
+
+```bash
+git clone https://github.com/general-instinct/InstinctWM && cd InstinctWM
+pip install -e ".[runtime]"          # add ".[runtime,diffusion]" for LingBot-VA
+```
+
+```python
+from instinctwm import Runtime
+
+runtime = Runtime.from_pretrained("general-instinct/lingbot-va")
+
+with runtime.episode(prompt="put the bottle in the dustbin") as episode:
+    while not done:
+        action = episode.predict(observation)
+```
+
+That is the whole API. There is no planner to configure, no port to manage, no optimization to
+select: the runtime reads what the checkpoint declares, works out which optimizations are legal,
+and applies them. `runtime.explain()` prints every decision if you want to see them.
+
+Look before you download 10 GB:
+
+```python
+from instinctwm import describe
+describe("general-instinct/lingbot-va")     # fetches one metadata file, no weights
+```
+
+**Requirements.** Python ≥ 3.10. Serving LingBot-VA needs a CUDA GPU with **≈30 GB free** (the
+resident set is ~22 GB of weights before activations) — it will OOM on a 24 GB card. Reproducible
+serving pins, including the upstream code's own undeclared imports, are in
+[`requirements-serving.txt`](requirements-serving.txt). `pip install -e .` alone needs no GPU and is
+enough to inspect any checkpoint.
+
+> **`pip install instinctwm` does not work yet** — InstinctWM is not on PyPI. Install from this
+> clone. Model cards that show the PyPI line are ahead of the release.
+
+New model family? [`examples/external_plugin/`](examples/external_plugin/) is a complete external
+integration: one entry point, two methods, no changes to InstinctWM.
+
 **If you have trained a checkpoint, this runtime will serve it.** You publish weights plus a short
 declaration of what those weights *are*; the runtime reads the declaration, works out which
 optimizations are legal, applies them, and reports what each one cost. You do not publish your
@@ -109,7 +149,7 @@ PYTHONPATH=. python examples/tiny_wam/run_end_to_end.py
 ```python
 from instinctwm.descriptors.package import from_pretrained
 
-ckpt = from_pretrained("example-org/wm-blockheads-2v4a")   # Hub id, or a local path
+ckpt = from_pretrained("examples/checkpoint/wm-blockheads-2v4a")   # a local path, or any Hub id
 print(ckpt.capabilities())
 # frozenset({'servable', 'backbone:wan_va',
 #            'output_projection:per_interval_velocity_heads',
@@ -251,22 +291,23 @@ so they are kept in the ledger and marked not recommended.
 
 ## Quick Start
 
-```bash
-git clone https://github.com/general-instinct/InstinctWM && cd InstinctWM
-pip install -e .                # analysis only: no torch, no GPU required
-pip install -e ".[runtime]"     # to actually apply a plan and serve
-```
+To *use* a checkpoint, see [Run a policy](#run-a-policy) at the top — `Runtime` is the API, and
+nothing below is required to serve a model.
 
-Deciding *which* optimizations are legal is dependency-free by design, so you can inspect a plan on
-a laptop. Only applying one needs torch.
+What follows is the **runtime developer's** view: the planner underneath, for people writing passes
+or debugging a plan. Deciding which optimizations are legal is dependency-free by design, so you can
+inspect a plan on a laptop with no GPU:
+
+```bash
+pip install -e .                # analysis only: no torch, no GPU required
+```
 
 ```python
 from instinctwm import load, Optimizer, Tier
 
-model  = load("lingbot-va-posttrain-robotwin")
-plan   = Optimizer(tier_ceiling=Tier.BITEXACT).compile(model.spec())
-print(plan.explain())                    # what fired, and why
-server = plan.serve(model, port=29056)   # deploy
+model = load("wan_va")                                        # a registered backbone, not a Hub id
+plan  = Optimizer(tier_ceiling=Tier.BITEXACT).compile(model.spec())
+print(plan.explain())                                          # what fired, and why
 ```
 
 `plan.explain()` reports every decision, including the ones it declined:

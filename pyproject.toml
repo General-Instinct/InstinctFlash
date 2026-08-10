@@ -17,13 +17,20 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 
-# The core -- adapters, the optimizer, and every pass -- is dependency-free on purpose.
-# Deciding which optimizations are legal for a model must work on a laptop with no CUDA;
-# torch is only needed to APPLY a plan, which is what the `runtime` extra is for.
-dependencies = []
+# The core stays laptop-installable -- no torch, no CUDA -- because deciding which optimizations are
+# legal has to work offline. `huggingface_hub` is the one exception and it is not a compromise: it is
+# pure Python, and without it `Runtime.from_pretrained("org/model")` and `describe("org/model")`
+# cannot resolve a repo id at all. It was previously in NO dependency list, so the documented install
+# produced a runtime that could not load the thing the README opens by loading.
+dependencies = ["huggingface_hub>=0.30"]
 
 [project.optional-dependencies]
-runtime = ["torch>=2.4"]
+# Enough to APPLY a plan and run a model whose weights are plain safetensors.
+runtime = ["torch>=2.4", "safetensors>=0.4", "numpy>=1.21"]
+# Additionally required to serve a diffusers-based backbone such as LingBot-VA (`wan_va`). Exact
+# verified pins, including the upstream serving code's own undeclared imports, are in
+# requirements-serving.txt -- use that file for a reproducible serving box.
+diffusion = ["diffusers>=0.36", "transformers>=4.55", "accelerate>=1.0", "einops>=0.8"]
 eval = ["numpy>=1.21"]
 
 [project.urls]

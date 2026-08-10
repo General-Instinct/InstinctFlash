@@ -90,13 +90,34 @@ class Runtime:
         return cls(ckpt, adapter, plan, backend, placement_reason=why)
 
     # -- using -----------------------------------------------------------------------------------
-    def predict(self, observation: Mapping[str, Any]) -> Any:
-        """One control step. Identical whether the model is in this process or in a worker."""
-        return self._backend.predict(observation)
+    def predict(self, observation: Mapping[str, Any], *, executed_action: Any = None) -> Any:
+        """One control cycle: observation in, action out. Call it in a loop.
+
+        `executed_action` reports what the robot ACTUALLY did, when a safety filter or low-level
+        controller changed it. Omit it and the runtime assumes the returned action was executed.
+        Models that carry no per-cycle state ignore it entirely.
+        """
+        return self._backend.predict(observation, executed_action=executed_action)
 
     def reset(self, **conditioning: Any) -> None:
-        """Start a new episode. Conditioning keys are whatever the checkpoint declares it needs."""
+        """Start a new episode on this runtime. Conditioning is whatever the checkpoint needs.
+
+        The simple, single-robot form. For concurrent or clearly-scoped episodes use `episode()`.
+        """
         self._backend.reset(**conditioning)
+
+    def episode(self, **conditioning: Any) -> "Episode":
+        """An explicit episode handle: `with runtime.episode(prompt=...) as ep: ep.predict(obs)`.
+
+        WHY BOTH THIS AND `reset()`. `reset()` mutates one implicit episode, which is exactly right
+        for one robot in one loop and is what LeRobot exposes. It has no way to say "these two
+        rollouts are separate", so as soon as a fleet shares one loaded model -- the case this
+        runtime exists for -- episode identity has to become a value the caller holds rather than
+        hidden state the caller hopes it reset. vLLM reached the same conclusion and calls it a
+        request id.
+        """
+        self._backend.reset(**conditioning)
+        return Episode(self, conditioning)
 
     def close(self) -> None:
         self._backend.close()
@@ -135,6 +156,45 @@ class Runtime:
 
     def __repr__(self) -> str:
         return f"<Runtime {self._checkpoint.model_id!r} backbone={self._checkpoint.execution.backbone!r}>"
+
+
+class Episode:
+    """One rollout. Created by `Runtime.episode()`; holds no weights and is cheap to make.
+
+    The verbs stop here deliberately. There is no `step()` -- ambiguous between a denoising step and
+    a control step, and it buys nothing over `predict`. There is no `commit()` -- committing state is
+    a phase inside a control cycle, and a model that needs one says so to the runtime, not to the
+    user. If a future model genuinely cannot express itself as observation-in/action-out, that is the
+    conversation to have then, and it should change this class rather than leak past it.
+    """
+
+    def __init__(self, runtime: "Runtime", conditioning: Mapping[str, Any]):
+        self._runtime, self._conditioning, self._closed = runtime, dict(conditioning), False
+        self._steps = 0
+
+    def predict(self, observation: Mapping[str, Any], *, executed_action: Any = None) -> Any:
+        if self._closed:
+            raise RuntimeError("this episode is finished; start another with runtime.episode(...)")
+        self._steps += 1
+        return self._runtime.predict(observation, executed_action=executed_action)
+
+    @property
+    def steps(self) -> int:
+        """Control cycles issued in this episode."""
+        return self._steps
+
+    def close(self) -> None:
+        """End the episode. The MODEL stays loaded -- that is `Runtime.close()`."""
+        self._closed = True
+
+    def __enter__(self) -> "Episode":
+        return self
+
+    def __exit__(self, *exc) -> None:
+        self.close()
+
+    def __repr__(self) -> str:
+        return f"<Episode of {self._runtime.model_id!r} steps={self._steps}>"
 
 
 def _unknown_backbone_message(ckpt: Checkpoint, registered: list[str]) -> str:
