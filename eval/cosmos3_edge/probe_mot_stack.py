@@ -37,20 +37,54 @@ ATTN_MODES = ["causal", "full"]
 NFE = 16                         # forwards per control step, the served rung
 
 
-def build_stack(n_layers, device, dtype=torch.bfloat16):
+# The shipped checkpoint's own transformer/config.json declares
+#   backbone_type = "cosmos3_edge_nemotron_dense",  hidden_act = "relu2",
+#   qk_norm_for_text = false,  use_und_k_norm_for_gen = true
+# and its weights carry mlp.up_proj + mlp.down_proj with NO mlp.gate_proj, in both towers.
+# "qwen3_vl_dense" below is therefore NOT the shipped backbone: Qwen3VLTextMLP is SwiGLU, so it
+# adds a third projection per tower per layer that the real model does not have (15 GEMM/layer
+# instead of 12), and it also swaps the RMSNorm and the rotary implementation.
+#
+# The default is left on "qwen3_vl_dense" ON PURPOSE: every number in RESULTS.md sections 3 and 6
+# was measured with it, and silently switching the backbone would re-measure the whole chain
+# against a different network while the numbers above kept their old labels. Pass
+# backbone="nemotron_dense" to measure the shipped structure; RESULTS.md records both.
+BACKBONES = ("qwen3_vl_dense", "nemotron_dense")
+
+
+def build_stack(n_layers, device, dtype=torch.bfloat16, backbone="qwen3_vl_dense"):
     from cosmos_framework.model.generator.mot.unified_mot import LayerTypes, MoTDecoderLayer
-    from cosmos_framework.model.generator.reasoner.qwen3_vl.configuration_qwen3_vl import (
-        Qwen3VLTextConfig,
-    )
-    cfg = Qwen3VLTextConfig(
+
+    if backbone == "qwen3_vl_dense":
+        from cosmos_framework.model.generator.reasoner.qwen3_vl.configuration_qwen3_vl import (
+            Qwen3VLTextConfig as _Cfg,
+        )
+        # Qwen3VLTextConfig takes the epsilon as rms_norm_eps.
+        extra, qk_text = {"rms_norm_eps": EDGE["rms_norm_eps"]}, True
+    elif backbone == "nemotron_dense":
+        from cosmos_framework.model.generator.reasoner.nemotron_3_dense_vl.configuration_nemotron_3_dense_vl import (  # noqa: E501
+            Nemotron3DenseVLTextConfig as _Cfg,
+        )
+        # Nemotron names the epsilon layer_norm_epsilon and exposes rms_norm_eps as a READ-ONLY
+        # alias property, so passing rms_norm_eps here raises. mlp_hidden_act selects ReLU^2 in
+        # Nemotron3DenseVLMLP; qk_norm_for_text=False and use_und_k_norm_for_gen=True are the
+        # checkpoint's own settings, not guesses.
+        extra, qk_text = {"layer_norm_epsilon": EDGE["rms_norm_eps"],
+                          "mlp_hidden_act": "relu2"}, False
+    else:
+        raise ValueError(f"backbone must be one of {BACKBONES}, got {backbone!r}")
+
+    cfg = _Cfg(
         hidden_size=EDGE["hidden_size"], num_attention_heads=EDGE["num_attention_heads"],
         num_key_value_heads=EDGE["num_key_value_heads"], num_hidden_layers=n_layers,
         intermediate_size=EDGE["intermediate_size"], head_dim=EDGE["head_dim"],
-        rms_norm_eps=EDGE["rms_norm_eps"], attention_bias=False,
+        attention_bias=False, **extra,
     )
-    lt = LayerTypes("qwen3_vl_dense")
-    layers = [MoTDecoderLayer(cfg, layer_idx=i, layer_types=lt,
-                              qk_norm_for_text=True, qk_norm_for_diffusion=True)
+    lt = LayerTypes(backbone)
+    kw = dict(qk_norm_for_text=qk_text, qk_norm_for_diffusion=True)
+    if backbone == "nemotron_dense":
+        kw["use_und_k_norm_for_gen"] = True
+    layers = [MoTDecoderLayer(cfg, layer_idx=i, layer_types=lt, **kw)
               .to(device, dtype).eval() for i in range(n_layers)]
     for l in layers:
         l.requires_grad_(False)
