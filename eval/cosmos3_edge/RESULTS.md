@@ -259,3 +259,71 @@ rather than rounded away.
 This is the shipped *structure* with random weights, at the shipped geometry. It is not the DROID
 policy end to end: the real control step also runs a vision encoder, a VAE and the action heads,
 none of which are in this stack. What is claimed here is bucket attribution for the MoT trunk.
+
+---
+
+## 8. The shipped weights, loaded — and the claim that weights do not change latency (2026-08-10)
+
+Sections 3, 6 and 7 all profile a stack this repo *builds*. This one loads the published
+checkpoint. `probe_real_weights.py`, on `/home/ubuntu/Cosmos3-Edge/transformer`:
+
+```
+load: missing=0 unexpected=0   CLEAN
+28 layers, hidden 2048, hidden_act relu2
+params 3.370 B   weights 6.29 GiB bf16
+```
+
+Zero missing, zero unexpected — the structure under test is the structure that shipped. The DROID
+post-train loads identically (same 3.370 B, same 12 `nn.Linear` per layer), so it is the same
+network with different values.
+
+### The standing claim, now measured
+
+"Weights do not change latency, only shapes do" has been an assertion in this file's reasoning.
+Comparing section 7 (random weights) against the real ones, kernel self-time per forward:
+
+| bucket | §7 random weights | shipped weights | Δ |
+|:--|--:|--:|--:|
+| GEMM | 11.95 (46.4%) | **11.88 (46.4%)** | −0.07 |
+| copy/cast | 8.30 (32.2%) | 7.57 (29.6%) | −0.73 |
+| elementwise | 2.62 (10.2%) | 2.86 (11.2%) | +0.24 |
+| **summed kernel self-time** | **25.78** | **25.59** | **−0.19 (0.7%)** |
+
+GEMM lands on 46.4% both times. The claim holds.
+
+### Three differences that make the columns only partly comparable
+
+**This run is EAGER; section 7 is graph replay.** Wall clock here is 50.37 ms against 25.59 ms of
+kernel self-time — half the time is enqueue, exactly the launch-bound regime capture removes. Only
+the *kernel self-time* columns above may be compared; the wall clocks may not.
+
+**Attention is a different kernel.** 1.69 ms / 84 kernels here via
+`pytorch_flash::flash_fwd_splitkv_kernel`, against 1.01 ms / 56 via
+`cudnn_generated_fort_native_sdpa` in section 7. diffusers and cosmos-framework dispatch attention
+differently; this is two implementations, not one implementation regressing. Attention's share
+still lands in single digits (6.6%), which is the fourth measurement to rank it low.
+
+**Kernel counts differ**: 3220 per forward here (115.0 per layer) against 3899 (139.2). The
+diffusers implementation is more compact.
+
+### Correction to section 7's floor
+
+Section 7 computed its memory floor from the stack it built (5.25 GiB → 2.76 ms). The shipped
+weights are **6.29 GiB → 3.31 ms**, so section 7's memory floor understates the real one by ~20%.
+The compute floor there is likewise proxy-derived. Section 7's *bucket shares* stand; its *floors*
+should be read from here.
+
+### Environment caveat, stated because it blocks reproduction
+
+This needs `diffusers 0.40.0.dev0` built from **git main** — the checkpoints declare that version
+and PyPI's newest release is 0.39.0, whose `Cosmos3OmniTransformer` is a different network (SwiGLU
+with `gate_proj`, `norm_q`/`norm_k` instead of `k_norm_und_for_gen`). Loading the real weights into
+0.39.0 newly-initialises **112** tensors and leaves **28** unused, and diffusers prints "You should
+probably TRAIN this model on a down-stream task". Built here into `$IWM_ROOT/.venv-cosmos-real`.
+**Pin the diffusers commit before quoting any of this as reproducible** — an unreleased dependency
+is not a lock.
+
+### Still not measured
+
+The vision encoder, the VAE, the action heads and the text tokenizer. This is the MoT trunk, which
+is what sections 3/6/7 measure too. A DROID control step is more than this trunk.
