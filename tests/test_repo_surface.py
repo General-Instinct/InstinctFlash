@@ -46,7 +46,9 @@ def test_root_is_product_shaped():
 def test_readme_answers_four_questions_first():
     print("\n=== 2. the first screen answers what / install / load / actions ===")
     text = (ROOT / "README.md").read_text()
-    head = text[:text.index("---\n\n## Supported models")] if "## Supported models" in text else text
+    # the first screen ends at whichever secondary section comes first
+    ends = [text.index(h) for h in ("## What's new", "## Supported models") if h in text]
+    head = text[:min(ends)] if ends else text
     at = [head.find(h) for h in FIRST_SCREEN]
     check(all(i > 0 for i in at), "install, load and get-actions all appear up front", str(at))
     check(at == sorted(at), "and in that order")
@@ -58,12 +60,34 @@ def test_readme_answers_four_questions_first():
 
 def test_readme_has_no_research_chronology():
     print("\n=== 3. no research chronology or profiling tables ===")
+    # A "What's new" section IS allowed, and is wanted: every widely used framework has one. What is
+    # not allowed is what the old one had -- optimization milestones, pass numbers, dated research
+    # entries. The distinction is user-facing capability versus internal chronology, so the check is
+    # on the vocabulary of chronology rather than on the heading.
     text = (ROOT / "README.md").read_text()
-    for banned in ("What's New", "Layer 6", "Layer 5", "P001", "P007", "forwards/cycle",
-                   "marginal slope", "NOT EVALUATED", "ABBA"):
+    for banned in ("Layer 6", "Layer 5", "P001", "P007", "marginal slope", "NOT EVALUATED", "ABBA",
+                   "RETRACTED", "PROPOSED API", "operating point", "Quality (25"):
         check(banned not in text, f"README does not mention {banned!r}")
-    # a date-stamped changelog line like "- **[2026/08]**" is the notebook tell
     check(not re.search(r"\*\*\[20\d\d/\d\d\]\*\*", text), "no date-stamped changelog entries")
+    news = re.search(r"^## What's new", text, re.M)
+    if news:
+        body = text[news.end():text.index("\n## ", news.end())]
+        check("×" not in body and "ms" not in body.split(), "the news section is not a results table")
+
+
+def test_canonical_docs_describe_only_main():
+    print("\n=== 5. the canonical docs describe main, not its history ===")
+    # Every one of these is something the docs actually said while describing a system that had
+    # moved on: a proposed API, an inline retraction, a pass list that graph capture was still part
+    # of, and two contradictory forwards-per-cycle figures in the same file.
+    for name in ("README.md", "ARCHITECTURE.md", "CHECKPOINTS.md"):
+        text = (ROOT / name).read_text()
+        for banned in ("PROPOSED API", "RETRACTED", "not implemented yet", "PROFILE.md",
+                       "3.38", "Fast runs", "566 matched pairs"):
+            check(banned not in text, f"{name} does not contain {banned!r}")
+        dead = [t for t in re.findall(r"\]\(([A-Za-z0-9_./-]+\.md)", text)
+                if not (ROOT / t).exists()]
+        check(not dead, f"{name} links no deleted document", str(dead) if dead else "")
 
 
 def test_every_readme_link_resolves():
@@ -79,6 +103,7 @@ def main() -> int:
     test_readme_answers_four_questions_first()
     test_readme_has_no_research_chronology()
     test_every_readme_link_resolves()
+    test_canonical_docs_describe_only_main()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")

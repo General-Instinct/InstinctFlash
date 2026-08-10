@@ -82,14 +82,33 @@ choose.
 
 ---
 
+## What's new 🔥
+
+- **Load from a Hub repo id.** `Runtime.from_pretrained("org/model")` resolves the declaration,
+  the adapter and the weights; `describe("org/model")` reads the metadata without downloading them.
+- **Episodes and closed-loop control.** `runtime.episode()` scopes a rollout and `episode.predict()`
+  is callable in a loop, so multi-phase models no longer leak their phases to callers.
+- **Bring your own model family.** Declare an `instinctwm.adapters` entry point and `pip install`;
+  no fork and no pull request. See [`examples/external_plugin/`](examples/external_plugin/).
+- **Report what the robot actually did.** `episode.predict(obs, executed_action=...)` for when a
+  safety layer changed the action before it reached the hardware.
+
 ## Supported models
 
-| model | notes |
-|:--|:--|
-| **LingBot-VA** | Full support. 3.38× faster than the reference implementation with bit-identical actions. |
-| **Cosmos3-Edge** | Runs; 2.33× on the control step. No accuracy claim — tested on random weights. |
+| model | speedup | actions |
+|:--|:--|:--|
+| **LingBot-VA** | 2.88× bit-exact, plus 1.405× from convolution-layout selection | see below |
+| **Cosmos3-Edge** | 2.33× on the control step | no accuracy claim — tested on random weights |
 
-Measurement protocols and per-pass results are in [`eval/`](eval/).
+The layout pass changes the accumulation order of every 3D convolution, so the chain LingBot-VA ships
+with is **NUMERIC**, not bit-exact. It carries a non-inferiority certificate: 555 paired episodes on
+identical seeds, 0.9081 against 0.9117, margin −0.05 declared before the run, one-sided p = 0.00031.
+Drop `--conv-layout` and the chain is bit-exact at 2.88×.
+
+Tiers are derived from what a pass can prove, never asserted. **BITEXACT** means identical actions,
+**NUMERIC** means a declared-margin non-inferiority result, **BEHAVIORAL** means neither.
+`runtime.explain()` prints the chain and its tier for the checkpoint you loaded, including the passes
+it declined and why. Protocols and per-pass results are in [`eval/`](eval/).
 
 ## Adding your own model
 

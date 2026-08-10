@@ -65,7 +65,7 @@ Immutable, identical on every box the checkpoint runs on. Implemented in
 | `obs_decode_modules` | modules needed only when the caller wants predicted pixels | `obs_decode_elision` |
 | `notes` | free text for humans | nothing |
 
-`phases` is doing most of the work. It is what makes the operating point a declared fact rather than
+`phases` is doing most of the work. It is what makes the step schedule a declared fact rather than
 a flag: `total_forwards()` and `forwards_breakdown()` come straight out of it, and those are the
 numbers profitability is computed against.
 
@@ -104,16 +104,24 @@ something they cannot know. Fields are added here only when a pass reads one.
 
 ### Scope: many checkpoints today, arbitrary backbones later
 
-**Supported now.** Many checkpoints per backbone, where the backbone has a registered `Adapter`.
-Different operating points, recipes, fine-tunes and output projections all declare capabilities and
-plan from them, with no runtime change. [`examples/tiny_wam/`](examples/tiny_wam/) demonstrates the
-whole workflow on real weights with an adapter defined outside `instinctwm/`.
+**Supported now.** Many checkpoints per backbone, where the backbone has a registered adapter. Step
+schedules, recipes, fine-tunes and output projections all declare capabilities and plan from them with
+no runtime change. The adapter does not have to live here: declare an entry point in your own package
+and `pip install` it, and any checkpoint naming that backbone resolves.
 
-**Not yet.** An arbitrary new backbone with no adapter. `execution.backbone` must resolve to a
-registered adapter; the adapter supplies the shape of a control step, which the declaration cannot
-currently express. Writing one requires no change to InstinctWM, but it is code rather than JSON.
-Deriving a full `AdapterSpec` from the declaration would close the gap and is deliberately not built —
-the schema would have to describe an execution graph, which is a much larger contract to freeze.
+```toml
+[project.entry-points."instinctwm.adapters"]
+my_backbone = "my_package.adapter:MyAdapter"
+```
+
+[`examples/external_plugin/`](examples/external_plugin/) is a complete one for a model unlike
+LingBot-VA; [`examples/tiny_wam/`](examples/tiny_wam/) shows the same on real weights.
+
+**Not yet.** An arbitrary new backbone with *no* adapter. `execution.backbone` must resolve to one,
+because the adapter supplies the shape of a control step and the declaration cannot express that.
+Writing an adapter needs no change to InstinctWM, but it is code rather than JSON. Deriving a full
+`AdapterSpec` from the declaration would close the gap and is deliberately not built: the schema
+would have to describe an execution graph, which is a much larger contract to freeze.
 
 ### The published package
 
@@ -157,7 +165,7 @@ The runtime resolves it in this order, first hit wins:
     "backbone": "wan-va",                  // which adapter publishes the sites
     "param_bytes": 24696061952,
 
-    // The control step. This IS the operating point: a reduced schedule is a
+    // The control step. A reduced schedule is a
     // different phases block, not a mode flag and not a second runtime.
     "phases": [
       {"name": "kv_refresh", "nfe": 1},
@@ -183,7 +191,6 @@ The runtime resolves it in this order, first hit wins:
     "obs_decode_modules": ["vae_decoder", "obs_head"],
 
     // Layer 4. A checkpoint-scoped fact: the runtime may choose any backend
-    // implementing THIS function and no other. See ATTENTION.md.
     "attention": {"semantics": "softmax_full", "mask": "none", "layout": "bshd"},
 
     // CAPABILITIES of the output projection -- what replaces "this is a PDD
@@ -238,56 +245,41 @@ Three properties of this shape are load-bearing:
 1. **`output_projection.kind` is the capability that replaces the method name.** DMD2, LCM, or a recipe
    nobody has written yet, producing per-interval velocity heads, declares the same numbers and is
    served by the same code. That is the platform claim made concrete rather than asserted.
-2. **`servable` is a boolean, not a diagnostic.** The runtime asks one recipe-agnostic question. The
-   audit found the serving path reading PDD's `coverage_gate_pass` directly
-   (AUDIT.md F2) — right intent, wrong layer. The PDD-specific reason now lives under
-   `provenance.training_diagnostics`, where the runtime cannot reach it.
+2. **`servable` is a boolean, not a diagnostic.** The runtime asks one recipe-agnostic question, and
+   a recipe-specific reason for refusing lives under `provenance.training_diagnostics`, where the
+   runtime cannot reach it. `tests/test_runtime_boundary.py` fails if a serving module names such a
+   key.
 3. **`velocity_convention` closes a real trap declaratively.** A double sign flip here once produced
    0/100 on RoboTwin against a 92/100 control. It is currently a comment in
    [`runtime/block_heads.py`](instinctwm/runtime/block_heads.py); a comment cannot be checked.
 
-The audit and the staged migration to this schema are in AUDIT.md.
-
 ---
 
-## Operating points are descriptor deltas
+## A step schedule is a declared field
 
-An operating point is a checkpoint declaration with a different `phases` block. Nothing else.
+A step schedule is a field in the declaration, not a mode in the runtime. Two checkpoints whose
+`execution.nfe` differ are two declarations over the same weights:
 
-```python
-fast = spec.with_phases(video=2, action=4)     # PROPOSED API -- not implemented yet
-plan = Optimizer(tier_ceiling=Tier.BEHAVIORAL).compile(fast, deployment)
+```json
+"execution": { "nfe": { "video": 2, "action": 4 } }
 ```
 
-Today the same thing is expressed by `--degrade-nfe 2,4` on the eval server, which is how every Fast
-number in this repository was measured. `with_phases` is the shape it should take once operating
-points are first-class; the planner already computes profitability from `phases`, so the missing part
-is only the ergonomics of producing the delta.
+Publish a second checkpoint that says something else, or override the declared field at load:
 
-The planner re-derives which passes are legal *and profitable* from that. This is not theoretical
-tidiness — it is the only reason we caught the following.
+```python
+Runtime.from_pretrained("org/model", nfe={"video": 25, "action": 50})
+```
 
-**Graph capture inverts between operating points.** `P005` saves ~17 ms per forward but costs a fixed
-~700 ms per cycle to capture, breaking even near **41 forwards per cycle**:
+There is no `Fast` or `Quality` preset in the runtime, and there will not be one: a preset table here
+would be per-checkpoint tuning living in the wrong repository. For sweeping schedules during
+evaluation, the eval server takes `--degrade-nfe 2,4`.
 
-| Operating point | forwards/cycle | graph capture |
-|:--|--:|:--|
-| Quality (25 video / 50 action) | 75 | **profitable** — 1.205× |
-| Fast (2 video / 4 action) | 6 | **unprofitable** |
-
-If Fast were a separate runtime with a hardcoded pass list, this would have shipped as a 2× latency
-regression with the reason buried in a branch. Because profitability is computed from declared
-`phases`, `admit()` answers it directly and the log says why.
-
-The same arithmetic explains why further step reduction is not worth pursuing at Fast. The warm cost
-decomposition puts 81% of the cycle in transformer forwards and 18% in the keyframe VAE encode. Step
-count multiplies the first of those, so it is still the strongest lever — but the last few steps buy
-little, and the encode is untouched by any step reduction. **RETRACTED — see PROFILE.md.** A direct phase decomposition at 2V/4A attributes
-99.0% of the cycle to two components: transformer forwards (80.8%) and the VAE encode of the
-keyframe observations (17.7%). Everything else together is under 1%. There is no large unexplained
-fixed term; the 1164 ms intercept was an artifact of regressing cycle time on forward count across
-configurations where per-forward cost is not constant. Fast runs **10** forwards per cycle, not 6
-(each denoise loop runs one extra cache-only forward, plus 2 for the KV refresh: 3 + 5 + 2).
+The planner re-derives which passes are legal *and* profitable from the declared schedule. That
+matters because profitability genuinely inverts. Graph capture trades a fixed per-cycle capture cost
+against a saving on every forward, so it depends on how many forwards a cycle runs; at the schedule
+LingBot-VA ships with it measures 1.43× slower than not capturing, and `admit()` declines it. Had the
+schedule been a runtime mode with its own hardcoded pass list, that would have shipped as a
+regression with no record of why.
 
 ---
 

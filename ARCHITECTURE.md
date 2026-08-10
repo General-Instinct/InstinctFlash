@@ -2,8 +2,8 @@
 
 **One Runtime. Many Checkpoints. Shared Infrastructure.**
 
-This document describes how InstinctWM is organized and why. It is about the architecture, not the
-order in which the pieces were built — for that see HISTORY.md.
+This document describes how InstinctWM is organized and why. It describes the code on `main`; for how
+it got there, read the git history.
 
 ---
 
@@ -33,30 +33,26 @@ provenance key such as `coverage_gate_pass` as a live string. The gate is self-c
 original violation in a temporary module each run and confirms it is caught, because a gate that
 cannot fail on the bug it gates is worse than no gate.
 
-### There is no "Fast Runtime" and no "Quality Runtime"
+### There is no fast runtime and no quality runtime
 
-This is worth stating as a prohibition because we nearly built one.
+A checkpoint declares its step schedule in `execution.nfe`. Two checkpoints that differ only there
+are the same weights served two ways, and it is tempting to make each one a runtime with its own
+pass list.
 
-We operate two published operating points. **Quality** runs the teacher's full step schedule.
-**Fast** runs a reduced one — currently 2 video / 4 action steps, certified non-inferior at a −0.05
-margin over 566 matched pairs (p = 0.0085). It is tempting to describe these as two runtimes, ship
-two entry points, and let each pick its own pass set.
-
-That would have been wrong, and we have the measurement that proves it. Graph capture
-(`P005`) is **profitable at Quality and unprofitable at Fast**: it saves roughly 17 ms per forward
-pass but costs a fixed ~700 ms per cycle to capture, so it breaks even near 41 forwards per cycle.
-Quality runs 75. Fast runs 6.
-
-A "Fast Runtime" would have hardcoded that as two pass lists, and the *reason* would have been lost
-in a branch. Instead the profitability test belongs where it can be evaluated from declared facts:
+That would bury the reason for a decision inside a branch. Whether a pass pays depends on the
+declared schedule, so the test belongs where the schedule can be read:
 
 ```
-pass.admit(spec, deployment)   ->  is this legal, and is it profitable AT THIS OPERATING POINT?
+pass.admit(spec, deployment)   ->  is this legal here, and does it pay here?
 ```
 
-Fast is not a checkpoint and not a runtime. It is a **descriptor delta** — the same weights, a
-different declared step schedule — and the planner re-derives the pass set from it. Adding a third
-operating point requires no new code path.
+Graph capture is the case that makes this concrete. It trades a fixed per-cycle capture cost for a
+saving on every forward, so its profitability depends entirely on how many forwards a cycle runs. At
+the schedule LingBot-VA ships with, it loses: capture measures **1.43× slower** than not capturing,
+so `admit()` declines it and the plan says why. A runtime that hardcoded a pass list per mode would
+have shipped that regression instead of reporting it.
+
+Adding a third schedule needs no new code path.
 
 ---
 
@@ -94,15 +90,17 @@ hoist; it never learns which tensor that was.
 Planning is pure analysis: no torch, no checkpoint, no GPU.
 
 ```python
-model = load("lingbot-va-posttrain-robotwin")     # states facts; touches nothing
+model = load("wan_va")                            # states facts; touches nothing
 plan  = Optimizer(tier_ceiling=Tier.BITEXACT).compile(model.spec())
 print(plan.explain())                             # what fired, and why
-server = plan.serve(model, port=29056)            # the first line that needs a GPU
 ```
 
 If you need the weights loaded before the framework can tell you what it would do, it is a runtime
 wearing a framework's clothes. Being able to answer "what would you do to this model, and why" on a
 laptop is what makes the optimizer something you can argue with.
+
+This is the internal seam, not the way anyone serves a model. `Runtime.from_pretrained` runs the same
+compile step and then acts on it, which is why `runtime.explain()` can print the plan.
 
 ---
 
@@ -158,22 +156,21 @@ Six layers, ordered by *what they change*.
 Layer 1 is the training side of the seam. Layers 2–6 are the runtime.
 
 The layers are **not** a priority order, and treating them as one is how time gets wasted. Attention
-is Layer 4 and looks like the obvious first move; on our profile it is 7% of GPU-busy time. At the
-Fast operating point the picture is starker — the warm cost model is
+is Layer 4 and looks like the obvious first move; it is 7% of GPU-busy time here.
+
+Priority comes from decomposing the cycle at the schedule you actually serve. At LingBot-VA's
+shipped 2 video / 4 action steps — 10 transformer forwards per cycle, once the two cache-only
+forwards and the two KV-refresh forwards are counted — two components are 99% of it:
 
 ```
-transformer forwards   81%      10 forwards/cycle
-keyframe VAE encode    18%      one call
-everything else       < 1%      schedulers, prepare, pre/postprocess
+transformer forwards   80.8%
+keyframe VAE encode    17.7%
+everything else        < 1%     schedulers, prepare, pre/postprocess
 ```
 
-Priority comes from a decomposition at the operating point, never from the layer number — and never
-from a regression intercept. **RETRACTED — see PROFILE.md.** A direct phase decomposition at 2V/4A attributes
-99.0% of the cycle to two components: transformer forwards (80.8%) and the VAE encode of the
-keyframe observations (17.7%). Everything else together is under 1%. There is no large unexplained
-fixed term; the 1164 ms intercept was an artifact of regressing cycle time on forward count across
-configurations where per-forward cost is not constant. Fast runs **10** forwards per cycle, not 6
-(each denoise loop runs one extra cache-only forward, plus 2 for the KV refresh: 3 + 5 + 2).
+Measure the phases directly. Inferring a fixed overhead by regressing cycle time against forward
+count across configurations does not work here, because per-forward cost is not constant across
+them.
 
 ---
 
@@ -222,13 +219,9 @@ cannot fail on the bug it is gating is worse than no gate, because it produces a
 
 - [CHECKPOINTS.md](CHECKPOINTS.md) — what a checkpoint declares, and why the training method is
   deliberately absent from it
-- ATTENTION.md — Layer 4: the attention backend abstraction. The same two seams
-  applied to a layer whose candidates are exchangeable implementations of a declared function
-- AUDIT.md — the audit of this document's central claim against the code, with the two
-  places it is not yet true and the staged plan to make it so
-- LAYER5.md — Layer 5's required flow (planner → backend → verification) and why
-  dispatch is tried before kernels: the same measured comparison twice favoured dispatch
-- HISTORY.md — P001–P006 implementation milestones
+- [`instinctwm/passes/`](instinctwm/passes/) — every pass, with its legality argument in its docstring
+- [`instinctwm/verify/released.py`](instinctwm/verify/released.py) — the release ledger: what shipped,
+  at what tier, on what evidence
 - [eval/lingbot_va_robotwin/RESULTS.md](eval/lingbot_va_robotwin/RESULTS.md) — measured numbers and
   protocols
 
@@ -258,5 +251,5 @@ is what backs it.
 
 Released is not the same as recommended. `RELEASED` is a frozen ledger of what shipped, at what tier,
 on what evidence. `DISPOSITIONS` states what should run today. P005 and P006 forced the distinction:
-both were released and verified, and at the current operating point CUDA graph capture measures 1.43×
+both were released and verified, and at the schedule LingBot-VA ships with CUDA graph capture measures 1.43×
 *slower* than not capturing, so they stay in the ledger and are marked not recommended.
