@@ -108,6 +108,12 @@ def main() -> int:
              "real one exists: it is the same descriptor delta a step-reduction recipe produces "
              "(phases[].nfe), applied to the teacher weights. Used to prove the certification "
              "workflow can REJECT a genuine regression, not just pass synthetic unit tests.")
+    ap.add_argument("--guidance", default=None,
+        help="Per-stream guidance mode from a checkpoint declaration, e.g. "
+             "'video=positive_only,action=positive_only'. A mode name or a numeric scale. This is "
+             "the worker-side half of execution.guidance: without it a guidance-distilled "
+             "checkpoint served through a worker would be double-guided, because the declaration "
+             "only reached the in-process path.")
     ap.add_argument("--legacy-passes", action="store_true",
         help="ORACLE/FALLBACK. Use the backend-specific P004/P006 install() functions instead of "
              "the pass framework. The generic path is the DEFAULT as of 2026-08-02: it measured "
@@ -185,6 +191,20 @@ def main() -> int:
 
         S.run = run_pdd
         applied.append(f"block-heads={_heads_dir}")
+
+    if getattr(args, "guidance", None):
+        from instinctwm.adapters.lingbot_va import apply_declared_guidance
+        decl = {}
+        for part in args.guidance.split(","):
+            if "=" not in part:
+                continue
+            k, v_ = part.split("=", 1)
+            decl[k.strip()] = v_.strip()
+        for cfg in S.VA_CONFIGS.values():
+            got = apply_declared_guidance(cfg, decl)
+            if got:
+                applied.append(f"guidance={got}")
+                break
 
     if getattr(args, "degrade_nfe", None):
         v, ac = (int(x) for x in args.degrade_nfe.split(","))

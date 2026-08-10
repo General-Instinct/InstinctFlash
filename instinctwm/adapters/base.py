@@ -146,6 +146,42 @@ class AdapterSpec:
                 return p
         raise KeyError(name)
 
+    def with_nfe(self, nfe: Mapping[str, int]) -> "AdapterSpec":
+        """This spec at a different declared step schedule. Phases are matched by name.
+
+        WHY THE PLANNER NEEDS THIS. An adapter states the model's own schedule, which for LingBot-VA
+        is 26 video + 51 action forwards. A checkpoint then declares `execution.nfe`, and the server
+        is configured from it — so without this, passes reasoned about a 79-forward cycle while a
+        10-forward cycle actually ran, and every profitability argument was computed against a
+        configuration that never executes.
+
+        COMMIT STEPS ARE REMAPPED, and that is the whole reason this is a method rather than a dict
+        update. `commit_steps` holds indices WITHIN a phase: video declares `{25}`, meaning "the last
+        of the 26 forwards is the one that writes K/V". Rewriting nfe to 2 without touching that
+        leaves an index two forwards past the end, and `cfg_elision` reads `commit_steps` to decide
+        which forwards may NOT have their guidance branch dropped. The committing forward would then
+        be elided, its K/V never written, and the episode would go wrong several chunks later. A
+        terminal commit stays terminal; anything else is clamped into range.
+
+        Phases absent from `nfe` are untouched, so a declaration that names only the streams it cares
+        about leaves fixed phases such as `kv_refresh` alone. Values below `min_nfe` are raised to it.
+        """
+        import dataclasses
+
+        out = []
+        for p in self.phases:
+            if p.name not in nfe:
+                out.append(p)
+                continue
+            new = max(int(nfe[p.name]), p.min_nfe)
+            if new == p.nfe:
+                out.append(p)
+                continue
+            commits = frozenset(
+                (new - 1) if c == p.nfe - 1 else min(c, new - 1) for c in p.commit_steps)
+            out.append(dataclasses.replace(p, nfe=new, commit_steps=commits))
+        return dataclasses.replace(self, phases=tuple(out))
+
     def total_forwards(self) -> int:
         """Every transformer forward in one control step, across all phases.
 

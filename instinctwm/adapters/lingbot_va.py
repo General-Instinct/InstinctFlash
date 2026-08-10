@@ -123,6 +123,46 @@ def lingbot_va_spec() -> AdapterSpec:
     )
 
 
+#: Declared guidance mode -> the server's per-stream guidance scale attribute.
+_GUIDANCE_ATTR = {"video": "guidance_scale", "action": "action_guidance_scale"}
+
+
+def apply_declared_guidance(cfg, guidance) -> dict:
+    """Make `execution.guidance` actually take effect. Returns what was applied, for the log.
+
+    Before this, the declaration's guidance block was parsed, echoed by `describe()`, and then
+    ignored: nothing wrote `cfg.guidance_scale`. A checkpoint declaring `video: positive_only` --
+    which is what any guidance-distilled student declares -- was served with the CFG combine still
+    applied, so it produced wrong actions AND paid the doubled batch it had been trained to avoid.
+    Silently serving something other than what the checkpoint declares is the failure this whole
+    two-namespace design exists to prevent, and it was happening in the shipped path.
+
+    The declaration names the MODE; the scale is a model fact and stays in the server config. So
+    `positive_only` pins the scale to 1.0 (the server's own `guidance_scale > 1` test is what turns
+    CFG off), `cfg` leaves the model's configured scale alone, and an explicit numeric scale wins if
+    a checkpoint declares one.
+    """
+    applied = {}
+    for stream, mode in dict(guidance or {}).items():
+        attr = _GUIDANCE_ATTR.get(stream)
+        if attr is None or not hasattr(cfg, attr):
+            continue
+        scale = None
+        if isinstance(mode, (int, float)) and not isinstance(mode, bool):
+            scale = float(mode)
+        elif isinstance(mode, dict):                      # {"mode": "cfg", "scale": 5.0}
+            if mode.get("scale") is not None:
+                scale = float(mode["scale"])
+            elif str(mode.get("mode", "")).lower() in ("positive_only", "none"):
+                scale = 1.0
+        elif str(mode).lower() in ("positive_only", "none"):
+            scale = 1.0
+        if scale is not None:
+            setattr(cfg, attr, scale)
+            applied[stream] = scale
+    return applied
+
+
 class _ControlLoop:
     """One loopable control cycle over wan_va's two-call server protocol.
 
@@ -378,6 +418,7 @@ class LingBotVA:
         if n:
             cfg.num_inference_steps = int(n.get("video", cfg.num_inference_steps))
             cfg.action_num_inference_steps = int(n.get("action", cfg.action_num_inference_steps))
+        apply_declared_guidance(cfg, checkpoint.execution.guidance)
 
         # the plan must be installed BEFORE the model is built: fsdp_elision replaces the bound
         # _configure_model that the build calls through.
@@ -403,19 +444,29 @@ class LingBotVA:
         argv = [python, "-u", str(serve), "--config-name", "robotwin",
                 "--port", str(port), *shipped_configuration()]
 
-        n = dict(nfe or {})
+        # The DECLARED schedule, with `nfe=` overriding it -- the same resolution order as
+        # build_in_process. This used to read the override only, so a checkpoint declaring
+        # nfe {video: 2, action: 4} was served by a worker at the upstream 25/50 default while the
+        # identical checkpoint served in-process ran 2/4. Two placements, two behaviours, from one
+        # declaration: exactly what `placement` is supposed to be invisible to.
+        n = {**dict(checkpoint.execution.nfe or {}), **dict(nfe or {})}
         if n:
-            # an explicit override of a DECLARED field, passed through as the harness spells it.
             argv += ["--degrade-nfe", f"{n.get('video', 2)},{n.get('action', 4)}"]
+
+        g = dict(checkpoint.execution.guidance or {})
+        if g:
+            argv += ["--guidance", ",".join(f"{k}={v}" for k, v in sorted(g.items()))]
 
         env = {"PYTHONUNBUFFERED": "1"}
         shim = os.environ.get("IWM_FA_SHIM_DIR")
         if shim:
             env["PYTHONPATH"] = shim + os.pathsep + os.environ.get("PYTHONPATH", "")
-        base = (checkpoint.execution.extra or {}).get("base_weights")
-        if base:
-            # the frozen stack lives in another repo; the server resolves it from here
-            env["LINGBOT_CKPT"] = str(base)
+        # THE COMPOSED TREE, not the base pointer. This read `base_weights` and handed the worker a
+        # Hub repo id -- so the worker loaded the BASE checkpoint's transformer and ignored the
+        # published package entirely, serving different weights from the same checkpoint depending on
+        # placement. `materialize()` is what composes the packaged transformer with the frozen stack,
+        # and it is what the in-process path has always used.
+        env["LINGBOT_CKPT"] = self.materialize(checkpoint)
         if device:
             env["CUDA_VISIBLE_DEVICES"] = device.split(":")[-1] if ":" in device else device
         return argv, env

@@ -82,7 +82,14 @@ class Runtime:
         except KeyError as e:
             raise UnknownBackboneError(_unknown_backbone_message(ckpt, available_models())) from e
 
+        # Plan against the schedule that will actually run, not the model's own default. The
+        # checkpoint declares `execution.nfe`; `nfe=` overrides it per stream. Without this the
+        # planner priced a 79-forward cycle while a 10-forward cycle executed.
         spec = adapter.spec()
+        schedule = {**dict(ckpt.execution.nfe or {}), **dict(nfe or {})}
+        if schedule:
+            spec = spec.with_nfe(schedule)
+
         from instinctwm.planners.planner import Optimizer
         plan = Optimizer().compile(spec, capabilities=ckpt.capabilities())
 
