@@ -234,7 +234,7 @@ NO_RUNTIME_ACTION: dict[str, str] = {
 }
 
 
-def install_plan(server_module, va_server_cls, plan) -> list[str]:
+def install_plan(server_module, va_server_cls, plan, *, phase=None, server=None) -> list[str]:
     """Apply every applied pass in `plan` to the imported upstream server.
 
     Raises on any applied pass this backend cannot install. That is the point: a server whose
@@ -247,10 +247,50 @@ def install_plan(server_module, va_server_cls, plan) -> list[str]:
     the server module mutated in a state no plan describes, and the patches are monkeypatches
     on an imported module, so there is nothing to roll back to.
     """
-    unsupported = [
-        r.name for r in plan.applied
-        if r.name not in INSTALLERS and r.name not in NO_RUNTIME_ACTION
-    ]
+    from instinctwm.config import InstallPhase, PassMode, default_registry
+
+    phase = InstallPhase.PRE_BUILD if phase is None else InstallPhase(phase)
+    registry = default_registry()
+
+    configured = {}
+    unsupported = []
+    for result in plan.applied:
+        if result.config_id:
+            definition = registry.get(result.config_id)
+            if result.name != result.config_id:
+                raise RuntimeError(
+                    f"optimization result name {result.name!r} does not match registered id "
+                    f"{result.config_id!r}")
+            if result.config_version != definition.version:
+                raise RuntimeError(
+                    f"optimization plan requests {result.config_id} v{result.config_version}, but "
+                    f"this runtime provides v{definition.version}; refusing a version-skewed install")
+            if result.install_phase != definition.install_phase.value:
+                raise RuntimeError(
+                    f"optimization plan phase for {result.config_id!r} is {result.install_phase!r}, "
+                    f"but the registered pass requires {definition.install_phase.value!r}")
+            if result.config_layer != definition.layer.value:
+                raise RuntimeError(
+                    f"optimization plan layer for {result.config_id!r} is {result.config_layer!r}, "
+                    f"but the registered pass belongs to {definition.layer.value!r}")
+            try:
+                mode = PassMode(result.config_mode)
+            except (TypeError, ValueError) as e:
+                raise RuntimeError(
+                    f"optimization plan has invalid mode {result.config_mode!r} for "
+                    f"{result.config_id!r}") from e
+            if result.required != (mode is PassMode.REQUIRED):
+                raise RuntimeError(
+                    f"optimization plan required marker disagrees with mode for {result.config_id!r}")
+            normalized = definition.validate_params(result.config_params)
+            if normalized != result.config_params:
+                raise RuntimeError(
+                    f"optimization plan parameters for {result.config_id!r} are not normalized")
+            configured[id(result)] = definition
+            if definition.installer is None and not definition.no_runtime_action:
+                unsupported.append(result.name)
+        elif result.name not in INSTALLERS and result.name not in NO_RUNTIME_ACTION:
+            unsupported.append(result.name)
     if unsupported:
         raise NotImplementedError(
             f"the lingbot-va backend has no installer for {unsupported}. Either implement one "
@@ -261,12 +301,64 @@ def install_plan(server_module, va_server_cls, plan) -> list[str]:
 
     applied: list[str] = []
     for result in plan.applied:
+        definition = configured.get(id(result))
+        if definition is not None:
+            if definition.install_phase is not phase:
+                continue
+            if definition.installer is not None:
+                applied.extend(definition.installer(
+                    server_module, va_server_cls, server,
+                    {**dict(result.params), **dict(result.config_params)}))
+            else:
+                applied.append(
+                    f"{result.name} (no runtime action: {definition.no_runtime_action})")
+            continue
+        if phase is not InstallPhase.PRE_BUILD:
+            continue
         installer = INSTALLERS.get(result.name)
         if installer is not None:
             applied.extend(installer(server_module, va_server_cls))
         else:
             applied.append(f"{result.name} (no runtime action: {NO_RUNTIME_ACTION[result.name]})")
     return applied
+
+
+def wrap_server_class_for_plan(server_module, va_server_cls, plan):
+    """Install live-model phases without teaching the upstream ``run()`` about InstinctWM.
+
+    ``run()`` constructs ``VA_Server`` internally. A small subclass is therefore the only seam at
+    which post-build/post-reset passes can receive the live server while leaving upstream unmodified.
+    The complete plan has already been preflighted by the PRE_BUILD call.
+    """
+    from instinctwm.config import InstallPhase
+
+    phases = {r.install_phase for r in plan.applied if r.config_id}
+    if not phases.intersection({InstallPhase.POST_BUILD.value, InstallPhase.POST_RESET.value}):
+        return va_server_cls
+
+    class _ConfiguredServer(va_server_cls):
+        def __init__(self, *args, **kwargs):
+            self._iwm_configured_build_complete = False
+            super().__init__(*args, **kwargs)
+            lines = install_plan(server_module, type(self), plan,
+                                 phase=InstallPhase.POST_BUILD, server=self)
+            for line in lines:
+                print(f"InstinctWM post-build: {line}", flush=True)
+            self._iwm_configured_build_complete = True
+
+        def _reset(self, *args, **kwargs):
+            out = super()._reset(*args, **kwargs)
+            if not getattr(self, "_iwm_configured_build_complete", False):
+                return out
+            lines = install_plan(server_module, type(self), plan,
+                                 phase=InstallPhase.POST_RESET, server=self)
+            for line in lines:
+                print(f"InstinctWM post-reset: {line}", flush=True)
+            return out
+
+    _ConfiguredServer.__name__ = f"Configured{va_server_cls.__name__}"
+    _ConfiguredServer.__qualname__ = _ConfiguredServer.__name__
+    return _ConfiguredServer
 
 
 def install_deterministic_seed(server_module, seed: int) -> list[str]:

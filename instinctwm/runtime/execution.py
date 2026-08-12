@@ -42,7 +42,7 @@ from typing import Any, Mapping, Protocol
 class ExecutionBackend(Protocol):
     """What `Runtime` needs from a placement. Three methods, none of them transport-shaped."""
 
-    def predict(self, observation: Mapping[str, Any]) -> Any: ...
+    def predict(self, observation: Mapping[str, Any], *, executed_action: Any = None) -> Any: ...
     def reset(self, **conditioning: Any) -> None: ...
     def close(self) -> None: ...
 
@@ -197,8 +197,11 @@ class WorkerBackend:
         return self._client
 
     # -- the same three methods ------------------------------------------------------------------
-    def predict(self, observation):
-        return self._ensure().infer(dict(observation))
+    def predict(self, observation, *, executed_action=None):
+        payload = dict(observation)
+        if executed_action is not None:
+            payload["executed_action"] = executed_action
+        return self._ensure().infer(payload)
 
     def reset(self, **conditioning):
         self._ensure().infer(dict(reset=True, **conditioning))

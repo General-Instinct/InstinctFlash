@@ -72,6 +72,43 @@ def test_install_plan_refuses_a_pass_it_cannot_install():
     raise AssertionError("install_plan must refuse a plan it cannot fully apply")
 
 
+def test_yaml_plan_installs_by_registry_metadata_and_preflights_version_skew():
+    if not HAVE_TORCH:
+        return
+    from dataclasses import replace
+
+    from instinctwm.adapters.lingbot_va import lingbot_va_spec
+    from instinctwm.runtime.lingbot_install import install_plan
+
+    config = {
+        "schema_version": 1, "kind": "OptimizationPipeline", "name": "one-pass",
+        "policy": {"tier_ceiling": "bitexact", "unlisted": "off"},
+        "layers": {
+            "graph": [{"id": "fsdp_elision", "mode": "on"}],
+            "cache": [], "attention": [], "kernel": [], "hardware": [],
+        },
+    }
+    plan = Optimizer(optimization_config=config).compile(
+        lingbot_va_spec(), capabilities=frozenset({"backbone:wan_va"}))
+    server = _FakeServerModule()
+    original = server._configure_model
+    assert install_plan(server, server.VA_Server, plan) == ["fsdp_elision"]
+    assert server._configure_model is not original
+
+    # The whole artifact is checked before the first mutation. A worker with a different plugin/pass
+    # version must not start under a plan evaluated by the parent process.
+    skewed = replace(plan, results=[replace(plan.results[0], config_version="999")])
+    server = _FakeServerModule()
+    original = server._configure_model
+    try:
+        install_plan(server, server.VA_Server, skewed)
+    except RuntimeError as exc:
+        assert "version-skewed" in str(exc)
+        assert server._configure_model is original
+    else:
+        raise AssertionError("configured plan must refuse pass version skew")
+
+
 def test_installers_refuse_a_server_that_changed_shape():
     if not HAVE_TORCH:
         return

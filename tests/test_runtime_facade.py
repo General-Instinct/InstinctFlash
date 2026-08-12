@@ -158,6 +158,32 @@ def test_composed_tree_never_lands_inside_the_package():
         check(again == composed, "materialize() is idempotent")
 
 
+def test_runtime_plans_at_the_checkpoint_declared_nfe():
+    print("\n=== 8. optimizer sees the checkpoint's real operating point ===")
+    from instinctwm import Runtime
+    import instinctwm.runtime.facade as facade
+
+    class _Backend:
+        def close(self):
+            pass
+
+    with tempfile.TemporaryDirectory() as td:
+        d = _pkg(Path(td) / "p", backbone="wan_va",
+                 extra={"nfe": {"video": 2, "action": 4}})
+        original = facade.choose_backend
+        facade.choose_backend = lambda *args, **kwargs: (_Backend(), "test placement")
+        try:
+            runtime = Runtime.from_pretrained(d, optimization_config="shipped")
+        finally:
+            facade.choose_backend = original
+        conditioning = next(
+            result for result in runtime.plan.results
+            if result.name == "conditioning_prefill")
+        check("10 forwards per control step" in conditioning.reason,
+              "2V/4A declaration plans at 10 actual forwards", conditioning.reason)
+        runtime.close()
+
+
 def main() -> int:
     test_public_api_is_small()
     test_describe_reads_no_provenance_and_no_weights()
@@ -166,6 +192,7 @@ def main() -> int:
     test_placement_is_a_deployment_choice_not_a_model_property()
     test_no_fast_quality_presets()
     test_composed_tree_never_lands_inside_the_package()
+    test_runtime_plans_at_the_checkpoint_declared_nfe()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")

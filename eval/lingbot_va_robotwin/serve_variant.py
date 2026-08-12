@@ -53,6 +53,12 @@ def main() -> int:
     ap.add_argument("--config-name", default="robotwin")
     ap.add_argument("--port", type=int, default=None)
     ap.add_argument("--save_root", default=None)
+    ap.add_argument("--optimization-config", default=None,
+        help="YAML optimization pipeline (or built-in preset name). Mutually exclusive with the "
+             "legacy optimization flags below.")
+    ap.add_argument("--optimization-plan", default=None,
+        help="Resolved Plan artifact produced by Runtime for this worker. Internal/reproducibility "
+             "interface; use --optimization-config when launching this file by hand.")
     ap.add_argument("--no-fsdp", action="store_true")
     ap.add_argument("--no-empty-cache", action="store_true")
     ap.add_argument("--no-debug-dump", action="store_true")
@@ -132,6 +138,65 @@ def main() -> int:
              "disagree and any A/B on output values is meaningless without this.")
     args = ap.parse_args()
 
+    if args.optimization_config and args.optimization_plan:
+        raise SystemExit("--optimization-config and --optimization-plan are mutually exclusive")
+    _legacy_optimization_values = {
+        "--no-fsdp": args.no_fsdp,
+        "--no-empty-cache": args.no_empty_cache,
+        "--no-debug-dump": args.no_debug_dump,
+        "--conditioning-prefill": args.conditioning_prefill,
+        "--hoist-casts": args.hoist_casts,
+        "--ring-kv": args.ring_kv,
+        "--graph-blocks": args.graph_blocks,
+        "--generic-only": args.generic_only is not None,
+        "--generic-dry-run": args.generic_dry_run,
+        "--persistent-graph": args.persistent_graph,
+        "--conv-layout": args.conv_layout,
+        "--legacy-passes": args.legacy_passes,
+        "--stable-pools": args.stable_pools,
+        "--no-keep-graphs": args.no_keep_graphs,
+    }
+    if (args.optimization_config or args.optimization_plan):
+        conflicts = [name for name, active in _legacy_optimization_values.items() if active]
+        if conflicts:
+            raise SystemExit(
+                "YAML/Plan optimization cannot be combined with legacy optimization flags: "
+                + ", ".join(conflicts))
+
+    _configured_plan = None
+    if args.optimization_plan:
+        from instinctwm.planners.planner import Plan
+        _configured_plan = Plan.read(args.optimization_plan)
+    elif args.optimization_config:
+        from instinctwm.adapters.lingbot_va import LingBotVA
+        from instinctwm.planners.planner import Optimizer
+        configured_nfe = None
+        if args.degrade_nfe:
+            video_nfe, action_nfe = (int(x) for x in args.degrade_nfe.split(","))
+            configured_nfe = {"video": video_nfe, "action": action_nfe}
+        spec = LingBotVA().spec_for_execution(configured_nfe)
+        _configured_plan = Optimizer(optimization_config=args.optimization_config).compile(
+            spec, capabilities=frozenset({"backbone:wan_va"}))
+    if _configured_plan is not None:
+        from instinctwm.adapters.lingbot_va import lingbot_va_spec
+        expected_model = lingbot_va_spec().model_id
+        if _configured_plan.model_id != expected_model:
+            raise SystemExit(
+                f"optimization plan targets {_configured_plan.model_id!r}, not {expected_model!r}")
+        runtime_nfe = {"video": 25, "action": 50}
+        if args.degrade_nfe:
+            video_nfe, action_nfe = (int(x) for x in args.degrade_nfe.split(","))
+            runtime_nfe = {"video": video_nfe, "action": action_nfe}
+        mismatched = {
+            phase: (configured, runtime_nfe[phase] + 1)
+            for phase, configured in _configured_plan.operating_point.items()
+            if phase in runtime_nfe and configured != runtime_nfe[phase] + 1
+        }
+        if mismatched:
+            raise SystemExit(
+                "optimization plan was evaluated at a different NFE than this server: "
+                f"{mismatched} (plan, runtime actual forwards)")
+
     # Every variant below calls the SAME installer that `plan.serve()` calls. They used to be
     # separate inline patches here, which meant an A/B could measure a patch that production
     # never applied.
@@ -142,11 +207,19 @@ def main() -> int:
         install_debug_dump_elision,
         install_deterministic_seed,
         install_fsdp_elision,
+        install_plan,
+        wrap_server_class_for_plan,
     )
 
     S = import_lingbot_server()
 
     applied = []
+    if _configured_plan is not None:
+        applied += install_plan(S, S.VA_Server, _configured_plan)
+        S.VA_Server = wrap_server_class_for_plan(S, S.VA_Server, _configured_plan)
+        applied.append(
+            f"pipeline={_configured_plan.optimization_name}"
+            f"[{(_configured_plan.optimization_fingerprint or '')[:12]}]")
 
     _heads_arg = getattr(args, "block_heads", None)
     if getattr(args, "pdd_heads", None):
@@ -274,7 +347,8 @@ def main() -> int:
 
     _surface = []            # one-element cell: `global` cannot rebind a local of main()
     _hoist_g = _pools_g = _promote_g = None
-    _use_legacy = (getattr(args, "legacy_passes", False)
+    _use_legacy = (_configured_plan is not None
+                   or getattr(args, "legacy_passes", False)
                    or getattr(args, "hoist_casts", False)
                    or getattr(args, "stable_pools", False))
     if not _use_legacy:

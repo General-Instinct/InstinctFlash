@@ -12,6 +12,7 @@ refuses to serve a plan it could not fully apply.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Sequence
 
 from instinctwm.adapters.base import (
@@ -229,6 +230,32 @@ class LingBotVA:
     def spec(self) -> AdapterSpec:
         return lingbot_va_spec()
 
+    def spec_for_execution(self, nfe) -> AdapterSpec:
+        """Apply the checkpoint's denoise-step declaration to planner phase facts.
+
+        Upstream's scheduler adds one terminal/cache timestep to each configured denoise count, so
+        execution ``video: 2, action: 4`` means planner phases 3 and 5 (10 total with KV refresh).
+        Keeping that conversion here prevents the generic runtime from learning a Wan scheduler rule.
+        """
+        values = dict(nfe or {})
+        spec = self.spec()
+        unknown = sorted(set(values) - {phase.name for phase in spec.phases})
+        if unknown:
+            raise ValueError(f"unknown LingBot execution.nfe phase(s): {unknown}")
+        phases = []
+        for phase in spec.phases:
+            if phase.name not in values:
+                phases.append(phase)
+                continue
+            declared = values[phase.name]
+            if isinstance(declared, bool) or not isinstance(declared, int) or declared < 1:
+                raise ValueError(f"execution.nfe.{phase.name} must be a positive integer")
+            actual = declared + 1
+            phases.append(replace(
+                phase, nfe=actual,
+                commit_steps=(frozenset({actual - 1}) if phase.commit_steps else frozenset())))
+        return replace(spec, phases=tuple(phases))
+
     def install(self, server_module: object, plan) -> Sequence[str]:
         # Imported here, not at module scope: the runtime layer needs torch, and reading a
         # model's declarations must not.
@@ -252,10 +279,13 @@ class LingBotVA:
         from instinctwm.runtime.lingbot_install import (
             import_lingbot_server,
             install_deterministic_seed,
+            wrap_server_class_for_plan,
         )
 
         server_module = import_lingbot_server(self.lingbot_root)
         applied = list(self.install(server_module, plan))
+        server_module.VA_Server = wrap_server_class_for_plan(
+            server_module, server_module.VA_Server, plan)
         if deterministic_seed is not None:
             applied += install_deterministic_seed(server_module, deterministic_seed)
 
@@ -351,7 +381,10 @@ class LingBotVA:
         """Build the server in THIS process and return a loopable control loop over it."""
         import os
 
-        from instinctwm.runtime.lingbot_install import import_lingbot_server
+        from instinctwm.runtime.lingbot_install import (
+            import_lingbot_server,
+            wrap_server_class_for_plan,
+        )
 
         composed = self.materialize(checkpoint)
         os.environ["LINGBOT_CKPT"] = composed
@@ -374,7 +407,8 @@ class LingBotVA:
         cfg.rank = cfg.local_rank = 0
         cfg.world_size = 1
 
-        n = dict(nfe or checkpoint.execution.nfe or {})
+        n = dict(checkpoint.execution.nfe or {})
+        n.update(dict(nfe or {}))
         if n:
             cfg.num_inference_steps = int(n.get("video", cfg.num_inference_steps))
             cfg.action_num_inference_steps = int(n.get("action", cfg.action_num_inference_steps))
@@ -382,6 +416,7 @@ class LingBotVA:
         # the plan must be installed BEFORE the model is built: fsdp_elision replaces the bound
         # _configure_model that the build calls through.
         applied = list(self.install(S, plan))
+        S.VA_Server = wrap_server_class_for_plan(S, S.VA_Server, plan)
         server = S.VA_Server(cfg)
         print(f"InstinctWM in-process: applied {applied or ['STOCK BASELINE']}", flush=True)
         return _ControlLoop(server, tuple(cfg.obs_cam_keys))
@@ -390,23 +425,35 @@ class LingBotVA:
         """How to start this model as a managed worker. Returns (argv, env-overrides).
 
         Reuses `serve_variant.py` -- the entry point the project already gates and measures -- rather
-        than adding a second serving path that would need its own bit-exactness evidence. The flags
-        come from `shipped_configuration()`, so the worker runs exactly what the registry says ships.
+        than adding a second serving path that would need its own bit-exactness evidence. A YAML
+        pipeline crosses the process boundary as the exact resolved, fingerprinted Plan artifact.
+        Legacy plans retain the previous released-flag behaviour for one migration cycle.
         """
         import os
         from pathlib import Path
 
-        from instinctwm.verify.released import shipped_configuration
-
         iwm_root = Path(__file__).resolve().parents[2]
         serve = iwm_root / "eval" / "lingbot_va_robotwin" / "serve_variant.py"
         argv = [python, "-u", str(serve), "--config-name", "robotwin",
-                "--port", str(port), *shipped_configuration()]
+                "--port", str(port)]
+        if plan.optimization_fingerprint:
+            root = Path(os.environ.get("IWM_CACHE") or
+                        Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "instinctwm")
+            artifact = root / "plans" / (
+                f"{plan.optimization_fingerprint}-{plan.execution_fingerprint()}.json")
+            plan.write(artifact)
+            argv += ["--optimization-plan", str(artifact)]
+        else:
+            from instinctwm.verify.released import shipped_configuration
+            argv += shipped_configuration()
 
-        n = dict(nfe or {})
+        n = dict(checkpoint.execution.nfe or {})
+        n.update(dict(nfe or {}))
         if n:
             # an explicit override of a DECLARED field, passed through as the harness spells it.
-            argv += ["--degrade-nfe", f"{n.get('video', 2)},{n.get('action', 4)}"]
+            video_nfe = n.get("video", plan.operating_point.get("video", 26) - 1)
+            action_nfe = n.get("action", plan.operating_point.get("action", 51) - 1)
+            argv += ["--degrade-nfe", f"{video_nfe},{action_nfe}"]
 
         env = {"PYTHONUNBUFFERED": "1"}
         shim = os.environ.get("IWM_FA_SHIM_DIR")

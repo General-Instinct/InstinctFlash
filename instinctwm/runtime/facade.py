@@ -63,6 +63,7 @@ class Runtime:
         device: str | None = None,
         placement: str = "auto",
         strict: bool = True,
+        optimization_config: str | Path | Mapping[str, Any] | None = "shipped",
     ) -> "Runtime":
         """Load a checkpoint and return a runtime handle.
 
@@ -72,6 +73,9 @@ class Runtime:
         `placement` 'auto' | 'in_process' | 'worker'. WHERE the model runs, not WHAT it is; 'auto'
                     is right unless you are deliberately isolating the model.
         `strict`    False downgrades the servable refusal to a warning, for inspection tooling.
+        `optimization_config` a built-in preset (``shipped``, ``bitexact``, ``stock``), a YAML
+                    path, or an already-loaded mapping. ``None`` keeps the legacy planner for one
+                    migration cycle.
         """
         ckpt = _load_package(model_id_or_path, revision=revision, require_servable=strict)
 
@@ -82,9 +86,13 @@ class Runtime:
         except KeyError as e:
             raise UnknownBackboneError(_unknown_backbone_message(ckpt, available_models())) from e
 
-        spec = adapter.spec()
+        effective_nfe = dict(ckpt.execution.nfe or {})
+        effective_nfe.update(dict(nfe or {}))
+        specialize = getattr(adapter, "spec_for_execution", None)
+        spec = specialize(effective_nfe) if specialize is not None else adapter.spec()
         from instinctwm.planners.planner import Optimizer
-        plan = Optimizer().compile(spec, capabilities=ckpt.capabilities())
+        plan = Optimizer(optimization_config=optimization_config).compile(
+            spec, capabilities=ckpt.capabilities())
 
         backend, why = choose_backend(placement, adapter, ckpt, plan, device=device, nfe=nfe)
         return cls(ckpt, adapter, plan, backend, placement_reason=why)
