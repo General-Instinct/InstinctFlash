@@ -415,6 +415,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "huggingface-hub" },
+    { name = "pyyaml" },
 ]
 
 [package.optional-dependencies]
@@ -445,6 +446,7 @@ requires-dist = [
     { name = "huggingface-hub", specifier = ">=0.30" },
     { name = "numpy", marker = "extra == 'eval'", specifier = ">=1.21" },
     { name = "numpy", marker = "extra == 'runtime'", specifier = ">=1.21" },
+    { name = "pyyaml", specifier = ">=6.0" },
     { name = "safetensors", marker = "extra == 'runtime'", specifier = ">=0.4" },
     { name = "torch", marker = "extra == 'runtime'", specifier = ">=2.4" },
     { name = "transformers", marker = "extra == 'diffusion'", specifier = ">=4.55" },

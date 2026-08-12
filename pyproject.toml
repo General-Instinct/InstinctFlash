@@ -22,9 +22,10 @@ classifiers = [
 # The core stays laptop-installable -- no torch, no CUDA -- because deciding which optimizations are
 # legal has to work offline. `huggingface_hub` is the one exception and it is not a compromise: it is
 # pure Python, and without it `Runtime.from_pretrained("org/model")` and `describe("org/model")`
-# cannot resolve a repo id at all. It was previously in NO dependency list, so the documented install
-# produced a runtime that could not load the thing the README opens by loading.
-dependencies = ["huggingface_hub>=0.30"]
+# cannot resolve a repo id at all. PyYAML is the small parser for strict optimization pipelines.
+# They were previously in no dependency list, so the documented install could not load or configure
+# the thing the README opens by loading.
+dependencies = ["huggingface_hub>=0.30", "PyYAML>=6.0"]
 
 [project.optional-dependencies]
 # Enough to APPLY a plan and run a model whose weights are plain safetensors.
@@ -42,6 +43,9 @@ Repository = "https://github.com/general-instinct/InstinctWM"
 [tool.setuptools.packages.find]
 include = ["instinctwm*"]
 
+[tool.setuptools.package-data]
+instinctwm = ["config/presets/*.yaml"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
@@ -50,8 +54,8 @@ testpaths = ["tests"]
 #
 # The environment split is not a convenience here, it enforces the invariant the
 # README states: analysis (adapters, Optimizer, every pass) must work with no
-# torch and no GPU. `dependencies = []` above means the DEFAULT environment has
-# no torch in it, so `./scripts/task.sh test` fails loudly the day a pass grows a
+# torch and no GPU. The core dependency list above has no torch, so the DEFAULT environment has no
+# torch in it, and `./scripts/task.sh test` fails loudly the day a pass grows a
 # torch import, instead of passing because torch happened to be in the one venv
 # everybody used.
 #

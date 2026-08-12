@@ -266,9 +266,8 @@ BASELINE = {
 # justifies it. A pass can be released and not recommended; those are different facts and conflating
 # them is what produced the inconsistency.
 #
-# THIS TABLE IS THE SINGLE SOURCE OF TRUTH FOR THE SHIPPED CONFIGURATION. The launch scripts, the
-# README and tests/test_shipped_config.py all derive from `shipped_configuration()`; if they disagree
-# the test fails. Add a flag here, not in four places.
+# This table remains the evidence/disposition ledger. Selection now lives in the ``shipped`` YAML
+# preset; ``shipped_configuration()`` derives legacy CLI flags from that preset during migration.
 # ---------------------------------------------------------------------------------------------------
 
 SERVED = "SERVED"                    # in the default serving path
@@ -328,14 +327,13 @@ def disposition_of(pid: str) -> Disposition:
 def shipped_configuration() -> list[str]:
     """The serve_variant.py flags that constitute the default serving path.
 
-    Every launch script and the README must match this exactly; test_shipped_config.py enforces it.
+    The shipped YAML is the selection source of truth. Every launch script and the README must match
+    this compatibility projection exactly; test_shipped_config.py enforces it.
     """
-    out: list[str] = []
-    for r in RELEASED:                      # RELEASED order, so the list is stable and reviewable
-        d = _BY_PID[r.pid]
-        if d.status == SERVED:
-            out.extend(d.serving_flags)
-    return out
+    from instinctwm.config import resolve_pipeline
+
+    return [flag for item in resolve_pipeline("shipped").ordered
+            for flag in item.definition.legacy_flags]
 
 
 def shipped_pids() -> list[str]:

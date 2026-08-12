@@ -1,0 +1,19 @@
+schema_version: 1
+kind: OptimizationPipeline
+name: bitexact
+policy:
+  tier_ceiling: bitexact
+  allow_experimental: false
+  unlisted: off
+layers:
+  graph:
+    - {id: fsdp_elision, mode: on}
+    - {id: allocator_churn_elision, mode: on}
+    - {id: debug_dump_elision, mode: on}
+    - {id: generic_eager_stack, mode: on}
+  cache:
+    - {id: conditioning_prefill, mode: on}
+    - {id: ring_kv_addressing, mode: on}
+  attention: []
+  kernel: []
+  hardware: []
