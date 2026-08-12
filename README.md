@@ -44,6 +44,19 @@ from instinctwm import Runtime
 runtime = Runtime.from_pretrained("general-instinct/lingbot-va")
 ```
 
+The default uses the verified `shipped` optimization pipeline. You can choose the bit-exact chain,
+the unmodified baseline, or your own YAML composition:
+
+```python
+runtime = Runtime.from_pretrained("general-instinct/lingbot-va", optimization_config="bitexact")
+runtime = Runtime.from_pretrained("general-instinct/lingbot-va", optimization_config="stock")
+runtime = Runtime.from_pretrained("general-instinct/lingbot-va", optimization_config="optimizations.yaml")
+```
+
+The YAML format, pass modes, dependencies and plugin entry point are documented in
+[ARCHITECTURE.md](ARCHITECTURE.md#yaml-optimization-pipelines). `runtime.explain()` includes the
+resolved pass order and configuration fingerprint.
+
 To see what a checkpoint is before downloading its weights:
 
 ```python
@@ -77,8 +90,8 @@ on what actually happened:
 action = episode.predict(observation, executed_action=clipped)
 ```
 
-That is the whole API. There is nothing to configure, no server to start, and no optimization to
-choose.
+That is the whole required API. There is no server to start, and optimization configuration is
+optional.
 
 ---
 
@@ -122,7 +135,7 @@ design; the optimization passes live in [`instinctwm/passes/`](instinctwm/passes
 ./scripts/task.sh test-all    # adds the torch-dependent suites
 ```
 
-The core is deliberately dependency-free so that reasoning about a checkpoint works on a laptop.
+The core deliberately has no torch or CUDA dependency, so reasoning about a checkpoint works on a laptop.
 Tests that need torch, diffusers or a GPU skip rather than fail.
 
 ## Citation

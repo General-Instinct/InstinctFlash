@@ -157,6 +157,84 @@ Six layers, ordered by *what they change*.
 
 Layer 1 is the training side of the seam. Layers 2–6 are the runtime.
 
+### YAML optimization pipelines
+
+Layers 2–6 can be selected and composed without editing Python. The default is the built-in
+`shipped` preset; `bitexact` removes every non-bit-exact pass, and `stock` applies none. A custom
+pipeline uses the same strict schema:
+
+```yaml
+schema_version: 1
+kind: OptimizationPipeline
+name: my-runtime
+policy:
+  tier_ceiling: numeric       # bitexact | numeric | behavioral
+  allow_experimental: false
+  unlisted: off               # auto selects only registry-approved auto passes
+layers:
+  graph:
+    - {id: fsdp_elision, mode: required}
+  cache:
+    - {id: ring_kv_addressing, mode: on}
+  attention: []
+  kernel:
+    - id: conv_layout_ndhwc
+      mode: auto
+      params: {prefer_bitexact: false}
+  hardware: []
+```
+
+```python
+runtime = Runtime.from_pretrained(checkpoint, optimization_config="my-runtime.yaml")
+```
+
+The four modes have deliberately different failure behaviour:
+
+| mode | meaning |
+|:--|:--|
+| `auto` | Consider it only if the registry marks it safe for automatic selection. |
+| `on` | Consider it explicitly, but still obey capability, applicability, tier and performance gates. |
+| `required` | Obey the same gates as `on`, but fail startup if any gate refuses it. |
+| `off` | Disable it; fail resolution if another selected pass requires it. |
+
+Layer is classification, not execution order. Each registered pass owns its dependencies,
+conflicts, before/after constraints and lifecycle phase (`pre_build`, `post_build`, `post_reset`). A
+cross-layer DAG plus lifecycle edges produces one deterministic order; YAML cannot override those
+safety relationships. Unknown keys, duplicate keys, wrong-layer placement, undeclared parameters,
+cycles, version skew and partial runtime installation all fail closed. The resolved plan carries a
+SHA-256 fingerprint and is the artifact passed to a managed worker, so in-process and worker
+placements execute the same decision.
+
+Third-party packages can add passes without changing this repository. Their entry point returns one
+`PassDefinition` or an iterable, and external IDs must be namespaced:
+
+```toml
+[project.entry-points."instinctwm.passes"]
+my_optimizations = "my_package.optimizations:pass_definitions"
+```
+
+```python
+from instinctwm.config import OptimizationLayer, ParameterSpec, PassDefinition
+
+def pass_definitions():
+    return PassDefinition(
+        id="my_package.fast_attention",
+        version="1.0.0",
+        layer=OptimizationLayer.ATTENTION,
+        factory=lambda params: FastAttentionDecision(**params),  # implements evaluate(spec, deployment)
+        installer=install_fast_attention,  # (module, server_class, live_server, resolved_params) -> list[str]
+        params={"block_size": ParameterSpec(int, default=128, minimum=16)},
+        requires=("ring_kv_addressing",),
+        auto_eligible=False,
+    )
+```
+
+The YAML never contains a Python import path. Only installed, registry-owned definitions can be
+named, and each definition explicitly declares its YAML-visible parameter schema and installer.
+The configurable unit is the smallest unit with its own valid gate: transforms may be bundled when
+only their composition is profitable (`generic_eager_stack` is the live example; its hoist alone is
+a measured regression).
+
 The layers are **not** a priority order, and treating them as one is how time gets wasted. Attention
 is Layer 4 and looks like the obvious first move; on our profile it is 7% of GPU-busy time. At the
 Fast operating point the picture is starker — the warm cost model is
@@ -234,9 +312,9 @@ cannot fail on the bug it is gating is worse than no gate, because it produces a
 
 ## Shipped configuration
 
-`instinctwm.verify.released.shipped_configuration()` is the single source of truth. The launch
-scripts, `serve_variant.py` and this table all derive from it, and `tests/test_shipped_config.py`
-fails if they drift apart. Add a flag there, not in four places.
+`instinctwm/config/presets/shipped.yaml` is the selection source of truth.
+`instinctwm.verify.released.shipped_configuration()` projects that plan to the legacy flags while
+the launch scripts migrate; `tests/test_shipped_config.py` fails if they drift apart.
 
 ```
 --no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout
@@ -251,6 +329,7 @@ is what backs it.
 | `substrate_elision` | BITEXACT | shipped | `--no-fsdp --no-empty-cache --no-debug-dump` |
 | `conditioning_prefill` | BITEXACT | shipped | `--conditioning-prefill` |
 | `ring_kv_addressing` | BITEXACT | shipped | `--ring-kv` |
+| `generic_eager_stack` (four generic rewrites) | BITEXACT | shipped | YAML (previously implicit default) |
 | `conv_layout_ndhwc` | NUMERIC | shipped | `--conv-layout` |
 | `hoist_invariant_casts` | BITEXACT | available | `--hoist-casts` |
 | `graph_block_stack` (P005) | BITEXACT | not recommended | `--graph-blocks` |
