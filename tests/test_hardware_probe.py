@@ -140,11 +140,41 @@ def test_layout_choice_can_be_measured_not_extrapolated():
     check(bool(A._MEASURED_CACHE), "the result is cached per (capability, shape)")
 
 
+def test_cpu_is_a_hardware_target():
+    print("\n=== 5. a CPU is a device, not the absence of one ===")
+    # probe() raised RuntimeError on a GPU-less machine, the facade swallowed it, and the planner
+    # then reported every hardware requirement as UNCHECKED -- when the truthful answer was
+    # available and specific. It is also the machine most external users have.
+    try:
+        import torch  # noqa: F401
+    except ImportError:
+        print("  SKIP: needs torch")
+        return
+    from instinctwm.passes.contract import DeviceProfile, HardwareReq, KNOWN_FEATURES
+    import torch
+    if torch.cuda.is_available():
+        cpu = DeviceProfile(name="CPU (test)", capability=(0, 0), total_memory=0,
+                            features=frozenset({"cpu"}))
+        print("  (CUDA present; using an explicit CPU profile for the assertions)")
+    else:
+        cpu = DeviceProfile.probe()
+        check(cpu.features == frozenset({"cpu"}), "a real GPU-less probe reports cpu only",
+              str(sorted(cpu.features)))
+    check("cpu" in KNOWN_FEATURES, "'cpu' is in the closed vocabulary")
+    check(cpu.features <= KNOWN_FEATURES, "and the profile uses only known names")
+    for feat in ("cuda_graphs", "cudnn", "fp8"):
+        ok, why = HardwareReq(requires=frozenset({feat})).satisfied_by(cpu)
+        check(not ok, f"a {feat}-requiring pass declines on CPU", why)
+    ok, _ = HardwareReq().satisfied_by(cpu)
+    check(ok, "an unconstrained pass still admits on CPU")
+
+
 def main() -> int:
     test_vocabulary_is_closed()
     test_probe_reports_vendor_libraries()
     test_the_shipped_conv_backend_is_satisfiable()
     test_layout_choice_can_be_measured_not_extrapolated()
+    test_cpu_is_a_hardware_target()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")

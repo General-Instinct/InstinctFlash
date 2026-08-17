@@ -84,7 +84,7 @@ def _cudnn_available() -> bool:
 #: requirement the probe cannot name is unsatisfiable on every device, which is how P007's
 #: `requires={"cudnn"}` came to be dormant-broken. Enforced by tests/test_hardware_probe.py.
 KNOWN_FEATURES = frozenset({
-    "cuda", "cuda_graphs", "triton", "fp8", "nvfp4", "wgmma", "tma", "cudnn", "cublas",
+    "cpu", "cuda", "cuda_graphs", "triton", "fp8", "nvfp4", "wgmma", "tma", "cudnn", "cublas",
 })
 
 
@@ -103,6 +103,18 @@ class DeviceProfile:
     @staticmethod
     def probe() -> "DeviceProfile":
         import torch
+        # CPU IS A HARDWARE TARGET, and treating it as "no device" was wrong. This raised
+        # `RuntimeError: No CUDA GPUs are available` on a GPU-less machine, the facade swallowed it,
+        # and the planner then reported every hardware requirement as UNCHECKED -- when the truthful
+        # answer was available and specific: this is a CPU, and cuda_graphs, cudnn and fp8 are
+        # genuinely absent, so passes needing them must decline rather than be left undecided.
+        # It is also the machine most external users have, so it is the one where an honest plan
+        # matters most.
+        if not torch.cuda.is_available():
+            import platform
+            return DeviceProfile(
+                name=f"CPU ({platform.machine()})", capability=(0, 0),
+                total_memory=0, features=frozenset({"cpu"}))
         i = torch.cuda.current_device()
         p = torch.cuda.get_device_properties(i)
         cap = (p.major, p.minor)

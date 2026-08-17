@@ -95,6 +95,27 @@ Inference needs the 14.5 GB checkpoint and a GPU, and is not part of this exampl
 tested here is whether the declaration and the planner survive a second model family, which needs
 neither.
 
+## Two hardware targets, measured
+
+`measure_across_targets.py` runs the same checkpoint through the same public API on whatever device it
+finds. ACT, 51.6M params, 12 cycles, warm median of the last ten:
+
+| target | first cycle | warm median |
+|:--|--:|--:|
+| H100 sm90 | 374.53 ms | 0.68 ms |
+| CPU x86_64 | 68.35 ms | 0.59 ms |
+
+Agreement between the two: `max|delta| 7.40e-04`, cosine `0.99999875`.
+
+Two things worth keeping. **Warm, the CPU is not slower** — for a policy this size the GPU wins
+nothing, and a runtime that assumed otherwise would be wrong. That is exactly the decision hardware
+awareness exists to make, and it is now measurable per device rather than assumed. And **the first
+cycle inverts**, 374 ms against 68 ms, because CUDA context creation and kernel autotune dominate a
+model this small; a benchmark reporting only cold latency would rank the two targets backwards.
+
+The agreement is NUMERIC, not bit-exact, so a cross-target claim needs a certificate like any other
+non-bit-exact change. Cosine on a 14-dimensional action vector is not evidence about task success.
+
 ## Attribution
 
 `lerobot/pi05_base` and LeRobot are Apache-2.0, © The HuggingFace Inc. team. Nothing is copied here —
