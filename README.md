@@ -155,7 +155,8 @@ distinct on purpose, because they carry different obligations:
   robot policy should feel like. `Runtime.from_pretrained` and the model-card-generated-from-artifact
   habit come from studying it. Where we differ: LeRobot loads a model *class*, InstinctWM loads a
   checkpoint *declaration* and derives what is legal from it.
-- [FlashRT](https://github.com/gugudeshubao/FlashRT) (Apache-2.0) — hand-tuned realtime inference for
+- [FlashRT](https://github.com/gugudeshubao/FlashRT) (Apache-2.0), read at `c6bbd54` on branch
+  `feat/orin-pipelined-streaming` — hand-tuned realtime inference for
   small-batch embodied workloads. The reference for hardware as a first-class dimension: strict
   architecture detection that refuses unknown devices rather than falling back, and buffers
   pre-allocated to a maximum so a captured graph stays valid. Its per-SM dispatch informed the
