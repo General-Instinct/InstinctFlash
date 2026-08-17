@@ -35,10 +35,15 @@ def cmd_devices(a) -> int:
     try:
         d = DeviceProfile.probe()
     except Exception as e:                                       # noqa: BLE001
-        print(f"could not probe a device: {type(e).__name__}: {e}")
-        print("Planning still works without one; passes with hardware requirements report "
-              "APPLICABILITY UNCHECKED.")
-        return 1
+        # EXIT 0. "There is no accelerator here, and here is why" is a successful answer to the
+        # question this verb asks, not a failure to answer it -- the core install has no torch by
+        # design, so this is the expected state on a laptop rather than an error. It also mattered
+        # concretely: exiting non-zero made `instinctwm devices` kill scripts/check_release.sh
+        # through pipefail, so the verb that reports capability was breaking the release gate.
+        print(f"no accelerator visible: {type(e).__name__}: {e}")
+        print("This is expected without the `runtime` extra installed. Planning still works; passes "
+              "with hardware requirements report APPLICABILITY UNCHECKED.")
+        return 0
     print(_fmt_device(d))
     absent = sorted(KNOWN_FEATURES - d.features)
     if absent:
