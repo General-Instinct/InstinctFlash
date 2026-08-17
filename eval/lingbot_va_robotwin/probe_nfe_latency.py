@@ -68,7 +68,21 @@ t2 = arm(2, 2); print(f"  treat 2V/2A  {t2:7.1f} ms", flush=True)
 b2 = arm(2, 4); print(f"  base  2V/4A  {b2:7.1f} ms", flush=True)
 base, treat = (b1+b2)/2, (t1+t2)/2
 drift = abs(b2-b1)/base
+tspread = abs(t2-t1)/treat
 print(f"\nbase mean {base:.1f} ms   treat mean {treat:.1f} ms")
-print(f"drift on repeated base arms {drift:.1%}  {'OK' if drift < 0.05 else 'TOO HIGH -> NOT EVALUATED'}")
+print(f"drift on repeated base  arms {drift:.1%}")
+# GATE BOTH ARMS. This checked only the base arms, and that is how a 1.340x reading survived: the
+# base arms agreed to 0.9% while the two IDENTICAL treat arms differed by up to 69% on other devices
+# (182.1 vs 307.6 ms), one of them slower than base despite running fewer forwards. An ABBA design
+# cancels drift, not variance -- if the repeated TREAT arms disagree, the treatment mean is noise and
+# the ratio is uninterpretable. The P007 certificate recorded the same asymmetry at 6.4% vs 0.7% and
+# called the treated path the noisier of the two; this is that failure an order of magnitude larger.
+print(f"spread on repeated treat arms {tspread:.1%}")
+worst = max(drift, tspread)
+if worst >= 0.05:
+    which = "treat" if tspread > drift else "base"
+    print(f"NOT EVALUATED: repeated {which} arms differ by {worst:.1%} (>= 5%). The ratio "
+          f"{base/treat:.3f}x is not interpretable; re-run on a verified-idle device.")
+    raise SystemExit(2)
 print(f"SPEEDUP 2V/2A vs shipped 2V/4A = {base/treat:.3f}x   ({base-treat:+.1f} ms/cycle)")
-print(f"  model estimate was 1.21x; the repo's one reduced-forward measurement was 1.10x")
+print(f"  both arms repeatable to <5%, so the ratio is admissible")

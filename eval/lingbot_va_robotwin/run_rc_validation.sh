@@ -46,11 +46,23 @@ echo "fleet idle at $(date -u +%FT%TZ)"
 
 # ---- GATE 1: latency, three independent devices ------------------------------------------------
 echo; echo "=== GATE 1: ABBA latency, 2V/2A vs shipped 2V/4A, on 3 GPUs ==="
+# IDLENESS IS AN INVARIANT, NOT A PRECONDITION. The first run of this script checked once at the
+# start, passed, and then produced two uninterpretable arms out of three -- repeated IDENTICAL treat
+# arms differing by 42% and 51%, one of them slower than base despite running fewer forwards. An
+# unrelated workload had started during the run. Re-checked around every arm now, and a run that
+# loses the fleet reports NOT EVALUATED instead of a ratio.
 for g in 1 2 3; do
   echo "--- GPU $g ---"
+  if ! fleet_idle; then
+    echo "NOT EVALUATED: fleet became contended before the GPU $g arm"
+    nvidia-smi --query-gpu=index,memory.used --format=csv,noheader
+    continue
+  fi
   CUDA_VISIBLE_DEVICES=$g PYTHONPATH="$IWM_FA_SHIM_DIR:/home/ubuntu/InstinctWM" \
     MASTER_ADDR=127.0.0.1 MASTER_PORT=$((29910 + g)) WORLD_SIZE=1 RANK=0 LOCAL_RANK=0 \
-    timeout 3000 "$IWM_SERVER_PY" probe_nfe_latency.py 2>&1 | grep -E "base |treat |drift|SPEEDUP|NOT EVAL"
+    timeout 3000 "$IWM_SERVER_PY" probe_nfe_latency.py 2>&1 |
+    grep -E "base |treat |drift|spread|SPEEDUP|NOT EVAL"
+  fleet_idle || echo "  WARNING: fleet contended by the END of the GPU $g arm -- discard this row"
 done
 
 # ---- GATE 2: quality, extend the shipped arm then certify --------------------------------------
