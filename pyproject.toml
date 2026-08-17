@@ -35,6 +35,11 @@ runtime = ["torch>=2.4", "safetensors>=0.4", "numpy>=1.21"]
 diffusion = ["diffusers>=0.36", "transformers>=4.55", "accelerate>=1.0", "einops>=0.8"]
 eval = ["numpy>=1.21"]
 
+# THE CLI. "install the package, give it a model id, run" should not require writing a program, and
+# four of the five verbs answer questions you want answered before committing to a download or a GPU.
+[project.scripts]
+instinctwm = "instinctwm.cli:main"
+
 [project.urls]
 Homepage = "https://general-instinct.com/"
 Repository = "https://github.com/general-instinct/InstinctWM"

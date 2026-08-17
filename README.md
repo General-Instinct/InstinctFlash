@@ -80,6 +80,21 @@ action = episode.predict(observation, executed_action=clipped)
 That is the whole API. There is nothing to configure, no server to start, and no optimization to
 choose.
 
+## Or without writing Python
+
+```bash
+instinctwm devices                 # what machine am I on, and what can it do
+instinctwm describe  <model-id>    # what a checkpoint declares — no weights downloaded
+instinctwm validate  <dir>         # is this a publishable checkpoint
+instinctwm plan      <model-id>    # what the runtime would do to it, and why
+instinctwm run       <model-id>    # load it and produce real actions
+```
+
+`describe` and `plan` need no weights and no GPU, which is the point: they answer *what is this, and
+will this machine serve it* before you commit to a download. `run` uses zero-filled observations and
+says so — it proves a checkpoint loads here and returns finite actions of the right shape, which is a
+smoke test, not an evaluation.
+
 ---
 
 ## What's new 🔥
