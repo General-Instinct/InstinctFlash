@@ -1,4 +1,4 @@
-# A VLA family, to test whether the abstraction is real
+# Two VLA families, to test whether the abstraction is real
 
 `lerobot/pi05_base` is a vision-language-action policy. It is here because it is structurally unlike
 LingBot-VA in almost every way that the runtime cares about, which makes it a test of whether
@@ -15,7 +15,12 @@ InstinctWM's declarations describe *execution* or merely describe one world mode
 | action chunk | 32 | 50 |
 | commit phase | yes, a deferred ring advance | none |
 
-Every fact in the right-hand column is read from the checkpoint's own `config.json`, not guessed.
+A third column, ACT (`lerobot/act_aloha_sim_transfer_cube_human`), is the degenerate case: an
+encoder-decoder transformer that emits a 100-action chunk in **one forward**, with no refinement loop,
+no guidance and no persistent stream at all. If `nfe` were secretly a diffusion concept rather than an
+execution one, ACT is where that would show.
+
+Every fact in these columns is read from the checkpoints' own `config.json`, not guessed.
 
 ## What it showed
 
@@ -39,6 +44,21 @@ expectation; a cross-family expectation now names the model it was measured on.
 captured graph stays valid. LingBot-VA accumulates 152 slots per cycle. Hand-tuned engines that
 capture a whole Pi0-class forward are exploiting that property of the model, not out-optimising the
 runtime.
+
+## The concept the comparison was missing
+
+Three families made one property visible that none of them declares directly: whether tensor shapes
+repeat from one control cycle to the next. A stream that outlives a cycle accumulates, so the extent
+read on cycle N differs from cycle N-1 and a captured graph is invalid. That is derivable from the
+declared stream lifetimes, so `AdapterSpec.shapes_static_across_cycles()` now derives it:
+
+    LingBot-VA   GROWS    streams ['action', 'video'] outlive a control cycle
+    pi05         STATIC   all streams (prefix) are rebuilt within a control cycle
+    ACT          STATIC   no stream persists
+
+Whole-cycle graph capture measured **1.43x slower** on LingBot-VA and is the headline optimization of
+hand-tuned VLA engines. Both are consequences of that one line. Before it was derivable, the only way
+to find out was to build the pass and measure the regression.
 
 ## Run it
 

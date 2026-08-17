@@ -3,14 +3,15 @@ requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pi05-iwm"
+name = "lerobot-families-iwm"
 version = "0.1.0"
-description = "LeRobot pi05 VLA family for InstinctWM"
+description = "LeRobot pi05 and ACT families for InstinctWM"
 requires-python = ">=3.10"
 dependencies = ["instinctwm"]
 
 [project.entry-points."instinctwm.adapters"]
 pi05 = "pi05_iwm.adapter:Pi05Adapter"
+act = "act_iwm.adapter:ACTAdapter"
 
 [tool.setuptools.packages.find]
-include = ["pi05_iwm*"]
+include = ["pi05_iwm*", "act_iwm*"]

@@ -146,6 +146,32 @@ class AdapterSpec:
                 return p
         raise KeyError(name)
 
+    def shapes_static_across_cycles(self) -> tuple[bool, str]:
+        """Do tensor shapes repeat from one control cycle to the next? Derived, never declared.
+
+        This is the property that decides whether whole-cycle graph capture can pay, and it is a fact
+        about the model's declared state, not about the hardware or the pass. A stream whose lifetime
+        outlives a control cycle accumulates, so the extent read on cycle N differs from cycle N-1 and
+        any captured graph is invalidated; a model whose state is rebuilt every cycle presents the same
+        shapes forever.
+
+        It generalises a difference that three model families made visible. LingBot-VA declares
+        EPISODE-lifetime streams and grows 152 slots per cycle, and capture measured 1.43x SLOWER
+        there because of recapture. A pi05 VLA declares a CHUNK-lifetime prefix and ACT declares no
+        streams at all, so both are shape-stable, which is why hand-tuned engines capture a whole
+        VLA forward and win. That is a property of the model, not a smarter runtime -- and until it
+        was derivable here, the only way to find out was to build the pass and measure the regression.
+        """
+        growing = [s.name for s in self.streams
+                   if s.lifetime in (KVLifetime.WINDOW, KVLifetime.EPISODE)]
+        if growing:
+            return False, (f"streams {sorted(growing)} outlive a control cycle, so their extent grows "
+                           f"and per-cycle shapes change")
+        if not self.streams:
+            return True, "no stream persists, so every cycle presents identical shapes"
+        return True, (f"all streams ({', '.join(sorted(s.name for s in self.streams))}) are rebuilt "
+                      f"within a control cycle, so shapes repeat")
+
     def with_nfe(self, nfe: Mapping[str, int]) -> "AdapterSpec":
         """This spec at a different declared step schedule. Phases are matched by name.
 
