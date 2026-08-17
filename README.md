@@ -185,6 +185,30 @@ upstream license header, and a note on what changed.
 
 **Directly reused code — none currently.**
 
+### How we compare
+
+Read from their code, not their READMEs, and stated so we can be argued with. Where we are behind, it
+says so.
+
+| | model integration | hardware selection | correctness vocabulary |
+|:--|:--|:--|:--|
+| LeRobot | 14 `if/elif` branches in `policies/factory.py`; **adding a family edits that file** | device string | task success in eval scripts |
+| vLLM | `ModelRegistry.register_model(...)` from a plugin `register()` | platform plugins | correctness tests |
+| FlashRT | `_PIPELINE_MAP[(config, framework, arch)]`, mutable by a plugin — but **one entry per model × arch** | strict `detect_arch()` enum → table | cosine ≥ 0.9996 vs a reference |
+| **InstinctWM** | one `instinctwm.adapters` entry point keyed on **backbone alone**; 2 required methods, 46–80 lines measured | `HardwareReq.satisfied_by(DeviceProfile)` — a predicate, so a new target costs one probe extension rather than one entry per model | per-pass tiers (BITEXACT / NUMERIC / BEHAVIORAL), derived not claimed; a plan takes its weakest tier |
+
+Checkpoint distribution is where we differ most deliberately: a checkpoint is a **declaration**, with
+`execution` and `provenance` in separate namespaces, a `publishability()` gate that proves weights can
+ship without the recipe, and weights that may be supplied **by reference** instead of vendored. The
+others load a model class or a repo directly, which is simpler and gives up the ability to say what a
+checkpoint is allowed to imply.
+
+**Where we are behind, plainly.** Not on PyPI, so installation is a clone. One accelerator measured
+(H100) plus CPU, against FlashRT's four. And there is **no head-to-head performance number**, which is
+not modesty — FlashRT's `detect_arch()` raises on SM 9.0, so it cannot run on the only accelerator we
+have, and its published figures are Thor and RTX on different models. Any speed comparison would be
+between different hardware running different work, which is not a comparison.
+
 License compatibility is checked before reuse, not after. Apache-2.0 permits incorporation into an
 AGPL-3.0 work with notices preserved; the reverse does not hold, so code cannot flow from InstinctWM
 back into those projects under their licenses.

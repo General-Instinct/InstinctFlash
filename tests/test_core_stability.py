@@ -188,12 +188,38 @@ def test_the_observation_contract_is_declared_not_guessed():
               f"the CLI's observation builder does not mention {banned!r}")
 
 
+def test_the_comparison_claims_match_our_code():
+    print("\n=== 6. the README's comparison describes this code, not an aspiration ===")
+    # A comparison table is a claim about ourselves as much as about anyone else, and ours is the half
+    # a reader cannot check. So the mechanisms it names are asserted to exist.
+    readme = (ROOT / "README.md").read_text()
+    if "How we compare" not in readme:
+        print("  SKIP: no comparison section")
+        return
+    from instinctwm.descriptors.package import publishability  # noqa: F401
+    from instinctwm.passes.contract import HardwareReq, Tier
+    from instinctwm.passes.registry import ENTRY_POINT_GROUP as PASSES
+    from instinctwm.runtime.loader import ENTRY_POINT_GROUP as ADAPTERS
+
+    check(ADAPTERS in readme, "the adapters entry-point group it names exists", ADAPTERS)
+    check(PASSES == "instinctwm.passes", "the passes group exists too", PASSES)
+    check(hasattr(HardwareReq, "satisfied_by"),
+          "hardware selection really is a predicate, as claimed")
+    for t in ("BITEXACT", "NUMERIC", "BEHAVIORAL"):
+        check(t in readme and t in [x.name for x in Tier], f"tier {t} is real and named")
+    check("publishability" in readme, "the publishability gate it cites is named")
+    # and the honesty clause has to stay
+    for owned in ("Not on PyPI", "no head-to-head performance"):
+        check(owned in readme, f"the comparison still admits: {owned!r}")
+
+
 def main() -> int:
     test_generic_layers_name_no_model()
     test_the_core_never_branches_on_model_identity()
     test_passes_are_discovered_like_adapters()
     test_a_broken_provider_does_not_break_planning()
     test_the_observation_contract_is_declared_not_guessed()
+    test_the_comparison_claims_match_our_code()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")
