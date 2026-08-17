@@ -144,6 +144,35 @@ design; the optimization passes live in [`instinctwm/passes/`](instinctwm/passes
 The core is deliberately dependency-free so that reasoning about a checkpoint works on a laptop.
 Tests that need torch, diffusers or a GPU skip rather than fail.
 
+## Acknowledgements
+
+InstinctWM learns from other projects rather than reinventing their work. Three categories, kept
+distinct on purpose, because they carry different obligations:
+
+**Inspiration — ideas studied, nothing copied.**
+
+- [LeRobot](https://github.com/huggingface/lerobot) (Apache-2.0) — the standard for what loading a
+  robot policy should feel like. `Runtime.from_pretrained` and the model-card-generated-from-artifact
+  habit come from studying it. Where we differ: LeRobot loads a model *class*, InstinctWM loads a
+  checkpoint *declaration* and derives what is legal from it.
+- [FlashRT](https://github.com/gugudeshubao/FlashRT) (Apache-2.0) — hand-tuned realtime inference for
+  small-batch embodied workloads. The reference for hardware as a first-class dimension: strict
+  architecture detection that refuses unknown devices rather than falling back, and buffers
+  pre-allocated to a maximum so a captured graph stays valid. Its per-SM dispatch informed the
+  hardware vocabulary in [ARCHITECTURE.md](ARCHITECTURE.md); we keep a capability *predicate* instead
+  of a `(model, framework, arch)` table.
+- [vLLM](https://github.com/vllm-project/vllm) (Apache-2.0) — request-scoped sessions with cache and
+  scheduling state kept entirely out of the user's API. `Episode` exists because of it.
+
+**Adapted implementations — none currently.** When we adapt code, the file will carry the origin, the
+upstream license header, and a note on what changed.
+
+**Directly reused code — none currently.**
+
+License compatibility is checked before reuse, not after. Apache-2.0 permits incorporation into an
+AGPL-3.0 work with notices preserved; the reverse does not hold, so code cannot flow from InstinctWM
+back into those projects under their licenses.
+
 ## Citation
 
 ```bibtex

@@ -171,6 +171,12 @@ class Optimizer:
         deployment = deployment if deployment is not None else DeploymentSpec()
         results: list[PassResult] = []
         for p in self._passes:
+            # `capabilities=None` is INSPECTION MODE and deliberately does not filter, so that a pass
+            # can be reasoned about, and unit-tested, without inventing a checkpoint. It stays that
+            # way. But it cannot be silent: planning a VLA this framework had never seen produced a
+            # plan reporting APPLY on three passes that rewrite the LingBot-VA server object, and
+            # nothing in the output said their applicability had not been checked. So the requirement
+            # is annotated instead of dropped -- the flag is unchanged, the reader is not misled.
             need = frozenset(getattr(p, "requires_capabilities", ()) or ())
             if need and capabilities is not None and not need <= capabilities:
                 results.append(PassResult(
@@ -179,12 +185,21 @@ class Optimizer:
                            f"not applicable to it. This is a CAPABILITY decision, not a recipe one.",
                 ))
                 continue
+            unchecked = need if (need and capabilities is None) else frozenset()
             r = p.evaluate(spec, deployment)
             if r.applies and r.tier > self._ceiling:
                 r = PassResult(
                     name=r.name, applies=False, tier=r.tier,
                     reason=f"legal but tier {r.tier.name} exceeds ceiling "
                            f"{self._ceiling.name}: {r.reason}",
+                    params=r.params, expected_win=r.expected_win,
+                )
+            if unchecked and r.applies:
+                r = PassResult(
+                    name=r.name, applies=r.applies, tier=r.tier,
+                    reason=f"APPLICABILITY UNCHECKED -- requires {sorted(unchecked)} and no "
+                           f"capabilities were supplied, so this may not be applicable to the model "
+                           f"you are planning: {r.reason}",
                     params=r.params, expected_win=r.expected_win,
                 )
             results.append(r)

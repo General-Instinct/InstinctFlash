@@ -82,12 +82,49 @@ def test_declaration_carries_no_model_specific_knowledge():
         check(k not in ex, f"execution declares no {k!r}")
 
 
+def test_a_second_model_family_plans_correctly():
+    print("\n=== 6. a VLA plans on its own declared merits, not LingBot's ===")
+    # examples/pi05_vla declares lerobot/pi05_base: one stream, CHUNK-lifetime prefix K/V, no
+    # guidance, no commit phase, no decode modules -- structurally unlike the world model this
+    # framework was built around. If the abstraction is real, the generic pass fires and the
+    # model-specific ones do not silently claim to.
+    import sys as _s
+    p = str(ROOT / "examples" / "pi05_vla")
+    if p not in _s.path:
+        _s.path.insert(0, p)
+    from pi05_iwm.adapter import Pi05Adapter
+    from instinctwm import Optimizer
+
+    spec = Pi05Adapter().spec()
+    check(spec.forwards_breakdown() == "prefix=1 + action=10",
+          "the VLA declares its own phase structure", spec.forwards_breakdown())
+    text = Optimizer().compile(spec).explain()
+
+    def line(name):
+        return next((l for l in text.splitlines() if name in l), "")
+
+    check("APPLY" in line("conditioning_prefill") and "chunk" in line("conditioning_prefill"),
+          "conditioning_prefill fires on a CHUNK-scope prefix it has never seen")
+    check("skip" in line("cfg_branch_elision"), "cfg_branch_elision declines: no CFG declared")
+    check("skip" in line("obs_decode_elision"), "obs_decode_elision declines: a VLA has no decoder")
+    for nm in ("fsdp_elision", "allocator_churn_elision", "debug_dump_elision"):
+        check("APPLICABILITY UNCHECKED" in line(nm),
+              f"{nm} is not silently endorsed for another family")
+    # and with capabilities supplied, the gate filters rather than annotates
+    filtered = Optimizer().compile(spec, capabilities=frozenset({"servable", "backbone:pi05"}))
+    ftext = filtered.explain()
+    fline = next((l for l in ftext.splitlines() if "fsdp_elision" in l), "")
+    check("skip" in fline and "does not declare" in fline,
+          "a declared checkpoint filters the pass out entirely")
+
+
 def main() -> int:
     test_discovery_is_by_entry_point()
     test_lingbot_passes_do_not_fire_on_other_models()
     test_the_impl_contract_uses_the_public_verb()
     test_lifecycle_verbs_are_the_decided_set()
     test_declaration_carries_no_model_specific_knowledge()
+    test_a_second_model_family_plans_correctly()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")

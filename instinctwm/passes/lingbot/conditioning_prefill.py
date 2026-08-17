@@ -91,9 +91,18 @@ class ConditioningPrefill:
                 "retain_across": ["kv_commit"],   # clear_pred_cache must NOT drop it
                 "release_on": ["reset"],
             },
+            # ATTRIBUTED, because this pass is genuinely generic and now fires on model families
+            # these numbers were never measured on. Planning a pi05 VLA produced a plan quoting
+            # "89 of 226 TFLOP" and "360 MiB resident" as its expectation -- LingBot-VA's figures,
+            # presented as a prediction for a different architecture with a different layer count and
+            # a different conditioning artifact. A cross-model expectation has to name the model it
+            # came from or it reads as a forecast.
             expected_win=(
-                "removes 89 of 226 TFLOP per control cycle (39%); 67.6% of an action forward's "
-                "layer FLOPs. Costs 360 MiB resident. Launch-bound share means the wall-clock "
-                "win will be less than the FLOP win — measure it"
+                f"hoists {len(hoistable)} artifact(s) out of the denoise loop. Measured ON "
+                f"LingBot-VA: 89 of 226 TFLOP per control cycle (39%), 67.6% of an action forward's "
+                f"layer FLOPs, 360 MiB resident. Those figures are that model's; for any other "
+                f"backbone the FLOP share and the residency cost follow its own layer count and "
+                f"artifact size. Launch-bound share means the wall-clock win is less than the FLOP "
+                f"win either way — measure it"
             ),
         )
