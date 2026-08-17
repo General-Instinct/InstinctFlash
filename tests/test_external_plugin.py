@@ -118,49 +118,6 @@ def test_a_second_model_family_plans_correctly():
           "a declared checkpoint filters the pass out entirely")
 
 
-def test_shape_stability_is_derived_not_declared():
-    print("\n=== 7. shape stability across control cycles is derived from the declaration ===")
-    # The property that decides whether whole-cycle graph capture can pay. It generalises the one
-    # structural difference three model families made visible: a stream that outlives a control cycle
-    # accumulates, so shapes change and a captured graph is invalidated. LingBot-VA measured capture
-    # at 1.43x SLOWER for exactly that reason; VLAs with no persistent stream are shape-stable, which
-    # is why hand-tuned engines capture a whole VLA forward and win. Deriving it means the next family
-    # does not have to discover it by building the pass and measuring the regression.
-    import sys as _s
-    for sub in ("pi05_vla",):
-        p_ = str(ROOT / "examples" / sub)
-        if p_ not in _s.path:
-            _s.path.insert(0, p_)
-    from instinctwm import load
-    from act_iwm.adapter import ACTAdapter
-    from pi05_iwm.adapter import Pi05Adapter
-
-    ok_wm, why_wm = load("wan_va").spec().shapes_static_across_cycles()
-    check(not ok_wm, "a world model with EPISODE streams is NOT shape-stable", why_wm[:60])
-    check("outlive" in why_wm, "and the reason names the growing streams")
-    ok_v, why_v = Pi05Adapter().spec().shapes_static_across_cycles()
-    check(ok_v, "a VLA with a CHUNK-lifetime prefix IS shape-stable", why_v[:60])
-    ok_a, why_a = ACTAdapter().spec().shapes_static_across_cycles()
-    check(ok_a, "a policy with no persistent stream IS shape-stable", why_a[:60])
-
-
-def test_a_no_refinement_model_plans_honestly():
-    print("\n=== 8. a model with no refinement loop gets an honest, empty plan ===")
-    import sys as _s
-    p_ = str(ROOT / "examples" / "pi05_vla")
-    if p_ not in _s.path:
-        _s.path.insert(0, p_)
-    from act_iwm.adapter import ACTAdapter
-    from instinctwm import Optimizer
-    spec = ACTAdapter().spec()
-    check(spec.total_forwards() == 1, "ACT is one forward per control step, no denoise loop")
-    text = Optimizer().compile(spec).explain()
-    cp = next((l for l in text.splitlines() if "conditioning_prefill" in l), "")
-    check("skip" in cp, "conditioning_prefill declines: there is no loop to hoist out of", cp[-58:])
-    for nm in ("cfg_branch_elision", "obs_decode_elision"):
-        check("skip" in next((l for l in text.splitlines() if nm in l), ""), f"{nm} declines")
-
-
 def test_weights_may_be_supplied_by_reference():
     print("\n=== 9. a declaration can adopt an upstream checkpoint without vendoring it ===")
     # Found by declaring a LeRobot ACT policy: every byte lives in the upstream repo, so the only
@@ -202,8 +159,6 @@ def main() -> int:
     test_lifecycle_verbs_are_the_decided_set()
     test_declaration_carries_no_model_specific_knowledge()
     test_a_second_model_family_plans_correctly()
-    test_shape_stability_is_derived_not_declared()
-    test_a_no_refinement_model_plans_honestly()
     test_weights_may_be_supplied_by_reference()
     print("\n" + "=" * 78)
     if FAILED:

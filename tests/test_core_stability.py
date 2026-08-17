@@ -147,18 +147,17 @@ def test_the_observation_contract_is_declared_not_guessed():
               "(the ratchet in tests 1-2 still ran)")
         return
     # The CLI used to branch on notes["family"] == "vla" and then hardcode camera names, tensor shapes
-    # and a history of 8. Three families want three different things -- and a fourth, VQ-BeT, declares
-    # a five-observation window, which that branch would have got wrong three ways. So it is declared.
+    # and a history of 8. A world model wants 8 uint8 frames as a list under "obs"; a VLA wants three
+    # 224x224 float cameras under flat keys. VQ-BeT, a third family, declares a five-observation
+    # window, which that branch would have got wrong three ways. So it is declared.
     import sys as _s
     ex = str(ROOT / "examples" / "pi05_vla")
     if ex not in _s.path:
         _s.path.insert(0, ex)
     from instinctwm import load
-    from act_iwm.adapter import ACTAdapter
     from pi05_iwm.adapter import Pi05Adapter
 
-    cases = {"wan_va": load("wan_va").spec(), "pi05": Pi05Adapter().spec(),
-             "act": ACTAdapter().spec()}
+    cases = {"wan_va": load("wan_va").spec(), "pi05": Pi05Adapter().spec()}
     for name, spec in cases.items():
         o = spec.observation
         check(bool(o.fields), f"{name} declares its observation fields", str(len(o.fields)))
@@ -176,7 +175,7 @@ def test_the_observation_contract_is_declared_not_guessed():
     # the contracts must actually DIFFER, or the abstraction is decorative
     sigs = {n: (s.observation.history, s.observation.frames_key, s.observation.batched,
                 tuple(sorted(f.key for f in s.observation.fields))) for n, s in cases.items()}
-    check(len(set(sigs.values())) == len(sigs), "all three contracts are distinct",
+    check(len(set(sigs.values())) == len(sigs), "the contracts are distinct",
           str({n: v[:3] for n, v in sigs.items()}))
 
     # and the CLI must not name a model to build one

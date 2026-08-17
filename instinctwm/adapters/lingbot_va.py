@@ -396,6 +396,16 @@ class LingBotVA:
                 link_to(composed / comp, src.resolve(), is_dir=True)
         return str(composed)
 
+    #: What THIS model needs in the hosting interpreter. The runtime used to hardcode this list, which
+    #: made it LingBot-VA's dependency set for every model in the ecosystem; it belongs here.
+    HOST_REQUIRES = ("torch", "diffusers", "transformers", "safetensors")
+
+    def can_host_in_process(self):
+        """Whether this interpreter can host LingBot-VA. Falling back to a worker is correct here:
+        the RoboTwin client genuinely cannot import diffusers, which is why the boundary exists."""
+        from instinctwm.runtime.execution import imports_available
+        return imports_available(self.HOST_REQUIRES)
+
     def build_in_process(self, checkpoint, plan, *, device=None, nfe=None):
         """Build the server in THIS process and return a loopable control loop over it."""
         import os

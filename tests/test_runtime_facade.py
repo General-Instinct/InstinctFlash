@@ -96,8 +96,9 @@ def test_unservable_is_refused():
 
 def test_placement_is_a_deployment_choice_not_a_model_property():
     print("\n=== 5. placement is chosen, not declared ===")
-    from instinctwm.runtime.execution import choose_backend, model_stack_importable
-    ok, why = model_stack_importable()
+    from instinctwm.runtime.execution import can_host_in_process, choose_backend
+    from instinctwm import load
+    ok, why = can_host_in_process(load('wan_va'))
     print(f"  this interpreter: {why}")
     decl = (ROOT / "instinctwm" / "descriptors" / "checkpoint.py").read_text()
     for w in ("websocket", "socket", "worker", "in_process", "placement"):

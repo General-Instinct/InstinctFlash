@@ -5,6 +5,8 @@ LingBot-VA. Facts below come from lerobot/pi05_base's own config.json, not from 
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 from instinctwm import (AdapterSpec, GuidanceRule, KVLifetime, KVStreamSpec, PhaseSpec, PurityKey)
 from instinctwm.adapters.base import GuidanceMode, ObservationField, ObservationSpec
 
@@ -44,3 +46,149 @@ class Pi05Adapter:
                 history=1, conditioning=("prompt",)),
             notes={"family": "vla", "chunk_size": "50", "n_obs_steps": "1"},
         )
+
+    #: pi05 needs lerobot and torch. It does NOT need diffusers -- which is what the runtime used to
+    #: demand of every model, sending a perfectly hostable VLA to a worker it has no reason to have.
+    HOST_REQUIRES = ("torch", "lerobot")
+
+    def can_host_in_process(self):
+        from instinctwm.runtime.execution import imports_available
+        return imports_available(self.HOST_REQUIRES)
+
+    def build_in_process(self, checkpoint, plan, *, device=None, nfe=None):
+        """Load the upstream pi05 policy WITH its processor pipeline.
+
+        THE PROCESSOR IS NOT OPTIONAL, and that is the substance of "VLA support". pi05's
+        `predict_action_chunk` reads `batch[OBS_LANGUAGE_TOKENS]` and
+        `batch[OBS_LANGUAGE_ATTENTION_MASK]` -- already tokenized. Text never reaches the policy. The
+        tokenizer, the input normalisation and the action un-normalisation all live in a
+        `PolicyProcessorPipeline` published alongside the weights as `policy_preprocessor.json`, so a
+        VLA served without it is not slow, it is WRONG: it would be fed unnormalised pixels and would
+        return actions in a normalised space nobody can execute.
+
+        This is model semantics, so it belongs here rather than in the runtime. What the runtime sees
+        is still one object with `predict` and `reset`.
+        """
+        import torch
+        from lerobot.policies.factory import make_pre_post_processors
+        from lerobot.policies.pi05.modeling_pi05 import PI05Policy
+
+        repo = (checkpoint.execution.extra or {}).get("base_weights")
+        if not repo:
+            raise RuntimeError(
+                f"{checkpoint.model_id}: no local weights and no execution.base_weights, so there is "
+                f"nothing to load. Declare the upstream repo id in base_weights.")
+        _require_processor_steps(repo)
+        policy = PI05Policy.from_pretrained(repo)
+        policy.eval()
+        dev = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        policy.to(dev)
+
+        n = dict(nfe or checkpoint.execution.nfe or {})
+        if "action" in n and hasattr(policy.config, "num_inference_steps"):
+            # the declared flow-matching schedule, applied. Without this a checkpoint declaring
+            # nfe {action: 4} would be served at the config's 10 and the plan would be priced wrong.
+            policy.config.num_inference_steps = int(n["action"])
+
+        pre, post = make_pre_post_processors(policy.config, pretrained_path=repo)
+        return _Pi05Loop(policy, pre, post, dev)
+
+
+class _Pi05Loop:
+    """One control cycle over pi05. No commit phase: the prefix is rebuilt every cycle."""
+
+    def __init__(self, policy, pre, post, device):
+        import torch
+        self._torch, self._p, self._pre, self._post, self._dev = torch, policy, pre, post, device
+        self._prompt = ""
+
+    def reset(self, **conditioning) -> None:
+        self._prompt = str(conditioning.get("prompt") or "")
+        self._p.reset()                       # drops the buffered 50-step action chunk
+
+    def predict(self, observation):
+        batch = {k: v for k, v in observation.items() if k.startswith("observation.")}
+        # LeRobot names the instruction `task`; the declaration calls it `prompt`. Mapping one to the
+        # other is exactly the adapter's job -- the runtime must not learn either name.
+        batch["task"] = str(observation.get("prompt") or self._prompt)
+        with self._torch.no_grad():
+            action = self._post(self._p.select_action(self._pre(batch)))
+        a = action if self._torch.is_tensor(action) else self._torch.as_tensor(action)
+        return {"action": a.squeeze(0).detach().cpu().numpy()}
+
+    def close(self) -> None:
+        self._p = None
+
+
+def _require_processor_steps(repo: str) -> None:
+    """Refuse early if this LeRobot cannot build the checkpoint's processor pipeline.
+
+    The real precondition, found by hitting three different walls in order. `lerobot 0.4.4` raises
+    `ValueError: An incorrect transformer version is used` from a pi05 assert on
+    `transformers.__version__ == "4.53.2"`, which names neither the module nor the fix. Patch that and
+    the next wall is the pipeline: `lerobot/pi05_base` declares a `relative_actions_processor` step
+    that 0.4.4's registry does not have, because the checkpoint was published by a newer LeRobot.
+    `lerobot 0.6.1` has the step AND has dropped the transformers assert, so the version check was
+    never the real requirement -- the processor registry is.
+
+    Checking the registry against the checkpoint's own step list says which of those two worlds you are
+    in, before 14.5 GB of weights load.
+    """
+    import json
+
+    from lerobot.processor import ProcessorStepRegistry
+
+    # NOT a bare `except: return`. It was, and it silently swallowed a NameError from a missing
+    # `Path` import -- so the whole precondition reported "fine" while checking nothing, and the run
+    # still died on the gated tokenizer after loading the weights. A check that cannot run must say so.
+    try:
+        from huggingface_hub import hf_hub_download
+        cfg = json.loads(Path(hf_hub_download(repo, "policy_preprocessor.json")).read_text())
+    except Exception as e:                                        # noqa: BLE001
+        print(f"instinctwm: cannot inspect {repo}'s processor pipeline "
+              f"({type(e).__name__}: {e}); preconditions unverified, the loader will report any "
+              f"failure itself.")
+        return
+    want = [st.get("registry_name") for st in (cfg.get("steps") or []) if st.get("registry_name")]
+    # THE TOKENIZER IS A SEPARATE GATE, and it used to fire after 14.5 GB had loaded. pi05's
+    # tokenizer_processor pulls `google/paligemma-3b-pt-224`, which is a GATED repo: without an
+    # accepted licence it is a 401, and the pipeline raised only once the policy was already resident.
+    # Checking reachability first costs one HTTP request and saves a multi-minute load that cannot
+    # succeed.
+    for st in (cfg.get("steps") or []):
+        name = (st.get("config") or {}).get("tokenizer_name")
+        if not name:
+            continue
+        try:
+            # Probe a real FILE FETCH, not `model_info`. A gated repo answers model_info with public
+            # metadata and then refuses the download, so metadata reachability was the wrong probe:
+            # the check passed and the pipeline still died on a 401 -- after the weights had loaded.
+            from huggingface_hub import hf_hub_download
+            hf_hub_download(name, "config.json")
+        except Exception as e:                                    # noqa: BLE001
+            raise RuntimeError(
+                f"{repo}'s processor pipeline tokenizes with {name!r}, which is not reachable from "
+                f"this machine: {type(e).__name__}.\n\n"
+                f"That repo is gated. Accept its licence at https://huggingface.co/{name} with the "
+                f"account whose token is configured here, then `hf auth login`. There is no substitute "
+                f"-- swapping in a different tokenizer would change how the instruction is encoded and "
+                f"silently produce a different policy.\n"
+                f"`instinctwm describe` and `instinctwm plan` need neither the tokenizer nor the "
+                f"weights.") from None
+
+    try:
+        have = set(ProcessorStepRegistry._registry)
+    except Exception as e:                                        # noqa: BLE001
+        print(f"instinctwm: cannot read LeRobot's processor registry ({type(e).__name__}); "
+              f"step availability unverified.")
+        return
+    missing = [w for w in want if w not in have]
+    if missing:
+        import lerobot
+        raise RuntimeError(
+            f"{repo} declares processor steps this LeRobot cannot build: {missing}.\n"
+            f"Installed lerobot is {lerobot.__version__}; the checkpoint was published by a newer one. "
+            f"pi05 needs a LeRobot whose registry has those steps -- 0.6.1 does, and it also dropped "
+            f"the `transformers == 4.53.2` assert that 0.4.4 fails on, so upgrading LeRobot fixes both "
+            f"walls at once. Note 0.5+ requires Python >= 3.12.\n"
+            f"`instinctwm describe` and `instinctwm plan` need none of this.")

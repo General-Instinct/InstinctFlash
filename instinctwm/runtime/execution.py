@@ -47,14 +47,15 @@ class ExecutionBackend(Protocol):
     def close(self) -> None: ...
 
 
-def model_stack_importable() -> tuple[bool, str]:
-    """Can THIS interpreter host the model? Returns (yes, reason).
+def imports_available(modules) -> tuple[bool, str]:
+    """Do these modules load in THIS interpreter? Returns (yes, reason).
 
     Checked by import rather than by version pin: a pin would go stale, and the only question that
-    matters is whether the modules load here and now.
+    matters is whether the modules load here and now. The MODULE LIST comes from the adapter, because
+    only the adapter knows what its model needs -- see `can_host_in_process`.
     """
     missing = []
-    for m in ("torch", "diffusers", "transformers", "safetensors"):
+    for m in modules:
         try:
             __import__(m)
         except Exception:                                     # noqa: BLE001 - any failure disqualifies
@@ -62,6 +63,30 @@ def model_stack_importable() -> tuple[bool, str]:
     if missing:
         return False, f"this interpreter cannot import {', '.join(missing)}"
     return True, "the model stack imports here"
+
+
+def can_host_in_process(adapter) -> tuple[bool, str]:
+    """Ask the ADAPTER whether this interpreter can host its model.
+
+    This used to be a hardcoded list -- torch, diffusers, transformers, safetensors -- which is
+    LingBot-VA's dependency set, not anyone else's. A pi05 VLA needs lerobot and does not need
+    diffusers, so in an interpreter with lerobot but no diffusers the runtime concluded "cannot host"
+    and fell through to a worker the pi05 adapter has no reason to implement. The error blamed the
+    adapter for a question the runtime had answered on the wrong model's behalf.
+
+    An adapter may implement `can_host_in_process() -> (bool, str)`. If it does not, an adapter that
+    implements `build_in_process` is taken at its word: it will raise its own specific reason if its
+    stack is missing, which is a better diagnostic than a guess made from another model's imports.
+    """
+    fn = getattr(adapter, "can_host_in_process", None)
+    if fn is not None:
+        try:
+            return fn()
+        except Exception as e:                                    # noqa: BLE001
+            return False, f"the adapter's own host check failed: {type(e).__name__}: {e}"
+    if getattr(adapter, "build_in_process", None) is not None:
+        return True, "the adapter implements build_in_process"
+    return False, "the adapter implements neither can_host_in_process nor build_in_process"
 
 
 class InProcessBackend:
@@ -249,7 +274,7 @@ def _connect_client(port: int):
 
 def choose_backend(placement: str, adapter, checkpoint, plan, **kw) -> tuple[ExecutionBackend, str]:
     """Pick a placement. Returns (backend, one-line reason) so `explain()` can report it."""
-    ok, why = model_stack_importable()
+    ok, why = can_host_in_process(adapter)
     if placement == "auto":
         placement = "in_process" if ok else "worker"
         why = f"auto -> {placement}: {why}"

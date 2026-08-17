@@ -1,12 +1,13 @@
-# Two VLA families, to test whether the abstraction is real
+# pi05, a VLA in InstinctWM
 
-`lerobot/pi05_base` is a vision-language-action policy. It is here because it is structurally unlike
-LingBot-VA in almost every way that the runtime cares about, which makes it a test of whether
-InstinctWM's declarations describe *execution* or merely describe one world model.
+`lerobot/pi05_base` is a vision-language-action policy, registered from outside the core through the
+`instinctwm.adapters` entry point. It is here because it is structurally unlike LingBot-VA in almost
+every way the runtime cares about, which makes it a test of whether InstinctWM's declarations describe
+*execution* or merely describe one world model.
 
 | | LingBot-VA (world-action) | pi05 (VLA) |
 |:--|:--|:--|
-| streams | two coupled: video + action | one: action |
+| streams | two coupled: video + action | one: a prefix |
 | observation history | growing ring, 72-frame window | `n_obs_steps=1`, a single observation |
 | K/V across control steps | carried and **grown** | prefix, **recomputed every step** |
 | K/V lifetime | `EPISODE` | `CHUNK` |
@@ -14,107 +15,51 @@ InstinctWM's declarations describe *execution* or merely describe one world mode
 | forwards per control step | 10 at the shipped schedule | 11 (1 prefix + 10 flow steps) |
 | action chunk | 32 | 50 |
 | commit phase | yes, a deferred ring advance | none |
+| language | a prompt, encoded once per episode | a prompt, **tokenized by a processor pipeline** |
 
-A third column, ACT (`lerobot/act_aloha_sim_transfer_cube_human`), is the degenerate case: an
-encoder-decoder transformer that emits a 100-action chunk in **one forward**, with no refinement loop,
-no guidance and no persistent stream at all. If `nfe` were secretly a diffusion concept rather than an
-execution one, ACT is where that would show.
+Every fact in the right-hand column is read from that checkpoint's own `config.json`, not guessed:
+three cameras at `(3,224,224)`, a 32-dimensional state, `num_inference_steps: 10`, `chunk_size: 50`.
 
-Every fact in these columns is read from the checkpoints' own `config.json`, not guessed.
+## What pi05 needs that a world model does not
 
-## What it showed
+**A processor pipeline, and it is not optional.** `predict_action_chunk` reads
+`batch[OBS_LANGUAGE_TOKENS]` and `batch[OBS_LANGUAGE_ATTENTION_MASK]` — already tokenized. Text never
+reaches the policy. The tokenizer, the input normalisation and the action un-normalisation all live in
+a `PolicyProcessorPipeline` published beside the weights as `policy_preprocessor.json`. A VLA served
+without it is not slow, it is **wrong**: fed unnormalised pixels, returning actions in a normalised
+space nobody can execute. `build_in_process` therefore loads the policy *and* its pipeline, and maps
+the declaration's `prompt` onto LeRobot's `task` key — model semantics, so it stays in the adapter.
 
-**The generic pass fired, on its own declared merits.** `conditioning_prefill` reports
-`['prefix_kv'] declared pure in ['chunk'] scope, but recomputed on all 11 forwards per control step`.
-Nothing about that pass knows what a VLA is; it read `PurityKey(scope=CHUNK)` and the phase list. That
-is the abstraction doing its job across families.
+**A patched `transformers`.** pi05 asserts
+`transformers.models.siglip.check.check_whether_transformers_replace_is_installed_correctly()`, which
+standard transformers does not provide. Upstream ships the replacement files in openpi's
+`transformers_replace/`, and newer LeRobot exposes them as `pip install "lerobot[pi]"` — an extra that
+`lerobot 0.4.4` does not have. Until that environment exists, `build_in_process` raises with the real
+reason instead of a `ValueError` about a version.
 
-**`cfg_branch_elision` and `obs_decode_elision` declined for the right reasons** — no stream requests
-CFG, and a VLA predicts no pixels.
-
-**Two defects surfaced, both now fixed.** Planning this model reported `APPLY` on three passes that
-rewrite the LingBot-VA *server object*, with no indication their applicability had not been checked;
-`capabilities=None` is inspection mode and deliberately does not filter, so the planner now annotates
-those results `APPLICABILITY UNCHECKED` instead of silently endorsing them. And
-`conditioning_prefill` quoted LingBot-VA's "89 of 226 TFLOP … 360 MiB resident" as this model's
-expectation; a cross-family expectation now names the model it was measured on.
-
-**It also explains, from the model side, why static graph capture pays for VLAs and not for us.**
-`n_obs_steps=1` means nothing accumulates between control steps, so every tensor shape is fixed and a
-captured graph stays valid. LingBot-VA accumulates 152 slots per cycle. Hand-tuned engines that
-capture a whole Pi0-class forward are exploiting that property of the model, not out-optimising the
-runtime.
-
-## The concept the comparison was missing
+## The concept this comparison contributed
 
 Three families made one property visible that none of them declares directly: whether tensor shapes
 repeat from one control cycle to the next. A stream that outlives a cycle accumulates, so the extent
 read on cycle N differs from cycle N-1 and a captured graph is invalid. That is derivable from the
-declared stream lifetimes, so `AdapterSpec.shapes_static_across_cycles()` now derives it:
+declared stream lifetimes, so `AdapterSpec.shapes_static_across_cycles()` derives it:
 
     LingBot-VA   GROWS    streams ['action', 'video'] outlive a control cycle
     pi05         STATIC   all streams (prefix) are rebuilt within a control cycle
-    ACT          STATIC   no stream persists
 
 Whole-cycle graph capture measured **1.43x slower** on LingBot-VA and is the headline optimization of
-hand-tuned VLA engines. Both are consequences of that one line. Before it was derivable, the only way
-to find out was to build the pass and measure the regression.
+hand-tuned VLA engines. Both are consequences of that one line.
 
 ## Run it
 
 ```bash
 pip install ./examples/pi05_vla
+instinctwm plan  <a-checkpoint-declaring-backbone-pi05>
+instinctwm run   <a-checkpoint-declaring-backbone-pi05>
 ```
 
-ACT runs end to end, from a declaration alone:
-
-```bash
-python examples/pi05_vla/run_act_end_to_end.py
-```
-
-    describe()            backbone act, servable, nfe {'action': 1}
-    from_pretrained()     plan compiled, shapes static across cycles
-    episode.predict() x5  action (14,) float32, finite, five consecutive cycles
-
-The package it builds carries **no weights at all** — `execution.base_weights` names the upstream
-LeRobot repo and the adapter resolves it at load. That is the shape a third party adopting someone
-else's checkpoint actually needs, and it did not work before this example existed: `validate_package`
-demanded local weight files even when a pointer was declared, so describing somebody else's
-checkpoint required copying their gigabytes first.
-
-LeRobot's `ACTPolicy.select_action` hides an internal action-chunk queue and returns one action per
-call; `reset` clears it. Our `predict`/`reset` map onto that with nothing model-specific reaching the
-runtime — two systems independently deciding that action-chunk buffering belongs behind one verb.
-
-```python
-from instinctwm import Optimizer, load
-print(Optimizer().compile(load("pi05").spec()).explain())
-```
-
-Inference needs the 14.5 GB checkpoint and a GPU, and is not part of this example: what is being
-tested here is whether the declaration and the planner survive a second model family, which needs
-neither.
-
-## Two hardware targets, measured
-
-`measure_across_targets.py` runs the same checkpoint through the same public API on whatever device it
-finds. ACT, 51.6M params, 12 cycles, warm median of the last ten:
-
-| target | first cycle | warm median |
-|:--|--:|--:|
-| H100 sm90 | 374.53 ms | 0.68 ms |
-| CPU x86_64 | 68.35 ms | 0.59 ms |
-
-Agreement between the two: `max|delta| 7.40e-04`, cosine `0.99999875`.
-
-Two things worth keeping. **Warm, the CPU is not slower** — for a policy this size the GPU wins
-nothing, and a runtime that assumed otherwise would be wrong. That is exactly the decision hardware
-awareness exists to make, and it is now measurable per device rather than assumed. And **the first
-cycle inverts**, 374 ms against 68 ms, because CUDA context creation and kernel autotune dominate a
-model this small; a benchmark reporting only cold latency would rank the two targets backwards.
-
-The agreement is NUMERIC, not bit-exact, so a cross-target claim needs a certificate like any other
-non-bit-exact change. Cosine on a 14-dimensional action vector is not evidence about task success.
+`plan` needs no weights and no GPU. `run` needs the patched transformers described above, plus a GPU
+with room for 14.5 GB of weights.
 
 ## Attribution
 
