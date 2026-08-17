@@ -48,10 +48,18 @@ def _register_builtins() -> None:
     Lazy inside the function: the pass modules import the planner's contract, so a module-scope
     import would be circular.
     """
+    def generic():
+        from instinctwm.passes.generic import default_passes as _d
+        return _d()
+
     def lingbot():
         from instinctwm.passes.lingbot import default_passes as _d
         return _d()
 
+    # Generic first: these decide from a declaration alone, so they are the ones that must fire for a
+    # family nobody here has seen. A model-named provider going first would make its ordering the
+    # ecosystem's ordering, which is the leak this registry exists to close.
+    register_passes("generic", generic)
     register_passes("lingbot", lingbot)
 
 

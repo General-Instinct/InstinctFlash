@@ -105,7 +105,53 @@ class Pi05Adapter:
             policy.config, pretrained_path=repo,
             preprocessor_overrides={"device_processor": {"device": str(dev)}},
             postprocessor_overrides={"device_processor": {"device": str(dev)}})
-        return _Pi05Loop(policy, pre, post, dev)
+
+        loop = _Pi05Loop(policy, pre, post, dev)
+        Pi05Adapter.install(policy, plan, device=dev)
+        return loop
+
+    @staticmethod
+    def install(policy, plan, *, device=None) -> list[str]:
+        """Act on the plan. Returns the names of what actually got installed.
+
+        The runtime asks the adapter to do this because a plan is a claim, and a claim nobody acts on
+        is worse than no claim: pi05 previously ran with a plan reporting an APPLIED pass and nothing
+        installed, silently. The generic `GraphCapture` pass does the work -- see `surface.py` for why
+        pi05 can be captured when LingBot-VA cannot, and for the one constant that blocked it.
+        """
+        import torch
+
+        from instinctwm.passes.graph_capture import GraphCapture
+        from instinctwm.passes.interface import run_pass
+
+        from pi05_iwm.surface import Pi05Surface
+
+        wanted = {getattr(r, "name", "") for r in getattr(plan, "results", ())
+                  if getattr(r, "applies", False)}
+        if "graph_capture" not in wanted:
+            return []
+        if not (device and str(device).startswith("cuda") and torch.cuda.is_available()):
+            print("InstinctWM pi05: graph_capture is planned but needs CUDA; running eager.")
+            return []
+
+        surface = Pi05Surface(policy.model)
+        hoisted = surface.hoist_loop_constants()          # BITEXACT, and the prerequisite
+        result = run_pass(GraphCapture(), surface, device=torch.device(str(device)))
+        if getattr(result, "skipped_reason", None) or not surface.install():
+            # Declining is the EXPECTED outcome here, not a failure. pi05's denoise region is not
+            # replay-safe -- measured, see surface.py -- so the site declares capturable=False and the
+            # generic pass refuses it. The hoists are bit-exact and stay; they buy nothing on their
+            # own, and saying so beats implying the run was optimized.
+            print(f"InstinctWM pi05: graph_capture declined "
+                  f"({getattr(result, 'skipped_reason', 'no rewrite applied')}). Running eager, which "
+                  f"is upstream's arithmetic exactly. {len(hoisted)} bit-exact hoist(s) applied "
+                  f"(no measurable win alone).")
+            return ["loop_constant_hoist"]
+        for h in hoisted:
+            print(f"InstinctWM pi05: hoisted {h}")
+        print("InstinctWM pi05: graph_capture installed on the denoise step. NOTE: this path is "
+              "opt-in and not equivalence-verified -- see pi05_iwm/surface.py.")
+        return ["loop_constant_hoist", "graph_capture"]
 
 
 class _Pi05Loop:

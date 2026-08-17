@@ -62,6 +62,25 @@ class HardwareReq:
     requires: frozenset[str] = frozenset()          # 'fp8', 'nvfp4', 'cuda_graphs', 'triton'
     excludes: frozenset[str] = frozenset()
 
+    def __post_init__(self):
+        # Accept any iterable of names. A tuple is the obvious thing to write, it type-checks against
+        # nothing at runtime, and it got as far as plan time before failing with
+        # "unsupported operand type(s) for -: 'tuple' and 'frozenset'" -- an error about operators,
+        # from deep inside the planner, for what is really a typo in a pass declaration. Every field
+        # in this class is set once at class-definition time by pass authors, so normalising here is
+        # free and turns a latent crash into no bug at all.
+        for field in ("requires", "excludes"):
+            value = getattr(self, field)
+            if not isinstance(value, frozenset):
+                object.__setattr__(self, field, frozenset(value or ()))
+        unknown = (self.requires | self.excludes) - KNOWN_FEATURES
+        if unknown:
+            raise ValueError(
+                f"HardwareReq names feature(s) no probe can emit: {sorted(unknown)}. "
+                f"Known: {sorted(KNOWN_FEATURES)}. A requirement the probe cannot name is "
+                f"unsatisfiable on every device, which is how P007's requires={{'cudnn'}} came to be "
+                f"dormant-broken -- so it is refused at declaration time instead.")
+
     def satisfied_by(self, device: "DeviceProfile") -> tuple[bool, str]:
         if self.min_capability and device.capability < self.min_capability:
             return False, f"needs sm_{self.min_capability[0]}{self.min_capability[1]}, " \
