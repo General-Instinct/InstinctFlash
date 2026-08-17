@@ -56,11 +56,25 @@ def revert_conv_plan(module) -> int:
     return len(convs)
 
 
-def plan_for_vae(module, *, prefer_bitexact: bool = False, measured: dict | None = None) -> ConvPlan:
+#: The machine the default timings below were taken on, and the only one they describe. Selecting a
+#: convolution backend from these numbers on different silicon is extrapolation, not measurement --
+#: cuDNN's kernel coverage for 3D bf16 is exactly what varies between architectures, which is the
+#: whole reason this layer exists.
+DEFAULTS_MEASURED_ON = (9, 0)      # sm_90, H100 80GB HBM3, torch 2.9 / cuDNN 9.10
+
+
+def plan_for_vae(module, *, prefer_bitexact: bool = False, measured: dict | None = None,
+                 device=None) -> ConvPlan:
     """The plan for a 3D VAE encoder subgraph, asked of the registry rather than asserted.
 
-    `measured` defaults to the encode-scale numbers from PROFILE.md so the caller gets the decision the
-    measurement supports; passing fresh numbers is how a different box gets a different answer.
+    `measured` defaults to the encode-scale numbers measured on sm_90, so the caller gets the decision
+    that measurement supports; passing fresh numbers is how a different box gets a different answer.
+
+    PROVENANCE IS CHECKED NOW. Nothing ever passed fresh numbers, so every device got the decision an
+    H100 supported -- including devices where cuDNN declines a different set of kernels. Pass a probed
+    `device` and a mismatch is announced rather than absorbed. It is announced rather than refused on
+    purpose: the layout choice may well still be right elsewhere, and silently falling back would trade
+    one unverified decision for another. What is not acceptable is not knowing which one you have.
     """
     from instinctwm.backends.conv import REGISTRY, register_declared
     from instinctwm.backends.conv.semantics import ConvSemantics, ConvShape
@@ -69,6 +83,17 @@ def plan_for_vae(module, *, prefer_bitexact: bool = False, measured: dict | None
     if measured is None:
         measured = {("torch_fallback", MemoryLayout.NCDHW): 175.72,
                     ("cudnn_conv3d", MemoryLayout.NDHWC): 17.00}
+        cap = getattr(device, "capability", None)
+        if cap is not None and tuple(cap) != DEFAULTS_MEASURED_ON:
+            import warnings
+            warnings.warn(
+                f"conv backend selected from timings measured on sm_"
+                f"{DEFAULTS_MEASURED_ON[0]}{DEFAULTS_MEASURED_ON[1]} while running on sm_"
+                f"{cap[0]}{cap[1]}. The choice is an extrapolation on this device; measure this "
+                f"machine and pass `measured=` to make it a measurement. The accuracy certificate "
+                f"behind the NUMERIC tier was also established on sm_"
+                f"{DEFAULTS_MEASURED_ON[0]}{DEFAULTS_MEASURED_ON[1]} and does not transfer.",
+                stacklevel=2)
     return REGISTRY.select(
         semantics=ConvSemantics.CAUSAL_TIME,
         shape=ConvShape(160, 160, (3, 3, 3), spatial=(8, 128, 160), dtype="bfloat16"),
