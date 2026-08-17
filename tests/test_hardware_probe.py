@@ -104,10 +104,47 @@ def test_the_shipped_conv_backend_is_satisfiable():
           "an unavailable feature still refuses, and says why", whybad)
 
 
+def test_layout_choice_can_be_measured_not_extrapolated():
+    print("\n=== 4. the conv layout decision can be measured on THIS device ===")
+    # `plan_for_vae` defaulted to timings from one H100, and the backends' own measure() raises
+    # NotImplementedError, so the layout decision was an extrapolation on every other machine --
+    # on precisely the axis (cuDNN 3D bf16 kernel coverage) that differs most between architectures.
+    # Warning about that was the previous fix; measuring is the real one.
+    try:
+        import torch
+        if not torch.cuda.is_available():
+            print("  SKIP: needs a CUDA device")
+            return
+    except ImportError:
+        print("  SKIP: needs torch")
+        return
+    from instinctwm.backends.conv.apply import DEFAULTS_MEASURED_ON, measure_conv_layouts
+    from instinctwm.passes.contract import DeviceProfile
+
+    d = DeviceProfile.probe()
+    m = measure_conv_layouts(device=d, iters=10, warmup=3)
+    check(m is not None and len(m) == 2, "both candidate layouts are timed on this device")
+    if not m:
+        return
+    ncdhw = next(v for (n, l), v in m.items() if l.name == "NCDHW")
+    ndhwc = next(v for (n, l), v in m.items() if l.name == "NDHWC")
+    print(f"  NCDHW {ncdhw:.3f} ms   NDHWC {ndhwc:.3f} ms   ratio {ncdhw/ndhwc:.2f}x")
+    check(ncdhw > 0 and ndhwc > 0, "both timings are real")
+    if tuple(d.capability) == DEFAULTS_MEASURED_ON:
+        # The independent check: a fresh instrument should reproduce the known per-signature range.
+        check(2.0 < ncdhw / ndhwc < 9.0,
+              "on sm_90 the measured advantage lands in the known 4.35-7.24x band",
+              f"{ncdhw/ndhwc:.2f}x")
+    # cached, so a second load does not re-time
+    import instinctwm.backends.conv.apply as A
+    check(bool(A._MEASURED_CACHE), "the result is cached per (capability, shape)")
+
+
 def main() -> int:
     test_vocabulary_is_closed()
     test_probe_reports_vendor_libraries()
     test_the_shipped_conv_backend_is_satisfiable()
+    test_layout_choice_can_be_measured_not_extrapolated()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")

@@ -63,8 +63,67 @@ def revert_conv_plan(module) -> int:
 DEFAULTS_MEASURED_ON = (9, 0)      # sm_90, H100 80GB HBM3, torch 2.9 / cuDNN 9.10
 
 
+#: Cache keyed by (capability, shape) so a load does not re-time what it already knows.
+_MEASURED_CACHE: dict = {}
+
+
+def measure_conv_layouts(*, channels: int = 160, spatial: tuple = (8, 128, 160),
+                         iters: int = 20, warmup: int = 5, device=None) -> dict | None:
+    """Time the candidate layouts ON THIS DEVICE. Returns what `plan_for_vae` wants, or None.
+
+    THE POINT. `plan_for_vae`'s defaults are timings from one H100, and the backends' own `measure()`
+    raises NotImplementedError, so the layout decision was an extrapolation everywhere except the
+    machine it was taken on. cuDNN's 3D bf16 kernel coverage is exactly what differs between
+    architectures, which is the entire reason this layer exists -- so the honest fix is not to warn
+    about the extrapolation, it is to stop extrapolating.
+
+    Conversion is done once outside the timed region because that is how the pass works: weights are
+    converted at install, then every forward runs in the chosen layout. Timing a per-call conversion
+    would measure a configuration nothing serves.
+
+    Returns None rather than raising when there is no CUDA device, so callers on a laptop fall back to
+    the declared defaults and are told they did.
+    """
+    try:
+        import torch
+        if not torch.cuda.is_available():
+            return None
+    except Exception:                                            # noqa: BLE001
+        return None
+
+    cap = tuple(getattr(device, "capability", None) or torch.cuda.get_device_capability())
+    key = (cap, channels, spatial)
+    if key in _MEASURED_CACHE:
+        return _MEASURED_CACHE[key]
+
+    import torch
+    D, H, W = spatial
+    x = torch.randn(1, channels, D, H, W, device="cuda", dtype=torch.bfloat16)
+    conv = torch.nn.Conv3d(channels, channels, 3, padding=1, bias=False).cuda().to(torch.bfloat16)
+
+    def time_in(memory_format) -> float:
+        c = conv.to(memory_format=memory_format)
+        xi = x.to(memory_format=memory_format)
+        with torch.no_grad():
+            for _ in range(warmup):
+                c(xi)
+            torch.cuda.synchronize()
+            s, e = torch.cuda.Event(True), torch.cuda.Event(True)
+            s.record()
+            for _ in range(iters):
+                c(xi)
+            e.record()
+            torch.cuda.synchronize()
+        return s.elapsed_time(e) / iters
+
+    out = {("torch_fallback", MemoryLayout.NCDHW): time_in(torch.contiguous_format),
+           ("cudnn_conv3d", MemoryLayout.NDHWC): time_in(torch.channels_last_3d)}
+    _MEASURED_CACHE[key] = out
+    return out
+
+
 def plan_for_vae(module, *, prefer_bitexact: bool = False, measured: dict | None = None,
-                 device=None) -> ConvPlan:
+                 device=None, measure: bool = False) -> ConvPlan:
     """The plan for a 3D VAE encoder subgraph, asked of the registry rather than asserted.
 
     `measured` defaults to the encode-scale numbers measured on sm_90, so the caller gets the decision
@@ -80,6 +139,8 @@ def plan_for_vae(module, *, prefer_bitexact: bool = False, measured: dict | None
     from instinctwm.backends.conv.semantics import ConvSemantics, ConvShape
     register_declared(REGISTRY)
     convs = convertible_convs(module)
+    if measured is None and measure:
+        measured = measure_conv_layouts(device=device)
     if measured is None:
         measured = {("torch_fallback", MemoryLayout.NCDHW): 175.72,
                     ("cudnn_conv3d", MemoryLayout.NDHWC): 17.00}
