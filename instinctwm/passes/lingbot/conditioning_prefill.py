@@ -76,6 +76,19 @@ class ConditioningPrefill:
             return PassResult(self.name, False, Tier.BITEXACT,
                               "model declares no episode- or chunk-constant conditioning")
 
+        # An artifact the implementation already hoists is a real purity with no work left in it. The
+        # pass can see from the spec that pi05's prefix is chunk-constant; it cannot see that
+        # `sample_actions` already prefills it once and threads the KV through all ten denoise steps.
+        # So the adapter declares that, and a plan that would have claimed a win it does not deliver
+        # declines instead.
+        done = [p for p in hoistable if p.already_hoisted]
+        hoistable = [p for p in hoistable if not p.already_hoisted]
+        if not hoistable:
+            return PassResult(
+                self.name, False, Tier.BITEXACT,
+                f"{[p.artifact for p in done]} is chunk- or episode-constant, but the model's own "
+                f"implementation already hoists it out of the loop, so there is nothing to hoist")
+
         n_fwd = spec.total_forwards()
         return PassResult(
             name=self.name,

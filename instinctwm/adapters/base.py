@@ -122,6 +122,14 @@ class PurityKey:
     artifact: str
     fields: tuple[str, ...]
     scope: KVLifetime
+    #: True when the reference implementation ALREADY hoists this artifact, so the purity is real but
+    #: there is no work left for a hoisting pass. Without this, a pass reasoning purely from scope has
+    #: to guess, and it guessed wrong: pi05's plan reported conditioning_prefill as APPLYING with the
+    #: reason "recomputed on all 11 forwards per control step", while upstream in fact prefills once
+    #: (`sample_actions` runs the prefix with use_cache=True and threads the KV through all ten
+    #: denoise steps). A pass can see the model's SHAPE from a spec; whether the implementation
+    #: already exploits that shape is something only the adapter knows, so the adapter says it.
+    already_hoisted: bool = False
 
 
 @dataclass(frozen=True)
@@ -138,11 +146,11 @@ class ObservationSpec:
     """What one call to `predict` expects. Declared, because callers cannot guess it.
 
     WHY THIS IS A DECLARATION AND NOT A CONVENTION. Three model families in this repository want three
-    genuinely different things: ACT takes one frame of (3,480,640) float and a state vector under flat
-    keys; pi05 takes three cameras plus a prompt; LingBot-VA takes EIGHT frames of (240,320,3) uint8 as
-    a list under an `obs` key, plus a prompt, because its control cycle consumes the window observed
-    while the previous action chunk executed. A fourth, VQ-BeT, declares a fixed five-observation
-    window. None of that is derivable from the weights.
+    genuinely different things: pi05 takes three (3,224,224) float cameras plus a state vector under
+    flat keys and a prompt; LingBot-VA takes EIGHT frames of (240,320,3) uint8 as a list under an `obs`
+    key, plus a prompt, because its control cycle consumes the window observed while the previous
+    action chunk executed. VQ-BeT, a third, declares a fixed five-observation window. None of that is
+    derivable from the weights.
 
     Before this existed the CLI guessed: it branched on `notes["family"] == "vla"`, then hardcoded
     camera names, tensor shapes and a history of 8. That is a model-specific branch sitting in the

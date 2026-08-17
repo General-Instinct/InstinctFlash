@@ -35,8 +35,13 @@ class Pi05Adapter:
             guidance={"action": GuidanceRule(mode=GuidanceMode.NONE)},
             # The prefix is a pure function of the observation and prompt, constant across all 10
             # action steps -- the same shape of claim LingBot-VA makes at EPISODE scope.
+            # The prefix KV is chunk-constant AND upstream already hoists it: `sample_actions` runs
+            # the prefix once with use_cache=True and threads the resulting cache through all ten
+            # denoise steps. Declaring the purity without `already_hoisted` made the plan promise a
+            # conditioning_prefill win that did not exist -- it reported "recomputed on all 11
+            # forwards per control step" about an implementation that recomputes it zero times.
             purity=(PurityKey(artifact="prefix_kv", fields=("images", "state", "prompt"),
-                              scope=KVLifetime.CHUNK),),
+                              scope=KVLifetime.CHUNK, already_hoisted=True),),
             obs_decode_modules=(),      # a VLA predicts no pixels
             observation=ObservationSpec(
                 fields=(ObservationField("observation.images.base_0_rgb", (3, 224, 224)),

@@ -103,8 +103,16 @@ def test_a_second_model_family_plans_correctly():
     def line(name):
         return next((l for l in text.splitlines() if name in l), "")
 
-    check("APPLY" in line("conditioning_prefill") and "chunk" in line("conditioning_prefill"),
-          "conditioning_prefill fires on a CHUNK-scope prefix it has never seen")
+    # REGRESSION, and this assertion used to say the opposite. It required conditioning_prefill to
+    # APPLY here, because a CHUNK-scope purity is exactly what that pass looks for -- and the plan
+    # duly reported "recomputed on all 11 forwards per control step". Reading upstream showed the
+    # claim was false: `sample_actions` prefills the prefix once with use_cache=True and threads the
+    # KV through all ten denoise steps, so the count is zero, not eleven. A pass reads a model's
+    # SHAPE from the spec and cannot see whether the implementation already exploits it, so the
+    # adapter declares `already_hoisted` and the pass declines a win it cannot deliver.
+    check("skip" in line("conditioning_prefill") and "already hoists" in line("conditioning_prefill"),
+          "conditioning_prefill declines: upstream already hoists this prefix",
+          line("conditioning_prefill").strip()[:80])
     check("skip" in line("cfg_branch_elision"), "cfg_branch_elision declines: no CFG declared")
     check("skip" in line("obs_decode_elision"), "obs_decode_elision declines: a VLA has no decoder")
     for nm in ("fsdp_elision", "allocator_churn_elision", "debug_dump_elision"):
