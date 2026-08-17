@@ -6,7 +6,7 @@ LingBot-VA. Facts below come from lerobot/pi05_base's own config.json, not from 
 from __future__ import annotations
 
 from instinctwm import (AdapterSpec, GuidanceRule, KVLifetime, KVStreamSpec, PhaseSpec, PurityKey)
-from instinctwm.adapters.base import GuidanceMode
+from instinctwm.adapters.base import GuidanceMode, ObservationField, ObservationSpec
 
 BACKBONE = "pi05"
 
@@ -36,5 +36,11 @@ class Pi05Adapter:
             purity=(PurityKey(artifact="prefix_kv", fields=("images", "state", "prompt"),
                               scope=KVLifetime.CHUNK),),
             obs_decode_modules=(),      # a VLA predicts no pixels
+            observation=ObservationSpec(
+                fields=(ObservationField("observation.images.base_0_rgb", (3, 224, 224)),
+                        ObservationField("observation.images.left_wrist_0_rgb", (3, 224, 224)),
+                        ObservationField("observation.images.right_wrist_0_rgb", (3, 224, 224)),
+                        ObservationField("observation.state", (32,))),
+                history=1, conditioning=("prompt",)),
             notes={"family": "vla", "chunk_size": "50", "n_obs_steps": "1"},
         )

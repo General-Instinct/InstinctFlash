@@ -7,7 +7,7 @@ abstraction is really about execution rather than about diffusion, it has to des
 from __future__ import annotations
 
 from instinctwm import AdapterSpec, GuidanceRule, PhaseSpec
-from instinctwm.adapters.base import GuidanceMode
+from instinctwm.adapters.base import GuidanceMode, ObservationField, ObservationSpec
 
 BACKBONE = "act"
 
@@ -22,6 +22,10 @@ class ACTAdapter:
             guidance={"action": GuidanceRule(mode=GuidanceMode.NONE)},
             purity=(),                  # no loop, so nothing to hoist out of one
             obs_decode_modules=(),
+            observation=ObservationSpec(
+                fields=(ObservationField("observation.images.top", (3, 480, 640)),
+                        ObservationField("observation.state", (14,))),
+                history=1),
             notes={"family": "act", "chunk_size": "100", "n_obs_steps": "1"},
         )
 

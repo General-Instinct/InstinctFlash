@@ -125,6 +125,72 @@ class PurityKey:
 
 
 @dataclass(frozen=True)
+class ObservationField:
+    """One tensor the model consumes. `shape` is per observation, with no batch dimension."""
+
+    key: str                                   # e.g. "observation.images.top"
+    shape: tuple[int, ...]                     # e.g. (3, 480, 640)
+    dtype: str = "float32"                     # "float32" | "uint8" | ...
+
+
+@dataclass(frozen=True)
+class ObservationSpec:
+    """What one call to `predict` expects. Declared, because callers cannot guess it.
+
+    WHY THIS IS A DECLARATION AND NOT A CONVENTION. Three model families in this repository want three
+    genuinely different things: ACT takes one frame of (3,480,640) float and a state vector under flat
+    keys; pi05 takes three cameras plus a prompt; LingBot-VA takes EIGHT frames of (240,320,3) uint8 as
+    a list under an `obs` key, plus a prompt, because its control cycle consumes the window observed
+    while the previous action chunk executed. A fourth, VQ-BeT, declares a fixed five-observation
+    window. None of that is derivable from the weights.
+
+    Before this existed the CLI guessed: it branched on `notes["family"] == "vla"`, then hardcoded
+    camera names, tensor shapes and a history of 8. That is a model-specific branch sitting in the
+    product surface, which is the thing the architecture is supposed to make unnecessary -- and it
+    would have been wrong for VQ-BeT in three separate ways.
+
+    `history` is how many observations one control cycle consumes, and `frames_key` says whether they
+    arrive as a list under one key or as flat keys. Both are execution facts about the model's
+    interface, not model internals: they tell a caller what to collect between calls.
+    """
+
+    fields: tuple[ObservationField, ...] = ()
+    #: observations consumed per control cycle. 1 for a single-observation policy, 8 for a model whose
+    #: cycle folds in the window observed while the last action executed.
+    history: int = 1
+    #: does the model want a leading batch dimension on each tensor
+    batched: bool = True
+    #: when set, the `history` observations arrive as a LIST under this key rather than as flat keys
+    frames_key: str | None = None
+    #: non-tensor inputs the caller must supply, e.g. ("prompt",)
+    conditioning: tuple[str, ...] = ()
+
+    def example(self) -> dict:
+        """A zero-filled observation of the declared shape. For smoke tests, never for evaluation."""
+        import numpy as np
+
+        def one(f: ObservationField):
+            shape = (1, *f.shape) if self.batched and not self.frames_key else f.shape
+            return np.zeros(shape, dtype=np.dtype(f.dtype))
+
+        if self.frames_key:
+            frames = [{f.key: one(f) for f in self.fields} for _ in range(max(1, self.history))]
+            out: dict = {self.frames_key: frames}
+        else:
+            out = {f.key: one(f) for f in self.fields}
+        for c in self.conditioning:
+            out[c] = ""
+        return out
+
+    def describe(self) -> str:
+        where = f"a list of {self.history} under {self.frames_key!r}" if self.frames_key \
+            else ("flat keys" + (f", {self.history} observations deep" if self.history > 1 else ""))
+        parts = [f"{f.key} {tuple(f.shape)} {f.dtype}" for f in self.fields]
+        tail = f"; plus {', '.join(self.conditioning)}" if self.conditioning else ""
+        return f"{where}: " + "; ".join(parts) + tail
+
+
+@dataclass(frozen=True)
 class AdapterSpec:
     """Everything the optimizer reads. Facts only — no optimizations."""
 
@@ -138,6 +204,9 @@ class AdapterSpec:
     #: WAMs surveyed agree the observation-decode tail is optional at serving time — Cosmos3-Edge
     #: denoises 550 of 567 tokens as future video and discards them.
     obs_decode_modules: tuple[str, ...] = ()
+    #: What one `predict` call expects. Empty means undeclared, which callers are told rather than
+    #: left to guess -- see ObservationSpec for why this cannot be a convention.
+    observation: ObservationSpec = field(default_factory=ObservationSpec)
     notes: Mapping[str, str] = field(default_factory=dict)
 
     def phase(self, name: str) -> PhaseSpec:

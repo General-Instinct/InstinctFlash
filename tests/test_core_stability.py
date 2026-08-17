@@ -135,11 +135,56 @@ def test_a_broken_provider_does_not_break_planning():
         register_passes("broken_probe", lambda: [])
 
 
+def test_the_observation_contract_is_declared_not_guessed():
+    print("\n=== 5. every family declares what predict() expects ===")
+    # The CLI used to branch on notes["family"] == "vla" and then hardcode camera names, tensor shapes
+    # and a history of 8. Three families want three different things -- and a fourth, VQ-BeT, declares
+    # a five-observation window, which that branch would have got wrong three ways. So it is declared.
+    import sys as _s
+    ex = str(ROOT / "examples" / "pi05_vla")
+    if ex not in _s.path:
+        _s.path.insert(0, ex)
+    from instinctwm import load
+    from act_iwm.adapter import ACTAdapter
+    from pi05_iwm.adapter import Pi05Adapter
+
+    cases = {"wan_va": load("wan_va").spec(), "pi05": Pi05Adapter().spec(),
+             "act": ACTAdapter().spec()}
+    for name, spec in cases.items():
+        o = spec.observation
+        check(bool(o.fields), f"{name} declares its observation fields", str(len(o.fields)))
+        ex_obs = o.example()
+        check(bool(ex_obs), f"{name} can build an example from its declaration")
+        for c in o.conditioning:
+            check(c in ex_obs, f"{name}: conditioning key {c!r} is present")
+        if o.frames_key:
+            check(isinstance(ex_obs[o.frames_key], list) and
+                  len(ex_obs[o.frames_key]) == o.history,
+                  f"{name}: {o.history} frames under {o.frames_key!r}")
+        else:
+            check(all(f.key in ex_obs for f in o.fields), f"{name}: flat keys present")
+
+    # the contracts must actually DIFFER, or the abstraction is decorative
+    sigs = {n: (s.observation.history, s.observation.frames_key, s.observation.batched,
+                tuple(sorted(f.key for f in s.observation.fields))) for n, s in cases.items()}
+    check(len(set(sigs.values())) == len(sigs), "all three contracts are distinct",
+          str({n: v[:3] for n, v in sigs.items()}))
+
+    # and the CLI must not name a model to build one
+    cli = (ROOT / "instinctwm" / "cli.py").read_text()
+    body = cli[cli.index("def _zero_observation"):]
+    body = body[:body.index("def ", 10)] if "def " in body[10:] else body
+    for banned in ("family", "cam_high", "observation.images.top", "240, 320"):
+        check(banned not in body.split('"""')[-1],
+              f"the CLI's observation builder does not mention {banned!r}")
+
+
 def main() -> int:
     test_generic_layers_name_no_model()
     test_the_core_never_branches_on_model_identity()
     test_passes_are_discovered_like_adapters()
     test_a_broken_provider_does_not_break_planning()
+    test_the_observation_contract_is_declared_not_guessed()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")

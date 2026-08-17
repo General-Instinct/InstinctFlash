@@ -109,11 +109,14 @@ def cmd_run(a) -> int:
         print(f"{a.model}: {type(e).__name__}: {e}")
         return 1
 
-    obs = _zero_observation(rt, a.camera, a.state_dim)
+    obs = _zero_observation(rt)
     if obs is None:
-        print("This backbone's observation format is not known to the CLI, so `run` cannot build a "
-              "smoke-test input for it. Use the Python API and pass a real observation.")
+        print("This backbone declares no observation contract, so `run` cannot build a smoke-test "
+              "input for it. Add ObservationSpec to its adapter, or use the Python API and pass a "
+              "real observation.")
         return 2
+    spec = rt._adapter.spec()
+    print(f"  expects: {spec.observation.describe()}")
 
     print(f"SMOKE TEST -- zero-filled observations. This proves the checkpoint loads here and "
           f"returns finite actions.\nIt is not an evaluation.\n")
@@ -132,27 +135,19 @@ def cmd_run(a) -> int:
     return 0 if np.isfinite(last).all() else 1
 
 
-def _zero_observation(rt, camera: str | None, state_dim: int):
-    """A zero-filled observation in the shape the backbone's own declaration implies."""
-    import numpy as np
-    streams = {s.name for s in rt.plan and rt._adapter.spec().streams} \
-        if hasattr(rt, "_adapter") else set()
-    cams = [camera] if camera else None
+def _zero_observation(rt):
+    """A zero-filled observation, built from what the adapter DECLARES it expects.
+
+    This used to branch on `notes["family"] == "vla"` and then hardcode camera names, tensor shapes
+    and a history of 8 -- model-specific knowledge sitting in the product surface, and wrong in three
+    separate ways for the next family that came along. `AdapterSpec.observation` is that knowledge
+    declared where it belongs, so this function no longer knows any model.
+    """
     spec = rt._adapter.spec() if hasattr(rt, "_adapter") else None
-    notes = dict(getattr(spec, "notes", {}) or {})
-    family = notes.get("family", "")
-    if family == "vla" or "video" not in streams:
-        cam = (cams or ["observation.images.top"])[0]
-        if not cam.startswith("observation."):
-            cam = f"observation.images.{cam}"
-        return {cam: np.zeros((1, 3, 480, 640), np.float32),
-                "observation.state": np.zeros((1, state_dim), np.float32)}
-    if "video" in streams:      # a world-action model: frames per camera, plus a prompt
-        frames = [{f"observation.images.{c}": np.zeros((240, 320, 3), np.uint8)
-                   for c in (cams or ["cam_high", "cam_left_wrist", "cam_right_wrist"])}
-                  for _ in range(8)]
-        return {"obs": frames, "prompt": ""}
-    return None
+    obs = getattr(spec, "observation", None)
+    if obs is None or not obs.fields:
+        return None
+    return obs.example()
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -180,8 +175,6 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("model")
     r.add_argument("--cycles", type=int, default=3)
     r.add_argument("--prompt", default=None)
-    r.add_argument("--camera", default=None, help="observation key, e.g. observation.images.top")
-    r.add_argument("--state-dim", type=int, default=14)
     r.set_defaults(fn=cmd_run)
 
     a = ap.parse_args(argv)

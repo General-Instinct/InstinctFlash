@@ -14,7 +14,8 @@ from __future__ import annotations
 
 from typing import Sequence
 
-from instinctwm.adapters.base import (
+from instinctwm.adapters.base import (  # noqa: F401
+    ObservationField, ObservationSpec,
     AdapterSpec, CommitMode, GuidanceMode, GuidanceRule, KVLifetime, KVStreamSpec,
     PhaseSpec, PurityKey,
 )
@@ -112,6 +113,14 @@ def lingbot_va_spec() -> AdapterSpec:
         # The predicted video is never consumed by the RoboTwin client — it asks only for
         # actions. `_infer` returns latents that the caller drops (wan_va_server.py:623-624).
         obs_decode_modules=("vae.decoder",),
+        # A cycle folds in the window observed while the last action chunk executed: 8 frames per
+        # camera, uint8 HWC, as a list under "obs". _ControlLoop conditions the action forward on the
+        # newest of them and advances the ring with the whole window.
+        observation=ObservationSpec(
+            fields=tuple(ObservationField(key=f"observation.images.{c}", shape=(240, 320, 3),
+                                          dtype="uint8")
+                         for c in ("cam_high", "cam_left_wrist", "cam_right_wrist")),
+            history=8, batched=False, frames_key="obs", conditioning=("prompt",)),
 
         notes={
             "attn_mode": "torch (custom_sdpa); forced by the server and by transformer/config.json",
