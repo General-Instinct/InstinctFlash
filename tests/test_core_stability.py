@@ -137,6 +137,15 @@ def test_a_broken_provider_does_not_break_planning():
 
 def test_the_observation_contract_is_declared_not_guessed():
     print("\n=== 5. every family declares what predict() expects ===")
+    # numpy is needed only to BUILD an example, and the ratchet above must keep running without it.
+    # Importing it at module scope made the whole file skip in the torch-free runner, which silently
+    # switched off the architecture gate -- a skipped ratchet is a ratchet that ratchets nothing.
+    try:
+        import numpy  # noqa: F401
+    except ImportError:
+        print("  SKIP: needs numpy to build an example observation "
+              "(the ratchet in tests 1-2 still ran)")
+        return
     # The CLI used to branch on notes["family"] == "vla" and then hardcode camera names, tensor shapes
     # and a history of 8. Three families want three different things -- and a fourth, VQ-BeT, declares
     # a five-observation window, which that branch would have got wrong three ways. So it is declared.
