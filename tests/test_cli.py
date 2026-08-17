@@ -79,14 +79,22 @@ def test_describe_and_validate_work_without_weights_or_gpu():
 
 
 def test_devices_reports_or_explains():
-    print("\n=== 3. devices reports a machine, or explains why it cannot ===")
+    print("\n=== 3. devices reports a machine, or explains why there is none ===")
     rc, out = run(["devices"])
-    check(rc in (0, 1), "devices exits cleanly either way", str(rc))
-    if rc == 0:
-        check("features:" in out, "it lists what the device can do")
-        check("decline here" in out, "and says what an absent feature means for a plan")
+    # BRANCH ON THE ANSWER, NOT THE EXIT CODE. This branched on rc, which worked only while
+    # "no accelerator" exited 1. Once that became a successful answer -- it is the expected state on
+    # the torch-free core install -- rc==0 covered both cases and the test asserted a device profile
+    # in an environment that has no device. It passed under an interpreter with torch and failed
+    # under the runner, which is the worst way for a test to be wrong.
+    check(rc == 0, "devices always exits 0: it answers a question rather than gating on hardware",
+          str(rc))
+    if "no accelerator visible" in out:
+        check("expected without the `runtime` extra" in out,
+              "with no torch it says so, and says that is expected")
+        check("APPLICABILITY UNCHECKED" in out, "and what that means for a plan")
     else:
-        check("Planning still works" in out, "it explains that planning does not need a device")
+        check("features:" in out, "with a device it lists what that device can do")
+        check("decline here" in out, "and what an absent feature means for a plan")
 
 
 def main_() -> int:
