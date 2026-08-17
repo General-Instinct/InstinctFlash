@@ -140,9 +140,13 @@ class Optimizer:
         #: passes are evaluated in registration order; ordering matters where one pass is a
         #: precondition for another (sync elimination gates graph capture, for instance).
         if passes is None:
-            # Imported lazily: the pass modules import this one, so a module-scope import
-            # here would be circular.
-            from instinctwm.passes.lingbot import default_passes
+            # THE REGISTRY, not one model's list. This read `from instinctwm.passes.lingbot import
+            # default_passes`, which made a world model's pass set the default for every family in
+            # the ecosystem -- and it was the last model-name reference left in executable code
+            # anywhere in the generic layers. A new family could not add a pass without editing the
+            # planner. A registry is allowed to know what ships; a planner is not allowed to know a
+            # model. Imported lazily because the pass modules import this one.
+            from instinctwm.passes.registry import default_passes
 
             passes = default_passes()
         self._passes = list(passes)

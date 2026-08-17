@@ -221,6 +221,14 @@ a backend declares `HardwareReq(min_capability, requires, excludes)` and the pla
 probed device satisfies it — so a new target costs one probe extension and a new model costs one
 adapter. That is the difference between adding a target and forking per model.
 
+**A registry may name what it ships; nothing else may name a model.** `runtime/loader.py` knows which
+adapters are bundled and `passes/registry.py` knows which passes are, because that is a registry's job.
+Planners, descriptors, executors and verifiers must not: the planner used to import one model's pass
+list as its default, so every family in the ecosystem inherited passes written for a world model and no
+new family could add one without editing the planner. Both now discover from entry points, so the
+in-tree path and the third-party path are the same path. `tests/test_core_stability.py` counts
+model-name references in the executable code of those layers and fails above zero.
+
 **A capability the probe cannot name is a capability no backend may require.** Both halves of that
 vocabulary have to be closed together. `DeviceProfile.probe()` reports what a device actually has,
 `KNOWN_FEATURES` bounds the names, and `tests/test_hardware_probe.py` fails if a backend requires

@@ -40,6 +40,12 @@ eval = ["numpy>=1.21"]
 [project.scripts]
 instinctwm = "instinctwm.cli:main"
 
+# Our own passes are advertised the same way a third party's are, so the in-tree path and the
+# external path are the same path. `passes/registry.py` also registers these as builtins, which is
+# what keeps a source checkout working before it is installed.
+[project.entry-points."instinctwm.passes"]
+lingbot = "instinctwm.passes.lingbot:default_passes"
+
 [project.urls]
 Homepage = "https://general-instinct.com/"
 Repository = "https://github.com/general-instinct/InstinctWM"
