@@ -115,8 +115,26 @@ def validate_package(ckpt_dir: str | Path) -> PackageReport:
             continue
         if not (d / f).exists():
             missing.append(f)
-    if not any((d / w).exists() for w in WEIGHTS_ANY):
-        missing.append(f"weights -- one of {', '.join(WEIGHTS_ANY)}")
+    # WEIGHTS MAY BE SUPPLIED BY REFERENCE, and until this existed they could not be. `base_weights`
+    # was already an execution fact -- LingBot-VA uses it to point at a frozen VAE/text-encoder stack
+    # it does not vendor -- but the validator still demanded local weight files, so a declaration
+    # could not adopt an upstream checkpoint wholesale. Found by declaring a LeRobot ACT policy:
+    # every byte lives in `lerobot/act_...`, and the only sane package is a declaration plus a
+    # pointer. Requiring a copy of somebody else's gigabytes to describe them is not a contract, it
+    # is a tax. A package with neither local weights nor a pointer is still incomplete.
+    has_local = any((d / w).exists() for w in WEIGHTS_ANY)
+    pointer = None
+    try:
+        pointer = (load_declaration(d).extra or {}).get("base_weights")
+    except Exception:                                            # reported below by the real load
+        pass
+    if not has_local and not pointer:
+        missing.append(f"weights -- one of {', '.join(WEIGHTS_ANY)}, "
+                       f"or an execution.base_weights pointer")
+    elif not has_local:
+        notes.append(f"no local weight files; they are referenced by "
+                     f"execution.base_weights = {pointer!r}. The adapter resolves it at load, so "
+                     f"that repo must stay reachable.")
     if not (d / "README.md").exists():
         notes.append("no README.md. Not required, but a published checkpoint without a model card is "
                      "hard to adopt.")

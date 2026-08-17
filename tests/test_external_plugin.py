@@ -161,6 +161,40 @@ def test_a_no_refinement_model_plans_honestly():
         check("skip" in next((l for l in text.splitlines() if nm in l), ""), f"{nm} declines")
 
 
+def test_weights_may_be_supplied_by_reference():
+    print("\n=== 9. a declaration can adopt an upstream checkpoint without vendoring it ===")
+    # Found by declaring a LeRobot ACT policy: every byte lives in the upstream repo, so the only
+    # sane package is a declaration plus a pointer. `base_weights` was already an execution fact,
+    # but validate_package demanded local weight files, so adopting somebody else's checkpoint meant
+    # copying their gigabytes first.
+    import json
+    import tempfile
+    from instinctwm.descriptors.package import publishability, validate_package
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "declared"
+        d.mkdir()
+        (d / "config.json").write_text("{}")
+        (d / "instinctwm.json").write_text(json.dumps({
+            "instinctwm_schema": 1,
+            "execution": {"model_id": "example-org/declared", "backbone": "act",
+                          "servable": True, "base_weights": "upstream-org/some-policy"},
+        }))
+        r = validate_package(d)
+        check(r.ok, "a pointer-only package is servable", "; ".join(r.missing) or "no missing")
+        check(any("base_weights" in n for n in r.notes),
+              "and the report says where the weights actually live")
+        check(publishability(d)[0], "it is publishable too")
+
+        # neither local weights nor a pointer is still incomplete
+        (d / "instinctwm.json").write_text(json.dumps({
+            "instinctwm_schema": 1,
+            "execution": {"model_id": "example-org/nothing", "backbone": "act", "servable": True},
+        }))
+        r2 = validate_package(d)
+        check(not r2.ok and any("weights" in m for m in r2.missing),
+              "but a package with neither is refused", "; ".join(r2.missing))
+
+
 def main() -> int:
     test_discovery_is_by_entry_point()
     test_lingbot_passes_do_not_fire_on_other_models()
@@ -170,6 +204,7 @@ def main() -> int:
     test_a_second_model_family_plans_correctly()
     test_shape_stability_is_derived_not_declared()
     test_a_no_refinement_model_plans_honestly()
+    test_weights_may_be_supplied_by_reference()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")

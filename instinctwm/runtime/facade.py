@@ -96,13 +96,16 @@ class Runtime:
         # An unprobed device is reported in the plan, never assumed away.
         from instinctwm.descriptors.deployment import DeploymentSpec
         from instinctwm.planners.planner import Optimizer
-        device = None
+        # NOT named `device`: that is the caller's placement string ("cuda:0"), and shadowing it here
+        # sent a DeviceProfile into `model.to()`. Two different things called device is exactly the
+        # kind of collision an end-to-end run catches and a unit test does not.
+        probed = None
         try:
             from instinctwm.passes.contract import DeviceProfile
-            device = DeviceProfile.probe()
+            probed = DeviceProfile.probe()
         except Exception:                                        # noqa: BLE001  no torch, no CUDA
             pass
-        plan = Optimizer().compile(spec, deployment=DeploymentSpec(device=device),
+        plan = Optimizer().compile(spec, deployment=DeploymentSpec(device=probed),
                                    capabilities=ckpt.capabilities())
 
         backend, why = choose_backend(placement, adapter, ckpt, plan, device=device, nfe=nfe)

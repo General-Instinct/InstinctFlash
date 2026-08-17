@@ -66,6 +66,26 @@ to find out was to build the pass and measure the regression.
 pip install ./examples/pi05_vla
 ```
 
+ACT runs end to end, from a declaration alone:
+
+```bash
+python examples/pi05_vla/run_act_end_to_end.py
+```
+
+    describe()            backbone act, servable, nfe {'action': 1}
+    from_pretrained()     plan compiled, shapes static across cycles
+    episode.predict() x5  action (14,) float32, finite, five consecutive cycles
+
+The package it builds carries **no weights at all** — `execution.base_weights` names the upstream
+LeRobot repo and the adapter resolves it at load. That is the shape a third party adopting someone
+else's checkpoint actually needs, and it did not work before this example existed: `validate_package`
+demanded local weight files even when a pointer was declared, so describing somebody else's
+checkpoint required copying their gigabytes first.
+
+LeRobot's `ACTPolicy.select_action` hides an internal action-chunk queue and returns one action per
+call; `reset` clears it. Our `predict`/`reset` map onto that with nothing model-specific reaching the
+runtime — two systems independently deciding that action-chunk buffering belongs behind one verb.
+
 ```python
 from instinctwm import Optimizer, load
 print(Optimizer().compile(load("pi05").spec()).explain())
