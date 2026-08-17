@@ -90,7 +90,16 @@ class Pi05Adapter:
             # nfe {action: 4} would be served at the config's 10 and the plan would be priced wrong.
             policy.config.num_inference_steps = int(n["action"])
 
-        pre, post = make_pre_post_processors(policy.config, pretrained_path=repo)
+        # OVERRIDE THE PUBLISHED DEVICE. `lerobot/pi05_base` ships its pipeline with
+        # `device_processor: {"device": "cpu"}` -- the publisher's deployment assumption baked into the
+        # checkpoint. Left alone it puts language tokens on the CPU while the weights are on cuda:0,
+        # and the run dies inside a Gemma embedding with "Expected all tensors to be on the same
+        # device". Where a model runs is a DEPLOYMENT fact, so the runtime's device wins over anything
+        # a checkpoint asserts about it.
+        pre, post = make_pre_post_processors(
+            policy.config, pretrained_path=repo,
+            preprocessor_overrides={"device_processor": {"device": str(dev)}},
+            postprocessor_overrides={"device_processor": {"device": str(dev)}})
         return _Pi05Loop(policy, pre, post, dev)
 
 
@@ -107,7 +116,12 @@ class _Pi05Loop:
         self._p.reset()                       # drops the buffered 50-step action chunk
 
     def predict(self, observation):
-        batch = {k: v for k, v in observation.items() if k.startswith("observation.")}
+        # TENSORS, not arrays. pi05's processor does `state.cpu().numpy()` (processor_pi05.py:67), so a
+        # numpy observation dies inside the pipeline with `'numpy.ndarray' has no attribute 'cpu'`.
+        # ObservationSpec declares shapes and dtypes, not a tensor library, and converting is the
+        # adapter's job -- the caller should be able to hand over whatever a camera produced.
+        batch = {k: self._as_tensor(v) for k, v in observation.items()
+                 if k.startswith("observation.")}
         # LeRobot names the instruction `task`; the declaration calls it `prompt`. Mapping one to the
         # other is exactly the adapter's job -- the runtime must not learn either name.
         batch["task"] = str(observation.get("prompt") or self._prompt)
@@ -115,6 +129,12 @@ class _Pi05Loop:
             action = self._post(self._p.select_action(self._pre(batch)))
         a = action if self._torch.is_tensor(action) else self._torch.as_tensor(action)
         return {"action": a.squeeze(0).detach().cpu().numpy()}
+
+    def _as_tensor(self, v):
+        t = v if self._torch.is_tensor(v) else self._torch.as_tensor(v)
+        if t.dtype not in (self._torch.float32, self._torch.uint8):
+            t = t.float()
+        return t.to(self._dev)
 
     def close(self) -> None:
         self._p = None

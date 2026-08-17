@@ -109,14 +109,14 @@ def cmd_run(a) -> int:
         print(f"{a.model}: {type(e).__name__}: {e}")
         return 1
 
-    obs = _zero_observation(rt)
-    if obs is None:
+    contract = rt.observation
+    if contract is None or not contract.fields:
         print("This backbone declares no observation contract, so `run` cannot build a smoke-test "
               "input for it. Add ObservationSpec to its adapter, or use the Python API and pass a "
               "real observation.")
         return 2
-    spec = rt._adapter.spec()
-    print(f"  expects: {spec.observation.describe()}")
+    obs = contract.example()
+    print(f"  expects: {contract.describe()}")
 
     print(f"SMOKE TEST -- zero-filled observations. This proves the checkpoint loads here and "
           f"returns finite actions.\nIt is not an evaluation.\n")
@@ -133,21 +133,6 @@ def cmd_run(a) -> int:
     print(f"  action      {last.shape} {last.dtype}")
     print(f"  finite      {bool(np.isfinite(last).all())}    std {float(last.std()):.4f}")
     return 0 if np.isfinite(last).all() else 1
-
-
-def _zero_observation(rt):
-    """A zero-filled observation, built from what the adapter DECLARES it expects.
-
-    This used to branch on `notes["family"] == "vla"` and then hardcode camera names, tensor shapes
-    and a history of 8 -- model-specific knowledge sitting in the product surface, and wrong in three
-    separate ways for the next family that came along. `AdapterSpec.observation` is that knowledge
-    declared where it belongs, so this function no longer knows any model.
-    """
-    spec = rt._adapter.spec() if hasattr(rt, "_adapter") else None
-    obs = getattr(spec, "observation", None)
-    if obs is None or not obs.fields:
-        return None
-    return obs.example()
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -111,7 +111,27 @@ class InProcessBackend:
                     f"build_in_process(checkpoint, plan, device=, nfe=). Either implement it, or "
                     f"load with placement='worker' so the model runs in a managed subprocess.")
             self._impl = build(self._checkpoint, self._plan, device=self._device, nfe=self._nfe)
+            self._report_unapplied()
         return self._impl
+
+    def _report_unapplied(self) -> None:
+        """Say so when a plan APPLIES passes the adapter cannot install.
+
+        A plan is a claim about what will happen to this model. An adapter without `install` cannot
+        make any of it happen, so a plan reporting APPLY while nothing is installed is the plan lying
+        -- and it lied quietly: pi05's plan says `conditioning_prefill` APPLIES, its adapter has no
+        install method, and the optimization simply did not occur. Reporting beats asserting, because
+        an adapter that deliberately builds an already-optimized object is legitimate; what is not
+        legitimate is the caller being unable to tell which case they are in.
+        """
+        if getattr(self._adapter, "install", None) is not None:
+            return
+        applied = [r.name for r in getattr(self._plan, "results", []) if getattr(r, "applies", False)]
+        if applied:
+            print(f"InstinctWM: the plan applies {applied}, but the adapter for "
+                  f"{self._checkpoint.execution.backbone!r} implements no install(), so NONE of them "
+                  f"were installed. The model runs unoptimized. Implement install(server_module, plan) "
+                  f"to act on a plan, or treat the plan as advisory for this backbone.")
 
     def predict(self, observation, *, executed_action=None):
         """One control cycle. Every internal phase the model needs happens inside this call.

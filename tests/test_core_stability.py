@@ -178,13 +178,18 @@ def test_the_observation_contract_is_declared_not_guessed():
     check(len(set(sigs.values())) == len(sigs), "the contracts are distinct",
           str({n: v[:3] for n, v in sigs.items()}))
 
-    # and the CLI must not name a model to build one
+    # and the CLI must not name a model to build one -- it asks the runtime through the PUBLIC api
     cli = (ROOT / "instinctwm" / "cli.py").read_text()
-    body = cli[cli.index("def _zero_observation"):]
-    body = body[:body.index("def ", 10)] if "def " in body[10:] else body
+    body = cli[cli.index("def cmd_run"):]
+    body = body[:body.index("\ndef ", 10)] if "\ndef " in body[10:] else body
     for banned in ("family", "cam_high", "observation.images.top", "240, 320"):
-        check(banned not in body.split('"""')[-1],
-              f"the CLI's observation builder does not mention {banned!r}")
+        check(banned not in body, f"the CLI's run command does not mention {banned!r}")
+    check("rt.observation" in body and "_adapter" not in body,
+          "and it reads the contract through the public property, not rt._adapter")
+
+    from instinctwm import Runtime
+    check(isinstance(getattr(Runtime, "observation", None), property),
+          "Runtime.observation is public, so a user with only a Hub id can ask what predict() wants")
 
 
 def test_the_comparison_claims_match_our_code():

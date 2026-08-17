@@ -164,6 +164,28 @@ class Runtime:
         """The optimization plan, read-only. What was applied to these weights, and why."""
         return self._plan
 
+    @property
+    def observation(self):
+        """What `predict` expects, declared by this backbone. `None` if it declares nothing.
+
+        A user who arrives with only a Hub id needs this. `predict(observation)` takes a dict in the
+        model's own format, and the formats genuinely differ -- LingBot-VA wants eight frames as a list
+        under one key, pi05 wants three cameras and a state vector under flat keys -- so without a way
+        to ask, the only place the contract exists is adapter source. That was the state of things:
+        even our own CLI reached into `runtime._adapter.spec()` to build a smoke-test observation,
+        which is the runtime admitting the public API was missing something its own tooling needed.
+
+        `.describe()` is the human answer, `.example()` builds a correctly-shaped zero-filled dict.
+
+        The CLI got here the hard way. It first branched on `notes["family"] == "vla"` and hardcoded
+        camera names, tensor shapes and a history of 8 -- model-specific knowledge sitting in the
+        product surface, and wrong in three separate ways for the next family that arrived. Declaring
+        the contract fixed the branch; exposing it here fixes the private-attribute reach that the
+        fix left behind.
+        """
+        spec = getattr(self._adapter, "spec", None)
+        return getattr(spec(), "observation", None) if callable(spec) else None
+
     def explain(self) -> str:
         """Everything a bug report needs, in one string."""
         ex = self._checkpoint.execution
