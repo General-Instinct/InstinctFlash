@@ -84,7 +84,7 @@ def _cudnn_available() -> bool:
 #: requirement the probe cannot name is unsatisfiable on every device, which is how P007's
 #: `requires={"cudnn"}` came to be dormant-broken. Enforced by tests/test_hardware_probe.py.
 KNOWN_FEATURES = frozenset({
-    "cuda_graphs", "triton", "fp8", "nvfp4", "wgmma", "tma", "cudnn", "cublas",
+    "cuda", "cuda_graphs", "triton", "fp8", "nvfp4", "wgmma", "tma", "cudnn", "cublas",
 })
 
 
@@ -106,7 +106,10 @@ class DeviceProfile:
         i = torch.cuda.current_device()
         p = torch.cuda.get_device_properties(i)
         cap = (p.major, p.minor)
-        feats = {"cuda_graphs", "triton"}
+        # "cuda" is vacuously true here -- probe() cannot run without a CUDA device -- but
+        # `graph_capture` declares `requires={"cuda"}`, and a name the probe never emits is
+        # unsatisfiable everywhere. Emitting it is honest and keeps the vocabulary closed.
+        feats = {"cuda", "cuda_graphs", "triton"}
         if cap >= (8, 9):
             feats.add("fp8")
         if cap >= (10, 0):

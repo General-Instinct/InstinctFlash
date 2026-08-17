@@ -43,12 +43,19 @@ def test_vocabulary_is_closed():
     import instinctwm.backends.conv.reference as ref
     import inspect
 
-    src = inspect.getsource(ref)
     import re
+    # EVERY declaration site, not just the conv backends. Scanning only those missed
+    # `graph_capture`'s `requires={"cuda"}`, which the probe never emitted -- the identical bug
+    # one directory over. A closure that is only checked in one place is not a closure.
+    sources = [inspect.getsource(ref)]
+    for path in sorted((ROOT / "instinctwm").rglob("*.py")):
+        if "requires=frozenset" in (t := path.read_text()):
+            sources.append(t)
     declared = set()
-    for m in re.finditer(r"requires=frozenset\(\{([^}]*)\}\)", src):
-        declared |= {t.strip().strip("\"'") for t in m.group(1).split(",") if t.strip()}
-    print(f"  declared by conv backends: {sorted(declared) or '(none)'}")
+    for src in sources:
+        for m in re.finditer(r"requires=frozenset\(\{([^}]*)\}\)", src):
+            declared |= {t.strip().strip("\"'") for t in m.group(1).split(",") if t.strip()}
+    print(f"  declared across the tree : {sorted(declared) or '(none)'}")
     print(f"  nameable by the probe    : {sorted(KNOWN_FEATURES)}")
     unknown = sorted(declared - KNOWN_FEATURES)
     check(not unknown, "no backend requires a feature the probe cannot name", str(unknown))

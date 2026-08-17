@@ -40,3 +40,14 @@ class DeploymentSpec:
     #: actions. Every WAM surveyed makes the observation-decode tail optional at serving time,
     #: but "optional" is a property of the *call*, not of the checkpoint.
     want_pixels: bool = False
+
+    #: THE MACHINE. `DeviceProfile.probe()` has existed since the pass contract was written and
+    #: was called from nowhere, so `HardwareReq` -- the mechanism by which a pass or backend says
+    #: which silicon it is legal on -- could not be enforced at plan time. Every
+    #: architecture-specific decision was therefore an unguarded extrapolation from the one
+    #: machine it was measured on. Hardware is a deployment fact, not a checkpoint fact: the same
+    #: weights run on an H100 here and an Orin there, and the checkpoint author cannot know which.
+    #:
+    #: None means "not probed", which the planner reports rather than assumes. Annotated as a
+    #: string so descriptors/ stays free of any import from passes/.
+    device: "DeviceProfile | None" = None      # noqa: F821  (passes.contract.DeviceProfile)

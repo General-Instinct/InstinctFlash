@@ -90,8 +90,20 @@ class Runtime:
         if schedule:
             spec = spec.with_nfe(schedule)
 
+        # Probe the machine, so hardware requirements are enforced rather than decorative. Probing
+        # is best-effort by design: analysing a checkpoint must keep working on a laptop with no
+        # torch and no GPU, and a planner that refused to run without a device would break that.
+        # An unprobed device is reported in the plan, never assumed away.
+        from instinctwm.descriptors.deployment import DeploymentSpec
         from instinctwm.planners.planner import Optimizer
-        plan = Optimizer().compile(spec, capabilities=ckpt.capabilities())
+        device = None
+        try:
+            from instinctwm.passes.contract import DeviceProfile
+            device = DeviceProfile.probe()
+        except Exception:                                        # noqa: BLE001  no torch, no CUDA
+            pass
+        plan = Optimizer().compile(spec, deployment=DeploymentSpec(device=device),
+                                   capabilities=ckpt.capabilities())
 
         backend, why = choose_backend(placement, adapter, ckpt, plan, device=device, nfe=nfe)
         return cls(ckpt, adapter, plan, backend, placement_reason=why)

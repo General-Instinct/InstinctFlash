@@ -186,6 +186,25 @@ class Optimizer:
                 ))
                 continue
             unchecked = need if (need and capabilities is None) else frozenset()
+
+            # HARDWARE, enforced at plan time. A pass declares `hardware = HardwareReq(...)` saying
+            # which silicon it is legal on; until the deployment carried a probed device there was
+            # nothing to check it against, so the declaration was decorative and every
+            # architecture-specific choice was an unguarded extrapolation from one machine.
+            hw = getattr(p, "hardware", None)
+            hw_unchecked = False
+            if hw is not None:
+                if deployment.device is not None:
+                    hw_ok, hw_why = hw.satisfied_by(deployment.device)
+                    if not hw_ok:
+                        results.append(PassResult(
+                            name=getattr(p, "name", type(p).__name__), applies=False,
+                            tier=Tier.BITEXACT,
+                            reason=f"hardware: {hw_why}. This is a DEVICE decision, not a model one.",
+                        ))
+                        continue
+                elif getattr(hw, "min_capability", None) or getattr(hw, "requires", frozenset()):
+                    hw_unchecked = True
             r = p.evaluate(spec, deployment)
             if r.applies and r.tier > self._ceiling:
                 r = PassResult(
@@ -194,12 +213,15 @@ class Optimizer:
                            f"{self._ceiling.name}: {r.reason}",
                     params=r.params, expected_win=r.expected_win,
                 )
-            if unchecked and r.applies:
+            if (unchecked or hw_unchecked) and r.applies:
+                bits = []
+                if unchecked:
+                    bits.append(f"requires {sorted(unchecked)} and no capabilities were supplied")
+                if hw_unchecked:
+                    bits.append("declares a hardware requirement and no device was probed")
                 r = PassResult(
                     name=r.name, applies=r.applies, tier=r.tier,
-                    reason=f"APPLICABILITY UNCHECKED -- requires {sorted(unchecked)} and no "
-                           f"capabilities were supplied, so this may not be applicable to the model "
-                           f"you are planning: {r.reason}",
+                    reason=f"APPLICABILITY UNCHECKED -- {'; '.join(bits)}: {r.reason}",
                     params=r.params, expected_win=r.expected_win,
                 )
             results.append(r)
