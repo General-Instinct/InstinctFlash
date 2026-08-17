@@ -165,6 +165,12 @@ class ObservationSpec:
     #: non-tensor inputs the caller must supply, e.g. ("prompt",)
     conditioning: tuple[str, ...] = ()
 
+    #: PINNED STAGING WAS TRIED HERE AND IS SLOWER. Allocating pinned host buffers from these declared
+    #: shapes and copying host->pinned->device measured 0.264 ms against 0.236 ms for a plain
+    #: `.to(device)` on a (1,3,480,640) float32 image. Pinned memory pays when the copy OVERLAPS
+    #: compute on a separate stream; a control cycle that uploads and immediately synchronises has no
+    #: overlap to exploit, so the extra host->host copy is pure cost. Do not re-add it without a
+    #: measurement showing overlap. See examples/pi05_vla/measure_overhead_vs_reference.py.
     def example(self) -> dict:
         """A zero-filled observation of the declared shape. For smoke tests, never for evaluation."""
         import numpy as np
