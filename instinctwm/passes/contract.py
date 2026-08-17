@@ -75,6 +75,19 @@ class HardwareReq:
         return True, "ok"
 
 
+def _cudnn_available() -> bool:
+    import torch
+    return bool(torch.backends.cudnn.is_available())
+
+
+#: Every feature name `probe()` can emit. A backend may only require names from this set: a
+#: requirement the probe cannot name is unsatisfiable on every device, which is how P007's
+#: `requires={"cudnn"}` came to be dormant-broken. Enforced by tests/test_hardware_probe.py.
+KNOWN_FEATURES = frozenset({
+    "cuda_graphs", "triton", "fp8", "nvfp4", "wgmma", "tma", "cudnn", "cublas",
+})
+
+
 @dataclass(frozen=True)
 class DeviceProfile:
     """What the target can do. Probed once, cached."""
@@ -101,6 +114,19 @@ class DeviceProfile:
         if cap >= (9, 0):
             feats.add("wgmma")
             feats.add("tma")
+        # VENDOR LIBRARIES, and their absence here was a live latent bug. `CuDNNConv3d`
+        # (backends/conv/reference.py) declares `requires={"cudnn"}`, this probe never emitted it,
+        # and the two only failed to contradict each other because nothing in planners/ calls
+        # `probe()`. Wiring the probe would have made P007 -- the shipped 1.405x NUMERIC pass --
+        # silently inapplicable while the plan still reported a legal selection. A capability the
+        # probe cannot name is a capability no backend may require, so the vocabulary has to be
+        # closed on both sides; `tests/test_hardware_probe.py` now asserts that it is.
+        for name, avail in (("cudnn", _cudnn_available), ("cublas", lambda: True)):
+            try:
+                if avail():
+                    feats.add(name)
+            except Exception:                                    # noqa: BLE001  never fail a probe
+                pass
         return DeviceProfile(name=p.name, capability=cap, total_memory=p.total_memory,
                              features=frozenset(feats))
 

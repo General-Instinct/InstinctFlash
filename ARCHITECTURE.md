@@ -196,6 +196,39 @@ the kind of error that survives review and then invalidates a benchmark.
 
 ---
 
+## Where each responsibility lives
+
+The two seams say what is separated. This says where a given decision belongs, and what must never
+appear in a layer. Most of these boundaries were tested against a hand-tuned realtime engine
+(FlashRT) that makes the opposite choice in several places; where the placements differ, the reason
+ours is placed differently is given.
+
+| layer | belongs here | must not be here |
+|:--|:--|:--|
+| checkpoint / adapter | capacity, lifetime, addressing, window, commit points, phase order, guidance, purity, attention *semantics*, shape envelope; quantization format and scale provenance | the calibration recipe, integer layer indices, kernel names, mode flags |
+| planner / passes | legality gates, tier derivation, refusal records with reasons, composition at the weakest tier, hardware-requirement enforcement | anything that changes numerics without changing the declared tier |
+| backend selection | measured choice over *declared semantics*, incumbent kept on ties, every rejection recorded | a model name or an architecture string as the dispatch key |
+| hardware kernels | arithmetic a vendor library declines, with shape legality proved and the tier derived from structure | a compile-time bound behind a runtime launcher with no check |
+| graph / capture | a whole declared phase program under one launch footprint, with caller-owned buffers and stable pointers | a capture key derived from a shape that changes per cycle |
+| quantization / calibration | format, granularity, scheme and scale provenance in the execution namespace | a host-local mutable file as the source of deployed numerics |
+
+Two of these are load-bearing and worth stating as prohibitions.
+
+**A dispatch key must not name the model.** The alternative is a table indexed by
+`(model, framework, architecture)`, which materialises the cross-product by hand: a new architecture
+then costs one entry per model, and a new model one entry per architecture. Ours is a predicate —
+a backend declares `HardwareReq(min_capability, requires, excludes)` and the planner asks whether the
+probed device satisfies it — so a new target costs one probe extension and a new model costs one
+adapter. That is the difference between adding a target and forking per model.
+
+**A capability the probe cannot name is a capability no backend may require.** Both halves of that
+vocabulary have to be closed together. `DeviceProfile.probe()` reports what a device actually has,
+`KNOWN_FEATURES` bounds the names, and `tests/test_hardware_probe.py` fails if a backend requires
+something outside it. Without that closure a requirement is unsatisfiable everywhere, which looks
+exactly like a typo and is equally silent: the shipped convolution-layout selection declared
+`requires={"cudnn"}` against a probe that never emitted `cudnn`, and the contradiction was invisible
+only because nothing called the probe.
+
 ## Measurement protocol
 
 Every latency claim in this repository is measured under **ABBA ordering** — base, treat, treat,
