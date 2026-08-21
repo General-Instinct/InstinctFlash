@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/instinctwm_2.png" alt="InstinctWM" width="360"/>
+<img src="assets/iFlash.png" alt="InstinctWM" width="360"/>
 
 **One runtime for robot world-action models.**
 
