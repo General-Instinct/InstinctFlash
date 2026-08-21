@@ -39,8 +39,8 @@ def check(cond, label, detail=""):
 
 def test_vocabulary_is_closed():
     print("\n=== 1. every declared requirement is a name the probe can emit ===")
-    from instinctwm.passes.contract import KNOWN_FEATURES
-    import instinctwm.backends.conv.reference as ref
+    from instinctflash.passes.contract import KNOWN_FEATURES
+    import instinctflash.backends.conv.reference as ref
     import inspect
 
     import re
@@ -48,7 +48,7 @@ def test_vocabulary_is_closed():
     # `graph_capture`'s `requires={"cuda"}`, which the probe never emitted -- the identical bug
     # one directory over. A closure that is only checked in one place is not a closure.
     sources = [inspect.getsource(ref)]
-    for path in sorted((ROOT / "instinctwm").rglob("*.py")):
+    for path in sorted((ROOT / "instinctflash").rglob("*.py")):
         if "requires=frozenset" in (t := path.read_text()):
             sources.append(t)
     declared = set()
@@ -72,7 +72,7 @@ def test_probe_reports_vendor_libraries():
     if not torch.cuda.is_available():
         print("  SKIP: needs a CUDA device")
         return
-    from instinctwm.passes.contract import DeviceProfile, KNOWN_FEATURES
+    from instinctflash.passes.contract import DeviceProfile, KNOWN_FEATURES
     d = DeviceProfile.probe()
     print(f"  {d.name}  sm{d.capability[0]}{d.capability[1]}  features {sorted(d.features)}")
     check(d.features <= KNOWN_FEATURES, "the probe emits only known names",
@@ -93,7 +93,7 @@ def test_the_shipped_conv_backend_is_satisfiable():
     except ImportError:
         print("  SKIP: needs torch")
         return
-    from instinctwm.passes.contract import DeviceProfile, HardwareReq
+    from instinctflash.passes.contract import DeviceProfile, HardwareReq
     d = DeviceProfile.probe()
     ok, why = HardwareReq(requires=frozenset({"cudnn"})).satisfied_by(d)
     check(ok, "a cuDNN-requiring backend is admissible on this device", why)
@@ -118,8 +118,8 @@ def test_layout_choice_can_be_measured_not_extrapolated():
     except ImportError:
         print("  SKIP: needs torch")
         return
-    from instinctwm.backends.conv.apply import DEFAULTS_MEASURED_ON, measure_conv_layouts
-    from instinctwm.passes.contract import DeviceProfile
+    from instinctflash.backends.conv.apply import DEFAULTS_MEASURED_ON, measure_conv_layouts
+    from instinctflash.passes.contract import DeviceProfile
 
     d = DeviceProfile.probe()
     m = measure_conv_layouts(device=d, iters=10, warmup=3)
@@ -136,7 +136,7 @@ def test_layout_choice_can_be_measured_not_extrapolated():
               "on sm_90 the measured advantage lands in the known 4.35-7.24x band",
               f"{ncdhw/ndhwc:.2f}x")
     # cached, so a second load does not re-time
-    import instinctwm.backends.conv.apply as A
+    import instinctflash.backends.conv.apply as A
     check(bool(A._MEASURED_CACHE), "the result is cached per (capability, shape)")
 
 
@@ -150,7 +150,7 @@ def test_cpu_is_a_hardware_target():
     except ImportError:
         print("  SKIP: needs torch")
         return
-    from instinctwm.passes.contract import DeviceProfile, HardwareReq, KNOWN_FEATURES
+    from instinctflash.passes.contract import DeviceProfile, HardwareReq, KNOWN_FEATURES
     import torch
     if torch.cuda.is_available():
         cpu = DeviceProfile(name="CPU (test)", capability=(0, 0), total_memory=0,

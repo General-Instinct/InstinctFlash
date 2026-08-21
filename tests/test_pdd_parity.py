@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """The sigma <-> t convention bridge the LingBot adapter depends on.
 
-HISTORY, because it explains what this file is for. InstinctWM used to carry its own copy of PDD in
-`instinctwm/train/pdd/`, integrating sigma DESCENDING 1 -> 0. The algorithm now lives in the
+HISTORY, because it explains what this file is for. InstinctFlash used to carry its own copy of PDD in
+`instinctflash/train/pdd/`, integrating sigma DESCENDING 1 -> 0. The algorithm now lives in the
 `instinct-pdd` submodule, which fixes time ASCENDING 0 -> 1 to match the paper's interpolant. Before
 the old copy was deleted, a parity test compared the two directly across the mapping and found them
 identical -- `max|Δ| = 0.00e+00` on grid widths, `advance()`, block sampling at L = 1/2/4/8, and the
@@ -15,7 +15,7 @@ What survives, and needs to, is the INVARIANT it established: under
     dt = -dsigma    =>   v_t = -v_sigma
 
 a step in one convention equals a step in the other, because both the width and the velocity flip
-sign. `instinctwm/train/oracles/lingbot_velocity.py` relies on exactly this -- it maps the scheduler's
+sign. `instinctflash/train/oracles/lingbot_velocity.py` relies on exactly this -- it maps the scheduler's
 descending sigmas onto an ascending `Grid` and negates every velocity crossing the boundary. A
 one-sided flip would train against a target pointing backwards along the trajectory, and the loss
 would fall regardless.
@@ -23,7 +23,7 @@ would fall regardless.
 So this file checks the bridge itself, against integration done by hand in sigma. No submodule
 internals, no server, no GPU.
 
-    $IWM_SERVER_PY tests/test_pdd_parity.py
+    $IFL_SERVER_PY tests/test_pdd_parity.py
 """
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 # The submodule is not installed; add it explicitly rather than relying on import order
-# through instinctwm/__init__.py, since these tests import instinct_pdd directly.
+# through instinctflash/__init__.py, since these tests import instinct_pdd directly.
 sys.path.insert(0, str(ROOT / "instinct-pdd" / "src"))
 
 import torch  # noqa: E402

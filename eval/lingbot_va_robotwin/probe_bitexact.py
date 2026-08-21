@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compare the actions two LingBot-VA server variants produce from identical inputs.
 
-"No accuracy loss" is a claim InstinctWM sells, so an optimization is only free if it
+"No accuracy loss" is a claim InstinctFlash sells, so an optimization is only free if it
 either (a) is bit-exact, or (b) survives a paired non-inferiority test against a measured
 noise floor -- which costs roughly 10x more to establish. This tool decides which bucket a
 variant falls into, cheaply, before anyone spends GPU-months on the expensive route.

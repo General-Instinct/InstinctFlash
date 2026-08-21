@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/instinctwm_2.png" alt="InstinctWM" width="360"/>
+<img src="assets/instinctflash_2.png" alt="InstinctFlash" width="360"/>
 
 **One runtime for robot world-action models.**
 
@@ -10,7 +10,7 @@
 
 ---
 
-InstinctWM runs world-action models — robot policies that predict what happens next *and* what to do
+InstinctFlash runs world-action models — robot policies that predict what happens next *and* what to do
 about it. You give it a checkpoint; it works out how to run that checkpoint quickly and correctly.
 
 A checkpoint carries a short declaration of what it is. The runtime reads the declaration, decides
@@ -20,7 +20,7 @@ about how the model was trained reaches the runtime, so a new training method ne
 ## Install
 
 ```bash
-git clone https://github.com/general-instinct/InstinctWM && cd InstinctWM
+git clone https://github.com/general-instinct/InstinctFlash && cd InstinctFlash
 pip install -e ".[runtime,diffusion]"
 ```
 
@@ -28,10 +28,10 @@ Python 3.10+. Running LingBot-VA needs a CUDA GPU with about 30 GB free; it will
 card. `pip install -e .` on its own has no GPU or torch requirement and is enough to inspect
 checkpoints. For a pinned serving environment, use [`requirements-serving.txt`](requirements-serving.txt).
 
-LingBot-VA also needs its upstream serving code, which InstinctWM patches rather than copies:
+LingBot-VA also needs its upstream serving code, which InstinctFlash patches rather than copies:
 
 ```bash
-git clone https://github.com/robbyant/lingbot-va ~/.cache/instinctwm/lingbot-va
+git clone https://github.com/robbyant/lingbot-va ~/.cache/instinctflash/lingbot-va
 ```
 
 Not on PyPI yet — install from the clone.
@@ -39,7 +39,7 @@ Not on PyPI yet — install from the clone.
 ## Load a model
 
 ```python
-from instinctwm import Runtime
+from instinctflash import Runtime
 
 runtime = Runtime.from_pretrained("general-instinct/lingbot-va")
 ```
@@ -47,7 +47,7 @@ runtime = Runtime.from_pretrained("general-instinct/lingbot-va")
 To see what a checkpoint is before downloading its weights:
 
 ```python
-from instinctwm import describe
+from instinctflash import describe
 
 describe("general-instinct/lingbot-va")
 ```
@@ -83,11 +83,11 @@ choose.
 ## Or without writing Python
 
 ```bash
-instinctwm devices                 # what machine am I on, and what can it do
-instinctwm describe  <model-id>    # what a checkpoint declares — no weights downloaded
-instinctwm validate  <dir>         # is this a publishable checkpoint
-instinctwm plan      <model-id>    # what the runtime would do to it, and why
-instinctwm run       <model-id>    # load it and produce real actions
+instinctflash devices                 # what machine am I on, and what can it do
+instinctflash describe  <model-id>    # what a checkpoint declares — no weights downloaded
+instinctflash validate  <dir>         # is this a publishable checkpoint
+instinctflash plan      <model-id>    # what the runtime would do to it, and why
+instinctflash run       <model-id>    # load it and produce real actions
 ```
 
 `describe` and `plan` need no weights and no GPU, which is the point: they answer *what is this, and
@@ -103,7 +103,7 @@ smoke test, not an evaluation.
   the adapter and the weights; `describe("org/model")` reads the metadata without downloading them.
 - **Episodes and closed-loop control.** `runtime.episode()` scopes a rollout and `episode.predict()`
   is callable in a loop, so multi-phase models no longer leak their phases to callers.
-- **Bring your own model family.** Declare an `instinctwm.adapters` entry point and `pip install`;
+- **Bring your own model family.** Declare an `instinctflash.adapters` entry point and `pip install`;
   no fork and no pull request. See [`examples/external_plugin/`](examples/external_plugin/).
 - **Report what the robot actually did.** `episode.predict(obs, executed_action=...)` for when a
   safety layer changed the action before it reached the hardware.
@@ -127,11 +127,11 @@ it declined and why. Protocols and per-pass results are in [`eval/`](eval/).
 
 ## Adding your own model
 
-An external package can add a model family without changing InstinctWM. Write an adapter with two
+An external package can add a model family without changing InstinctFlash. Write an adapter with two
 methods and declare one entry point:
 
 ```toml
-[project.entry-points."instinctwm.adapters"]
+[project.entry-points."instinctflash.adapters"]
 my_backbone = "my_package.adapter:MyAdapter"
 ```
 
@@ -147,7 +147,7 @@ without shipping your training recipe.
 `Runtime.from_pretrained` reads the checkpoint's declaration, finds the adapter for its backbone,
 derives a set of capabilities, and compiles a plan from them. `runtime.explain()` prints every
 decision, including the passes it declined and why. [ARCHITECTURE.md](ARCHITECTURE.md) covers the
-design; the optimization passes live in [`instinctwm/passes/`](instinctwm/passes/).
+design; the optimization passes live in [`instinctflash/passes/`](instinctflash/passes/).
 
 ## Development
 
@@ -161,14 +161,14 @@ Tests that need torch, diffusers or a GPU skip rather than fail.
 
 ## Acknowledgements
 
-InstinctWM learns from other projects rather than reinventing their work. Three categories, kept
+InstinctFlash learns from other projects rather than reinventing their work. Three categories, kept
 distinct on purpose, because they carry different obligations:
 
 **Inspiration — ideas studied, nothing copied.**
 
 - [LeRobot](https://github.com/huggingface/lerobot) (Apache-2.0) — the standard for what loading a
   robot policy should feel like. `Runtime.from_pretrained` and the model-card-generated-from-artifact
-  habit come from studying it. Where we differ: LeRobot loads a model *class*, InstinctWM loads a
+  habit come from studying it. Where we differ: LeRobot loads a model *class*, InstinctFlash loads a
   checkpoint *declaration* and derives what is legal from it.
 - [FlashRT](https://github.com/gugudeshubao/FlashRT) (Apache-2.0), read at `c6bbd54` on branch
   `feat/orin-pipelined-streaming` — hand-tuned realtime inference for
@@ -195,7 +195,7 @@ says so.
 | LeRobot | 14 `if/elif` branches in `policies/factory.py`; **adding a family edits that file** | device string | task success in eval scripts |
 | vLLM | `ModelRegistry.register_model(...)` from a plugin `register()` | platform plugins | correctness tests |
 | FlashRT | `_PIPELINE_MAP[(config, framework, arch)]`, mutable by a plugin — but **one entry per model × arch** | strict `detect_arch()` enum → table | cosine ≥ 0.9996 vs a reference |
-| **InstinctWM** | one `instinctwm.adapters` entry point keyed on **backbone alone**; 2 required methods, 46–80 lines measured | `HardwareReq.satisfied_by(DeviceProfile)` — a predicate, so a new target costs one probe extension rather than one entry per model | per-pass tiers (BITEXACT / NUMERIC / BEHAVIORAL), derived not claimed; a plan takes its weakest tier |
+| **InstinctFlash** | one `instinctflash.adapters` entry point keyed on **backbone alone**; 2 required methods, 46–80 lines measured | `HardwareReq.satisfied_by(DeviceProfile)` — a predicate, so a new target costs one probe extension rather than one entry per model | per-pass tiers (BITEXACT / NUMERIC / BEHAVIORAL), derived not claimed; a plan takes its weakest tier |
 
 Checkpoint distribution is where we differ most deliberately: a checkpoint is a **declaration**, with
 `execution` and `provenance` in separate namespaces, a `publishability()` gate that proves weights can
@@ -210,17 +210,17 @@ have, and its published figures are Thor and RTX on different models. Any speed 
 between different hardware running different work, which is not a comparison.
 
 License compatibility is checked before reuse, not after. Apache-2.0 permits incorporation into an
-AGPL-3.0 work with notices preserved; the reverse does not hold, so code cannot flow from InstinctWM
+AGPL-3.0 work with notices preserved; the reverse does not hold, so code cannot flow from InstinctFlash
 back into those projects under their licenses.
 
 ## Citation
 
 ```bibtex
-@software{instinctwm2026,
-  title  = {InstinctWM: One Runtime for Robot World-Action Models},
+@software{instinctflash2026,
+  title  = {InstinctFlash: One Runtime for Robot World-Action Models},
   author = {General Instinct},
   year   = {2026},
-  url    = {https://github.com/General-Instinct/InstinctWM}
+  url    = {https://github.com/General-Instinct/InstinctFlash}
 }
 ```
 

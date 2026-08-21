@@ -14,14 +14,14 @@
 #                  SEPARATE lock on purpose (see that file's header)
 set -euo pipefail
 
-IWM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$IWM_ROOT"
+IFL_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$IFL_ROOT"
 
-CORE_VENV="$IWM_ROOT/.venv"
-DEV_VENV="$IWM_ROOT/.venv-dev"
-SERVER_VENV="$IWM_ROOT/.venv-server"
-SERVER_IN="$IWM_ROOT/eval/lingbot_va_robotwin/server-requirements.in"
-SERVER_TXT="$IWM_ROOT/eval/lingbot_va_robotwin/server-requirements.txt"
+CORE_VENV="$IFL_ROOT/.venv"
+DEV_VENV="$IFL_ROOT/.venv-dev"
+SERVER_VENV="$IFL_ROOT/.venv-server"
+SERVER_IN="$IFL_ROOT/eval/lingbot_va_robotwin/server-requirements.in"
+SERVER_TXT="$IFL_ROOT/eval/lingbot_va_robotwin/server-requirements.txt"
 
 usage() {
   cat <<'EOF'
@@ -58,10 +58,10 @@ sync_server() {
   }
   [ -d "$SERVER_VENV" ] || uv venv --python 3.10 "$SERVER_VENV"
   VIRTUAL_ENV="$SERVER_VENV" uv pip sync "$SERVER_TXT"
-  # instinctwm itself is not in that lock (it has no dependencies, and listing it
+  # instinctflash itself is not in that lock (it has no dependencies, and listing it
   # there would put a path dependency in a file that is otherwise pure upstream
   # pins). --no-deps keeps the sync above authoritative.
-  VIRTUAL_ENV="$SERVER_VENV" uv pip install --no-deps -e "$IWM_ROOT"
+  VIRTUAL_ENV="$SERVER_VENV" uv pip install --no-deps -e "$IFL_ROOT"
 }
 
 case "${1:-}" in
@@ -90,8 +90,8 @@ case "${1:-}" in
     sync_server
     # shellcheck source=eval/lingbot_va_robotwin/env.sh
     source eval/lingbot_va_robotwin/env.sh
-    export PYTHONPATH="$IWM_FA_SHIM_DIR"
-    exec "$IWM_SERVER_PY" tests/run_tests.py
+    export PYTHONPATH="$IFL_FA_SHIM_DIR"
+    exec "$IFL_SERVER_PY" tests/run_tests.py
     ;;
 
   parity-allocator)
@@ -100,19 +100,19 @@ case "${1:-}" in
     sync_server
     # shellcheck source=eval/lingbot_va_robotwin/env.sh
     source eval/lingbot_va_robotwin/env.sh
-    export PYTHONPATH="$IWM_FA_SHIM_DIR" CYCLES=200
-    exec "$IWM_SERVER_PY" tests/test_ring_allocator.py
+    export PYTHONPATH="$IFL_FA_SHIM_DIR" CYCLES=200
+    exec "$IFL_SERVER_PY" tests/test_ring_allocator.py
     ;;
 
   env-check)
     # shellcheck source=eval/lingbot_va_robotwin/env.sh
     source eval/lingbot_va_robotwin/env.sh
-    echo "IWM_ROOT      $IWM_ROOT"
+    echo "IFL_ROOT      $IFL_ROOT"
     echo "LINGBOT_ROOT  $LINGBOT_ROOT"
     echo "ROBOTWIN_ROOT $ROBOTWIN_ROOT"
     echo "LINGBOT_CKPT  $LINGBOT_CKPT"
-    echo "IWM_SERVER_PY $IWM_SERVER_PY"
-    echo "IWM_CLIENT_PY $IWM_CLIENT_PY"
+    echo "IFL_SERVER_PY $IFL_SERVER_PY"
+    echo "IFL_CLIENT_PY $IFL_CLIENT_PY"
     ;;
 
   lock)

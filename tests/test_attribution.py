@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import torch  # noqa: E402
 
-from instinctwm.verify.attribution import MIN_COVERAGE, Report, Row, attribute  # noqa: E402
+from instinctflash.verify.attribution import MIN_COVERAGE, Report, Row, attribute  # noqa: E402
 
 FAILED: list[str] = []
 

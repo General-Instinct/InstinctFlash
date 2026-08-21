@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generalization: bring Cosmos3-Edge into the InstinctWM engine without changing the engine.
+"""Generalization: bring Cosmos3-Edge into the InstinctFlash engine without changing the engine.
 
 Cosmos3-Edge shares almost nothing with LingBot-VA. The unit of data is a SequencePack (a dict,
 not a tensor); there is no KV pool; und and gen tokens take different weight towers inside one
@@ -18,13 +18,13 @@ sys.path[:0] = [os.path.join(os.path.dirname(__file__), ".."), "/home/ubuntu/cos
 
 import torch
 
-from instinctwm.adapters.cosmos3 import (
+from instinctflash.adapters.cosmos3 import (
     build_pack, build_plan, build_stack, state_roots, use_torch_sdpa,
 )
-from instinctwm.planners.deps import derive_signature
-from instinctwm.planners.effects import detect_host_effects
-from instinctwm.executors.executor import CaptureFailed, EagerExecutor, GraphExecutor
-from instinctwm.planners.plan import BufferSpec, CaptureUnit, Plan, PlanBuffer
+from instinctflash.planners.deps import derive_signature
+from instinctflash.planners.effects import detect_host_effects
+from instinctflash.executors.executor import CaptureFailed, EagerExecutor, GraphExecutor
+from instinctflash.planners.plan import BufferSpec, CaptureUnit, Plan, PlanBuffer
 
 DEV, DT, NL = torch.device("cuda"), torch.bfloat16, 3
 SAMPLE_LENS = [10, 8]
@@ -171,7 +171,7 @@ def main() -> int:
 
     # ---- 4. which existing passes fire? ---------------------------------------------------
     print("\n=== 4. do LingBot's passes apply? ===")
-    from instinctwm.runtime.state.manifests import REGISTRY
+    from instinctflash.runtime.state.manifests import REGISTRY
     mf = REGISTRY.get("cosmos3-edge")
     man = mf() if callable(mf) else mf
     segs = getattr(man, "segments", ())

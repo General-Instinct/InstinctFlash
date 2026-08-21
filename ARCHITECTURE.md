@@ -2,7 +2,7 @@
 
 **One Runtime. Many Checkpoints. Shared Infrastructure.**
 
-This document describes how InstinctWM is organized and why. It describes the code on `main`; for how
+This document describes how InstinctFlash is organized and why. It describes the code on `main`; for how
 it got there, read the git history.
 
 ---
@@ -22,12 +22,12 @@ central design mistake this repository is arranged to prevent.
 | Lives in | `train/`, and in separate repos per recipe | `runtime/`, `planners/`, `passes/`, … |
 
 Training recipes — PDD, DMD2, LCM, DreamZero, rCM, sCM — produce **different checkpoints**. They do
-not produce different runtimes. There is exactly one InstinctWM runtime, and it serves every
+not produce different runtimes. There is exactly one InstinctFlash runtime, and it serves every
 compatible checkpoint by reading what that checkpoint declares about itself.
 
 This is **enforced, not aspirational**. `tests/test_runtime_boundary.py` parses every module under
 `runtime/`, `planners/`, `executors/`, `descriptors/` and `backends/` and fails if any of them can
-reach `instinct_pdd` or `instinctwm.train` — transitively, and including function-local imports,
+reach `instinct_pdd` or `instinctflash.train` — transitively, and including function-local imports,
 because the violation it was written for was function-local. It also fails if any of them names a
 provenance key such as `coverage_gate_pass` as a live string. The gate is self-checking: it plants the
 original violation in a temporary module each run and confirms it is caught, because a gate that
@@ -107,7 +107,7 @@ compile step and then acts on it, which is why `runtime.explain()` can print the
 ## Directory layout
 
 ```
-instinctwm/
+instinctflash/
   descriptors/     what a checkpoint declares            capabilities, never recipes
   adapters/        WHERE things are, per backbone        publish sites
   passes/          WHAT to do there                      consume sites, return rewrites
@@ -135,7 +135,7 @@ reference.
 **`train/` is not part of serving.** It appears in the tree because Layer 1 is part of the product,
 but nothing under `runtime/`, `planners/`, or `passes/` imports it. The one recipe we have
 implemented in full, PDD, lives in its own repository ([`instinct-pdd`](instinct-pdd), Apache-2.0)
-and is consumed here as a submodule — it is backbone-agnostic infrastructure, not an InstinctWM
+and is consumed here as a submodule — it is backbone-agnostic infrastructure, not an InstinctFlash
 research project.
 
 ---
@@ -260,15 +260,15 @@ cannot fail on the bug it is gating is worse than no gate, because it produces a
 
 - [CHECKPOINTS.md](CHECKPOINTS.md) — what a checkpoint declares, and why the training method is
   deliberately absent from it
-- [`instinctwm/passes/`](instinctwm/passes/) — every pass, with its legality argument in its docstring
-- [`instinctwm/verify/released.py`](instinctwm/verify/released.py) — the release ledger: what shipped,
+- [`instinctflash/passes/`](instinctflash/passes/) — every pass, with its legality argument in its docstring
+- [`instinctflash/verify/released.py`](instinctflash/verify/released.py) — the release ledger: what shipped,
   at what tier, on what evidence
 - [eval/lingbot_va_robotwin/RESULTS.md](eval/lingbot_va_robotwin/RESULTS.md) — measured numbers and
   protocols
 
 ## Shipped configuration
 
-`instinctwm.verify.released.shipped_configuration()` is the single source of truth. The launch
+`instinctflash.verify.released.shipped_configuration()` is the single source of truth. The launch
 scripts, `serve_variant.py` and this table all derive from it, and `tests/test_shipped_config.py`
 fails if they drift apart. Add a flag there, not in four places.
 

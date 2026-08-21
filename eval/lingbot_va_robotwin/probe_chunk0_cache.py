@@ -16,7 +16,7 @@ So: build the real server, reset it, and count occupied KV slots at three points
 The middle one is the load-bearing measurement. It says the conditioning a chunk-0 training context
 carries is exactly (observation, state, prompt) with no history term.
 
-    IWM_FA_SHIM=1 CUDA_VISIBLE_DEVICES=0 $IWM_SERVER_PY probe_chunk0_cache.py
+    IFL_FA_SHIM=1 CUDA_VISIBLE_DEVICES=0 $IFL_SERVER_PY probe_chunk0_cache.py
 """
 from __future__ import annotations
 
@@ -24,14 +24,14 @@ import os
 import sys
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
-from instinctwm.runtime.lingbot_install import import_lingbot_server  # noqa: E402
+from instinctflash.runtime.lingbot_install import import_lingbot_server  # noqa: E402
 
 
 def occupancy(transformer, cache_name: str) -> tuple[int, int]:
@@ -79,9 +79,9 @@ def synthetic_obs(cfg, n_frames: int = 4):
 
 def main() -> int:
     S = import_lingbot_server()
-    cfg_name = os.environ.get("IWM_CFG", "robotwin")
+    cfg_name = os.environ.get("IFL_CFG", "robotwin")
     cfg = S.VA_CONFIGS[cfg_name]          # same table the upstream main() uses (server.py:679)
-    cfg.save_root = os.environ.get("IWM_PROBE_SAVE", "/tmp/iwm_probe_chunk0")
+    cfg.save_root = os.environ.get("IFL_PROBE_SAVE", "/tmp/iwm_probe_chunk0")
     os.makedirs(cfg.save_root, exist_ok=True)
 
     # Mirror wan_va_server.run(): the server reads rank/local_rank/world_size off the config, and
@@ -127,7 +127,7 @@ def main() -> int:
     reset_empty = (occ <= 0)
 
     print("\n=== 2. during the first chunk's denoise (frame_st_id=0) ===")
-    obs = synthetic_obs(cfg, n_frames=int(os.getenv("IWM_PROBE_FRAMES", "4")))
+    obs = synthetic_obs(cfg, n_frames=int(os.getenv("IFL_PROBE_FRAMES", "4")))
     server._infer(obs, frame_st_id=0)
     vid = [o for s, o, _ in seen if s == "video"]
     act = [o for s, o, _ in seen if s == "action"]

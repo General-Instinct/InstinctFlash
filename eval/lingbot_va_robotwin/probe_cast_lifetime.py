@@ -28,7 +28,7 @@ rebuilt each block at a new address with equal contents: still redundant, but on
 value. Both are reported, because a hoist justified by value equality alone needs a stronger argument
 than one justified by object identity.
 
-    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY \\
+    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IFL_FA_SHIM_DIR $IFL_SERVER_PY \\
         -m torch.distributed.run --nproc_per_node 1 --master_port 29993 \\
         probe_cast_lifetime.py [--warm 70]
 """
@@ -41,15 +41,15 @@ import sys
 import traceback
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 from torch.utils._python_dispatch import TorchDispatchMode  # noqa: E402
 
-from instinctwm.runtime.lingbot_install import (  # noqa: E402
+from instinctflash.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_conditioning_prefill, install_debug_dump_elision,
     install_fsdp_elision,
 )
@@ -75,7 +75,7 @@ class Tracker(TorchDispatchMode):
             fn = f.filename
             if "/torch/" in fn or "probe_cast_lifetime" in fn or "_python_dispatch" in fn:
                 continue
-            tag = ("iwm" if "/instinctwm/" in fn else
+            tag = ("iwm" if "/instinctflash/" in fn else
                    "lingbot" if "/wan_va/" in fn or "/lingbot" in fn else
                    "diffusers" if "diffusers" in fn else "app")
             return f"[{tag}] {Path(fn).name}:{f.lineno} {f.name}"
@@ -149,7 +149,7 @@ def main() -> int:
     a = ap.parse_args()
 
     S = import_lingbot_server()
-    cfg = S.VA_CONFIGS[os.environ.get("IWM_CFG", "robotwin")]
+    cfg = S.VA_CONFIGS[os.environ.get("IFL_CFG", "robotwin")]
     cfg.save_root = "/tmp/iwm_cast_life"
     os.makedirs(cfg.save_root, exist_ok=True)
     rank = int(os.getenv("RANK", 0))
@@ -160,13 +160,13 @@ def main() -> int:
     cfg.num_inference_steps, cfg.action_num_inference_steps = 2, 4
     print("building server ...", flush=True)
     server = S.VA_Server(cfg)
-    from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+    from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
     RingKVAddressing().install(S, type(server))
     for n in install_conditioning_prefill(S, type(server)):
         print(f"  installed {n}", flush=True)
     for n in install_debug_dump_elision(S):
         print(f"  installed {n}", flush=True)
-    from instinctwm.backends.conv.apply import install_conv_layout
+    from instinctflash.backends.conv.apply import install_conv_layout
     for line in install_conv_layout(server):
         print(f"  {line}", flush=True)
 

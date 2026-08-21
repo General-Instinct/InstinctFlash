@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import torch
 
-from instinctwm.backends.triton_residual import (
+from instinctflash.backends.triton_residual import (
     _gated_residual_kernel, gated_residual, gated_residual_eager,
 )
 

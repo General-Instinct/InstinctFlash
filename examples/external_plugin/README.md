@@ -1,4 +1,4 @@
-# A new model family, with no changes to InstinctWM
+# A new model family, with no changes to InstinctFlash
 
 `gridworld-ar` is a toy world-action model chosen to be structurally *unlike* LingBot-VA, so that
 integrating it exercises the parts of the runtime a second model family will actually hit:
@@ -18,7 +18,7 @@ pip install ./examples/external_plugin      # or your own package, from anywhere
 ```
 
 ```python
-from instinctwm import Runtime               # note: no import of gridworld_wm
+from instinctflash import Runtime               # note: no import of gridworld_wm
 runtime = Runtime.from_pretrained("path/to/my-world-model")
 with runtime.episode() as ep:
     action = ep.predict({"obs": [0.1, 0.2, 0.3]})
@@ -27,11 +27,11 @@ with runtime.episode() as ep:
 The binding is one entry point in the author's own `pyproject.toml`:
 
 ```toml
-[project.entry-points."instinctwm.adapters"]
+[project.entry-points."instinctflash.adapters"]
 gridworld_ar = "gridworld_wm.adapter:GridworldAdapter"
 ```
 
-InstinctWM discovers it from installed metadata, so a checkpoint that declares
+InstinctFlash discovers it from installed metadata, so a checkpoint that declares
 `"backbone": "gridworld_ar"` resolves with no import, no import-order rule, and no PR.
 
 ## What the author has to write
@@ -56,7 +56,7 @@ python run_as_user.py                       # describe -> from_pretrained -> clo
 
 ## Deliberately not required
 
-No InstinctWM source change, no pass, no planner knowledge, no entry in any InstinctWM registry
-file, and nothing model-specific in `instinctwm.json` — `vocab`, `dim` and `history` live in the
+No InstinctFlash source change, no pass, no planner knowledge, no entry in any InstinctFlash registry
+file, and nothing model-specific in `instinctflash.json` — `vocab`, `dim` and `history` live in the
 author's own `config.json`, because they are model knowledge and the declaration is for execution
 facts.

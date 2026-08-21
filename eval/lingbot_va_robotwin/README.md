@@ -1,6 +1,6 @@
 # LingBot-VA × RoboTwin 2.0 — evaluation pipeline
 
-The accuracy reference for InstinctWM. Every future optimization (step distillation, CUDA
+The accuracy reference for InstinctFlash. Every future optimization (step distillation, CUDA
 graph capture, kernel work, KV-cache changes) is judged against numbers produced here, so
 this directory optimizes for *being correct and auditable*, not for being fast to run.
 
@@ -25,7 +25,7 @@ Two processes, two Python environments, one websocket:
 ```
 
 The two environments are dependency-incompatible on purpose; the websocket is the seam.
-That seam is also InstinctWM's abstraction boundary — swapping the model under test should
+That seam is also InstinctFlash's abstraction boundary — swapping the model under test should
 be a change of what listens on the port, nothing else.
 
 ## Wire protocol (server reads exactly 5 keys)
@@ -44,16 +44,16 @@ The server is **stateful per episode**. One client per server, always.
 cd eval/lingbot_va_robotwin
 source ./env.sh
 
-IWM_FA_SHIM=1 ./servers.sh start 8      # one server per GPU; refuses to start on a busy port
+IFL_FA_SHIM=1 ./servers.sh start 8      # one server per GPU; refuses to start on a busy port
 ./servers.sh status
 
 # gate: serving must reproduce the training text conditioning (see below)
-$IWM_SERVER_PY check_prompt_parity.py \
+$IFL_SERVER_PY check_prompt_parity.py \
   --latent  /home/ubuntu/iwm_parity/.../episode_000000_0_139.pth \
   --empty-emb /home/ubuntu/iwm_parity/empty_emb.pt
 
 ./run_eval.sh myrun 100 adjust_bottle place_dual_shoes ...   # fans tasks over the 8 GPUs
-$IWM_CLIENT_PY aggregate.py $IWM_RESULT_DIR/myrun --expect-episodes 100 --expect-tasks 50
+$IFL_CLIENT_PY aggregate.py $IFL_RESULT_DIR/myrun --expect-episodes 100 --expect-tasks 50
 ```
 
 ## The traps
@@ -108,7 +108,7 @@ route `--config-name robotwin` into offline video generation and produce no eval
 
 **flash-attn is a hard import that is never called.** `model.py:29-32` imports
 `flash_attn_func` at module scope, but both the checkpoint config and the server select
-`attn_mode='torch'` (`custom_sdpa`). `IWM_FA_SHIM=1` supplies an import-only stub that
+`attn_mode='torch'` (`custom_sdpa`). `IFL_FA_SHIM=1` supplies an import-only stub that
 **raises if called**, turning "flash-attn is unused" from an assumption into an enforced
 invariant. Drop it once a real wheel is installed — `PYTHONPATH` precedes site-packages and
 would otherwise shadow the real package.

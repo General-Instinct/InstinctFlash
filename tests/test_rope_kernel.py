@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import torch  # noqa: E402
 
-from instinctwm.backends.rope import (  # noqa: E402
+from instinctflash.backends.rope import (  # noqa: E402
     HAVE_TRITON,
     RopeLayout,
     rope_reference,
@@ -112,7 +112,7 @@ def main() -> int:
     if not HAVE_TRITON:
         print("SKIP: no Triton")
         return 0
-    from instinctwm.backends.rope import rope_fused
+    from instinctflash.backends.rope import rope_fused
 
     dev = "cuda"
 

@@ -1,4 +1,4 @@
-"""`pi05` for InstinctWM — a VLA family, registered from outside the core.
+"""`pi05` for InstinctFlash — a VLA family, registered from outside the core.
 
     pip install ./examples/pi05_vla
 

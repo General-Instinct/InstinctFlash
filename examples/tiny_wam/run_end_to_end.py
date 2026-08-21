@@ -31,11 +31,11 @@ if str(ROOT) not in sys.path:
 import torch  # noqa: E402
 from safetensors.torch import load_file  # noqa: E402
 
-import instinctwm  # noqa: E402
+import instinctflash  # noqa: E402
 from examples.tiny_wam import model as M  # noqa: E402
 from examples.tiny_wam.adapter import BACKBONE, TinyWAMAdapter  # noqa: E402
-from instinctwm.descriptors.package import from_pretrained, publishability, validate_package  # noqa: E402
-from instinctwm.planners.planner import Optimizer  # noqa: E402
+from instinctflash.descriptors.package import from_pretrained, publishability, validate_package  # noqa: E402
+from instinctflash.planners.planner import Optimizer  # noqa: E402
 
 CKPT = ROOT / "examples" / "checkpoint" / "tiny-wam-2v2a"
 FAILED: list[str] = []
@@ -76,17 +76,17 @@ def main() -> int:
     check(ckpt.model_id == "example-org/tiny-wam-2v2a", "loaded by declaration")
 
     step(4, "Its backbone resolves to a REGISTERED adapter")
-    print(f"  registered before: {instinctwm.available_models()}")
-    check(ckpt.execution.backbone not in instinctwm.available_models(),
+    print(f"  registered before: {instinctflash.available_models()}")
+    check(ckpt.execution.backbone not in instinctflash.available_models(),
           "the backbone is NOT built in -- this is a third-party adapter")
     param_bytes = int(ckpt.execution.extra.get("param_bytes", 0))
-    instinctwm.register(BACKBONE, lambda: TinyWAMAdapter(
+    instinctflash.register(BACKBONE, lambda: TinyWAMAdapter(
         checkpoint_dir=str(CKPT), param_bytes=param_bytes, declared_model_id=ckpt.model_id))
-    print(f"  registered after : {instinctwm.available_models()}")
-    check(ckpt.execution.backbone in instinctwm.available_models(),
+    print(f"  registered after : {instinctflash.available_models()}")
+    check(ckpt.execution.backbone in instinctflash.available_models(),
           f"declared backbone {ckpt.execution.backbone!r} now resolves")
-    adapter = instinctwm.load(ckpt.execution.backbone)
-    check(adapter is not None, "instinctwm.load() returns the adapter")
+    adapter = instinctflash.load(ckpt.execution.backbone)
+    check(adapter is not None, "instinctflash.load() returns the adapter")
 
     step(5, "capabilities() -- derived from the execution block, and nothing else")
     caps = ckpt.capabilities()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Capture real conditioning contexts from RoboTwin resets. CLIENT-SIDE ($IWM_CLIENT_PY).
+"""Capture real conditioning contexts from RoboTwin resets. CLIENT-SIDE ($IFL_CLIENT_PY).
 
 Stage one of the PDD conditioning pipeline. A chunk-0 video training context is exactly
 (observation, prompt) -- measured, see probe_chunk0_cache.py -- and both come from a sim reset with
@@ -19,7 +19,7 @@ like the other's problem:
 
     cd "$ROBOTWIN_ROOT" && env ROBOTWIN_ROOT="$ROBOTWIN_ROOT" PYTHONPATH="$ROBOTWIN_ROOT" \
       PYTHONWARNINGS=ignore::UserWarning CUDA_VISIBLE_DEVICES=0 \
-      "$IWM_CLIENT_PY" -u <abs path>/dump_reset_context.py --tasks adjust_bottle --episodes 1 --out DIR
+      "$IFL_CLIENT_PY" -u <abs path>/dump_reset_context.py --tasks adjust_bottle --episodes 1 --out DIR
 
   * CUDA_VISIBLE_DEVICES must be set. With all 8 GPUs visible, sapien/Vulkan initialisation HANGS
     indefinitely -- no output, no error, no traceback. Thirty minutes of silence looks exactly like a

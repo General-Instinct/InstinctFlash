@@ -25,11 +25,11 @@ import sys
 import time
 from pathlib import Path
 
-sys.path.insert(0, os.environ.get("IWM_ROOT", "/home/ubuntu/InstinctWM"))
+sys.path.insert(0, os.environ.get("IFL_ROOT", "/home/ubuntu/InstinctFlash"))
 import numpy as np
 import torch
 
-from instinctwm.runtime.lingbot_install import (
+from instinctflash.runtime.lingbot_install import (
     import_lingbot_server,
     install_conditioning_prefill,
     install_debug_dump_elision,
@@ -48,14 +48,14 @@ torch.cuda.empty_cache = lambda *a, **k: None
 cfg.num_inference_steps, cfg.action_num_inference_steps = 2, 4
 server = S.VA_Server(cfg)
 
-from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
 
 RingKVAddressing().install(S, type(server))
 for _ in install_conditioning_prefill(S, type(server)):
     pass
 for _ in install_debug_dump_elision(S):
     pass
-from instinctwm.backends.conv.apply import install_conv_layout
+from instinctflash.backends.conv.apply import install_conv_layout
 
 for _ in install_conv_layout(server):
     pass

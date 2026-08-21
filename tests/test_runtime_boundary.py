@@ -6,9 +6,9 @@ This is AUDIT.md Stage 4, and it is the deliverable that stops the audit being n
 WHAT IT ENFORCES
 
     1. No module under runtime/, planners/, executors/, descriptors/ or backends/ imports a training
-       package -- `instinct_pdd` or `instinctwm.train` -- at any depth, including function-local
+       package -- `instinct_pdd` or `instinctflash.train` -- at any depth, including function-local
        imports. The violation it was written for was function-local, which is exactly why it went
-       unnoticed: `runtime/block_heads.py` did `from instinctwm.adapters.lingbot_velocity import ...`
+       unnoticed: `runtime/block_heads.py` did `from instinctflash.adapters.lingbot_velocity import ...`
        inside the install function, and that module does `from instinct_pdd import Grid`.
 
     2. No module in the runtime path reads a provenance key. `coverage_gate_pass` was read in the
@@ -50,7 +50,7 @@ GOVERNED = ("runtime", "planners", "executors", "descriptors", "backends")
 
 #: Packages that exist to TRAIN. Importing one from the runtime path makes a training method a
 #: serving dependency.
-FORBIDDEN_PACKAGES = ("instinct_pdd", "instinctwm.train")
+FORBIDDEN_PACKAGES = ("instinct_pdd", "instinctflash.train")
 
 #: Keys that describe HOW a checkpoint was trained. Reading one from the runtime path is the
 #: dependency this project forbids, even when the value is used for something sensible.
@@ -72,14 +72,14 @@ PROVENANCE_KEYS = (
 #:   provenance_of            hands provenance to humans and tools, deliberately, never to a planner
 #:
 #: Anywhere else in that file -- including `load_declaration` -- is a violation.
-QUARANTINE_FILE = "instinctwm/descriptors/checkpoint.py"
+QUARANTINE_FILE = "instinctflash/descriptors/checkpoint.py"
 QUARANTINE_CONTEXTS = ("FORBIDDEN_IN_EXECUTION", "_from_legacy_delta", "provenance_of")
 
 
 def modules_under(*dirs) -> list[Path]:
     out = []
     for d in dirs:
-        out += sorted((ROOT / "instinctwm" / d).rglob("*.py"))
+        out += sorted((ROOT / "instinctflash" / d).rglob("*.py"))
     return out
 
 
@@ -100,7 +100,7 @@ def imports_of(path: Path) -> list[str]:
 
 
 def to_path(module: str) -> Path | None:
-    if not module.startswith("instinctwm"):
+    if not module.startswith("instinctflash"):
         return None
     p = ROOT / Path(*module.split("."))
     for cand in (p.with_suffix(".py"), p / "__init__.py"):
@@ -207,7 +207,7 @@ def test_the_check_can_actually_fail():
     # A gate that cannot fail on the bug it gates is worse than no gate: it produces a signed-off
     # feeling. So plant the exact violation this file was written for and confirm it is caught.
     import tempfile
-    with tempfile.TemporaryDirectory(dir=ROOT / "instinctwm" / "runtime") as d:
+    with tempfile.TemporaryDirectory(dir=ROOT / "instinctflash" / "runtime") as d:
         planted = Path(d) / "planted_violation.py"
         planted.write_text("def f():\n    from instinct_pdd import Grid\n    return Grid\n")
         chain = reaches_forbidden(planted)
@@ -216,7 +216,7 @@ def test_the_check_can_actually_fail():
               " -> ".join(chain) if chain else "NOT CAUGHT")
 
         indirect = Path(d) / "planted_indirect.py"
-        indirect.write_text("from instinctwm.train.oracles.lingbot_velocity import "
+        indirect.write_text("from instinctflash.train.oracles.lingbot_velocity import "
                             "LingBotChunk0VideoOracle\n")
         chain2 = reaches_forbidden(indirect)
         check(chain2 is not None, "and so is an import of a module that imports it",

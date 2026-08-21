@@ -21,8 +21,8 @@ sys.path += [os.path.join(LINGBOT_ROOT, "wan_va"), LINGBOT_ROOT,
 
 import torch
 
-from instinctwm.passes.hoist_invariant import HoistInvariant
-from instinctwm.passes.interface import Scope, SiteKind, run_pass
+from instinctflash.passes.hoist_invariant import HoistInvariant
+from instinctflash.passes.interface import Scope, SiteKind, run_pass
 
 DEV, DT = torch.device("cuda"), torch.bfloat16
 results = []
@@ -31,7 +31,7 @@ results = []
 def pass_is_model_free() -> bool:
     import ast
     path = os.path.join(os.path.dirname(__file__), "..",
-                        "instinctwm", "passes", "hoist_invariant.py")
+                        "instinctflash", "passes", "hoist_invariant.py")
     tree = ast.parse(open(path).read())
     for node in ast.walk(tree):
         if isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -51,7 +51,7 @@ def case_a_lingbot() -> bool:
     print("\n=== (a) LingBot-VA: real fp32 parameter casts ===")
     import trace_block
     from trace_block import DIM, HEADS, TEXT_LEN
-    from instinctwm.adapters.lingbot import LingBotSurface
+    from instinctflash.adapters.lingbot import LingBotSurface
 
     B, N, KV, NL = 2, 32, 2048, 3
     blocks = []
@@ -86,7 +86,7 @@ def case_a_lingbot() -> bool:
 
 def cases_bc_synthetic() -> bool:
     print("\n=== (b)+(c) synthetic adapter: one hoistable site, one that must not be ===")
-    from instinctwm.adapters.synthetic import SyntheticSurface
+    from instinctflash.adapters.synthetic import SyntheticSurface
 
     surf = SyntheticSurface(DEV)
     with torch.no_grad():

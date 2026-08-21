@@ -10,7 +10,7 @@ So this reports (operator, callsite, calls, bytes, shapes, exclusive time) and, 
 what fraction of its calls were actually attributed. An operator below the coverage threshold is
 printed with [PARTIAL, NOT RANKABLE] and must not be used to choose work.
 
-    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY \\
+    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IFL_FA_SHIM_DIR $IFL_SERVER_PY \\
         -m torch.distributed.run --nproc_per_node 1 --master_port 29992 \\
         profile_attribution.py [--warm 70] [--conv-layout ndhwc]
 """
@@ -21,18 +21,18 @@ import os
 import sys
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
-from instinctwm.runtime.lingbot_install import (  # noqa: E402
+from instinctflash.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_conditioning_prefill, install_debug_dump_elision,
     install_fsdp_elision,
 )
-from instinctwm.verify.attribution import attribute  # noqa: E402
+from instinctflash.verify.attribution import attribute  # noqa: E402
 
 #: The operators the warm profile shows as dominant. Watching everything would work and be very slow;
 #: these are the ones a Layer 5 decision would be made about.
@@ -72,7 +72,7 @@ def main() -> int:
         return 2
 
     S = import_lingbot_server()
-    cfg = S.VA_CONFIGS[os.environ.get("IWM_CFG", "robotwin")]
+    cfg = S.VA_CONFIGS[os.environ.get("IFL_CFG", "robotwin")]
     cfg.save_root = "/tmp/iwm_attr"
     os.makedirs(cfg.save_root, exist_ok=True)
     rank = int(os.getenv("RANK", 0))
@@ -84,14 +84,14 @@ def main() -> int:
 
     print(f"building server at {a.video}V/{a.action}A ...", flush=True)
     server = S.VA_Server(cfg)
-    from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+    from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
     RingKVAddressing().install(S, type(server))
     for n in install_conditioning_prefill(S, type(server)):
         print(f"  installed {n}", flush=True)
     for n in install_debug_dump_elision(S):
         print(f"  installed {n}", flush=True)
     if a.conv_layout == "ndhwc":
-        from instinctwm.backends.conv.apply import install_conv_layout
+        from instinctflash.backends.conv.apply import install_conv_layout
         for line in install_conv_layout(server):
             print(f"  {line}", flush=True)
 

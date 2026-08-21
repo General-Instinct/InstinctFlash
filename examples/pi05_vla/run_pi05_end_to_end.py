@@ -38,7 +38,7 @@ for _p in (str(HERE.parents[1]), str(HERE)):
         sys.path.insert(0, _p)
 
 import numpy as np                                                 # noqa: E402
-import instinctwm                                                  # noqa: E402
+import instinctflash                                                  # noqa: E402
 from pi05_iwm.adapter import Pi05Adapter                           # noqa: E402
 
 BASE = "lerobot/pi05_base"
@@ -56,8 +56,8 @@ def check(cond, label, detail=""):
 def declare(into: Path) -> Path:
     into.mkdir(parents=True, exist_ok=True)
     (into / "config.json").write_text("{}")
-    (into / "instinctwm.json").write_text(json.dumps({
-        "instinctwm_schema": 1,
+    (into / "instinctflash.json").write_text(json.dumps({
+        "instinctflash_schema": 1,
         "execution": {"model_id": "example-org/pi05-declared", "backbone": "pi05", "servable": True,
                       "guidance": {"action": "none"},
                       "nfe": {"action": 10, "prefix": 1},
@@ -69,21 +69,21 @@ def declare(into: Path) -> Path:
 
 
 def main() -> int:
-    if "pi05" not in instinctwm.available_models():
-        instinctwm.register("pi05", Pi05Adapter)
+    if "pi05" not in instinctflash.available_models():
+        instinctflash.register("pi05", Pi05Adapter)
 
     with tempfile.TemporaryDirectory() as td:
         pkg = declare(Path(td) / "pi05")
 
         print("1. describe() -- no weights downloaded")
-        d = instinctwm.describe(pkg)
+        d = instinctflash.describe(pkg)
         print(f"   backbone={d['backbone']}  nfe={d['nfe']}")
         check(d["backbone"] == "pi05", "declares the pi05 backbone")
         check("not the runtime's business" not in json.dumps(d), "provenance does not leak")
 
         print("2. Runtime.from_pretrained() -- resolves the adapter, plans, places")
         t0 = time.time()
-        runtime = instinctwm.Runtime.from_pretrained(pkg)
+        runtime = instinctflash.Runtime.from_pretrained(pkg)
         print(f"   loaded in {time.time() - t0:.1f} s")
         check(runtime.plan is not None, "compiled a plan")
         print(f"   expects: {runtime.observation.describe()}")

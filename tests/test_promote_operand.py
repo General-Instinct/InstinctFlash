@@ -19,8 +19,8 @@ sys.path += [os.path.join(LINGBOT_ROOT, "wan_va"), LINGBOT_ROOT,
 
 import torch
 
-from instinctwm.passes.interface import Site, SiteKind, run_pass
-from instinctwm.passes.promote_small_operand import PromoteSmallOperand
+from instinctflash.passes.interface import Site, SiteKind, run_pass
+from instinctflash.passes.promote_small_operand import PromoteSmallOperand
 
 DEV, DT = torch.device("cuda"), torch.bfloat16
 results = []
@@ -28,7 +28,7 @@ results = []
 
 def model_free() -> bool:
     import ast
-    path = os.path.join(os.path.dirname(__file__), "..", "instinctwm", "passes",
+    path = os.path.join(os.path.dirname(__file__), "..", "instinctflash", "passes",
                         "promote_small_operand.py")
     tree = ast.parse(open(path).read())
     for n in ast.walk(tree):
@@ -49,8 +49,8 @@ def case_a() -> bool:
     print("\n=== (a) LingBot-VA modulation combine ===")
     import trace_block
     from trace_block import DIM, HEADS, TEXT_LEN
-    from instinctwm.adapters.lingbot import LingBotSurface
-    from instinctwm.passes.hoist_invariant import HoistInvariant
+    from instinctflash.adapters.lingbot import LingBotSurface
+    from instinctflash.passes.hoist_invariant import HoistInvariant
 
     B, N, KV, NL = 2, 240, 512, 3
     blocks = []

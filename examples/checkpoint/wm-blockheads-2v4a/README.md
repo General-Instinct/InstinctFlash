@@ -1,12 +1,12 @@
 ---
 license: apache-2.0
-library_name: instinctwm
+library_name: instinctflash
 tags:
   - world-action-model
   - robotics
 ---
 
-# wm-blockheads-2v4a — an example InstinctWM checkpoint
+# wm-blockheads-2v4a — an example InstinctFlash checkpoint
 
 This is a **layout example**, not real weights (`model.safetensors` is a single null byte). It exists
 so a checkpoint author can see exactly what a publishable package looks like, and so
@@ -16,7 +16,7 @@ the test.
 ## Validate it
 
 ```bash
-python -m instinctwm.descriptors.package examples/checkpoint/wm-blockheads-2v4a
+python -m instinctflash.descriptors.package examples/checkpoint/wm-blockheads-2v4a
 ```
 
 ```
@@ -28,7 +28,7 @@ examples/checkpoint/wm-blockheads-2v4a
 
 ## What the runtime reads
 
-Only the `execution` block of `instinctwm.json`. That is the entire contract:
+Only the `execution` block of `instinctflash.json`. That is the entire contract:
 
 | field | why the runtime needs it |
 |:--|:--|
@@ -71,7 +71,7 @@ opposite `provenance` produce a **byte-identical plan**.
 **You can delete `provenance` entirely and this checkpoint still serves.** Verify before publishing:
 
 ```python
-from instinctwm.descriptors.package import publishability
+from instinctflash.descriptors.package import publishability
 ok, findings = publishability("examples/checkpoint/wm-blockheads-2v4a")
 ```
 
@@ -81,7 +81,7 @@ the two-namespace split exists to catch.
 ## Serving it
 
 ```python
-from instinctwm.descriptors.package import from_pretrained
+from instinctflash.descriptors.package import from_pretrained
 
 ckpt = from_pretrained("example-org/wm-blockheads-2v4a")   # or a local path
 print(ckpt.capabilities())

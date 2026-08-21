@@ -1,4 +1,4 @@
-# Cosmos3-Edge — first end-to-end run under the InstinctWM engine
+# Cosmos3-Edge — first end-to-end run under the InstinctFlash engine
 
 Second reference model. Everything below was produced by
 [`probe_mot_stack.py`](probe_mot_stack.py) on this box, against a fresh upstream checkout.

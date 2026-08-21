@@ -33,7 +33,7 @@ def check(cond, label, detail=""):
 
 def run(argv):
     """Invoke the CLI, capturing stdout. Returns (exit_code, output)."""
-    from instinctwm.cli import main
+    from instinctflash.cli import main
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         try:
@@ -57,8 +57,8 @@ def test_describe_and_validate_work_without_weights_or_gpu():
         pkg = Path(td) / "p"
         pkg.mkdir()
         (pkg / "config.json").write_text("{}")
-        (pkg / "instinctwm.json").write_text(json.dumps({
-            "instinctwm_schema": 1,
+        (pkg / "instinctflash.json").write_text(json.dumps({
+            "instinctflash_schema": 1,
             "execution": {"model_id": "example-org/x", "backbone": "tiny-wam", "servable": True,
                           "nfe": {"action": 2}, "base_weights": "upstream/none"},
             "provenance": {"training_method": "secret"},

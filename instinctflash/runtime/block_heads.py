@@ -1,0 +1,199 @@
+"""Serve a checkpoint whose output projection is a set of per-interval velocity heads.
+
+THIS MODULE IS NAMED FOR A CAPABILITY, NOT A RECIPE, AND THAT IS THE POINT.
+
+It used to be called `pdd_serve.py` and its entry point `install_pdd_video_heads`. That was a
+training method's name inside the runtime, which is exactly what CHECKPOINTS.md forbids: it made the
+serving path care where the weights came from, when the only thing it actually needs is what the
+weights ARE. Parallel Decoding Distillation is one way to produce these heads. It is not the only
+possible one, and the runtime must not care.
+
+THE CAPABILITY, stated without reference to any recipe. A checkpoint declares:
+
+    n_intervals (N)   the ODE grid it was trained on
+    block (L)         how many of those intervals one head spans
+    guidance          the scale folded into the heads, per stream
+
+and provides L linear heads per block. From those three facts the runtime derives everything: it
+serves at `num_inference_steps = N / L`, folds each block's heads into one affine map, and selects
+which map to use from the conditioning timestep. Any checkpoint that can declare those facts is
+servable here, whatever produced it.
+
+WHY NO NEW SAMPLER IS NEEDED, which is the whole trick.
+
+A block step advances L intervals from grid point n with one network evaluation:
+
+    x <- x + sum_{l=n}^{n+L-1} h_l * u_l          u_l = head l's mean velocity
+
+and because sum_{l=n}^{n+L-1} h_l = sigma_{n+L} - sigma_n, that is identical to
+
+    x <- x + v_eff * (sigma_{n+L} - sigma_n)      v_eff = sum(h_l * u_l) / sum(h_l)
+
+which is exactly the form `FlowMatchScheduler.step` already computes. So the student needs no bespoke
+sampler: run the server at `num_inference_steps = N/L` and have the video head return `v_eff`.
+
+AND THE GRIDS LINE UP EXACTLY. The N=256 grid's block boundary is sigma_128 = shift(1 - 128/256) =
+shift(0.5) = 0.8333, and a 2-step scheduler's sigmas are shift([1.0, 0.5]) = [1.0, 0.8333]. Same
+numbers, because the shift is applied pointwise to a linspace that both share. Verified in
+tests/test_serve_parity.py rather than asserted.
+
+THE HEADS COLLAPSE INTO ONE LINEAR PER BLOCK. Every head is a copy of `proj_out`, i.e. affine, so
+
+    v_eff = sum_l w_l (W_l f + b_l) = (sum_l w_l W_l) f + (sum_l w_l b_l),   w_l = h_l / sum h
+
+is a single affine map. Folding it once at load time means the student costs the SAME per forward as
+the teacher -- L=128 head evaluations would otherwise be paid on every step for a result that is a
+fixed linear combination. This is only valid because the heads are linear; a non-linear head would
+have to be evaluated L times.
+
+PROVENANCE, for humans. The heads this currently serves were produced by instinct-pdd (Apache-2.0,
+consumed here as a submodule). That fact belongs in a model card and in the comments below that
+explain the sign convention; it does not belong in a conditional.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any
+
+import torch
+
+from instinctflash.descriptors.checkpoint import OutputProjection, load_declaration
+from instinctflash.runtime.schedule import (
+    block_start_timesteps,
+    block_weights,
+    sigmas_from_scheduler,
+)
+
+
+class _BlockHead(torch.nn.Module):
+    """Replaces `transformer.proj_out` with one folded affine map per grid block.
+
+    Which block is active is derived from the conditioning timestep rather than from a call counter:
+    a counter would silently desynchronise the moment the server inserts an extra forward, and it
+    does -- the video loop runs one final cache-only forward whose output is discarded
+    (wan_va_server.py:502-508). Reading the timestep cannot drift.
+    """
+
+    def __init__(self, folded, cond_at_block_start, fallback):
+        super().__init__()
+        self.folded = torch.nn.ModuleList(folded)
+        self.register_buffer("starts", torch.tensor(cond_at_block_start, dtype=torch.float64))
+        self.fallback = fallback          # the checkpoint's own proj_out, for the action stream
+        self.current_t = None
+        self.misses = 0
+
+    def set_timestep(self, t) -> None:
+        """`None` means "the caller is not on a video step" -- the action loop calls
+        _prepare_latent_input with latent_in=None, and float(None) would raise on the first action
+        step of the first chunk. Falling back to the checkpoint's own proj_out is correct
+        there anyway, since only the video stream was distilled."""
+        self.current_t = None if t is None else float(t)
+
+    def forward(self, x):
+        if self.current_t is None:
+            self.misses += 1
+            return self.fallback(x)
+        d = (self.starts - self.current_t).abs()
+        i = int(torch.argmin(d))
+        if float(d[i]) > 1.0:             # timestep is not a block start: not a student step
+            self.misses += 1
+            return self.fallback(x)
+        return self.folded[i](x)
+
+
+def fold_heads(state_dict, weights, block: int, n_blocks: int, template: torch.nn.Linear):
+    """Collapse each block's L heads into one affine map, weighted by interval width.
+
+    `weights` is one normalised list per block, from `runtime/schedule.block_weights`. It used to be an
+    `instinct_pdd.Grid`, which meant this function -- and therefore the whole serving path -- imported
+    the training library of one distillation method to obtain interval widths. See AUDIT.md F1.
+    """
+    L = block
+    out = []
+    for b in range(n_blocks):
+        n = b * L
+        hs = list(range(n, n + len(weights[b])))
+        w = torch.tensor(weights[b], dtype=torch.float64)
+        # Already normalised: sum h_l over the block cancels against the sampler's dsigma.
+        lin = torch.nn.Linear(template.in_features, template.out_features,
+                              bias=template.bias is not None)
+        with torch.no_grad():
+            # Accumulate on CPU: the state dict is loaded with map_location="cpu" while the template
+            # lives on the GPU, and mixing them is a device error. Folding is a one-off at load time,
+            # so doing it in fp64 on the host costs nothing and avoids a partial-sum rounding path.
+            W = torch.zeros(template.weight.shape, dtype=torch.float64)
+            B = (torch.zeros(template.bias.shape, dtype=torch.float64)
+                 if template.bias is not None else None)
+            for wi, l in zip(w, hs):
+                W += state_dict[f"{l}.weight"].double() * wi
+                if B is not None:
+                    B += state_dict[f"{l}.bias"].double() * wi
+            lin.weight.copy_(W.to(dtype=template.weight.dtype))
+            if B is not None:
+                lin.bias.copy_(B.to(dtype=template.bias.dtype))
+        out.append(lin.to(device=template.weight.device, dtype=template.weight.dtype)
+                   .requires_grad_(False))
+    return out
+
+
+def install_block_velocity_heads(server_module, server, ckpt_dir: str) -> list[str]:
+    """Load per-interval velocity heads and serve the video stream at NFE = N/L.
+
+    Chosen by CAPABILITY: any checkpoint declaring
+    `output_projection.kind == "per_interval_velocity_heads"` is served here, whatever recipe produced
+    it. Nothing below reads how it was trained.
+    """
+    d = Path(ckpt_dir)
+    # CAPABILITIES, not a recipe. `load_declaration` returns the execution block only -- it has nowhere
+    # to put a training method -- and `servable` is the recipe-agnostic successor to reading PDD's
+    # `coverage_gate_pass` here. See AUDIT.md F2, and descriptors/checkpoint.py.
+    decl = load_declaration(d)
+    decl.require_servable(str(d))
+    proj = decl.require_projection(OutputProjection.PER_INTERVAL_VELOCITY_HEADS, str(d))
+    n_intervals, block = proj.n_intervals, proj.block
+    nfe = proj.nfe()
+    if proj.velocity_convention != "sigma_descending":
+        raise RuntimeError(
+            f"{d}: declares velocity_convention={proj.velocity_convention!r}. This serving path feeds "
+            f"the folded map straight to FlowMatchScheduler.step, which consumes a SIGMA velocity. "
+            f"Serving a t-ascending checkpoint here would integrate away from the data -- the failure "
+            f"that once measured 0/100 on RoboTwin against a 92/100 control.")
+
+    # The schedule comes from the server's own scheduler. No training package is involved.
+    sigmas = sigmas_from_scheduler(server.scheduler, n_intervals)
+    weights = block_weights(sigmas, block, nfe, n_intervals)
+
+    sd = torch.load(d / "heads.pt", map_location="cpu")
+    sd = {k.split("head_list.")[-1] if "head_list." in k else k: v for k, v in sd.items()}
+
+    template = server.transformer.proj_out
+    folded = fold_heads(sd, weights, block, nfe, template)
+    # NO SIGN FLIP HERE, and this is the subtle part. The adapter's `_Student.heads` returns `-y` so
+    # that instinct-pdd sees an ascending-t velocity. The training loss therefore drove `-y` onto the
+    # t-velocity, which means the head's RAW output y is already the SIGMA-velocity -- exactly what
+    # FlowMatchScheduler.step consumes. Negating the folded weights (as a first version did) served
+    # v_t where v_sigma was wanted, integrating away from the data: 0/100 success on RoboTwin against
+    # 92/100 for the untrained 2-step control.
+
+    starts = block_start_timesteps(sigmas, block, nfe, server.scheduler.num_train_timesteps)
+    head = _BlockHead(folded, starts, template).to(template.weight.device)
+    server.transformer.proj_out = head
+
+    # The video loop must take exactly `nfe` steps, and the action loop is untouched: only the video
+    # stream was distilled, and the action stream reads the KV the video stream commits.
+    for cfg in server_module.VA_CONFIGS.values():
+        if hasattr(cfg, "num_inference_steps"):
+            cfg.num_inference_steps = nfe
+    server.job_config.num_inference_steps = nfe
+
+    # Feed the head the timestep the server is currently on. `_prepare_latent_input` is the one place
+    # that sees it for both streams, so hooking there cannot miss a call.
+    orig_prepare = server._prepare_latent_input
+
+    def prepare_with_t(latent_in, action_in, latent_t=0, action_t=0, *a, **k):
+        head.set_timestep(float(latent_t) if latent_in is not None else None)
+        return orig_prepare(latent_in, action_in, latent_t, action_t, *a, **k)
+
+    server._prepare_latent_input = prepare_with_t
+    return [f"pdd_video_heads(nfe={nfe},N={n_intervals},L={block})"]

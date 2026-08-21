@@ -18,7 +18,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, "/home/ubuntu/cosmos-framework")
-sys.path.insert(0, "/home/ubuntu/Code/InstinctWM")
+sys.path.insert(0, "/home/ubuntu/Code/InstinctFlash")
 
 import torch
 from torch.profiler import ProfilerActivity, profile
@@ -109,8 +109,8 @@ def main() -> int:
             x = l(x, mask, pos)[0]
         return x
 
-    from instinctwm.adapters.cosmos3 import build_plan
-    from instinctwm.executors.executor import GraphExecutor
+    from instinctflash.adapters.cosmos3 import build_plan
+    from instinctflash.executors.executor import GraphExecutor
 
     graph = GraphExecutor(build_plan(layers, mask, pos), dev)
     graph.prepare()

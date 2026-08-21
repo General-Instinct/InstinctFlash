@@ -14,7 +14,7 @@ not, however large its total.
 MEASURED WARM ONLY. Cycles 1-30 run at 1385 ms and cycles 31+ at 490 ms (PROFILE.md), so anything
 profiled before cycle 31 describes the transient. Tracing starts after the run has converged.
 
-    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY \\
+    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IFL_FA_SHIM_DIR $IFL_SERVER_PY \\
         -m torch.distributed.run --nproc_per_node 1 --master_port 29986 \\
         profile_layer5_ops.py [--warm 40] [--trace 3]
 """
@@ -26,14 +26,14 @@ import os
 import sys
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
-from instinctwm.runtime.lingbot_install import (  # noqa: E402
+from instinctflash.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_conditioning_prefill, install_debug_dump_elision,
     install_fsdp_elision,
 )
@@ -61,7 +61,7 @@ def main() -> int:
         return 2
 
     S = import_lingbot_server()
-    cfg = S.VA_CONFIGS[os.environ.get("IWM_CFG", "robotwin")]
+    cfg = S.VA_CONFIGS[os.environ.get("IFL_CFG", "robotwin")]
     cfg.save_root = "/tmp/iwm_l5_ops"
     os.makedirs(cfg.save_root, exist_ok=True)
     rank = int(os.getenv("RANK", 0))
@@ -73,7 +73,7 @@ def main() -> int:
 
     print(f"building server at {a.video}V/{a.action}A ...", flush=True)
     server = S.VA_Server(cfg)
-    from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+    from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
     RingKVAddressing().install(S, type(server))
     for n in install_conditioning_prefill(S, type(server)):
         print(f"  installed {n}", flush=True)
@@ -82,8 +82,8 @@ def main() -> int:
 
     # ---- apply the conv backend plan, through the dispatch layer ------------------------------
     if a.conv_layout == "ndhwc":
-        from instinctwm.backends.conv import REGISTRY, ConvShape, register_declared
-        from instinctwm.backends.conv.semantics import ConvSemantics, MemoryLayout
+        from instinctflash.backends.conv import REGISTRY, ConvShape, register_declared
+        from instinctflash.backends.conv.semantics import ConvSemantics, MemoryLayout
         register_declared(REGISTRY)
         convs = [m for m in server.streaming_vae.vae.modules()
                  if isinstance(m, torch.nn.Conv3d) and m.weight.dim() == 5]

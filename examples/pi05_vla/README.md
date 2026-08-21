@@ -1,8 +1,8 @@
-# pi05, a VLA in InstinctWM
+# pi05, a VLA in InstinctFlash
 
 `lerobot/pi05_base` is a vision-language-action policy, registered from outside the core through the
-`instinctwm.adapters` entry point. It is here because it is structurally unlike LingBot-VA in almost
-every way the runtime cares about, which makes it a test of whether InstinctWM's declarations describe
+`instinctflash.adapters` entry point. It is here because it is structurally unlike LingBot-VA in almost
+every way the runtime cares about, which makes it a test of whether InstinctFlash's declarations describe
 *execution* or merely describe one world model.
 
 | | LingBot-VA (world-action) | pi05 (VLA) |
@@ -54,8 +54,8 @@ hand-tuned VLA engines. Both are consequences of that one line.
 
 ```bash
 pip install ./examples/pi05_vla
-instinctwm plan  <a-checkpoint-declaring-backbone-pi05>
-instinctwm run   <a-checkpoint-declaring-backbone-pi05>
+instinctflash plan  <a-checkpoint-declaring-backbone-pi05>
+instinctflash run   <a-checkpoint-declaring-backbone-pi05>
 ```
 
 `plan` needs no weights and no GPU. `run` needs the patched transformers described above, plus a GPU
@@ -64,4 +64,4 @@ with room for 14.5 GB of weights.
 ## Attribution
 
 `lerobot/pi05_base` and LeRobot are Apache-2.0, © The HuggingFace Inc. team. Nothing is copied here —
-this adapter reads that checkpoint's published configuration and declares it in InstinctWM's terms.
+this adapter reads that checkpoint's published configuration and declares it in InstinctFlash's terms.

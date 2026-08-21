@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Part C: can an external model family reach `Runtime.predict` with no PR to InstinctWM?
+"""Part C: can an external model family reach `Runtime.predict` with no PR to InstinctFlash?
 
     PYTHONPATH=. python run_as_user.py
 """
@@ -23,18 +23,18 @@ def main() -> int:
     print("1. the checkpoint bootstraps its own adapter -- NO import of the plugin")
     print("=" * 78)
     assert "gridworld_wm" not in sys.modules, "the plugin must not be pre-imported"
-    from instinctwm import Runtime, describe
-    import instinctwm
+    from instinctflash import Runtime, describe
+    import instinctflash
     d = describe(PKG)
     print(f"  declares backbone {d['backbone']!r}, servable={d['servable']}")
-    print(f"  discovered via entry points: {instinctwm.available_models()}")
-    check("gridworld_ar" in instinctwm.available_models(),
+    print(f"  discovered via entry points: {instinctflash.available_models()}")
+    check("gridworld_ar" in instinctflash.available_models(),
           "an INSTALLED plugin is found with no import by the user")
     check("gridworld_wm" not in [m for m in sys.modules if m == "gridworld_wm"] or True,
           "(entry point loaded the adapter module on demand)")
 
     runtime = Runtime.from_pretrained(PKG)
-    check(runtime.plan is not None, "a plan compiled for a model InstinctWM has never seen")
+    check(runtime.plan is not None, "a plan compiled for a model InstinctFlash has never seen")
     print()
     print("\n".join("  " + ln for ln in runtime.explain().splitlines()))
 
@@ -68,7 +68,7 @@ def main() -> int:
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")
         return 1
-    print("PASS: an external model family reached Runtime.predict with no PR to InstinctWM.")
+    print("PASS: an external model family reached Runtime.predict with no PR to InstinctFlash.")
     return 0
 
 

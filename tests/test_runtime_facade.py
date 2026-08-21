@@ -30,8 +30,8 @@ def _pkg(d: Path, backbone="tiny-wam", servable=True, extra=None) -> Path:
     ex = {"model_id": "example-org/x", "backbone": backbone, "servable": servable,
           "guidance": {"action": "positive_only"}, "nfe": {"action": 2}}
     ex.update(extra or {})
-    (d / "instinctwm.json").write_text(json.dumps(
-        {"instinctwm_schema": 1, "execution": ex,
+    (d / "instinctflash.json").write_text(json.dumps(
+        {"instinctflash_schema": 1, "execution": ex,
          "provenance": {"training_method": "secret", "teacher": "also secret"}}))
     (d / "config.json").write_text("{}")
     (d / "model.safetensors").write_bytes(b"\x00")
@@ -40,11 +40,11 @@ def _pkg(d: Path, backbone="tiny-wam", servable=True, extra=None) -> Path:
 
 def test_public_api_is_small():
     print("\n=== 1. the public API is five names, not eighteen ===")
-    import instinctwm
+    import instinctflash
     for n in ("Runtime", "from_pretrained", "describe"):
-        check(hasattr(instinctwm, n), f"instinctwm.{n} exists")
-    check(instinctwm.__all__[0] == "Runtime", "Runtime leads __all__", instinctwm.__all__[0])
-    src = (ROOT / "instinctwm" / "runtime" / "facade.py").read_text()
+        check(hasattr(instinctflash, n), f"instinctflash.{n} exists")
+    check(instinctflash.__all__[0] == "Runtime", "Runtime leads __all__", instinctflash.__all__[0])
+    src = (ROOT / "instinctflash" / "runtime" / "facade.py").read_text()
     for word in ("socket", "websocket", "port", "subprocess"):
         # transport may be MENTIONED in prose; it must not be in the public signatures
         sigs = [ln for ln in src.splitlines()
@@ -54,7 +54,7 @@ def test_public_api_is_small():
 
 def test_describe_reads_no_provenance_and_no_weights():
     print("\n=== 2. describe() returns execution facts only ===")
-    from instinctwm import describe
+    from instinctflash import describe
     with tempfile.TemporaryDirectory() as td:
         d = _pkg(Path(td) / "p")
         got = describe(d)
@@ -66,8 +66,8 @@ def test_describe_reads_no_provenance_and_no_weights():
 
 def test_unknown_backbone_teaches():
     print("\n=== 3. an unregistered backbone produces an error that teaches ===")
-    from instinctwm import Runtime
-    from instinctwm.runtime.facade import UnknownBackboneError
+    from instinctflash import Runtime
+    from instinctflash.runtime.facade import UnknownBackboneError
     with tempfile.TemporaryDirectory() as td:
         d = _pkg(Path(td) / "p", backbone="not-registered-anywhere")
         try:
@@ -77,13 +77,13 @@ def test_unknown_backbone_teaches():
             m = str(e)
             check("not-registered-anywhere" in m, "names the declared backbone")
             check("Registered backbones:" in m, "lists what IS registered")
-            check("instinctwm.register(" in m, "shows the exact fix")
+            check("instinctflash.register(" in m, "shows the exact fix")
             check("examples/tiny_wam/adapter.py" in m, "points at a worked example")
 
 
 def test_unservable_is_refused():
     print("\n=== 4. servable=false is refused, without asking why ===")
-    from instinctwm import Runtime
+    from instinctflash import Runtime
     with tempfile.TemporaryDirectory() as td:
         d = _pkg(Path(td) / "p", servable=False)
         try:
@@ -96,11 +96,11 @@ def test_unservable_is_refused():
 
 def test_placement_is_a_deployment_choice_not_a_model_property():
     print("\n=== 5. placement is chosen, not declared ===")
-    from instinctwm.runtime.execution import can_host_in_process, choose_backend
-    from instinctwm import load
+    from instinctflash.runtime.execution import can_host_in_process, choose_backend
+    from instinctflash import load
     ok, why = can_host_in_process(load('wan_va'))
     print(f"  this interpreter: {why}")
-    decl = (ROOT / "instinctwm" / "descriptors" / "checkpoint.py").read_text()
+    decl = (ROOT / "instinctflash" / "descriptors" / "checkpoint.py").read_text()
     for w in ("websocket", "socket", "worker", "in_process", "placement"):
         check(w not in decl, f"the declaration schema has no notion of {w!r}")
     check(callable(choose_backend), "the runtime chooses placement at load time")
@@ -108,13 +108,13 @@ def test_placement_is_a_deployment_choice_not_a_model_property():
 
 def test_no_fast_quality_presets():
     print("\n=== 6. no Fast/Quality preset table lives in the runtime ===")
-    src = (ROOT / "instinctwm" / "runtime" / "facade.py").read_text()
+    src = (ROOT / "instinctflash" / "runtime" / "facade.py").read_text()
     code = "\n".join(ln for ln in src.splitlines() if not ln.strip().startswith("#"))
     check("operating_point" not in code.split('"""')[-1],
           "no operating_point parameter in the implementation")
     check("nfe" in src, "nfe override IS available -- an explicit override of a declared field")
     import inspect
-    from instinctwm import Runtime
+    from instinctflash import Runtime
     params = inspect.signature(Runtime.from_pretrained).parameters
     check("operating_point" not in params, "from_pretrained has no operating_point argument")
     check("nfe" in params, "from_pretrained takes nfe=", str(list(params)))
@@ -122,18 +122,18 @@ def test_no_fast_quality_presets():
 
 def test_composed_tree_never_lands_inside_the_package():
     print("\n=== 7. the composed tree is a cache artifact, not a package member ===")
-    # REGRESSION. materialize() used to write `<pkg>/.instinctwm_composed/`. A package directory can
+    # REGRESSION. materialize() used to write `<pkg>/.instinctflash_composed/`. A package directory can
     # be a shared Hugging Face snapshot, and `hf upload` of one that had been loaded once published
     # a SECOND 10 GB copy of the transformer -- the symlinks resolved to real bytes on the way up.
     import os
-    from instinctwm.adapters.lingbot_va import LingBotVA
+    from instinctflash.adapters.lingbot_va import LingBotVA
     with tempfile.TemporaryDirectory() as td:
         pkg = _pkg(Path(td) / "pkg", backbone="wan_va")
         base = Path(td) / "base"
         for comp in LingBotVA.FROZEN_COMPONENTS:
             (base / comp).mkdir(parents=True, exist_ok=True)
         cache = Path(td) / "cache"
-        os.environ["IWM_CACHE"] = str(cache)
+        os.environ["IFL_CACHE"] = str(cache)
         os.environ["LINGBOT_CKPT"] = str(base)
         try:
             class _Ck:
@@ -145,16 +145,16 @@ def test_composed_tree_never_lands_inside_the_package():
             # idempotent: loading twice must not raise on the links the first call created
             again = Path(LingBotVA.materialize(_Ck()))
         finally:
-            os.environ.pop("IWM_CACHE", None)
+            os.environ.pop("IFL_CACHE", None)
             os.environ.pop("LINGBOT_CKPT", None)
 
-        check(not (pkg / ".instinctwm_composed").exists(),
+        check(not (pkg / ".instinctflash_composed").exists(),
               "nothing was written inside the package")
         check(cache in composed.parents, "the composed tree lives under the cache", str(composed))
         check((composed / "transformer" / "config.json").is_symlink(),
               "the trainable side is symlinked, not copied")
         check(set(p.name for p in pkg.iterdir()) ==
-              {"instinctwm.json", "config.json", "model.safetensors"},
+              {"instinctflash.json", "config.json", "model.safetensors"},
               "the package directory is byte-for-byte what it was before loading")
         check(again == composed, "materialize() is idempotent")
 

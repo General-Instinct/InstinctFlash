@@ -50,7 +50,7 @@ Engine mechanics, separately:
 
 ## Two ways this benchmark can lie to you
 
-**Toy width.** The config in `instinctwm/adapters/cosmos3.py:build_stack` is hidden 512 / head_dim 64,
+**Toy width.** The config in `instinctflash/adapters/cosmos3.py:build_stack` is hidden 512 / head_dim 64,
 chosen because the cuDNN SDPA of the day rejected 128. Cost *ranking* at that width does not survive
 to 2048, and a benchmark that reports a ratio from toy shapes is reporting the wrong model.
 `probe_mot_stack.py` uses the shipped geometry for exactly this reason.

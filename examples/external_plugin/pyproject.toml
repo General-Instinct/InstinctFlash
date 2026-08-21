@@ -5,13 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "gridworld-wm"
 version = "0.1.0"
-description = "A toy autoregressive world-action model for InstinctWM"
+description = "A toy autoregressive world-action model for InstinctFlash"
 requires-python = ">=3.10"
-dependencies = ["instinctwm", "torch", "safetensors", "numpy"]
+dependencies = ["instinctflash", "torch", "safetensors", "numpy"]
 
-# THE WHOLE INTEGRATION. `pip install gridworld-wm` and InstinctWM can serve any checkpoint whose
-# declaration says `backbone: gridworld_ar` -- no PR to InstinctWM, no import order to remember.
-[project.entry-points."instinctwm.adapters"]
+# THE WHOLE INTEGRATION. `pip install gridworld-wm` and InstinctFlash can serve any checkpoint whose
+# declaration says `backbone: gridworld_ar` -- no PR to InstinctFlash, no import order to remember.
+[project.entry-points."instinctflash.adapters"]
 gridworld_ar = "gridworld_wm.adapter:GridworldAdapter"
 
 [tool.setuptools.packages.find]

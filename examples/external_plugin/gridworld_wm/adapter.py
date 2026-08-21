@@ -1,13 +1,13 @@
-"""The InstinctWM adapter for `gridworld-ar`, written from OUTSIDE InstinctWM.
+"""The InstinctFlash adapter for `gridworld-ar`, written from OUTSIDE InstinctFlash.
 
-AUDIT RECORD. Every InstinctWM name this file has to import or implement is a thing an external
-model author must learn. Counted at the bottom of the module. Nothing in the InstinctWM tree was
+AUDIT RECORD. Every InstinctFlash name this file has to import or implement is a thing an external
+model author must learn. Counted at the bottom of the module. Nothing in the InstinctFlash tree was
 modified to make this work.
 """
 
 from __future__ import annotations
 
-from instinctwm import AdapterSpec, PhaseSpec
+from instinctflash import AdapterSpec, PhaseSpec
 
 from gridworld_wm.model import GridworldAR, quantize
 
@@ -15,7 +15,7 @@ from gridworld_wm.model import GridworldAR, quantize
 class _Impl:
     """What `build_in_process` returns. The runtime calls `reset` and `predict` on this.
 
-    NOTE FOR THE AUDIT: nothing in InstinctWM's documented `BackendAdapter` protocol says this
+    NOTE FOR THE AUDIT: nothing in InstinctFlash's documented `BackendAdapter` protocol says this
     object exists or what shape it has. I found the required methods by reading the error message
     from `InProcessBackend`, which is a better failure mode than silence but is not documentation.
     """
@@ -45,7 +45,7 @@ class _Impl:
 
 
 class GridworldAdapter:
-    """Implements the parts of InstinctWM's adapter contract that are actually required."""
+    """Implements the parts of InstinctFlash's adapter contract that are actually required."""
 
     BACKBONE = "gridworld_ar"
 

@@ -14,7 +14,7 @@ Every file is run as a SUBPROCESS. That is not incidental: most of this suite ne
 upstream lingbot-va or cosmos-framework trees, and importing those in-process means one
 missing checkout takes down the whole run instead of skipping one file.
 
-A missing THIRD-PARTY module is reported as SKIP. A missing `instinctwm` is reported as FAIL,
+A missing THIRD-PARTY module is reported as SKIP. A missing `instinctflash` is reported as FAIL,
 because that means the repo cannot import itself — which is exactly what a stale absolute
 sys.path entry looks like, and it stayed invisible for a while by looking like a skip.
 """
@@ -63,7 +63,7 @@ def classify(proc: subprocess.CompletedProcess) -> tuple[str, str]:
     if missing:
         mod = missing.group(1)
         root = mod.split(".")[0]
-        if root == "instinctwm":
+        if root == "instinctflash":
             return "FAIL", f"cannot import {mod} — the repo cannot import itself"
         return "SKIP", f"needs {root}"
     tail = (proc.stderr or proc.stdout or "").strip().splitlines()

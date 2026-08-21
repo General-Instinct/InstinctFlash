@@ -52,7 +52,7 @@ import random
 from collections import defaultdict
 from pathlib import Path
 
-RESULTS = Path(os.environ.get("IWM_RESULT_DIR", "/home/ubuntu/iwm_results"))
+RESULTS = Path(os.environ.get("IFL_RESULT_DIR", "/home/ubuntu/iwm_results"))
 
 
 def load(run: str) -> dict[str, bool]:

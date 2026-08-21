@@ -22,10 +22,10 @@ set -uo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 source ./env.sh
 
-PIDFILE="$IWM_LOG_DIR/server_pgids.txt"
+PIDFILE="$IFL_LOG_DIR/server_pgids.txt"
 
 start() {
-  local n=${1:-$IWM_NUM_GPUS}
+  local n=${1:-$IFL_NUM_GPUS}
 
   # -- preflight: every port we intend to use must be free ---------------------
   local busy=0
@@ -48,24 +48,24 @@ start() {
   fi
 
   local extra_pypath=""
-  if [ "${IWM_FA_SHIM:-0}" = "1" ]; then
-    extra_pypath="$IWM_FA_SHIM_DIR"
-    echo "NOTE: flash-attn import shim ENABLED ($IWM_FA_SHIM_DIR)."
+  if [ "${IFL_FA_SHIM:-0}" = "1" ]; then
+    extra_pypath="$IFL_FA_SHIM_DIR"
+    echo "NOTE: flash-attn import shim ENABLED ($IFL_FA_SHIM_DIR)."
   fi
 
   : > "$PIDFILE"
   for i in $(seq 0 $((n-1))); do
     local ws rdzv log
     ws=$(iwm_ws_port "$i"); rdzv=$(iwm_rdzv_port "$i")
-    log="$IWM_LOG_DIR/server_gpu$i.log"
+    log="$IFL_LOG_DIR/server_gpu$i.log"
     ( cd "$LINGBOT_ROOT" && \
       CUDA_VISIBLE_DEVICES=$i \
       PYTHONPATH="${extra_pypath}" \
       LINGBOT_CKPT="$LINGBOT_CKPT" \
-      setsid nohup "$IWM_SERVER_PY" -m torch.distributed.run \
+      setsid nohup "$IFL_SERVER_PY" -m torch.distributed.run \
         --nproc_per_node 1 --master_port "$rdzv" \
         wan_va/wan_va_server.py --config-name robotwin \
-        --port "$ws" --save_root "$IWM_VIS_DIR" \
+        --port "$ws" --save_root "$IFL_VIS_DIR" \
         > "$log" 2>&1 & echo $! >> "$PIDFILE" )
     echo "gpu$i -> ws:$ws rdzv:$rdzv log:$log"
   done
@@ -85,9 +85,9 @@ start() {
     fi
     # fail fast if a server process died
     for i in $(seq 0 $((n-1))); do
-      if grep -qE "Traceback|ChildFailedError|CUDA out of memory" "$IWM_LOG_DIR/server_gpu$i.log" 2>/dev/null; then
-        echo "SERVER gpu$i FAILED -- see $IWM_LOG_DIR/server_gpu$i.log" >&2
-        grep -E "Error|error while attempting|out of memory" "$IWM_LOG_DIR/server_gpu$i.log" | head -5 >&2
+      if grep -qE "Traceback|ChildFailedError|CUDA out of memory" "$IFL_LOG_DIR/server_gpu$i.log" 2>/dev/null; then
+        echo "SERVER gpu$i FAILED -- see $IFL_LOG_DIR/server_gpu$i.log" >&2
+        grep -E "Error|error while attempting|out of memory" "$IFL_LOG_DIR/server_gpu$i.log" | head -5 >&2
         return 1
       fi
     done
@@ -130,7 +130,7 @@ stop() {
   sleep 3
   for pat in "wan_va/wan_va_server.py" "serve_variant.py"; do _iwm_kill 9 "$pat"; done
   # Anything still holding a serving port is killed by port, so `stop` is authoritative.
-  for i in $(seq 0 $((IWM_NUM_GPUS-1))); do
+  for i in $(seq 0 $((IFL_NUM_GPUS-1))); do
     p=$(iwm_ws_port "$i")
     for pid in $(ss -ltnp "sport = :${p}" 2>/dev/null | grep -oP 'pid=\K[0-9]+' | sort -u); do
       kill -9 "$pid" 2>/dev/null
@@ -143,11 +143,11 @@ stop() {
 
 status() {
   printf "%-6s %-8s %-10s %s\n" GPU PORT LISTENING LOG_TAIL
-  for i in $(seq 0 $((IWM_NUM_GPUS-1))); do
+  for i in $(seq 0 $((IFL_NUM_GPUS-1))); do
     local ws state tail_
     ws=$(iwm_ws_port "$i")
     if iwm_port_busy "$ws"; then state=yes; else state=NO; fi
-    tail_=$(grep -h "server listening on" "$IWM_LOG_DIR/server_gpu$i.log" 2>/dev/null | tail -1 | sed 's/.*INFO - //')
+    tail_=$(grep -h "server listening on" "$IFL_LOG_DIR/server_gpu$i.log" 2>/dev/null | tail -1 | sed 's/.*INFO - //')
     printf "%-6s %-8s %-10s %s\n" "$i" "$ws" "$state" "${tail_:-<none>}"
   done
 }

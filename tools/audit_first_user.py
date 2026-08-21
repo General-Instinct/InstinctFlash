@@ -3,7 +3,7 @@
 
 Rules this script obeys, because they are what makes the result mean anything:
   * only commands and snippets that appear in the README;
-  * no InstinctWM environment variables (no LINGBOT_ROOT, no IWM_*, no LINGBOT_CKPT);
+  * no InstinctFlash environment variables (no LINGBOT_ROOT, no IFL_*, no LINGBOT_CKPT);
   * no local paths -- the model is named by Hub repo id;
   * repeated inference is the pass criterion, not a single action.
 
@@ -38,8 +38,8 @@ def main() -> int:
     print("0. the environment a first user actually has")
     print("=" * 78)
     leaked = sorted(k for k in os.environ
-                    if k.startswith(("IWM_", "LINGBOT_")) or k == "PYTHONPATH")
-    check(not leaked, "no InstinctWM environment variables are set", str(leaked))
+                    if k.startswith(("IFL_", "LINGBOT_")) or k == "PYTHONPATH")
+    check(not leaked, "no InstinctFlash environment variables are set", str(leaked))
     for mod in ("torch", "huggingface_hub", "diffusers"):
         try:
             __import__(mod)
@@ -49,7 +49,7 @@ def main() -> int:
     print("\n" + "=" * 78)
     print("1. describe(model) -- README: 'see what a checkpoint is before downloading'")
     print("=" * 78)
-    from instinctwm import Runtime, describe
+    from instinctflash import Runtime, describe
     try:
         d = describe(a.model)
         print(f"  backbone={d['backbone']}  servable={d['servable']}  nfe={d['nfe']}")

@@ -3,8 +3,8 @@
 # Source this; do not execute it.
 #
 # Port scheme (deliberately non-overlapping -- see NOTE below):
-#   websocket serving port : IWM_WS_PORT_BASE  + gpu_index   -> 29056..29063
-#   torch.distributed rdzv : IWM_RDZV_PORT_BASE + gpu_index  -> 29800..29807
+#   websocket serving port : IFL_WS_PORT_BASE  + gpu_index   -> 29056..29063
+#   torch.distributed rdzv : IFL_RDZV_PORT_BASE + gpu_index  -> 29800..29807
 #
 # NOTE: the upstream launch scripts use START_PORT=29056 and MASTER_PORT=29061,
 # i.e. the rendezvous port of GPU 0 collides with the websocket port of GPU 5
@@ -17,10 +17,10 @@ set -u
 
 # ---- repos ------------------------------------------------------------------
 # Derived from this file's own location rather than written down, because the tree has moved
-# once (/home/ubuntu/InstinctWM -> /home/ubuntu/Code/InstinctWM) and a stale IWM_ROOT breaks
-# only the arms that import instinctwm -- a broken A/B rather than a broken run.
+# once (/home/ubuntu/InstinctFlash -> /home/ubuntu/Code/InstinctFlash) and a stale IFL_ROOT breaks
+# only the arms that import instinctflash -- a broken A/B rather than a broken run.
 # BASH_SOURCE is the right variable here: this file is sourced, never executed.
-export IWM_ROOT=${IWM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}
+export IFL_ROOT=${IFL_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}
 export ROBOTWIN_ROOT=${ROBOTWIN_ROOT:-/home/ubuntu/RoboTwin}
 export LINGBOT_ROOT=${LINGBOT_ROOT:-/home/ubuntu/lingbot-va}
 
@@ -53,39 +53,39 @@ export LINGBOT_CKPT=${LINGBOT_CKPT:-/home/ubuntu/ckpt_lingbot/lingbot-va-posttra
 # probe_episode arm against .venv-lingbot, and only then change this line. The lock is
 # the right destination -- a hand-rolled venv cannot be re-created from the repo -- but
 # the parity check comes before the switch, not after.
-export IWM_SERVER_PY=${IWM_SERVER_PY:-/home/ubuntu/.venv-lingbot/bin/python}
-export IWM_CLIENT_PY=${IWM_CLIENT_PY:-${ROBOTWIN_ROOT}/.venv/bin/python}
+export IFL_SERVER_PY=${IFL_SERVER_PY:-/home/ubuntu/.venv-lingbot/bin/python}
+export IFL_CLIENT_PY=${IFL_CLIENT_PY:-${ROBOTWIN_ROOT}/.venv/bin/python}
 
-if [ ! -x "$IWM_SERVER_PY" ]; then
-  echo "WARNING: IWM_SERVER_PY does not exist: $IWM_SERVER_PY" >&2
-  echo "         run './scripts/task.sh test-lingbot' from $IWM_ROOT, or see the" >&2
+if [ ! -x "$IFL_SERVER_PY" ]; then
+  echo "WARNING: IFL_SERVER_PY does not exist: $IFL_SERVER_PY" >&2
+  echo "         run './scripts/task.sh test-lingbot' from $IFL_ROOT, or see the" >&2
   echo "         build command in $(basename "${BASH_SOURCE[0]}")" >&2
 fi
 
 # ---- flash-attn import shim -------------------------------------------------
 # wan_va/modules/model.py imports flash_attn unconditionally at module scope even
-# though the RoboTwin path runs attn_mode='torch'. Set IWM_FA_SHIM=1 to make the
+# though the RoboTwin path runs attn_mode='torch'. Set IFL_FA_SHIM=1 to make the
 # import-only shim visible. It raises if ever CALLED, so it cannot change numerics.
 # Leave unset once a real flash-attn wheel is installed -- PYTHONPATH precedes
 # site-packages and would otherwise shadow the real package.
-export IWM_FA_SHIM_DIR=${IWM_FA_SHIM_DIR:-/home/ubuntu/iwm_shims}
+export IFL_FA_SHIM_DIR=${IFL_FA_SHIM_DIR:-/home/ubuntu/iwm_shims}
 
 # ---- ports ------------------------------------------------------------------
-export IWM_WS_PORT_BASE=${IWM_WS_PORT_BASE:-29056}
-export IWM_RDZV_PORT_BASE=${IWM_RDZV_PORT_BASE:-29800}
-export IWM_NUM_GPUS=${IWM_NUM_GPUS:-8}
+export IFL_WS_PORT_BASE=${IFL_WS_PORT_BASE:-29056}
+export IFL_RDZV_PORT_BASE=${IFL_RDZV_PORT_BASE:-29800}
+export IFL_NUM_GPUS=${IFL_NUM_GPUS:-8}
 
 # ---- run artifacts ----------------------------------------------------------
-export IWM_LOG_DIR=${IWM_LOG_DIR:-/home/ubuntu/iwm_logs}
-export IWM_RESULT_DIR=${IWM_RESULT_DIR:-/home/ubuntu/iwm_results}
+export IFL_LOG_DIR=${IFL_LOG_DIR:-/home/ubuntu/iwm_logs}
+export IFL_RESULT_DIR=${IFL_RESULT_DIR:-/home/ubuntu/iwm_results}
 # The server dumps latents/actions/obs tensors here on EVERY chunk via save_async.
 # On a full 50-task run this is the largest artifact by far -- keep it on the big disk.
-export IWM_VIS_DIR=${IWM_VIS_DIR:-/home/ubuntu/iwm_vis}
+export IFL_VIS_DIR=${IFL_VIS_DIR:-/home/ubuntu/iwm_vis}
 
-mkdir -p "$IWM_LOG_DIR" "$IWM_RESULT_DIR" "$IWM_VIS_DIR"
+mkdir -p "$IFL_LOG_DIR" "$IFL_RESULT_DIR" "$IFL_VIS_DIR"
 
-iwm_ws_port()   { echo $(( IWM_WS_PORT_BASE   + $1 )); }
-iwm_rdzv_port() { echo $(( IWM_RDZV_PORT_BASE + $1 )); }
+iwm_ws_port()   { echo $(( IFL_WS_PORT_BASE   + $1 )); }
+iwm_rdzv_port() { echo $(( IFL_RDZV_PORT_BASE + $1 )); }
 
 # True if something is already listening on $1.
 iwm_port_busy() {

@@ -52,7 +52,7 @@ Two kinds of facts, and the split is load-bearing.
 ### Checkpoint-scoped — `AdapterSpec`
 
 Immutable, identical on every box the checkpoint runs on. Implemented in
-[`instinctwm/adapters/base.py`](instinctwm/adapters/base.py).
+[`instinctflash/adapters/base.py`](instinctflash/adapters/base.py).
 
 | Field | Meaning | What reads it |
 |:--|:--|:--|
@@ -73,7 +73,7 @@ numbers profitability is computed against.
 
 The same checkpoint is one GPU here and eight there, and one caller wants predicted pixels while the
 next wants only actions. Implemented in
-[`instinctwm/descriptors/deployment.py`](instinctwm/descriptors/deployment.py).
+[`instinctflash/descriptors/deployment.py`](instinctflash/descriptors/deployment.py).
 
 | Field | Meaning |
 |:--|:--|
@@ -88,13 +88,13 @@ something they cannot know. Fields are added here only when a pass reads one.
 ## The serialized form
 
 > **Status: the declaration and the package layer are implemented; full `AdapterSpec` construction is
-> not.** [`descriptors/checkpoint.py`](instinctwm/descriptors/checkpoint.py) reads this schema:
+> not.** [`descriptors/checkpoint.py`](instinctflash/descriptors/checkpoint.py) reads this schema:
 > `load_declaration()` returns the `execution` block **only** and has nowhere to put a training
 > method, `provenance_of()` is a separate deliberate call, and a provenance key found inside
-> `execution` is a load error. [`descriptors/package.py`](instinctwm/descriptors/package.py) adds the
+> `execution` is a load error. [`descriptors/package.py`](instinctflash/descriptors/package.py) adds the
 > published form — `from_pretrained()` (local path, or Hub repo id when `huggingface_hub` is
 > installed), `validate_package()`, `publishability()` and `migrate_legacy()`, with a CLI at
-> `python -m instinctwm.descriptors.package <dir>`. `Checkpoint.capabilities()` is what the planner
+> `python -m instinctflash.descriptors.package <dir>`. `Checkpoint.capabilities()` is what the planner
 > receives; `Optimizer.compile(..., capabilities=...)` admits a pass only if the tokens it requires
 > are declared.
 >
@@ -110,7 +110,7 @@ no runtime change. The adapter does not have to live here: declare an entry poin
 and `pip install` it, and any checkpoint naming that backbone resolves.
 
 ```toml
-[project.entry-points."instinctwm.adapters"]
+[project.entry-points."instinctflash.adapters"]
 my_backbone = "my_package.adapter:MyAdapter"
 ```
 
@@ -119,7 +119,7 @@ LingBot-VA; [`examples/tiny_wam/`](examples/tiny_wam/) shows the same on real we
 
 **Not yet.** An arbitrary new backbone with *no* adapter. `execution.backbone` must resolve to one,
 because the adapter supplies the shape of a control step and the declaration cannot express that.
-Writing an adapter needs no change to InstinctWM, but it is code rather than JSON. Deriving a full
+Writing an adapter needs no change to InstinctFlash, but it is code rather than JSON. Deriving a full
 `AdapterSpec` from the declaration would close the gap and is deliberately not built: the schema
 would have to describe an execution graph, which is a much larger contract to freeze.
 
@@ -127,7 +127,7 @@ would have to describe an execution graph, which is a much larger contract to fr
 
 ```
 my-checkpoint/
-  instinctwm.json          REQUIRED   the declaration
+  instinctflash.json          REQUIRED   the declaration
   config.json              REQUIRED   the backbone's own config, as its modelling library expects it
   model.safetensors        REQUIRED   or a sharded set + model.safetensors.index.json
   README.md                optional   model card
@@ -145,16 +145,16 @@ worked example lives in [`examples/checkpoint/wm-blockheads-2v4a/`](examples/che
 and `tests/test_checkpoint_platform.py` validates that directory rather than a fixture invented inside
 the test.
 
-For a checkpoint published on the Hub, the declaration ships as `instinctwm.json` beside the weights.
+For a checkpoint published on the Hub, the declaration ships as `instinctflash.json` beside the weights.
 The runtime resolves it in this order, first hit wins:
 
-1. `instinctwm.json` in the checkpoint directory or repo
-2. a registered adapter for `model_id` (`instinctwm.register`)
+1. `instinctflash.json` in the checkpoint directory or repo
+2. a registered adapter for `model_id` (`instinctflash.register`)
 3. refuse — an unrecognized checkpoint is not served on guessed facts
 
 ```jsonc
 {
-  "instinctwm_schema": 1,
+  "instinctflash_schema": 1,
 
   // ==========================================================================
   // EXECUTION -- everything the runtime may read, and nothing else.
@@ -251,7 +251,7 @@ Three properties of this shape are load-bearing:
    key.
 3. **`velocity_convention` closes a real trap declaratively.** A double sign flip here once produced
    0/100 on RoboTwin against a 92/100 control. It is currently a comment in
-   [`runtime/block_heads.py`](instinctwm/runtime/block_heads.py); a comment cannot be checked.
+   [`runtime/block_heads.py`](instinctflash/runtime/block_heads.py); a comment cannot be checked.
 
 ---
 
@@ -289,7 +289,7 @@ Nothing in the runtime changes. In full:
 
 1. Train, in your own repository. If it is reusable, keep it standalone and backbone-agnostic — PDD
    lives in [`instinct-pdd`](instinct-pdd) under Apache-2.0 for exactly this reason.
-2. Publish the checkpoint with an `instinctwm.json` declaring its `phases`, `streams`, `guidance`,
+2. Publish the checkpoint with an `instinctflash.json` declaring its `phases`, `streams`, `guidance`,
    and `purity`.
 3. Certify it: paired episodes on identical seeds, exact McNemar, a declared margin.
 4. `load()` it. The runtime plans against the declaration it finds.

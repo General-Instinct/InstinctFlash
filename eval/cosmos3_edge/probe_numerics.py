@@ -24,7 +24,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, "/home/ubuntu/cosmos-framework")
-sys.path.insert(0, "/home/ubuntu/Code/InstinctWM")
+sys.path.insert(0, "/home/ubuntu/Code/InstinctFlash")
 
 import torch
 import probe_mot_stack as P
@@ -96,8 +96,8 @@ def main() -> int:
 
     # ---- shared full-depth setup -------------------------------------------------------
     layers, pack, mask, pos = make(args.layers, dev)
-    from instinctwm.adapters.cosmos3 import build_plan
-    from instinctwm.executors.executor import GraphExecutor
+    from instinctflash.adapters.cosmos3 import build_plan
+    from instinctflash.executors.executor import GraphExecutor
 
     with torch.no_grad():
         ref = get_all_seq(run(layers, pack, mask, pos)).clone()
@@ -186,7 +186,7 @@ def main() -> int:
     torch._dynamo.reset()
     torch.cuda.empty_cache()
 
-    from instinctwm.adapters.cosmos3 import use_torch_sdpa
+    from instinctflash.adapters.cosmos3 import use_torch_sdpa
     print(f"  CAVEAT: the fp32 oracle runs {use_torch_sdpa()} because Cosmos's cuDNN backend is")
     print("  bf16/fp16. Both bf16 arms meet the SAME oracle, so the comparison BETWEEN them is")
     print("  sound; the absolute distances carry the oracle's own attention difference.")

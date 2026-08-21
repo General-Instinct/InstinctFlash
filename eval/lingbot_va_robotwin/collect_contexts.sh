@@ -34,7 +34,7 @@ for t in "${TASKS[@]}"; do
 done
 
 mkdir -p "$OUT"
-LOGD="${IWM_LOG_DIR}/collect_$(basename "$OUT")"
+LOGD="${IFL_LOG_DIR}/collect_$(basename "$OUT")"
 mkdir -p "$LOGD"
 QUEUE="$LOGD/_queue"
 printf '%s\n' "${TASKS[@]}" > "$QUEUE"
@@ -59,7 +59,7 @@ worker() {
     fi
     ( cd "$ROBOTWIN_ROOT" && env ROBOTWIN_ROOT="$ROBOTWIN_ROOT" PYTHONPATH="$ROBOTWIN_ROOT" \
         PYTHONWARNINGS=ignore::UserWarning CUDA_VISIBLE_DEVICES="$gpu" \
-        "$IWM_CLIENT_PY" -u "$IWM_ROOT/eval/lingbot_va_robotwin/dump_reset_context.py" \
+        "$IFL_CLIENT_PY" -u "$IFL_ROOT/eval/lingbot_va_robotwin/dump_reset_context.py" \
         --tasks "$task" --episodes "$N" --seed 0 --out "$OUT" ) > "$LOGD/$task.log" 2>&1
     local rc=$?
     local got

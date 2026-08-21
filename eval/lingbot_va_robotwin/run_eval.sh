@@ -50,21 +50,21 @@ for t in "${TASKS[@]}"; do
 done
 
 # -- refuse to dispatch at a dead server --------------------------------------
-for i in $(seq 0 $((IWM_NUM_GPUS-1))); do
+for i in $(seq 0 $((IFL_NUM_GPUS-1))); do
   p=$(iwm_ws_port "$i")
   iwm_port_busy "$p" || { echo "REFUSING: no server listening on port $p (gpu $i). Run ./servers.sh start" >&2; exit 2; }
 done
 
-SAVE_ROOT="$IWM_RESULT_DIR/$RUN_NAME"
-LOG_DIR="$IWM_LOG_DIR/$RUN_NAME"
+SAVE_ROOT="$IFL_RESULT_DIR/$RUN_NAME"
+LOG_DIR="$IFL_LOG_DIR/$RUN_NAME"
 mkdir -p "$SAVE_ROOT" "$LOG_DIR"
 
 # Export rather than using a `${VAR:+VAR=$VAR}` prefix on the client command: a word that
 # only LOOKS like an assignment after expansion is not treated as one by bash, it is
 # treated as the command name, and the client dies with rc=127. Export makes the worker
 # subshells inherit them normally.
-[ -n "${IWM_SEED_CACHE:-}" ] && { export IWM_SEED_CACHE; mkdir -p "$IWM_SEED_CACHE"; }
-[ -n "${IWM_ACTION_LOG:-}" ] && { export IWM_ACTION_LOG; mkdir -p "$IWM_ACTION_LOG"; }
+[ -n "${IFL_SEED_CACHE:-}" ] && { export IFL_SEED_CACHE; mkdir -p "$IFL_SEED_CACHE"; }
+[ -n "${IFL_ACTION_LOG:-}" ] && { export IFL_ACTION_LOG; mkdir -p "$IFL_ACTION_LOG"; }
 
 # -- provenance: what code actually produced this run -------------------------
 {
@@ -77,7 +77,7 @@ mkdir -p "$SAVE_ROOT" "$LOG_DIR"
   echo "lingbot_head=$(git -C "$LINGBOT_ROOT" rev-parse HEAD 2>/dev/null)"
   echo "lingbot_dirty=$(git -C "$LINGBOT_ROOT" status --porcelain | tr '\n' ';')"
   echo "robotwin_head=$(git -C "$ROBOTWIN_ROOT" rev-parse HEAD 2>/dev/null)"
-  echo "fa_shim=${IWM_FA_SHIM:-0}"
+  echo "fa_shim=${IFL_FA_SHIM:-0}"
   echo "# numerics-defining files:"
   sha256sum "$LINGBOT_ROOT/wan_va/wan_va_server.py" \
             "$LINGBOT_ROOT/wan_va/modules/model.py" \
@@ -87,7 +87,7 @@ mkdir -p "$SAVE_ROOT" "$LOG_DIR"
 cat "$SAVE_ROOT/_provenance.txt"
 
 echo
-echo "dispatching ${#TASKS[@]} tasks, ${TEST_NUM} episodes each, over $IWM_NUM_GPUS GPUs"
+echo "dispatching ${#TASKS[@]} tasks, ${TEST_NUM} episodes each, over $IFL_NUM_GPUS GPUs"
 echo "save_root=$SAVE_ROOT"
 echo
 
@@ -101,7 +101,7 @@ run_one() {                       # run_one <task> <gpu> <port>
   ( cd "$ROBOTWIN_ROOT" && \
     ROBOTWIN_ROOT="$ROBOTWIN_ROOT" PYTHONWARNINGS=ignore::UserWarning \
     CUDA_VISIBLE_DEVICES=$gpu \
-    "$IWM_CLIENT_PY" -m evaluation.robotwin.eval_polict_client_openpi \
+    "$IFL_CLIENT_PY" -m evaluation.robotwin.eval_polict_client_openpi \
       --config policy/ACT/deploy_policy.yml \
       --overrides \
       --task_name "$t" --task_config demo_clean \
@@ -141,7 +141,7 @@ echo "  queue (longest first): $(head -c 200 "$QUEUE" | tr '\n' ' ')..."
 : > "$LOCK"
 
 worker_pids=()
-for gpu in $(seq 0 $((IWM_NUM_GPUS-1))); do
+for gpu in $(seq 0 $((IFL_NUM_GPUS-1))); do
   port=$(iwm_ws_port "$gpu")
   (
     while :; do

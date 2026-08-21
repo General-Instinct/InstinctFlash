@@ -20,10 +20,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "eval", "lingbo
 
 import torch
 
-from instinctwm.executors.executor import (
+from instinctflash.executors.executor import (
     CaptureFailed, EagerExecutor, GraphExecutor, report, verify_and_bench,
 )
-from instinctwm.planners.plan import BufferSpec, CaptureUnit, Plan, PlanBuffer
+from instinctflash.planners.plan import BufferSpec, CaptureUnit, Plan, PlanBuffer
 from trace_block import DIM, HEADS, TEXT_LEN, build_block
 
 import modules.model as M

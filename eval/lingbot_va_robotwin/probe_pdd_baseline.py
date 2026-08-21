@@ -15,7 +15,7 @@ not comparable across sigma. Two facts are missing to read it:
 An earlier baseline taken from the smoke run is NOT usable for this: it predates the fp32 ODE-state
 fix, used a per-rank unseeded x0, and averaged one context. It is quoted nowhere.
 
-    CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY \\
+    CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$IFL_FA_SHIM_DIR $IFL_SERVER_PY \\
       -m torch.distributed.run --nproc_per_node 1 --master_port 29960 \\
       probe_pdd_baseline.py --contexts /home/ubuntu/iwm_results/pdd_ctx50 \\
       [--heads /home/ubuntu/iwm_results/pdd_heads_run1/final/heads.pt]
@@ -31,15 +31,15 @@ import os
 import sys
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
-from instinctwm.train.oracles.lingbot_velocity import LingBotChunk0VideoOracle  # noqa: E402
-from instinctwm.runtime.lingbot_install import (  # noqa: E402
+from instinctflash.train.oracles.lingbot_velocity import LingBotChunk0VideoOracle  # noqa: E402
+from instinctflash.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_fsdp_elision,
 )
 from instinct_pdd import advance, sample  # noqa: E402
@@ -101,7 +101,7 @@ def main() -> int:
     a = ap.parse_args()
 
     S = import_lingbot_server()
-    cfg = S.VA_CONFIGS[os.environ.get("IWM_CFG", "robotwin")]
+    cfg = S.VA_CONFIGS[os.environ.get("IFL_CFG", "robotwin")]
     cfg.save_root = "/tmp/iwm_pdd_baseline"
     os.makedirs(cfg.save_root, exist_ok=True)
     S.init_distributed(1, 0, 0)

@@ -38,7 +38,7 @@ for _p in (str(HERE.parents[1]), str(HERE)):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-import instinctwm                                                  # noqa: E402
+import instinctflash                                                  # noqa: E402
 from pi05_iwm.adapter import Pi05Adapter                           # noqa: E402
 
 BASE = "lerobot/pi05_base"
@@ -51,8 +51,8 @@ def declare(into: Path) -> Path:
     """A checkpoint that carries pi05's weights BY REFERENCE, so nothing is copied to run this."""
     into.mkdir(parents=True, exist_ok=True)
     (into / "config.json").write_text("{}")
-    (into / "instinctwm.json").write_text(json.dumps({
-        "instinctwm_schema": 1,
+    (into / "instinctflash.json").write_text(json.dumps({
+        "instinctflash_schema": 1,
         "execution": {"model_id": "example-org/pi05", "backbone": "pi05", "servable": True,
                       "guidance": {"action": "none"},          # flow matching, no CFG
                       "nfe": {"action": 10, "prefix": 1},
@@ -62,11 +62,11 @@ def declare(into: Path) -> Path:
 
 
 def main() -> int:
-    if "pi05" not in instinctwm.available_models():
-        instinctwm.register("pi05", Pi05Adapter)
+    if "pi05" not in instinctflash.available_models():
+        instinctflash.register("pi05", Pi05Adapter)
 
     with tempfile.TemporaryDirectory() as td:
-        runtime = instinctwm.Runtime.from_pretrained(declare(Path(td) / "pi05"))
+        runtime = instinctflash.Runtime.from_pretrained(declare(Path(td) / "pi05"))
         obs = runtime.observation.example()
         obs["prompt"] = PROMPT
 

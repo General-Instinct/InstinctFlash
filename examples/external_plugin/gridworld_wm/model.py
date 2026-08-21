@@ -1,6 +1,6 @@
 """A toy world-action model that is deliberately NOT shaped like LingBot-VA.
 
-Structural differences, chosen so the integration exercises the parts of InstinctWM that LingBot
+Structural differences, chosen so the integration exercises the parts of InstinctFlash that LingBot
 would never touch:
 
     LingBot-VA                          gridworld-ar
@@ -11,7 +11,7 @@ would never touch:
     frozen VAE + T5 by pointer          self-contained, no base weights
     multi-phase control cycle           single phase
 
-If InstinctWM's public surface only fits models that look like LingBot, this file is where that
+If InstinctFlash's public surface only fits models that look like LingBot, this file is where that
 shows up.
 """
 

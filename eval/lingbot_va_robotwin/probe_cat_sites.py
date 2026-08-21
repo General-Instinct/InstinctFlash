@@ -25,7 +25,7 @@ WHAT IT ANSWERS, in order:
      `self.attn_op(query, key_all, value_all)`, so if the cat is real and hot, the question is whether
      attn_op can be handed (span_a, span_b) -- which is a backend capability question, not a kernel.
 
-    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY \\
+    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IFL_FA_SHIM_DIR $IFL_SERVER_PY \\
         -m torch.distributed.run --nproc_per_node 1 --master_port 29991 probe_cat_sites.py
 """
 from __future__ import annotations
@@ -37,14 +37,14 @@ import sys
 import traceback
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
-from instinctwm.runtime.lingbot_install import (  # noqa: E402
+from instinctflash.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_conditioning_prefill, install_debug_dump_elision,
     install_fsdp_elision,
 )
@@ -57,7 +57,7 @@ def main() -> int:
     a = ap.parse_args()
 
     S = import_lingbot_server()
-    cfg = S.VA_CONFIGS[os.environ.get("IWM_CFG", "robotwin")]
+    cfg = S.VA_CONFIGS[os.environ.get("IFL_CFG", "robotwin")]
     cfg.save_root = "/tmp/iwm_cat"
     os.makedirs(cfg.save_root, exist_ok=True)
     rank = int(os.getenv("RANK", 0))
@@ -68,14 +68,14 @@ def main() -> int:
     cfg.num_inference_steps, cfg.action_num_inference_steps = 2, 4
     print("building server ...", flush=True)
     server = S.VA_Server(cfg)
-    from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+    from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
     RingKVAddressing().install(S, type(server))
     for n in install_conditioning_prefill(S, type(server)):
         print(f"  installed {n}", flush=True)
     for n in install_debug_dump_elision(S):
         print(f"  installed {n}", flush=True)
     if a.conv_layout == "ndhwc":
-        from instinctwm.backends.conv.apply import install_conv_layout
+        from instinctflash.backends.conv.apply import install_conv_layout
         for line in install_conv_layout(server):
             print(f"  {line}", flush=True)
 
@@ -117,7 +117,7 @@ def main() -> int:
             fn = f.filename
             if "/torch/" in fn or "probe_cat_sites" in fn:
                 continue
-            tag = ("iwm" if "/instinctwm/" in fn else
+            tag = ("iwm" if "/instinctflash/" in fn else
                    "lingbot" if "/wan_va/" in fn or "/lingbot" in fn else
                    "diffusers" if "diffusers" in fn else "other")
             return f"[{tag}] {Path(fn).name}:{f.lineno} {f.name}"

@@ -1,12 +1,12 @@
 ---
 license: apache-2.0
-library_name: instinctwm
+library_name: instinctflash
 tags:
   - world-action-model
   - robotics
 ---
 
-# tiny-wam-2v2a — a real, runnable InstinctWM checkpoint
+# tiny-wam-2v2a — a real, runnable InstinctFlash checkpoint
 
 **327 KB of real weights.** Not a fixture: `model.safetensors` loads, the module runs a forward pass,
 and it produces an action chunk. It is published so the whole user-facing workflow can be executed
@@ -38,7 +38,7 @@ Nine steps, each checked:
 
 ## What makes this a real test of the platform
 
-**The adapter is not built in.** `examples/tiny_wam/adapter.py` lives outside `instinctwm/`, nothing
+**The adapter is not built in.** `examples/tiny_wam/adapter.py` lives outside `instinctflash/`, nothing
 in the runtime imports it, and step 4 asserts `tiny-wam` is absent from `available_models()` *before*
 registering it. An author with their own backbone does exactly this.
 

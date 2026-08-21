@@ -12,7 +12,7 @@ endpoint error between them, while k=248-255 quietly owned 44%.
 The honest per-head quantity is the state error a head injects into the jump: h_k * RMSE_k. That is
 what this ranks by.
 
-    $IWM_SERVER_PY analyse_pdd_heads.py --run /home/ubuntu/iwm_results/pdd_heads_run1
+    $IFL_SERVER_PY analyse_pdd_heads.py --run /home/ubuntu/iwm_results/pdd_heads_run1
 """
 from __future__ import annotations
 
@@ -23,8 +23,8 @@ import os
 import sys
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-for p in (IWM_ROOT, os.path.join(IWM_ROOT, "instinct-pdd", "src"),
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+for p in (IFL_ROOT, os.path.join(IFL_ROOT, "instinct-pdd", "src"),
           os.path.join(os.environ.get("LINGBOT_ROOT", "/home/ubuntu/lingbot-va"), "wan_va")):
     if p not in sys.path:
         sys.path.insert(0, p)

@@ -26,8 +26,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import torch  # noqa: E402
 
-from instinctwm.runtime.block_heads import fold_heads  # noqa: E402
-from instinctwm.runtime.schedule import (  # noqa: E402
+from instinctflash.runtime.block_heads import fold_heads  # noqa: E402
+from instinctflash.runtime.schedule import (  # noqa: E402
     block_start_timesteps,
     block_weights,
     conditioning_timesteps,
@@ -179,7 +179,7 @@ def test_scheduler_state_is_restored():
             self.sigmas = torch.linspace(1.0, 0.0, n + 1)
             self.timesteps = self.sigmas * self.num_train_timesteps
 
-    from instinctwm.runtime.schedule import sigmas_from_scheduler
+    from instinctflash.runtime.schedule import sigmas_from_scheduler
     sch = FakeScheduler()
     before = sch.sigmas.clone()
     out = sigmas_from_scheduler(sch, 8)

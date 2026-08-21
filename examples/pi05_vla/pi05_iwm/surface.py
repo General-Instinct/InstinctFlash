@@ -1,7 +1,7 @@
 """The Layer-5 surface for pi05: where the generic passes are allowed to act on this model.
 
 A checkpoint adapter says WHAT pi05 is (`adapter.py`). This says WHERE a pass may cut into it. The
-split matters because `instinctwm/passes/graph_capture.py` is already generic -- it keys graphs on a
+split matters because `instinctflash/passes/graph_capture.py` is already generic -- it keys graphs on a
 structural signature, binds inputs to stable addresses, refuses regions that mutate host state, and
 falls back to eager when it refuses. None of that needed writing again. What it cannot know is which
 callable of pi05's is the capture unit, and how to flatten a `DynamicCache`. That is what is here.
@@ -67,8 +67,8 @@ from __future__ import annotations
 import torch
 import torch.nn.functional as F
 
-from instinctwm.executors.binding import TreeBinder
-from instinctwm.passes.interface import RewriteKind, Site, SiteKind
+from instinctflash.executors.binding import TreeBinder
+from instinctflash.passes.interface import RewriteKind, Site, SiteKind
 
 CAPTURE_UNIT_ID = "pi05.denoise_step"
 
@@ -174,7 +174,7 @@ class Pi05Surface:
 
     # -- AdapterSurface --------------------------------------------------------------------------
     #: Publish the denoise step as capturable. OFF, on evidence -- see the module docstring. Set
-    #: IWM_PI05_CAPTURE=1 to reproduce the negative result or to test a fix; it is an opt-in rather
+    #: IFL_PI05_CAPTURE=1 to reproduce the negative result or to test a fix; it is an opt-in rather
     #: than a deletion because the measurement is the useful artifact and it should stay runnable.
     #:
     #: The decision, stated plainly: replay is 1.53x on the chunk and the actions are wrong. With the
@@ -183,7 +183,7 @@ class Pi05Surface:
     #: integration. 1.139e-02 is not bit-exact and no non-inferiority evidence exists for it, so there
     #: is no tier under which it can ship. A VLA that is 1.5x faster and moves the arm somewhere else
     #: is not a faster VLA.
-    CAPTURE_OPT_IN = "IWM_PI05_CAPTURE"
+    CAPTURE_OPT_IN = "IFL_PI05_CAPTURE"
 
     def sites(self, kind):
         import os

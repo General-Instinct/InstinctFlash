@@ -32,7 +32,7 @@ def main() -> int:
 
     slug = "models--" + a.package.replace("/", "--")
     caches = [HUB / slug, HUB / "models--robbyant--lingbot-va-posttrain-robotwin",
-              Path.home() / ".cache" / "instinctwm"]
+              Path.home() / ".cache" / "instinctflash"]
     if a.cold:
         for c in caches:
             if c.exists():
@@ -40,7 +40,7 @@ def main() -> int:
         print("cold: caches removed")
     before = sum(dirsize(c) for c in caches)
 
-    from instinctwm import Runtime, describe
+    from instinctflash import Runtime, describe
 
     t0 = time.time()
     d = describe(a.package)

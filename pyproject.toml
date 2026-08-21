@@ -5,7 +5,7 @@ requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "instinctwm"
+name = "instinctflash"
 version = "0.1.0"
 description = "Load, optimize, and deploy world-action models"
 readme = "README.md"
@@ -38,20 +38,20 @@ eval = ["numpy>=1.21"]
 # THE CLI. "install the package, give it a model id, run" should not require writing a program, and
 # four of the five verbs answer questions you want answered before committing to a download or a GPU.
 [project.scripts]
-instinctwm = "instinctwm.cli:main"
+instinctflash = "instinctflash.cli:main"
 
 # Our own passes are advertised the same way a third party's are, so the in-tree path and the
 # external path are the same path. `passes/registry.py` also registers these as builtins, which is
 # what keeps a source checkout working before it is installed.
-[project.entry-points."instinctwm.passes"]
-lingbot = "instinctwm.passes.lingbot:default_passes"
+[project.entry-points."instinctflash.passes"]
+lingbot = "instinctflash.passes.lingbot:default_passes"
 
 [project.urls]
 Homepage = "https://general-instinct.com/"
-Repository = "https://github.com/general-instinct/InstinctWM"
+Repository = "https://github.com/general-instinct/InstinctFlash"
 
 [tool.setuptools.packages.find]
-include = ["instinctwm*"]
+include = ["instinctflash*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

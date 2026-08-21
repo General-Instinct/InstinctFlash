@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Cosmos3-Edge MoT stack under the InstinctWM engine, at the REAL served width.
+"""Cosmos3-Edge MoT stack under the InstinctFlash engine, at the REAL served width.
 
-Replaces the toy config in instinctwm/adapters/cosmos3.py (hidden 512 / head_dim 64) with the
+Replaces the toy config in instinctflash/adapters/cosmos3.py (hidden 512 / head_dim 64) with the
 shipped Cosmos3-Edge text-tower geometry read off nvidia/Cosmos3-Edge config.json:
 
     hidden 2048, 28 layers, 16 q heads, 8 kv heads, head_dim 128, intermediate 9216
@@ -22,7 +22,7 @@ import sys
 import time
 
 sys.path.insert(0, "/home/ubuntu/cosmos-framework")
-sys.path.insert(0, "/home/ubuntu/Code/InstinctWM")
+sys.path.insert(0, "/home/ubuntu/Code/InstinctFlash")
 
 import torch
 
@@ -30,7 +30,7 @@ import torch
 EDGE = dict(hidden_size=2048, num_hidden_layers=28, num_attention_heads=16,
             num_key_value_heads=8, head_dim=128, intermediate_size=9216, rms_norm_eps=1e-5)
 
-# Served pack geometry, as declared in instinctwm/runtime/state/manifests.py:cosmos3_edge_manifest.
+# Served pack geometry, as declared in instinctflash/runtime/state/manifests.py:cosmos3_edge_manifest.
 SAMPLE_LENS = [567]
 SPLIT_LENS = [111, 456]          # und (text) prefix, gen (video+action) body
 ATTN_MODES = ["causal", "full"]
@@ -104,7 +104,7 @@ def main() -> int:
 
     sha = os.popen("git -C /home/ubuntu/cosmos-framework rev-parse --short HEAD").read().strip()
     print("=" * 92)
-    print("Cosmos3-Edge MoT stack -- InstinctWM engine, real served width")
+    print("Cosmos3-Edge MoT stack -- InstinctFlash engine, real served width")
     print("=" * 92)
     print(f"  torch {torch.__version__}  cudnn {torch.backends.cudnn.version()}  "
           f"{torch.cuda.get_device_name(0)}")
@@ -118,7 +118,7 @@ def main() -> int:
 
     # ---- attention backend -------------------------------------------------------------
     if args.shim:
-        from instinctwm.adapters.cosmos3 import use_torch_sdpa
+        from instinctflash.adapters.cosmos3 import use_torch_sdpa
         backend = use_torch_sdpa()
     else:
         from cosmos_framework.model.attention.backends import choose_backend
@@ -159,8 +159,8 @@ def main() -> int:
         return x
 
     # ---- 1. dependency derivation ------------------------------------------------------
-    from instinctwm.adapters.cosmos3 import build_plan, state_roots
-    from instinctwm.planners.deps import derive_signature
+    from instinctflash.adapters.cosmos3 import build_plan, state_roots
+    from instinctflash.planners.deps import derive_signature
 
     print("\n--- 1. dependency signature (engine, unchanged) ------------------------------")
     with torch.no_grad():
@@ -171,7 +171,7 @@ def main() -> int:
     print(f"  capturable: {cap} ({why})")
 
     # ---- 2. one Plan, both executors ---------------------------------------------------
-    from instinctwm.executors.executor import EagerExecutor, GraphExecutor
+    from instinctflash.executors.executor import EagerExecutor, GraphExecutor
 
     print("\n--- 2. one Plan under EagerExecutor and GraphExecutor ------------------------")
     plan = build_plan(layers, mask, pos)

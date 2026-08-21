@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from instinctwm.verify.released import (  # noqa: E402
+from instinctflash.verify.released import (  # noqa: E402
     AVAILABLE, DISPOSITIONS, NOT_RECOMMENDED, RELEASED, SERVED, disposition_of,
     served_tier, shipped_configuration, shipped_pids,
 )
@@ -100,7 +100,7 @@ def test_not_recommended_passes_say_so_where_a_reader_will_look():
 def test_readme_states_the_same_configuration():
     print("\n=== 5. ARCHITECTURE.md describes the shipped configuration, and describes THIS one ===")
     # This used to assert against the README. The README is now the product front page -- what
-    # InstinctWM is, how to install it, how to load a model, how to get actions -- and a table of
+    # InstinctFlash is, how to install it, how to load a model, how to get actions -- and a table of
     # serving CLI flags is not that. The invariant is unchanged and still enforced: whatever document
     # states the shipped configuration must state THIS one.
     text = (ROOT / "ARCHITECTURE.md").read_text()
@@ -143,7 +143,7 @@ def test_every_pass_module_is_classified():
         "substrate", "conditioning_prefill", "hoist_invariant_casts", "graph_capture",
         "stable_pools", "ring_kv", "conv_layout_ndhwc",
     }
-    d = ROOT / "instinctwm" / "passes" / "lingbot"
+    d = ROOT / "instinctflash" / "passes" / "lingbot"
     for f in sorted(d.glob("*.py")):
         if f.stem == "__init__":
             continue

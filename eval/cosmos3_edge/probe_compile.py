@@ -26,7 +26,7 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, "/home/ubuntu/cosmos-framework")
-sys.path.insert(0, "/home/ubuntu/Code/InstinctWM")
+sys.path.insert(0, "/home/ubuntu/Code/InstinctFlash")
 
 import torch
 from torch.profiler import ProfilerActivity, profile
@@ -86,8 +86,8 @@ def main() -> int:
         ct = causal_type.value if causal_type is not None and hasattr(causal_type, "value") else -1
         return torch.ops.iwm.cosmos_attn(q, k, v, bool(is_causal), int(ct))
 
-    from instinctwm.adapters.cosmos3 import build_plan
-    from instinctwm.executors.executor import GraphExecutor
+    from instinctflash.adapters.cosmos3 import build_plan
+    from instinctflash.executors.executor import GraphExecutor
 
     def stack(inp):
         x = inp

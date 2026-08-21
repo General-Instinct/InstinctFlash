@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export the real LingBot-VA training output as a publishable InstinctWM package.
+"""Export the real LingBot-VA training output as a publishable InstinctFlash package.
 
     THE 23 GB DIRECTORY IS A TRAINING OUTPUT, NOT A PUBLISHED PACKAGE.
 
@@ -13,20 +13,20 @@ the frozen stack referenced by repo id rather than vendored.
 So this script produces:
 
     lingbot-va/
-      instinctwm.json                              the declaration (execution + provenance)
+      instinctflash.json                              the declaration (execution + provenance)
       config.json                                  the transformer's own config, copied
       diffusion_pytorch_model-0000N-of-0000M.safetensors + .index.json    the TRAINABLE weights only
       README.md                                    generated model card
       LICENSE                                      copied if present upstream
-      instinctwm_certificate.json                  optional, from verify/released.py
-      instinctwm_benchmark.json                    optional, from verify/released.py
+      instinctflash_certificate.json                  optional, from verify/released.py
+      instinctflash_benchmark.json                    optional, from verify/released.py
 
 and nothing else. The VAE, text encoder and tokenizer are NOT copied: they are frozen, they are the
 same bytes for every fine-tune of this backbone, and duplicating 13 GB of them into every published
 checkpoint is the cost the pointer avoids.
 
     python tools/export_lingbot_hub_package.py --out /home/ubuntu/hub/lingbot-va
-    python -m instinctwm.descriptors.package /home/ubuntu/hub/lingbot-va
+    python -m instinctflash.descriptors.package /home/ubuntu/hub/lingbot-va
     hf upload general-instinct/lingbot-va /home/ubuntu/hub/lingbot-va
 """
 
@@ -69,7 +69,7 @@ def build_declaration(*, model_id: str, base_weights: str, param_bytes: int,
         "base_weights": base_weights,
         "param_bytes": param_bytes,
     }
-    doc = {"instinctwm_schema": 1, "execution": execution}
+    doc = {"instinctflash_schema": 1, "execution": execution}
     if provenance:
         doc["provenance"] = {
             "note": "FOR HUMANS. The runtime never reads this block; publishability() proves the "
@@ -83,7 +83,7 @@ def build_declaration(*, model_id: str, base_weights: str, param_bytes: int,
 def collect_evidence() -> tuple[dict | None, dict | None]:
     """Certificate and benchmark, from the release registry. Both optional by design."""
     try:
-        from instinctwm.verify.released import RELEASED, disposition_of, SERVED
+        from instinctflash.verify.released import RELEASED, disposition_of, SERVED
     except Exception:                                          # noqa: BLE001
         return None, None
     cert = None
@@ -130,13 +130,13 @@ The served chain is therefore **{cert['tier']}**, not bit-exact end to end. That
 certificate is for.
 """
     return f"""---
-library_name: instinctwm
+library_name: instinctflash
 pipeline_tag: robotics
 license: apache-2.0
 tags:
   - world-action-model
   - robotics
-  - instinctwm
+  - instinctflash
 inference: false
 base_model: {base_weights}
 base_model_relation: finetune
@@ -144,7 +144,7 @@ base_model_relation: finetune
 
 # {model_id.split('/')[-1]}
 
-A LingBot-VA world-action model packaged for the [InstinctWM](https://github.com/General-Instinct/InstinctWM)
+A LingBot-VA world-action model packaged for the [InstinctFlash](https://github.com/General-Instinct/InstinctFlash)
 runtime. **This package contains the trainable transformer only.** The frozen stack — VAE, text
 encoder, tokenizer — is referenced by repo id and resolved at load:
 
@@ -155,11 +155,11 @@ execution.base_weights = "{base_weights}"
 ## Quick start
 
 ```bash
-pip install instinctwm
+pip install instinctflash
 ```
 
 ```python
-from instinctwm import Runtime
+from instinctflash import Runtime
 
 runtime = Runtime.from_pretrained("{model_id}")
 runtime.reset(prompt="put the bottle in the dustbin")
@@ -182,7 +182,7 @@ episode for each prediction until multi-phase cycles land.
 Inspect it first, without downloading {ex.get('param_bytes', 0) / 1e9:.1f} GB of weights:
 
 ```python
-from instinctwm import describe
+from instinctflash import describe
 describe("{model_id}")
 ```
 
@@ -219,9 +219,9 @@ would be per-checkpoint tuning living in the wrong place.
 {eval_block}
 ## Limitations
 
-- Requires an adapter registered for backbone `{ex['backbone']}`. InstinctWM ships one.
+- Requires an adapter registered for backbone `{ex['backbone']}`. InstinctFlash ships one.
 - The frozen stack is fetched from `{base_weights}`; that repo must remain reachable.
-- Latency figures in the InstinctWM repository are measured on specific hardware and do not transfer.
+- Latency figures in the InstinctFlash repository are measured on specific hardware and do not transfer.
 """
 
 
@@ -280,18 +280,18 @@ def main() -> int:
     decl = build_declaration(model_id=a.model_id, base_weights=a.base_weights, param_bytes=total,
                              nfe_video=a.nfe_video, nfe_action=a.nfe_action,
                              provenance=not a.no_provenance)
-    (out / "instinctwm.json").write_text(json.dumps(decl, indent=2) + "\n")
-    print(f"  {'instinctwm.json':52} {(out / 'instinctwm.json').stat().st_size:>15,} bytes")
+    (out / "instinctflash.json").write_text(json.dumps(decl, indent=2) + "\n")
+    print(f"  {'instinctflash.json':52} {(out / 'instinctflash.json').stat().st_size:>15,} bytes")
 
     cert, bench = collect_evidence()
     if cert:
-        (out / "instinctwm_certificate.json").write_text(json.dumps(cert, indent=2) + "\n")
-        print(f"  {'instinctwm_certificate.json':52} "
-              f"{(out / 'instinctwm_certificate.json').stat().st_size:>15,} bytes")
+        (out / "instinctflash_certificate.json").write_text(json.dumps(cert, indent=2) + "\n")
+        print(f"  {'instinctflash_certificate.json':52} "
+              f"{(out / 'instinctflash_certificate.json').stat().st_size:>15,} bytes")
     if bench:
-        (out / "instinctwm_benchmark.json").write_text(json.dumps(bench, indent=2) + "\n")
-        print(f"  {'instinctwm_benchmark.json':52} "
-              f"{(out / 'instinctwm_benchmark.json').stat().st_size:>15,} bytes")
+        (out / "instinctflash_benchmark.json").write_text(json.dumps(bench, indent=2) + "\n")
+        print(f"  {'instinctflash_benchmark.json':52} "
+              f"{(out / 'instinctflash_benchmark.json').stat().st_size:>15,} bytes")
 
     card = generate_card(model_id=a.model_id, base_weights=a.base_weights, decl=decl,
                          cert=cert, bench=bench)
@@ -302,7 +302,7 @@ def main() -> int:
           f"({written / 1e9:.1f} GB, vs {(total + frozen) / 1e9:.1f} GB for the training output)")
 
     # -- the gates, run here so a bad package is never uploaded ---------------------------------
-    from instinctwm.descriptors.package import publishability, validate_package
+    from instinctflash.descriptors.package import publishability, validate_package
     print("\n" + "=" * 78)
     rep = validate_package(out)
     print(rep.explain())

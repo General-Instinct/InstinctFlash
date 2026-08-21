@@ -22,19 +22,19 @@ import time
 
 # Repo root from this file, matching the convention in test_deps.py. The absolute path
 # this replaced stopped resolving when the tree moved, and the only symptom was
-# ModuleNotFoundError: No module named 'instinctwm'.
+# ModuleNotFoundError: No module named 'instinctflash'.
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import torch  # noqa: E402
 
-import instinctwm.backends.torch_fused as _kernels  # noqa: F401,E402  (registers them)
-import instinctwm.backends.triton_residual as _tri  # noqa: F401,E402  (registers the Triton one)
-from instinctwm.backends.lingbot_regions import (  # noqa: E402
+import instinctflash.backends.torch_fused as _kernels  # noqa: F401,E402  (registers them)
+import instinctflash.backends.triton_residual as _tri  # noqa: F401,E402  (registers the Triton one)
+from instinctflash.backends.lingbot_regions import (  # noqa: E402
     POST_ATTENTION, PRE_ATTENTION, lingbot_fusion_descriptor)
-from instinctwm.backends.registry import (  # noqa: E402
+from instinctflash.backends.registry import (  # noqa: E402
     REGISTRY, audit_tier, check_legality, derive_tier)
-from instinctwm.backends.regions import FusibleRegion, OpKind, OpSpec  # noqa: E402
-from instinctwm.passes.contract import DeviceProfile, HardwareReq, Tier  # noqa: E402
+from instinctflash.backends.regions import FusibleRegion, OpKind, OpSpec  # noqa: E402
+from instinctflash.passes.contract import DeviceProfile, HardwareReq, Tier  # noqa: E402
 
 SHAPE = (2, 240, 3072)          # LingBot video-stream hidden states
 

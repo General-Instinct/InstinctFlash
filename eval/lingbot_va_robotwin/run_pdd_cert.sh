@@ -31,18 +31,18 @@ d=json.load(open('$CKPT/delta.json'))
 sys.exit(0 if d.get('coverage_gate_pass') else 1)" || {
   echo "REFUSING: $CKPT did not pass the coverage gate" >&2; exit 2; }
 
-LOGD="$IWM_LOG_DIR/pdd_cert"; mkdir -p "$LOGD"
+LOGD="$IFL_LOG_DIR/pdd_cert"; mkdir -p "$LOGD"
 
 start_arm() {   # start_arm <label> <first_gpu> <n_gpus> <extra args...>
   local label=$1 g0=$2 n=$3; shift 3
   for i in $(seq 0 $((n - 1))); do
     local gpu=$((g0 + i)) port=$((29056 + g0 + i))
-    # SHIPPED CONFIGURATION -- must equal instinctwm.verify.released.shipped_configuration().
+    # SHIPPED CONFIGURATION -- must equal instinctflash.verify.released.shipped_configuration().
     # tests/test_shipped_config.py fails if it drifts. Do not edit here alone.
-    ( cd "$LINGBOT_ROOT" && nohup env CUDA_VISIBLE_DEVICES=$gpu PYTHONPATH="$IWM_FA_SHIM_DIR" \
-        LINGBOT_CKPT="$LINGBOT_CKPT" setsid "$IWM_SERVER_PY" -m torch.distributed.run \
+    ( cd "$LINGBOT_ROOT" && nohup env CUDA_VISIBLE_DEVICES=$gpu PYTHONPATH="$IFL_FA_SHIM_DIR" \
+        LINGBOT_CKPT="$LINGBOT_CKPT" setsid "$IFL_SERVER_PY" -m torch.distributed.run \
         --nproc_per_node 1 --master_port $((29800 + g0 + i)) \
-        "$IWM_ROOT/eval/lingbot_va_robotwin/serve_variant.py" --config-name robotwin \
+        "$IFL_ROOT/eval/lingbot_va_robotwin/serve_variant.py" --config-name robotwin \
         --port $port --save_root /home/ubuntu/iwm_vis/pdd_cert \
         --no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout \
         "$@" > "$LOGD/${label}_$port.log" 2>&1 & )
@@ -64,7 +64,7 @@ up=0; for p in $(seq 29056 29063); do iwm_port_busy $p && up=$((up + 1)); done
 
 # run_paired.sh drives both arms over the SAME tasks and seeds, which is what makes the pairing --
 # and therefore exact McNemar on the discordant pairs -- valid.
-./run_paired.sh "${IWM_CERT_RUN:-pdd_cert}" "$N" \
+./run_paired.sh "${IFL_CERT_RUN:-pdd_cert}" "$N" \
   0:29056,1:29057,2:29058,3:29059 \
   4:29060,5:29061,6:29062,7:29063 \
   "${TASKS[@]}"

@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from instinctwm.descriptors.checkpoint import (  # noqa: E402
+from instinctflash.descriptors.checkpoint import (  # noqa: E402
     FORBIDDEN_IN_EXECUTION, SCHEMA_VERSION, load_declaration, provenance_of,
 )
 
@@ -68,8 +68,8 @@ PROVENANCE_B = {
 
 def _write(d: Path, execution: dict, provenance: dict) -> Path:
     d.mkdir(parents=True, exist_ok=True)
-    (d / "instinctwm.json").write_text(json.dumps(
-        {"instinctwm_schema": SCHEMA_VERSION, "execution": execution, "provenance": provenance},
+    (d / "instinctflash.json").write_text(json.dumps(
+        {"instinctflash_schema": SCHEMA_VERSION, "execution": execution, "provenance": provenance},
         indent=2))
     (d / "config.json").write_text(json.dumps({"architectures": ["WanTransformer3DModel"]}))
     (d / "model.safetensors").write_bytes(b"\x00")     # presence is what the layout checks
@@ -107,7 +107,7 @@ def test_forbidden_keys_are_refused_at_the_boundary():
 
 def test_planning_is_invariant_to_provenance():
     print("\n=== 3. THE PLATFORM CLAIM: identical execution -> identical plan ===")
-    from instinctwm.descriptors.package import from_pretrained
+    from instinctflash.descriptors.package import from_pretrained
     with tempfile.TemporaryDirectory() as td:
         a = from_pretrained(_write(Path(td) / "a", EXECUTION, PROVENANCE_A))
         b = from_pretrained(_write(Path(td) / "b", EXECUTION, PROVENANCE_B))
@@ -117,8 +117,8 @@ def test_planning_is_invariant_to_provenance():
         for word in ("pdd", "distill", "teacher", "dataset", "recipe", "adamw"):
             check(word not in blob.lower(), f"no capability token mentions {word!r}")
 
-        from instinctwm.adapters.base import AdapterSpec
-        from instinctwm.planners.planner import Optimizer
+        from instinctflash.adapters.base import AdapterSpec
+        from instinctflash.planners.planner import Optimizer
         spec = AdapterSpec(model_id=a.model_id, param_bytes=1, streams=(), phases=(), guidance={})
         opt = Optimizer(passes=[])
         pa = opt.compile(spec, capabilities=a.capabilities()).explain()
@@ -128,8 +128,8 @@ def test_planning_is_invariant_to_provenance():
 
 def test_a_pass_is_admitted_by_capability_not_by_recipe():
     print("\n=== 4. capability gating: declared, or the pass is skipped ===")
-    from instinctwm.adapters.base import AdapterSpec
-    from instinctwm.planners.planner import Optimizer, PassResult, Tier
+    from instinctflash.adapters.base import AdapterSpec
+    from instinctflash.planners.planner import Optimizer, PassResult, Tier
 
     class NeedsFoldableHeads:
         name = "needs_foldable_heads"
@@ -153,7 +153,7 @@ def test_a_pass_is_admitted_by_capability_not_by_recipe():
 
 def test_publishable_without_training_internals():
     print("\n=== 5. a checkpoint can be published with provenance stripped ===")
-    from instinctwm.descriptors.package import publishability, validate_package
+    from instinctflash.descriptors.package import publishability, validate_package
     with tempfile.TemporaryDirectory() as td:
         d = _write(Path(td) / "pub", EXECUTION, PROVENANCE_A)
         ok, findings = publishability(d)
@@ -166,7 +166,7 @@ def test_publishable_without_training_internals():
 
 def test_legacy_is_a_compatibility_layer_only():
     print("\n=== 6. delta.json still serves, and migrates ===")
-    from instinctwm.descriptors.package import migrate_legacy, validate_package
+    from instinctflash.descriptors.package import migrate_legacy, validate_package
     with tempfile.TemporaryDirectory() as td:
         d = Path(td) / "legacy"
         d.mkdir()
@@ -181,7 +181,7 @@ def test_legacy_is_a_compatibility_layer_only():
               "and its capability survives the mapping")
         rep = validate_package(d)
         check(any("legacy" in n for n in rep.notes), "validate_package flags it as legacy")
-        from instinctwm.descriptors.package import publishability
+        from instinctflash.descriptors.package import publishability
         ok, _ = publishability(d)
         check(not ok, "and it is NOT publishable -- one flat namespace cannot hide training keys")
         doc = migrate_legacy(d)
@@ -198,7 +198,7 @@ def test_the_shipped_example_package_validates():
     tests/test_shipped_config.py derives from released.py instead of restating it.
     """
     print("\n=== 7. examples/checkpoint/wm-blockheads-2v4a validates ===")
-    from instinctwm.descriptors.package import from_pretrained, publishability, validate_package
+    from instinctflash.descriptors.package import from_pretrained, publishability, validate_package
     d = ROOT / "examples" / "checkpoint" / "wm-blockheads-2v4a"
     check(d.is_dir(), "the example package exists")
     rep = validate_package(d)
@@ -230,7 +230,7 @@ def test_no_runtime_code_branches_on_a_model_or_recipe_name():
     dirs = ("runtime", "planners", "executors", "passes", "backends", "descriptors", "adapters")
     offenders = []
     for sub in dirs:
-        for f in sorted((ROOT / "instinctwm" / sub).rglob("*.py")):
+        for f in sorted((ROOT / "instinctflash" / sub).rglob("*.py")):
             if "__pycache__" in str(f):
                 continue
             src = f.read_text()
@@ -259,7 +259,7 @@ def test_no_runtime_code_branches_on_a_model_or_recipe_name():
           f"{len(offenders)} found")
 
     # and the one allowance is a real quarantine, not a loophole
-    from instinctwm.runtime.state import manifests as M
+    from instinctflash.runtime.state import manifests as M
     check(set(M.REGISTRY) <= {"lingbot-va", "cosmos3-edge"},
           "REGISTRY contains only supported models", str(sorted(M.REGISTRY)))
     unval = set(getattr(M, "UNVALIDATED_DESIGNS", {}))

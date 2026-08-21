@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The PDD grid must equal LingBot-VA's real serving schedule, to the float.
 
-Lives in InstinctWM rather than in the submodule on purpose: it imports LingBot's scheduler, and
+Lives in InstinctFlash rather than in the submodule on purpose: it imports LingBot's scheduler, and
 `instinct-pdd` must stay free of any LingBot dependency. Keeping this check on this side is what lets
 both statements be true at once.
 
@@ -11,7 +11,7 @@ the broken one was 827.6, so the training grid clustered its steps at the DATA e
 clusters them at the NOISE end. Nothing about that is visible in a loss curve: the student trains
 happily on intervals it will never be asked to jump.
 
-    $IWM_SERVER_PY tests/test_pdd_lingbot_parity.py
+    $IFL_SERVER_PY tests/test_pdd_lingbot_parity.py
 """
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 # The submodule is not installed; add it explicitly rather than relying on import order
-# through instinctwm/__init__.py, since these tests import instinct_pdd directly.
+# through instinctflash/__init__.py, since these tests import instinct_pdd directly.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "instinct-pdd" / "src"))
 sys.path.insert(0, os.path.join(os.environ.get("LINGBOT_ROOT", "/home/ubuntu/lingbot-va"), "wan_va"))
 

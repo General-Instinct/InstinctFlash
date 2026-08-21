@@ -22,7 +22,7 @@ non-inferiority. This probe reports the actual delta on the encoder's output so 
 is known before anyone argues about it -- the encoded latents feed the KV cache, so the difference
 propagates to actions.
 
-    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY \\
+    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IFL_FA_SHIM_DIR $IFL_SERVER_PY \\
         -m torch.distributed.run --nproc_per_node 1 --master_port 29990 probe_vae_channels_last.py
 """
 from __future__ import annotations
@@ -34,14 +34,14 @@ import sys
 import time
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
-from instinctwm.runtime.lingbot_install import (  # noqa: E402
+from instinctflash.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_fsdp_elision,
 )
 
@@ -102,7 +102,7 @@ def main() -> int:
         return 2
 
     S = import_lingbot_server()
-    cfg = S.VA_CONFIGS[os.environ.get("IWM_CFG", "robotwin")]
+    cfg = S.VA_CONFIGS[os.environ.get("IFL_CFG", "robotwin")]
     cfg.save_root = "/tmp/iwm_vae_cl"
     os.makedirs(cfg.save_root, exist_ok=True)
     rank = int(os.getenv("RANK", 0))

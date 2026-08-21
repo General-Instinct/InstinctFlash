@@ -13,10 +13,10 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from instinctwm.train.recipe import (
+from instinctflash.train.recipe import (
     Capabilities, DescriptorDelta, Environment, RecipeRejected, admit, prepare,
 )
-from instinctwm.train.recipes.pdd import ParallelDecoding
+from instinctflash.train.recipes.pdd import ParallelDecoding
 
 results = []
 
@@ -138,7 +138,7 @@ def main() -> int:
     # earns a check here is the registry's scope: one recipe, deliberately. Declaration-only scm /
     # rcm / dmd2 entries were removed rather than kept as future-proofing.
     print("\n=== 5. the registry is scoped to what is implemented ===")
-    from instinctwm.train.recipes import REGISTRY, available, build as build_recipe
+    from instinctflash.train.recipes import REGISTRY, available, build as build_recipe
     check("the registry holds exactly the implemented recipe",
           available() == ["pdd"], str(available()))
     try:

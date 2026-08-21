@@ -16,7 +16,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from instinctwm import (  # noqa: E402  (importable only after the sys.path insert above)
+from instinctflash import (  # noqa: E402  (importable only after the sys.path insert above)
     AdapterSpec,
     CommitMode,
     DeploymentSpec,
@@ -31,7 +31,7 @@ from instinctwm import (  # noqa: E402  (importable only after the sys.path inse
     default_passes,
     load,
 )
-from instinctwm.passes.lingbot.cfg_elision import CFGBranchElision
+from instinctflash.passes.lingbot.cfg_elision import CFGBranchElision
 
 LINGBOT = load("lingbot-va-posttrain-robotwin").spec()
 SINGLE_GPU = DeploymentSpec()

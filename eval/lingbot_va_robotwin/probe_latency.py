@@ -2,7 +2,7 @@
 """Measure the batch-1 closed-loop cost model of a LingBot-VA policy server.
 
 This is the latency counterpart to `check_prompt_parity.py`: that one says the server is
-*correct*, this one says what it *costs*. Every InstinctWM optimization is scored against
+*correct*, this one says what it *costs*. Every InstinctFlash optimization is scored against
 the numbers this produces, so it replays the real episode message sequence rather than
 timing an isolated forward pass:
 

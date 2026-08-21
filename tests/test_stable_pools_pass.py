@@ -21,8 +21,8 @@ sys.path += [os.path.join(LINGBOT_ROOT, "wan_va"), LINGBOT_ROOT,
 
 import torch
 
-from instinctwm.passes.interface import SiteKind, run_pass
-from instinctwm.passes.stable_pools import StablePools
+from instinctflash.passes.interface import SiteKind, run_pass
+from instinctflash.passes.stable_pools import StablePools
 
 DEV, DT = torch.device("cuda"), torch.bfloat16
 results = []
@@ -31,7 +31,7 @@ results = []
 def pass_is_model_free() -> bool:
     import ast
     path = os.path.join(os.path.dirname(__file__), "..",
-                        "instinctwm", "passes", "stable_pools.py")
+                        "instinctflash", "passes", "stable_pools.py")
     tree = ast.parse(open(path).read())
     for n in ast.walk(tree):
         if isinstance(n, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -51,7 +51,7 @@ def lingbot_cases() -> bool:
     print("\n=== LingBot-VA: real KV pools ===")
     import trace_block
     from trace_block import DIM, HEADS
-    from instinctwm.adapters.lingbot import LingBotSurface
+    from instinctflash.adapters.lingbot import LingBotSurface
 
     B, KV, NL = 2, 512, 3
     blocks = []
@@ -115,7 +115,7 @@ def lingbot_cases() -> bool:
 
 def decline_case() -> bool:
     print("\n=== synthetic: dynamic extent must be declined ===")
-    from instinctwm.adapters.synthetic import SyntheticSurface
+    from instinctflash.adapters.synthetic import SyntheticSurface
 
     surf = SyntheticSurface(DEV)
     p = StablePools()
@@ -130,7 +130,7 @@ def decline_case() -> bool:
 
 def noop_case() -> bool:
     print("\n=== Cosmos3-Edge: no persistent allocations at all ===")
-    from instinctwm.adapters.cosmos3 import Cosmos3Surface
+    from instinctflash.adapters.cosmos3 import Cosmos3Surface
 
     surf = Cosmos3Surface(layers=[], mask=None, pos=None)
     p = StablePools()

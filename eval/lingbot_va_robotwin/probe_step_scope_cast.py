@@ -11,7 +11,7 @@ TWO THINGS MUST BOTH HOLD, and only one of them is about speed:
   2. The casts are actually gone. A pass that is bit-exact because it did nothing is the easy way to
      pass check 1, so the `_to_copy` count at model.py:524 is measured before and after.
 
-    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY \\
+    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IFL_FA_SHIM_DIR $IFL_SERVER_PY \\
         -m torch.distributed.run --nproc_per_node 1 --master_port 29994 probe_step_scope_cast.py
 """
 from __future__ import annotations
@@ -23,15 +23,15 @@ import sys
 import traceback
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 from torch.utils._python_dispatch import TorchDispatchMode  # noqa: E402
 
-from instinctwm.runtime.lingbot_install import (  # noqa: E402
+from instinctflash.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_conditioning_prefill, install_debug_dump_elision,
     install_fsdp_elision,
 )
@@ -66,18 +66,18 @@ class CountCasts(TorchDispatchMode):
 
 def build(S, cfg, hoist: bool):
     server = S.VA_Server(cfg)
-    from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+    from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
     RingKVAddressing().install(S, type(server))
     for _ in install_conditioning_prefill(S, type(server)):
         pass
     for _ in install_debug_dump_elision(S):
         pass
-    from instinctwm.backends.conv.apply import install_conv_layout
+    from instinctflash.backends.conv.apply import install_conv_layout
     for _ in install_conv_layout(server):
         pass
     p = None
     if hoist:
-        from instinctwm.passes.lingbot.step_scope_cast import StepScopeCastHoist
+        from instinctflash.passes.lingbot.step_scope_cast import StepScopeCastHoist
         p = StepScopeCastHoist()
         names = p.install(S, type(server))
         print(f"  installed {names}", flush=True)
@@ -90,7 +90,7 @@ def main() -> int:
     a = ap.parse_args()
 
     S = import_lingbot_server()
-    cfg = S.VA_CONFIGS[os.environ.get("IWM_CFG", "robotwin")]
+    cfg = S.VA_CONFIGS[os.environ.get("IFL_CFG", "robotwin")]
     cfg.save_root = "/tmp/iwm_stepcast"
     os.makedirs(cfg.save_root, exist_ok=True)
     rank = int(os.getenv("RANK", 0))

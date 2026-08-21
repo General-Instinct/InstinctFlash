@@ -6,7 +6,7 @@ THE QUESTION THIS RUN ANSWERS, and it is deliberately narrow: can 256 repeated o
 If heads-only works it is a strong result; if it plateaus we have a measured reason to unfreeze the
 backbone rather than paying for full fine-tuning by default.
 
-    CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY \\
+    CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 PYTHONPATH=$IFL_FA_SHIM_DIR $IFL_SERVER_PY \\
       -m torch.distributed.run --nproc_per_node 8 --master_port 29950 \\
       train_pdd_heads.py --contexts /home/ubuntu/iwm_results/pdd_ctx50 --steps 20000
 
@@ -35,16 +35,16 @@ import sys
 import time
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 import torch.distributed as dist  # noqa: E402
 
-from instinctwm.train.oracles.lingbot_velocity import LingBotChunk0VideoOracle  # noqa: E402
-from instinctwm.runtime.lingbot_install import (  # noqa: E402
+from instinctflash.train.oracles.lingbot_velocity import LingBotChunk0VideoOracle  # noqa: E402
+from instinctflash.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_fsdp_elision,
 )
 from instinct_pdd import DataFreeRollout, PDDConfig, advance, pdd_loss  # noqa: E402
@@ -258,7 +258,7 @@ def main() -> int:
     world = int(os.getenv("WORLD_SIZE", 1))
 
     S = import_lingbot_server()
-    cfg_name = os.environ.get("IWM_CFG", "robotwin")
+    cfg_name = os.environ.get("IFL_CFG", "robotwin")
     cfg = S.VA_CONFIGS[cfg_name]
     cfg.save_root = "/tmp/iwm_pdd_train"
     os.makedirs(cfg.save_root, exist_ok=True)
@@ -692,11 +692,11 @@ def save(student, grid, a, out_dir, head_counts, report, tag: str = "final"):
     torch.save(student.state_dict(), p / "heads.pt")
     # AUDIT.md Stage 2: write the two-namespace declaration ALONGSIDE the legacy delta.json.
     # Additive on purpose -- delta.json keeps every existing checkpoint servable, and the runtime
-    # prefers instinctwm.json when it is present. Execution facts are CAPABILITIES: any recipe
+    # prefers instinctflash.json when it is present. Execution facts are CAPABILITIES: any recipe
     # producing per-interval velocity heads writes the same execution block, and "PDD" appears only
     # under provenance, which the runtime never reads.
-    (p / "instinctwm.json").write_text(json.dumps({
-        "instinctwm_schema": 1,
+    (p / "instinctflash.json").write_text(json.dumps({
+        "instinctflash_schema": 1,
         "execution": {
             "model_id": f"lingbot-va-robotwin-blockheads-{grid.nfe}v",
             "backbone": "wan-va",

@@ -6,9 +6,9 @@ entire justification for shipping it. This measures it: ABBA-ordered (base, trea
 drift is visible and cancels, no profiler, warm past ring saturation.
 """
 import os, sys, time, statistics
-sys.path.insert(0, "/home/ubuntu/InstinctWM")
+sys.path.insert(0, "/home/ubuntu/InstinctFlash")
 import numpy as np, torch
-from instinctwm.runtime.lingbot_install import (
+from instinctflash.runtime.lingbot_install import (
     import_lingbot_server, install_conditioning_prefill, install_debug_dump_elision,
     install_fsdp_elision)
 
@@ -25,11 +25,11 @@ S.init_distributed(1, 0, 0); cfg.rank = cfg.local_rank = 0; cfg.world_size = 1
 install_fsdp_elision(S); torch.cuda.empty_cache = lambda *a, **k: None
 cfg.num_inference_steps, cfg.action_num_inference_steps = 2, 4
 server = S.VA_Server(cfg)
-from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
 RingKVAddressing().install(S, type(server))
 for _ in install_conditioning_prefill(S, type(server)): pass
 for _ in install_debug_dump_elision(S): pass
-from instinctwm.backends.conv.apply import install_conv_layout
+from instinctflash.backends.conv.apply import install_conv_layout
 for _ in install_conv_layout(server): pass
 
 from pathlib import Path

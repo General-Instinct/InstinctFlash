@@ -48,8 +48,8 @@ CALLS = 105                     # spans three chunk boundaries at chunk_size 50
 def declare(into: Path) -> Path:
     into.mkdir(parents=True, exist_ok=True)
     (into / "config.json").write_text("{}")
-    (into / "instinctwm.json").write_text(json.dumps({
-        "instinctwm_schema": 1,
+    (into / "instinctflash.json").write_text(json.dumps({
+        "instinctflash_schema": 1,
         "execution": {"model_id": "example-org/pi05", "backbone": "pi05", "servable": True,
                       "guidance": {"action": "none"}, "nfe": {"action": 10, "prefix": 1},
                       "base_weights": BASE}}))
@@ -61,7 +61,7 @@ import json, statistics, sys, time
 from pathlib import Path
 import numpy as np
 sys.path[:0] = [%(root)r, %(here)r]
-import instinctwm
+import instinctflash
 from pi05_iwm.adapter import Pi05Adapter
 
 ARM, PKG, OUT = sys.argv[1], Path(sys.argv[2]), Path(sys.argv[3])
@@ -77,8 +77,8 @@ if ARM in ("baseline", "control"):
     # returns [] exactly like a machine where the plan declined -- not a different code path.
     Pi05Adapter.install = staticmethod(lambda policy, plan, *, device=None: [])
 
-instinctwm.register("pi05", Pi05Adapter)
-rt = instinctwm.Runtime.from_pretrained(PKG)
+instinctflash.register("pi05", Pi05Adapter)
+rt = instinctflash.Runtime.from_pretrained(PKG)
 obs = rt.observation.example()
 obs["prompt"] = %(prompt)r
 
@@ -167,7 +167,7 @@ def main() -> int:
         print(f"  note  {speedup:.2f}x -- no win, and that is the shipped state. pi05's denoise "
               f"region is not replay-safe (measured: see pi05_iwm/surface.py), so the site declares "
               f"capturable=False and the generic pass refuses it. What this script asserts is the "
-              f"thing that matters: upstream's actions, byte for byte. Set IWM_PI05_CAPTURE=1 to run "
+              f"thing that matters: upstream's actions, byte for byte. Set IFL_PI05_CAPTURE=1 to run "
               f"the capture anyway and watch this comparison fail.")
     print("\n" + ("PASS: same actions, byte for byte, at " f"{speedup:.2f}x." if ok else "FAILED"))
     return 0 if ok else 1

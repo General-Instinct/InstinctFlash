@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""PDD as an InstinctWM recipe: composition, not algorithm.
+"""PDD as an InstinctFlash recipe: composition, not algorithm.
 
 test_pdd_core.py proves the algorithm. This file proves the ORCHESTRATION around it:
 
@@ -28,9 +28,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import torch  # noqa: E402
 import torch.nn as nn  # noqa: E402
 
-from instinctwm.train.recipe import Environment, prepare  # noqa: E402
-from instinctwm.train.recipes.pdd import ParallelDecoding  # noqa: E402
-from instinctwm.train.trainer import TrainConfig, Trainer  # noqa: E402
+from instinctflash.train.recipe import Environment, prepare  # noqa: E402
+from instinctflash.train.recipes.pdd import ParallelDecoding  # noqa: E402
+from instinctflash.train.trainer import TrainConfig, Trainer  # noqa: E402
 
 FAILED: list[str] = []
 

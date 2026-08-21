@@ -14,7 +14,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from instinctwm import (  # noqa: E402  (importable only after the sys.path insert above)
+from instinctflash import (  # noqa: E402  (importable only after the sys.path insert above)
     KVLifetime,
     available_models,
     load,
@@ -116,8 +116,8 @@ def test_planning_does_not_import_torch():
     Run in a subprocess because another test in this process may already have imported torch.
     """
     code = (
-        "import sys; import instinctwm; "
-        "from instinctwm import load, Optimizer, Tier; "
+        "import sys; import instinctflash; "
+        "from instinctflash import load, Optimizer, Tier; "
         "Optimizer(tier_ceiling=Tier.BITEXACT)"
         ".compile(load('lingbot-va-posttrain-robotwin').spec()).explain(); "
         "assert 'torch' not in sys.modules, 'planning pulled in torch'"

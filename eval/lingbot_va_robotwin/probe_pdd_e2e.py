@@ -13,7 +13,7 @@ none of which a synthetic test would have surfaced.
 
 The paper configuration is preserved: N=256, L=128, Euler, unweighted MSE, guidance 5.0.
 
-    CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY \\
+    CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$IFL_FA_SHIM_DIR $IFL_SERVER_PY \\
         -m torch.distributed.run --nproc_per_node 1 --master_port 29933 \\
         probe_pdd_e2e.py --ctx /tmp/pdd_ctx_probe/adjust_bottle__ep0__seed10000.npz
 """
@@ -24,15 +24,15 @@ import os
 import sys
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
-from instinctwm.train.oracles.lingbot_velocity import LingBotChunk0VideoOracle  # noqa: E402
-from instinctwm.runtime.lingbot_install import (  # noqa: E402
+from instinctflash.train.oracles.lingbot_velocity import LingBotChunk0VideoOracle  # noqa: E402
+from instinctflash.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_fsdp_elision,
 )
 from instinct_pdd import pdd_loss  # noqa: E402
@@ -69,7 +69,7 @@ def main() -> int:
     a = ap.parse_args()
 
     S = import_lingbot_server()
-    cfg = S.VA_CONFIGS[os.environ.get("IWM_CFG", "robotwin")]
+    cfg = S.VA_CONFIGS[os.environ.get("IFL_CFG", "robotwin")]
     cfg.save_root = "/tmp/iwm_pdd_e2e"
     os.makedirs(cfg.save_root, exist_ok=True)
     rank = int(os.getenv("RANK", 0))

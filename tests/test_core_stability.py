@@ -6,7 +6,7 @@ capabilities and backends without making the runtime more model-specific. That i
 is tested rather than asserted.
 
 Measured before this test existed: exactly ONE model-name reference in executable code anywhere in the
-generic layers -- `planners/planner.py` doing `from instinctwm.passes.lingbot import default_passes`,
+generic layers -- `planners/planner.py` doing `from instinctflash.passes.lingbot import default_passes`,
 which made one world model's pass set the default for every family in the ecosystem and meant a new
 family could not add a pass without editing the planner. It is a registry now, and the count is zero.
 
@@ -47,9 +47,9 @@ def check(cond, label, detail=""):
 
 def _generic_paths():
     for d in GENERIC_DIRS:
-        yield from sorted((ROOT / "instinctwm" / d).rglob("*.py"))
+        yield from sorted((ROOT / "instinctflash" / d).rglob("*.py"))
     for f in GENERIC_FILES:
-        p = ROOT / "instinctwm" / f
+        p = ROOT / "instinctflash" / f
         if p.exists():
             yield p
 
@@ -96,10 +96,10 @@ def test_the_core_never_branches_on_model_identity():
 
 def test_passes_are_discovered_like_adapters():
     print("\n=== 3. passes come from a registry, symmetric with adapters ===")
-    from instinctwm.passes.registry import (
+    from instinctflash.passes.registry import (
         ENTRY_POINT_GROUP, default_passes, discover, providers, register_passes,
     )
-    check(ENTRY_POINT_GROUP == "instinctwm.passes", "the group is stable", ENTRY_POINT_GROUP)
+    check(ENTRY_POINT_GROUP == "instinctflash.passes", "the group is stable", ENTRY_POINT_GROUP)
     check(discover() == [], "discovery reports no problems", str(discover()))
     names = providers()
     check("lingbot" in names, "the in-tree passes register as a provider", str(names))
@@ -122,7 +122,7 @@ def test_passes_are_discovered_like_adapters():
 
 def test_a_broken_provider_does_not_break_planning():
     print("\n=== 4. one bad pass package cannot stop an unrelated model planning ===")
-    from instinctwm.passes.registry import default_passes, register_passes
+    from instinctflash.passes.registry import default_passes, register_passes
 
     def explodes():
         raise RuntimeError("third-party pass package is broken")
@@ -154,7 +154,7 @@ def test_the_observation_contract_is_declared_not_guessed():
     ex = str(ROOT / "examples" / "pi05_vla")
     if ex not in _s.path:
         _s.path.insert(0, ex)
-    from instinctwm import load
+    from instinctflash import load
     from pi05_iwm.adapter import Pi05Adapter
 
     cases = {"wan_va": load("wan_va").spec(), "pi05": Pi05Adapter().spec()}
@@ -179,7 +179,7 @@ def test_the_observation_contract_is_declared_not_guessed():
           str({n: v[:3] for n, v in sigs.items()}))
 
     # and the CLI must not name a model to build one -- it asks the runtime through the PUBLIC api
-    cli = (ROOT / "instinctwm" / "cli.py").read_text()
+    cli = (ROOT / "instinctflash" / "cli.py").read_text()
     body = cli[cli.index("def cmd_run"):]
     body = body[:body.index("\ndef ", 10)] if "\ndef " in body[10:] else body
     for banned in ("family", "cam_high", "observation.images.top", "240, 320"):
@@ -187,7 +187,7 @@ def test_the_observation_contract_is_declared_not_guessed():
     check("rt.observation" in body and "_adapter" not in body,
           "and it reads the contract through the public property, not rt._adapter")
 
-    from instinctwm import Runtime
+    from instinctflash import Runtime
     check(isinstance(getattr(Runtime, "observation", None), property),
           "Runtime.observation is public, so a user with only a Hub id can ask what predict() wants")
 
@@ -200,13 +200,13 @@ def test_the_comparison_claims_match_our_code():
     if "How we compare" not in readme:
         print("  SKIP: no comparison section")
         return
-    from instinctwm.descriptors.package import publishability  # noqa: F401
-    from instinctwm.passes.contract import HardwareReq, Tier
-    from instinctwm.passes.registry import ENTRY_POINT_GROUP as PASSES
-    from instinctwm.runtime.loader import ENTRY_POINT_GROUP as ADAPTERS
+    from instinctflash.descriptors.package import publishability  # noqa: F401
+    from instinctflash.passes.contract import HardwareReq, Tier
+    from instinctflash.passes.registry import ENTRY_POINT_GROUP as PASSES
+    from instinctflash.runtime.loader import ENTRY_POINT_GROUP as ADAPTERS
 
     check(ADAPTERS in readme, "the adapters entry-point group it names exists", ADAPTERS)
-    check(PASSES == "instinctwm.passes", "the passes group exists too", PASSES)
+    check(PASSES == "instinctflash.passes", "the passes group exists too", PASSES)
     check(hasattr(HardwareReq, "satisfied_by"),
           "hardware selection really is a predicate, as claimed")
     for t in ("BITEXACT", "NUMERIC", "BEHAVIORAL"):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""A second model family must be reachable without editing InstinctWM.
+"""A second model family must be reachable without editing InstinctFlash.
 
 These are the invariants the external-author audit turned into regressions. No GPU, no weights.
 The full runnable integration is examples/external_plugin/.
@@ -24,12 +24,12 @@ def check(cond, label, detail=""):
 
 def test_discovery_is_by_entry_point():
     print("\n=== 1. plugins are discovered from installed metadata, not import order ===")
-    from instinctwm.runtime.loader import ENTRY_POINT_GROUP, discover_plugins
-    check(ENTRY_POINT_GROUP == "instinctwm.adapters", "the group is stable and documented",
+    from instinctflash.runtime.loader import ENTRY_POINT_GROUP, discover_plugins
+    check(ENTRY_POINT_GROUP == "instinctflash.adapters", "the group is stable and documented",
           ENTRY_POINT_GROUP)
     check(callable(discover_plugins), "discovery runs on lookup, so no user import is needed")
     # A broken third-party plugin must not take the runtime down with it.
-    import instinctwm.runtime.loader as L
+    import instinctflash.runtime.loader as L
     L._DISCOVERED = False
     problems = L.discover_plugins()
     check(isinstance(problems, list), "discovery reports failures instead of raising", str(problems))
@@ -39,7 +39,7 @@ def test_lingbot_passes_do_not_fire_on_other_models():
     print("\n=== 2. LingBot's passes decline models they cannot rewrite ===")
     # These patch the LingBot server object. Applied to anything else they were claiming, in the
     # plan, that a toy GRU would get "measured 1.75x standalone on LingBot-VA".
-    from instinctwm.passes.lingbot.substrate import (
+    from instinctflash.passes.lingbot.substrate import (
         AllocatorChurnElision, DebugDumpElision, FSDPElision,
     )
     for cls in (FSDPElision, AllocatorChurnElision, DebugDumpElision):
@@ -49,7 +49,7 @@ def test_lingbot_passes_do_not_fire_on_other_models():
 
 def test_the_impl_contract_uses_the_public_verb():
     print("\n=== 3. an external impl implements predict(), not LingBot's infer() ===")
-    src = (ROOT / "instinctwm" / "runtime" / "execution.py").read_text()
+    src = (ROOT / "instinctflash" / "runtime" / "execution.py").read_text()
     check('getattr(impl, "predict", None)' in src, "predict is preferred")
     check('getattr(impl, "infer", None)' in src, "infer remains as compatibility")
     check('getattr(impl, "commit", None)' in src,
@@ -58,7 +58,7 @@ def test_the_impl_contract_uses_the_public_verb():
 
 def test_lifecycle_verbs_are_the_decided_set():
     print("\n=== 4. the public lifecycle is model / episode / cycle -- and nothing else ===")
-    from instinctwm import Episode, Runtime
+    from instinctflash import Episode, Runtime
     for name in ("from_pretrained", "predict", "reset", "episode", "close"):
         check(hasattr(Runtime, name), f"Runtime.{name}")
     for name in ("step", "commit", "warmup", "flush"):
@@ -71,9 +71,9 @@ def test_lifecycle_verbs_are_the_decided_set():
 
 
 def test_declaration_carries_no_model_specific_knowledge():
-    print("\n=== 5. model knowledge stays in the adapter, not in instinctwm.json ===")
+    print("\n=== 5. model knowledge stays in the adapter, not in instinctflash.json ===")
     import json
-    p = ROOT / "examples" / "external_plugin" / "my-world-model" / "instinctwm.json"
+    p = ROOT / "examples" / "external_plugin" / "my-world-model" / "instinctflash.json"
     if not p.exists():
         print("  (built artifact absent; run examples/external_plugin/build_checkpoint.py)")
         return
@@ -93,7 +93,7 @@ def test_a_second_model_family_plans_correctly():
     if p not in _s.path:
         _s.path.insert(0, p)
     from pi05_iwm.adapter import Pi05Adapter
-    from instinctwm import Optimizer
+    from instinctflash import Optimizer
 
     spec = Pi05Adapter().spec()
     check(spec.forwards_breakdown() == "prefix=1 + action=10",
@@ -134,13 +134,13 @@ def test_weights_may_be_supplied_by_reference():
     # copying their gigabytes first.
     import json
     import tempfile
-    from instinctwm.descriptors.package import publishability, validate_package
+    from instinctflash.descriptors.package import publishability, validate_package
     with tempfile.TemporaryDirectory() as td:
         d = Path(td) / "declared"
         d.mkdir()
         (d / "config.json").write_text("{}")
-        (d / "instinctwm.json").write_text(json.dumps({
-            "instinctwm_schema": 1,
+        (d / "instinctflash.json").write_text(json.dumps({
+            "instinctflash_schema": 1,
             "execution": {"model_id": "example-org/declared", "backbone": "act",
                           "servable": True, "base_weights": "upstream-org/some-policy"},
         }))
@@ -151,8 +151,8 @@ def test_weights_may_be_supplied_by_reference():
         check(publishability(d)[0], "it is publishable too")
 
         # neither local weights nor a pointer is still incomplete
-        (d / "instinctwm.json").write_text(json.dumps({
-            "instinctwm_schema": 1,
+        (d / "instinctflash.json").write_text(json.dumps({
+            "instinctflash_schema": 1,
             "execution": {"model_id": "example-org/nothing", "backbone": "act", "servable": True},
         }))
         r2 = validate_package(d)

@@ -35,7 +35,7 @@ def check(cond, label, detail=""):
 
 def test_with_nfe_rewrites_the_schedule():
     print("\n=== 1. AdapterSpec.with_nfe reprices the declared schedule ===")
-    from instinctwm import load
+    from instinctflash import load
     spec = load("wan_va").spec()
     check(spec.total_forwards() == 79, "the adapter states the model's own schedule", "79")
     at24 = spec.with_nfe({"video": 2, "action": 4})
@@ -58,7 +58,7 @@ def test_commit_steps_are_remapped():
     # Rewrite nfe to 2 and leave that index alone and it points two forwards past the end, so
     # cfg_elision -- which reads commit_steps to decide which forwards must keep their guidance
     # branch -- would elide the committing forward. The episode then goes wrong several chunks later.
-    from instinctwm import load
+    from instinctflash import load
     spec = load("wan_va").spec()
     before = spec.phase("video")
     check(before.commit_steps == frozenset({before.nfe - 1}), "video commits on its last forward",
@@ -77,20 +77,20 @@ def test_commit_steps_are_remapped():
 
 def test_planner_plans_the_declared_schedule():
     print("\n=== 3. the plan is priced at the schedule that will run ===")
-    from instinctwm import load, Optimizer
+    from instinctflash import load, Optimizer
     spec = load("wan_va").spec()
     teacher = Optimizer().compile(spec).explain()
     shipped = Optimizer().compile(spec.with_nfe({"video": 2, "action": 4})).explain()
     check("79" in teacher, "the teacher schedule reports 79 forwards somewhere")
     check("79" not in shipped, "the shipped plan does NOT quote a 79-forward cycle")
-    src = (ROOT / "instinctwm" / "runtime" / "facade.py").read_text()
+    src = (ROOT / "instinctflash" / "runtime" / "facade.py").read_text()
     check("with_nfe(schedule)" in src, "from_pretrained applies the declaration before compiling")
     check("ckpt.execution.nfe" in src, "and the declaration is the base, not just the override")
 
 
 def test_declared_guidance_is_applied():
     print("\n=== 4. execution.guidance reaches the server ===")
-    from instinctwm.adapters.lingbot_va import apply_declared_guidance
+    from instinctflash.adapters.lingbot_va import apply_declared_guidance
 
     class Cfg:
         guidance_scale = 5.0
@@ -117,7 +117,7 @@ def test_declared_guidance_is_applied():
 
 def test_both_placements_serve_the_same_declaration():
     print("\n=== 5. worker and in-process obey the same declaration ===")
-    from instinctwm.adapters.lingbot_va import LingBotVA
+    from instinctflash.adapters.lingbot_va import LingBotVA
     with tempfile.TemporaryDirectory() as td:
         pkg = Path(td) / "pkg"
         pkg.mkdir()
@@ -138,12 +138,12 @@ def test_both_placements_serve_the_same_declaration():
             execution = Ex()
 
         import os
-        os.environ["IWM_CACHE"] = str(Path(td) / "cache")
+        os.environ["IFL_CACHE"] = str(Path(td) / "cache")
         try:
             argv, env = LingBotVA().worker_command(
                 Ck(), None, port=1234, python="python3", device=None, nfe=None)
         finally:
-            os.environ.pop("IWM_CACHE", None)
+            os.environ.pop("IFL_CACHE", None)
 
         joined = " ".join(argv)
         check("--degrade-nfe 2,4" in joined,

@@ -32,15 +32,15 @@ stop_servers() {
 start_servers() {   # start_servers <video> <action>
   local v=$1 a=$2 i
   for i in 0 1 2 3 4 5 6 7; do
-    # SHIPPED CONFIGURATION -- must equal instinctwm.verify.released.shipped_configuration().
+    # SHIPPED CONFIGURATION -- must equal instinctflash.verify.released.shipped_configuration().
     # tests/test_shipped_config.py fails if it drifts. Do not edit here alone.
-    ( cd "$LINGBOT_ROOT" && nohup env CUDA_VISIBLE_DEVICES=$i PYTHONPATH="$IWM_FA_SHIM_DIR" \
-        LINGBOT_CKPT="$LINGBOT_CKPT" setsid "$IWM_SERVER_PY" -m torch.distributed.run \
+    ( cd "$LINGBOT_ROOT" && nohup env CUDA_VISIBLE_DEVICES=$i PYTHONPATH="$IFL_FA_SHIM_DIR" \
+        LINGBOT_CKPT="$LINGBOT_CKPT" setsid "$IFL_SERVER_PY" -m torch.distributed.run \
         --nproc_per_node 1 --master_port $((29840+i)) \
-        /home/ubuntu/InstinctWM/eval/lingbot_va_robotwin/serve_variant.py --config-name robotwin \
+        /home/ubuntu/InstinctFlash/eval/lingbot_va_robotwin/serve_variant.py --config-name robotwin \
         --port $((29056+i)) --save_root /home/ubuntu/iwm_vis/sweep \
         --no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout \
-        --degrade-nfe "$v,$a" > "$IWM_LOG_DIR/sweep_srv_$((29056+i)).log" 2>&1 & )
+        --degrade-nfe "$v,$a" > "$IFL_LOG_DIR/sweep_srv_$((29056+i)).log" 2>&1 & )
   done
   local tries=0
   while :; do
@@ -55,7 +55,7 @@ start_servers() {   # start_servers <video> <action>
 for cfg in "${CONFIGS[@]}"; do
   V=${cfg%%:*}; A=${cfg##*:}
   RUN="${PREFIX}_v${V}a${A}"
-  ROOT="$IWM_RESULT_DIR/$RUN"; LOGD="$IWM_LOG_DIR/$RUN"
+  ROOT="$IFL_RESULT_DIR/$RUN"; LOGD="$IFL_LOG_DIR/$RUN"
   if [ -f "$ROOT/episodes.jsonl" ]; then echo "== $RUN already done, skipping"; continue; fi
   echo "== $RUN : video=$V action=$A =="
   stop_servers; start_servers "$V" "$A" || { echo "SKIP $RUN"; continue; }
@@ -63,7 +63,7 @@ for cfg in "${CONFIGS[@]}"; do
   mkdir -p "$ROOT" "$LOGD"; : > "$LOGD/_progress.txt"; : > "$LOGD/_lock"
   printf '%s\n' "${TASKS[@]}" > "$LOGD/_queue"
   # latency for this configuration, before the eval loads the servers
-  "$IWM_SERVER_PY" probe_latency.py --port 29056 --cycles 10 --repeats 3 \
+  "$IFL_SERVER_PY" probe_latency.py --port 29056 --cycles 10 --repeats 3 \
     > "$LOGD/_latency.txt" 2>&1
   grep -m1 "steady-state" "$LOGD/_latency.txt" || true
 
@@ -75,7 +75,7 @@ for cfg in "${CONFIGS[@]}"; do
         [ -n "$t" ] || break
         ( cd "$ROBOTWIN_ROOT" && ROBOTWIN_ROOT="$ROBOTWIN_ROOT" \
           PYTHONWARNINGS=ignore::UserWarning CUDA_VISIBLE_DEVICES=$i \
-          "$IWM_CLIENT_PY" -m evaluation.robotwin.eval_polict_client_openpi \
+          "$IFL_CLIENT_PY" -m evaluation.robotwin.eval_polict_client_openpi \
             --config policy/ACT/deploy_policy.yml --overrides \
             --task_name "$t" --task_config demo_clean --train_config_name 0 --model_name 0 \
             --ckpt_setting "$RUN" --seed 0 --policy_name LingBotVA --save_root "$ROOT" \
@@ -86,7 +86,7 @@ for cfg in "${CONFIGS[@]}"; do
     ) & pids+=($!)
   done
   wait "${pids[@]}"
-  "$IWM_SERVER_PY" emit_episodes.py "$ROOT" -o "$ROOT/episodes.jsonl" \
+  "$IFL_SERVER_PY" emit_episodes.py "$ROOT" -o "$ROOT/episodes.jsonl" \
     || echo "WARNING: $RUN episode emission refused; not certifiable" >&2
   echo "== $RUN done =="
 done

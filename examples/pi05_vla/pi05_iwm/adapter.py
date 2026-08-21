@@ -1,14 +1,14 @@
-"""InstinctWM adapter for LeRobot's pi05 VLA family. External plugin: no core changes.
+"""InstinctFlash adapter for LeRobot's pi05 VLA family. External plugin: no core changes.
 
-Written to test whether InstinctWM's abstraction is real, using a model family deliberately unlike
+Written to test whether InstinctFlash's abstraction is real, using a model family deliberately unlike
 LingBot-VA. Facts below come from lerobot/pi05_base's own config.json, not from guesses.
 """
 from __future__ import annotations
 
 from pathlib import Path
 
-from instinctwm import (AdapterSpec, GuidanceRule, KVLifetime, KVStreamSpec, PhaseSpec, PurityKey)
-from instinctwm.adapters.base import GuidanceMode, ObservationField, ObservationSpec
+from instinctflash import (AdapterSpec, GuidanceRule, KVLifetime, KVStreamSpec, PhaseSpec, PurityKey)
+from instinctflash.adapters.base import GuidanceMode, ObservationField, ObservationSpec
 
 BACKBONE = "pi05"
 
@@ -57,7 +57,7 @@ class Pi05Adapter:
     HOST_REQUIRES = ("torch", "lerobot")
 
     def can_host_in_process(self):
-        from instinctwm.runtime.execution import imports_available
+        from instinctflash.runtime.execution import imports_available
         return imports_available(self.HOST_REQUIRES)
 
     def build_in_process(self, checkpoint, plan, *, device=None, nfe=None):
@@ -121,8 +121,8 @@ class Pi05Adapter:
         """
         import torch
 
-        from instinctwm.passes.graph_capture import GraphCapture
-        from instinctwm.passes.interface import run_pass
+        from instinctflash.passes.graph_capture import GraphCapture
+        from instinctflash.passes.interface import run_pass
 
         from pi05_iwm.surface import Pi05Surface
 
@@ -131,7 +131,7 @@ class Pi05Adapter:
         if "graph_capture" not in wanted:
             return []
         if not (device and str(device).startswith("cuda") and torch.cuda.is_available()):
-            print("InstinctWM pi05: graph_capture is planned but needs CUDA; running eager.")
+            print("InstinctFlash pi05: graph_capture is planned but needs CUDA; running eager.")
             return []
 
         surface = Pi05Surface(policy.model)
@@ -142,14 +142,14 @@ class Pi05Adapter:
             # replay-safe -- measured, see surface.py -- so the site declares capturable=False and the
             # generic pass refuses it. The hoists are bit-exact and stay; they buy nothing on their
             # own, and saying so beats implying the run was optimized.
-            print(f"InstinctWM pi05: graph_capture declined "
+            print(f"InstinctFlash pi05: graph_capture declined "
                   f"({getattr(result, 'skipped_reason', 'no rewrite applied')}). Running eager, which "
                   f"is upstream's arithmetic exactly. {len(hoisted)} bit-exact hoist(s) applied "
                   f"(no measurable win alone).")
             return ["loop_constant_hoist"]
         for h in hoisted:
-            print(f"InstinctWM pi05: hoisted {h}")
-        print("InstinctWM pi05: graph_capture installed on the denoise step. NOTE: this path is "
+            print(f"InstinctFlash pi05: hoisted {h}")
+        print("InstinctFlash pi05: graph_capture installed on the denoise step. NOTE: this path is "
               "opt-in and not equivalence-verified -- see pi05_iwm/surface.py.")
         return ["loop_constant_hoist", "graph_capture"]
 
@@ -216,7 +216,7 @@ def _require_processor_steps(repo: str) -> None:
         from huggingface_hub import hf_hub_download
         cfg = json.loads(Path(hf_hub_download(repo, "policy_preprocessor.json")).read_text())
     except Exception as e:                                        # noqa: BLE001
-        print(f"instinctwm: cannot inspect {repo}'s processor pipeline "
+        print(f"instinctflash: cannot inspect {repo}'s processor pipeline "
               f"({type(e).__name__}: {e}); preconditions unverified, the loader will report any "
               f"failure itself.")
         return
@@ -244,13 +244,13 @@ def _require_processor_steps(repo: str) -> None:
                 f"account whose token is configured here, then `hf auth login`. There is no substitute "
                 f"-- swapping in a different tokenizer would change how the instruction is encoded and "
                 f"silently produce a different policy.\n"
-                f"`instinctwm describe` and `instinctwm plan` need neither the tokenizer nor the "
+                f"`instinctflash describe` and `instinctflash plan` need neither the tokenizer nor the "
                 f"weights.") from None
 
     try:
         have = set(ProcessorStepRegistry._registry)
     except Exception as e:                                        # noqa: BLE001
-        print(f"instinctwm: cannot read LeRobot's processor registry ({type(e).__name__}); "
+        print(f"instinctflash: cannot read LeRobot's processor registry ({type(e).__name__}); "
               f"step availability unverified.")
         return
     missing = [w for w in want if w not in have]
@@ -262,4 +262,4 @@ def _require_processor_steps(repo: str) -> None:
             f"pi05 needs a LeRobot whose registry has those steps -- 0.6.1 does, and it also dropped "
             f"the `transformers == 4.53.2` assert that 0.4.4 fails on, so upgrading LeRobot fixes both "
             f"walls at once. Note 0.5+ requires Python >= 3.12.\n"
-            f"`instinctwm describe` and `instinctwm plan` need none of this.")
+            f"`instinctflash describe` and `instinctflash plan` need none of this.")

@@ -35,9 +35,9 @@ import numpy as np
 import torch
 
 # Repo root from this file, not hardcoded -- see the note in serve_variant.py.
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 CAMS = ["observation.images.cam_high",
         "observation.images.cam_left_wrist",
@@ -51,7 +51,7 @@ def make_obs(rng, h=240, w=320):
 def build_server(ckpt: str, no_fsdp: bool, prefill: bool):
     # Same installers `serve_variant.py` and `plan.serve()` use. A profile taken against a
     # locally re-implemented patch profiles something nobody serves.
-    from instinctwm.runtime.lingbot_install import (
+    from instinctflash.runtime.lingbot_install import (
         import_lingbot_server,
         install_allocator_churn_elision,
         install_conditioning_prefill,
@@ -70,8 +70,8 @@ def build_server(ckpt: str, no_fsdp: bool, prefill: bool):
     if prefill:
         install_conditioning_prefill(S, S.VA_Server)
 
-    if os.environ.get("IWM_RING_KV") == "1":
-        from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+    if os.environ.get("IFL_RING_KV") == "1":
+        from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
         RingKVAddressing().install(S, S.VA_Server)
 
     cfg = VA_CONFIGS["robotwin"]

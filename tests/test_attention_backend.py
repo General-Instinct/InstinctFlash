@@ -15,7 +15,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from instinctwm.backends.attention import (  # noqa: E402
+from instinctflash.backends.attention import (  # noqa: E402
     REGISTRY,
     AttentionBackendRegistry,
     AttentionSemantics as S,
@@ -28,7 +28,7 @@ from instinctwm.backends.attention import (  # noqa: E402
     read_site,
     register_declared,
 )
-from instinctwm.backends.attention.reference import (  # noqa: E402
+from instinctflash.backends.attention.reference import (  # noqa: E402
     AdapterNativeAttention,
     FlashAttention,
     FlashInfer,
@@ -36,11 +36,11 @@ from instinctwm.backends.attention.reference import (  # noqa: E402
     SanaHybrid,
     TorchSDPA,
 )
-from instinctwm.backends.attention.site import (  # noqa: E402
+from instinctflash.backends.attention.site import (  # noqa: E402
     lingbot_video_self_attention_example,
 )
-from instinctwm.passes.contract import Tier  # noqa: E402
-from instinctwm.runtime.state.types import Addressing as A  # noqa: E402
+from instinctflash.passes.contract import Tier  # noqa: E402
+from instinctflash.runtime.state.types import Addressing as A  # noqa: E402
 
 FAILED: list[str] = []
 
@@ -74,7 +74,7 @@ def test_site_vocabulary():
     check(f.shape.seq_kv_max == 9792, "declared KV extent round-trips", f"{f.shape.seq_kv_max}")
     check(f.forwards_per_cycle == 25, "forwards/cycle present -- the profitability denominator")
 
-    from instinctwm.passes.interface import Site, SiteKind
+    from instinctflash.passes.interface import Site, SiteKind
     try:
         read_site(Site(kind=SiteKind.ATTENTION, id="bad", attrs={"mask": None}))
         check(False, "a site missing `semantics` is rejected")
@@ -200,7 +200,7 @@ def test_adding_a_backend_changes_nothing_else():
         name, version = "invented_2027", "0.0.0"
 
         def capabilities(self):
-            from instinctwm.backends.attention import AttentionCapabilities
+            from instinctflash.backends.attention import AttentionCapabilities
             return AttentionCapabilities(
                 semantics=frozenset({S.SOFTMAX_FULL}), mask_kinds=frozenset({M.NONE}),
                 layouts=frozenset({L.BSHD}), kv_addressing=frozenset({A.RING_INTERVAL}))

@@ -16,15 +16,15 @@ import sapien/mplib. The boundary is bidirectional and real, so it stays. `Runti
 under the SERVING interpreter and placement resolves to in-process; run it under the client
 interpreter and it resolves to a worker. Same three calls either way.
 
-    PYTHONPATH=. $IWM_SERVER_PY tools/lingbot_end_to_end.py --package /home/ubuntu/hub/lingbot-va
-    PYTHONPATH=. $IWM_SERVER_PY tools/lingbot_end_to_end.py --package ... --placement worker
+    PYTHONPATH=. $IFL_SERVER_PY tools/lingbot_end_to_end.py --package /home/ubuntu/hub/lingbot-va
+    PYTHONPATH=. $IFL_SERVER_PY tools/lingbot_end_to_end.py --package ... --placement worker
 
 STATUS, 2026-08-10. All four steps pass against a real Hugging Face repo id on an idle H100-80GB.
 Needs a GPU with >= ~30 GB free: the resident set is transformer 10.18 + vae 0.51 + text_encoder
 11.36 = 22.05 GB before activations, and it OOMs on a card with only ~23.4 GB free.
 
-    CUDA_VISIBLE_DEVICES=<free> PYTHONPATH=$IWM_FA_SHIM_DIR:. MASTER_ADDR=127.0.0.1 \
-      MASTER_PORT=29854 WORLD_SIZE=1 RANK=0 LOCAL_RANK=0 HF_TOKEN=... $IWM_SERVER_PY \
+    CUDA_VISIBLE_DEVICES=<free> PYTHONPATH=$IFL_FA_SHIM_DIR:. MASTER_ADDR=127.0.0.1 \
+      MASTER_PORT=29854 WORLD_SIZE=1 RANK=0 LOCAL_RANK=0 HF_TOKEN=... $IFL_SERVER_PY \
       tools/lingbot_end_to_end.py --package GM717/lingbot-va \
       --base-weights /home/ubuntu/ckpt_lingbot/lingbot-va-posttrain-robotwin
 
@@ -79,8 +79,8 @@ def main() -> int:
     ap.add_argument("--timeout", type=float, default=1200.0)
     a = ap.parse_args()
 
-    import instinctwm
-    from instinctwm import Runtime, describe
+    import instinctflash
+    from instinctflash import Runtime, describe
 
     step(1, "describe() -- what it declares, WITHOUT downloading 10.2 GB")
     t0 = time.time()
@@ -97,8 +97,8 @@ def main() -> int:
           "no capability token mentions how it was trained")
 
     step(2, "the backbone resolves to a registered adapter")
-    print(f"  registered: {instinctwm.available_models()}")
-    check(d["backbone"] in instinctwm.available_models(), f"{d['backbone']!r} resolves")
+    print(f"  registered: {instinctflash.available_models()}")
+    check(d["backbone"] in instinctflash.available_models(), f"{d['backbone']!r} resolves")
 
     step(3, "Runtime.from_pretrained() -- one call, one handle")
     if a.base_weights:
@@ -122,7 +122,7 @@ def main() -> int:
         FAILED.append("no observation")
         return 1
     z = np.load(ctx[0], allow_pickle=True)
-    # The observation schema is the BACKBONE's contract, not InstinctWM's -- `predict` passes the
+    # The observation schema is the BACKBONE's contract, not InstinctFlash's -- `predict` passes the
     # mapping through untouched. wan_va uses the LeRobot camera convention, and the recorded npz
     # stores the short names, so the prefix is applied here rather than assumed on either side.
     # An earlier version of this script fed the short names straight through and got

@@ -14,11 +14,11 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from instinctwm.backends.conv import (  # noqa: E402
+from instinctflash.backends.conv import (  # noqa: E402
     ConvBackendRegistry, ConvShape, MemoryLayout as L, register_declared,
 )
-from instinctwm.backends.conv.semantics import ConvSemantics as C  # noqa: E402
-from instinctwm.passes.contract import Tier  # noqa: E402
+from instinctflash.backends.conv.semantics import ConvSemantics as C  # noqa: E402
+from instinctflash.passes.contract import Tier  # noqa: E402
 
 FAILED: list[str] = []
 

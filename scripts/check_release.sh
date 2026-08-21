@@ -29,7 +29,7 @@ echo "=== every module on disk is in the wheel ==="
 import os, sys, zipfile, glob
 whl = glob.glob("dist/*.whl")[0]
 names = set(zipfile.ZipFile(whl).namelist())
-disk = [os.path.join(dp, f) for dp, _, fs in os.walk("instinctwm") for f in fs if f.endswith(".py")]
+disk = [os.path.join(dp, f) for dp, _, fs in os.walk("instinctflash") for f in fs if f.endswith(".py")]
 missing = sorted(p for p in disk if p not in names)
 print(f"  {len(disk)} modules on disk, {len([n for n in names if n.endswith('.py')])} in the wheel")
 if missing:
@@ -47,15 +47,15 @@ for art in dist/*.whl dist/*.tar.gz; do
   "$V/bin/pip" -q install "$ROOT/$art"
   # run from OUTSIDE the repo, so nothing resolves via the source tree
   ( cd "$WORK" && "$V/bin/python" -c "
-import instinctwm, os
-assert 'site-packages' in os.path.dirname(instinctwm.__file__), instinctwm.__file__
-print('  import OK from', os.path.dirname(instinctwm.__file__).split('site-packages')[-1] or 'site-packages')
-print('  public API:', ', '.join(instinctwm.__all__[:5]), '...')
+import instinctflash, os
+assert 'site-packages' in os.path.dirname(instinctflash.__file__), instinctflash.__file__
+print('  import OK from', os.path.dirname(instinctflash.__file__).split('site-packages')[-1] or 'site-packages')
+print('  public API:', ', '.join(instinctflash.__all__[:5]), '...')
 " )
-  ( cd "$WORK" && "$V/bin/instinctwm" --help >/dev/null && echo "  console script OK" )
+  ( cd "$WORK" && "$V/bin/instinctflash" --help >/dev/null && echo "  console script OK" )
   # informational, and deliberately not allowed to fail the gate: what this line reports is the
   # environment, not the artifact.
-  ( cd "$WORK" && "$V/bin/instinctwm" devices 2>&1 | head -1 | sed 's/^/  devices: /' ) || true
+  ( cd "$WORK" && "$V/bin/instinctflash" devices 2>&1 | head -1 | sed 's/^/  devices: /' ) || true
 done
 
 echo

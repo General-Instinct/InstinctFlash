@@ -27,8 +27,8 @@ def main() -> None:
 
     # The declaration. Execution facts only -- no model-specific knowledge, which is the point:
     # `history`, `vocab` and the GRU live in config.json and in the adapter, NOT here.
-    (OUT / "instinctwm.json").write_text(json.dumps({
-        "instinctwm_schema": 1,
+    (OUT / "instinctflash.json").write_text(json.dumps({
+        "instinctflash_schema": 1,
         "execution": {
             "model_id": "some-org/my-world-model",
             "backbone": "gridworld_ar",

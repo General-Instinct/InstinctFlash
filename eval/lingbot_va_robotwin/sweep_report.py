@@ -14,9 +14,9 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "/home/ubuntu/InstinctWM")
+sys.path.insert(0, "/home/ubuntu/InstinctFlash")
 
-from instinctwm.verify.certify import NotCertifiable, certify, load_jsonl
+from instinctflash.verify.certify import NotCertifiable, certify, load_jsonl
 
 
 def latency_of(log_dir: Path) -> float | None:

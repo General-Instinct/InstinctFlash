@@ -13,9 +13,9 @@ from __future__ import annotations
 import argparse
 import sys
 
-sys.path.insert(0, "/home/ubuntu/InstinctWM")
+sys.path.insert(0, "/home/ubuntu/InstinctFlash")
 
-from instinctwm.verify.certify import NotCertifiable, certify, load_jsonl
+from instinctflash.verify.certify import NotCertifiable, certify, load_jsonl
 
 
 def main() -> int:

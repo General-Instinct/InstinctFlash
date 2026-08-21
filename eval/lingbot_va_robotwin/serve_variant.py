@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Launch the LingBot-VA server with InstinctWM optimization variants toggled on.
+"""Launch the LingBot-VA server with InstinctFlash optimization variants toggled on.
 
 This is an A/B harness, not a fork. It imports the upstream server unmodified and patches
 named behaviours at runtime, so `git status` in lingbot-va stays clean and every variant is
@@ -40,12 +40,12 @@ import sys
 from pathlib import Path
 
 # Repo root, derived from this file rather than written down. The tree has moved once already
-# (/home/ubuntu/InstinctWM -> /home/ubuntu/Code/InstinctWM), and the stale absolute path turned
+# (/home/ubuntu/InstinctFlash -> /home/ubuntu/Code/InstinctFlash), and the stale absolute path turned
 # --conditioning-prefill into an ImportError while every other variant kept working -- i.e. it
-# broke exactly one arm of an A/B comparison. IWM_ROOT still wins when it is set.
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+# broke exactly one arm of an A/B comparison. IFL_ROOT still wins when it is set.
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 
 def main() -> int:
@@ -90,7 +90,7 @@ def main() -> int:
              "eager tax of exposing a rewritable surface from the effect of rewriting it.")
     ap.add_argument("--block-heads", default=None,
                     help="directory of a checkpoint declaring output_projection.kind == "
-                         "per_interval_velocity_heads (heads.pt + instinctwm.json, or a legacy "
+                         "per_interval_velocity_heads (heads.pt + instinctflash.json, or a legacy "
                          "delta.json). Chosen by CAPABILITY: no recipe is named or implied.")
     ap.add_argument("--pdd-heads", default=None,
                     help="DEPRECATED alias for --block-heads. Names a training method in a serving "
@@ -141,7 +141,7 @@ def main() -> int:
     # Every variant below calls the SAME installer that `plan.serve()` calls. They used to be
     # separate inline patches here, which meant an A/B could measure a patch that production
     # never applied.
-    from instinctwm.runtime.lingbot_install import (
+    from instinctflash.runtime.lingbot_install import (
         import_lingbot_server,
         install_allocator_churn_elision,
         install_conditioning_prefill,
@@ -167,7 +167,7 @@ def main() -> int:
             raise SystemExit(
                 "--block-heads and --degrade-nfe both set the video step count; pick one. "
                 "--block-heads already reduces video NFE to N/L.")
-        from instinctwm.runtime.block_heads import install_block_velocity_heads
+        from instinctflash.runtime.block_heads import install_block_velocity_heads
         _heads_dir = _heads_arg
 
         _orig_run_pdd = S.run
@@ -181,7 +181,7 @@ def main() -> int:
                 def __init__(self, *ar, **kw):
                     super().__init__(*ar, **kw)
                     for name in install_block_velocity_heads(S, self, _heads_dir):
-                        print(f"InstinctWM pdd: {name}", flush=True)
+                        print(f"InstinctFlash pdd: {name}", flush=True)
 
             S.VA_Server = _WithHeads
             try:
@@ -193,7 +193,7 @@ def main() -> int:
         applied.append(f"block-heads={_heads_dir}")
 
     if getattr(args, "guidance", None):
-        from instinctwm.adapters.lingbot_va import apply_declared_guidance
+        from instinctflash.adapters.lingbot_va import apply_declared_guidance
         decl = {}
         for part in args.guidance.split(","):
             if "=" not in part:
@@ -235,7 +235,7 @@ def main() -> int:
         applied += install_conditioning_prefill(S, S.VA_Server)
 
     if getattr(args, "conv_layout", False):
-        from instinctwm.backends.conv.apply import install_conv_layout
+        from instinctflash.backends.conv.apply import install_conv_layout
 
         # Same shape as the block-heads install: the VAEs only exist once the server is built, so wrap
         # the class rather than the module. BOTH VAEs are converted -- the full-res one for the head
@@ -250,7 +250,7 @@ def main() -> int:
                 def __init__(self, *ar, **kw):
                     super().__init__(*ar, **kw)
                     for line in install_conv_layout(self):
-                        print(f"InstinctWM conv-layout: {line}", flush=True)
+                        print(f"InstinctFlash conv-layout: {line}", flush=True)
 
             S.VA_Server = _WithConvLayout
             try:
@@ -270,7 +270,7 @@ def main() -> int:
             class _WithPG(_oc):
                 def __init__(self, *ar, **kw):
                     super().__init__(*ar, **kw)
-                    from instinctwm.passes.lingbot.persistent_graph import PersistentRingGraph
+                    from instinctflash.passes.lingbot.persistent_graph import PersistentRingGraph
                     PersistentRingGraph().install(S, self)
 
             S.VA_Server = _WithPG
@@ -283,12 +283,12 @@ def main() -> int:
         applied.append("persistent-graph")
 
     if getattr(args, "ring_kv", False):
-        from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+        from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
         RingKVAddressing().install(S, S.VA_Server)
         applied.append("ring-kv")
 
     if getattr(args, "hoist_casts", False):
-        from instinctwm.passes.lingbot.hoist_invariant_casts import HoistInvariantCasts
+        from instinctflash.passes.lingbot.hoist_invariant_casts import HoistInvariantCasts
         HoistInvariantCasts().install(S, S.VA_Server)
         applied.append("hoist-casts")
 
@@ -298,12 +298,12 @@ def main() -> int:
                    or getattr(args, "hoist_casts", False)
                    or getattr(args, "stable_pools", False))
     if not _use_legacy:
-        from instinctwm.adapters.lingbot import LingBotSurface
-        from instinctwm.passes.hoist_invariant import HoistInvariant
-        from instinctwm.passes.interface import run_pass
-        from instinctwm.passes.explicit_step_index import ExplicitStepIndex
-        from instinctwm.passes.promote_small_operand import PromoteSmallOperand
-        from instinctwm.passes.stable_pools import StablePools
+        from instinctflash.adapters.lingbot import LingBotSurface
+        from instinctflash.passes.hoist_invariant import HoistInvariant
+        from instinctflash.passes.interface import run_pass
+        from instinctflash.passes.explicit_step_index import ExplicitStepIndex
+        from instinctflash.passes.promote_small_operand import PromoteSmallOperand
+        from instinctflash.passes.stable_pools import StablePools
 
         _hoist_g, _pools_g = HoistInvariant(), StablePools()
         _promote_g = PromoteSmallOperand()
@@ -323,7 +323,7 @@ def main() -> int:
                          ("promote", _promote_g), ("stepidx", _stepidx_g))
                 sel = (None if not getattr(args, "generic_only", None)
                        else {x.strip() for x in args.generic_only.split(",")})
-                from instinctwm.passes.interface import SiteKind
+                from instinctflash.passes.interface import SiteKind
                 if getattr(args, "generic_dry_run", False):
                     # touch every site kind so all shims install, then apply nothing
                     for k in SiteKind:
@@ -361,7 +361,7 @@ def main() -> int:
 
     _pools_pass = None
     if getattr(args, "stable_pools", False):
-        from instinctwm.passes.lingbot.stable_pools import StableStatePools
+        from instinctflash.passes.lingbot.stable_pools import StableStatePools
         _pools_pass = StableStatePools()
         _pools_pass.install(S, S.VA_Server)
         applied.append("stable-pools")
@@ -372,7 +372,7 @@ def main() -> int:
                   "mask.nonzero() per layer per forward, which is a data-dependent shape; "
                   "capture fails with cudaErrorStreamCaptureInvalidated.", flush=True)
             return 2
-        from instinctwm.passes.lingbot.graph_capture import GraphBlockStack
+        from instinctflash.passes.lingbot.graph_capture import GraphBlockStack
         _graph_pass = GraphBlockStack()
         _graph_pass.install(S, S.VA_Server)
         applied.append("graph-blocks")
@@ -450,7 +450,7 @@ def main() -> int:
         applied += install_deterministic_seed(S, args.deterministic_seed)
 
     print("=" * 72, flush=True)
-    print(f"InstinctWM serve_variant: {applied if applied else ['STOCK BASELINE']}", flush=True)
+    print(f"InstinctFlash serve_variant: {applied if applied else ['STOCK BASELINE']}", flush=True)
     print(f"  ckpt   : {os.environ.get('LINGBOT_CKPT')}", flush=True)
     print(f"  config : {args.config_name}   port: {args.port}", flush=True)
     print("=" * 72, flush=True)

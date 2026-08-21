@@ -22,10 +22,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import torch  # noqa: E402
 import torch.nn as nn  # noqa: E402
 
-from instinctwm.train.recipe import (  # noqa: E402
+from instinctflash.train.recipe import (  # noqa: E402
     Capabilities, DescriptorDelta, Environment, RecipeRejected, RecipeState, StepOutput,
 )
-from instinctwm.train.trainer import CachedTeacher, TrainConfig, Trainer  # noqa: E402
+from instinctflash.train.trainer import CachedTeacher, TrainConfig, Trainer  # noqa: E402
 
 FAILED: list[str] = []
 

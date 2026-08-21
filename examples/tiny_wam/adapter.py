@@ -1,7 +1,7 @@
-"""A THIRD-PARTY Backend Adapter, written entirely outside `instinctwm/`.
+"""A THIRD-PARTY Backend Adapter, written entirely outside `instinctflash/`.
 
 This is the point of the example. Nothing in this file is imported by the runtime, nothing in the
-runtime knows it exists, and it is registered at call time with the public `instinctwm.register`.
+runtime knows it exists, and it is registered at call time with the public `instinctflash.register`.
 An author with their own backbone does exactly this: implement `spec()`, register it, publish a
 checkpoint whose `execution.backbone` names it.
 
@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from typing import Sequence
 
-from instinctwm.adapters.base import (
+from instinctflash.adapters.base import (
     AdapterSpec, CommitMode, GuidanceMode, GuidanceRule, KVLifetime, KVStreamSpec, PhaseSpec,
 )
 

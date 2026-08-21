@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """One pass, two structurally different WAMs, zero model imports in the pass.
 
-`instinctwm/passes/graph_capture.py` contains no `import modules.model`, no class name, no
+`instinctflash/passes/graph_capture.py` contains no `import modules.model`, no class name, no
 `for block in self.blocks`. It asks each adapter for CAPTURE_UNIT sites and rewrites them.
 
 The comparison that matters is with `passes/lingbot/graph_capture.py`, the LingBot version,
@@ -22,8 +22,8 @@ sys.path += [os.path.join(LINGBOT_ROOT, "wan_va"), LINGBOT_ROOT,
 
 import torch
 
-from instinctwm.passes.graph_capture import GraphCapture
-from instinctwm.passes.interface import SiteKind, run_pass
+from instinctflash.passes.graph_capture import GraphCapture
+from instinctflash.passes.interface import SiteKind, run_pass
 
 DEV, DT = torch.device("cuda"), torch.bfloat16
 results = []
@@ -39,7 +39,7 @@ def source_is_model_free() -> bool:
     import ast
 
     path = os.path.join(os.path.dirname(__file__), "..",
-                        "instinctwm", "passes", "graph_capture.py")
+                        "instinctflash", "passes", "graph_capture.py")
     tree = ast.parse(open(path).read())
     for node in ast.walk(tree):                        # drop every docstring
         if isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -58,7 +58,7 @@ def source_is_model_free() -> bool:
 
 def run_cosmos():
     print("\n=== Cosmos3-Edge (two-tower MoT, SequencePack) ===")
-    from instinctwm.adapters.cosmos3 import (
+    from instinctflash.adapters.cosmos3 import (
         Cosmos3Surface, build_pack, build_stack, use_torch_sdpa,
     )
     from cosmos_framework.data.generator.sequence_packing.runtime import get_all_seq, zeros_like
@@ -98,8 +98,8 @@ def run_lingbot():
     print("\n=== LingBot-VA (dual-stream DiT, ring KV) ===")
     import trace_block
     from trace_block import DIM, HEADS, TEXT_LEN
-    from instinctwm.adapters.lingbot import LingBotSurface
-    from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+    from instinctflash.adapters.lingbot import LingBotSurface
+    from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
 
     RingKVAddressing().install(None, type("S", (), {"_reset": lambda s, prompt=None: None}))
     B, N, KV, NL = 2, 32, 2048, 3

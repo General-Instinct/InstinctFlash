@@ -4,7 +4,7 @@
 Produces exactly what a checkpoint author would push to the Hub:
 
     examples/checkpoint/tiny-wam-2v2a/
-      instinctwm.json      the declaration -- execution + provenance
+      instinctflash.json      the declaration -- execution + provenance
       config.json          the backbone's own config
       model.safetensors    REAL WEIGHTS, ~1 MB, loadable by safetensors
       README.md            model card
@@ -39,7 +39,7 @@ def main() -> int:
     state = {k: v.contiguous() for k, v in net.state_dict().items()}
     param_bytes = sum(v.numel() * v.element_size() for v in state.values())
     save_file(state, str(OUT / "model.safetensors"),
-              metadata={"format": "pt", "instinctwm_example": "tiny-wam"})
+              metadata={"format": "pt", "instinctflash_example": "tiny-wam"})
 
     (OUT / "config.json").write_text(json.dumps({
         "_class_name": "TinyWAM",
@@ -50,12 +50,12 @@ def main() -> int:
         "obs_dim": M.OBS_DIM,
         "action_dim": M.ACTION_DIM,
         "action_horizon": M.ACTION_HORIZON,
-        "_comment": "The backbone's own config. InstinctWM does not read this file; the adapter and "
+        "_comment": "The backbone's own config. InstinctFlash does not read this file; the adapter and "
                     "the modelling code do.",
     }, indent=2) + "\n")
 
-    (OUT / "instinctwm.json").write_text(json.dumps({
-        "instinctwm_schema": 1,
+    (OUT / "instinctflash.json").write_text(json.dumps({
+        "instinctflash_schema": 1,
         "execution": {
             "model_id": "example-org/tiny-wam-2v2a",
             # must name a REGISTERED adapter, or the checkpoint is not servable however well it

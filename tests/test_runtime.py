@@ -14,7 +14,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from instinctwm import Optimizer, Tier, load  # noqa: E402  (needs the insert above)
+from instinctflash import Optimizer, Tier, load  # noqa: E402  (needs the insert above)
 
 try:
     import torch  # noqa: F401
@@ -36,7 +36,7 @@ class _FakeServerModule:
 def test_install_plan_applies_the_bitexact_substrate_passes():
     if not HAVE_TORCH:
         return
-    from instinctwm.runtime.lingbot_install import install_plan
+    from instinctflash.runtime.lingbot_install import install_plan
 
     model = load("lingbot-va-posttrain-robotwin")
     plan = Optimizer(tier_ceiling=Tier.BITEXACT).compile(model.spec())
@@ -55,7 +55,7 @@ def test_install_plan_applies_the_bitexact_substrate_passes():
 def test_install_plan_refuses_a_pass_it_cannot_install():
     if not HAVE_TORCH:
         return
-    from instinctwm.runtime.lingbot_install import install_plan
+    from instinctflash.runtime.lingbot_install import install_plan
 
     model = load("lingbot-va-posttrain-robotwin")
     # cfg_branch_elision is analysed but has no installer yet.
@@ -75,7 +75,7 @@ def test_install_plan_refuses_a_pass_it_cannot_install():
 def test_installers_refuse_a_server_that_changed_shape():
     if not HAVE_TORCH:
         return
-    from instinctwm.runtime.lingbot_install import install_debug_dump_elision
+    from instinctflash.runtime.lingbot_install import install_debug_dump_elision
 
     class _Renamed:
         pass
@@ -91,7 +91,7 @@ def test_installers_refuse_a_server_that_changed_shape():
 def test_resolve_lingbot_root_reports_what_is_missing():
     if not HAVE_TORCH:
         return
-    from instinctwm.runtime.lingbot_install import resolve_lingbot_root
+    from instinctflash.runtime.lingbot_install import resolve_lingbot_root
 
     try:
         resolve_lingbot_root("/definitely/not/here")

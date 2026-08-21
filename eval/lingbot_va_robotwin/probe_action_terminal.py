@@ -18,7 +18,7 @@ uniquely the terminal action forward (the other four action forwards are update_
 refresh is update_cache=2). `_prepare_latent_input` and the scheduler bookkeeping still run in the
 ON arm, so this UNDERSTATES the full elision by ~0.4 ms.
 
-    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY -u \
+    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IFL_FA_SHIM_DIR $IFL_SERVER_PY -u \
         -m torch.distributed.run --nproc_per_node 1 --master_port 29971 probe_action_terminal.py
 
 REFUTED 2026-08-09, see LAYER5_COMPLETE.md section 4b and probe_terminal_forward.py.
@@ -37,14 +37,14 @@ import sys
 import time
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
-from instinctwm.runtime.lingbot_install import (  # noqa: E402
+from instinctflash.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_conditioning_prefill, install_debug_dump_elision,
     install_fsdp_elision,
 )
@@ -61,7 +61,7 @@ def main() -> int:
     a = ap.parse_args()
 
     S = import_lingbot_server()
-    cfg = S.VA_CONFIGS[os.environ.get("IWM_CFG", "robotwin")]
+    cfg = S.VA_CONFIGS[os.environ.get("IFL_CFG", "robotwin")]
     cfg.save_root = "/tmp/iwm_actterm"
     os.makedirs(cfg.save_root, exist_ok=True)
     rank = int(os.getenv("RANK", 0))
@@ -73,13 +73,13 @@ def main() -> int:
 
     print("building server at 2V/4A, shipped stack ...", flush=True)
     server = S.VA_Server(cfg)
-    from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+    from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
     RingKVAddressing().install(S, type(server))
     for _ in install_conditioning_prefill(S, type(server)):
         pass
     for _ in install_debug_dump_elision(S):
         pass
-    from instinctwm.backends.conv.apply import install_conv_layout
+    from instinctflash.backends.conv.apply import install_conv_layout
     for _ in install_conv_layout(server):
         pass
 

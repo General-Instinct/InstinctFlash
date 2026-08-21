@@ -34,12 +34,12 @@ import os, sys
 from pathlib import Path
 
 # Resolved from this file rather than written down, matching serve_variant.py and
-# profile_cycle.py. The hardcoded /home/ubuntu/InstinctWM this replaced does not exist
-# any more -- the tree moved to /home/ubuntu/Code/InstinctWM -- so the import of
-# profile_cycle below could not have resolved. IWM_ROOT still wins when it is set.
+# profile_cycle.py. The hardcoded /home/ubuntu/InstinctFlash this replaced does not exist
+# any more -- the tree moved to /home/ubuntu/Code/InstinctFlash -- so the import of
+# profile_cycle below could not have resolved. IFL_ROOT still wins when it is set.
 _HERE = Path(__file__).resolve().parent
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(_HERE.parents[1])
-for _p in (IWM_ROOT, str(_HERE)):
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(_HERE.parents[1])
+for _p in (IFL_ROOT, str(_HERE)):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 import numpy as np, torch
@@ -47,7 +47,7 @@ from profile_cycle import build_server, drive
 
 CKPT, PROMPT = os.environ["LINGBOT_CKPT"], "Use the left arm to lift the plastic drink bottle head-up"
 srv, S = build_server(CKPT, no_fsdp=True, prefill=True)
-from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
 RingKVAddressing().install(S, S.VA_Server)
 import modules.model as M
 

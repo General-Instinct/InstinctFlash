@@ -21,7 +21,7 @@ cd "$(dirname "$0")" && source ./env.sh
 
 IDLE_MEM=${IDLE_MEM:-8000}          # MiB per GPU below which we call it idle
 WAIT_HOURS=${WAIT_HOURS:-24}
-LOG=${IWM_LOG_DIR:-/tmp}/rc_validation.log
+LOG=${IFL_LOG_DIR:-/tmp}/rc_validation.log
 exec > >(tee -a "$LOG") 2>&1
 echo "=== RC validation started $(date -u +%FT%TZ) ==="
 
@@ -58,26 +58,26 @@ for g in 1 2 3; do
     nvidia-smi --query-gpu=index,memory.used --format=csv,noheader
     continue
   fi
-  CUDA_VISIBLE_DEVICES=$g PYTHONPATH="$IWM_FA_SHIM_DIR:/home/ubuntu/InstinctWM" \
+  CUDA_VISIBLE_DEVICES=$g PYTHONPATH="$IFL_FA_SHIM_DIR:/home/ubuntu/InstinctFlash" \
     MASTER_ADDR=127.0.0.1 MASTER_PORT=$((29910 + g)) WORLD_SIZE=1 RANK=0 LOCAL_RANK=0 \
-    timeout 3000 "$IWM_SERVER_PY" probe_nfe_latency.py 2>&1 |
+    timeout 3000 "$IFL_SERVER_PY" probe_nfe_latency.py 2>&1 |
     grep -E "base |treat |drift|spread|SPEEDUP|NOT EVAL"
   fleet_idle || echo "  WARNING: fleet contended by the END of the GPU $g arm -- discard this row"
 done
 
 # ---- GATE 2: quality, extend the shipped arm then certify --------------------------------------
 echo; echo "=== GATE 2: extending the SHIPPED arm to 24 episodes/task (1200) ==="
-if [ -f "$IWM_RESULT_DIR/rc_v2a4/episodes.jsonl" ]; then
+if [ -f "$IFL_RESULT_DIR/rc_v2a4/episodes.jsonl" ]; then
   echo "rc_v2a4 already present, skipping the run"
 else
   ./run_sweep.sh rc 24 tasks50.txt 2:4
 fi
 
 echo; echo "=== CERTIFICATE ==="
-"$IWM_SERVER_PY" certify_operating_point.py \
+"$IFL_SERVER_PY" certify_operating_point.py \
   --control rc_v2a4 --treat fastcert_v2a2 --repeat actsweep_v2a4 \
   --margin -0.05 --label "vanilla 2V/2A vs shipped 2V/4A, n=1200" \
-  --out "$IWM_RESULT_DIR/rc_2v2a_certificate.json"
+  --out "$IFL_RESULT_DIR/rc_2v2a_certificate.json"
 rc=$?
 echo
 echo "=== RC validation finished $(date -u +%FT%TZ), certificate exit=$rc ==="

@@ -34,7 +34,7 @@ WHAT IT REPORTS
   * a kernel-level breakdown by operator category from torch.profiler -- attention vs matmul vs
     normalisation vs elementwise -- which is what re-ranks Layer 4 against Layer 5
 
-    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY \\
+    CUDA_VISIBLE_DEVICES=7 PYTHONPATH=$IFL_FA_SHIM_DIR $IFL_SERVER_PY \\
         -m torch.distributed.run --nproc_per_node 1 --master_port 29985 \\
         profile_forward_warm.py [--cycles 90] [--graph]
 """
@@ -48,14 +48,14 @@ import sys
 import time
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
-from instinctwm.runtime.lingbot_install import (  # noqa: E402
+from instinctflash.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_conditioning_prefill, install_debug_dump_elision,
     install_fsdp_elision,
 )
@@ -131,7 +131,7 @@ def main() -> int:
         return 2
 
     S = import_lingbot_server()
-    cfg = S.VA_CONFIGS[os.environ.get("IWM_CFG", "robotwin")]
+    cfg = S.VA_CONFIGS[os.environ.get("IFL_CFG", "robotwin")]
     cfg.save_root = "/tmp/iwm_fwd_warm"
     os.makedirs(cfg.save_root, exist_ok=True)
     rank = int(os.getenv("RANK", 0))
@@ -145,21 +145,21 @@ def main() -> int:
           f"(graph capture {'ON' if a.graph else 'OFF'}) ...", flush=True)
     server = S.VA_Server(cfg)
 
-    from instinctwm.passes.lingbot.ring_kv import RingKVAddressing
+    from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
     RingKVAddressing().install(S, type(server))
     for n in install_conditioning_prefill(S, type(server)):
         print(f"  installed {n}", flush=True)
     for n in install_debug_dump_elision(S):
         print(f"  installed {n}", flush=True)
     if a.graph:
-        from instinctwm.passes.lingbot.graph_capture import GraphBlockStack
+        from instinctflash.passes.lingbot.graph_capture import GraphBlockStack
         for n in GraphBlockStack().install(S, type(server)):
             print(f"  installed {n}", flush=True)
 
     # ---- apply the conv backend plan, through the dispatch layer ------------------------------
     if a.conv_layout == "ndhwc":
-        from instinctwm.backends.conv import REGISTRY, ConvShape, register_declared
-        from instinctwm.backends.conv.semantics import ConvSemantics, MemoryLayout
+        from instinctflash.backends.conv import REGISTRY, ConvShape, register_declared
+        from instinctflash.backends.conv.semantics import ConvSemantics, MemoryLayout
         register_declared(REGISTRY)
         convs = [m for m in server.streaming_vae.vae.modules()
                  if isinstance(m, torch.nn.Conv3d) and m.weight.dim() == 5]
@@ -190,13 +190,13 @@ def main() -> int:
             print(f"    converted {len(hc)} Conv3d weights in the half-res VAE as well")
 
     if a.step_cast:
-        from instinctwm.passes.lingbot.step_scope_cast import StepScopeCastHoist
+        from instinctflash.passes.lingbot.step_scope_cast import StepScopeCastHoist
         _sc = StepScopeCastHoist()
         for n in _sc.install(S, type(server)):
             print(f"  installed {n}", flush=True)
 
     if a.fused_qkv:
-        from instinctwm.passes.lingbot.fused_qkv import FusedQKVProjection
+        from instinctflash.passes.lingbot.fused_qkv import FusedQKVProjection
         _fq = FusedQKVProjection()
         _fq.install(S, server)
 

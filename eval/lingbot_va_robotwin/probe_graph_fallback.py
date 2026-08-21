@@ -16,7 +16,7 @@ WHAT THIS PROBE DOES. Installs the pass, runs cycles normally to establish the r
 forces `failed` (the pass instance IS the engine -- `engine = self`) and runs more cycles. The ring must
 keep growing at the SAME rate. Before the fix it flatlines.
 
-    CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$IWM_FA_SHIM_DIR $IWM_SERVER_PY \\
+    CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$IFL_FA_SHIM_DIR $IFL_SERVER_PY \\
         -m torch.distributed.run --nproc_per_node 1 --master_port 29981 probe_graph_fallback.py
 """
 from __future__ import annotations
@@ -25,16 +25,16 @@ import os
 import sys
 from pathlib import Path
 
-IWM_ROOT = os.environ.get("IWM_ROOT") or str(Path(__file__).resolve().parents[2])
-if IWM_ROOT not in sys.path:
-    sys.path.insert(0, IWM_ROOT)
+IFL_ROOT = os.environ.get("IFL_ROOT") or str(Path(__file__).resolve().parents[2])
+if IFL_ROOT not in sys.path:
+    sys.path.insert(0, IFL_ROOT)
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
-from instinctwm.passes.lingbot.graph_capture import GraphBlockStack  # noqa: E402
-from instinctwm.passes.lingbot.ring_kv import RingKVAddressing  # noqa: E402
-from instinctwm.runtime.lingbot_install import (  # noqa: E402
+from instinctflash.passes.lingbot.graph_capture import GraphBlockStack  # noqa: E402
+from instinctflash.passes.lingbot.ring_kv import RingKVAddressing  # noqa: E402
+from instinctflash.runtime.lingbot_install import (  # noqa: E402
     import_lingbot_server, install_fsdp_elision,
 )
 
@@ -91,7 +91,7 @@ def one_cycle(server, obs, prompt, first: bool):
 
 def main() -> int:
     S = import_lingbot_server()
-    cfg = S.VA_CONFIGS[os.environ.get("IWM_CFG", "robotwin")]
+    cfg = S.VA_CONFIGS[os.environ.get("IFL_CFG", "robotwin")]
     cfg.save_root = "/tmp/iwm_gate_fallback"
     os.makedirs(cfg.save_root, exist_ok=True)
     rank = int(os.getenv("RANK", 0))

@@ -5,11 +5,11 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pi05-iwm"
 version = "0.1.0"
-description = "LeRobot pi05 VLA for InstinctWM"
+description = "LeRobot pi05 VLA for InstinctFlash"
 requires-python = ">=3.10"
-dependencies = ["instinctwm"]
+dependencies = ["instinctflash"]
 
-[project.entry-points."instinctwm.adapters"]
+[project.entry-points."instinctflash.adapters"]
 pi05 = "pi05_iwm.adapter:Pi05Adapter"
 
 [tool.setuptools.packages.find]

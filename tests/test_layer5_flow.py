@@ -16,8 +16,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from instinctwm.passes.contract import Tier  # noqa: E402
-from instinctwm.verify.released import RELEASED, summary  # noqa: E402
+from instinctflash.passes.contract import Tier  # noqa: E402
+from instinctflash.verify.released import RELEASED, summary  # noqa: E402
 
 FAILED: list[str] = []
 
@@ -72,9 +72,9 @@ def test_summary_does_not_hide_the_tier():
 
 def test_conv_selection_requires_measurement_and_consent():
     print("\n=== 4. the planner will not leave BITEXACT on its own ===")
-    from instinctwm.backends.conv import ConvBackendRegistry, ConvShape, MemoryLayout as L
-    from instinctwm.backends.conv import register_declared
-    from instinctwm.backends.conv.semantics import ConvSemantics as C
+    from instinctflash.backends.conv import ConvBackendRegistry, ConvShape, MemoryLayout as L
+    from instinctflash.backends.conv import register_declared
+    from instinctflash.backends.conv.semantics import ConvSemantics as C
     r = ConvBackendRegistry()
     register_declared(r)
     kw = dict(semantics=C.CAUSAL_TIME,
