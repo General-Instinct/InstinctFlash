@@ -98,20 +98,20 @@ def test_not_recommended_passes_say_so_where_a_reader_will_look():
 
 
 def test_readme_states_the_same_configuration():
-    print("\n=== 5. ARCHITECTURE.md describes the shipped configuration, and describes THIS one ===")
+    print("\n=== 5. the README architecture chapter describes the shipped configuration, THIS one ===")
     # This used to assert against the README. The README is now the product front page -- what
     # InstinctFlash is, how to install it, how to load a model, how to get actions -- and a table of
     # serving CLI flags is not that. The invariant is unchanged and still enforced: whatever document
     # states the shipped configuration must state THIS one.
-    text = (ROOT / "ARCHITECTURE.md").read_text()
+    text = (ROOT / "README.md").read_text()
     check("shipped_configuration()" in text or "SHIPPED CONFIGURATION" in text.upper(),
-          "ARCHITECTURE.md has a shipped-configuration section")
+          "README has a shipped-configuration section")
     for flag in shipped_configuration():
-        check(flag in text, f"ARCHITECTURE.md lists {flag}")
+        check(flag in text, f"README architecture chapter lists {flag}")
     for d in DISPOSITIONS:
         if d.status is NOT_RECOMMENDED:
             for pid in (d.pid,):
-                check(pid in text, f"ARCHITECTURE.md accounts for {pid} (NOT RECOMMENDED)")
+                check(pid in text, f"README accounts for {pid} (NOT RECOMMENDED)")
 
 
 def test_served_tier_is_stated_honestly():
@@ -166,7 +166,7 @@ def main() -> int:
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")
         return 1
-    print("PASS: the registry, both launch scripts, serve_variant and ARCHITECTURE.md agree.")
+    print("PASS: the registry, both launch scripts, serve_variant and the README agree.")
     return 0
 
 

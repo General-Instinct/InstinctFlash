@@ -95,7 +95,7 @@ case "${1:-}" in
     ;;
 
   parity-allocator)
-    # RESULTS.md 7b quotes 200 cycles / 800 checks; the file's own default is 120 / 480.
+    # the eval README (7b) quotes 200 cycles / 800 checks; the file's own default is 120 / 480.
     # Pin the documented sweep so the published number is the one that gets reproduced.
     sync_server
     # shellcheck source=eval/lingbot_va_robotwin/env.sh

@@ -1,7 +1,7 @@
 """Tests for the declaration layer and the loader.
 
 The LingBot-VA numbers asserted here are the ones the write-ups quote. They are pinned so a
-refactor cannot quietly change a published figure — `RESULTS.md` and the adapter have to move
+refactor cannot quietly change a published figure — the eval README's results chapter and the adapter have to move
 together or this fails.
 """
 
@@ -36,7 +36,7 @@ def test_forward_counts():
 
 
 def test_forwards_breakdown_shows_its_terms():
-    # total_forwards() alone (79) contradicts the 77 quoted in RESULTS.md, so anything
+    # total_forwards() alone (79) contradicts the 77 quoted in the published table, so anything
     # user-facing has to say which count it means.
     assert SPEC.forwards_breakdown() == "kv_refresh=2 + video=26 + action=51"
 
