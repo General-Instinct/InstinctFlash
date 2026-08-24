@@ -136,6 +136,19 @@ class Pi05Adapter:
 
         surface = Pi05Surface(policy.model)
         hoisted = surface.hoist_loop_constants()          # BITEXACT, and the prerequisite
+
+        import os
+        if os.environ.get(Pi05Surface.STATIC_CAPTURE_OPT_IN) == "1":
+            # The replay-safe path: static max-extent KV buffers, gate numbers in
+            # pi05_iwm/static_capture.py and verify_static_capture.py (bitexact on unseen
+            # inputs and prompts; 3.55x denoise step, 1.65x chunk on H100/pi05_base).
+            from pi05_iwm.static_capture import install_static_capture
+            install_static_capture(policy.model)
+            for h in hoisted:
+                print(f"InstinctFlash pi05: hoisted {h}")
+            print("InstinctFlash pi05: static-KV graph capture installed (bitexact-verified path).")
+            return ["loop_constant_hoist", "graph_capture_static_kv"]
+
         result = run_pass(GraphCapture(), surface, device=torch.device(str(device)))
         if getattr(result, "skipped_reason", None) or not surface.install():
             # Declining is the EXPECTED outcome here, not a failure. pi05's denoise region is not

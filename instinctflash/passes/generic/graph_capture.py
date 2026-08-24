@@ -72,9 +72,11 @@ class GraphCaptureApplicable:
                 "removes per-forward dispatch cost where the region is replay-safe. Measured ON pi05 "
                 "(H100, pi05_base, 50-step chunk): a denoise step is 2187 kernel launches, 17.25 ms "
                 "of CPU submit against 9.48 ms of GPU work -- 99.9% submit-bound, the GPU idle ~45% "
-                "of the step, and replay ran it in 5.01 ms. That is the size of the prize. It was NOT "
-                "collected: pi05's region is not replay-safe and the engine pass discards the graph, "
-                "so the shipped number for pi05 is 1.00x. Both halves are this model's -- a backbone "
-                "whose forwards are already compute-bound has nothing here to win either way, so "
-                "measure the submit-vs-busy split, then measure replay against eager"),
+                "of the step. The naive region (per-step DynamicCache clone+append) replays fast and "
+                "WRONG and stays discarded; the static-KV region (pi05_iwm/static_capture.py) is "
+                "replay-safe by construction and collected the prize: denoise step 16.25 -> 4.57 ms "
+                "(3.55x), chunk 298.7 -> 181.3 ms (1.65x), bitexact on unseen inputs and prompts. "
+                "Both halves are this model's -- a backbone whose forwards are already compute-bound "
+                "has nothing here to win either way, so measure the submit-vs-busy split, then "
+                "measure replay against eager on a SECOND input"),
         )

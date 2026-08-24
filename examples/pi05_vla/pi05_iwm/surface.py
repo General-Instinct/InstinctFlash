@@ -59,7 +59,23 @@ The engine pass now compares replay against eager on the second, DIFFERENT input
 graph, so pi05 runs eager and returns upstream's actions exactly. The site stays published: the
 rejection is a measurement about this region in this version of lerobot, and a preallocated cache of
 prefix+chunk extent -- the serving engine's approach (serving/), where a max-sized buffer is what makes capture valid -- is
-the thing that would make it replay-safe. That is the open work, not a claim.
+the thing that would make it replay-safe.
+
+RESOLVED, AND THE FIX IS THE ONE THE REJECTION NAMED. `static_capture.py` replaces the per-step
+DynamicCache clone+append with one K/V buffer per layer of extent prefix+suffix: prefix slots are
+rewritten once per chunk OUTSIDE the graph, suffix slots are overwritten INSIDE it at fixed
+addresses, and attention always runs over the constant full extent under the 4D mask pi05 already
+builds for exactly that width. Nothing in the region allocates and no Python container exists to
+go stale. Measured on the same H100, same checkpoint (`verify_static_capture.py`):
+
+    replay vs eager, captured input            max |d| 0.000e+00
+    replay vs eager, 3 new (x_t, t)            max |d| 0.000e+00   (was 2.116e-01)
+    replay vs eager, NEW PROMPT, refilled      max |d| 0.000e+00   (was 2.036e+00)
+    denoise step                               16.25 -> 4.57 ms    3.55x
+    chunk (prefill + 10 steps)                 298.7 -> 181.3 ms   1.65x
+
+BITEXACT on inputs the capture never saw, which is the tier the DynamicCache version could not
+reach at any speed.
 """
 
 from __future__ import annotations
@@ -174,16 +190,17 @@ class Pi05Surface:
 
     # -- AdapterSurface --------------------------------------------------------------------------
     #: Publish the denoise step as capturable. OFF, on evidence -- see the module docstring. Set
-    #: IFL_PI05_CAPTURE=1 to reproduce the negative result or to test a fix; it is an opt-in rather
-    #: than a deletion because the measurement is the useful artifact and it should stay runnable.
+    #: IFL_PI05_CAPTURE=1 to reproduce the negative result; it is an opt-in rather than a deletion
+    #: because the measurement is the useful artifact and it should stay runnable.
     #:
-    #: The decision, stated plainly: replay is 1.53x on the chunk and the actions are wrong. With the
-    #: engine pass's replay check in place the end-to-end action delta falls from 2.163e+00 to
-    #: 1.139e-02 -- about 2% of the 0.51 action scale, accumulating chunk over chunk through the Euler
-    #: integration. 1.139e-02 is not bit-exact and no non-inferiority evidence exists for it, so there
-    #: is no tier under which it can ship. A VLA that is 1.5x faster and moves the arm somewhere else
-    #: is not a faster VLA.
+    #: The DynamicCache decision, stated plainly: replay is 1.53x on the chunk and the actions are
+    #: wrong (1.139e-02 end-to-end delta after the engine pass's replay check; not bit-exact, no
+    #: non-inferiority evidence, no tier under which it can ship). The SHIPPABLE capture is the
+    #: static-KV path in `static_capture.py` (`install_static_capture(model)`, opt-in
+    #: IFL_PI05_STATIC_CAPTURE=1): bitexact on unseen inputs and prompts, 3.55x on the denoise
+    #: step, 1.65x on the chunk -- see the module docstring for the gate numbers.
     CAPTURE_OPT_IN = "IFL_PI05_CAPTURE"
+    STATIC_CAPTURE_OPT_IN = "IFL_PI05_STATIC_CAPTURE"
 
     def sites(self, kind):
         import os
