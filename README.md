@@ -12,9 +12,6 @@
 
 ---
 
-You give InstinctFlash a robotics checkpoint — a world-action model or a VLA policy. It works out
-how to run that checkpoint quickly and correctly, and can show its reasoning.
-
 ## What's new 🔥
 
 - **Seven model families served, measured, and tiered.** LingBot-VA 3.22×, LingBot-VLA-4B 3.66×,
@@ -26,16 +23,10 @@ how to run that checkpoint quickly and correctly, and can show its reasoning.
   denoise loop capturable with **bit-exact replay on unseen inputs** — verified on three model
   families and on two GPU architectures (H100/SM90 and Jetson Thor/SM110, same certificate).
   Sparse-MoE routing is capture-safe: it re-executes per replay, never baked.
-- **Honesty is load-bearing.** Where the model itself is nondeterministic (fused-MoE atomics),
-  the tier says NUMERIC and the null control is published. Where an optimization did not pay
-  (CFG batching on a compute-saturated 5B DiT: 0.97×), the number ships anyway.
 - **[InstinctCompress](https://github.com/General-Instinct/InstinctCompress)** (customer access),
   the companion compression toolkit: a fine-tuned pi05 checkpoint 8.7 GB → 3.2 GB with the
   accuracy trained back on your own demonstrations and verified, then served through the same
   stack unchanged.
-- **Load straight from the Hub, or bring your own model.** `Runtime.from_pretrained("org/model")`
-  resolves everything — including known upstream releases that carry no declaration; an external
-  package adds a new model family through an entry point — no fork.
 
 ## Architecture
 
@@ -64,18 +55,6 @@ Layer 1 changes the *weights* and produces a checkpoint; it lives in the compani
 2–6 change *how the weights execute* and produce a plan; they are the runtime in this repo. The
 layers are not a priority order — the runtime measures where the time actually goes and starts
 there.
-
-Every shipped optimization carries a proof tier, derived rather than asserted: **BITEXACT**
-(identical actions), **NUMERIC** (a paired non-inferiority certificate at a pre-declared margin),
-or it does not ship. `runtime.explain()` prints the chain chosen for your checkpoint, including
-the passes it declined and why. Protocols and per-pass results are in [`eval/`](eval/).
-
-On edge devices, execution runs on the serving engine in [`serving/`](serving/): fp8 and fp16
-paths, captured CUDA graphs, and real-time chunking — the configuration behind the 15 Hz
-closed-loop pi05 numbers above.
-
-Nothing about how a model was trained reaches the runtime, so a new training method needs no
-changes here.
 
 ## Using it
 
@@ -124,17 +103,18 @@ pip install git+https://github.com/General-Instinct/InstinctCompress   # with gr
 pi05-compress compress <checkpoint> out/ --tasks tasks.txt --dataset <your_demonstrations>
 ```
 
-| model | measured on H100, vs the authors' own serving | tier |
+| model | pytorch vs InstinctFlash | tier |
 |:--|:--|:--|
-| **LingBot-VA** (14B WAM) | 8308 → 2580 ms/cycle, **3.22×** (12.4 Hz control) | NUMERIC, 555-episode non-inferiority certificate |
-| **LingBot-VLA-4B** | 673 → 184 ms/infer, **3.66×** | BITEXACT across prompts |
-| **LingBot-VLA-V2-6B** (sparse-MoE) | 840 → 184 ms/infer, **4.45×** (1.47× vs their compile default) | NUMERIC within the model's own nondeterminism envelope |
-| **Cosmos3-Edge-Policy** (3.86B) | 300 → 184 ms/request, **1.64×** | action-equivalence screened |
-| **Cosmos3-Nano-Policy** (15.75B) | 480 → 318 ms/request, **1.51×** | action-equivalence screened |
-| **pi05** | 299 → 181 ms/chunk, **1.65×** | BITEXACT incl. unseen inputs, holds on SM90 and SM110 |
-| **DreamZero-DROID** (Wan2.2-5B WAM) | 3117 → 1787 ms via its own surfaced step-cache, **1.74×** | SCREEN — a closed-loop gate is required before defaulting |
+| **LingBot-VA** (14B WAM) | 8308 → 2580 ms, **3.22×** | NUMERIC |
+| **LingBot-VLA-4B** | 673 → 184 ms, **3.66×** | BITEXACT |
+| **LingBot-VLA-V2-6B** (sparse-MoE) | 840 → 184 ms, **4.45×** | NUMERIC |
+| **Cosmos3-Edge-Policy** (3.86B) | 300 → 184 ms, **1.64×** | NUMERIC |
+| **Cosmos3-Nano-Policy** (15.75B) | 480 → 318 ms, **1.51×** | NUMERIC |
+| **pi05** | 299 → 181 ms, **1.65×** | BITEXACT |
+| **DreamZero-DROID** (Wan2.2-5B WAM) | 3117 → 1787 ms, **1.74×** | SCREEN |
 
-Tiers are derived from what a pass can prove, never asserted. **BITEXACT** means identical actions,
+The Cosmos3 arms are measured on repeated single-prompt serving; multi-prompt serving currently
+runs the pipeline arm. Tiers are derived from what a pass can prove, never asserted. **BITEXACT** means identical actions,
 **NUMERIC** means a declared-margin result, **SCREEN** means measured deltas without a closed-loop
 certificate. `runtime.explain()` prints the chain and its tier for the checkpoint you loaded,
 including the passes it declined and why. Protocols and per-pass results are in [`eval/`](eval/).
