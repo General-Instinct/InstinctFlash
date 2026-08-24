@@ -58,7 +58,7 @@ being taken, and every chunk after it replayed and was wrong by ~2.1 against an 
 The engine pass now compares replay against eager on the second, DIFFERENT input and discards the
 graph, so pi05 runs eager and returns upstream's actions exactly. The site stays published: the
 rejection is a measurement about this region in this version of lerobot, and a preallocated cache of
-prefix+chunk extent -- FlashRT's approach, where a max-sized buffer is what makes capture valid -- is
+prefix+chunk extent -- the serving engine's approach (serving/), where a max-sized buffer is what makes capture valid -- is
 the thing that would make it replay-safe. That is the open work, not a claim.
 """
 

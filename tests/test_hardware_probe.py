@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The hardware vocabulary must be closed on both sides.
 
-FOUND WHILE STUDYING FLASHRT, whose `detect_arch()` is strict by design and refuses rather than
+FOUND WHILE STUDYING OUR SERVING ENGINE (serving/), whose `detect_arch()` is strict by design and refuses rather than
 falling back, on the stated grounds that "silently falling back to the wrong backend would hide
 latency/correctness regressions". Checking whether we had the same discipline turned up a dormant
 bug of exactly that shape:

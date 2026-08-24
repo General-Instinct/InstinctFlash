@@ -47,6 +47,10 @@ Every shipped optimization carries a proof tier, derived rather than asserted: *
 or it does not ship. `runtime.explain()` prints the chain chosen for your checkpoint, including
 the passes it declined and why. Protocols and per-pass results are in [`eval/`](eval/).
 
+On edge devices, execution runs on the serving engine in [`serving/`](serving/): fp8 and fp16
+paths, captured CUDA graphs, and real-time chunking — the configuration behind the 15 Hz
+closed-loop pi05 numbers above.
+
 Nothing about how a model was trained reaches the runtime, so a new training method needs no
 changes here.
 
