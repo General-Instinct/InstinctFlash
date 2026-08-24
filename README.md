@@ -17,8 +17,10 @@ how to run that checkpoint quickly and correctly, and can show its reasoning.
 
 ## What's new 🔥
 
-- **pi05 (VLA) support.** Load a pi05 checkpoint and serve actions. The runtime measures the
-  model's cost profile and reports exactly which optimizations apply — and which it declined, and why.
+- **pi05 (VLA) support.** Load a pi05 checkpoint and serve actions. On Jetson Thor, pi05 serves
+  through our FlashRT path — fp8, captured CUDA graphs, real-time chunking — at 15 Hz closed
+  loop, validated on a real robot. The runtime measures the model's cost profile and reports
+  exactly which optimizations apply — and which it declined, and why.
 - **[InstinctCompress](https://github.com/General-Instinct/InstinctCompress)**, included as a
   submodule: compresses a fine-tuned pi05 checkpoint 8.7 GB → 3.2 GB with the accuracy trained
   back on your own demonstrations and verified, then serves through the same stack unchanged.
@@ -97,7 +99,7 @@ pi05-compress compress <checkpoint> out/ --tasks tasks.txt --dataset <your_demon
 |:--|:--|:--|
 | **LingBot-VA** | 2.88×, plus 1.405× from convolution layout | BITEXACT / NUMERIC (certified) |
 | **Cosmos3-Edge** | 2.33× on the control step | no accuracy claim — tested on random weights |
-| **pi05** | serving + compression via InstinctCompress | verified per checkpoint |
+| **pi05** | fp8 + CUDA-graph serving (FlashRT) at 15 Hz closed loop on Jetson Thor | validated on the target robot |
 
 To add your own model family, declare an `instinctflash.adapters` entry point and `pip install`
 your package — see [`examples/external_plugin/`](examples/external_plugin/).
