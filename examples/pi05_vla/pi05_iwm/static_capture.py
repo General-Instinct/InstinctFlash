@@ -34,12 +34,54 @@ from __future__ import annotations
 import torch
 
 #: eager steps on the static path before capture; also serves as kernel warmup. The count is
-#: chunk-agnostic — what matters is that capture happens after at least one full prefix refill.
+#: chunk-agnostic — what matters is that capture happens after at least one full prefix refill,
+#: and (with step tables on) that every timestep of the fixed Euler schedule has been seen once.
 WARMUP_STEPS = 12
 
 
+class _TableDense(torch.nn.Module):
+    """Stands in for an AdaRMS `dense` projection inside the captured region.
+
+    The projection's input is the time conditioning, which for a fixed Euler schedule takes ten
+    values ever — so its output is a per-step CONSTANT. The serving engine precomputes exactly
+    these (step, layer) modulation tables offline and slices them by baked pointer offset
+    (serving/flash_rt/frontends/torch/pi05_rtx.py:371-430, models/pi05/pipeline_rtx.py:422-443);
+    this is the torch-level equivalent: the module returns a static buffer that the step loop
+    fills OUTSIDE the graph from a table of outputs the REAL projection produced during warmup on
+    the same conditioning bytes. The swap moves WHEN the GEMV runs (once per timestep per model
+    lifetime, not once per step), never WHAT it produces, so bitexactness is preserved by
+    construction and re-proven by the verify gates. Measured: the 37 projections plus the time
+    MLP cost 0.302 ms inside a 4.57 ms replay (6.6%).
+    """
+
+    def __init__(self, real: torch.nn.Module, buf: torch.Tensor, owner):
+        super().__init__()
+        self.real = real
+        self.buf = buf
+        self._owner = [owner]                      # plain list: keep the denoiser out of state_dict
+
+    def forward(self, cond):
+        # Inside the captured region the owner flag is True and the graph bakes the buffer read.
+        # Any OTHER caller of this module (the in-process stock comparator, training) sees the
+        # flag False and gets the real projection — the swap must never leak outside the graph.
+        if self._owner[0]._tabled_active:
+            return self.buf
+        return self.real(cond)
+
+
 class _StaticKV:
-    """The Cache interface `GemmaAttention.update` needs, over fixed-extent buffers."""
+    """The Cache interface `GemmaAttention.update` needs, over fixed-extent buffers.
+
+    This is the same memory discipline the serving engine uses for its enc+dec cache: one
+    fixed-extent K and V per layer, the decoder's fresh entries written AT AN OFFSET into the
+    shared buffer, attention reading the full extent with zero concat and zero copy per step
+    (serving/flash_rt/hardware/rtx/attn_backend.py:249-270 allocates K/V each
+    (layers, enc_seq_max+chunk, 1, head_dim); models/pi05/pipeline_rtx.py:1011-1029 writes the
+    chunk K/V at token offset enc_seq and attends over enc_seq+dec_seq). Here `update` is that
+    offset write — suffix slots at [prefix, prefix+suffix) — and returning the whole buffer is
+    the zero-materialization read. The `torch.cat` upstream keeps in its Q/K/V head-stacking is
+    untouched: capture-pool allocations are replay-stable; it is the CACHE join that must not
+    reallocate, and here it never does."""
 
     def __init__(self, prefix_kv, suffix_len: int):
         first_k = next(iter(prefix_kv))[0]
@@ -86,7 +128,7 @@ class _StaticKV:
 class StaticDenoiser:
     """pi05's denoise step over static buffers: eager until warm, then captured and replayed."""
 
-    def __init__(self, model):
+    def __init__(self, model, step_tables: bool = True):
         self._m = model
         self._kv: "_StaticKV | None" = None
         self._last_cache_obj = None
@@ -97,6 +139,59 @@ class StaticDenoiser:
         self._out = None
         self._steps = 0
         self.replays = 0
+        # -- per-step constant tables (the FlashRT style-table absorb) ---------------------------
+        self._step_tables = step_tables
+        self._table: dict[float, tuple] = {}       # t -> (adarms_cond, [dense outs])
+        self._adarms_buf = None
+        self._dense_bufs: "list[torch.Tensor] | None" = None
+        self._denses: "list | None" = None          # (norm, real dense) pairs, in swap order
+        self._tabled_active = False
+
+    # -- per-step-constant compute, done OUTSIDE the graph ----------------------------------------
+    def _adarms_denses(self):
+        """(norm, real dense) pairs, in a fixed traversal order the buffers share."""
+        expert = self._m.paligemma_with_expert.gemma_expert.model
+        pairs = []
+        for layer in expert.layers:
+            for norm in (layer.input_layernorm, layer.post_attention_layernorm):
+                if getattr(norm, "dense", None) is not None:
+                    pairs.append((norm, norm.dense))
+        final = getattr(expert, "norm", None)
+        if final is not None and getattr(final, "dense", None) is not None:
+            pairs.append((final, final.dense))
+        return pairs
+
+    def _time_cond(self, timestep):
+        """The embed_suffix time path, byte-identical: same modules, same op order, same dtypes."""
+        import torch.nn.functional as F
+
+        from lerobot.policies.pi05.modeling_pi05 import create_sinusoidal_pos_embedding
+        m = self._m
+        e = create_sinusoidal_pos_embedding(
+            timestep, m.action_in_proj.out_features,
+            min_period=m.config.min_period, max_period=m.config.max_period,
+            device=timestep.device).type(dtype=timestep.dtype)
+        return F.silu(m.time_mlp_out(F.silu(m.time_mlp_in(e))))
+
+    def _record_step(self, timestep) -> None:
+        key = round(float(timestep[0]), 9)
+        if key in self._table:
+            return
+        with torch.no_grad():
+            cond = self._time_cond(timestep)
+            outs = [real(cond).clone() for _, real in self._denses]
+        self._table[key] = (cond.clone(), outs)
+
+    def _load_step(self, timestep) -> None:
+        key = round(float(timestep[0]), 9)
+        if key not in self._table:
+            # a timestep the warmup never saw (schedule change): compute the entry now, outside
+            # the graph — correctness is preserved, only this step pays the 0.7 ms eager cost
+            self._record_step(timestep)
+        cond, outs = self._table[key]
+        self._adarms_buf.copy_(cond)
+        for buf, o in zip(self._dense_bufs, outs):
+            buf.copy_(o)
 
     # -- per-chunk, outside the graph ------------------------------------------------------------
     def _begin_chunk(self, prefix_pad_masks, past_key_values) -> None:
@@ -132,7 +227,13 @@ class StaticDenoiser:
     def _forward_static(self):
         m = self._m
         mask4d, position_ids, cache_position = self._const
-        suffix_embs, _, _, adarms = m.embed_suffix(self._x_buf, self._t_buf)
+        if self._step_tables and self._adarms_buf is not None:
+            # tabled path: the time MLP and every AdaRMS projection were computed outside the
+            # graph (`_load_step`); the region does only the step-VARYING work
+            suffix_embs = m.action_in_proj(self._x_buf)
+            adarms = self._adarms_buf
+        else:
+            suffix_embs, _, _, adarms = m.embed_suffix(self._x_buf, self._t_buf)
         out = m.paligemma_with_expert.gemma_expert.model.forward(
             inputs_embeds=suffix_embs,
             attention_mask=mask4d,
@@ -158,18 +259,37 @@ class StaticDenoiser:
             self._t_buf.copy_(timestep)
 
         if self._graph is not None:
+            if self._step_tables:
+                self._load_step(timestep)
             self._graph.replay()
             self.replays += 1
             return self._out.clone()
 
         self._steps += 1
         if self._steps <= WARMUP_STEPS:
+            if self._step_tables:
+                if self._denses is None:
+                    self._denses = self._adarms_denses()
+                self._record_step(timestep)
             return self._forward_static()
+
+        if self._step_tables and self._adarms_buf is None:
+            # swap point: from here the projections live in tables and the graph never sees them
+            cond0, outs0 = next(iter(self._table.values()))
+            self._adarms_buf = cond0.clone()
+            self._dense_bufs = [o.clone() for o in outs0]
+            for (norm, real), buf in zip(self._denses, self._dense_bufs):
+                norm.dense = _TableDense(real, buf, self)
+            self._load_step(timestep)
 
         torch.cuda.synchronize()
         self._graph = torch.cuda.CUDAGraph()
-        with torch.cuda.graph(self._graph):
-            self._out = self._forward_static()
+        self._tabled_active = True
+        try:
+            with torch.cuda.graph(self._graph):
+                self._out = self._forward_static()
+        finally:
+            self._tabled_active = False
         # capture runs the region once on a side stream but its output tensor content is not
         # trustworthy on all driver versions; replay once so _out holds this call's real answer
         self._graph.replay()
@@ -177,9 +297,16 @@ class StaticDenoiser:
         return self._out.clone()
 
 
-def install_static_capture(model) -> StaticDenoiser:
-    """Route `model.denoise_step` through a StaticDenoiser. Returns it (for its counters)."""
-    d = StaticDenoiser(model)
+def install_static_capture(model, step_tables: "bool | None" = None) -> StaticDenoiser:
+    """Route `model.denoise_step` through a StaticDenoiser. Returns it (for its counters).
+
+    `step_tables` (default on; IFL_PI05_STEP_TABLES=0 disables) additionally hoists the time MLP
+    and the 37 AdaRMS modulation projections out of the captured region into per-timestep tables.
+    """
+    if step_tables is None:
+        import os
+        step_tables = os.environ.get("IFL_PI05_STEP_TABLES", "1") != "0"
+    d = StaticDenoiser(model, step_tables=step_tables)
 
     def denoise_step(self_m, prefix_pad_masks, past_key_values, x_t, timestep):
         return d(prefix_pad_masks, past_key_values, x_t, timestep)
