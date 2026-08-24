@@ -184,9 +184,9 @@ per task rather than 100, a different accepted-seed set, or a genuine small defi
 sound *reference* either way — every optimization is compared against this run, on these pinned
 seeds, not against the paper.
 
-Pinned accepted-seed lists are in `/home/ubuntu/iwm_seeds/baseline50` and per-chunk action
-streams in `/home/ubuntu/iwm_actions/baseline50`, so a later arm can replay the identical scene
-set and be compared per-episode.
+Pinned accepted-seed lists and per-chunk action streams are retained internally, so a later arm
+can replay the identical scene set and be compared per-episode (contact the maintainers for the
+artifacts).
 
 ## 3. Latency cost model (batch 1, idle H100)
 
@@ -246,33 +246,6 @@ What each removes:
 matters, since establishing non-inferiority costs roughly 10× more GPU time than measuring
 a speedup, and a previous project found CUDA graph capture was *not* bit-exact and had to
 pay exactly that cost.
-
-## 5. What the numbers say about where to go next
-
-After the free 1.92×, a forward still costs 56 ms against a ~3 ms roofline. The remaining
-gap decomposes into two very different problems:
-
-1. **Step count.** 77 forwards per chunk is the dominant term and no amount of kernel work
-   touches it. Few-step distillation is the only lever with an order of magnitude in it.
-   The 51-step *action* loop is the larger half and conditions on a KV cache the 26-step
-   video loop already wrote, so the two are not equally compressible.
-2. **Per-forward overhead.** ~53 of the remaining 56 ms is not arithmetic. CUDA graph
-   capture, `torch.compile`, and an attention kernel that handles a growing KV window are
-   the candidates — but note CUDA graphs were previously measured **not** bit-exact on a
-   related model, so that one buys speed at the cost of an expensive accuracy certificate.
-
-Two structural observations worth more than either:
-
-- **CFG doubles every forward.** `guidance_scale=5 > 1` duplicates the batch on all 77
-  forwards. A guidance-distilled model halves the compute with no scheduling change.
-- **The paper's "asynchronous execution" is not in the server.** There are no CUDA streams
-  anywhere in the repo; `wan_va_server.py:489-522` runs the video loop, then `:524-561`
-  runs the action loop, strictly sequentially.
-
-Finally, a protocol caveat that governs all of the above: **RoboTwin does not score
-latency.** `take_action` blocks until the policy returns, so a 77-forward model ties a
-4-forward model. Every number in §4 is real, and none of it shows up in §2. Making latency
-count needs its own protocol.
 
 ## Appendix — flash-attn and the baseline environment
 

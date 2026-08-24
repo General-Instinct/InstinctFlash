@@ -17,19 +17,25 @@ how to run that checkpoint quickly and correctly, and can show its reasoning.
 
 ## What's new 🔥
 
-- **pi05 (VLA) support.** Load a pi05 checkpoint and serve actions. On Jetson Thor, pi05 serves
-  at 15 Hz closed loop — fp8, captured CUDA graphs, real-time chunking — validated on a real
-  robot. The runtime measures the model's cost profile and reports exactly which optimizations
-  apply — and which it declined, and why.
-- **[InstinctCompress](https://github.com/General-Instinct/InstinctCompress)**, the companion
-  compression toolkit: compresses a fine-tuned pi05 checkpoint 8.7 GB → 3.2 GB with the accuracy
-  trained back on your own demonstrations and verified, then serves through the same stack
-  unchanged.
-- **LingBot-VA at 2.88× bit-exact**, plus 1.405× from convolution-layout selection under a paired
-  non-inferiority certificate (555 episodes, identical seeds, one-sided p = 0.00031).
-  **Cosmos3-Edge at 2.33×** on the control step.
+- **Seven model families served, measured, and tiered.** LingBot-VA 3.22×, LingBot-VLA-4B 3.66×,
+  **LingBot-VLA-V2-6B (sparse-MoE) 4.45×**, Cosmos3-Edge-Policy 1.64×, Cosmos3-Nano-Policy 1.51×,
+  pi05 1.65× — each against its authors' own serving code on the same H100, identical requests
+  per arm. DreamZero-DROID ships with its upstream dynamic step-cache surfaced as a declared
+  configuration (1.74×, screen-tier).
+- **Static-KV replay-safe CUDA-graph capture.** A preallocated max-extent KV buffer makes the
+  denoise loop capturable with **bit-exact replay on unseen inputs** — verified on three model
+  families and on two GPU architectures (H100/SM90 and Jetson Thor/SM110, same certificate).
+  Sparse-MoE routing is capture-safe: it re-executes per replay, never baked.
+- **Honesty is load-bearing.** Where the model itself is nondeterministic (fused-MoE atomics),
+  the tier says NUMERIC and the null control is published. Where an optimization did not pay
+  (CFG batching on a compute-saturated 5B DiT: 0.97×), the number ships anyway.
+- **[InstinctCompress](https://github.com/General-Instinct/InstinctCompress)** (customer access),
+  the companion compression toolkit: a fine-tuned pi05 checkpoint 8.7 GB → 3.2 GB with the
+  accuracy trained back on your own demonstrations and verified, then served through the same
+  stack unchanged.
 - **Load straight from the Hub, or bring your own model.** `Runtime.from_pretrained("org/model")`
-  resolves everything; an external package adds a new model family through an entry point — no fork.
+  resolves everything — including known upstream releases that carry no declaration; an external
+  package adds a new model family through an entry point — no fork.
 
 ## Architecture
 
@@ -109,19 +115,29 @@ instinctflash run       <model-id>    # load it and produce real actions
 `describe` and `plan` need no weights and no GPU: they answer *will this machine serve it* before
 you commit to a download.
 
-Compress a checkpoint before serving it (see
-[InstinctCompress](https://github.com/General-Instinct/InstinctCompress)):
+Compress a checkpoint before serving it — see
+[InstinctCompress](https://github.com/General-Instinct/InstinctCompress) (customer access;
+contact founders@general-instinct.com):
 
 ```bash
-pip install git+https://github.com/General-Instinct/InstinctCompress
+pip install git+https://github.com/General-Instinct/InstinctCompress   # with granted access
 pi05-compress compress <checkpoint> out/ --tasks tasks.txt --dataset <your_demonstrations>
 ```
 
-| model | speedup | tier |
+| model | measured on H100, vs the authors' own serving | tier |
 |:--|:--|:--|
-| **LingBot-VA** | 2.88×, plus 1.405× from convolution layout | BITEXACT / NUMERIC (certified) |
-| **Cosmos3-Edge** | 2.33× on the control step | no accuracy claim — tested on random weights |
-| **pi05** | fp8 + CUDA-graph serving at 15 Hz closed loop on Jetson Thor | validated on the target robot |
+| **LingBot-VA** (14B WAM) | 8308 → 2580 ms/cycle, **3.22×** (12.4 Hz control) | NUMERIC, 555-episode non-inferiority certificate |
+| **LingBot-VLA-4B** | 673 → 184 ms/infer, **3.66×** | BITEXACT across prompts |
+| **LingBot-VLA-V2-6B** (sparse-MoE) | 840 → 184 ms/infer, **4.45×** (1.47× vs their compile default) | NUMERIC within the model's own nondeterminism envelope |
+| **Cosmos3-Edge-Policy** (3.86B) | 300 → 184 ms/request, **1.64×** | action-equivalence screened |
+| **Cosmos3-Nano-Policy** (15.75B) | 480 → 318 ms/request, **1.51×** | action-equivalence screened |
+| **pi05** | 299 → 181 ms/chunk, **1.65×** | BITEXACT incl. unseen inputs, holds on SM90 and SM110 |
+| **DreamZero-DROID** (Wan2.2-5B WAM) | 3117 → 1787 ms via its own surfaced step-cache, **1.74×** | SCREEN — a closed-loop gate is required before defaulting |
+
+Tiers are derived from what a pass can prove, never asserted. **BITEXACT** means identical actions,
+**NUMERIC** means a declared-margin result, **SCREEN** means measured deltas without a closed-loop
+certificate. `runtime.explain()` prints the chain and its tier for the checkpoint you loaded,
+including the passes it declined and why. Protocols and per-pass results are in [`eval/`](eval/).
 
 To add your own model family, declare an `instinctflash.adapters` entry point and `pip install`
 your package — see [`examples/external_plugin/`](examples/external_plugin/).

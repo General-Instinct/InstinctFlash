@@ -156,8 +156,7 @@ def load_declaration(ckpt_dir: str | Path) -> ExecutionDeclaration:
     Resolution order, first hit wins:
       1. `instinctflash.json`  -- the two-namespace schema
       2. `instinctwm.json`     -- the same schema under the project's pre-rename name. Published
-                                  artifacts carry it (general-instinct/lingbot-va on the Hub does),
-                                  and a rename must not orphan them.
+                                  artifacts may carry it, and a rename must not orphan them.
       3. `delta.json`          -- legacy flat format, mapped and marked
       4. refuse                -- an unrecognised checkpoint is not served on guessed facts
     """

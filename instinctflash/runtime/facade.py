@@ -2,7 +2,7 @@
 
     from instinctflash import Runtime
 
-    runtime = Runtime.from_pretrained("general-instinct/lingbot-va")
+    runtime = Runtime.from_pretrained("robbyant/lingbot-va-posttrain-robotwin")
     action = runtime.predict(observation)
 
 Nothing above mentions a planner, a pass, a tier, a backend or a socket, and nothing below requires

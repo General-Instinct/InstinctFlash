@@ -3,7 +3,7 @@
 The generalization arm. LingBot-VA answers "does the stack make *this* model fast"; Cosmos3-Edge
 answers "is the stack a framework or a LingBot-VA optimizer with ambitions".
 
-Results and protocol: [RESULTS.md](RESULTS.md).
+Results and protocol are summarized below.
 
 ## Setup
 
@@ -60,7 +60,7 @@ decisive and measures 1.000× on the path that ships. This is the fused RoPE ker
 (`d5aae5e`: bit-exact, 1.10× at region scale, 0.3% of the cycle, did not ship) arriving from a
 different direction — there the region was too small to resolve, here it is large and already
 subsumed by capture. Both fail the same gate. Gate on the cycle. Section 4 of
-[RESULTS.md](RESULTS.md) is that story in full.
+The probes in this directory are that story in full.
 
 ---
 

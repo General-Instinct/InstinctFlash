@@ -7,7 +7,7 @@ Rules this script obeys, because they are what makes the result mean anything:
   * no local paths -- the model is named by Hub repo id;
   * repeated inference is the pass criterion, not a single action.
 
-    python tools/audit_first_user.py --model general-instinct/lingbot-va
+    python tools/audit_first_user.py --model robbyant/lingbot-va-posttrain-robotwin
 """
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ def check(cond, label, detail=""):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default="general-instinct/lingbot-va")
+    ap.add_argument("--model", default="robbyant/lingbot-va-posttrain-robotwin")
     ap.add_argument("--cycles", type=int, default=5)
     a = ap.parse_args()
 

@@ -139,7 +139,7 @@ class StaticDenoiser:
         self._out = None
         self._steps = 0
         self.replays = 0
-        # -- per-step constant tables (the FlashRT style-table absorb) ---------------------------
+        # -- per-step constant tables (the serving engine's style-table absorb) ---------------------------
         self._step_tables = step_tables
         self._table: dict[float, tuple] = {}       # t -> (adarms_cond, [dense outs])
         self._adarms_buf = None
