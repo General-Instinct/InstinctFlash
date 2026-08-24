@@ -21,9 +21,10 @@ how to run that checkpoint quickly and correctly, and can show its reasoning.
   at 15 Hz closed loop — fp8, captured CUDA graphs, real-time chunking — validated on a real
   robot. The runtime measures the model's cost profile and reports exactly which optimizations
   apply — and which it declined, and why.
-- **[InstinctCompress](https://github.com/General-Instinct/InstinctCompress)**, included as a
-  submodule: compresses a fine-tuned pi05 checkpoint 8.7 GB → 3.2 GB with the accuracy trained
-  back on your own demonstrations and verified, then serves through the same stack unchanged.
+- **[InstinctCompress](https://github.com/General-Instinct/InstinctCompress)**, the companion
+  compression toolkit: compresses a fine-tuned pi05 checkpoint 8.7 GB → 3.2 GB with the accuracy
+  trained back on your own demonstrations and verified, then serves through the same stack
+  unchanged.
 - **LingBot-VA at 2.88× bit-exact**, plus 1.405× from convolution-layout selection under a paired
   non-inferiority certificate (555 episodes, identical seeds, one-sided p = 0.00031).
   **Cosmos3-Edge at 2.33×** on the control step.
@@ -57,7 +58,7 @@ changes here.
 ## Using it
 
 ```bash
-git clone --recurse-submodules https://github.com/General-Instinct/InstinctFlash && cd InstinctFlash
+git clone https://github.com/General-Instinct/InstinctFlash && cd InstinctFlash
 pip install -e ".[runtime,diffusion]"
 ```
 
@@ -92,10 +93,11 @@ instinctflash run       <model-id>    # load it and produce real actions
 `describe` and `plan` need no weights and no GPU: they answer *will this machine serve it* before
 you commit to a download.
 
-Compress a checkpoint before serving it:
+Compress a checkpoint before serving it (see
+[InstinctCompress](https://github.com/General-Instinct/InstinctCompress)):
 
 ```bash
-cd InstinctCompress   # see its README
+pip install git+https://github.com/General-Instinct/InstinctCompress
 pi05-compress compress <checkpoint> out/ --tasks tasks.txt --dataset <your_demonstrations>
 ```
 

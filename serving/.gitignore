@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+.eggs/
+
+# Build artifacts
+build/
+build*/
+*.so
+*.o
+*.a
+
+# Generated model / engine files
+*.engine
+*.rtexe
+*.bin
+*.pkl
+*.safetensors
+*.npz
+!tests/fixtures/cfg_reference_outputs.npz
+
+# Cache
+.cache/
+.ccache/
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Long-form training run archives — only the reproducer ships.
+training/_runs/**
+!training/_runs/run_jax_compare.py
+
+# Dev-local probe scripts (per-model micro-benches not part of the
+# release surface). Mirror the FlashVLA dev convention.
+internal-tests/
+internal-docs/
