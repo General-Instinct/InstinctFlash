@@ -43,6 +43,22 @@ checkpoint ─▶ adapter          ─▶ planner            ─▶ engine passe
                                    no weights needed)
 ```
 
+Optimization is organized in six layers, by what each one changes:
+
+| layer | | changes |
+|:--|:--|:--|
+| 1 | **MODEL** | what is computed — distillation, step reduction, checkpoint compression ([InstinctCompress](https://github.com/General-Instinct/InstinctCompress), [instinct-pdd](https://github.com/General-Instinct/instinct-pdd)) |
+| 2 | **GRAPH** | when work is issued — prefill extraction, CUDA-graph capture, memory planning |
+| 3 | **CACHE** | what is recomputed — KV reuse, cross-attention and episode caches |
+| 4 | **ATTENTION** | how tokens mix — FlashAttention, hybrid and linear attention |
+| 5 | **KERNEL** | how a kernel is written — backend and layout dispatch, fusion |
+| 6 | **HARDWARE** | what it executes on — fp8/int8, TensorRT, Jetson-class edge devices ([`serving/`](serving/)) |
+
+Layer 1 changes the *weights* and produces a checkpoint; it lives in the companion repos. Layers
+2–6 change *how the weights execute* and produce a plan; they are the runtime in this repo. The
+layers are not a priority order — the runtime measures where the time actually goes and starts
+there.
+
 Every shipped optimization carries a proof tier, derived rather than asserted: **BITEXACT**
 (identical actions), **NUMERIC** (a paired non-inferiority certificate at a pre-declared margin),
 or it does not ship. `runtime.explain()` prints the chain chosen for your checkpoint, including
