@@ -262,6 +262,31 @@ class Checkpoint:
         return frozenset(caps)
 
 
+def _declared_view(snapshot: Path, model_id: str, doc: dict) -> Path:
+    """A checkpoint directory for an upstream snapshot that carries no declaration.
+
+    Symlinks every snapshot entry (weights stay in the HF cache, nothing is copied or mutated)
+    and writes the known declaration next to them. Rebuilt on every call: cheap, and it tracks
+    snapshot updates.
+    """
+    import json as _json
+    import os
+    base = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
+    view = base / "instinctflash" / "declared" / model_id.replace("/", "__")
+    view.mkdir(parents=True, exist_ok=True)
+    for entry in view.iterdir():
+        if entry.is_symlink() or entry.name == "instinctflash.json":
+            entry.unlink()
+    for entry in snapshot.iterdir():
+        (view / entry.name).symlink_to(entry)
+    if not (view / "config.json").exists() and (snapshot / "transformer" / "config.json").exists():
+        # diffusers-composed upstream layout: the backbone architecture config lives under
+        # transformer/; the package contract wants it at top level, and it is the same file
+        (view / "config.json").symlink_to(snapshot / "transformer" / "config.json")
+    (view / "instinctflash.json").write_text(_json.dumps(doc, indent=1))
+    return view
+
+
 def from_pretrained(model_id_or_path: str | Path, *, revision: str | None = None,
                     require_servable: bool = True) -> Checkpoint:
     """Load a checkpoint by local path, or by Hub repo id if `huggingface_hub` is installed.
@@ -282,6 +307,15 @@ def from_pretrained(model_id_or_path: str | Path, *, revision: str | None = None
                 f"so it cannot be resolved as a Hub repo id. Install huggingface_hub, or pass a path."
             ) from e
         p = Path(snapshot_download(str(model_id_or_path), revision=revision))
+        from instinctflash.descriptors.checkpoint import _declaration_file
+        if _declaration_file(p) is None:
+            # A known upstream release: its authors publish weights without a declaration, and we
+            # serve them without republishing. Materialize a declared view — symlinks into the HF
+            # snapshot plus our declaration — so every check below runs unchanged on it.
+            from instinctflash.descriptors.known import lookup
+            doc = lookup(str(model_id_or_path))
+            if doc is not None:
+                p = _declared_view(p, str(model_id_or_path), doc)
 
     report = validate_package(p)
     if not report.is_checkpoint or report.declaration is None:

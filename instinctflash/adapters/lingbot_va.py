@@ -387,9 +387,24 @@ class LingBotVA:
             link.symlink_to(target, target_is_directory=is_dir)
 
         tdir = composed / cls.TRAINABLE_COMPONENT
-        tdir.mkdir(parents=True, exist_ok=True)
-        for f in list(pkg.glob("*.safetensors")) + list(pkg.glob("*.index.json")) + [pkg / "config.json"]:
-            link_to(tdir / f.name, f.resolve())
+        flat = list(pkg.glob("*.safetensors"))
+        if flat:
+            # published package layout: the trainable transformer sits flat at the package root
+            tdir.mkdir(parents=True, exist_ok=True)
+            for f in flat + list(pkg.glob("*.index.json")) + [pkg / "config.json"]:
+                link_to(tdir / f.name, f.resolve())
+        elif (pkg / cls.TRAINABLE_COMPONENT).exists():
+            # upstream-composed layout (a declared view of the original release): the package
+            # already carries transformer/ as a component; link it whole
+            composed.mkdir(parents=True, exist_ok=True)
+            if tdir.exists() and not tdir.is_symlink():
+                import shutil
+                shutil.rmtree(tdir)                 # stale flat-layout build under the same key
+            link_to(tdir, (pkg / cls.TRAINABLE_COMPONENT).resolve(), is_dir=True)
+        else:
+            raise RuntimeError(f"{checkpoint.model_id}: no transformer weights found — neither "
+                               f"flat *.safetensors at the package root nor a transformer/ "
+                               f"component directory")
         for comp in cls.FROZEN_COMPONENTS:
             src = basep / comp
             if src.exists():

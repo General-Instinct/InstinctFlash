@@ -86,7 +86,7 @@ Serve actions:
 ```python
 from instinctflash import Runtime
 
-runtime = Runtime.from_pretrained("general-instinct/lingbot-va")
+runtime = Runtime.from_pretrained("robbyant/lingbot-va-posttrain-robotwin")
 
 with runtime.episode(prompt="put the bottle in the dustbin") as episode:
     while not done:

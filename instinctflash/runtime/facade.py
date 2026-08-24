@@ -286,10 +286,16 @@ def describe(model_id_or_path: str | Path, *, revision: str | None = None) -> di
             except Exception:                                    # noqa: BLE001  try the next name
                 continue
     if decl_path is None or not Path(decl_path).exists():
-        raise RuntimeError(f"{model_id_or_path}: no declaration "
-                           f"(looked for {', '.join(DECLARATION_FILENAMES)})")
-
-    doc = json.loads(Path(decl_path).read_text())
+        # A repo without a declaration may still be a release we know how to serve; an in-repo
+        # declaration always wins, so this is a fallback, never an override.
+        from instinctflash.descriptors.known import lookup
+        doc = lookup(str(model_id_or_path))
+        if doc is None:
+            raise RuntimeError(f"{model_id_or_path}: no declaration "
+                               f"(looked for {', '.join(DECLARATION_FILENAMES)}, and it is not a "
+                               f"known upstream release)")
+    else:
+        doc = json.loads(Path(decl_path).read_text())
     ex = dict(doc.get("execution") or {})
     from instinctflash.descriptors.package import Checkpoint as _C
     from instinctflash.descriptors.checkpoint import load_declaration
