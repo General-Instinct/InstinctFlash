@@ -29,7 +29,12 @@ from trace_block import DIM, HEADS, TEXT_LEN, build_block
 import modules.model as M
 
 DEV, DT, KV, B = torch.device("cuda"), torch.bfloat16, 9792, 2
-NBLOCK = int(sys.argv[1]) if len(sys.argv) > 1 else 8
+# Block count is overridable when run as a script; under pytest argv[1] is the test path itself,
+# so only trust an argument that parses.
+try:
+    NBLOCK = int(sys.argv[1]) if len(sys.argv) > 1 else 8
+except ValueError:
+    NBLOCK = 8
 LIVE = 4096
 
 

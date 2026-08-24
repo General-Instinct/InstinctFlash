@@ -27,6 +27,10 @@ internals, no server, no GPU.
 """
 from __future__ import annotations
 
+import pytest
+
+pytest.importorskip("instinct_pdd", reason="the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests")
+
 import sys
 from pathlib import Path
 

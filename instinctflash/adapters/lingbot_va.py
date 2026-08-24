@@ -428,6 +428,13 @@ class LingBotVA:
                 setattr(cfg, attr, composed)
         cfg.save_root = os.environ.get("IFL_SAVE_ROOT", "/tmp/iwm_runtime")
         os.makedirs(cfg.save_root, exist_ok=True)
+        # Single-GPU serving must not require torchrun: env:// rendezvous demands these four
+        # variables even at world size 1, where every collective is identity. A clean shell
+        # (any machine that is not a launcher-managed rank) gets the single-process defaults.
+        os.environ.setdefault("MASTER_ADDR", "127.0.0.1")
+        os.environ.setdefault("MASTER_PORT", "29531")
+        os.environ.setdefault("RANK", "0")
+        os.environ.setdefault("WORLD_SIZE", "1")
         S.init_distributed(int(os.getenv("WORLD_SIZE", 1)), int(os.getenv("LOCAL_RANK", 0)),
                            int(os.getenv("RANK", 0)))
         cfg.rank = cfg.local_rank = 0

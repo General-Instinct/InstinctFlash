@@ -305,7 +305,15 @@ def resolve_lingbot_root(explicit: str | None = None) -> str:
     """
     cache = os.path.join(os.environ.get("XDG_CACHE_HOME") or
                          os.path.join(os.path.expanduser("~"), ".cache"), "instinctflash", "lingbot-va")
-    candidates = [c for c in (explicit, os.environ.get("LINGBOT_ROOT"), cache,
+    if explicit is not None:
+        # An explicit path is a claim, not a hint: silently falling back to a cache when it is
+        # wrong would serve a different checkout than the one the caller named.
+        if os.path.isdir(explicit):
+            return explicit
+        raise FileNotFoundError(
+            f"LINGBOT_ROOT candidate {explicit!r} does not exist. Point it at a checkout of "
+            f"https://github.com/robbyant/lingbot-va, or unset it to use the default cache.")
+    candidates = [c for c in (os.environ.get("LINGBOT_ROOT"), cache,
                               "/home/ubuntu/lingbot-va") if c]
     for root in candidates:
         if os.path.isdir(root):

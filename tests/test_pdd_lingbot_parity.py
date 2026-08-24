@@ -15,6 +15,11 @@ happily on intervals it will never be asked to jump.
 """
 from __future__ import annotations
 
+import pytest
+
+pytest.importorskip("instinct_pdd", reason="the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests")
+pytest.importorskip("websockets")
+
 import os
 import sys
 from pathlib import Path

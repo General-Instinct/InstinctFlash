@@ -32,7 +32,9 @@ runtime = ["torch>=2.4", "safetensors>=0.4", "numpy>=1.21"]
 # Additionally required to serve a diffusers-based backbone such as LingBot-VA (`wan_va`). Exact
 # verified pins, including the upstream serving code's own undeclared imports, are in
 # requirements-serving.txt -- use that file for a reproducible serving box.
-diffusion = ["diffusers>=0.36", "transformers>=4.55", "accelerate>=1.0", "einops>=0.8"]
+diffusion = ["diffusers>=0.36", "transformers>=4.55", "accelerate>=1.0", "einops>=0.8",
+             # the upstream wan_va serving code's own undeclared imports
+             "easydict", "ftfy", "imageio", "opencv-python", "websockets", "msgpack"]
 eval = ["numpy>=1.21"]
 
 # THE CLI. "install the package, give it a model id, run" should not require writing a program, and

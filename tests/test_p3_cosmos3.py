@@ -64,7 +64,7 @@ def test_applicability() -> bool:
     return ok
 
 
-def test_correctness(rt) -> tuple[bool, float]:
+def check_correctness(rt) -> tuple[bool, float]:
     """BITEXACT: memoized results must be torch.equal to freshly computed ones, with layout."""
     print("\n=== correctness gate: memoized vs freshly computed ===")
     orig = rt.init_sequence_pack
@@ -100,7 +100,7 @@ def test_correctness(rt) -> tuple[bool, float]:
     return (not problems), worst
 
 
-def test_performance(rt) -> tuple[float, float]:
+def check_performance(rt) -> tuple[float, float]:
     """Per-control-step cost of building pack metadata, before vs after."""
     print("\n=== performance gate: pack metadata construction per control step ===")
     dev = torch.device("cpu")
@@ -130,8 +130,8 @@ def test_performance(rt) -> tuple[float, float]:
 def main() -> int:
     rt = _fresh_runtime()
     ok_appl = test_applicability()
-    ok_corr, worst = test_correctness(rt)
-    before, after = test_performance(rt)
+    ok_corr, worst = check_correctness(rt)
+    before, after = check_performance(rt)
     StaticPartitionHoist.uninstall(rt)
 
     from instinctflash.passes.contract import BenchResult, VerifyResult

@@ -20,7 +20,13 @@ from __future__ import annotations
 
 from typing import Mapping, Sequence
 
-from instinct_pdd import DataFreeRollout, Grid, PDDConfig, pdd_loss, shift_time
+try:
+    from instinct_pdd import DataFreeRollout, Grid, PDDConfig, pdd_loss, shift_time
+except ModuleNotFoundError as e:  # the recipe lives in a companion repo
+    raise ModuleNotFoundError(
+        "the PDD recipe needs the instinct-pdd package: "
+        "pip install git+https://github.com/General-Instinct/instinct-pdd"
+    ) from e
 from instinct_pdd.objective import sample_k
 from instinctflash.train.recipe import (
     Capabilities, DescriptorDelta, Environment, RecipeState, StepOutput,

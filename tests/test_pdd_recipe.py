@@ -18,6 +18,10 @@ test_pdd_core.py proves the algorithm. This file proves the ORCHESTRATION around
 """
 from __future__ import annotations
 
+import pytest
+
+pytest.importorskip("instinct_pdd", reason="the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests")
+
 import json
 import sys
 import tempfile

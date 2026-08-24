@@ -8,6 +8,10 @@ special cases, and if it fails closed when the environment cannot satisfy them.
 """
 from __future__ import annotations
 
+import pytest
+
+pytest.importorskip("instinct_pdd", reason="the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests")
+
 import os
 import sys
 

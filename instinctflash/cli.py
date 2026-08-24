@@ -118,10 +118,13 @@ def cmd_run(a) -> int:
     obs = contract.example()
     print(f"  expects: {contract.describe()}")
 
-    print(f"SMOKE TEST -- zero-filled observations. This proves the checkpoint loads here and "
-          f"returns finite actions.\nIt is not an evaluation.\n")
+    # A prompt-conditioned model crashes deep in its forward when no prompt was ever encoded, so
+    # the smoke test always supplies one. It conditions the actions, which a smoke test ignores.
+    prompt = a.prompt or "smoke test: reach forward"
+    print(f"SMOKE TEST -- zero-filled observations, prompt {prompt!r}. This proves the checkpoint "
+          f"loads here and returns finite actions.\nIt is not an evaluation.\n")
     times, last = [], None
-    with rt, rt.episode(**({"prompt": a.prompt} if a.prompt else {})) as ep:
+    with rt, rt.episode(prompt=prompt) as ep:
         for i in range(a.cycles):
             t0 = time.perf_counter()
             out = ep.predict(obs)
