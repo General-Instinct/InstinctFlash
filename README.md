@@ -19,6 +19,13 @@
   pi05 1.65× — each against its authors' own serving code on the same H100, identical requests
   per arm. DreamZero-DROID ships with its upstream dynamic step-cache surfaced as a declared
   configuration (1.74×, screen-tier).
+- **Declared operating points, and a few-step distillation framework on the way.** A checkpoint
+  can declare a few-step denoise schedule and the runtime serves it: LingBot-VA at its 2V/4A
+  point runs the full pipeline in **360 ms** on the same H100 — **23×** end to end. A changed
+  schedule never inherits a serving tier: the point ships with its own paired closed-loop
+  evidence (600 RoboTwin episode pairs, −2.3 pp against a pre-registered −0.05 non-inferiority
+  margin; certification extension to n=1200 in progress). The distillation framework that
+  trains the few-step gap back out is under development as an InstinctFlash component.
 - **Static-KV replay-safe CUDA-graph capture.** A preallocated max-extent KV buffer makes the
   denoise loop capturable with **bit-exact replay on unseen inputs** — verified on three model
   families and on two GPU architectures (H100/SM90 and Jetson Thor/SM110, same certificate).
@@ -106,6 +113,7 @@ pi05-compress compress <checkpoint> out/ --tasks tasks.txt --dataset <your_demon
 | model | pytorch vs InstinctFlash | tier |
 |:--|:--|:--|
 | **LingBot-VA** (14B WAM) | 8308 → 2580 ms, **3.22×** | NUMERIC |
+| ↳ **@ 2V/4A** (declared operating point) | 8308 → 360 ms, **23×** | OPERATING-POINT |
 | **LingBot-VLA-4B** | 673 → 184 ms, **3.66×** | BITEXACT |
 | **LingBot-VLA-V2-6B** (sparse-MoE) | 840 → 184 ms, **4.45×** | NUMERIC |
 | **Cosmos3-Edge-Policy** (3.86B) | 300 → 184 ms, **1.64×** | NUMERIC |
@@ -116,7 +124,8 @@ pi05-compress compress <checkpoint> out/ --tasks tasks.txt --dataset <your_demon
 The Cosmos3 arms are measured on repeated single-prompt serving; multi-prompt serving currently
 runs the pipeline arm. Tiers are derived from what a pass can prove, never asserted. **BITEXACT** means identical actions,
 **NUMERIC** means a declared-margin result, **SCREEN** means measured deltas without a closed-loop
-certificate. `runtime.explain()` prints the chain and its tier for the checkpoint you loaded,
+certificate. **OPERATING-POINT** means a declared few-step schedule — changed computation,
+carried by its own paired closed-loop evidence rather than a serving tier. `runtime.explain()` prints the chain and its tier for the checkpoint you loaded,
 including the passes it declined and why. Protocols and per-pass results are in [`eval/`](eval/).
 
 To add your own model family, declare an `instinctflash.adapters` entry point and `pip install`
