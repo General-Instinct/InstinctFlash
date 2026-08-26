@@ -51,6 +51,20 @@ be a change of what listens on the port, nothing else.
 
 The server is **stateful per episode**. One client per server, always.
 
+### The two-phase episode contract (what `Runtime.predict()` hides)
+
+One upstream control cycle is TWO calls: `infer(obs)` produces the action chunk, then a second
+`infer(compute_kv_cache=True, state=<executed action>, obs=<frames observed while it executed>)`
+advances the KV ring. The two calls want DIFFERENT observations — the action forward conditions on
+the current frame only (the first chunk of an episode on exactly ONE frame, streaming VAE), while
+the ring advance consumes the whole window: 4 frames on the first advance, 8 after. Skip the
+commit and the ring never moves; the model fails with a conv-size error several chunks later.
+InstinctFlash's `Runtime.predict()` folds all of this in — it holds the returned action, folds it
+into the ring on your NEXT `predict()` together with the frames observed while it executed, and
+raises a readable error when the window is short — so a caller just loops
+`runtime.predict({"obs": frames_since_last_call, "prompt": task})`. Only clients speaking the raw
+wire protocol above (stock `wan_va_server`, `serve_variant.py`) issue the two calls themselves.
+
 ## Running it
 
 ```bash
