@@ -158,6 +158,41 @@ def validate_package(ckpt_dir: str | Path) -> PackageReport:
     return PackageReport(str(d), True, tuple(missing), tuple(problems), tuple(notes), decl)
 
 
+def verify_weights_indexes(ckpt_dir: str | Path) -> list[str]:
+    """Integrity of a sharded-weights index: every declared shard exists, inside the package.
+
+    Three failure classes, each of which `validate_package` used to wave through because it reads
+    declarations, not weights: a weight_map that is missing or empty, a referenced shard that does
+    not exist, and a shard path that escapes the package directory (a symlink or ../ that would
+    make a 'validated' package read files it does not contain). Returns problems; empty is good.
+    A package with no index file (single-file weights, pointer-only) has nothing to verify.
+    """
+    root = Path(ckpt_dir)
+    problems: list[str] = []
+    for name in ("model.safetensors.index.json", "diffusion_pytorch_model.safetensors.index.json"):
+        p = root / name
+        if not p.is_file():
+            continue
+        try:
+            doc = json.loads(p.read_text())
+            weight_map = doc.get("weight_map")
+            if not isinstance(weight_map, dict) or not weight_map:
+                problems.append(f"{name}: missing non-empty weight_map")
+                continue
+            for shard in sorted(set(weight_map.values())):
+                target = root / str(shard)
+                try:
+                    target.resolve().relative_to(root.resolve())
+                except ValueError:
+                    problems.append(f"{name}: shard escapes package: {shard}")
+                    continue
+                if not target.is_file():
+                    problems.append(f"{name}: referenced shard is missing: {shard}")
+        except Exception as e:                                   # noqa: BLE001
+            problems.append(f"{name}: invalid index: {type(e).__name__}: {e}")
+    return problems
+
+
 def publishability(ckpt_dir: str | Path) -> tuple[bool, list[str]]:
     """Can this be published without exposing training internals?
 

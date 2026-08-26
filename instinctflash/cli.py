@@ -1,16 +1,22 @@
-"""`instinctflash` — the command line. Five verbs, no Python required.
+"""`instinctflash` — the command line. Six verbs, no Python required.
 
     instinctflash devices                    what machine am I on, and what can it do
     instinctflash describe  <model-id>       what a checkpoint declares, without downloading weights
     instinctflash validate  <dir>            is this directory a publishable checkpoint
     instinctflash plan      <model-id>       what the runtime would do to it, and why
     instinctflash run       <model-id>       load it and produce real actions
+    instinctflash certify   --certify....    paired non-inferiority certificate from two outcome files
 
 Why a CLI at all, given `Runtime.from_pretrained` is three lines. Because "install the package, give
-it a model id, run" should not require writing a program, and because four of these five verbs answer
+it a model id, run" should not require writing a program, and because most of these verbs answer
 questions you want answered BEFORE committing to a download or a GPU: what is this checkpoint, will
 this runtime serve it, what would it do to it, and is this machine capable of the plan. `plan` and
 `describe` need no weights and no GPU at all.
+
+`certify` uses the typed dotted-field syntax from `cli_config` (`--certify.margin=-0.05`,
+optional `--config_path=FILE` with CLI overrides winning, unknown fields are hard errors, JSON
+errors use one stable schema, `--output.path` writes atomically). The classic verbs keep their
+existing syntax — that surface is published and stays stable.
 
 `run` uses zero-filled observations by default. That is deliberately a smoke test and says so: it
 proves this checkpoint loads on this machine and produces finite actions of the right shape, which is
@@ -22,6 +28,32 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from dataclasses import dataclass, field
+from pathlib import Path
+
+from instinctflash.cli_config import OutputConfig
+
+
+@dataclass
+class CertifyOptions:
+    """The `certify` verb's inputs. Module-level so the typed parser can resolve the hints."""
+
+    teacher_outcomes: Path | None = None
+    student_outcomes: Path | None = None
+    margin: float | None = None
+    min_pairs: int = 1
+    harness: str | None = None
+    recipe: str | None = None
+    seeds: list[int] | None = None
+    per_task: bool = True
+    teacher_hash: str = "?"
+    student_hash: str = "?"
+
+
+@dataclass
+class CertifyConfig:
+    certify: CertifyOptions = field(default_factory=CertifyOptions)
+    output: OutputConfig = field(default_factory=lambda: OutputConfig(format="json"))
 
 
 def _fmt_device(d) -> str:
@@ -72,9 +104,19 @@ def cmd_describe(a) -> int:
 
 
 def cmd_validate(a) -> int:
-    from instinctflash.descriptors.package import publishability, validate_package
+    from instinctflash.descriptors.package import (
+        publishability, validate_package, verify_weights_indexes,
+    )
     rep = validate_package(a.path)
     print(rep.explain())
+    # Weights-index integrity GATES the exit code: a package whose declared shards are missing,
+    # or whose shard paths escape the package, is not a valid package — the old exit simply could
+    # not see it because validation read declarations, not weights. Publishability stays
+    # INFORMATIONAL (exit-neutral), preserving the published exit contract for packages that are
+    # valid but carry training internals.
+    index_problems = verify_weights_indexes(a.path)
+    for p in index_problems:
+        print(f"  PROBLEM  {p}")
     ok = False
     try:
         ok, findings = publishability(a.path)
@@ -83,7 +125,7 @@ def cmd_validate(a) -> int:
             print(f"    - {f}")
     except Exception as e:                                       # noqa: BLE001
         print(f"  publishability: {type(e).__name__}: {e}")
-    return 0 if rep.ok else 1
+    return 0 if rep.ok and not index_problems else 1
 
 
 def cmd_plan(a) -> int:
@@ -151,9 +193,59 @@ def cmd_run(a) -> int:
     return 0 if np.isfinite(last).all() else 1
 
 
+def cmd_certify(argv: list[str]) -> int:
+    """Paired non-inferiority certificate from two outcome JSONL files.
+
+    A thin CLI over `instinctflash.verify.certify` — the same code path the harnesses use, so a
+    certificate produced here is the certificate, not a reimplementation of one.
+    """
+    from dataclasses import asdict
+
+    from instinctflash.cli_config import CommandReport, ConfigError, execute
+
+    def run(cfg: CertifyConfig) -> CommandReport:
+        c = cfg.certify
+        if c.teacher_outcomes is None or c.student_outcomes is None or c.margin is None:
+            raise ConfigError(
+                "certify.teacher_outcomes, certify.student_outcomes, and certify.margin are "
+                "required")
+        if c.margin > 0 or c.min_pairs < 1:
+            raise ConfigError("certify.margin must be <= 0 and certify.min_pairs must be >= 1")
+        from instinctflash.verify.certify import certify, load_jsonl
+
+        cert = certify(
+            load_jsonl(str(c.teacher_outcomes)), load_jsonl(str(c.student_outcomes)),
+            margin=c.margin, min_pairs=c.min_pairs,
+            teacher_hash=c.teacher_hash, student_hash=c.student_hash,
+            harness=c.harness or "?", recipe=c.recipe or "?",
+            seeds=",".join(map(str, c.seeds)) if c.seeds is not None else "?",
+        )
+        result = asdict(cert)
+        result["passed"] = bool(cert.passed)
+        if not c.per_task:
+            result.pop("per_task", None)
+        text = str(cert)
+        if c.per_task:
+            text += ("\n\nper-task (a macro average can hide a collapsed task):\n"
+                     + cert.per_task_table())
+        return CommandReport(result, text, cert.passed, 0 if cert.passed else 1)
+
+    return execute("certify", CertifyConfig, run, argv, prog="instinctflash certify",
+                   description="Certify paired teacher/student outcomes at a declared margin.")
+
+
 def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    # certify speaks the typed dotted-field syntax and owns its own help/error contract, so it is
+    # dispatched before argparse (whose positional grammar the classic verbs keep).
+    if argv[:1] == ["certify"]:
+        return cmd_certify(argv[1:])
+
     ap = argparse.ArgumentParser(prog="instinctflash", description=__doc__.split("\n")[0])
     sub = ap.add_subparsers(dest="cmd")
+
+    sub.add_parser("certify", help="paired non-inferiority certificate (typed "
+                                   "--certify.field=value syntax; see `instinctflash certify -h`)")
 
     sub.add_parser("devices", help="what machine am I on").set_defaults(fn=cmd_devices)
 
