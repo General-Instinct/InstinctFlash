@@ -207,7 +207,7 @@ class _GR00TN17Loop:
         model_path: Path,
         action_nfe: int,
         driver=None,
-        cpu_threads: int | None = None,
+        cpu_threads: "_ThreadPin | None" = None,
         fast_decode: bool = False,
         backbone_fastpath=None,
     ):
@@ -251,7 +251,7 @@ class _GR00TN17Loop:
             "graph_captures": int(self._driver.captures if self._driver else 0),
             "graph_replays": int(self._driver.replays if self._driver else 0),
             "action_nfe": self._action_nfe,
-            "cpu_threads": self._cpu_threads,
+            "cpu_threads": (self._cpu_threads.target if self._cpu_threads else None),
             "fast_decode": self._fast_decode,
             "backbone_fastpath": self._backbone_fastpath is not None,
             "backbone_cache_hits": int(
@@ -267,8 +267,12 @@ class _GR00TN17Loop:
             self._driver.close()
         if self._backbone_fastpath is not None:
             self._backbone_fastpath.close()
+        if self._cpu_threads is not None:
+            # The pin is process-global; a closed model must not leave its cap on the process.
+            self._cpu_threads.restore()
         self._driver = None
         self._backbone_fastpath = None
+        self._cpu_threads = None
         self._policy = None
 
 
@@ -427,25 +431,61 @@ def _env_flag(name: str, *, default: bool) -> bool:
     raise RuntimeError(f"{name} must be a boolean flag, got {value!r}")
 
 
-def _configure_preprocessing_threads(value) -> int | None:
-    """Bound tiny image-batch CPU pools without changing numerical kernels."""
+class _ThreadPin:
+    """A process-global torch/cv2 thread cap that remembers what it replaced.
+
+    torch.set_num_threads / cv2.setNumThreads mutate the WHOLE process — a co-hosted engine
+    inherits the cap — so the pin is (a) opt-in via IFL_GROOT_CPU_THREADS only, never a manifest
+    or frontend default, and (b) restored on close(). The win is host-specific: ~165 ms on a
+    240-logical-CPU box, ~2 ms measured on our 208-CPU H100 (bitexact either way).
+    """
+
+    def __init__(self, target: int, prev_torch: int, prev_cv2: int | None):
+        self.target = int(target)
+        self._prev_torch = int(prev_torch)
+        self._prev_cv2 = prev_cv2
+        self.restored = False
+
+    def restore(self) -> None:
+        if self.restored:
+            return
+        import torch
+
+        torch.set_num_threads(self._prev_torch)
+        if self._prev_cv2 is not None:
+            try:
+                import cv2
+            except ImportError:
+                pass
+            else:
+                cv2.setNumThreads(self._prev_cv2)
+        self.restored = True
+
+
+def _configure_preprocessing_threads(value) -> _ThreadPin | None:
+    """Bound tiny image-batch CPU pools without changing numerical kernels. Returns the pin
+    handle (carrying the previous values for restore-on-close), or None when not requested."""
     if value is None or str(value).strip().lower() in {"", "0", "off", "false", "none"}:
         return None
     text = str(value).strip().lower()
+    # `auto` CAPS at min(16, cores): a fixed 16 on a <16-core host would RAISE thread counts.
     target = min(16, os.cpu_count() or 16) if text == "auto" else int(text)
     if target < 1:
         raise ValueError(f"GR00T N1.7 CPU threads must be positive, got {target}")
 
     import torch
 
+    prev_torch = torch.get_num_threads()
     torch.set_num_threads(target)
+    prev_cv2 = None
     try:
         import cv2
     except ImportError:
         pass
     else:
+        prev_cv2 = cv2.getNumThreads()
         cv2.setNumThreads(target)
-    return target
+    return _ThreadPin(target, prev_torch, prev_cv2)
 
 
 def _is_checkpoint(path: Path) -> bool:

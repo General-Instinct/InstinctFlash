@@ -85,6 +85,7 @@ def test_example_surface_stays_product_shaped():
         "config.json",
         "fastpath_results.json",
         "instinctflash.json",
+        "profile_runtime.py",
         "pyproject.toml",
         "static_capture.py",
         "verify_backbone_fastpath.py",
@@ -266,24 +267,48 @@ def test_static_capture_flag_is_strict():
             os.environ[name] = previous
 
 
-def test_preprocessing_threads_support_auto_disable_and_explicit_values():
-    fake_cv2 = SimpleNamespace(setNumThreads=Mock())
+def test_preprocessing_threads_support_auto_disable_explicit_and_restore():
+    # The pin is process-global, so it is env-opt-in only and MUST restore on close: the handle
+    # carries the previous torch/cv2 values and puts them back.
+    fake_cv2 = SimpleNamespace(setNumThreads=Mock(), getNumThreads=Mock(return_value=208))
     with patch.dict(sys.modules, {"cv2": fake_cv2}), patch(
         "torch.set_num_threads"
-    ) as set_torch:
+    ) as set_torch, patch("torch.get_num_threads", return_value=104):
         assert _configure_preprocessing_threads(None) is None
         assert _configure_preprocessing_threads("0") is None
-        assert _configure_preprocessing_threads("7") == 7
+        pin = _configure_preprocessing_threads("7")
+        assert pin.target == 7
         set_torch.assert_called_once_with(7)
         fake_cv2.setNumThreads.assert_called_once_with(7)
+        pin.restore()
+        assert set_torch.call_args_list[-1].args == (104,)
+        assert fake_cv2.setNumThreads.call_args_list[-1].args == (208,)
+        assert pin.restored
+        pin.restore()  # idempotent
+        assert len(set_torch.call_args_list) == 2
 
     fake_cv2.setNumThreads.reset_mock()
     with patch.dict(sys.modules, {"cv2": fake_cv2}), patch(
         "os.cpu_count", return_value=240
-    ), patch("torch.set_num_threads") as set_torch:
-        assert _configure_preprocessing_threads("auto") == 16
+    ), patch("torch.set_num_threads") as set_torch, patch(
+        "torch.get_num_threads", return_value=240
+    ):
+        # `auto` caps at min(16, cores): a fixed 16 on a <16-core host would RAISE threads.
+        assert _configure_preprocessing_threads("auto").target == 16
         set_torch.assert_called_once_with(16)
         fake_cv2.setNumThreads.assert_called_once_with(16)
+
+
+def test_loop_close_restores_the_thread_pin():
+    with tempfile.TemporaryDirectory() as td:
+        path = Path(td)
+        _write_statistics(path)
+        pin = SimpleNamespace(target=7, restored=False,
+                              restore=Mock(side_effect=lambda: None))
+        loop = _GR00TN17Loop(_FakePolicy(), model_path=path, action_nfe=4, cpu_threads=pin)
+        assert loop.backend_stats["cpu_threads"] == 7
+        loop.close()
+        pin.restore.assert_called_once()
 
 
 if __name__ == "__main__":
