@@ -12,6 +12,22 @@
 
 ---
 
+## What's new 🔥
+
+- **Eight model families, two device classes.** Each measured against its authors' own serving
+  code on the same device — up to 4.54x on H100 (LingBot-VLA-V2) and 7.13x on Jetson Thor
+  (LingBot-VLA-4B). The two devices need opposite optimizations — the planner measures before
+  it applies. Full table in the results section below.
+- **Declared few-step schedules.** LingBot-VA's 2V/4A schedule runs at twenty-three times its
+  upstream serving cost, certified non-inferior over 1153 pre-registered RoboTwin episode
+  pairs. A few-step distillation framework is under development as an InstinctFlash component.
+- **Bit-exact CUDA-graph capture.** A static max-extent KV buffer makes denoise loops
+  capturable with bit-exact replay on unseen inputs — verified on three model families and two
+  GPU architectures. Sparse-MoE routing re-executes per replay, never baked.
+- **[InstinctCompress](https://github.com/General-Instinct/InstinctCompress)** (customer
+  access): a fine-tuned pi05 checkpoint 8.7 GB → 3.2 GB, accuracy trained back on your own
+  demonstrations and verified, served through the same stack unchanged.
+
 ## Install
 
 ```bash
@@ -86,21 +102,6 @@ stamps the certificate into the package.
 **BITEXACT** means identical actions, **NUMERIC** means a declared-margin result, **SCREEN**
 means measured deltas without a closed-loop certificate, and **OPERATING-POINT** means a declared
 few-step schedule — changed computation, carried by its own paired closed-loop certificate.
-
-## What's new 🔥
-
-- **Eight model families, two device classes.** Each measured against its authors' own serving
-  code on the same device. H100 and Jetson Thor need opposite optimizations — the planner
-  measures before it applies. Numbers in the results table above.
-- **Declared few-step schedules.** LingBot-VA's 2V/4A schedule runs at twenty-three times its
-  upstream serving cost, certified non-inferior over 1153 pre-registered RoboTwin episode
-  pairs. A few-step distillation framework is under development as an InstinctFlash component.
-- **Bit-exact CUDA-graph capture.** A static max-extent KV buffer makes denoise loops
-  capturable with bit-exact replay on unseen inputs — verified on three model families and two
-  GPU architectures. Sparse-MoE routing re-executes per replay, never baked.
-- **[InstinctCompress](https://github.com/General-Instinct/InstinctCompress)** (customer
-  access): a fine-tuned pi05 checkpoint 8.7 GB → 3.2 GB, accuracy trained back on your own
-  demonstrations and verified, served through the same stack unchanged.
 
 ## Roadmap
 
