@@ -63,52 +63,37 @@ class Runtime:
         device: str | None = None,
         placement: str = "auto",
         strict: bool = True,
+        tier_ceiling: str = "bitexact",
+        exclude_passes: tuple[str, ...] | list[str] = (),
+        startup_timeout_s: float = 900.0,
     ) -> "Runtime":
         """Load a checkpoint and return a runtime handle.
 
         `revision`  commit, branch or tag. Pin it when a number has to be reproducible.
         `nfe`       explicit override of the checkpoint's declared forwards-per-stream. Not a preset.
         `device`    None lets the adapter choose.
-        `placement` 'auto' | 'in_process' | 'worker'. WHERE the model runs, not WHAT it is; 'auto'
-                    is right unless you are deliberately isolating the model.
+        `placement` 'auto' | 'in_process' | 'worker'. WHERE the model runs, not WHAT it
+                    is; 'auto' is right unless you are deliberately isolating the model.
         `strict`    False downgrades the servable refusal to a warning, for inspection tooling.
+        `tier_ceiling`     the strongest accuracy claim the plan may spend: 'bitexact' (default),
+                           'numeric', or 'behavioral'. Raising it is a claim budget, not a speed knob.
+        `exclude_passes`   pass names to drop via `Plan.without` — a CALLER EXCLUSION the runtime
+                           honors everywhere; an excluded pass cannot be resurrected by a placement.
+        `startup_timeout_s` worker-placement only: how long a cold load may take before the spawn
+                           is declared dead. Raise it for cold 10 GB loads.
         """
+        if placement not in {"auto", "in_process", "worker"}:
+            raise ValueError(
+                f"placement must be one of auto, in_process, worker; got {placement!r}")
         ckpt = _load_package(model_id_or_path, revision=revision, require_servable=strict)
+        adapter, plan, _ = _compile_declaration(
+            ckpt, nfe=nfe, tier_ceiling=tier_ceiling, exclude_passes=exclude_passes,
+        )
 
-        from instinctflash.runtime.loader import available_models, load as load_adapter
-        backbone = ckpt.execution.backbone
-        try:
-            adapter = load_adapter(backbone)
-        except KeyError as e:
-            raise UnknownBackboneError(_unknown_backbone_message(ckpt, available_models())) from e
-
-        # Plan against the schedule that will actually run, not the model's own default. The
-        # checkpoint declares `execution.nfe`; `nfe=` overrides it per stream. Without this the
-        # planner priced a 79-forward cycle while a 10-forward cycle executed.
-        spec = adapter.spec()
-        schedule = {**dict(ckpt.execution.nfe or {}), **dict(nfe or {})}
-        if schedule:
-            spec = spec.with_nfe(schedule)
-
-        # Probe the machine, so hardware requirements are enforced rather than decorative. Probing
-        # is best-effort by design: analysing a checkpoint must keep working on a laptop with no
-        # torch and no GPU, and a planner that refused to run without a device would break that.
-        # An unprobed device is reported in the plan, never assumed away.
-        from instinctflash.descriptors.deployment import DeploymentSpec
-        from instinctflash.planners.planner import Optimizer
-        # NOT named `device`: that is the caller's placement string ("cuda:0"), and shadowing it here
-        # sent a DeviceProfile into `model.to()`. Two different things called device is exactly the
-        # kind of collision an end-to-end run catches and a unit test does not.
-        probed = None
-        try:
-            from instinctflash.passes.contract import DeviceProfile
-            probed = DeviceProfile.probe()
-        except Exception:                                        # noqa: BLE001  no torch, no CUDA
-            pass
-        plan = Optimizer().compile(spec, deployment=DeploymentSpec(device=probed),
-                                   capabilities=ckpt.capabilities())
-
-        backend, why = choose_backend(placement, adapter, ckpt, plan, device=device, nfe=nfe)
+        backend, why = choose_backend(
+            placement, adapter, ckpt, plan, device=device, nfe=nfe,
+            startup_timeout_s=startup_timeout_s,
+        )
         return cls(ckpt, adapter, plan, backend, placement_reason=why)
 
     # -- using -----------------------------------------------------------------------------------
@@ -255,6 +240,153 @@ def _unknown_backbone_message(ckpt: Checkpoint, registered: list[str]) -> str:
         f"Why it is required, and what would remove the requirement: CHECKPOINTS.md, 'Scope'.")
 
 
+def load_declaration_ref(model_id_or_path: str | Path, *, revision: str | None = None):
+    """Resolve only a checkpoint declaration, never a weight snapshot.
+
+    Returns ``(declaration, raw_document, source)``.  Hub references use ``hf_hub_download`` for
+    exactly one small metadata file.  This is the path behind `describe` and the CLI's plan
+    preflight, so planning no longer pays the download/device cost of constructing a `Runtime`.
+    """
+    from instinctflash.descriptors.checkpoint import (
+        DECLARATION_FILENAMES, SCHEMA_VERSION, load_declaration,
+    )
+
+    ref = str(model_id_or_path)
+    p = Path(model_id_or_path)
+    decl_path: Path | None = None
+    doc: dict | None = None
+    if p.exists():
+        if not p.is_dir():
+            raise RuntimeError(f"{p}: model path must be a checkpoint directory or Hub repo id")
+        for name in DECLARATION_FILENAMES:
+            if (p / name).is_file():
+                decl_path = p / name
+                break
+        if decl_path is None and (p / "delta.json").is_file():
+            decl = load_declaration(p)
+            # Legacy files have no namespaces.  Expose only the declaration produced by the
+            # quarantined legacy reader; provenance values are intentionally not reconstructed.
+            doc = {"instinctflash_schema": SCHEMA_VERSION, "execution": {
+                "model_id": decl.model_id, "backbone": decl.backbone,
+                "servable": decl.servable, "guidance": dict(decl.guidance),
+                "nfe": dict(decl.nfe),
+            }}
+            return decl, doc, str(p / "delta.json")
+    else:
+        try:
+            from huggingface_hub import hf_hub_download
+        except ImportError as e:
+            raise RuntimeError(
+                f"{ref!r} is not a local directory and huggingface_hub is not installed, so it "
+                f"cannot be resolved as a Hub repo id.") from e
+        # published artifacts predate the rename; try the new name, fall back to the old
+        for name in DECLARATION_FILENAMES:
+            try:
+                decl_path = Path(hf_hub_download(ref, name, revision=revision))
+                break
+            except Exception:                                    # noqa: BLE001 - try compatibility name
+                continue
+
+    if decl_path is not None:
+        doc = json.loads(decl_path.read_text())
+    if doc is None:
+        # A repo without a declaration may still be a release we know how to serve; an in-repo
+        # declaration always wins, so this is a fallback, never an override.
+        from instinctflash.descriptors.known import lookup
+        doc = lookup(ref)
+        if doc is None:
+            raise RuntimeError(
+                f"{ref}: no declaration (looked for {', '.join(DECLARATION_FILENAMES)}, and it is "
+                f"not a known upstream release)")
+
+    # Reuse the real reader, including schema and forbidden-provenance-key enforcement, instead of
+    # maintaining a looser CLI parser for the same document.
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        Path(td, "instinctflash.json").write_text(json.dumps(doc))
+        decl = load_declaration(td)
+    return decl, doc, str(decl_path or f"known:{ref}")
+
+
+def _compile_declaration(
+    ckpt: Checkpoint,
+    *,
+    nfe: Mapping[str, int] | None = None,
+    tier_ceiling: str = "bitexact",
+    exclude_passes: tuple[str, ...] | list[str] = (),
+    world_size: int = 1,
+    want_pixels: bool = False,
+    probe_device: bool = True,
+):
+    """Compile a plan from declaration facts.  Does not inspect or load checkpoint weights."""
+    from instinctflash.runtime.loader import available_models, load as load_adapter
+    try:
+        adapter = load_adapter(ckpt.execution.backbone)
+    except KeyError as e:
+        raise UnknownBackboneError(_unknown_backbone_message(ckpt, available_models())) from e
+
+    # Plan against the schedule that will actually run, not the model's own default. The
+    # checkpoint declares `execution.nfe`; `nfe=` overrides it per stream. Without this the
+    # planner priced a 79-forward cycle while a 10-forward cycle executed.
+    spec = adapter.spec()
+    schedule = {**dict(ckpt.execution.nfe or {}), **dict(nfe or {})}
+    if schedule:
+        spec = spec.with_nfe(schedule)
+
+    # Probe the machine, so hardware requirements are enforced rather than decorative. Probing
+    # is best-effort by design: analysing a checkpoint must keep working on a laptop with no
+    # torch and no GPU, and a planner that refused to run without a device would break that.
+    # An unprobed device is reported in the plan, never assumed away.
+    probed = None
+    if probe_device:
+        try:
+            from instinctflash.passes.contract import DeviceProfile
+            probed = DeviceProfile.probe()
+        except Exception:                                        # noqa: BLE001 - no torch, no CUDA
+            pass
+
+    from instinctflash.descriptors.deployment import DeploymentSpec
+    from instinctflash.planners.planner import Optimizer, Tier
+    tiers = {"bitexact": Tier.BITEXACT, "numeric": Tier.NUMERIC,
+             "behavioral": Tier.BEHAVIORAL}
+    if tier_ceiling not in tiers:
+        raise ValueError(f"unknown tier ceiling {tier_ceiling!r}; one of {sorted(tiers)}")
+    plan = Optimizer(tier_ceiling=tiers[tier_ceiling]).compile(
+        spec,
+        deployment=DeploymentSpec(world_size=world_size, want_pixels=want_pixels, device=probed),
+        capabilities=ckpt.capabilities(),
+    )
+    if exclude_passes:
+        # A caller exclusion, honored everywhere: Plan.without marks the entries excluded, and
+        # no placement may resurrect an excluded pass.
+        plan = plan.without(*exclude_passes)
+    return adapter, plan, probed
+
+
+def plan_declaration(
+    model_id_or_path: str | Path,
+    *,
+    revision: str | None = None,
+    strict: bool = True,
+    nfe: Mapping[str, int] | None = None,
+    tier_ceiling: str = "bitexact",
+    exclude_passes: tuple[str, ...] | list[str] = (),
+    world_size: int = 1,
+    want_pixels: bool = False,
+    probe_device: bool = True,
+):
+    """Return ``(checkpoint, adapter, plan, device_profile)`` without downloading weights."""
+    decl, _, source = load_declaration_ref(model_id_or_path, revision=revision)
+    if strict:
+        decl.require_servable(f"plan preflight for {model_id_or_path!r}")
+    ckpt = Checkpoint(source, decl)
+    adapter, plan, probed = _compile_declaration(
+        ckpt, nfe=nfe, tier_ceiling=tier_ceiling, exclude_passes=exclude_passes,
+        world_size=world_size, want_pixels=want_pixels, probe_device=probe_device,
+    )
+    return ckpt, adapter, plan, probed
+
+
 def describe(model_id_or_path: str | Path, *, revision: str | None = None) -> dict:
     """What a checkpoint declares, WITHOUT downloading its weights.
 
@@ -263,49 +395,9 @@ def describe(model_id_or_path: str | Path, *, revision: str | None = None) -> di
 
     Returns execution facts and capabilities only -- provenance is not read here either.
     """
-    from instinctflash.descriptors.checkpoint import DECLARATION_FILENAMES
-    p = Path(model_id_or_path)
-    decl_path = None
-    if p.exists():
-        for name in DECLARATION_FILENAMES:
-            if (p / name).exists():
-                decl_path = p / name
-                break
-    else:
-        try:
-            from huggingface_hub import hf_hub_download
-        except ImportError as e:
-            raise RuntimeError(
-                f"{model_id_or_path!r} is not a local directory and huggingface_hub is not "
-                f"installed, so it cannot be resolved as a Hub repo id.") from e
-        # published artifacts predate the rename; try the new name, fall back to the old
-        for name in DECLARATION_FILENAMES:
-            try:
-                decl_path = Path(hf_hub_download(str(model_id_or_path), name, revision=revision))
-                break
-            except Exception:                                    # noqa: BLE001  try the next name
-                continue
-    if decl_path is None or not Path(decl_path).exists():
-        # A repo without a declaration may still be a release we know how to serve; an in-repo
-        # declaration always wins, so this is a fallback, never an override.
-        from instinctflash.descriptors.known import lookup
-        doc = lookup(str(model_id_or_path))
-        if doc is None:
-            raise RuntimeError(f"{model_id_or_path}: no declaration "
-                               f"(looked for {', '.join(DECLARATION_FILENAMES)}, and it is not a "
-                               f"known upstream release)")
-    else:
-        doc = json.loads(Path(decl_path).read_text())
+    decl, doc, source = load_declaration_ref(model_id_or_path, revision=revision)
     ex = dict(doc.get("execution") or {})
-    from instinctflash.descriptors.package import Checkpoint as _C
-    from instinctflash.descriptors.checkpoint import load_declaration
-
-    # reuse the real reader so the same forbidden-key enforcement applies
-    import tempfile
-    with tempfile.TemporaryDirectory() as td:
-        Path(td, "instinctflash.json").write_text(json.dumps(doc))
-        decl = load_declaration(td)
-    caps = _C(str(model_id_or_path), decl).capabilities()
+    caps = Checkpoint(str(model_id_or_path), decl).capabilities()
 
     return {
         "model_id": decl.model_id,
@@ -321,6 +413,8 @@ def describe(model_id_or_path: str | Path, *, revision: str | None = None) -> di
             "foldable": decl.output_projection.foldable,
         }),
         "capabilities": sorted(caps),
+        # Presence is safe to reveal; values stay out of the runtime and CLI result.
         "has_provenance": bool(doc.get("provenance")),
         "extra": dict(ex.get("extra", {})) or {k: v for k, v in decl.extra.items()},
+        "declaration_source": source,
     }

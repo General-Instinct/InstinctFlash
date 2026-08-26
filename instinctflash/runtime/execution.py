@@ -304,6 +304,9 @@ def choose_backend(placement: str, adapter, checkpoint, plan, **kw) -> tuple[Exe
             f"in a managed worker instead, or install the serving environment here.")
     else:
         why = f"placement={placement!r} (explicit)"
-    backend = (InProcessBackend if placement == "in_process" else WorkerBackend)(
-        adapter, checkpoint, plan, **kw)
+    backend_cls = InProcessBackend if placement == "in_process" else WorkerBackend
+    backend_kw = dict(kw)
+    if backend_cls is InProcessBackend:
+        backend_kw.pop("startup_timeout_s", None)
+    backend = backend_cls(adapter, checkpoint, plan, **backend_kw)
     return backend, why

@@ -87,13 +87,26 @@ def cmd_validate(a) -> int:
 
 
 def cmd_plan(a) -> int:
-    from instinctflash import Runtime
+    # DECLARATION-ONLY. `plan` answers "what would the runtime do to this checkpoint" and that
+    # answer costs one small metadata file, never a weight snapshot and never a loaded model --
+    # pinned by tests/test_cli_preflight.py. Building a Runtime here paid the full download.
+    from instinctflash.runtime.facade import plan_declaration
     try:
-        rt = Runtime.from_pretrained(a.model, strict=not a.any_checkpoint)
+        ckpt, _adapter, plan, probed = plan_declaration(
+            a.model, strict=not a.any_checkpoint,
+            tier_ceiling=a.tier_ceiling, exclude_passes=tuple(a.exclude_pass or ()))
     except Exception as e:                                       # noqa: BLE001
         print(f"{a.model}: {type(e).__name__}: {e}")
         return 1
-    print(rt.explain())
+    ex = ckpt.execution
+    print(f"InstinctFlash plan preflight for {ex.model_id!r} (declaration-only; no weights fetched)")
+    print(f"  declaration : {ckpt.path}")
+    print(f"  backbone    : {ex.backbone}")
+    print(f"  servable    : {ex.servable}")
+    print(f"  device      : {probed.name if probed is not None else 'not probed on this host'}")
+    print(f"  capabilities: {', '.join(sorted(ckpt.capabilities()))}")
+    print()
+    print(plan.explain())
     return 0
 
 
@@ -153,10 +166,17 @@ def main(argv: list[str] | None = None) -> int:
     v.add_argument("path")
     v.set_defaults(fn=cmd_validate)
 
-    p = sub.add_parser("plan", help="what the runtime would do, and why")
+    p = sub.add_parser("plan", help="what the runtime would do, and why (declaration-only)")
     p.add_argument("model")
     p.add_argument("--any-checkpoint", action="store_true",
                    help="do not refuse a checkpoint declaring servable=false")
+    p.add_argument("--tier-ceiling", choices=("bitexact", "numeric", "behavioral"),
+                   default="bitexact",
+                   help="the strongest accuracy claim the plan may spend (a claim budget, "
+                        "not a speed knob)")
+    p.add_argument("--exclude-pass", action="append", metavar="NAME",
+                   help="drop a pass via Plan.without(); a caller exclusion the runtime honors "
+                        "everywhere (repeatable)")
     p.set_defaults(fn=cmd_plan)
 
     r = sub.add_parser("run", help="load it and produce real actions (smoke test)")
