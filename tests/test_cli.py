@@ -44,11 +44,16 @@ def run(argv):
 
 
 def test_the_verbs_exist():
-    print("\n=== 1. five verbs, and help rather than a traceback ===")
+    print("\n=== 1. two documented verbs; the old five stay as hidden aliases ===")
     rc, out = run([])
     check(rc == 2, "bare invocation exits 2 and prints usage", str(rc))
-    for verb in ("devices", "describe", "validate", "plan", "run"):
+    for verb in ("serve", "validate"):
         check(verb in out, f"{verb} is listed")
+    for legacy in ("devices", "describe", "plan", "certify"):
+        check(f"\n    {legacy}" not in out, f"{legacy} is hidden from the help (still parses)")
+    # the aliases keep working — that is the compatibility contract
+    rc, _ = run(["devices"])
+    check(rc == 0, "the devices alias still answers", str(rc))
 
 
 def test_describe_and_validate_work_without_weights_or_gpu():
@@ -97,10 +102,59 @@ def test_devices_reports_or_explains():
         check("decline here" in out, "and what an absent feature means for a plan")
 
 
+def test_serve_verb_surface():
+    print("\n=== 4. serve exists, and refuses bad input before touching a socket ===")
+    # Everything here happens before the serving extra is imported, so it must hold on the
+    # torch-free core install too. The wire itself is tested in tests/test_ws_server.py.
+    rc, out = run(["serve", "--help"])
+    check(rc == 0 and "--serve.port" in out and "--runtime.placement" in out,
+          "serve -h shows the typed dotted fields, including the shared runtime section")
+    check("--serve.dry_run" in out and "--serve.smoke" in out and "--serve.viz" in out,
+          "and the three stop-early/observability flags")
+    rc, out = run(["serve"])
+    check(rc == 2, "serve without a model exits 2", str(rc))
+    check("serve.model is required" in out, "and says exactly what is missing")
+    rc, _ = run(["serve", "some/model", "--serve.bogus=1"])
+    check(rc == 2, "an unknown --serve field is a hard error, not a silent ignore", str(rc))
+
+
+def test_serve_dry_run_is_the_offline_preflight():
+    print("\n=== 5. serve --serve.dry_run: device + declaration + plan, offline ===")
+    import instinctflash
+    sys.path.insert(0, str(ROOT))
+    from examples.tiny_wam.adapter import TinyWAMAdapter
+    try:
+        instinctflash.register("tiny-wam", TinyWAMAdapter)
+    except Exception:                                            # noqa: BLE001 - already registered
+        pass
+    with tempfile.TemporaryDirectory() as td:
+        pkg = Path(td) / "p"
+        pkg.mkdir()
+        (pkg / "config.json").write_text("{}")
+        (pkg / "instinctflash.json").write_text(json.dumps({
+            "instinctflash_schema": 1,
+            "execution": {"model_id": "example-org/x", "backbone": "tiny-wam", "servable": True,
+                          "guidance": {"action": "positive_only"}, "nfe": {"action": 2},
+                          "base_weights": "upstream/none"},
+        }))
+        (pkg / "model.safetensors").write_bytes(b"\x00")
+        rc, out = run(["serve", str(pkg), "--serve.dry_run=true"])
+        check(rc == 0, "dry_run exits 0 with no torch and no weights", str(rc))
+        check("preflight" in out and "declaration-only" in out, "and says what it is")
+        check("device" in out, "reports the device (or its absence)")
+        check("plan tier" in out or "InstinctFlash plan" in out, "and prints the plan")
+
+        rc, out = run(["serve", str(pkg) + "-nope", "--serve.dry_run=true"])
+        check(rc == 1, "a bad model path exits 1", str(rc))
+        check("Traceback" not in out, "without a traceback at the user")
+
+
 def main_() -> int:
     test_the_verbs_exist()
     test_describe_and_validate_work_without_weights_or_gpu()
     test_devices_reports_or_explains()
+    test_serve_verb_surface()
+    test_serve_dry_run_is_the_offline_preflight()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")

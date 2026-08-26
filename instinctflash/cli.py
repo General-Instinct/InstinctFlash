@@ -1,26 +1,29 @@
-"""`instinctflash` — the command line. Six verbs, no Python required.
+"""`instinctflash` — the command line. Two verbs, no Python required.
 
-    instinctflash devices                    what machine am I on, and what can it do
-    instinctflash describe  <model-id>       what a checkpoint declares, without downloading weights
-    instinctflash validate  <dir>            is this directory a publishable checkpoint
-    instinctflash plan      <model-id>       what the runtime would do to it, and why
-    instinctflash run       <model-id>       load it and produce real actions
-    instinctflash certify   --certify....    paired non-inferiority certificate from two outcome files
+    instinctflash serve     <model-id>       deploy: preflight, then serve over websocket
+    instinctflash validate  <dir>            trust: publishable-package check + the certificate
 
-Why a CLI at all, given `Runtime.from_pretrained` is three lines. Because "install the package, give
-it a model id, run" should not require writing a program, and because most of these verbs answer
-questions you want answered BEFORE committing to a download or a GPU: what is this checkpoint, will
-this runtime serve it, what would it do to it, and is this machine capable of the plan. `plan` and
-`describe` need no weights and no GPU at all.
+`serve` always prints its preflight — device capabilities, the checkpoint's declaration, and the
+plan — BEFORE any weight is downloaded, because those are the questions you want answered before
+committing to a download or a GPU. Its flags select how far to go:
 
-`certify` uses the typed dotted-field syntax from `cli_config` (`--certify.margin=-0.05`,
-optional `--config_path=FILE` with CLI overrides winning, unknown fields are hard errors, JSON
-errors use one stable schema, `--output.path` writes atomically). The classic verbs keep their
-existing syntax — that surface is published and stays stable.
+    --serve.dry_run=true    preflight only: no download, no GPU, exit
+    --serve.smoke=true      load, produce one zero-filled action, exit — proves the checkpoint
+                            loads here and returns finite actions; it is not an evaluation
+    --serve.viz=true        stream observations, actions and latency to a Rerun viewer
 
-`run` uses zero-filled observations by default. That is deliberately a smoke test and says so: it
-proves this checkpoint loads on this machine and produces finite actions of the right shape, which is
-the question a new user actually has. It is not an evaluation and the output is not a result.
+`validate` is the structural package check; given `--validate.teacher_outcomes`,
+`--validate.student_outcomes` and `--validate.margin` it also runs the paired non-inferiority
+analysis and stamps the certificate into the package's provenance block, and a later plain
+`validate <dir>` verifies any embedded certificate's integrity.
+
+Both verbs use the typed dotted-field syntax from `cli_config` (`--serve.smoke=true`,
+`--validate.margin=-0.05`, optional `--config_path=FILE` with CLI overrides winning, unknown
+fields are hard errors, JSON errors use one stable schema, `--output.path` writes atomically).
+
+The previous verbs — devices, describe, plan, run, certify — remain as undocumented compatibility
+aliases: each prints a one-line pointer to the verb that absorbed it and then behaves exactly as
+before, so existing scripts keep working.
 """
 
 from __future__ import annotations
@@ -30,8 +33,57 @@ import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
-from instinctflash.cli_config import OutputConfig
+from instinctflash.cli_config import OutputConfig, RuntimeConfig
+
+
+@dataclass
+class ServeOptions:
+    """The `serve` verb's own knobs. Runtime knobs (device, placement, nfe, tier_ceiling,
+    exclude_passes) are the shared `--runtime.*` section, so they are the same words here as
+    everywhere else."""
+
+    model: str = ""
+    host: str = "0.0.0.0"
+    port: int = 8000
+    #: preflight only — device + declaration + plan, no download, no GPU
+    dry_run: bool = False
+    #: load, produce one zero-filled action, exit; a load check, never an evaluation
+    smoke: bool = False
+    #: stream observations/actions/latency to a Rerun viewer (the `viz` extra)
+    viz: bool = False
+    #: where the Rerun stream goes: "" spawns a viewer, "*.rrd" records headless,
+    #: "rerun+http://..." connects to a running viewer
+    viz_sink: str = ""
+
+
+@dataclass
+class ServeConfig:
+    serve: ServeOptions = field(default_factory=ServeOptions)
+    runtime: RuntimeConfig = field(default_factory=RuntimeConfig)
+    output: OutputConfig = field(default_factory=OutputConfig)
+
+
+@dataclass
+class ValidateOptions:
+    """The `validate` verb: the structural check, plus the certificate when outcomes are given."""
+
+    path: Path | None = None
+    teacher_outcomes: Path | None = None
+    student_outcomes: Path | None = None
+    margin: float | None = None
+    min_pairs: int = 1
+    harness: str | None = None
+    recipe: str | None = None
+    seeds: list[int] | None = None
+    per_task: bool = True
+
+
+@dataclass
+class ValidateConfig:
+    validate: ValidateOptions = field(default_factory=ValidateOptions)
+    output: OutputConfig = field(default_factory=OutputConfig)
 
 
 @dataclass
@@ -103,29 +155,166 @@ def cmd_describe(a) -> int:
     return 0
 
 
-def cmd_validate(a) -> int:
-    from instinctflash.descriptors.package import (
-        publishability, validate_package, verify_weights_indexes,
+def _certificate_content_hash(block: dict) -> str:
+    """The self-hash a stamped certificate carries, over everything except the hash itself."""
+    import hashlib
+
+    payload = {k: v for k, v in block.items() if k != "content_sha256"}
+    canon = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(canon.encode()).hexdigest()
+
+
+def _declaration_path(pkg: Path) -> Path | None:
+    from instinctflash.descriptors.checkpoint import DECLARATION_FILENAMES
+    for name in DECLARATION_FILENAMES:
+        if (pkg / name).is_file():
+            return pkg / name
+    return None
+
+
+def _stamp_certificate(pkg: Path, v: "ValidateOptions") -> tuple[Any, dict]:
+    """Run the paired analysis and stamp the result into the package's provenance block.
+
+    Provenance is the one namespace the runtime never reads (descriptors enforce that), which is
+    exactly why the certificate belongs there: it is a fact about how the checkpoint was verified,
+    not an input to serving. The block carries sha256 of both outcome files and a self-hash, so a
+    later plain `validate` can detect a hand-edited verdict.
+    """
+    import hashlib
+    from datetime import datetime, timezone
+
+    from instinctflash.cli_config import ConfigError, _atomic_write
+    from instinctflash.verify.certify import certify, load_jsonl
+
+    decl_path = _declaration_path(pkg)
+    if decl_path is None:
+        raise ConfigError(f"cannot stamp a certificate: {pkg} has no declaration file "
+                          f"(instinctflash.json) to carry a provenance block")
+
+    def sha256(p: Path) -> str:
+        return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+    t_sha, s_sha = sha256(v.teacher_outcomes), sha256(v.student_outcomes)
+    cert = certify(
+        load_jsonl(str(v.teacher_outcomes)), load_jsonl(str(v.student_outcomes)),
+        margin=v.margin, min_pairs=v.min_pairs,
+        teacher_hash=t_sha, student_hash=s_sha,
+        harness=v.harness or "?", recipe=v.recipe or "?",
+        seeds=",".join(map(str, v.seeds)) if v.seeds is not None else "?",
     )
-    rep = validate_package(a.path)
-    print(rep.explain())
-    # Weights-index integrity GATES the exit code: a package whose declared shards are missing,
-    # or whose shard paths escape the package, is not a valid package — the old exit simply could
-    # not see it because validation read declarations, not weights. Publishability stays
-    # INFORMATIONAL (exit-neutral), preserving the published exit contract for packages that are
-    # valid but carry training internals.
-    index_problems = verify_weights_indexes(a.path)
-    for p in index_problems:
-        print(f"  PROBLEM  {p}")
-    ok = False
+    block = json.loads(cert.to_json())
+    block.update({
+        "teacher_outcomes_sha256": t_sha,
+        "student_outcomes_sha256": s_sha,
+        "stamped_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "instinctflash_version": _cli_version(),
+    })
+    block["content_sha256"] = _certificate_content_hash(block)
+
+    doc = json.loads(decl_path.read_text())
+    doc.setdefault("provenance", {})["certificate"] = block
+    _atomic_write(decl_path, json.dumps(doc, indent=2, ensure_ascii=False) + "\n")
+    return cert, block
+
+
+def _verify_embedded_certificate(pkg: Path) -> tuple[str, dict | None]:
+    """-> (status, block): 'absent', 'intact' or 'tampered'."""
+    decl_path = _declaration_path(pkg)
+    if decl_path is None:
+        return "absent", None
     try:
-        ok, findings = publishability(a.path)
-        print(f"  publishable without training internals: {'YES' if ok else 'NO'}")
-        for f in findings:
-            print(f"    - {f}")
-    except Exception as e:                                       # noqa: BLE001
-        print(f"  publishability: {type(e).__name__}: {e}")
-    return 0 if rep.ok and not index_problems else 1
+        doc = json.loads(decl_path.read_text())
+    except Exception:                                            # noqa: BLE001 - structure check reports it
+        return "absent", None
+    block = (doc.get("provenance") or {}).get("certificate")
+    if not isinstance(block, dict):
+        return "absent", None
+    ok = block.get("content_sha256") == _certificate_content_hash(block)
+    return ("intact" if ok else "tampered"), block
+
+
+def _cli_version() -> str:
+    from instinctflash.cli_config import _version
+    return _version()
+
+
+def cmd_validate(argv: list[str]) -> int:
+    """`instinctflash validate <dir>` — the trust verb.
+
+    Structure always; the certificate when outcomes are given (reusing `verify.certify`, the same
+    code path the harnesses use, so a certificate produced here IS the certificate); integrity of
+    any embedded certificate on every plain run.
+    """
+    from instinctflash.cli_config import CommandReport, ConfigError, execute
+
+    if argv and not argv[0].startswith("-"):
+        argv = [f"--validate.path={argv[0]}", *argv[1:]]
+
+    def run(cfg: ValidateConfig) -> CommandReport:
+        v = cfg.validate
+        if v.path is None:
+            raise ConfigError("validate.path is required: instinctflash validate <dir>")
+        from instinctflash.descriptors.package import (
+            publishability, validate_package, verify_weights_indexes,
+        )
+        lines: list[str] = []
+        rep = validate_package(str(v.path))
+        lines.append(rep.explain())
+        # Weights-index integrity GATES the exit code: a package whose declared shards are missing,
+        # or whose shard paths escape the package, is not a valid package. Publishability stays
+        # INFORMATIONAL (exit-neutral), preserving the published exit contract for packages that
+        # are valid but carry training internals.
+        index_problems = verify_weights_indexes(str(v.path))
+        for p in index_problems:
+            lines.append(f"  PROBLEM  {p}")
+        publishable = False
+        try:
+            publishable, findings = publishability(str(v.path))
+            lines.append(f"  publishable without training internals: {'YES' if publishable else 'NO'}")
+            for f in findings:
+                lines.append(f"    - {f}")
+        except Exception as e:                                   # noqa: BLE001
+            lines.append(f"  publishability: {type(e).__name__}: {e}")
+
+        result: dict[str, Any] = {"path": str(v.path), "structure_ok": rep.ok,
+                                  "index_problems": list(index_problems),
+                                  "publishable": publishable}
+        ok = rep.ok and not index_problems
+
+        wants_cert = [x for x in (v.teacher_outcomes, v.student_outcomes, v.margin)
+                      if x is not None]
+        if wants_cert and len(wants_cert) < 3:
+            raise ConfigError("the certificate needs all three of validate.teacher_outcomes, "
+                              "validate.student_outcomes and validate.margin")
+        if wants_cert:
+            if v.margin > 0 or v.min_pairs < 1:
+                raise ConfigError("validate.margin must be <= 0 and validate.min_pairs must be >= 1")
+            cert, block = _stamp_certificate(Path(v.path), v)
+            lines += ["", str(cert)]
+            if v.per_task:
+                lines += ["", "per-task (a macro average can hide a collapsed task):",
+                          cert.per_task_table()]
+            lines.append(f"\ncertificate stamped into {_declaration_path(Path(v.path))} "
+                         f"(provenance.certificate — present, and never read by the runtime)")
+            result["certificate"] = block
+            ok = ok and cert.passed
+        else:
+            status, block = _verify_embedded_certificate(Path(v.path))
+            if status == "intact":
+                lines.append(f"  certificate: intact — {block['verdict']}, n={block['n_pairs']}, "
+                             f"margin {block['margin_declared']:+.4f}, stamped {block['stamped_at']}")
+                result["certificate"] = {"status": "intact", "verdict": block["verdict"]}
+            elif status == "tampered":
+                lines.append("  PROBLEM  embedded certificate fails its integrity hash — the "
+                             "verdict has been edited after stamping")
+                result["certificate"] = {"status": "tampered"}
+                ok = False
+
+        return CommandReport(result, "\n".join(lines), ok, 0 if ok else 1)
+
+    return execute("validate", ValidateConfig, run, argv, prog="instinctflash validate",
+                   description="Validate a checkpoint package; with outcome files, certify and "
+                               "stamp the certificate into its provenance block.")
 
 
 def cmd_plan(a) -> int:
@@ -193,6 +382,143 @@ def cmd_run(a) -> int:
     return 0 if np.isfinite(last).all() else 1
 
 
+def _serve_preflight(model: str, r: RuntimeConfig) -> tuple[dict, str]:
+    """Device capabilities + declaration + plan, from one metadata file. Never weights."""
+    from instinctflash.runtime.facade import plan_declaration
+
+    ckpt, _adapter, plan, probed = plan_declaration(
+        model, strict=True, nfe=r.nfe or None,
+        tier_ceiling=r.tier_ceiling, exclude_passes=tuple(r.exclude_passes))
+    ex = ckpt.execution
+    if probed is not None:
+        cap = f"sm{probed.capability[0]}{probed.capability[1]}" if probed.capability != (0, 0) else "cpu"
+        mem = f"{probed.total_memory / 1e9:.0f} GB" if probed.total_memory else "-"
+        device = f"{probed.name}  {cap}  {mem}"
+        features = ", ".join(sorted(probed.features))
+    else:
+        device = ("none visible — expected without the `runtime` extra; passes with hardware "
+                  "requirements report APPLICABILITY UNCHECKED")
+        features = ""
+    lines = [
+        f"InstinctFlash serve preflight for {ex.model_id!r} (declaration-only; no weights fetched)",
+        f"  device      : {device}",
+    ]
+    if features:
+        lines.append(f"  features    : {features}")
+    lines += [
+        f"  declaration : {ckpt.path}",
+        f"  backbone    : {ex.backbone}",
+        f"  servable    : {ex.servable}",
+        f"  capabilities: {', '.join(sorted(ckpt.capabilities()))}",
+        "",
+        plan.explain(),
+    ]
+    result = {"model_id": ex.model_id, "backbone": ex.backbone, "servable": ex.servable,
+              "device": device, "capabilities": sorted(ckpt.capabilities()),
+              "plan": plan.explain()}
+    return result, "\n".join(lines)
+
+
+def _serve_smoke(rt, preflight: dict):
+    """One zero-filled control cycle: does this checkpoint load HERE and return finite actions."""
+    import numpy as np
+
+    from instinctflash.cli_config import CommandReport
+
+    contract = rt.observation
+    if contract is None or not contract.fields:
+        return CommandReport(
+            preflight,
+            "This backbone declares no observation contract, so the smoke test cannot build an "
+            "input for it. Add ObservationSpec to its adapter, or use the Python API and pass a "
+            "real observation.", False, 2)
+    obs = contract.example()
+    with rt.episode(prompt="smoke test: reach forward") as ep:
+        out = ep.predict(obs)
+    last = np.asarray(out["action"] if isinstance(out, dict) and "action" in out
+                      else out.get("actions") if isinstance(out, dict) else out)
+    finite = bool(np.isfinite(last).all())
+    text = ("SMOKE TEST — one zero-filled observation, prompt 'smoke test: reach forward'. This "
+            "proves the checkpoint loads here and returns finite actions. It is not an evaluation.\n"
+            f"  expects  {contract.describe()}\n"
+            f"  action   {last.shape} {last.dtype}   finite {finite}   std {float(last.std()):.4f}")
+    return CommandReport(
+        {**preflight, "smoke": {"action_shape": list(last.shape), "dtype": str(last.dtype),
+                                "finite": finite}},
+        text, finite, 0 if finite else 1)
+
+
+def cmd_serve(argv: list[str]) -> int:
+    """`instinctflash serve <model-id>` — preflight, then the openpi-wire websocket policy server.
+
+    Preflight prints BEFORE any weight moves. Then load-then-bind, in that order: a checkpoint
+    that cannot load exits here with the loader's error and the port never opens, because the
+    openpi client retries a dead port forever and a half-started server is the documented worst
+    case (eval/lingbot_va_robotwin/README.md).
+    """
+    from instinctflash.cli_config import (
+        CommandReport, ConfigError, UnsupportedCapability, execute,
+    )
+
+    # `serve <model-id> --serve.port=...`: the leading positional is sugar for --serve.model=.
+    if argv and not argv[0].startswith("-"):
+        argv = [f"--serve.model={argv[0]}", *argv[1:]]
+
+    def run(cfg: ServeConfig) -> CommandReport:
+        s = cfg.serve
+        if not s.model:
+            raise ConfigError("serve.model is required: instinctflash serve <model-id>")
+        preflight, preflight_text = _serve_preflight(s.model, cfg.runtime)
+        if s.dry_run:
+            return CommandReport(preflight, preflight_text, True, 0)
+        # From here on the command runs for a while (or forever): the preflight and the logs go
+        # to stderr NOW rather than through execute()'s deferred stdout capture.
+        print(preflight_text + "\n", file=sys.stderr)
+
+        viz = None
+        if s.viz and not s.smoke:
+            from instinctflash.serving.viz import RerunViz
+            try:
+                # BEFORE the model loads: discovering a missing extra after a 10 GB download is
+                # the wrong order.
+                viz = RerunViz(session_name=f"instinctflash-serve {s.model}", sink=s.viz_sink)
+            except ImportError as e:
+                raise UnsupportedCapability(
+                    "--serve.viz needs rerun-sdk: pip install 'instinctflash[viz]'") from e
+
+        import logging
+        logging.basicConfig(level=logging.INFO, stream=sys.stderr,
+                            format="%(asctime)s %(name)s %(message)s")
+        from instinctflash import Runtime
+
+        r = cfg.runtime
+        rt = Runtime.from_pretrained(
+            s.model, device=r.device, placement=r.placement, nfe=r.nfe or None,
+            tier_ceiling=r.tier_ceiling, exclude_passes=tuple(r.exclude_passes))
+        try:
+            if s.smoke:
+                return _serve_smoke(rt, preflight)
+            from instinctflash.serving import WebsocketPolicyServer
+            server = WebsocketPolicyServer(rt, host=s.host, port=s.port, viz=viz)
+            print(f"loaded {rt.model_id!r}; binding ws://{s.host}:{s.port} "
+                  f"(clients: openpi_client.WebsocketClientPolicy, or GET /healthz)",
+                  file=sys.stderr)
+            try:
+                server.serve_forever()
+            except KeyboardInterrupt:
+                pass
+        finally:
+            if viz is not None:
+                viz.close()
+            rt.close()
+        return CommandReport({**preflight, "host": s.host, "port": s.port},
+                             "server stopped", True, 0)
+
+    return execute("serve", ServeConfig, run, argv, prog="instinctflash serve",
+                   description="Preflight a checkpoint, then serve it over websocket on the "
+                               "openpi wire protocol (--serve.dry_run / --serve.smoke stop early).")
+
+
 def cmd_certify(argv: list[str]) -> int:
     """Paired non-inferiority certificate from two outcome JSONL files.
 
@@ -234,31 +560,58 @@ def cmd_certify(argv: list[str]) -> int:
                    description="Certify paired teacher/student outcomes at a declared margin.")
 
 
+#: one-line pointers the compatibility aliases print (to stderr) before delegating.
+_ALIAS_POINTERS = {
+    "devices": "its report is part of `instinctflash serve <model-id> --serve.dry_run=true`",
+    "describe": "use `instinctflash serve <model-id> --serve.dry_run=true`",
+    "plan": "use `instinctflash serve <model-id> --serve.dry_run=true`",
+    "run": "use `instinctflash serve <model-id> --serve.smoke=true`",
+    "certify": "use `instinctflash validate <dir> --validate.teacher_outcomes=... "
+               "--validate.student_outcomes=... --validate.margin=...` (also stamps the "
+               "certificate into the package)",
+}
+
+
+def _alias_note(verb: str) -> None:
+    print(f"note: `instinctflash {verb}` is a compatibility alias — {_ALIAS_POINTERS[verb]}",
+          file=sys.stderr)
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
-    # certify speaks the typed dotted-field syntax and owns its own help/error contract, so it is
-    # dispatched before argparse (whose positional grammar the classic verbs keep).
+    # The two verbs speak the typed dotted-field syntax and own their help/error contract, so
+    # they are dispatched before argparse (whose positional grammar the aliases keep).
+    if argv[:1] == ["serve"]:
+        return cmd_serve(argv[1:])
+    if argv[:1] == ["validate"]:
+        return cmd_validate(argv[1:])
     if argv[:1] == ["certify"]:
+        _alias_note("certify")
         return cmd_certify(argv[1:])
 
     ap = argparse.ArgumentParser(prog="instinctflash", description=__doc__.split("\n")[0])
-    sub = ap.add_subparsers(dest="cmd")
+    # metavar hides the alias verbs from usage; registering them without help= hides them from
+    # the listing. They still parse — existing scripts keep working — they are just not taught.
+    sub = ap.add_subparsers(dest="cmd", metavar="{serve,validate}")
 
-    sub.add_parser("certify", help="paired non-inferiority certificate (typed "
-                                   "--certify.field=value syntax; see `instinctflash certify -h`)")
+    sub.add_parser("serve", help="deploy: preflight (device + declaration + plan), then serve "
+                                 "over websocket on the openpi wire protocol; --serve.dry_run "
+                                 "and --serve.smoke stop early (see `instinctflash serve -h`)")
 
-    sub.add_parser("devices", help="what machine am I on").set_defaults(fn=cmd_devices)
+    sub.add_parser("validate", help="trust: is this directory a publishable checkpoint; with "
+                                    "--validate.teacher_outcomes/.student_outcomes/.margin also "
+                                    "certifies and stamps the certificate into the package "
+                                    "(see `instinctflash validate -h`)")
 
-    d = sub.add_parser("describe", help="what a checkpoint declares, without its weights")
+    # -- undocumented compatibility aliases below this line ----------------------------------------
+    sub.add_parser("devices").set_defaults(fn=cmd_devices)
+
+    d = sub.add_parser("describe")
     d.add_argument("model")
     d.add_argument("--json", action="store_true")
     d.set_defaults(fn=cmd_describe)
 
-    v = sub.add_parser("validate", help="is this directory a publishable checkpoint")
-    v.add_argument("path")
-    v.set_defaults(fn=cmd_validate)
-
-    p = sub.add_parser("plan", help="what the runtime would do, and why (declaration-only)")
+    p = sub.add_parser("plan")
     p.add_argument("model")
     p.add_argument("--any-checkpoint", action="store_true",
                    help="do not refuse a checkpoint declaring servable=false")
@@ -271,7 +624,7 @@ def main(argv: list[str] | None = None) -> int:
                         "everywhere (repeatable)")
     p.set_defaults(fn=cmd_plan)
 
-    r = sub.add_parser("run", help="load it and produce real actions (smoke test)")
+    r = sub.add_parser("run")
     r.add_argument("model")
     r.add_argument("--cycles", type=int, default=3)
     r.add_argument("--prompt", default=None)
@@ -281,6 +634,8 @@ def main(argv: list[str] | None = None) -> int:
     if not getattr(a, "fn", None):
         ap.print_help()
         return 2
+    if a.cmd in _ALIAS_POINTERS:
+        _alias_note(a.cmd)
     return a.fn(a)
 
 
