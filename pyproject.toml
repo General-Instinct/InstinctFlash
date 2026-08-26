@@ -39,6 +39,10 @@ eval = ["numpy>=1.21"]
 # `instinctflash serve` — the openpi-wire websocket policy server. msgpack + the vendored numpy
 # shim are the wire; websockets>=13 is where the asyncio server implementation it uses landed.
 serve = ["websockets>=13", "msgpack>=1.0.5", "numpy>=1.21"]
+# `--serve.viz=true` — the live Rerun dashboard (lerobot's viewer; same entity-path conventions).
+# >=0.36 is a MEASURED floor, not a fashion statement: 0.23.1 satisfies the API this code calls
+# but fails tests/test_serve_viz.py's recording assertions (.rrd contents differ); 0.36.3 passes.
+viz = ["rerun-sdk>=0.36", "numpy>=1.21"]
 
 # THE CLI. "install the package, give it a model id, run" should not require writing a program, and
 # four of the five verbs answer questions you want answered before committing to a download or a GPU.
