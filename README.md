@@ -161,3 +161,6 @@ your package — see [`examples/external_plugin/`](examples/external_plugin/).
       for pi05-class models; hybrid and linear attention for long-context world models.
 - [ ] **Cosmos3 engine serving, DreamZero on the edge** — each after its groundwork
       (reference-implementation alignment; memory footprint on unified-memory devices).
+- [ ] **Device-conditional serving defaults** — encode the measured capture-vs-pipeline law as
+      automatic per-device defaults for every model family, so no operator flag is ever the
+      difference between the right arm and the wrong one.
