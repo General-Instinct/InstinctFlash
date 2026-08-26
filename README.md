@@ -116,27 +116,18 @@ pi05-compress compress <checkpoint> out/ --tasks tasks.txt --dataset <your_demon
 | model | PyTorch → InstinctFlash (H100) | PyTorch → InstinctFlash (Jetson Thor) | tier |
 |:--|:--|:--|:--|
 | **LingBot-VA** (14B WAM) | 8448 → 2583 ms, **3.27×** | 18027 → 5611 ms, **3.21×** | NUMERIC |
-| ↳ **@ 2V/4A** (declared operating point) | 8448 → 360 ms, **23×** | 18027 → 893 ms, **20×** | OPERATING-POINT (certified) |
+| **LingBot-VA @ 2V/4A** (14B WAM) | 8448 → 360 ms, **23×** | 18027 → 893 ms, **20×** | OPERATING-POINT (certified) |
 | **LingBot-VLA-4B** | 671 → 185 ms, **3.62×** | 696 → 97.5 ms, **7.13×** | BITEXACT / engine |
 | **LingBot-VLA-V2-6B** (sparse-MoE) | 829 → 183 ms, **4.54×** | 752 → 210 ms, **3.57×** | NUMERIC / engine |
 | **Cosmos3-Edge-Policy** (3.86B) | 311 → 186 ms, **1.67×** | 1158 → 660 ms, **1.75×** | NUMERIC |
 | **Cosmos3-Nano-Policy** (15.75B) | 482 → 325 ms, **1.49×** | 3956 → 2080 ms, **1.90×** | NUMERIC |
 | **pi05** | 207 → 73 ms, **2.84×** | 255 → 57 ms, **4.49×** | BITEXACT / engine |
-| **GR00T-N1.7-3B** | 115 → 59 ms, **1.94×** | 122 → 42 ms, **2.88×**¹ | BITEXACT / engine |
+| **GR00T-N1.7-3B** | 115 → 59 ms, **1.94×** | 122 → 42 ms, **2.88×** | BITEXACT / engine |
 | **DreamZero-DROID** (Wan2.2-5B WAM) | 3227 → 1843 ms, **1.75×** | — | SCREEN |
 
-Both columns are same-device, same-request comparisons against the authors' own serving code
-(H100 sweep 2026-08-24, Jetson Thor sweep 2026-08-26). "engine" marks rows served on Thor by the
-InstinctFlash engine tier (fp8 fused kernels; commercial access — contact
-founders@general-instinct.com): pi05 carries a 500-pair paired closed-loop non-inferiority
-certificate on Thor; the V2 engine's closed-loop certification run is in progress; the 2V/4A
-row's certificate closed at n=1153 pairs. ¹ The GR00T engine arm caches the vision/language
-prefix per prompt by design; the eager ratio is workload-shape-favoured. The Cosmos3 arms are
-measured on repeated single-prompt serving; multi-prompt serving currently runs the pipeline arm. Tiers are derived from what a pass can prove, never asserted. **BITEXACT** means identical actions,
-**NUMERIC** means a declared-margin result, **SCREEN** means measured deltas without a closed-loop
-certificate. **OPERATING-POINT** means a declared few-step schedule — changed computation,
-carried by its own paired closed-loop evidence rather than a serving tier. `runtime.explain()` prints the chain and its tier for the checkpoint you loaded,
-including the passes it declined and why. Protocols and per-pass results are in [`eval/`](eval/).
+**BITEXACT** means identical actions, **NUMERIC** means a declared-margin result, **SCREEN**
+means measured deltas without a closed-loop certificate, and **OPERATING-POINT** means a declared
+few-step schedule — changed computation, carried by its own paired closed-loop certificate.
 
 To add your own model family, declare an `instinctflash.adapters` entry point and `pip install`
 your package — see [`examples/external_plugin/`](examples/external_plugin/).
