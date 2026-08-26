@@ -14,18 +14,21 @@
 
 ## What's new 🔥
 
-- **Seven model families served, measured, and tiered.** LingBot-VA 3.22×, LingBot-VLA-4B 3.66×,
-  **LingBot-VLA-V2-6B (sparse-MoE) 4.45×**, Cosmos3-Edge-Policy 1.64×, Cosmos3-Nano-Policy 1.51×,
-  pi05 1.65× — each against its authors' own serving code on the same H100, identical requests
-  per arm. DreamZero-DROID ships with its upstream dynamic step-cache surfaced as a declared
-  configuration (1.74×, screen-tier).
+- **Eight model families served, measured, and tiered — on two device classes.** LingBot-VA,
+  LingBot-VLA-4B, LingBot-VLA-V2-6B (sparse-MoE), Cosmos3 Edge and Nano policies, pi05,
+  GR00T-N1.7, and DreamZero-DROID — each measured against its authors' own serving code on the
+  same device, identical requests per arm, on H100 **and on Jetson Thor**. The two device
+  classes need opposite optimizations (H100 is launch-bound at batch 1, Thor is
+  bandwidth-bound), which is why the planner measures before it applies. The numbers live in
+  the results table below.
 - **Declared operating points, and a few-step distillation framework on the way.** A checkpoint
   can declare a few-step denoise schedule and the runtime serves it: LingBot-VA at its 2V/4A
   point runs the full pipeline in **360 ms** on the same H100 — **23×** end to end. A changed
   schedule never inherits a serving tier: the point ships with its own paired closed-loop
-  evidence (600 RoboTwin episode pairs, −2.3 pp against a pre-registered −0.05 non-inferiority
-  margin; certification extension to n=1200 in progress). The distillation framework that
-  trains the few-step gap back out is under development as an InstinctFlash component.
+  certificate — **non-inferior** over 1153 pre-registered RoboTwin episode pairs, with the
+  most-conservative interval clearing the declared margin with room to spare. The distillation
+  framework that trains the few-step gap back out is under development as an InstinctFlash
+  component.
 - **Static-KV replay-safe CUDA-graph capture.** A preallocated max-extent KV buffer makes the
   denoise loop capturable with **bit-exact replay on unseen inputs** — verified on three model
   families and on two GPU architectures (H100/SM90 and Jetson Thor/SM110, same certificate).
@@ -110,19 +113,26 @@ pip install git+https://github.com/General-Instinct/InstinctCompress   # with gr
 pi05-compress compress <checkpoint> out/ --tasks tasks.txt --dataset <your_demonstrations>
 ```
 
-| model | pytorch vs InstinctFlash | tier |
-|:--|:--|:--|
-| **LingBot-VA** (14B WAM) | 8308 → 2580 ms, **3.22×** | NUMERIC |
-| ↳ **@ 2V/4A** (declared operating point) | 8308 → 360 ms, **23×** | OPERATING-POINT |
-| **LingBot-VLA-4B** | 673 → 184 ms, **3.66×** | BITEXACT |
-| **LingBot-VLA-V2-6B** (sparse-MoE) | 840 → 184 ms, **4.45×** | NUMERIC |
-| **Cosmos3-Edge-Policy** (3.86B) | 300 → 184 ms, **1.64×** | NUMERIC |
-| **Cosmos3-Nano-Policy** (15.75B) | 480 → 318 ms, **1.51×** | NUMERIC |
-| **pi05** | 299 → 181 ms, **1.65×** | BITEXACT |
-| **DreamZero-DROID** (Wan2.2-5B WAM) | 3117 → 1787 ms, **1.74×** | SCREEN |
+| model | PyTorch → InstinctFlash (H100) | PyTorch → InstinctFlash (Jetson Thor) | tier |
+|:--|:--|:--|:--|
+| **LingBot-VA** (14B WAM) | 8448 → 2583 ms, **3.27×** | 18027 → 5611 ms, **3.21×** | NUMERIC |
+| ↳ **@ 2V/4A** (declared operating point) | 8448 → 360 ms, **23×** | 18027 → 893 ms, **20×** | OPERATING-POINT (certified) |
+| **LingBot-VLA-4B** | 671 → 185 ms, **3.62×** | 696 → 97.5 ms, **7.13×** | BITEXACT / engine |
+| **LingBot-VLA-V2-6B** (sparse-MoE) | 829 → 183 ms, **4.54×** | 752 → 210 ms, **3.57×** | NUMERIC / engine |
+| **Cosmos3-Edge-Policy** (3.86B) | 311 → 186 ms, **1.67×** | 1158 → 660 ms, **1.75×** | NUMERIC |
+| **Cosmos3-Nano-Policy** (15.75B) | 482 → 325 ms, **1.49×** | 3956 → 2080 ms, **1.90×** | NUMERIC |
+| **pi05** | 207 → 73 ms, **2.84×** | 255 → 57 ms, **4.49×** | BITEXACT / engine |
+| **GR00T-N1.7-3B** | 115 → 59 ms, **1.94×** | 122 → 42 ms, **2.88×**¹ | BITEXACT / engine |
+| **DreamZero-DROID** (Wan2.2-5B WAM) | 3227 → 1843 ms, **1.75×** | — | SCREEN |
 
-The Cosmos3 arms are measured on repeated single-prompt serving; multi-prompt serving currently
-runs the pipeline arm. Tiers are derived from what a pass can prove, never asserted. **BITEXACT** means identical actions,
+Both columns are same-device, same-request comparisons against the authors' own serving code
+(H100 sweep 2026-08-24, Jetson Thor sweep 2026-08-26). "engine" marks rows served on Thor by the
+InstinctFlash engine tier (fp8 fused kernels; commercial access — contact
+founders@general-instinct.com): pi05 carries a 500-pair paired closed-loop non-inferiority
+certificate on Thor; the V2 engine's closed-loop certification run is in progress; the 2V/4A
+row's certificate closed at n=1153 pairs. ¹ The GR00T engine arm caches the vision/language
+prefix per prompt by design; the eager ratio is workload-shape-favoured. The Cosmos3 arms are
+measured on repeated single-prompt serving; multi-prompt serving currently runs the pipeline arm. Tiers are derived from what a pass can prove, never asserted. **BITEXACT** means identical actions,
 **NUMERIC** means a declared-margin result, **SCREEN** means measured deltas without a closed-loop
 certificate. **OPERATING-POINT** means a declared few-step schedule — changed computation,
 carried by its own paired closed-loop evidence rather than a serving tier. `runtime.explain()` prints the chain and its tier for the checkpoint you loaded,
