@@ -36,6 +36,9 @@ diffusion = ["diffusers>=0.36", "transformers>=4.55", "accelerate>=1.0", "einops
              # the upstream wan_va serving code's own undeclared imports
              "easydict", "ftfy", "imageio", "opencv-python", "websockets", "msgpack"]
 eval = ["numpy>=1.21"]
+# `instinctflash serve` — the openpi-wire websocket policy server. msgpack + the vendored numpy
+# shim are the wire; websockets>=13 is where the asyncio server implementation it uses landed.
+serve = ["websockets>=13", "msgpack>=1.0.5", "numpy>=1.21"]
 
 # THE CLI. "install the package, give it a model id, run" should not require writing a program, and
 # four of the five verbs answer questions you want answered before committing to a download or a GPU.
