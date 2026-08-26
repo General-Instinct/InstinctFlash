@@ -12,6 +12,36 @@
 
 ---
 
+## Install
+
+```bash
+git clone https://github.com/General-Instinct/InstinctFlash && cd InstinctFlash
+pip install -e ".[runtime,diffusion]"
+```
+
+Python 3.10+. `pip install -e .` alone needs no GPU and is enough to inspect checkpoints;
+LingBot-VA needs a CUDA GPU with ~30 GB free.
+
+## Load a model
+
+```python
+from instinctflash import Runtime
+
+runtime = Runtime.from_pretrained("robbyant/lingbot-va-posttrain-robotwin")
+```
+
+## Get actions
+
+```python
+with runtime.episode(prompt="put the bottle in the dustbin") as episode:
+    while not done:
+        action = episode.predict(observation)
+```
+
+`observation` is a dict in the model's own format. That is the whole API — no server to start, no
+optimization to choose. If a safety layer changed the action before it reached the robot, pass
+`executed_action=...` and the model conditions on what actually happened.
+
 ## What's new 🔥
 
 - **Eight model families served, measured, and tiered — on two device classes.** LingBot-VA,
@@ -21,9 +51,10 @@
   classes need opposite optimizations (H100 is launch-bound at batch 1, Thor is
   bandwidth-bound), which is why the planner measures before it applies. The numbers live in
   the results table below.
-- **Declared operating points, and a few-step distillation framework on the way.** A checkpoint
+- **Declared few-step schedules, and a few-step distillation framework on the way.** A checkpoint
   can declare a few-step denoise schedule and the runtime serves it: LingBot-VA at its 2V/4A
-  point runs the full pipeline in **360 ms** on the same H100 — **23×** end to end. A changed
+  point runs the full pipeline at twenty-three times its upstream end-to-end serving
+  cost — the measured row is in the results table below. A changed
   schedule never inherits a serving tier: the point ships with its own paired closed-loop
   certificate — **non-inferior** over 1153 pre-registered RoboTwin episode pairs, with the
   most-conservative interval clearing the declared margin with room to spare. The distillation
@@ -38,7 +69,12 @@
   accuracy trained back on your own demonstrations and verified, then served through the same
   stack unchanged.
 
-## Architecture
+## Framework overview
+
+InstinctFlash keeps model declarations, optimization planning, runtime execution, and evidence in
+one inspectable path, whether it is called from Python or the command line.
+
+# Architecture
 
 A checkpoint carries a short declaration of what it is. The runtime reads the declaration, decides
 which optimizations are provably valid for those weights, applies them, and shows its work:
@@ -85,33 +121,20 @@ means measured deltas without a closed-loop certificate, and **OPERATING-POINT**
 few-step schedule — changed computation, carried by its own paired closed-loop certificate.
 
 
-## Using it
+## Shipped configuration
 
-```bash
-git clone https://github.com/General-Instinct/InstinctFlash && cd InstinctFlash
-pip install -e ".[runtime,diffusion]"
+`shipped_configuration()` is the source of truth for the production LingBot serving flags:
+
+```text
+--no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout
 ```
 
-Python 3.10+. `pip install -e .` alone needs no GPU and is enough to inspect checkpoints;
-LingBot-VA needs a CUDA GPU with ~30 GB free.
+This serves P001 (substrate elision), P002 (conditioning prefill), P003 (ring KV addressing), and
+P007 (convolution layout) at an overall NUMERIC tier. P005 (`--graph-blocks`) and P006
+(`--stable-pools`) remain available for measurement but are **NOT RECOMMENDED** in the shipped
+configuration.
 
-Serve actions:
-
-```python
-from instinctflash import Runtime
-
-runtime = Runtime.from_pretrained("robbyant/lingbot-va-posttrain-robotwin")
-
-with runtime.episode(prompt="put the bottle in the dustbin") as episode:
-    while not done:
-        action = episode.predict(observation)
-```
-
-`observation` is a dict in the model's own format. That is the whole API — no server to start, no
-optimization to choose. If a safety layer changed the action before it reached the robot, pass
-`executed_action=...` and the model conditions on what actually happened.
-
-### Or serve it over the network
+## Or serve it over the network
 
 ```bash
 instinctflash serve robbyant/lingbot-va-posttrain-robotwin
