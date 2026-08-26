@@ -111,17 +111,39 @@ with runtime.episode(prompt="put the bottle in the dustbin") as episode:
 optimization to choose. If a safety layer changed the action before it reached the robot, pass
 `executed_action=...` and the model conditions on what actually happened.
 
-Or from the command line:
+### Or serve it over the network
 
 ```bash
-instinctflash devices                 # what machine am I on, and what can it do
-instinctflash describe  <model-id>    # what a checkpoint declares — no weights downloaded
-instinctflash plan      <model-id>    # what the runtime would do to it, and why
-instinctflash run       <model-id>    # load it and produce real actions
+instinctflash serve robbyant/lingbot-va-posttrain-robotwin
 ```
 
-`describe` and `plan` need no weights and no GPU: they answer *will this machine serve it* before
-you commit to a download.
+This is the same msgpack-over-websocket wire protocol the pi0/openpi ecosystem's robot-side
+clients already speak, so existing clients connect unchanged:
+
+```python
+from openpi_client.websocket_client_policy import WebsocketClientPolicy  # pip install openpi-client
+
+client = WebsocketClientPolicy("my-server", 8000)
+action = client.infer(observation)      # dict in, dict out — "prompt" rides in the observation
+```
+
+For stateful models a changed prompt starts a new episode server-side, and a client can say it
+explicitly with `{"reset": True, "prompt": ...}`. `--serve.viz=true` streams observations, actions
+and latency to a [Rerun](https://rerun.io) viewer.
+
+Or from the command line, two verbs:
+
+```bash
+instinctflash serve    <model-id>   # preflight (device + declaration + plan), then serve on :8000
+                                    #   --serve.dry_run=true   preflight only — no download, no GPU
+                                    #   --serve.smoke=true     load, produce one action, exit
+instinctflash validate <dir>        # is this directory a publishable checkpoint; with
+                                    #   --validate.teacher_outcomes / .student_outcomes / .margin it
+                                    #   also certifies and stamps the certificate into the package
+```
+
+The preflight fetches one metadata file — no weights, no GPU: it answers *will this machine serve
+it* before you commit to a download.
 
 Compress a checkpoint before serving it — see
 [InstinctCompress](https://github.com/General-Instinct/InstinctCompress) (customer access;
