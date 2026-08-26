@@ -92,6 +92,27 @@ class PackageReport:
         return "\n".join(out)
 
 
+def _training_layout_hint(d: Path) -> "str | None":
+    """One actionable line when a FAILING directory is a training-output tree.
+
+    Trainers write `<run>/transformer/*.safetensors`; the package convention is the transformer
+    contents FLAT at the package root, next to the declaration (the layout `materialize()`
+    composes from — see adapters/lingbot_va.py). A user pointing `validate` at the training
+    output gets "MISSING config.json" and "no local weight files; referenced by base_weights",
+    both true and both useless without this line, because the weights are sitting one directory
+    down. Only emitted when validation is already failing: a composed upstream package
+    legitimately carries a transformer/ component and must not be told to flatten itself.
+    """
+    t = d / "transformer"
+    if not t.is_dir() or not any(t.glob("*.safetensors")):
+        return None
+    return ("this looks like a training-output layout: the weight files sit under transformer/. "
+            "An InstinctFlash package is the FLAT transformer contents at the package root, next "
+            f"to instinctflash.json — run  mv {t}/* {d}/  (config.json and the *.safetensors land "
+            "at the root); the frozen vae/text_encoder/tokenizer are never packaged, they come "
+            "from the execution.base_weights pointer")
+
+
 def validate_package(ckpt_dir: str | Path) -> PackageReport:
     """Check a directory against the published layout. Reports everything, raises nothing."""
     d = Path(ckpt_dir)
@@ -105,8 +126,10 @@ def validate_package(ckpt_dir: str | Path) -> PackageReport:
     from instinctflash.descriptors.checkpoint import _declaration_file
     has_new, has_old = _declaration_file(d) is not None, (d / "delta.json").exists()
     if not has_new and not has_old:
+        hint = _training_layout_hint(d)
         return PackageReport(str(d), False, missing=("instinctflash.json",),
-                             problems=("no declaration: this directory is not a checkpoint",))
+                             problems=("no declaration: this directory is not a checkpoint",),
+                             notes=(hint,) if hint else ())
     if not has_new and has_old:
         notes.append("legacy delta.json. Supported as a compatibility layer; publish instinctflash.json "
                      "for anything new. See `migrate_legacy()`.")
@@ -141,12 +164,17 @@ def validate_package(ckpt_dir: str | Path) -> PackageReport:
         notes.append("no README.md. Not required, but a published checkpoint without a model card is "
                      "hard to adopt.")
 
+    def finished_notes() -> tuple[str, ...]:
+        # The layout hint rides on FAILING reports only, appended last so it reads as the fix.
+        hint = _training_layout_hint(d) if (missing or problems) else None
+        return tuple([*notes, hint] if hint else notes)
+
     decl = None
     try:
         decl = load_declaration(d)
     except Exception as e:                                   # the declaration is the whole contract
         problems.append(f"declaration rejected: {e}")
-        return PackageReport(str(d), True, tuple(missing), tuple(problems), tuple(notes))
+        return PackageReport(str(d), True, tuple(missing), tuple(problems), finished_notes())
 
     if not decl.servable:
         notes.append("execution.servable is false, so the runtime will refuse to serve it. That is a "
@@ -155,7 +183,7 @@ def validate_package(ckpt_dir: str | Path) -> PackageReport:
         if not getattr(decl, k, None) and k != "servable":
             problems.append(f"execution.{k} is empty; it is part of the minimal serving metadata")
 
-    return PackageReport(str(d), True, tuple(missing), tuple(problems), tuple(notes), decl)
+    return PackageReport(str(d), True, tuple(missing), tuple(problems), finished_notes(), decl)
 
 
 def verify_weights_indexes(ckpt_dir: str | Path) -> list[str]:
