@@ -16,7 +16,7 @@
 
 ```bash
 git clone https://github.com/General-Instinct/InstinctFlash && cd InstinctFlash
-pip install -e ".[runtime,diffusion]"
+pip install -e ".[runtime,diffusion,serve]"
 ```
 
 Python 3.10+. `pip install -e .` alone needs no GPU and is enough to inspect checkpoints;
