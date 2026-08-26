@@ -30,7 +30,7 @@ einops==0.8.2
 ftfy==6.3.1
 imageio==2.37.4
 msgpack==1.2.1
-websockets==17.0.1
+websockets==16.1.1  # 17.x requires Python >=3.11; 16.1.1 is the newest pin that honors the repo Python 3.10 floor (verified: serve suite 37/37 on it)
 
 # Imported by the upstream serving code rather than by InstinctFlash, and undeclared upstream: a clean
 # box gets ModuleNotFoundError at the first real inference, AFTER the checkpoint has loaded and a
