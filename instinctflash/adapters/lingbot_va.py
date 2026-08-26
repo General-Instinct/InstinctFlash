@@ -543,8 +543,14 @@ class LingBotVA:
         from instinctflash.runtime.execution import imports_available
         return imports_available(self.HOST_REQUIRES)
 
-    def build_in_process(self, checkpoint, plan, *, device=None, nfe=None):
-        """Build the server in THIS process and return a loopable control loop over it."""
+    def build_in_process(self, checkpoint, plan, *, device=None, nfe=None, seed=None):
+        """Build the server in THIS process and return a loopable control loop over it.
+
+        `seed` is threaded PER REQUEST, not just per episode: `_infer` draws `torch.randn` for
+        the initial video latents and action tokens with no upstream seeding, so
+        `install_deterministic_seed` re-seeds each draw as seed+frame_st_id — deterministic
+        across servers, while keeping the stock within-episode noise distribution.
+        """
         import os
 
         from instinctflash.runtime.lingbot_install import import_lingbot_server
@@ -598,11 +604,15 @@ class LingBotVA:
         # the plan must be installed BEFORE the model is built: fsdp_elision replaces the bound
         # _configure_model that the build calls through.
         applied = list(self.install(S, plan))
+        if seed is not None:
+            from instinctflash.runtime.lingbot_install import install_deterministic_seed
+            applied += install_deterministic_seed(S, int(seed))
         server = S.VA_Server(cfg)
         print(f"InstinctFlash in-process: applied {applied or ['STOCK BASELINE']}", flush=True)
         return _ControlLoop(server, tuple(cfg.obs_cam_keys))
 
-    def worker_command(self, checkpoint, plan, *, port, python, device=None, nfe=None):
+    def worker_command(self, checkpoint, plan, *, port, python, device=None, nfe=None,
+                       seed=None):
         """How to start this model as a managed worker. Returns (argv, env-overrides).
 
         Reuses `serve_variant.py` -- the entry point the project already gates and measures -- rather
@@ -647,6 +657,10 @@ class LingBotVA:
         g = dict(checkpoint.execution.guidance or {})
         if g:
             argv += ["--guidance", ",".join(f"{k}={v}" for k, v in sorted(g.items()))]
+
+        if seed is not None:
+            # the same per-request seeding as build_in_process, installed by serve_variant
+            argv += ["--deterministic-seed", str(int(seed))]
 
         env = {"PYTHONUNBUFFERED": "1"}
         shim = os.environ.get("IFL_FA_SHIM_DIR")

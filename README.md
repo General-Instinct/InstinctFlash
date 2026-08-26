@@ -62,7 +62,8 @@ server-side, and a client can say it explicitly with `{"reset": True, "prompt": 
 `--serve.dry_run=true` runs the preflight only — device, declaration and plan from one metadata
 file, no weights, no GPU; `--serve.smoke=true` loads, produces one action and exits;
 `--serve.viz=true` streams observations, actions and latency to a [Rerun](https://rerun.io)
-viewer. The second and last verb, `instinctflash validate <dir>`, checks a checkpoint is
+viewer. A/B two servers with the same `--serve.seed` to compare outputs value-for-value — it
+seeds the noise the model draws, which stock serving leaves unseeded. The second and last verb, `instinctflash validate <dir>`, checks a checkpoint is
 publishable — and with `--validate.teacher_outcomes / .student_outcomes / .margin` also runs a
 paired non-inferiority certificate and stamps it into the package.
 

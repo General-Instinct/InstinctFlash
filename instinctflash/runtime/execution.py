@@ -65,6 +65,40 @@ def imports_available(modules) -> tuple[bool, str]:
     return True, "the model stack imports here"
 
 
+def _seed_rngs(seed: int) -> None:
+    """Seed every RNG a hosted model might draw noise from. Called per EPISODE.
+
+    Per-episode is the floor that makes two seeded runtimes comparable given the same call
+    sequence; an adapter that accepts `seed=` in `build_in_process` threads it deeper and seeds
+    per request (wan_va re-seeds every `_infer` draw as seed+frame_st_id, preserving the stock
+    within-episode noise distribution). Both run when both exist — re-seeding twice cannot
+    disagree with itself.
+    """
+    import random
+
+    random.seed(seed)
+    try:
+        import numpy as np
+        np.random.seed(seed % (2 ** 32))
+    except ImportError:
+        pass
+    try:
+        import torch
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
+    except ImportError:
+        pass
+
+
+def _accepts_seed(fn) -> bool:
+    import inspect
+    try:
+        return "seed" in inspect.signature(fn).parameters
+    except (TypeError, ValueError):                              # builtins/partials without signatures
+        return False
+
+
 def can_host_in_process(adapter) -> tuple[bool, str]:
     """Ask the ADAPTER whether this interpreter can host its model.
 
@@ -97,9 +131,9 @@ class InProcessBackend:
     """
 
     def __init__(self, adapter, checkpoint, plan, *, device: str | None = None,
-                 nfe: Mapping[str, int] | None = None):
+                 nfe: Mapping[str, int] | None = None, seed: int | None = None):
         self._adapter, self._checkpoint, self._plan = adapter, checkpoint, plan
-        self._device, self._nfe = device, dict(nfe or {})
+        self._device, self._nfe, self._seed = device, dict(nfe or {}), seed
         self._impl = None
 
     def _ensure(self):
@@ -110,7 +144,13 @@ class InProcessBackend:
                     f"adapter for {self._checkpoint.execution.backbone!r} does not implement "
                     f"build_in_process(checkpoint, plan, device=, nfe=). Either implement it, or "
                     f"load with placement='worker' so the model runs in a managed subprocess.")
-            self._impl = build(self._checkpoint, self._plan, device=self._device, nfe=self._nfe)
+            # The seed reaches the adapter only when its build declares seed= — an adapter that
+            # threads it deeper (per request) opts in; everyone else gets the per-episode floor
+            # from reset() below, so an older adapter signature is never called with a keyword
+            # it does not know.
+            kw = {"seed": self._seed} if self._seed is not None and _accepts_seed(build) else {}
+            self._impl = build(self._checkpoint, self._plan, device=self._device, nfe=self._nfe,
+                               **kw)
             self._report_unapplied()
         return self._impl
 
@@ -168,6 +208,8 @@ class InProcessBackend:
 
     def reset(self, **conditioning):
         impl = self._ensure()
+        if self._seed is not None:
+            _seed_rngs(self._seed)                               # per-episode determinism floor
         reset = getattr(impl, "reset", None)
         if reset is not None:
             reset(**conditioning)
@@ -191,9 +233,10 @@ class WorkerBackend:
 
     def __init__(self, adapter, checkpoint, plan, *, device: str | None = None,
                  nfe: Mapping[str, int] | None = None, port: int | None = None,
-                 python: str | None = None, startup_timeout_s: float = 900.0):
+                 python: str | None = None, startup_timeout_s: float = 900.0,
+                 seed: int | None = None):
         self._adapter, self._checkpoint, self._plan = adapter, checkpoint, plan
-        self._device, self._nfe = device, dict(nfe or {})
+        self._device, self._nfe, self._seed = device, dict(nfe or {}), seed
         self._port = port or _free_port()
         self._python = python or _serving_interpreter()
         self._timeout = startup_timeout_s
@@ -209,8 +252,21 @@ class WorkerBackend:
                 f"worker_command(checkpoint, plan, port=, python=, device=, nfe=), so InstinctFlash "
                 f"cannot start a worker for it. Implement it, or run in an interpreter that can "
                 f"import the model stack so placement='in_process' is available.")
+        kw = {}
+        if self._seed is not None:
+            # A worker draws its noise in another process, so the per-episode floor in this one
+            # cannot reach it: either the adapter carries the seed onto the worker command line,
+            # or the caller is refused. Spawning an UNSEEDED worker under a caller who asked for
+            # determinism is the lie a seed flag exists to prevent.
+            if not _accepts_seed(launch):
+                raise RuntimeError(
+                    f"seed={self._seed} was requested, but the adapter for "
+                    f"{self._checkpoint.execution.backbone!r} does not accept seed= in "
+                    f"worker_command, so its worker would serve unseeded noise while the caller "
+                    f"believes otherwise. Add seed= there, or serve with placement='in_process'.")
+            kw["seed"] = self._seed
         cmd, env = launch(self._checkpoint, self._plan, port=self._port, python=self._python,
-                          device=self._device, nfe=self._nfe)
+                          device=self._device, nfe=self._nfe, **kw)
         self._proc = subprocess.Popen(cmd, env={**os.environ, **(env or {})},
                                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         atexit.register(self.close)

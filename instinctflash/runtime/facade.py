@@ -66,11 +66,17 @@ class Runtime:
         tier_ceiling: str = "bitexact",
         exclude_passes: tuple[str, ...] | list[str] = (),
         startup_timeout_s: float = 900.0,
+        seed: int | None = None,
     ) -> "Runtime":
         """Load a checkpoint and return a runtime handle.
 
         `revision`  commit, branch or tag. Pin it when a number has to be reproducible.
         `nfe`       explicit override of the checkpoint's declared forwards-per-stream. Not a preset.
+        `seed`      seed the RNGs the model draws noise from, per episode; adapters that can
+                    thread it deeper seed per request (wan_va seeds every `_infer` draw). Two
+                    runtimes with the same seed and the same inputs produce comparable outputs —
+                    which is what makes value-for-value A/B possible at all, since stock serving
+                    is unseeded and two stock servers already disagree. None keeps stock behaviour.
         `device`    None lets the adapter choose.
         `placement` 'auto' | 'in_process' | 'worker'. WHERE the model runs, not WHAT it
                     is; 'auto' is right unless you are deliberately isolating the model.
@@ -92,7 +98,7 @@ class Runtime:
 
         backend, why = choose_backend(
             placement, adapter, ckpt, plan, device=device, nfe=nfe,
-            startup_timeout_s=startup_timeout_s,
+            startup_timeout_s=startup_timeout_s, seed=seed,
         )
         return cls(ckpt, adapter, plan, backend, placement_reason=why)
 

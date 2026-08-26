@@ -56,6 +56,10 @@ class ServeOptions:
     #: where the Rerun stream goes: "" spawns a viewer, "*.rrd" records headless,
     #: "rerun+http://..." connects to a running viewer
     viz_sink: str = ""
+    #: seed the RNGs the model draws noise from, per episode (adapters that can thread it deeper
+    #: seed per request — wan_va seeds every _infer draw). Two serves with the same seed and the
+    #: same inputs are comparable value-for-value; unset keeps the model's own unseeded behaviour.
+    seed: int | None = None
 
 
 @dataclass
@@ -497,7 +501,8 @@ def cmd_serve(argv: list[str]) -> int:
         r = cfg.runtime
         rt = Runtime.from_pretrained(
             s.model, device=r.device, placement=r.placement, nfe=r.nfe or None,
-            tier_ceiling=r.tier_ceiling, exclude_passes=tuple(r.exclude_passes))
+            tier_ceiling=r.tier_ceiling, exclude_passes=tuple(r.exclude_passes),
+            seed=s.seed)
         try:
             if s.smoke:
                 return _serve_smoke(rt, preflight)
