@@ -15,6 +15,19 @@ from __future__ import annotations
 import copy
 
 KNOWN_DECLARATIONS: dict[str, dict] = {
+    "nvidia/GR00T-N1.7-3B": {
+        "instinctflash_schema": 1,
+        "execution": {
+            "model_id": "nvidia/GR00T-N1.7-3B",
+            "backbone": "groot_n17",
+            "servable": True,
+            "guidance": {"action": "none"},
+            "nfe": {"backbone": 1, "action": 4},
+            "base_weights": "nvidia/GR00T-N1.7-3B",
+            "embodiment_tag": "OXE_DROID_RELATIVE_EEF_RELATIVE_JOINT",
+            "param_bytes": 6910499416,
+        },
+    },
     "robbyant/lingbot-va-posttrain-robotwin": {
         "instinctflash_schema": 1,
         "execution": {
@@ -35,6 +48,25 @@ KNOWN_DECLARATIONS: dict[str, dict] = {
             "width": 320,
             "env_type": "robotwin_tshape",
             "param_bytes": 10179017396,
+        },
+    },
+    # The upstream VLA-V2 release keeps its HF checkpoint three directories below the
+    # repository root and does not publish an InstinctFlash declaration. Keep the original
+    # bytes in place; `_declared_view` exposes the nested config at the package root while the
+    # adapter consumes `checkpoint_subdir` to load the six shards from their real location.
+    "robbyant/lingbot-vla-v2-6b-robotwin": {
+        "instinctflash_schema": 1,
+        "execution": {
+            "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+            "backbone": "lingbot_vla_v2",
+            "servable": True,
+            "guidance": {"action": "none"},
+            "nfe": {"prefix": 1, "action": 10},
+            "base_weights": "robbyant/lingbot-vla-v2-6b-robotwin",
+            "checkpoint_subdir": "checkpoints/global_step_50000/hf_ckpt",
+            "tokenizer_repo": "Qwen/Qwen3-VL-4B-Instruct",
+            "robot": "robotwin",
+            "param_bytes": 25503630044,
         },
     },
 }

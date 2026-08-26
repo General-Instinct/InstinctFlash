@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "groot-n17-iwm"
+version = "0.1.0"
+description = "GR00T N1.7 Runtime adapter for InstinctFlash"
+requires-python = ">=3.10"
+dependencies = ["instinctflash"]
+
+[project.entry-points."instinctflash.adapters"]
+groot_n17 = "groot_n17_iwm.adapter:GR00TN17Adapter"
+
+[tool.setuptools.packages.find]
+include = ["groot_n17_iwm*"]

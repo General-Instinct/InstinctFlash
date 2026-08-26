@@ -346,6 +346,15 @@ def _declared_view(snapshot: Path, model_id: str, doc: dict) -> Path:
         # diffusers-composed upstream layout: the backbone architecture config lives under
         # transformer/; the package contract wants it at top level, and it is the same file
         (view / "config.json").symlink_to(snapshot / "transformer" / "config.json")
+    # Some upstream repositories are release bundles rather than flat HF checkpoints. Their
+    # declaration names the directory that contains the actual model. Validation still wants a
+    # root config, while the adapter needs the original nested layout for neighbouring metadata.
+    execution = dict(doc.get("execution") or {})
+    subdir = execution.get("checkpoint_subdir")
+    nested = snapshot / str(subdir) if subdir else None
+    if (not (view / "config.json").exists() and nested is not None
+            and (nested / "config.json").exists()):
+        (view / "config.json").symlink_to(nested / "config.json")
     (view / "instinctflash.json").write_text(_json.dumps(doc, indent=1))
     return view
 

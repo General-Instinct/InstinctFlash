@@ -19,6 +19,19 @@ torch = ["torch", "safetensors", "sentencepiece"]
 jax = ["jax", "jaxlib", "ml_dtypes", "orbax-checkpoint", "flax"]
 server = ["fastapi", "uvicorn"]
 eval = ["opencv-python", "tqdm"]
+lingbot-vla-v2 = [
+    "torch==2.8.0",
+    "torchvision==0.23.0",
+    "transformers==4.57.3",
+    "qwen-vl-utils",
+    "safetensors",
+    "einops",
+    "tqdm",
+    "torchdata==0.11.0",
+    "numpydantic==1.9.0",
+    "lerobot==0.4.2",
+    "flash-attn==2.8.3",
+]
 # Optional. Required only for the legacy upstream attention path
 # (FVK_RTX_FA2=0 / FVK_RTX_FA2_SITES=...) and the GROOT N1.6/N1.7
 # backend. Default RTX Pi0 / Pi0.5 inference uses the vendored

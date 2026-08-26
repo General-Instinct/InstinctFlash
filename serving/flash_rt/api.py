@@ -38,6 +38,7 @@ class VLAModel:
         self._pipe = pipe
         self._framework = framework
         self._current_prompt = None
+        self._last_action_dict = None
         # rtx Pi0.5 (RtxTorchPi05) requires an explicit
         # ``calibrate_with_real_data([obs])`` call before the first
         # ``infer()``; Thor / rtx GROOT lazy-calibrate inside ``infer()``.
@@ -90,6 +91,10 @@ class VLAModel:
                 obs['wrist_image_right'] = images[2]
         else:
             raise ValueError("images must be a list of numpy arrays or a dict")
+        if state is not None:
+            # Continuous-state policies consume this with the observation.  Tokenizing policies may
+            # already have consumed it in set_prompt(); retaining it here is harmless for them.
+            obs.setdefault("state", state)
 
         # rtx Pi0.5 expects an explicit calibration bootstrap before the
         # first infer(); fire it lazily here so user code stays "3 lines".
@@ -98,7 +103,23 @@ class VLAModel:
             self._needs_real_data_calibration = False
 
         result = self._pipe.infer(obs)
+        self._last_action_dict = result.get('action_dict')
         return result['actions']
+
+    @property
+    def backend_stats(self):
+        """Backend-specific capture counters, when the selected frontend exposes them."""
+        return getattr(self._pipe, "backend_stats", None)
+
+    @property
+    def action_dict(self):
+        """Last action split by modality, when the backend exposes one (GR00T N1.7)."""
+        return self._last_action_dict
+
+    def close(self):
+        close = getattr(self._pipe, "close", None)
+        if close is not None:
+            close()
 
     def calibrate(
         self,
@@ -180,7 +201,15 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
                use_awq=None,
                awq_alpha=0.5,
                use_p1_split_gu=None,
-               use_fp8=True):
+               use_fp8=True,
+               use_cuda_graph=True,
+               use_cuda_kernels=False,
+               use_prefix_graph=True,
+               use_gpu_preprocess=True,
+               gpu_preprocess_mode="processor",
+               robot="robotwin",
+               source_root=None,
+               qwen3vl_path=None):
     """Load a FlashRT model.
 
     Args:
@@ -198,7 +227,9 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
             and force fresh FP8 quantization + calibration.
         weight_cache: if True (default), cache FP8-quantized weights to disk
             after first load. Only affects JAX.
-        config: model config name: "pi05", "pi0", "groot", "pi0fast"
+        config: model config name: "pi05", "pi0", "groot", "groot_n17", "pi0fast",
+            or "lingbot_vla_v2". ``groot_n17`` uses upstream BF16 with an optional
+            bitexact DiT CUDA Graph on A100/H100.
         device: ignored (auto-detects GPU). Reserved for future multi-GPU.
         decode_cuda_graph: Pi0-FAST only. Capture action-phase decode as CUDA
             Graph for max throughput (trades startup time for per-token speed).
@@ -214,9 +245,12 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
                                       those classes have SM120 runtime forks
                                       where needed, e.g. Pi0-FAST.)
               SM89  (RTX 4090)     → ``flash_rt.hardware.rtx.*``
+              SM80  (A100)         → upstream BF16 baselines where available
+              SM90  (H100)         → upstream BF16 baselines where available
             Pass ``"thor"`` / ``"rtx_sm120"`` / ``"rtx_sm89"`` explicitly to
             force a specific backend (useful for cross-hardware debugging).
-        embodiment_tag: GROOT only. Per-embodiment MLP slot to load. Passing
+        embodiment_tag: GROOT only. For N1.7 the default is
+            ``OXE_DROID_RELATIVE_EEF_RELATIVE_JOINT``. For N1.6, passing
             ``None`` uses the backend default (``"new_embodiment"`` — unfit
             for the base 3B checkpoint demo; see below). The GR00T-N1.6-3B
             base checkpoint is only actually trained on a subset of its 32
@@ -225,7 +259,9 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
             tag prints a warning and emits noise-like actions.
         action_horizon: GROOT only. Number of action steps to generate per
             inference (default = ``ACTION_HORIZON_MAX`` = 50). Set to a
-            smaller value (e.g. 16 for LIBERO) to reduce DiT compute.
+            smaller value (e.g. 16 for LIBERO) to reduce N1.6 DiT compute.
+            The N1.7 BF16 baseline currently computes its native 40 steps and
+            only trims the decoded chunk returned to the caller.
         use_fp4: Pi0.5 torch only. If True, enable NVFP4 quantization on the
             selected encoder FFN layers (Gate+Up + Down GEMMs). Requires
             SM100+ GPU (Thor SM110) and the flash_rt_fp4 extension. Falls
@@ -238,13 +274,30 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
         use_fp8: Enable FP8 execution where the selected frontend supports
             an FP8/BF16 switch. Defaults to True to preserve existing
             performance-oriented behavior.
+        use_cuda_graph: Enable replay-safe CUDA Graph execution where supported.
+            For GR00T N1.7 this captures the four repeated DiT calls; set False
+            for the upstream BF16 eager control.
+        use_cuda_kernels: LingBot-VLA-V2 only. Enable its dedicated sparse-MoE and
+            fused RMSNorm/AdaRMSNorm Triton kernels. Defaults to False pending an
+            H100 gate under the 6-case protocol; refused on Thor SM110 (Triton is
+            measured-dead there and the vendor fallback path crashes).
+        use_prefix_graph: LingBot-VLA-V2 only. Capture the fixed-grid vision encoder
+            and 286-token prefix prefill in addition to the denoise graph. Defaults
+            to True when CUDA Graph execution is enabled.
+        use_gpu_preprocess: LingBot-VLA-V2 only. Keep the upstream resize and run the
+            Qwen image processor on CUDA using fixed pinned staging buffers. Defaults
+            to True.
+        gpu_preprocess_mode: LingBot-VLA-V2 only. ``"processor"`` is the validated,
+            output-identical mode. ``"full"`` additionally moves resize to CUDA and
+            is experimental because interpolation changes policy numerics slightly.
 
     Returns:
         VLAModel instance with .predict() method.
     """
-    if config not in ("pi05", "groot", "pi0", "pi0fast"):
+    if config not in ("pi05", "groot", "groot_n17", "pi0", "pi0fast", "lingbot_vla_v2"):
         raise ValueError(
-            f"Unknown config: {config}. Supported: pi05, groot, pi0, pi0fast")
+            f"Unknown config: {config}. Supported: pi05, groot, groot_n17, pi0, "
+            "pi0fast, lingbot_vla_v2")
     if framework not in ("torch", "jax"):
         raise ValueError(
             f"Unknown framework: {framework}. Supported: torch, jax")
@@ -333,19 +386,30 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
     # users specify groot/pi0fast knobs.
     import inspect
     sig = inspect.signature(pipe_cls)
-    kwargs: dict = {"num_views": num_views}
+    kwargs: dict = {"num_views": (3 if config == "lingbot_vla_v2" else num_views)}
     if "hardware" in sig.parameters:
         kwargs["hardware"] = arch
     if "use_fp8" in sig.parameters:
         kwargs["use_fp8"] = use_fp8
-    if config == "pi0fast":
+    if config == "lingbot_vla_v2":
+        kwargs["use_cuda_graph"] = bool(use_cuda_graph)
+        kwargs["use_cuda_kernels"] = bool(use_cuda_kernels)
+        kwargs["use_prefix_graph"] = bool(use_prefix_graph)
+        kwargs["use_gpu_preprocess"] = bool(use_gpu_preprocess)
+        kwargs["gpu_preprocess_mode"] = str(gpu_preprocess_mode)
+        kwargs["robot"] = str(robot)
+        if source_root is not None:
+            kwargs["source_root"] = source_root
+        if qwen3vl_path is not None:
+            kwargs["qwen3vl_path"] = qwen3vl_path
+    elif config == "pi0fast":
         kwargs.update(
             autotune=autotune,
             decode_cuda_graph=decode_cuda_graph,
             decode_graph_steps=decode_graph_steps,
             max_decode_steps=max_decode_steps,
         )
-    elif config == "groot":
+    elif config in ("groot", "groot_n17"):
         # rtx-side GROOT accepts embodiment_tag + action_horizon; Thor-side
         # GROOT accepts embodiment_tag + autotune. Feature-detect via the
         # concrete class signature so one call site works for both.
@@ -355,6 +419,10 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
             kwargs["embodiment_tag"] = embodiment_tag
         if "action_horizon" in sig.parameters and action_horizon is not None:
             kwargs["action_horizon"] = action_horizon
+        if "source_root" in sig.parameters and source_root is not None:
+            kwargs["source_root"] = source_root
+        if "use_cuda_graph" in sig.parameters:
+            kwargs["use_cuda_graph"] = bool(use_cuda_graph)
     else:
         # pi05, pi0 — both Thor and rtx variants take (checkpoint, num_views, autotune)
         # or (checkpoint, num_views). Feature-detect.

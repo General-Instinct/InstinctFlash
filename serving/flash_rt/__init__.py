@@ -6,8 +6,14 @@ Public exports (stable API — see ``docs/stable_api.md``):
     flash_rt.load_model(...)   → VLAModel
     flash_rt.VLAModel          — unified inference wrapper
 
-Supported models: Pi0.5, Pi0, Pi0-FAST, GROOT N1.6.
-Supported hardware: Jetson Thor (SM110), RTX 5090 (SM120), RTX 4090 (SM89).
+Supported models: Pi0.5, Pi0, Pi0-FAST, GROOT N1.6, GR00T N1.7, LingBot-VLA-V2.
+Supported hardware: Jetson Thor (SM110), RTX 5090 (SM120), RTX 4090 (SM89); GR00T N1.7 and
+LingBot-VLA-V2 add A100 (SM80) / H100 (SM90) paths.
+
+The LingBot-VLA-V2 arm in this tree is the ``cuda_sm80`` / ``cuda_sm90`` upstream-BF16
+datacenter graft: upstream kernels plus static-KV CUDA-graph replay and optional Triton
+MoE/RMSNorm kernels (never on Thor). There is no SM110 dispatch row for it here; an engine
+tier for launch-bound edge devices is available under commercial access.
 
 Extending with new models: see ``docs/plugin_model_template.md``.
 

@@ -36,6 +36,8 @@ def detect_arch() -> str:
         ``"thor"``      — Jetson AGX Thor, SM110 (cc 11.0)
         ``"rtx_sm120"`` — RTX 5090 / Blackwell consumer, SM120 (cc 12.0)
         ``"rtx_sm89"``  — RTX 4090 / Ada, SM89 (cc 8.9)
+        ``"cuda_sm80"`` — A100 / Ampere, SM80 (upstream BF16 baselines)
+        ``"cuda_sm90"`` — H100 / Hopper, SM90 (upstream BF16 baselines)
 
     Raises RuntimeError if CUDA is unavailable or the card has an
     unsupported SM level. Deliberately strict: silently falling back to
@@ -57,10 +59,14 @@ def detect_arch() -> str:
         return "rtx_sm120"
     if (major, minor) == (8, 9):
         return "rtx_sm89"
+    if (major, minor) == (8, 0):
+        return "cuda_sm80"
+    if (major, minor) == (9, 0):
+        return "cuda_sm90"
     raise RuntimeError(
         f"FlashRT: unsupported GPU SM {major}.{minor}. "
         f"Supported architectures: SM110 (Thor), SM120 (RTX 5090), "
-        f"SM89 (RTX 4090)."
+        f"SM89 (RTX 4090), SM80 (A100), SM90 (H100)."
     )
 
 
@@ -69,6 +75,14 @@ def detect_arch() -> str:
 # drag in every backend. External plugins may add entries to this dict
 # to register new models — see ``docs/plugin_model_template.md``.
 _PIPELINE_MAP: dict[tuple[str, str, str], tuple[str, str]] = {
+    # ── LingBot-VLA-V2 ──
+    # This route uses the model's upstream BF16 kernels plus static-KV CUDA Graph replay.  It is
+    # available on the GPUs on which that path has been measured; no JAX frontend is claimed.
+    ("lingbot_vla_v2", "torch", "cuda_sm80"):
+        ("flash_rt.frontends.torch.lingbot_vla_v2", "LingBotVLAV2TorchFrontend"),
+    ("lingbot_vla_v2", "torch", "cuda_sm90"):
+        ("flash_rt.frontends.torch.lingbot_vla_v2", "LingBotVLAV2TorchFrontend"),
+
     # ── Pi0.5 ──
     ("pi05", "torch", "thor"):
         ("flash_rt.frontends.torch.pi05_thor", "Pi05TorchFrontendThor"),
@@ -102,6 +116,15 @@ _PIPELINE_MAP: dict[tuple[str, str, str], tuple[str, str]] = {
         ("flash_rt.frontends.torch.groot_thor", "GrootTorchFrontendThor"),
     ("groot", "torch", "rtx_sm120"):
         ("flash_rt.frontends.torch.groot_rtx", "GrootTorchFrontendRtx"),
+
+    # ── GR00T N1.7 ──
+    # A100/H100 use NVIDIA's upstream BF16 policy as the correctness baseline.
+    # The separate Thor frontend is still experimental and is deliberately not
+    # exposed through this production dispatch table yet.
+    ("groot_n17", "torch", "cuda_sm80"):
+        ("flash_rt.frontends.torch.groot_n17_cuda", "GrootN17TorchFrontendCuda"),
+    ("groot_n17", "torch", "cuda_sm90"):
+        ("flash_rt.frontends.torch.groot_n17_cuda", "GrootN17TorchFrontendCuda"),
 
     # ── Pi0-FAST ── (SM120 runtime fork inside pipeline, no AttentionBackend protocol.)
     ("pi0fast", "torch", "thor"):

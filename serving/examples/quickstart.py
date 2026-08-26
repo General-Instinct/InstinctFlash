@@ -46,7 +46,8 @@ def main():
     parser.add_argument('--num_views', type=int, default=2)
     parser.add_argument('--prompt', default='pick up the red block and place it in the tray')
     parser.add_argument('--config', default='pi05',
-                        help="Model config: pi05, pi0, groot, pi0fast")
+                        help="Model config: pi05, pi0, groot, groot_n17, pi0fast, "
+                             "lingbot_vla_v2")
     parser.add_argument('--benchmark', type=int, default=0)
     parser.add_argument('--warmup', type=int, default=500,
                         help="Warmup iters before timed run. RTX 5090 needs "
@@ -62,20 +63,25 @@ def main():
     parser.add_argument('--max_steps', type=int, default=50,
                         help="Pi0-FAST: max decode steps for benchmark")
     parser.add_argument('--hardware', default='auto',
-                        choices=['auto', 'thor', 'rtx_sm120', 'rtx_sm89'],
+                        choices=['auto', 'thor', 'rtx_sm120', 'rtx_sm89',
+                                 'cuda_sm80', 'cuda_sm90'],
                         help="Backend selection; default auto-detects SM level")
     parser.add_argument('--embodiment_tag', default=None,
                         help="GROOT only. Trained slots in GR00T-N1.6-3B base: "
                              "gr1, robocasa_panda_omron, behavior_r1_pro. "
-                             "Any other tag emits noise.")
+                             "N1.7 defaults to OXE_DROID_RELATIVE_EEF_RELATIVE_JOINT.")
     parser.add_argument('--action_horizon', type=int, default=None,
                         help="GROOT only. Number of action steps to generate "
-                             "(default 50; pass 16 for LIBERO)")
+                             "(N1.6 default 50; N1.7 default 40)")
+    parser.add_argument('--source_root', default=None,
+                        help="Upstream source checkout (GR00T N1.7 or LingBot-VLA-V2)")
+    parser.add_argument('--no_cuda_graph', action='store_true',
+                        help="Disable CUDA Graph and run the selected frontend eagerly")
     parser.add_argument('--use_fp4', action='store_true',
                         help="Pi0.5 torch only. Enable NVFP4 quantization "
                              "with the production preset: full 18 encoder "
                              "FFN layers + AWQ + P1 split-GU "
-                             "(LIBERO Spatial 491/500 = 98.2%, matches FP8 "
+                             "(LIBERO Spatial 491/500 = 98.2%%, matches FP8 "
                              "baseline). Requires Thor SM110 / SM100+.")
     args = parser.parse_args()
 
@@ -96,9 +102,20 @@ def main():
         embodiment_tag=args.embodiment_tag,
         action_horizon=args.action_horizon,
         use_fp4=args.use_fp4,
+        source_root=args.source_root,
+        use_cuda_graph=not args.no_cuda_graph,
     )
 
-    img = np.random.randint(0, 255, (224, 224, 3), dtype=np.uint8)
+    if args.config == 'groot_n17':
+        img = np.random.randint(0, 255, (180, 320, 3), dtype=np.uint8)
+        # XYZ + a valid identity rotation-6D + gripper + seven joints.
+        state = np.array([
+            0.5, 0.0, 0.3, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+            0.4, 0.0, 0.3, 0.0, -1.9, 0.0, 2.2, 0.1,
+        ], dtype=np.float32)
+    else:
+        img = np.random.randint(0, 255, (224, 224, 3), dtype=np.uint8)
+        state = None
     # Supply ``num_views`` images. The public API accepts up to 3 views
     # (image / wrist_image / wrist_image_right); sending the wrong count
     # silently drops frames and biases latency measurements.
@@ -106,6 +123,7 @@ def main():
     actions = model.predict(
         images=imgs,
         prompt=args.prompt,
+        state=state,
     )
     # ══════════════════════════════════════════
 
@@ -115,7 +133,7 @@ def main():
     print(f"  sanity: {'PASS' if ok else 'FAIL'}")
 
     # Second call — reuses prompt (no recalibration, no graph recapture)
-    actions2 = model.predict(images=imgs)
+    actions2 = model.predict(images=imgs, state=state)
     print(f"  reuse prompt: shape={actions2.shape} OK")
 
     if args.benchmark > 0:
@@ -124,11 +142,11 @@ def main():
         # 2-3 ms. Jetson Thor settles faster, 50 is plenty there.
         warmup = args.warmup
         for _ in range(warmup):
-            model.predict(images=imgs)
+            model.predict(images=imgs, state=state)
         times = []
         for _ in range(args.benchmark):
             t0 = time.perf_counter()
-            model.predict(images=imgs)
+            model.predict(images=imgs, state=state)
             times.append((time.perf_counter() - t0) * 1000)
         times.sort()
         p50 = times[len(times) // 2]
