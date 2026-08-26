@@ -100,6 +100,18 @@ few-step schedule — changed computation, carried by its own paired closed-loop
   access): a fine-tuned pi05 checkpoint 8.7 GB → 3.2 GB, accuracy trained back on your own
   demonstrations and verified, served through the same stack unchanged.
 
+## Roadmap
+
+- **Few-step distillation.** Train back the small quality cost of declared few-step schedules —
+  starting with LingBot-VA's 2V/4A point (−1.65 pp against its teacher today) — and reach
+  schedules that untrained reduction cannot, each shipped with its own paired certificate.
+- **LingBot-VA on the edge engine.** The fp8 engine tier that serves pi05, LingBot-VLA-4B and
+  LingBot-VLA-V2 on Jetson Thor, extended to the VA world-action model.
+- **Attention upgrades.** A faster NUMERIC-tier attention arm beside the BITEXACT default for
+  pi05-class models; hybrid and linear attention for long-context world models.
+- **Cosmos3 engine serving, and DreamZero on the edge** — each after its groundwork
+  (reference-implementation alignment; memory footprint on unified-memory devices).
+
 ## Framework overview
 
 InstinctFlash keeps model declarations, optimization planning, runtime execution, and evidence in
