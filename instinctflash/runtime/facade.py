@@ -355,6 +355,14 @@ def _compile_declaration(
     # checkpoint declares `execution.nfe`; `nfe=` overrides it per stream. Without this the
     # planner priced a 79-forward cycle while a 10-forward cycle executed.
     spec = adapter.spec()
+    # The plan header names the CHECKPOINT being planned, not the adapter's default example.
+    # `spec.model_id` is the adapter author's sample checkpoint id, so a local directory whose
+    # declaration says `general-instinct/lingbot-va-fans-8000` printed "InstinctFlash plan for
+    # lingbot-va-posttrain-robotwin" — a wrong name on the one line a user quotes in a report.
+    declared_id = (ckpt.execution.model_id or "").strip()
+    if declared_id and declared_id != spec.model_id:
+        import dataclasses
+        spec = dataclasses.replace(spec, model_id=declared_id)
     schedule = {**dict(ckpt.execution.nfe or {}), **dict(nfe or {})}
     if schedule:
         spec = spec.with_nfe(schedule)
