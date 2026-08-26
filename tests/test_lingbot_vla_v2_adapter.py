@@ -37,10 +37,12 @@ def test_example_surface_stays_product_shaped():
     assert root_files == {
         "README.md",
         "instinctwm.json",
+        "moe_kernel_results.json",
         "profile_infer.py",
         "pyproject.toml",
         "static_capture.py",
         "static_capture_results.json",
+        "verify_moe_kernel.py",
         "verify_static_capture.py",
     }
     assert not (PLUGIN_ROOT / "csrc").exists()

@@ -153,9 +153,12 @@ class LingBotVLAV2Adapter:
                     .strip()
                     .lower(),
                 )
-            # The Triton kernels DEFAULT OFF: their only accuracy evidence today is a 4-case
-            # A100 gate against a null-derived threshold, weaker than the 6-case H100 protocol
-            # behind the published row. Flip the default only after that gate passes on H100.
+            # The Triton kernels DEFAULT OFF, now with the H100 6-case gate on record
+            # (verify_moe_kernel.py / moe_kernel_results.json): the MoE kernel PASSES the
+            # null-control envelope (3.84e-2 vs 5.08e-2) with self-consistency 0.0 — the
+            # deterministic reduction verified — but measured ~2% slower than vendor robby_moe
+            # on the eager path and is ungated under capture; the fused RMSNorm FAILED the
+            # envelope (6.10e-2) and is NOT RECOMMENDED until it passes.
             all_kernels = _env_flag("IFL_VLA2_CUDA_KERNELS", default=False)
             if _env_flag("IFL_VLA2_MOE_KERNEL", default=all_kernels) \
                     and _triton_kernels_allowed("IFL_VLA2_MOE_KERNEL"):

@@ -1,0 +1,55 @@
+{
+ "protocol": "6-case H100, null-control envelope (same as verify_static_capture.py)",
+ "null_control_deltas": [
+  0.05083918571472168,
+  0.04829716682434082,
+  0.025645852088928223
+ ],
+ "envelope": 0.05083918571472168,
+ "moe_kernel": {
+  "vs_stock_max_abs_d": 0.038365334272384644,
+  "self_consistency_max_abs_d": 0.0,
+  "p50_ms_eager": 842.5,
+  "pass": true
+ },
+ "moe_plus_rmsnorm": {
+  "vs_stock_max_abs_d": 0.061007022857666016,
+  "self_consistency_max_abs_d": 0.0,
+  "p50_ms_eager": 781.1,
+  "pass": false
+ },
+ "stock_p50_ms_eager": 827.7,
+ "device": "NVIDIA H100 80GB HBM3",
+ "cases": [
+  [
+   0,
+   100,
+   "Use the left arm to pick"
+  ],
+  [
+   1,
+   101,
+   "Use the left arm to pick"
+  ],
+  [
+   2,
+   102,
+   "Use the left arm to pick"
+  ],
+  [
+   3,
+   103,
+   "Use the left arm to pick"
+  ],
+  [
+   4,
+   104,
+   "Stack the red bowl on to"
+  ],
+  [
+   5,
+   105,
+   "Stack the red bowl on to"
+  ]
+ ]
+}

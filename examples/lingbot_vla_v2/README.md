@@ -50,18 +50,25 @@ uv pip install -e ./serving
 `IFL_VLA2_BACKEND=static` is the default. `compile` selects upstream `torch.compile`; `eager`
 selects the uncompiled reference.
 
-Two optional LingBot-specific Triton kernels exist and currently DEFAULT OFF
-(`IFL_VLA2_CUDA_KERNELS=0`), pending an H100 gate under the 6-case protocol that backs the
-published row:
+Two optional LingBot-specific Triton kernels exist and DEFAULT OFF (`IFL_VLA2_CUDA_KERNELS=0`).
+They were gated on H100 under the same 6-case null-control protocol as the published row
+(`verify_moe_kernel.py`, results committed in `moe_kernel_results.json`):
 
-- fused RMSNorm/AdaRMSNorm for the 73 action-expert normalization sites;
-- sparse top-4 MoE with the exact per-expert route bound (`T`, not `T * top_k`) and an
-  expert-sorted deterministic output reduction.
+- **sparse top-4 MoE** with the exact per-expert route bound (`T`, not `T * top_k`) and an
+  expert-sorted, atomics-free deterministic output reduction — **accuracy PASS**
+  (3.84e-02 vs the 5.08e-02 stock-vs-stock envelope) and **self-consistency 0.0**: with the
+  vendor's atomics replaced, identical seeds reproduce identical actions, which the stock model
+  cannot do (envelope up to 5.1e-02 against itself). It stays off by default because it measured
+  ~2% slower than vendor robby_moe on the eager path and its interaction with the captured
+  182.5 ms serving path is ungated; set `IFL_VLA2_MOE_KERNEL=1` when deterministic replay
+  matters more than the last 2%.
+- **fused RMSNorm/AdaRMSNorm** for the 73 action-expert normalization sites — **accuracy FAIL**
+  (6.10e-02, outside the envelope). It remains available for measurement via
+  `IFL_VLA2_RMSNORM_KERNEL=1` but is NOT RECOMMENDED until it passes.
 
-The two pieces can be controlled independently with `IFL_VLA2_RMSNORM_KERNEL=0|1` and
-`IFL_VLA2_MOE_KERNEL=0|1`. They are REFUSED on Thor (SM110): Triton codegen is measured-dead
-there and the vendor fallback path crashes; that device class is served by a separate engine
-tier available under commercial access.
+Both are REFUSED on Thor (SM110): Triton codegen is measured-dead there and the vendor fallback
+path crashes; that device class is served by a separate engine tier available under commercial
+access.
 
 GPU image processing is enabled by default. `IFL_VLA2_GPU_PREPROCESS_MODE=processor` batches
 the three upstream CPU resizes without changing their values, then uses reusable pinned staging
