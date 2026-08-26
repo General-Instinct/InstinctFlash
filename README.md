@@ -103,18 +103,6 @@ stamps the certificate into the package.
 means measured deltas without a closed-loop certificate, and **OPERATING-POINT** means a declared
 few-step schedule — changed computation, carried by its own paired closed-loop certificate.
 
-## Roadmap
-
-- **Few-step distillation.** Train back the small quality cost of declared few-step schedules —
-  starting with LingBot-VA's 2V/4A point (−1.65 pp against its teacher today) — and reach
-  schedules that untrained reduction cannot, each shipped with its own paired certificate.
-- **LingBot-VA on the edge engine.** The fp8 engine tier that serves pi05, LingBot-VLA-4B and
-  LingBot-VLA-V2 on Jetson Thor, extended to the VA world-action model.
-- **Attention upgrades.** A faster NUMERIC-tier attention arm beside the BITEXACT default for
-  pi05-class models; hybrid and linear attention for long-context world models.
-- **Cosmos3 engine serving, and DreamZero on the edge** — each after its groundwork
-  (reference-implementation alignment; memory footprint on unified-memory devices).
-
 ## Framework overview
 
 InstinctFlash keeps model declarations, optimization planning, runtime execution, and evidence in
@@ -161,3 +149,15 @@ pi05-compress compress <checkpoint> out/ --tasks tasks.txt --dataset <your_demon
 
 To add your own model family, declare an `instinctflash.adapters` entry point and `pip install`
 your package — see [`examples/external_plugin/`](examples/external_plugin/).
+
+## Roadmap
+
+- [ ] **Few-step distillation** — train back the small quality cost of declared few-step
+      schedules, starting with LingBot-VA's 2V/4A point (−1.65 pp against its teacher today);
+      reach schedules untrained reduction cannot, each with its own paired certificate.
+- [ ] **LingBot-VA on the edge engine** — extend the fp8 engine tier that serves pi05,
+      LingBot-VLA-4B and LingBot-VLA-V2 on Jetson Thor to the VA world-action model.
+- [ ] **Attention upgrades** — a faster NUMERIC-tier attention arm beside the BITEXACT default
+      for pi05-class models; hybrid and linear attention for long-context world models.
+- [ ] **Cosmos3 engine serving, DreamZero on the edge** — each after its groundwork
+      (reference-implementation alignment; memory footprint on unified-memory devices).
