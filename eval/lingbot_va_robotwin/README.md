@@ -4,6 +4,19 @@ The accuracy reference for InstinctFlash. Every future optimization (step distil
 graph capture, kernel work, KV-cache changes) is judged against numbers produced here, so
 this directory optimizes for *being correct and auditable*, not for being fast to run.
 
+## Shipped configuration
+
+`shipped_configuration()` is the source of truth for the production LingBot serving flags:
+
+```text
+--no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout
+```
+
+This serves P001 (substrate elision), P002 (conditioning prefill), P003 (ring KV addressing), and
+P007 (convolution layout) at an overall NUMERIC tier. P005 (`--graph-blocks`) and P006
+(`--stable-pools`) remain available for measurement but are **NOT RECOMMENDED** in the shipped
+configuration.
+
 ## What it is
 
 [LingBot-VA](https://github.com/robbyant/lingbot-va) is an autoregressive video-action

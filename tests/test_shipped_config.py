@@ -103,15 +103,18 @@ def test_readme_states_the_same_configuration():
     # InstinctFlash is, how to install it, how to load a model, how to get actions -- and a table of
     # serving CLI flags is not that. The invariant is unchanged and still enforced: whatever document
     # states the shipped configuration must state THIS one.
-    text = (ROOT / "README.md").read_text()
+    # 2026-08-26: the front-page README sheds serving-flag detail (user decision — the front page
+    # is install/load/actions/results). The invariant is unchanged: whatever document states the
+    # shipped configuration must state THIS one. That document is now the LingBot eval README.
+    text = (ROOT / "eval" / "lingbot_va_robotwin" / "README.md").read_text()
     check("shipped_configuration()" in text or "SHIPPED CONFIGURATION" in text.upper(),
-          "README has a shipped-configuration section")
+          "the LingBot eval README has a shipped-configuration section")
     for flag in shipped_configuration():
-        check(flag in text, f"README architecture chapter lists {flag}")
+        check(flag in text, f"the shipped-config doc lists {flag}")
     for d in DISPOSITIONS:
         if d.status is NOT_RECOMMENDED:
             for pid in (d.pid,):
-                check(pid in text, f"README accounts for {pid} (NOT RECOMMENDED)")
+                check(pid in text, f"the shipped-config doc accounts for {pid} (NOT RECOMMENDED)")
 
 
 def test_served_tier_is_stated_honestly():
