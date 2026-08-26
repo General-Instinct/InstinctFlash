@@ -12,7 +12,8 @@ refuses to serve a plan it could not fully apply.
 
 from __future__ import annotations
 
-from typing import Sequence
+import os
+from typing import Mapping, Sequence
 
 from instinctflash.adapters.base import (  # noqa: F401
     ObservationField, ObservationSpec,
@@ -172,6 +173,106 @@ def apply_declared_guidance(cfg, guidance) -> dict:
     return applied
 
 
+# --- observation geometry: declared per checkpoint, never guessed --------------------------------
+
+#: The upstream config fields that decide WHAT the model looks at: which cameras, at what
+#: resolution, composited how. The names match wan_va/configs/*.py verbatim, so a training config
+#: can be transcribed field-for-field into the `execution` block of instinctflash.json.
+GEOMETRY_KEYS = ("obs_cam_keys", "height", "width", "env_type")
+
+
+def _normalized_geometry(g: Mapping) -> dict:
+    return {
+        "obs_cam_keys": [str(k) for k in g["obs_cam_keys"]],
+        "height": int(g["height"]),
+        "width": int(g["width"]),
+        "env_type": str(g["env_type"]),
+    }
+
+
+def _upstream_va_configs() -> Mapping:
+    """The upstream VA_CONFIGS registry, without importing the torch-heavy server module.
+
+    `wan_va/configs/` imports easydict and nothing heavier, so an IFL_CFG lookup stays possible in
+    an interpreter that could never host the model.
+    """
+    import sys
+
+    from instinctflash.runtime.lingbot_install import resolve_lingbot_root
+
+    wan = os.path.join(resolve_lingbot_root(None), "wan_va")
+    if wan not in sys.path:
+        sys.path.insert(0, wan)
+    from configs import VA_CONFIGS  # noqa: PLC0415  (importable only after the insert above)
+    return VA_CONFIGS
+
+
+def resolve_observation_geometry(execution, *, va_configs: Mapping | None = None,
+                                 environ: Mapping | None = None) -> tuple[dict, str]:
+    """Where this checkpoint's cameras and frame geometry come from. Returns (geometry, source).
+
+    Resolution order, per key in `GEOMETRY_KEYS`:
+
+        1. the checkpoint's own DECLARATION (`execution.obs_cam_keys` / `height` / `width` /
+           `env_type` in instinctflash.json)
+        2. the `IFL_CFG` environment variable, naming an upstream `VA_CONFIGS` entry
+        3. FAIL LOUD.
+
+    There is deliberately no silent default. This used to be a plain VA_CONFIGS lookup that fell
+    back to "robotwin", so a custom checkpoint served without an
+    env var no document mentioned ran under another robot's camera keys, resolution and
+    compositing — conditioning entirely wrong, with no warning, while `--serve.smoke` printed the
+    robotwin camera names as what the model "expects". Guessed geometry is a wrong action, not a
+    convenience.
+    """
+    environ = os.environ if environ is None else environ
+    extra = dict(getattr(execution, "extra", None) or {})
+    declared = {k: extra[k] for k in GEOMETRY_KEYS if extra.get(k) is not None}
+    missing = [k for k in GEOMETRY_KEYS if k not in declared]
+    if not missing:
+        src = str(getattr(execution, "source", "") or "instinctflash.json")
+        return _normalized_geometry(declared), f"declaration ({src})"
+
+    cfg_name = environ.get("IFL_CFG")
+    if cfg_name:
+        cfgs = _upstream_va_configs() if va_configs is None else va_configs
+        if cfg_name not in cfgs:
+            raise RuntimeError(
+                f"IFL_CFG={cfg_name!r} names no upstream LingBot-VA config. Known names: "
+                f"{', '.join(sorted(cfgs))}. The registry is wan_va/configs/__init__.py.")
+        cfg = cfgs[cfg_name]
+        merged = dict(declared)
+        for k in missing:
+            if not hasattr(cfg, k):
+                raise RuntimeError(f"upstream config {cfg_name!r} carries no {k!r}; it cannot "
+                                   f"supply this checkpoint's observation geometry")
+            merged[k] = getattr(cfg, k)
+        source = f"IFL_CFG={cfg_name}"
+        if declared:
+            source += f", with the declaration overriding {sorted(declared)}"
+        return _normalized_geometry(merged), source
+
+    model_id = getattr(execution, "model_id", "") or "this checkpoint"
+    raise RuntimeError(
+        f"{model_id}: no observation geometry. The wan_va backbone cannot serve a checkpoint "
+        f"without knowing which cameras it was trained on, at what resolution, and how the views "
+        f"are composited — and it refuses to guess: the old silent 'robotwin' default ran custom "
+        f"checkpoints under another robot's cameras with no warning.\n\n"
+        f"Missing declaration keys: {', '.join(missing)}.\n\n"
+        f"Fix (preferred): declare them in the package's instinctflash.json, inside the "
+        f"\"execution\" block, copied from YOUR training config (wan_va/configs/*.py). The "
+        f"robotwin values, as an example of the shape, not a default:\n\n"
+        f'    "obs_cam_keys": ["observation.images.cam_high",\n'
+        f'                     "observation.images.cam_left_wrist",\n'
+        f'                     "observation.images.cam_right_wrist"],\n'
+        f'    "height": 256,\n'
+        f'    "width": 320,\n'
+        f'    "env_type": "robotwin_tshape"\n\n'
+        f"Or, for a one-off run, set the environment override IFL_CFG=<name> to adopt an upstream "
+        f"VA_CONFIGS entry wholesale (e.g. IFL_CFG=robotwin, IFL_CFG=fans). A declared key always "
+        f"wins over IFL_CFG.")
+
+
 class _ControlLoop:
     """One loopable control cycle over wan_va's two-call server protocol.
 
@@ -277,6 +378,27 @@ class LingBotVA:
 
     def spec(self) -> AdapterSpec:
         return lingbot_va_spec()
+
+    def observation_contract(self, checkpoint) -> tuple[ObservationSpec, str]:
+        """What `predict` expects FOR THIS CHECKPOINT, and where that answer came from.
+
+        `spec().observation` is the adapter's static robotwin example. A checkpoint that declares
+        its own geometry gets a contract built from ITS camera keys and resolution, so
+        `Runtime.observation` and `--serve.smoke` stop printing another robot's camera names.
+        The per-frame shape is the model's native (height, width); the server resizes incoming
+        frames to it, so that is the resolution to supply, not a hard requirement.
+
+        Raises the same loud declare-or-IFL_CFG error as serving would, which is the point: the
+        smoke test must not teach the wrong cameras.
+        """
+        import dataclasses
+
+        geometry, source = resolve_observation_geometry(checkpoint.execution)
+        fields = tuple(
+            ObservationField(key=k, shape=(geometry["height"], geometry["width"], 3),
+                             dtype="uint8")
+            for k in geometry["obs_cam_keys"])
+        return dataclasses.replace(lingbot_va_spec().observation, fields=fields), source
 
     def install(self, server_module: object, plan) -> Sequence[str]:
         # Imported here, not at module scope: the runtime layer needs torch, and reading a
@@ -430,7 +552,19 @@ class LingBotVA:
         composed = self.materialize(checkpoint)
         os.environ["LINGBOT_CKPT"] = composed
         S = import_lingbot_server(self.lingbot_root)
-        cfg = S.VA_CONFIGS[os.environ.get("IFL_CFG", "robotwin")]
+        # Observation geometry: declaration > IFL_CFG > fail loud, never a silent robotwin
+        # default. The named config (IFL_CFG, else robotwin) stays the structural base for the
+        # NON-geometry serving facts (normalization stats, action channel map, schedules), which
+        # the declaration cannot express yet; the resolved geometry overrides what it looks at.
+        geometry, geo_source = resolve_observation_geometry(checkpoint.execution,
+                                                            va_configs=S.VA_CONFIGS)
+        base_name = os.environ.get("IFL_CFG") or "robotwin"
+        cfg = S.VA_CONFIGS[base_name]
+        for key, value in geometry.items():
+            setattr(cfg, key, value)
+        print(f"InstinctFlash observation geometry: {geo_source} — cameras "
+              f"{list(cfg.obs_cam_keys)}, {cfg.height}x{cfg.width}, env_type={cfg.env_type!r} "
+              f"(non-geometry serving facts from upstream config {base_name!r})", flush=True)
 
         # Point the upstream config at the weights EXPLICITLY. Setting LINGBOT_CKPT alone worked only
         # because this machine's checkout had been hand-edited to read that variable; a clean `git
@@ -480,10 +614,26 @@ class LingBotVA:
 
         from instinctflash.verify.released import shipped_configuration
 
+        # Geometry follows the same declaration > IFL_CFG > fail-loud rule as build_in_process.
+        # The named config rides on --config-name (previously hardcoded to robotwin, so
+        # IFL_CFG=fans plus worker placement silently served robotwin geometry); declared keys
+        # ride on --geometry as JSON overrides, resolved by serve_variant in the worker where the
+        # upstream configs actually import.
+        import json as _json
+
+        extra = dict(checkpoint.execution.extra or {})
+        declared = {k: extra[k] for k in GEOMETRY_KEYS if extra.get(k) is not None}
+        cfg_name = os.environ.get("IFL_CFG")
+        if len(declared) < len(GEOMETRY_KEYS) and not cfg_name:
+            # raises the loud declare-or-IFL_CFG error before a worker is ever spawned
+            resolve_observation_geometry(checkpoint.execution, va_configs={})
+
         iwm_root = Path(__file__).resolve().parents[2]
         serve = iwm_root / "eval" / "lingbot_va_robotwin" / "serve_variant.py"
-        argv = [python, "-u", str(serve), "--config-name", "robotwin",
+        argv = [python, "-u", str(serve), "--config-name", cfg_name or "robotwin",
                 "--port", str(port), *shipped_configuration()]
+        if declared:
+            argv += ["--geometry", _json.dumps(declared)]
 
         # The DECLARED schedule, with `nfe=` overriding it -- the same resolution order as
         # build_in_process. This used to read the override only, so a checkpoint declaring

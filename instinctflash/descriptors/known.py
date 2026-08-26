@@ -24,6 +24,16 @@ KNOWN_DECLARATIONS: dict[str, dict] = {
             "guidance": {"video": "cfg", "action": "positive_only"},
             "nfe": {"video": 2, "action": 4},
             "base_weights": "robbyant/lingbot-va-posttrain-robotwin",
+            # Observation geometry, transcribed from wan_va/configs/va_robotwin_cfg.py. Declared
+            # EXPLICITLY because the adapter refuses to guess these: a wan_va checkpoint states
+            # its cameras and resolution or names an IFL_CFG entry, and the built-ins follow the
+            # same rule rather than being a hidden fourth resolution source.
+            "obs_cam_keys": ["observation.images.cam_high",
+                             "observation.images.cam_left_wrist",
+                             "observation.images.cam_right_wrist"],
+            "height": 256,
+            "width": 320,
+            "env_type": "robotwin_tshape",
             "param_bytes": 10179017396,
         },
     },

@@ -51,6 +51,12 @@ if IFL_ROOT not in sys.path:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config-name", default="robotwin")
+    ap.add_argument(
+        "--geometry", default=None,
+        help="JSON overrides for the observation-geometry fields (obs_cam_keys, height, width, "
+             "env_type), applied onto the --config-name entry. This is how a checkpoint's "
+             "DECLARED geometry reaches a worker: the declaration outranks the named config, "
+             "per key (see instinctflash/adapters/lingbot_va.py resolve_observation_geometry).")
     ap.add_argument("--port", type=int, default=None)
     ap.add_argument("--save_root", default=None)
     ap.add_argument("--no-fsdp", action="store_true")
@@ -449,10 +455,27 @@ def main() -> int:
     if args.deterministic_seed is not None:
         applied += install_deterministic_seed(S, args.deterministic_seed)
 
+    geometry_source = f"upstream config {args.config_name!r}"
+    if getattr(args, "geometry", None):
+        import json as _json
+
+        from instinctflash.adapters.lingbot_va import GEOMETRY_KEYS
+        overrides = _json.loads(args.geometry)
+        unknown = sorted(set(overrides) - set(GEOMETRY_KEYS))
+        if unknown:
+            raise SystemExit(f"--geometry only carries {GEOMETRY_KEYS}; got {unknown}")
+        cfg = S.VA_CONFIGS[args.config_name]
+        for k_, v_ in overrides.items():
+            setattr(cfg, k_, v_)
+        geometry_source = (f"declaration overrides {sorted(overrides)} on upstream config "
+                           f"{args.config_name!r}")
+        applied.append(f"geometry={sorted(overrides)}")
+
     print("=" * 72, flush=True)
     print(f"InstinctFlash serve_variant: {applied if applied else ['STOCK BASELINE']}", flush=True)
     print(f"  ckpt   : {os.environ.get('LINGBOT_CKPT')}", flush=True)
     print(f"  config : {args.config_name}   port: {args.port}", flush=True)
+    print(f"  geometry: {geometry_source}", flush=True)
     print("=" * 72, flush=True)
 
     class _A:

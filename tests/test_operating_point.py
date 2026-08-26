@@ -130,7 +130,14 @@ def test_both_placements_serve_the_same_declaration():
         class Ex:
             nfe = {"video": 2, "action": 4}
             guidance = {"video": "cfg", "action": "positive_only"}
-            extra = {"base_weights": str(base)}
+            # geometry declared like any real wan_va checkpoint must: the adapter now refuses
+            # to guess it (see tests/test_va_geometry.py), and the worker carries it as
+            # --geometry overrides
+            extra = {"base_weights": str(base),
+                     "obs_cam_keys": ["observation.images.cam_high",
+                                      "observation.images.cam_left_wrist",
+                                      "observation.images.cam_right_wrist"],
+                     "height": 256, "width": 320, "env_type": "robotwin_tshape"}
 
         class Ck:
             path = str(pkg)

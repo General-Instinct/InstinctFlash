@@ -167,9 +167,29 @@ class Runtime:
         product surface, and wrong in three separate ways for the next family that arrived. Declaring
         the contract fixed the branch; exposing it here fixes the private-attribute reach that the
         fix left behind.
+
+        An adapter that resolves the contract PER CHECKPOINT (LingBot-VA's camera keys and frame
+        geometry are declaration facts, not adapter constants) implements
+        `observation_contract(checkpoint) -> (ObservationSpec, source)`; the static `spec()` is the
+        fallback. Such an adapter may raise here -- with the same actionable error serving would
+        raise -- rather than describe another robot's cameras.
         """
+        return self._observation_contract()[0]
+
+    @property
+    def observation_source(self) -> str:
+        """Where the observation contract came from: the checkpoint's declaration, an environment
+        override, or the adapter's static declaration. `--serve.smoke` prints it so a wrong
+        geometry source is visible before anyone trusts the 'expects' line."""
+        return self._observation_contract()[1]
+
+    def _observation_contract(self):
+        fn = getattr(self._adapter, "observation_contract", None)
+        if callable(fn):
+            return fn(self._checkpoint)
         spec = getattr(self._adapter, "spec", None)
-        return getattr(spec(), "observation", None) if callable(spec) else None
+        obs = getattr(spec(), "observation", None) if callable(spec) else None
+        return obs, "the adapter's static declaration"
 
     def explain(self) -> str:
         """Everything a bug report needs, in one string."""

@@ -433,6 +433,7 @@ def _serve_smoke(rt, preflight: dict):
             "input for it. Add ObservationSpec to its adapter, or use the Python API and pass a "
             "real observation.", False, 2)
     obs = contract.example()
+    geometry_source = rt.observation_source
     with rt.episode(prompt="smoke test: reach forward") as ep:
         out = ep.predict(obs)
     last = np.asarray(out["action"] if isinstance(out, dict) and "action" in out
@@ -441,10 +442,12 @@ def _serve_smoke(rt, preflight: dict):
     text = ("SMOKE TEST — one zero-filled observation, prompt 'smoke test: reach forward'. This "
             "proves the checkpoint loads here and returns finite actions. It is not an evaluation.\n"
             f"  expects  {contract.describe()}\n"
+            f"  geometry {geometry_source}\n"
             f"  action   {last.shape} {last.dtype}   finite {finite}   std {float(last.std()):.4f}")
     return CommandReport(
         {**preflight, "smoke": {"action_shape": list(last.shape), "dtype": str(last.dtype),
-                                "finite": finite}},
+                                "finite": finite,
+                                "observation_source": geometry_source}},
         text, finite, 0 if finite else 1)
 
 

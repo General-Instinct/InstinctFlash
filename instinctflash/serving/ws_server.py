@@ -92,9 +92,15 @@ def default_metadata(runtime) -> dict:
         extra = dict(getattr(ex, "extra", None) or {})
         if extra:
             md["extra"] = extra
-    obs = getattr(runtime, "observation", None)
-    if obs is not None and getattr(obs, "fields", ()):
-        md["observation"] = obs.describe()
+    try:
+        obs = getattr(runtime, "observation", None)
+        if obs is not None and getattr(obs, "fields", ()):
+            md["observation"] = obs.describe()
+            src = getattr(runtime, "observation_source", None)
+            if src:
+                md["observation_source"] = src
+    except Exception:                                            # noqa: BLE001 - metadata is best-effort;
+        pass                                                     # the load path raises the real error
     return md
 
 
