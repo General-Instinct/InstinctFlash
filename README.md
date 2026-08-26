@@ -66,6 +66,25 @@ Layer 1 changes the *weights* and produces a checkpoint; it lives in the compani
 layers are not a priority order — the runtime measures where the time actually goes and starts
 there.
 
+## Results
+
+| model | PyTorch → InstinctFlash (H100) | PyTorch → InstinctFlash (Jetson Thor) | tier |
+|:--|:--|:--|:--|
+| **LingBot-VA** (14B WAM) | 8448 → 2583 ms, **3.27×** | 18027 → 5611 ms, **3.21×** | NUMERIC |
+| **LingBot-VA @ 2V/4A** (14B WAM) | 8448 → 360 ms, **23×** | 18027 → 893 ms, **20×** | OPERATING-POINT (certified) |
+| **LingBot-VLA-4B** | 671 → 185 ms, **3.62×** | 696 → 97.5 ms, **7.13×** | BITEXACT / engine |
+| **LingBot-VLA-V2-6B** (sparse-MoE) | 829 → 183 ms, **4.54×** | 752 → 210 ms, **3.57×** | NUMERIC / engine |
+| **Cosmos3-Edge-Policy** (3.86B) | 311 → 186 ms, **1.67×** | 1158 → 660 ms, **1.75×** | NUMERIC |
+| **Cosmos3-Nano-Policy** (15.75B) | 482 → 325 ms, **1.49×** | 3956 → 2080 ms, **1.90×** | NUMERIC |
+| **pi05** | 207 → 73 ms, **2.84×** | 255 → 57 ms, **4.49×** | BITEXACT / engine |
+| **GR00T-N1.7-3B** | 115 → 59 ms, **1.94×** | 122 → 42 ms, **2.88×** | BITEXACT / engine |
+| **DreamZero-DROID** (Wan2.2-5B WAM) | 3227 → 1843 ms, **1.75×** | — | SCREEN |
+
+**BITEXACT** means identical actions, **NUMERIC** means a declared-margin result, **SCREEN**
+means measured deltas without a closed-loop certificate, and **OPERATING-POINT** means a declared
+few-step schedule — changed computation, carried by its own paired closed-loop certificate.
+
+
 ## Using it
 
 ```bash
@@ -113,21 +132,6 @@ pip install git+https://github.com/General-Instinct/InstinctCompress   # with gr
 pi05-compress compress <checkpoint> out/ --tasks tasks.txt --dataset <your_demonstrations>
 ```
 
-| model | PyTorch → InstinctFlash (H100) | PyTorch → InstinctFlash (Jetson Thor) | tier |
-|:--|:--|:--|:--|
-| **LingBot-VA** (14B WAM) | 8448 → 2583 ms, **3.27×** | 18027 → 5611 ms, **3.21×** | NUMERIC |
-| **LingBot-VA @ 2V/4A** (14B WAM) | 8448 → 360 ms, **23×** | 18027 → 893 ms, **20×** | OPERATING-POINT (certified) |
-| **LingBot-VLA-4B** | 671 → 185 ms, **3.62×** | 696 → 97.5 ms, **7.13×** | BITEXACT / engine |
-| **LingBot-VLA-V2-6B** (sparse-MoE) | 829 → 183 ms, **4.54×** | 752 → 210 ms, **3.57×** | NUMERIC / engine |
-| **Cosmos3-Edge-Policy** (3.86B) | 311 → 186 ms, **1.67×** | 1158 → 660 ms, **1.75×** | NUMERIC |
-| **Cosmos3-Nano-Policy** (15.75B) | 482 → 325 ms, **1.49×** | 3956 → 2080 ms, **1.90×** | NUMERIC |
-| **pi05** | 207 → 73 ms, **2.84×** | 255 → 57 ms, **4.49×** | BITEXACT / engine |
-| **GR00T-N1.7-3B** | 115 → 59 ms, **1.94×** | 122 → 42 ms, **2.88×** | BITEXACT / engine |
-| **DreamZero-DROID** (Wan2.2-5B WAM) | 3227 → 1843 ms, **1.75×** | — | SCREEN |
-
-**BITEXACT** means identical actions, **NUMERIC** means a declared-margin result, **SCREEN**
-means measured deltas without a closed-loop certificate, and **OPERATING-POINT** means a declared
-few-step schedule — changed computation, carried by its own paired closed-loop certificate.
 
 To add your own model family, declare an `instinctflash.adapters` entry point and `pip install`
 your package — see [`examples/external_plugin/`](examples/external_plugin/).
