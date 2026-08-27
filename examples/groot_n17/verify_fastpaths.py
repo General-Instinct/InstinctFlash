@@ -24,9 +24,41 @@ import numpy as np
 import torch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, "/home/ubuntu/iwm_distill/bench_groot_h100")
 sys.path.insert(0, HERE)
-from bench_groot_eager import synth_obs  # noqa: E402
+
+STATE_DIMS = {"eef_9d": 9, "gripper_position": 1, "joint_position": 7}
+
+
+def synth_obs(policy):
+    """Observation built from the checkpoint's own modality metadata.
+
+    Dims come from experiment_cfg/dataset_statistics.json (oxe_droid_relative_eef_relative_joint):
+    state eef_9d=9, gripper_position=1, joint_position=7. Video horizon 2, state horizon 1
+    (both enforced by Gr00tPolicy's validators). Inlined from the original bench harness so this
+    gate runs from the repository alone.
+    """
+    cfg = policy.get_modality_config()
+    rng = np.random.default_rng(0)
+    obs = {}
+    for name, mod in cfg.items():
+        keys = getattr(mod, "modality_keys", None) or []
+        if name == "video":
+            obs["video"] = {k: rng.integers(0, 256, size=(1, 2, 256, 256, 3), dtype=np.uint8)
+                            for k in keys}
+        elif name == "state":
+            obs["state"] = {}
+            for k in keys:
+                base = k.split(".")[-1]
+                dim = STATE_DIMS.get(base, 8)
+                v = np.zeros((1, 1, dim), dtype=np.float32)
+                if base == "eef_9d":
+                    # position(3) + rot6d(6): zeros are a degenerate rotation (SVD blows up);
+                    # use the identity frame's first two basis vectors
+                    v[0, 0, 3:9] = [1, 0, 0, 0, 1, 0]
+                obs["state"][k] = v
+        elif name == "language":
+            obs["language"] = {k: [["pick up the object"]] for k in keys}
+    return obs
 
 
 def build_policy():

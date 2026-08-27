@@ -16,8 +16,8 @@ the graph on inputs the capture never saw.
 
     CUDA_VISIBLE_DEVICES=4 QWEN3VL_PATH=Qwen/Qwen3-VL-4B-Instruct .venv/bin/python examples/lingbot_vla_v2/verify_static_capture.py
 """
-import glob
 import json
+import os
 import statistics
 import sys
 import time
@@ -25,12 +25,17 @@ import time
 import numpy as np
 import torch
 
-sys.path.insert(0, "/home/ubuntu/lingbot-vla-v2-repo")
-sys.path.insert(0, "/home/ubuntu/InstinctFlash/examples/lingbot_vla_v2")
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.environ.get("LINGBOT_VLA_V2_ROOT", "/home/ubuntu/lingbot-vla-v2-repo"))
+sys.path.insert(0, HERE)   # this checkout's own lingbot_vla_v2_iwm, never another tree's
 
-SNAP = glob.glob(
-    "/home/ubuntu/.cache/huggingface/hub/models--robbyant--lingbot-vla-v2-6b-robotwin/snapshots/*/"
-)[0] + "checkpoints/global_step_50000/hf_ckpt"
+if os.environ.get("VLA2_SNAP"):
+    SNAP = os.environ["VLA2_SNAP"]
+else:
+    from huggingface_hub import snapshot_download
+
+    SNAP = os.path.join(snapshot_download("robbyant/lingbot-vla-v2-6b-robotwin"),
+                        "checkpoints", "global_step_50000", "hf_ckpt")
 CAMS = ["observation.images.cam_high", "observation.images.cam_left_wrist",
         "observation.images.cam_right_wrist"]
 PROMPT_A = "Use the left arm to pick up the block and place it in the tray"
@@ -112,8 +117,7 @@ def main():
         "replays": d.replays,
     }
     print(json.dumps({k: v for k, v in res.items() if k != "gates"}, indent=1))
-    open("/home/ubuntu/InstinctFlash/examples/lingbot_vla_v2/static_capture_results.json",
-         "w").write(json.dumps(res, indent=1))
+    open(os.path.join(HERE, "static_capture_results.json"), "w").write(json.dumps(res, indent=1))
 
 
 if __name__ == "__main__":
