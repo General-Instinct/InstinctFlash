@@ -28,6 +28,26 @@
   access): a fine-tuned pi05 checkpoint 8.7 GB → 3.2 GB, accuracy trained back on your own
   demonstrations and verified, served through the same stack unchanged.
 
+## Results
+
+| model | PyTorch → InstinctFlash (H100) | PyTorch → InstinctFlash (Jetson Thor) | tier |
+|:--|:--|:--|:--|
+| **LingBot-VA** (5B WAM) | 8448 → 2583 ms, **3.27×** | 18027 → 5611 ms, **3.21×** | NUMERIC |
+| **LingBot-VA @ 2V/4A** (5B WAM) | 8448 → 360 ms, **23×** | 18027 → 893 ms, **20×** | OPERATING-POINT (certified) |
+| **LingBot-VLA-4B** | 671 → 185 ms, **3.62×** | 696 → 97.5 ms, **7.13×** | BITEXACT / engine |
+| **LingBot-VLA-V2-6B** (sparse-MoE) | 829 → 183 ms, **4.54×** | 752 → 210 ms, **3.57×** | NUMERIC / engine |
+| **Cosmos3-Edge-Policy** (3.86B) | 311 → 186 ms, **1.67×** | 1158 → 660 ms, **1.75×** | NUMERIC |
+| **Cosmos3-Nano-Policy** (15.75B) | 482 → 325 ms, **1.49×** | 3956 → 2080 ms, **1.90×** | NUMERIC |
+| **pi05** | 207 → 73 ms, **2.84×** | 255 → 57 ms, **4.49×** | BITEXACT / engine |
+| **GR00T-N1.7-3B** | 115 → 59 ms, **1.94×** | 122 → 42 ms, **2.88×** | BITEXACT / engine |
+| **DreamZero-DROID** (Wan2.2-5B WAM) | 3227 → 1843 ms, **1.75×** | — | SCREEN |
+
+**BITEXACT** means identical actions, **NUMERIC** means a declared-margin result, **SCREEN**
+means measured deltas without a closed-loop certificate, and **OPERATING-POINT** means a declared
+few-step schedule — changed computation, carried by its own paired closed-loop certificate.
+Every row is reproducible: `examples/<family>/reproduce_h100.sh` reruns its pair with the exact
+protocol.
+
 ## Install
 
 ```bash
@@ -115,26 +135,6 @@ say it explicitly with `{"reset": True, ...}`.
 The second verb, `instinctflash validate <dir>`, checks a checkpoint is publishable; given
 `--validate.teacher_outcomes/.student_outcomes/.margin` it also certifies non-inferiority and
 stamps the certificate into the package.
-
-## Results
-
-| model | PyTorch → InstinctFlash (H100) | PyTorch → InstinctFlash (Jetson Thor) | tier |
-|:--|:--|:--|:--|
-| **LingBot-VA** (5B WAM) | 8448 → 2583 ms, **3.27×** | 18027 → 5611 ms, **3.21×** | NUMERIC |
-| **LingBot-VA @ 2V/4A** (5B WAM) | 8448 → 360 ms, **23×** | 18027 → 893 ms, **20×** | OPERATING-POINT (certified) |
-| **LingBot-VLA-4B** | 671 → 185 ms, **3.62×** | 696 → 97.5 ms, **7.13×** | BITEXACT / engine |
-| **LingBot-VLA-V2-6B** (sparse-MoE) | 829 → 183 ms, **4.54×** | 752 → 210 ms, **3.57×** | NUMERIC / engine |
-| **Cosmos3-Edge-Policy** (3.86B) | 311 → 186 ms, **1.67×** | 1158 → 660 ms, **1.75×** | NUMERIC |
-| **Cosmos3-Nano-Policy** (15.75B) | 482 → 325 ms, **1.49×** | 3956 → 2080 ms, **1.90×** | NUMERIC |
-| **pi05** | 207 → 73 ms, **2.84×** | 255 → 57 ms, **4.49×** | BITEXACT / engine |
-| **GR00T-N1.7-3B** | 115 → 59 ms, **1.94×** | 122 → 42 ms, **2.88×** | BITEXACT / engine |
-| **DreamZero-DROID** (Wan2.2-5B WAM) | 3227 → 1843 ms, **1.75×** | — | SCREEN |
-
-**BITEXACT** means identical actions, **NUMERIC** means a declared-margin result, **SCREEN**
-means measured deltas without a closed-loop certificate, and **OPERATING-POINT** means a declared
-few-step schedule — changed computation, carried by its own paired closed-loop certificate.
-Every row is reproducible: `examples/<family>/reproduce_h100.sh` reruns its pair with the exact
-protocol.
 
 ## Framework overview
 

@@ -48,9 +48,10 @@ def test_root_is_product_shaped():
 def test_readme_answers_four_questions_first():
     print("\n=== 2. the first screen answers what / install / load / actions ===")
     text = (ROOT / "README.md").read_text()
-    # 2026-08-26 (user decision): What's new leads the page; the usage screen — what / install /
-    # load / actions — must follow immediately and completely before the results section.
-    ends = [text.index(h) for h in ("## Results", "## Supported models") if h in text]
+    # 2026-08-27 (user decision): the page order is news -> results -> usage. The usage screen —
+    # what / install / load / actions — must appear in order and completely before the framework
+    # chapters begin.
+    ends = [text.index(h) for h in ("## Framework overview", "# Architecture") if h in text]
     head = text[:min(ends)] if ends else text
     at = [head.find(h) for h in FIRST_SCREEN]
     check(all(i > 0 for i in at), "install, load and get-actions all appear up front", str(at))
