@@ -139,6 +139,11 @@ class ObservationField:
     key: str                                   # e.g. "observation.images.top"
     shape: tuple[int, ...]                     # e.g. (3, 480, 640)
     dtype: str = "float32"                     # "float32" | "uint8" | ...
+    #: Smoke-test fill values, when all-zeros is DEGENERATE for this field rather than merely
+    #: uninformative. Example: GR00T's eef_9d state carries a rotation-6D whose zero vector has
+    #: no orthonormalization (upstream's SVD decode diverges on it), so its declaration carries
+    #: the identity frame instead. Flat values, reshaped to `shape`; None keeps zeros.
+    example: tuple[float, ...] | None = None
 
 
 @dataclass(frozen=True)
@@ -185,6 +190,8 @@ class ObservationSpec:
 
         def one(f: ObservationField):
             shape = (1, *f.shape) if self.batched and not self.frames_key else f.shape
+            if f.example is not None:
+                return np.asarray(f.example, dtype=np.dtype(f.dtype)).reshape(shape)
             return np.zeros(shape, dtype=np.dtype(f.dtype))
 
         if self.frames_key:

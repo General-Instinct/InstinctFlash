@@ -66,7 +66,12 @@ class GR00TN17Adapter:
                     ObservationField(
                         "video.wrist_image_left", (2, 180, 320, 3), "uint8"
                     ),
-                    ObservationField("state.eef_9d", (1, 9), "float32"),
+                    # position(3) + rotation-6D(6). The zero vector is a DEGENERATE rotation —
+                    # upstream's SVD orthonormalization diverges on it — so the declared smoke
+                    # example is the identity frame's first two basis vectors, same construction
+                    # as verify_fastpaths.py's synth_obs.
+                    ObservationField("state.eef_9d", (1, 9), "float32",
+                                     example=(0, 0, 0, 1, 0, 0, 0, 1, 0)),
                     ObservationField("state.gripper_position", (1, 1), "float32"),
                     ObservationField("state.joint_position", (1, 7), "float32"),
                 ),
@@ -121,6 +126,19 @@ class GR00TN17Adapter:
         root = _source_root()
         if str(root) not in sys.path:
             sys.path.insert(0, str(root))
+        # transformers 4.57.3 _patch_mistral_regex calls the Hub API even in offline mode (and
+        # 401s on the gated backbone repo when online without credentials); the checkpoint's
+        # Qwen3 tokenizer is not a mistral model, skip it. Same workaround as
+        # verify_fastpaths.py / verify_fast_decode.py — the adapter must load from a warm cache.
+        try:
+            import transformers.tokenization_utils_base as tub
+
+            def _no_mistral_patch(cls, tokenizer, *args, **kwargs):
+                return tokenizer
+
+            tub.PreTrainedTokenizerBase._patch_mistral_regex = classmethod(_no_mistral_patch)
+        except Exception:  # noqa: BLE001 - a transformers without the probe needs no patch
+            pass
         from gr00t.policy.gr00t_policy import Gr00tPolicy
 
         embodiment = str(extra.get("embodiment_tag") or DEFAULT_EMBODIMENT)
