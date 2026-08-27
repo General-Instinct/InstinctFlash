@@ -32,15 +32,15 @@
 
 | model | PyTorch → InstinctFlash (H100) | PyTorch → InstinctFlash (Jetson Thor) | tier |
 |:--|:--|:--|:--|
-| **LingBot-VA** (5B WAM) | 8448 → 2583 ms, **3.27×** | 18027 → 5611 ms, **3.21×** | NUMERIC |
-| **LingBot-VA @ 2V/4A** (5B WAM) | 8448 → 360 ms, **23×** | 18027 → 893 ms, **20×** | OPERATING-POINT (certified) |
-| **LingBot-VLA-4B** | 671 → 185 ms, **3.62×** | 696 → 97.5 ms, **7.13×** | BITEXACT / engine |
-| **LingBot-VLA-V2-6B** (sparse-MoE) | 829 → 183 ms, **4.54×** | 752 → 210 ms, **3.57×** | NUMERIC / engine |
-| **Cosmos3-Edge-Policy** (3.86B) | 311 → 186 ms, **1.67×** | 1158 → 660 ms, **1.75×** | NUMERIC |
-| **Cosmos3-Nano-Policy** (15.75B) | 482 → 325 ms, **1.49×** | 3956 → 2080 ms, **1.90×** | NUMERIC |
-| **pi05** | 207 → 73 ms, **2.84×** | 255 → 57 ms, **4.49×** | BITEXACT / engine |
-| **GR00T-N1.7-3B** | 115 → 59 ms, **1.94×** | 122 → 42 ms, **2.88×** | BITEXACT / engine |
-| **DreamZero-DROID** (Wan2.2-5B WAM) | 3227 → 1843 ms, **1.75×** | — | SCREEN |
+| **LingBot-VA** (5B WAM) | 8448&nbsp;→&nbsp;2583&nbsp;ms,&nbsp;**3.27×** | 18027&nbsp;→&nbsp;5611&nbsp;ms,&nbsp;**3.21×** | NUMERIC |
+| **LingBot-VA @ 2V/4A** (5B WAM) | 8448&nbsp;→&nbsp;360&nbsp;ms,&nbsp;**23×** | 18027&nbsp;→&nbsp;893&nbsp;ms,&nbsp;**20×** | OPERATING-POINT (certified) |
+| **LingBot-VLA-4B** | 671&nbsp;→&nbsp;185&nbsp;ms,&nbsp;**3.62×** | 696&nbsp;→&nbsp;97.5&nbsp;ms,&nbsp;**7.13×** | BITEXACT / engine |
+| **LingBot-VLA-V2-6B** (sparse-MoE) | 829&nbsp;→&nbsp;183&nbsp;ms,&nbsp;**4.54×** | 752&nbsp;→&nbsp;210&nbsp;ms,&nbsp;**3.57×** | NUMERIC / engine |
+| **Cosmos3-Edge-Policy** (3.86B) | 311&nbsp;→&nbsp;186&nbsp;ms,&nbsp;**1.67×** | 1158&nbsp;→&nbsp;660&nbsp;ms,&nbsp;**1.75×** | NUMERIC |
+| **Cosmos3-Nano-Policy** (15.75B) | 482&nbsp;→&nbsp;325&nbsp;ms,&nbsp;**1.49×** | 3956&nbsp;→&nbsp;2080&nbsp;ms,&nbsp;**1.90×** | NUMERIC |
+| **pi05** | 207&nbsp;→&nbsp;73&nbsp;ms,&nbsp;**2.84×** | 255&nbsp;→&nbsp;57&nbsp;ms,&nbsp;**4.49×** | BITEXACT / engine |
+| **GR00T-N1.7-3B** | 115&nbsp;→&nbsp;59&nbsp;ms,&nbsp;**1.94×** | 122&nbsp;→&nbsp;42&nbsp;ms,&nbsp;**2.88×** | BITEXACT / engine |
+| **DreamZero-DROID** (Wan2.2-5B WAM) | 3227&nbsp;→&nbsp;1843&nbsp;ms,&nbsp;**1.75×** | — | SCREEN |
 
 **BITEXACT** means identical actions, **NUMERIC** means a declared-margin result, **SCREEN**
 means measured deltas without a closed-loop certificate, and **OPERATING-POINT** means a declared
