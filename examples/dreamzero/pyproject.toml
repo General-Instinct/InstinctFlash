@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dreamzero-iwm"
+version = "0.1.0"
+description = "DreamZero (GEAR-Dreams, Wan2.2-5B WAM) Runtime adapter for InstinctFlash"
+requires-python = ">=3.10"
+dependencies = ["instinctflash"]
+
+[project.entry-points."instinctflash.adapters"]
+dreamzero = "dreamzero_iwm.adapter:DreamZeroAdapter"
+
+[tool.setuptools.packages.find]
+include = ["dreamzero_iwm*"]
