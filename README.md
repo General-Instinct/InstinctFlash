@@ -70,19 +70,16 @@ from instinctflash import Runtime
 runtime = Runtime.from_pretrained("/path/to/your/finetuned/checkpoint")
 ```
 
-The only requirement is a **declaration** — a small `instinctflash.json` in the directory that
-states what the model is: backbone, observation geometry (camera keys, resolution), denoise
-schedule. The runtime plans from the declaration, so a fine-tune inherits every optimization
-and proof tier of its family automatically. The guided path from a fresh training run:
+The only requirement is a small `instinctflash.json` **declaration**, and one command writes it:
 
 ```bash
-instinctflash validate /path/to/your/checkpoint
+instinctflash validate /path/to/your/checkpoint --validate.scaffold=auto
 ```
 
-`validate` lists exactly what is missing, with fixes — the declaration fields to add, the exact
-move command when the weights sit in a training layout (e.g. a `transformer/` subdirectory),
-the shard that didn't finish copying. When it passes, the checkpoint serves like any stock
-model.
+The scaffold detects your model's family, fills in everything provable from the checkpoint
+itself, and the validation that follows tells you exactly what is left to fill. When it passes,
+the checkpoint serves like any stock model — a fine-tune inherits every optimization and proof
+tier of its family automatically.
 
 The stock releases load by Hub id with zero setup, and their built-in declarations double as
 templates for your own:
