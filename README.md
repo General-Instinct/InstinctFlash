@@ -41,13 +41,31 @@ you download anything).
 
 ## Load a model
 
+Your fine-tuned checkpoint is the expected case — it loads straight from the training output
+directory:
+
 ```python
 from instinctflash import Runtime
 
-runtime = Runtime.from_pretrained("robbyant/lingbot-va-posttrain-robotwin")
+runtime = Runtime.from_pretrained("/path/to/your/finetuned/checkpoint")
 ```
 
-All eight supported families load by Hub id the same way:
+The only requirement is a **declaration** — a small `instinctflash.json` in the directory that
+states what the model is: backbone, observation geometry (camera keys, resolution), denoise
+schedule. The runtime plans from the declaration, so a fine-tune inherits every optimization
+and proof tier of its family automatically. The guided path from a fresh training run:
+
+```bash
+instinctflash validate /path/to/your/checkpoint
+```
+
+`validate` lists exactly what is missing, with fixes — the declaration fields to add, the exact
+move command when the weights sit in a training layout (e.g. a `transformer/` subdirectory),
+the shard that didn't finish copying. When it passes, the checkpoint serves like any stock
+model.
+
+The stock releases load by Hub id with zero setup, and their built-in declarations double as
+templates for your own:
 
 | family | model id |
 |:--|:--|
@@ -58,9 +76,6 @@ All eight supported families load by Hub id the same way:
 | GR00T-N1.7-3B | `nvidia/GR00T-N1.7-3B` |
 | Cosmos3 policies | `nvidia/Cosmos3-Edge-Policy-DROID` · `nvidia/Cosmos3-Nano-Policy-DROID` |
 | DreamZero | `GEAR-Dreams/DreamZero-DROID` |
-
-Your own checkpoint loads from a local directory once it carries a declaration —
-`instinctflash validate <dir>` tells you exactly what is missing.
 
 ## Get actions
 
