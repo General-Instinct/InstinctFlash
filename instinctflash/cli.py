@@ -115,7 +115,9 @@ class CertifyConfig:
 def _fmt_device(d) -> str:
     cap = f"sm{d.capability[0]}{d.capability[1]}" if d.capability != (0, 0) else "cpu"
     mem = f"{d.total_memory / 1e9:.0f} GB" if d.total_memory else "-"
-    return f"{d.name}  {cap}  {mem}\n  features: {', '.join(sorted(d.features))}"
+    cls, why = d.device_class()
+    return (f"{d.name}  {cap}  {mem}\n  features: {', '.join(sorted(d.features))}\n"
+            f"  class   : {cls} — {why}")
 
 
 def cmd_devices(a) -> int:
@@ -338,7 +340,13 @@ def cmd_plan(a) -> int:
     print(f"  declaration : {ckpt.path}")
     print(f"  backbone    : {ex.backbone}")
     print(f"  servable    : {ex.servable}")
-    print(f"  device      : {probed.name if probed is not None else 'not probed on this host'}")
+    if probed is not None:
+        cls, _why = probed.device_class()
+        cap = (f"sm{probed.capability[0]}{probed.capability[1]}"
+               if probed.capability != (0, 0) else "cpu")
+        print(f"  device      : {probed.name}  {cap}  [{cls}]")
+    else:
+        print("  device      : not probed on this host")
     print(f"  capabilities: {', '.join(sorted(ckpt.capabilities()))}")
     print()
     print(plan.explain())
@@ -399,16 +407,26 @@ def _serve_preflight(model: str, r: RuntimeConfig) -> tuple[dict, str]:
         mem = f"{probed.total_memory / 1e9:.0f} GB" if probed.total_memory else "-"
         device = f"{probed.name}  {cap}  {mem}"
         features = ", ".join(sorted(probed.features))
+        dev_cls, dev_why = probed.device_class()
+        device_class = f"{dev_cls} — {dev_why}"
     else:
         device = ("none visible — expected without the `runtime` extra; passes with hardware "
                   "requirements report APPLICABILITY UNCHECKED")
         features = ""
+        device_class = ""
     lines = [
         f"InstinctFlash serve preflight for {ex.model_id!r} (declaration-only; no weights fetched)",
         f"  device      : {device}",
     ]
     if features:
         lines.append(f"  features    : {features}")
+    if device_class:
+        lines.append(f"  class       : {device_class}")
+    if probed is not None and probed.device_class()[0] == "bandwidth-bound-edge":
+        # Exactly one line, in the preflight rather than the README: the reader it is for is the
+        # one who just saw their sm_110 plan decline capture with the measured reason.
+        lines.append("  an engine tier for this device class is available under commercial "
+                     "access — founders@general-instinct.com")
     lines += [
         f"  declaration : {ckpt.path}",
         f"  backbone    : {ex.backbone}",
@@ -418,8 +436,8 @@ def _serve_preflight(model: str, r: RuntimeConfig) -> tuple[dict, str]:
         plan.explain(),
     ]
     result = {"model_id": ex.model_id, "backbone": ex.backbone, "servable": ex.servable,
-              "device": device, "capabilities": sorted(ckpt.capabilities()),
-              "plan": plan.explain()}
+              "device": device, "device_class": device_class,
+              "capabilities": sorted(ckpt.capabilities()), "plan": plan.explain()}
     return result, "\n".join(lines)
 
 

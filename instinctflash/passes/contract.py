@@ -119,6 +119,30 @@ class DeviceProfile:
     launch_overhead_us: float = 0.0
     hbm_bandwidth_gbps: float = 0.0
 
+    def device_class(self) -> tuple[str, str]:
+        """-> (class, the measurement behind it). MEASURED CLASSES ONLY, everything else says so.
+
+        The optimization landscape flips with the memory system, and both measured ends flip it
+        in opposite directions -- which is why 'unmeasured' is an honest class and not a gap:
+        assigning an unmeasured device to either side would be exactly the extrapolation this
+        field exists to replace.
+        """
+        if self.capability == (0, 0):
+            return "cpu", "no CUDA device; GPU passes decline on their own requirements"
+        if self.capability == (11, 0):
+            return "bandwidth-bound-edge", (
+                "measured on Thor (sm110): ~15x less memory bandwidth than H100, the same "
+                "forwards run ~10x longer, launch overhead vanishes into them -- graph capture "
+                "measured 1.04x on pi05, no battlefield")
+        if self.capability == (9, 0):
+            return "launch-bound", (
+                "measured on H100 (sm90): batch-1 GEMMs are 17-88 us, kernel launch overhead "
+                "dominates -- static-KV graph capture collects 1.65-4.54x on pi05")
+        return "unmeasured", (
+            f"sm{self.capability[0]}{self.capability[1]} has no measured cost model in this "
+            f"repo; passes decide on their declared hardware requirements only, and any "
+            f"class-conditional default keeps its measured-class behaviour")
+
     @staticmethod
     def probe() -> "DeviceProfile":
         import torch

@@ -50,6 +50,24 @@ class GraphCaptureApplicable:
     hardware = HardwareReq(requires=("cuda", "cuda_graphs"))
 
     def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
+        # LAUNCH-BOUND DEVICES ONLY, and that is a measured law, not taste. Capture pays where
+        # kernel LAUNCH overhead dominates the forward; on the one bandwidth-bound edge class
+        # this repo has measured (sm110/Thor) the same forwards run ~10x longer on ~15x less
+        # memory bandwidth, launch overhead vanishes into them, and capture measured 1.04x on
+        # pi05 -- no battlefield. Checked before the shape question because it holds for every
+        # model on the device. Only the MEASURED class declines; an unmeasured sm keeps the
+        # launch-bound default, stated as such by the device_class surface.
+        dev = getattr(deployment, "device", None)
+        if dev is not None and dev.device_class()[0] == "bandwidth-bound-edge":
+            return PassResult(
+                self.name, False, Tier.BITEXACT,
+                reason=(f"device class bandwidth-bound-edge "
+                        f"(sm{dev.capability[0]}{dev.capability[1]}): capture is a launch-bound-"
+                        f"device optimization and the measured law flips here -- forwards run "
+                        f"~10x longer on ~15x less memory bandwidth, launch overhead vanishes "
+                        f"into them, capture measured 1.04x on pi05 (Thor). Declined so the plan "
+                        f"reports the device truth rather than a legal-but-pointless apply."))
+
         static, why = spec.shapes_static_across_cycles()
         if not static:
             return PassResult(self.name, False, Tier.BITEXACT,
