@@ -163,17 +163,33 @@ class StaticVelocity:
         self.replays += 1
         return self._out.clone()
 
+    def close(self) -> None:
+        """Restore the instance-level KV handler and drop the graph. Compute is untouched:
+        close() exists so a Runtime that unloads the model releases the captured pool."""
+        try:
+            del self._fm.qwenvl_with_expert.handle_kv_cache      # uncovers the class method
+        except AttributeError:
+            pass
+        self._graph = None
+        self._out = None
+        self._kv = None
+
 
 def install_static_capture(fm) -> StaticVelocity:
-    """Route `FlowMatching.predict_velocity` through a StaticVelocity. Returns it (counters)."""
+    """Route `FlowMatching.predict_velocity` through a StaticVelocity. Returns it (counters).
+
+    Idempotent: a second install on the same class returns the first driver rather than
+    stacking wrappers (two drivers would each own static buffers and disagree on addresses).
+    """
     orig = type(fm).predict_velocity
-    if not hasattr(orig, "__wrapped__"):
-        d = StaticVelocity(fm)
+    if hasattr(orig, "__wrapped__"):
+        return orig.__driver__
+    d = StaticVelocity(fm)
 
-        def predict_velocity(self_fm, state, prefix_pad_masks, past_key_values, x_t, timestep):
-            return d(state, prefix_pad_masks, past_key_values, x_t, timestep)
+    def predict_velocity(self_fm, state, prefix_pad_masks, past_key_values, x_t, timestep):
+        return d(state, prefix_pad_masks, past_key_values, x_t, timestep)
 
-        predict_velocity.__wrapped__ = orig
-        type(fm).predict_velocity = predict_velocity
-        return d
-    raise RuntimeError("static capture already installed")
+    predict_velocity.__wrapped__ = orig
+    predict_velocity.__driver__ = d
+    type(fm).predict_velocity = predict_velocity
+    return d

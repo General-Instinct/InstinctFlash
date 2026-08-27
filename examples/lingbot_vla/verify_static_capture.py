@@ -11,15 +11,18 @@ the graph on inputs the capture never saw.
 """
 import glob
 import json
+import os
 import statistics
 import sys
 import time
+from pathlib import Path
 
 import numpy as np
 import torch
 
-sys.path.insert(0, "/home/ubuntu/lingbot-vla-repo")
-sys.path.insert(0, "/home/ubuntu/InstinctFlash/examples/lingbot_vla")
+sys.path.insert(0, os.environ.get("LINGBOT_VLA_ROOT", "/home/ubuntu/lingbot-vla-repo"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))   # repo root: the package imports instinctflash
 
 SNAP = glob.glob(
     "/home/ubuntu/.cache/huggingface/hub/models--robbyant--lingbot-vla-4b-posttrain-robotwin/snapshots/*/"
@@ -54,7 +57,7 @@ def run_case(server, case):
 
 def main():
     from deploy.lingbot_vla_policy import LingbotVLAServer
-    from static_capture import install_static_capture
+    from lingbot_vla_iwm.static_capture import install_static_capture
 
     server = LingbotVLAServer(SNAP, use_length=25, robot_norm_path=NORM, num_denoising_step=10)
     server.infer(dict(reset=True, robo_name="robotwin"))
@@ -105,8 +108,9 @@ def main():
         "replays": d.replays,
     }
     print(json.dumps({k: v for k, v in res.items() if k != "gates"}, indent=1))
-    open("/home/ubuntu/InstinctFlash/examples/lingbot_vla/static_capture_results.json",
-         "w").write(json.dumps(res, indent=1))
+    out = Path(__file__).resolve().parent / "static_capture_results.json"
+    out.write_text(json.dumps(res, indent=1))
+    print(f"-> {out}")
 
 
 if __name__ == "__main__":

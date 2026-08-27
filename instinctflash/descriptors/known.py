@@ -97,6 +97,26 @@ KNOWN_DECLARATIONS: dict[str, dict] = {
             "param_bytes": 7473096344,
         },
     },
+    # The 4B family. The upstream release is a flat checkpoint (safetensors +
+    # lingbotvla_cli.yaml) served by its own deploy/lingbot_vla_policy.py, which the adapter
+    # package (examples/lingbot_vla) wraps in-process. The action norm stats ship with the
+    # upstream CHECKOUT, not the checkpoint, so they are declared here and verified at load.
+    "robbyant/lingbot-vla-4b-posttrain-robotwin": {
+        "instinctflash_schema": 1,
+        "execution": {
+            "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+            "backbone": "lingbot_vla",
+            "servable": True,
+            "guidance": {"action": "none"},
+            "nfe": {"prefix": 1, "action": 10},
+            "base_weights": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+            "tokenizer_repo": "Qwen/Qwen2.5-VL-3B-Instruct",
+            "robot": "robotwin",
+            "norm_stats": "assets/norm_stats/robotwin_50.json",
+            "use_length": 25,
+            "param_bytes": 16789932052,
+        },
+    },
     # The upstream VLA-V2 release keeps its HF checkpoint three directories below the
     # repository root and does not publish an InstinctFlash declaration. Keep the original
     # bytes in place; `_declared_view` exposes the nested config at the package root while the
