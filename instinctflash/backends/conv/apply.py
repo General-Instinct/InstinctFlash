@@ -23,8 +23,10 @@ from __future__ import annotations
 
 import torch
 
+from instinctflash.autotune import Candidate, Decision, Site, autotune, register_site
 from instinctflash.backends.conv.registry import ConvPlan
 from instinctflash.backends.conv.semantics import MemoryLayout
+from instinctflash.passes.contract import Tier
 
 
 def convertible_convs(module) -> list[torch.nn.Conv3d]:
@@ -162,20 +164,152 @@ def plan_for_vae(module, *, prefer_bitexact: bool = False, measured: dict | None
         prefer_bitexact=prefer_bitexact, measured=measured)
 
 
-def install_conv_layout(server, *, prefer_bitexact: bool = False) -> list[str]:
+#: The autotune site behind P007. The candidates are the two layouts the conv registry already
+#: knows how to select between; what the site adds is measurement ON THIS DEVICE at first load,
+#: a persistent per-device cache, an operator override (IFL_AUTOTUNE_VA_CONV_LAYOUT=stock|ndhwc),
+#: and a plan line stating what was chosen over what and at which equivalence tier.
+CONV_LAYOUT_SITE = register_site(Site(
+    name="va_conv_layout",
+    candidates=(
+        Candidate(
+            "stock", Tier.BITEXACT,
+            evidence="the incumbent NCDHW/torch dispatch; selecting it changes nothing"),
+        Candidate(
+            "ndhwc", Tier.NUMERIC,
+            evidence=(
+                "P007 certificate: paired non-inferiority, margin -0.05 declared before the "
+                "run, 555 paired episodes on pinned seeds -- baseline 506/555 = 0.9117, "
+                "conv-layout 504/555 = 0.9081, delta -0.0036; exact McNemar two-sided "
+                "p = 0.897, one-sided non-inferiority p = 0.00031. NUMERIC because NDHWC "
+                "changes the convolution's accumulation order (max|delta| 1.25e-01 on the "
+                "encoder output). ESTABLISHED ON sm_90 (H100); the certificate does not "
+                "transfer to other silicon, only the latency measurement does"),
+            params={"backend": "cudnn_conv3d", "layout": "ndhwc",
+                    "certified_on": "sm_90 / 555 paired episodes"}),
+    ),
+    baseline="stock",
+    shape_signature="conv3d 160->160 k3 bf16 1x8x128x160",
+))
+
+_LAYOUT_OF = {"stock": torch.contiguous_format, "ndhwc": torch.channels_last_3d}
+
+
+def conv_layout_bench(*, channels: int = 160, spatial: tuple = (8, 128, 160)):
+    """A bench(candidate) -> ms for the conv-layout site: ONE convolution call at encode scale.
+
+    Each arm is built once, OUTSIDE the timed region, in its candidate's memory format -- that is
+    how the pass works (weights converted at install, every forward runs in the chosen layout),
+    so timing a per-call conversion would measure a configuration nothing serves. The runner
+    supplies warmup and the median; this returns one event-timed call per invocation.
+    """
+    arms: dict = {}
+
+    def bench(cand) -> float:
+        fmt = _LAYOUT_OF[cand.name]
+        if cand.name not in arms:
+            D, H, W = spatial
+            x = torch.randn(1, channels, D, H, W, device="cuda",
+                            dtype=torch.bfloat16).to(memory_format=fmt)
+            conv = torch.nn.Conv3d(channels, channels, 3, padding=1, bias=False
+                                   ).cuda().to(torch.bfloat16).to(memory_format=fmt)
+            arms[cand.name] = (x, conv)
+        x, conv = arms[cand.name]
+        with torch.no_grad():
+            torch.cuda.synchronize()
+            s, e = torch.cuda.Event(True), torch.cuda.Event(True)
+            s.record()
+            conv(x)
+            e.record()
+            torch.cuda.synchronize()
+        return s.elapsed_time(e)
+
+    return bench
+
+
+def autotune_conv_layout(*, model_id: str = "lingbot-va", prefer_bitexact: bool = False,
+                         device=None) -> Decision:
+    """Decide the VA conv layout by measurement on THIS device, cached, overridable.
+
+    Replaces the extrapolate-and-warn behaviour for the serving path: `plan_for_vae`'s defaults
+    are one H100's timings, and cuDNN's 3D bf16 kernel coverage is exactly what varies between
+    architectures. Legality still belongs to the conv registry -- a device where the
+    cudnn/NDHWC pair is refused never reaches the bench, it gets the refusal as the reason.
+
+    `prefer_bitexact=True` is the BITEXACT tier ceiling: the NUMERIC candidate is not benched
+    and the drop is recorded, exactly the planner's ceiling rule.
+    """
+    from instinctflash.autotune import _reason  # the one honest way to share the line format
+
+    baseline = CONV_LAYOUT_SITE.candidate("stock")
+    if not torch.cuda.is_available():
+        return Decision(CONV_LAYOUT_SITE.name, baseline.name, "", 1.0, Tier.BITEXACT,
+                        "no-device",
+                        reason=_reason(CONV_LAYOUT_SITE, baseline.name, "", 1.0, Tier.BITEXACT,
+                                       "no-device", "no CUDA device; the incumbent stands"))
+
+    # Legality first, from the registry that owns it. tier_ceiling here is the LEGALITY ceiling
+    # (NUMERIC -- the pair's derived tier); the autotune ceiling below is the CLAIM budget.
+    from instinctflash.backends.conv import REGISTRY, register_declared
+    from instinctflash.backends.conv.semantics import ConvSemantics, ConvShape
+    register_declared(REGISTRY)
+    cands = REGISTRY.candidates(
+        semantics=ConvSemantics.CAUSAL_TIME,
+        shape=ConvShape(160, 160, (3, 3, 3), spatial=(8, 128, 160), dtype="bfloat16"),
+        have_layout=MemoryLayout.NCDHW, tier_ceiling=Tier.NUMERIC, subgraph_size=62)
+    ndhwc = next((c for c in cands
+                  if c.backend_name == "cudnn_conv3d" and c.use_layout is MemoryLayout.NDHWC),
+                 None)
+    if ndhwc is None or not ndhwc.legal:
+        why = ndhwc.verdict.reason if ndhwc is not None else "no cudnn_conv3d/NDHWC pair registered"
+        return Decision(CONV_LAYOUT_SITE.name, baseline.name, "", 1.0, Tier.BITEXACT, "ceiling",
+                        reason=_reason(CONV_LAYOUT_SITE, baseline.name, "", 1.0, Tier.BITEXACT,
+                                       "ceiling", f"cudnn/NDHWC refused by the conv registry: "
+                                                  f"{why}"))
+
+    from instinctflash.passes.contract import DeviceProfile
+    if device is None:
+        device = DeviceProfile.probe()
+    return autotune(
+        CONV_LAYOUT_SITE, conv_layout_bench(), model_id=model_id, device=device,
+        tier_ceiling=Tier.BITEXACT if prefer_bitexact else Tier.NUMERIC,
+        n=7, warmup=3)
+
+
+def conv_plan_from_decision(decision: Decision) -> ConvPlan:
+    """The ConvPlan a Decision denotes. Applying it stays `apply_conv_plan`'s job."""
+    if decision.chosen == "ndhwc":
+        return ConvPlan("cudnn_conv3d", MemoryLayout.NDHWC, True, Tier.NUMERIC, decision.reason)
+    return ConvPlan("torch_fallback", MemoryLayout.NCDHW, False, Tier.BITEXACT, decision.reason)
+
+
+def install_conv_layout(server, *, prefer_bitexact: bool = False, model_id: str = "lingbot-va",
+                        plan=None) -> list[str]:
     """Apply the conv plan to EVERY VAE subgraph a LingBot-VA server owns.
 
     Enumerated by attribute name rather than by walking the server, because a VAE that is missed is
     silent: the run simply comes out slower than it should and nothing reports why.
+
+    THE DECISION IS AUTOTUNED: measured on this device at first load, cached at
+    ~/.cache/instinctflash/autotune.json, forceable with IFL_AUTOTUNE_VA_CONV_LAYOUT and
+    disabled entirely (baseline layout) with IFL_AUTOTUNE=0. One decision serves both VAEs --
+    they share the conv signature, and converting only one is the half-applied state the
+    docstring above exists to prevent. Pass `plan=` (a planners.Plan) and the decision is
+    recorded there, so explain() shows the swap and Plan.tier() prices it.
     """
-    out = []
+    decision = autotune_conv_layout(model_id=model_id, prefer_bitexact=prefer_bitexact)
+    conv_plan = conv_plan_from_decision(decision)
+    out = [decision.reason]
+    if plan is not None:
+        from instinctflash.autotune import record_decision
+        record_decision(plan, decision)
+    applied_any = False
     for attr in ("streaming_vae", "streaming_vae_half"):
         sv = getattr(server, attr, None)
         if sv is None:
             continue
         vae = getattr(sv, "vae", sv)
-        plan = plan_for_vae(vae, prefer_bitexact=prefer_bitexact)
-        out.append(apply_conv_plan(vae, plan, label=attr))
-    if not out:
+        out.append(apply_conv_plan(vae, conv_plan, label=attr))
+        applied_any = True
+    if not applied_any:
         out.append("no VAE subgraph found; conv layout not applied")
     return out
