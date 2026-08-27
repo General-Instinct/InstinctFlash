@@ -52,6 +52,39 @@ class Pi05Adapter:
             notes={"family": "vla", "chunk_size": "50", "n_obs_steps": "1"},
         )
 
+    def observation_contract(self, checkpoint):
+        """What `predict` expects FOR THIS CHECKPOINT, and where that answer came from.
+
+        `spec().observation` is pi05_base's geometry. A fine-tune renames and reshapes the
+        cameras — `lerobot/pi05_libero_finetuned_v044` takes two 256x256 cameras, one empty 224
+        camera and an 8-dim state, and feeding it the base geometry dies inside its normalizer
+        with a shape error AFTER the weights loaded. So geometry is a declaration fact:
+        `execution.obs_features` maps each observation key to its per-observation shape, and a
+        checkpoint that is not the base release must declare it rather than inherit a different
+        robot's cameras.
+        """
+        import dataclasses
+
+        from instinctflash.adapters.base import ObservationField
+
+        feats = dict((checkpoint.execution.extra or {}).get("obs_features") or {})
+        static = self.spec().observation
+        if feats:
+            fields = tuple(ObservationField(str(k), tuple(int(x) for x in shape), "float32")
+                           for k, shape in feats.items())
+            return dataclasses.replace(static, fields=fields), \
+                "the checkpoint's declared execution.obs_features"
+        if (checkpoint.execution.model_id or "") == "lerobot/pi05_base":
+            return static, "the adapter's static declaration (pi05_base geometry)"
+        raise RuntimeError(
+            f"{checkpoint.execution.model_id or checkpoint.path}: no execution.obs_features "
+            f"declared, and pi05 fine-tunes do not share the base checkpoint's cameras "
+            f"(v044 takes image/image2/empty_camera_0 + an 8-dim state, the base takes three "
+            f"224x224 cameras + a 32-dim state). Declare obs_features in the checkpoint's "
+            f"instinctflash.json: a mapping of observation key -> per-observation shape, e.g. "
+            f'{{"observation.images.image": [3, 256, 256], "observation.state": [8]}}. '
+            f"The values are in the checkpoint's own train_config.json input_features.")
+
     #: pi05 needs lerobot and torch. It does NOT need diffusers -- which is what the runtime used to
     #: demand of every model, sending a perfectly hostable VLA to a worker it has no reason to have.
     HOST_REQUIRES = ("torch", "lerobot")

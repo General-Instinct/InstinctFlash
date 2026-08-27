@@ -32,6 +32,7 @@ import torch
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parents[1]))    # repo root, so pi05_iwm can import instinctflash
 
 from lerobot.policies.pi05 import modeling_pi05 as M  # noqa: E402
 from lerobot.policies.pi05.modeling_pi05 import PI05Policy  # noqa: E402

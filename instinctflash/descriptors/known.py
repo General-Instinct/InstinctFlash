@@ -50,6 +50,53 @@ KNOWN_DECLARATIONS: dict[str, dict] = {
             "param_bytes": 10179017396,
         },
     },
+    # LeRobot publishes pi05 checkpoints without a declaration. The adapter package is
+    # examples/pi05_vla (backbone "pi05"); execution facts below are read from each
+    # checkpoint's own config.json (three 224x224 cameras, 32-dim state, chunk 50,
+    # num_inference_steps 10), not guessed.
+    "lerobot/pi05_base": {
+        "instinctflash_schema": 1,
+        "execution": {
+            "model_id": "lerobot/pi05_base",
+            "backbone": "pi05",
+            "servable": True,
+            "guidance": {"action": "none"},
+            "nfe": {"prefix": 1, "action": 10},
+            "base_weights": "lerobot/pi05_base",
+            # Observation geometry, from the checkpoint's own config.json. Declared EXPLICITLY:
+            # the adapter refuses to guess a fine-tune's cameras (a pi05 fine-tune renames and
+            # reshapes them — see the v044 entry below), so every declaration states its own.
+            "obs_features": {
+                "observation.images.base_0_rgb": [3, 224, 224],
+                "observation.images.left_wrist_0_rgb": [3, 224, 224],
+                "observation.images.right_wrist_0_rgb": [3, 224, 224],
+                "observation.state": [32],
+            },
+            "param_bytes": 14467165872,
+        },
+    },
+    # The LIBERO fine-tune is bf16-stored — the realistic serving artifact, and the checkpoint
+    # the README H100 row (206.7 -> 72.8 ms) was measured on. Its observation contract differs
+    # from the base (train_config.json input_features): two 256x256 cameras, one empty 224
+    # camera, an 8-dim state — which is exactly why obs geometry is declared, never assumed.
+    "lerobot/pi05_libero_finetuned_v044": {
+        "instinctflash_schema": 1,
+        "execution": {
+            "model_id": "lerobot/pi05_libero_finetuned_v044",
+            "backbone": "pi05",
+            "servable": True,
+            "guidance": {"action": "none"},
+            "nfe": {"prefix": 1, "action": 10},
+            "base_weights": "lerobot/pi05_libero_finetuned_v044",
+            "obs_features": {
+                "observation.images.image": [3, 256, 256],
+                "observation.images.image2": [3, 256, 256],
+                "observation.images.empty_camera_0": [3, 224, 224],
+                "observation.state": [8],
+            },
+            "param_bytes": 7473096344,
+        },
+    },
     # The upstream VLA-V2 release keeps its HF checkpoint three directories below the
     # repository root and does not publish an InstinctFlash declaration. Keep the original
     # bytes in place; `_declared_view` exposes the nested config at the package root while the
