@@ -15,7 +15,10 @@ committing to a download or a GPU. Its flags select how far to go:
 `validate` is the structural package check; given `--validate.teacher_outcomes`,
 `--validate.student_outcomes` and `--validate.margin` it also runs the paired non-inferiority
 analysis and stamps the certificate into the package's provenance block, and a later plain
-`validate <dir>` verifies any embedded certificate's integrity.
+`validate <dir>` verifies any embedded certificate's integrity. A checkpoint with no
+declaration yet starts with `--validate.scaffold=<base-hub-id|auto>`, which WRITES its
+instinctflash.json from a built-in base declaration — inferring what the checkpoint itself
+proves, marking the rest FILL_ME — and then validates the result, flagging every sentinel.
 
 Both verbs use the typed dotted-field syntax from `cli_config` (`--serve.smoke=true`,
 `--validate.margin=-0.05`, optional `--config_path=FILE` with CLI overrides winning, unknown
@@ -74,6 +77,14 @@ class ValidateOptions:
     """The `validate` verb: the structural check, plus the certificate when outcomes are given."""
 
     path: Path | None = None
+    #: write the package's instinctflash.json BEFORE validating it: a built-in base id (e.g.
+    #: lerobot/pi05_base) to copy-and-infer from, or "auto" to detect the base from the
+    #: checkpoint's own config.json. Facts the checkpoint does not prove are written as FILL_ME
+    #: sentinels, and the validation that follows flags every one of them.
+    scaffold: str = ""
+    #: allow --validate.scaffold to overwrite an existing declaration file. Without it an
+    #: existing instinctflash.json is never touched; the scaffold prints what would change instead.
+    force: bool = False
     teacher_outcomes: Path | None = None
     student_outcomes: Path | None = None
     margin: float | None = None
@@ -264,6 +275,22 @@ def cmd_validate(argv: list[str]) -> int:
             publishability, validate_package, verify_weights_indexes,
         )
         lines: list[str] = []
+        result: dict[str, Any] = {"path": str(v.path)}
+        scaffold_ok = True
+        if v.scaffold:
+            # Write the declaration FIRST, then fall through to the normal validation below, so
+            # the user sees the scaffold judged by exactly the check everyone else's package
+            # gets — including a PROBLEM line for every FILL_ME the scaffold refused to guess.
+            from instinctflash.descriptors.scaffold import ScaffoldError, run_scaffold
+            try:
+                sres, stext, wrote = run_scaffold(Path(v.path), v.scaffold, force=bool(v.force))
+            except ScaffoldError as e:
+                raise ConfigError(str(e)) from e
+            lines += [stext, ""]
+            result["scaffold"] = sres
+            # Refusing to overwrite is correct behaviour AND a non-zero exit: the command was
+            # asked to write a declaration and did not. The diff above is the answer.
+            scaffold_ok = wrote
         rep = validate_package(str(v.path))
         lines.append(rep.explain())
         # Weights-index integrity GATES the exit code: a package whose declared shards are missing,
@@ -273,6 +300,13 @@ def cmd_validate(argv: list[str]) -> int:
         index_problems = verify_weights_indexes(str(v.path))
         for p in index_problems:
             lines.append(f"  PROBLEM  {p}")
+        # FILL_ME sentinels GATE the exit code, on every run: a scaffolded declaration is not a
+        # valid package until its author has replaced the last fact the scaffold refused to
+        # guess. Each line carries the scaffold's one-line explanation of what belongs there.
+        from instinctflash.descriptors.scaffold import fill_me_findings
+        fill_me = fill_me_findings(str(v.path))
+        for where, why in fill_me:
+            lines.append(f"  PROBLEM  {where} is \"FILL_ME\" — {why}")
         publishable = False
         try:
             publishable, findings = publishability(str(v.path))
@@ -282,10 +316,11 @@ def cmd_validate(argv: list[str]) -> int:
         except Exception as e:                                   # noqa: BLE001
             lines.append(f"  publishability: {type(e).__name__}: {e}")
 
-        result: dict[str, Any] = {"path": str(v.path), "structure_ok": rep.ok,
-                                  "index_problems": list(index_problems),
-                                  "publishable": publishable}
-        ok = rep.ok and not index_problems
+        result.update({"structure_ok": rep.ok,
+                       "index_problems": list(index_problems),
+                       "fill_me": [where for where, _ in fill_me],
+                       "publishable": publishable})
+        ok = rep.ok and not index_problems and not fill_me and scaffold_ok
 
         wants_cert = [x for x in (v.teacher_outcomes, v.student_outcomes, v.margin)
                       if x is not None]
@@ -319,8 +354,10 @@ def cmd_validate(argv: list[str]) -> int:
         return CommandReport(result, "\n".join(lines), ok, 0 if ok else 1)
 
     return execute("validate", ValidateConfig, run, argv, prog="instinctflash validate",
-                   description="Validate a checkpoint package; with outcome files, certify and "
-                               "stamp the certificate into its provenance block.")
+                   description="Validate a checkpoint package; --validate.scaffold=<base|auto> "
+                               "first writes its instinctflash.json from a built-in base "
+                               "declaration; with outcome files, certify and stamp the "
+                               "certificate into its provenance block.")
 
 
 def cmd_plan(a) -> int:
@@ -624,7 +661,9 @@ def main(argv: list[str] | None = None) -> int:
                                  "over websocket on the openpi wire protocol; --serve.dry_run "
                                  "and --serve.smoke stop early (see `instinctflash serve -h`)")
 
-    sub.add_parser("validate", help="trust: is this directory a publishable checkpoint; with "
+    sub.add_parser("validate", help="trust: is this directory a publishable checkpoint; "
+                                    "--validate.scaffold=<base|auto> writes its instinctflash.json "
+                                    "from a built-in base first; with "
                                     "--validate.teacher_outcomes/.student_outcomes/.margin also "
                                     "certifies and stamps the certificate into the package "
                                     "(see `instinctflash validate -h`)")

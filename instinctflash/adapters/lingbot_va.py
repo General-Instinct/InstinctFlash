@@ -227,7 +227,12 @@ def resolve_observation_geometry(execution, *, va_configs: Mapping | None = None
     """
     environ = os.environ if environ is None else environ
     extra = dict(getattr(execution, "extra", None) or {})
-    declared = {k: extra[k] for k in GEOMETRY_KEYS if extra.get(k) is not None}
+    # A scaffolded declaration carries the literal "FILL_ME" for every geometry fact it refused
+    # to guess (descriptors/scaffold.py). That sentinel is "not declared", never a value — so an
+    # unfilled scaffold gets this function's loud declare-or-IFL_CFG error instead of feeding
+    # int("FILL_ME") into the server config.
+    declared = {k: extra[k] for k in GEOMETRY_KEYS
+                if extra.get(k) is not None and extra.get(k) != "FILL_ME"}
     missing = [k for k in GEOMETRY_KEYS if k not in declared]
     if not missing:
         src = str(getattr(execution, "source", "") or "instinctflash.json")
@@ -632,7 +637,9 @@ class LingBotVA:
         import json as _json
 
         extra = dict(checkpoint.execution.extra or {})
-        declared = {k: extra[k] for k in GEOMETRY_KEYS if extra.get(k) is not None}
+        # the same FILL_ME-is-undeclared rule as resolve_observation_geometry
+        declared = {k: extra[k] for k in GEOMETRY_KEYS
+                    if extra.get(k) is not None and extra.get(k) != "FILL_ME"}
         cfg_name = os.environ.get("IFL_CFG")
         if len(declared) < len(GEOMETRY_KEYS) and not cfg_name:
             # raises the loud declare-or-IFL_CFG error before a worker is ever spawned

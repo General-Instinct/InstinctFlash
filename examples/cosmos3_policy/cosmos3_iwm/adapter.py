@@ -91,7 +91,9 @@ class Cosmos3PolicyAdapter:
         import dataclasses
 
         extra = dict(checkpoint.execution.extra or {})
-        missing = [k for k in REQUIRED_SERVING_KEYS if k not in extra]
+        # "FILL_ME" is a scaffold sentinel (descriptors/scaffold.py), not a value: an unfilled
+        # scaffolded declaration gets the same loud missing-serving-config message.
+        missing = [k for k in REQUIRED_SERVING_KEYS if extra.get(k) in (None, "FILL_ME")]
         if missing:
             raise RuntimeError(_missing_serving_config_message(checkpoint, missing))
         fields = (
@@ -135,7 +137,9 @@ class Cosmos3PolicyAdapter:
                 f"Select the GPU with CUDA_VISIBLE_DEVICES instead.")
 
         extra = dict(checkpoint.execution.extra or {})
-        missing = [k for k in REQUIRED_SERVING_KEYS if k not in extra]
+        # "FILL_ME" is a scaffold sentinel (descriptors/scaffold.py), not a value: an unfilled
+        # scaffolded declaration gets the same loud missing-serving-config message.
+        missing = [k for k in REQUIRED_SERVING_KEYS if extra.get(k) in (None, "FILL_ME")]
         if missing:
             raise RuntimeError(_missing_serving_config_message(checkpoint, missing))
 

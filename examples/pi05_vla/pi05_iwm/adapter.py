@@ -67,7 +67,10 @@ class Pi05Adapter:
 
         from instinctflash.adapters.base import ObservationField
 
-        feats = dict((checkpoint.execution.extra or {}).get("obs_features") or {})
+        raw = (checkpoint.execution.extra or {}).get("obs_features")
+        # "FILL_ME" (or anything that is not a mapping) is a scaffold sentinel, not a value —
+        # it falls through to the loud declare-your-obs_features message below.
+        feats = dict(raw) if isinstance(raw, dict) else {}
         static = self.spec().observation
         if feats:
             fields = tuple(ObservationField(str(k), tuple(int(x) for x in shape), "float32")
