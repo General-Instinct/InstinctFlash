@@ -29,6 +29,21 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.environ.get("LINGBOT_VLA_V2_ROOT", "/home/ubuntu/lingbot-vla-v2-repo"))
 sys.path.insert(0, HERE)   # this checkout's own lingbot_vla_v2_iwm, never another tree's
 
+
+def _skip_transformers_mistral_hub_probe():
+    # transformers 4.57.3 _patch_mistral_regex calls the Hub API even in offline mode when the
+    # Qwen3-VL tokenizer loads; it is not a mistral model, skip it. Same workaround as the
+    # adapter and the N1.7 verify scripts — this gate must run from a warm cache.
+    import transformers.tokenization_utils_base as tub
+
+    def _no_mistral_patch(cls, tokenizer, *args, **kwargs):
+        return tokenizer
+
+    tub.PreTrainedTokenizerBase._patch_mistral_regex = classmethod(_no_mistral_patch)
+
+
+_skip_transformers_mistral_hub_probe()
+
 if os.environ.get("VLA2_SNAP"):
     SNAP = os.environ["VLA2_SNAP"]
 else:
