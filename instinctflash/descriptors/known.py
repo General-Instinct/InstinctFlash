@@ -97,6 +97,63 @@ KNOWN_DECLARATIONS: dict[str, dict] = {
             "param_bytes": 7473096344,
         },
     },
+    # GEAR-Dreams' causal video-action WAM. The 16-step scheduler grid at CFG 5.0 is the
+    # shipped configuration (its fixed mask computes 8 of the 16 DiT forwards);
+    # dynamic_cache_schedule is upstream's velocity-cosine skipper, surfaced as a declared
+    # option and SCREEN-tier — it changes outputs, so it is never default-on.
+    "GEAR-Dreams/DreamZero-DROID": {
+        "instinctflash_schema": 1,
+        "execution": {
+            "model_id": "GEAR-Dreams/DreamZero-DROID",
+            "backbone": "dreamzero",
+            "servable": True,
+            "guidance": {"video_action": "cfg"},
+            "nfe": {"video_action": 16},
+            "base_weights": "GEAR-Dreams/DreamZero-DROID",
+            "embodiment_tag": "oxe_droid",
+            "dynamic_cache_schedule": False,
+            "param_bytes": 45848344232,
+        },
+    },
+    # Cosmos3 action policies (DROID post-trains). One adapter package
+    # (examples/cosmos3_policy, backbone "cosmos3_policy") serves both sizes; the serving
+    # config below is the measured protocol of the published rows (canonical policy request:
+    # one 540x640 image, [16, 8] action chunk, 4 denoise steps, guidance 1.0) — declared,
+    # because a guessed value silently skews serve-time preprocessing away from training.
+    "nvidia/Cosmos3-Edge-Policy-DROID": {
+        "instinctflash_schema": 1,
+        "execution": {
+            "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+            "backbone": "cosmos3_policy",
+            "servable": True,
+            "guidance": {"action": "none"},
+            "nfe": {"prefix": 1, "action": 4},
+            "base_weights": "nvidia/Cosmos3-Edge-Policy-DROID",
+            "domain_name": "droid_lerobot",
+            "action_dim": 8,
+            "action_chunk_size": 16,
+            "image_height": 540,
+            "image_width": 640,
+            "param_bytes": 7574066016,
+        },
+    },
+    "nvidia/Cosmos3-Nano-Policy-DROID": {
+        "instinctflash_schema": 1,
+        "execution": {
+            "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+            "backbone": "cosmos3_policy",
+            "servable": True,
+            "guidance": {"action": "none"},
+            "nfe": {"prefix": 1, "action": 4},
+            "base_weights": "nvidia/Cosmos3-Nano-Policy-DROID",
+            "domain_name": "droid_lerobot",
+            "action_dim": 8,
+            "action_chunk_size": 16,
+            "image_height": 540,
+            "image_width": 640,
+            "param_bytes": 31499049824,
+        },
+    },
     # The 4B family. The upstream release is a flat checkpoint (safetensors +
     # lingbotvla_cli.yaml) served by its own deploy/lingbot_vla_policy.py, which the adapter
     # package (examples/lingbot_vla) wraps in-process. The action norm stats ship with the

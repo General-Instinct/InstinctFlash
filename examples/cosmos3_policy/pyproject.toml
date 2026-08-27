@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cosmos3-iwm"
+version = "0.1.0"
+description = "Cosmos3 action-policy (Edge/Nano) Runtime adapter for InstinctFlash"
+requires-python = ">=3.10"
+dependencies = ["instinctflash"]
+
+[project.entry-points."instinctflash.adapters"]
+cosmos3_policy = "cosmos3_iwm.adapter:Cosmos3PolicyAdapter"
+
+[tool.setuptools.packages.find]
+include = ["cosmos3_iwm*"]
