@@ -35,8 +35,9 @@ git clone https://github.com/General-Instinct/InstinctFlash && cd InstinctFlash
 pip install -e ".[runtime,diffusion,serve]"
 ```
 
-Python 3.10+. `pip install -e .` alone needs no GPU and is enough to inspect checkpoints;
-LingBot-VA needs a CUDA GPU with ~30 GB free.
+Python 3.10+. `pip install -e .` alone needs no GPU and is enough to inspect checkpoints and
+plan; serving needs a CUDA GPU (memory varies by family — `--serve.dry_run` tells you before
+you download anything).
 
 ## Load a model
 
@@ -45,6 +46,21 @@ from instinctflash import Runtime
 
 runtime = Runtime.from_pretrained("robbyant/lingbot-va-posttrain-robotwin")
 ```
+
+All eight supported families load by Hub id the same way:
+
+| family | model id |
+|:--|:--|
+| LingBot-VA (5B WAM) | `robbyant/lingbot-va-posttrain-robotwin` |
+| LingBot-VLA-4B | `robbyant/lingbot-vla-4b-posttrain-robotwin` |
+| LingBot-VLA-V2-6B | `robbyant/lingbot-vla-v2-6b-robotwin` |
+| pi0.5 | `lerobot/pi05_base` · `lerobot/pi05_libero_finetuned_v044` |
+| GR00T-N1.7-3B | `nvidia/GR00T-N1.7-3B` |
+| Cosmos3 policies | `nvidia/Cosmos3-Edge-Policy-DROID` · `nvidia/Cosmos3-Nano-Policy-DROID` |
+| DreamZero | `GEAR-Dreams/DreamZero-DROID` |
+
+Your own checkpoint loads from a local directory once it carries a declaration —
+`instinctflash validate <dir>` tells you exactly what is missing.
 
 ## Get actions
 
@@ -102,6 +118,8 @@ stamps the certificate into the package.
 **BITEXACT** means identical actions, **NUMERIC** means a declared-margin result, **SCREEN**
 means measured deltas without a closed-loop certificate, and **OPERATING-POINT** means a declared
 few-step schedule — changed computation, carried by its own paired closed-loop certificate.
+Every row is reproducible: `examples/<family>/reproduce_h100.sh` reruns its pair with the exact
+protocol.
 
 ## Framework overview
 
