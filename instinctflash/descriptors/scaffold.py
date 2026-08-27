@@ -526,6 +526,19 @@ _FAMILIES: dict[str, _Family] = {
 
 # --- the scaffold itself ---------------------------------------------------------------------------
 
+def _refuse_unmerged_adapter(d: Path) -> None:
+    """An unmerged peft/LoRA adapter is refused before any family fingerprinting runs.
+
+    The layout knowledge and the message (with the exact merge command) live in
+    `package.unmerged_adapter_problem`, the same check plain `validate` gates on — one rule,
+    two surfaces, so the scaffold can never write what validate would then reject as garbage.
+    """
+    from instinctflash.descriptors.package import unmerged_adapter_problem
+    problem = unmerged_adapter_problem(d)
+    if problem is not None:
+        raise ScaffoldError(f"{d}: {problem}\n    Scaffold the merged output, not the adapter.")
+
+
 def known_bases() -> list[str]:
     return sorted(KNOWN_DECLARATIONS)
 
@@ -542,6 +555,7 @@ def detect_base(ckpt_dir: str | Path) -> list:
 def scaffold_declaration(ckpt_dir: str | Path, base_id: str) -> ScaffoldPlan:
     """Build (do not write) the scaffolded declaration for `ckpt_dir` from `base_id`."""
     d = Path(ckpt_dir)
+    _refuse_unmerged_adapter(d)
     doc = lookup(base_id)
     if doc is None:
         raise ScaffoldError(
@@ -649,6 +663,11 @@ def run_scaffold(ckpt_dir: str | Path, base: str, *, force: bool = False) -> tup
     d = Path(ckpt_dir)
     if not d.is_dir():
         raise ScaffoldError(f"{d} is not a directory")
+    # BEFORE fingerprinting: lerobot's peft flow saves the policy's config.json next to the
+    # adapter files, so an unmerged adapter fingerprints EXACTLY like its base — the scaffold
+    # would inherit the base's param_bytes and base_weights and write a declaration that
+    # validates, serves, and silently answers with the base model minus the fine-tune.
+    _refuse_unmerged_adapter(d)
     lines: list[str] = []
     if base == "auto":
         matches = detect_base(d)

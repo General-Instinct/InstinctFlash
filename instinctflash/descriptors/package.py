@@ -92,6 +92,69 @@ class PackageReport:
         return "\n".join(out)
 
 
+#: peft's adapter layout. adapter_config.json is the manifest; the adapter_model.* file carries
+#: ONLY the low-rank deltas. lerobot's peft flow saves the policy's own config.json next to these
+#: (`PreTrainedPolicy.push_model_to_hub`: "we need to store the policy config ourselves since PEFT
+#: can't"), so an adapter directory carries a PERFECT family fingerprint while carrying none of
+#: the weights that fingerprint promises.
+PEFT_ADAPTER_MARKERS = ("adapter_config.json", "adapter_model.safetensors", "adapter_model.bin")
+
+
+def peft_adapter_markers(ckpt_dir: str | Path) -> list[str]:
+    """The peft adapter files present in this directory, in marker order. Empty == not an adapter."""
+    d = Path(ckpt_dir)
+    return [m for m in PEFT_ADAPTER_MARKERS if (d / m).is_file()]
+
+
+def unmerged_adapter_problem(ckpt_dir: str | Path) -> "str | None":
+    """The refusal for an UNMERGED peft/LoRA adapter directory, carrying the exact merge command.
+
+    None when the layout is not adapter-only: no adapter markers, or full weights sit beside them
+    (a merged package that kept its adapter residue is a note, not a refusal).
+
+    The refusal exists because every downstream reading of an adapter-only directory is silently
+    WRONG, not merely incomplete — measured before this check existed: the family fingerprint
+    (config.json) matches the base, `param_bytes` inherits the base's bytes, `base_weights`
+    resolves to the PLAIN BASE, and the scaffolded declaration validated and served — answering
+    with the base model while the user believes their fine-tune is running. The deltas are the
+    fine-tune; a package that drops them on the floor must fail loudly.
+    """
+    d = Path(ckpt_dir)
+    markers = peft_adapter_markers(d)
+    if not markers or any((d / w).exists() for w in WEIGHTS_ANY):
+        return None
+    try:
+        base = json.loads((d / "adapter_config.json").read_text()).get("base_model_name_or_path")
+    except Exception:                                            # noqa: BLE001 - marker may be absent
+        base = None
+    base = base if isinstance(base, str) and base else \
+        "<the base checkpoint this adapter was trained from>"
+    try:
+        policy_type = json.loads((d / "config.json").read_text()).get("type")
+    except Exception:                                            # noqa: BLE001 - config may be absent
+        policy_type = None
+    if isinstance(policy_type, str) and policy_type:
+        # the loader class comes from the checkpoint's OWN config.json type string — registry
+        # data, exactly like the scaffold's family fingerprints, never a model-name branch here.
+        merge = (f"python -c \"from lerobot.policies.factory import get_policy_class; "
+                 f"from peft import PeftModel; "
+                 f"base = get_policy_class('{policy_type}').from_pretrained('{base}'); "
+                 f"PeftModel.from_pretrained(base, '{d}').merge_and_unload()"
+                 f".save_pretrained('{d}-merged')\"")
+    else:
+        merge = (f"python -c \"from peft import PeftModel; "
+                 f"base = ...  # load '{base}' with its own modelling library; "
+                 f"PeftModel.from_pretrained(base, '{d}').merge_and_unload()"
+                 f".save_pretrained('{d}-merged')\"")
+    return (f"this is an unmerged LoRA adapter ({', '.join(markers)} present, no full weight "
+            f"file): the directory carries the fine-tune's low-rank deltas, not the model, and a "
+            f"declaration written here would describe the plain base and silently serve it "
+            f"without the fine-tune. Merge into the base first —\n"
+            f"      {merge}\n"
+            f"    then copy the base package's processor/tokenizer sidecar files next to the "
+            f"merged weights and validate the MERGED output")
+
+
 def _training_layout_hint(d: Path) -> "str | None":
     """One actionable line when a FAILING directory is a training-output tree.
 
@@ -123,9 +186,22 @@ def validate_package(ckpt_dir: str | Path) -> PackageReport:
     if not d.is_dir():
         return PackageReport(str(d), False, problems=(f"{d} is not a directory",))
 
+    # An unmerged peft adapter GATES, declaration or not: whatever else the directory looks like,
+    # serving it means serving the base without the fine-tune. This must outrank the layout
+    # diagnostics below, which would truthfully-but-uselessly ask for weight files.
+    adapter_problem = unmerged_adapter_problem(d)
+    if adapter_problem is not None:
+        problems.append(adapter_problem)
+    elif peft_adapter_markers(d):
+        notes.append("peft adapter files sit next to full weights; the runtime ignores them — "
+                     "remove them if the merge already happened, or merge properly if it has not")
+
     from instinctflash.descriptors.checkpoint import _declaration_file
     has_new, has_old = _declaration_file(d) is not None, (d / "delta.json").exists()
     if not has_new and not has_old:
+        if adapter_problem is not None:
+            return PackageReport(str(d), False, missing=("instinctflash.json",),
+                                 problems=tuple(problems))
         hint = _training_layout_hint(d)
         return PackageReport(str(d), False, missing=("instinctflash.json",),
                              problems=("no declaration: this directory is not a checkpoint",),

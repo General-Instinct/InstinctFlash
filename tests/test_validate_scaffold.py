@@ -224,6 +224,70 @@ def test_round_trip_scaffold_fill_validate_pass():
         check("declaration" in source, "as a declaration source", source)
 
 
+def lora_adapter_fixture(td: Path) -> Path:
+    """An UNMERGED peft LoRA adapter the way lerobot's peft flow saves it: the adapter manifest
+    and deltas, plus the policy's own config.json next to them (`push_model_to_hub` stores it
+    "since PEFT can't") — so the directory fingerprints EXACTLY like a full pi05 checkpoint."""
+    d = td / "pi05-lora-ft"
+    d.mkdir()
+    (d / "adapter_config.json").write_text(json.dumps({
+        "peft_type": "LORA", "r": 8, "lora_alpha": 16,
+        "base_model_name_or_path": "lerobot/pi05_base",
+        "target_modules": r"(.*\.gemma_expert\..*\.self_attn\.(q|v)_proj)"}))
+    (d / "adapter_model.safetensors").write_bytes(b"\x00" * 8192)
+    (d / "config.json").write_text(json.dumps({
+        "type": "pi05", "num_inference_steps": 10,
+        "input_features": {
+            "observation.images.image": {"type": "VISUAL", "shape": [3, 256, 256]},
+            "observation.state": {"type": "STATE", "shape": [8]}}}))
+    return d
+
+
+def test_unmerged_lora_adapter_is_refused_with_the_merge_command():
+    print("\n=== 9. an unmerged LoRA adapter is refused everywhere, with the exact merge command ===")
+    # Before this check existed, the scaffold on this fixture wrote a declaration that VALIDATED
+    # AND SERVED: backbone fingerprint matched the base, param_bytes inherited the base's bytes,
+    # base_weights resolved to the plain base — the fine-tune's deltas silently dropped.
+    with tempfile.TemporaryDirectory() as td:
+        d = lora_adapter_fixture(Path(td))
+        rc, out = run(["validate", str(d), "--validate.scaffold=auto"])
+        check(rc == 2, "scaffold auto refuses (config error, exit 2)", str(rc))
+        check("unmerged LoRA adapter" in out, "and names the layout")
+        check("adapter_config.json" in out, "quoting the marker files found")
+        check("merge_and_unload" in out and f"'{d}'" in out,
+              "with the exact merge command over this adapter path")
+        check("get_policy_class('pi05')" in out and "'lerobot/pi05_base'" in out,
+              "loader from the checkpoint's own config type, base from adapter_config")
+        check(not (d / "instinctflash.json").exists(), "and writes nothing")
+
+        rc, out = run(["validate", str(d), "--validate.scaffold=lerobot/pi05_base"])
+        check(rc == 2 and "unmerged LoRA adapter" in out,
+              "an explicit base is refused the same way", str(rc))
+        check(not (d / "instinctflash.json").exists(), "still writes nothing")
+
+        rc, out = run(["validate", str(d)])
+        check(rc != 0, "plain validate gates on the adapter layout", str(rc))
+        check("PROBLEM" in out and "unmerged LoRA adapter" in out, "as a PROBLEM line")
+
+        # a garbage declaration written before the check existed keeps failing now
+        (d / "instinctflash.json").write_text(json.dumps({
+            "instinctflash_schema": 1,
+            "execution": {"model_id": "x/lora-ft", "backbone": "pi05", "servable": True,
+                          "base_weights": "lerobot/pi05_base", "param_bytes": 14467165872}}))
+        rc, out = run(["validate", str(d)])
+        check(rc != 0 and "unmerged LoRA adapter" in out,
+              "a pre-existing declaration does not launder the adapter", str(rc))
+
+        # merged output that kept its adapter residue: full weights present -> note, not a gate
+        (d / "instinctflash.json").unlink()
+        (d / "model.safetensors").write_bytes(b"\x00" * 4096)
+        (d / "policy_preprocessor.json").write_text("{}")
+        rc, out = run(["validate", str(d), "--validate.scaffold=auto"])
+        check(rc == 0, "with full weights beside the residue, scaffold+validate pass", str(rc))
+        check("adapter files sit next to full weights" in out,
+              "and the residue is called out as a note")
+
+
 def test_adapters_treat_fill_me_as_undeclared():
     print("\n=== 8. FILL_ME is a sentinel to the adapters, never a value ===")
     from types import SimpleNamespace
@@ -260,6 +324,7 @@ def main_() -> int:
     test_existing_declaration_is_never_overwritten_without_force()
     test_fill_me_is_flagged_by_every_later_plain_validate()
     test_round_trip_scaffold_fill_validate_pass()
+    test_unmerged_lora_adapter_is_refused_with_the_merge_command()
     test_adapters_treat_fill_me_as_undeclared()
     print("\n" + "=" * 78)
     if FAILED:
