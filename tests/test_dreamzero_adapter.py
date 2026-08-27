@@ -108,7 +108,14 @@ def test_nfe_override_is_refused_with_the_screen_tier_explanation():
                                  nfe={"video_action": 8})
     except RuntimeError as e:
         message = str(e)
-        assert "SCREEN" in message and "DYNAMIC_CACHE_SCHEDULE" in message
+        if "SCREEN" not in message:
+            # The adapter's CUDA gate fires before the nfe refusal, and it raises RuntimeError
+            # too — so the CUDA-less fallback must live HERE, not in a later except clause a
+            # RuntimeError can never reach (the bug this branch replaces: on a box with CUDA
+            # masked, the gate's message failed the SCREEN assertion instead of skipping).
+            assert "CUDA" in message, message
+        else:
+            assert "SCREEN" in message and "DYNAMIC_CACHE_SCHEDULE" in message
     except Exception as e:  # noqa: BLE001 - only acceptable on a CUDA-less test box
         assert "CUDA" in str(e)
     else:
