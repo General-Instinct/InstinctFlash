@@ -109,6 +109,20 @@ class LingBotVLAV2Adapter:
         if mode not in {"static", "compile", "eager"}:
             raise RuntimeError("IFL_VLA2_BACKEND must be one of: static, compile, eager")
 
+        # transformers 4.57.3 _patch_mistral_regex probes the Hub API even in offline mode when
+        # the Qwen3-VL tokenizer loads; the tokenizer is not a mistral model, skip it. Same
+        # workaround as the GR00T adapter and the N1.7 verify scripts — the adapter must load
+        # from a warm cache with HF_HUB_OFFLINE=1.
+        try:
+            import transformers.tokenization_utils_base as tub
+
+            def _no_mistral_patch(cls, tokenizer, *args, **kwargs):
+                return tokenizer
+
+            tub.PreTrainedTokenizerBase._patch_mistral_regex = classmethod(_no_mistral_patch)
+        except Exception:  # noqa: BLE001 - a transformers without the probe needs no patch
+            pass
+
         from deploy.lingbot_vla_v2_policy import LingbotVLAv2Server
 
         server = LingbotVLAv2Server(
