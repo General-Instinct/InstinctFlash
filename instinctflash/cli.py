@@ -5,7 +5,11 @@
 
 `serve` always prints its preflight — device capabilities, the checkpoint's declaration, and the
 plan — BEFORE any weight is downloaded, because those are the questions you want answered before
-committing to a download or a GPU. Its flags select how far to go:
+committing to a download or a GPU. A local directory with NO declaration is scaffolded inline
+first (the same writer as `validate --validate.scaffold=auto`, announced field by field): when the
+checkpoint proves everything, serve continues in the same command; when FILL_ME facts remain, it
+stops before any download with exactly the missing fields and the rerun. Its flags select how far
+to go:
 
     --serve.dry_run=true    preflight only: no download, no GPU, exit
     --serve.smoke=true      load, produce one zero-filled action, exit — proves the checkpoint
@@ -478,6 +482,69 @@ def _serve_preflight(model: str, r: RuntimeConfig) -> tuple[dict, str]:
     return result, "\n".join(lines)
 
 
+def _serve_autoscaffold(model: str):
+    """Scaffold a local checkpoint directory that has no declaration, inline, before preflight.
+
+    Returns ``(scaffold_result | None, text, fill_me)``. A Hub id, a missing path, or a
+    directory that already carries a declaration (or the legacy delta.json) returns
+    ``(None, "", [])`` — serve behaves exactly as before. Everything else reuses the scaffold
+    verb's own writer (`descriptors.scaffold.run_scaffold`, base=auto), so the announcement,
+    the per-field evidence, and the written file are the same ones `validate` produces.
+
+    Two walls, both BEFORE any download or load:
+
+      * an unmerged peft/LoRA adapter is refused with `package.unmerged_adapter_problem`'s
+        message — the exact merge command included — declaration or not, because serving that
+        layout means serving the base without the fine-tune (the silent-wrong-model class).
+      * FILL_ME sentinels stop the command — whether this run's scaffold just wrote them or an
+        earlier one did (`fill_me_findings` runs on EVERY serve of a local directory, exactly as
+        it does on every validate; without that, the second serve of a half-filled scaffold would
+        download the base's frozen stack and only then hit the adapter's geometry refusal). The
+        caller stops with each missing field, the scaffold's one-line "where the value comes
+        from", and the rerun. Never guess, never serve a wrong-geometry model.
+
+    A directory whose declaration is complete returns ``(None, "", [])`` and serve proceeds
+    exactly as it always has.
+    """
+    from instinctflash.cli_config import ConfigError
+
+    d = Path(model)
+    if not d.is_dir():
+        return None, "", []
+    from instinctflash.descriptors.package import unmerged_adapter_problem
+    problem = unmerged_adapter_problem(d)
+    if problem is not None:
+        raise ConfigError(f"{d}: {problem}\n    then serve the MERGED output.")
+
+    from instinctflash.descriptors.checkpoint import _declaration_file
+    from instinctflash.descriptors.scaffold import ScaffoldError, fill_me_findings, run_scaffold
+    sres = None
+    lines: list[str] = []
+    if _declaration_file(d) is None and not (d / "delta.json").is_file():
+        try:
+            sres, stext, _wrote = run_scaffold(d, "auto")
+        except ScaffoldError as e:
+            raise ConfigError(str(e)) from e
+        lines = [f"no declaration in {d} — scaffolding one from the checkpoint's own evidence "
+                 f"(the same writer as `instinctflash validate --validate.scaffold=auto`):",
+                 stext]
+    fill_me = fill_me_findings(d)
+    if fill_me:
+        wrote_now = "The declaration was written" if sres is not None \
+            else f"Its declaration ({_declaration_file(d).name}) still carries"
+        lines += [
+            *([""] if lines else []),
+            f"SERVE STOPPED — before any download or load: {len(fill_me)} field(s) this "
+            f"checkpoint cannot prove, and the runtime never guesses. {wrote_now} "
+            f"FILL_ME at each:",
+            *(f"  {where} — {why}" for where, why in fill_me),
+            "",
+            f"Fill each value in {_declaration_file(d)}, then rerun:",
+            f"  instinctflash serve {d}",
+        ]
+    return sres, "\n".join(lines), fill_me
+
+
 def _serve_smoke(rt, preflight: dict):
     """One zero-filled control cycle: does this checkpoint load HERE and return finite actions."""
     import numpy as np
@@ -513,6 +580,9 @@ def _serve_smoke(rt, preflight: dict):
 def cmd_serve(argv: list[str]) -> int:
     """`instinctflash serve <model-id>` — preflight, then the openpi-wire websocket policy server.
 
+    A local directory with no declaration scaffolds its own first (`_serve_autoscaffold`): the
+    detected base, every inherited/inferred field with its evidence, and the written file are
+    all announced, so the one command from "training output" to "server up" stays inspectable.
     Preflight prints BEFORE any weight moves. Then load-then-bind, in that order: a checkpoint
     that cannot load exits here with the loader's error and the port never opens, because the
     openpi client retries a dead port forever and a half-started server is the documented worst
@@ -530,7 +600,18 @@ def cmd_serve(argv: list[str]) -> int:
         s = cfg.serve
         if not s.model:
             raise ConfigError("serve.model is required: instinctflash serve <model-id>")
+        scaffold, scaffold_text, fill_me = _serve_autoscaffold(s.model)
+        if fill_me:
+            # STOP, loudly and completely, before any download: the text above already carries
+            # each missing field, why the scaffold refused to guess it, and the exact rerun.
+            return CommandReport(
+                {"model": s.model, "scaffold": scaffold,
+                 "fill_me": [where for where, _ in fill_me]},
+                scaffold_text, False, 1)
         preflight, preflight_text = _serve_preflight(s.model, cfg.runtime)
+        if scaffold is not None:
+            preflight["scaffold"] = scaffold
+            preflight_text = scaffold_text + "\n\n" + preflight_text
         if s.dry_run:
             return CommandReport(preflight, preflight_text, True, 0)
         # From here on the command runs for a while (or forever): the preflight and the logs go
@@ -579,7 +660,9 @@ def cmd_serve(argv: list[str]) -> int:
 
     return execute("serve", ServeConfig, run, argv, prog="instinctflash serve",
                    description="Preflight a checkpoint, then serve it over websocket on the "
-                               "openpi wire protocol (--serve.dry_run / --serve.smoke stop early).")
+                               "openpi wire protocol (--serve.dry_run / --serve.smoke stop "
+                               "early). A local directory with no declaration scaffolds its "
+                               "own first and stops before any download if facts are missing.")
 
 
 def cmd_certify(argv: list[str]) -> int:
@@ -658,8 +741,10 @@ def main(argv: list[str] | None = None) -> int:
     sub = ap.add_subparsers(dest="cmd", metavar="{serve,validate}")
 
     sub.add_parser("serve", help="deploy: preflight (device + declaration + plan), then serve "
-                                 "over websocket on the openpi wire protocol; --serve.dry_run "
-                                 "and --serve.smoke stop early (see `instinctflash serve -h`)")
+                                 "over websocket on the openpi wire protocol; a local fine-tune "
+                                 "directory with no declaration scaffolds its own first; "
+                                 "--serve.dry_run and --serve.smoke stop early "
+                                 "(see `instinctflash serve -h`)")
 
     sub.add_parser("validate", help="trust: is this directory a publishable checkpoint; "
                                     "--validate.scaffold=<base|auto> writes its instinctflash.json "

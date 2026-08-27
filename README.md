@@ -70,16 +70,16 @@ from instinctflash import Runtime
 runtime = Runtime.from_pretrained("/path/to/your/finetuned/checkpoint")
 ```
 
-The only requirement is a small `instinctflash.json` **declaration**, and one command writes it:
+Serving needs a small `instinctflash.json` **declaration** — and `serve` writes it for you:
 
 ```bash
-instinctflash validate /path/to/your/checkpoint --validate.scaffold=auto
+instinctflash serve /path/to/your/checkpoint
 ```
 
-The scaffold detects your model's family, fills in everything provable from the checkpoint
-itself, and the validation that follows tells you exactly what is left to fill. When it passes,
-the checkpoint serves like any stock model — a fine-tune inherits every optimization and proof
-tier of its family automatically.
+Pointed at a bare training output, `serve` detects the family, writes the declaration from what
+the checkpoint itself proves, and keeps going — server up in one command. Only what the
+checkpoint cannot prove is left for you to fill (never guessed), and a fine-tune inherits every
+optimization and proof tier of its family automatically.
 
 The stock releases load by Hub id with zero setup, and their built-in declarations double as
 templates for your own:
