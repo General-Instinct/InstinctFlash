@@ -298,7 +298,11 @@ class WorkerBackend:
         return self._client
 
     # -- the same three methods ------------------------------------------------------------------
-    def predict(self, observation):
+    def predict(self, observation, *, executed_action=None):
+        # `executed_action` feeds a commit phase, which lives server-side behind this transport.
+        # The facade passes the keyword unconditionally -- without accepting it here, every
+        # worker predict died on a TypeError before the adapter's own diagnostics could run.
+        # The existing websocket protocol carries no field for it, so it is not forwarded.
         return self._ensure().infer(dict(observation))
 
     def reset(self, **conditioning):
