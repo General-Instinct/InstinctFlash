@@ -262,8 +262,16 @@ def _require_processor_steps(repo: str) -> None:
     # `Path` import -- so the whole precondition reported "fine" while checking nothing, and the run
     # still died on the gated tokenizer after loading the weights. A check that cannot run must say so.
     try:
-        from huggingface_hub import hf_hub_download
-        cfg = json.loads(Path(hf_hub_download(repo, "policy_preprocessor.json")).read_text())
+        # `repo` is a local fine-tune directory at least as often as it is a Hub id, and
+        # hf_hub_download refuses a path outright (HFValidationError) — which used to demote this
+        # whole precondition to "unverified" for exactly the local-serve flow that needs it most:
+        # the gated-tokenizer wall would fire only after the full weights had loaded.
+        local = Path(repo) / "policy_preprocessor.json"
+        if local.is_file():
+            cfg = json.loads(local.read_text())
+        else:
+            from huggingface_hub import hf_hub_download
+            cfg = json.loads(Path(hf_hub_download(repo, "policy_preprocessor.json")).read_text())
     except Exception as e:                                        # noqa: BLE001
         print(f"instinctflash: cannot inspect {repo}'s processor pipeline "
               f"({type(e).__name__}: {e}); preconditions unverified, the loader will report any "

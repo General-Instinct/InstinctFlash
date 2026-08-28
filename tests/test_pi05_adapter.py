@@ -165,6 +165,54 @@ def test_runtime_loop_maps_prompt_to_lerobot_task_and_returns_numpy():
     assert policy.batch["task"] == "stack the bowls"
 
 
+def test_processor_precondition_reads_a_local_checkpoint_directory():
+    """The pipeline precondition must RUN for a local fine-tune dir, not demote to a warning.
+
+    hf_hub_download refuses a filesystem path (HFValidationError), so before the local branch the
+    whole check printed "preconditions unverified" for exactly the serve-<local-dir> flow — and
+    the gated-tokenizer wall came back to firing after the full weights had loaded.
+    """
+    import contextlib
+    import io
+    import json as _json
+    import sys as _sys
+    import tempfile
+    import types
+
+    from pi05_iwm import adapter as A
+
+    fake_reg = types.SimpleNamespace(ProcessorStepRegistry=types.SimpleNamespace(
+        _registry={"known_step": object}))
+    saved = {k: _sys.modules.get(k) for k in ("lerobot", "lerobot.processor")}
+    _sys.modules["lerobot"] = types.ModuleType("lerobot")
+    _sys.modules["lerobot"].__version__ = "0.6.1"
+    mod = types.ModuleType("lerobot.processor")
+    mod.ProcessorStepRegistry = fake_reg.ProcessorStepRegistry
+    _sys.modules["lerobot.processor"] = mod
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            (Path(td) / "policy_preprocessor.json").write_text(_json.dumps(
+                {"steps": [{"registry_name": "known_step", "config": {}}]}))
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                A._require_processor_steps(td)                    # local dir: must not warn
+            assert "cannot inspect" not in buf.getvalue(), buf.getvalue()
+            # and the registry comparison is REAL: an unknown step still raises
+            (Path(td) / "policy_preprocessor.json").write_text(_json.dumps(
+                {"steps": [{"registry_name": "step_from_the_future", "config": {}}]}))
+            try:
+                A._require_processor_steps(td)
+                raise AssertionError("a step the registry lacks must refuse")
+            except RuntimeError as e:
+                assert "step_from_the_future" in str(e)
+    finally:
+        for k, v in saved.items():
+            if v is None:
+                _sys.modules.pop(k, None)
+            else:
+                _sys.modules[k] = v
+
+
 def test_gpu_smoke_one_predict_finite_actions():
     """Load -> one predict -> finite actions, through the public Runtime API.
 
