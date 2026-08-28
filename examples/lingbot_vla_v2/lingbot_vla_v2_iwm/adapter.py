@@ -19,6 +19,10 @@ from instinctflash.adapters.base import GuidanceMode, ObservationField, Observat
 
 BACKBONE = "lingbot_vla_v2"
 MODEL_ID = "robbyant/lingbot-vla-v2-6b-robotwin"
+#: The kill-switch for the family's DEFAULT capture arm (denoise static-KV graph AND the
+#: vision/prefill graphs). Family-scoped, the IFL_PI05_NO_CAPTURE convention. Honored by
+#: `install`, recorded on the plan, printed.
+CAPTURE_KILL_SWITCH = "IFL_VLA2_NO_CAPTURE"
 #: Where the upstream checkout is looked for when LINGBOT_VLA_V2_ROOT is unset. There is no
 #: universal default — the env var is the contract; these are the documented conventions.
 SOURCE_ROOT_CANDIDATES = (
@@ -195,10 +199,26 @@ class LingBotVLAV2Adapter:
                     f"({report.modules} modules, hidden={report.hidden_size})."
                 )
             driver = None
+            if capture_planned and os.environ.get(CAPTURE_KILL_SWITCH) == "1":
+                capture = next(r for r in plan.results
+                               if r.name == "graph_capture" and r.applies)
+                note = (f"{CAPTURE_KILL_SWITCH}=1 — the default capture arm (static-KV denoise "
+                        f"graph + vision/prefill graphs) is disabled by the caller; running "
+                        f"eager (upstream's arithmetic exactly)")
+                capture.params["decision"] = tuple(capture.params.get("decision", ())) + (note,)
+                print(f"InstinctFlash LingBot-VLA-V2: {note}.")
+                capture_planned = False
             if capture_planned:
-                from .static_capture import install_static_capture
+                from instinctflash.runtime.capture_self_check import record_self_check_on_plan
 
-                driver = install_static_capture(server.vla.model)
+                from .static_capture import NULL_ENVELOPE, install_static_capture
+
+                capture = next(r for r in plan.results
+                               if r.name == "graph_capture" and r.applies)
+                driver = install_static_capture(
+                    server.vla.model,
+                    on_self_check=_release_prefix_graphs_on_fail(
+                        record_self_check_on_plan(capture, "LingBot-VLA-V2"), server))
                 if _env_flag("IFL_VLA2_PREFIX_GRAPH", default=True):
                     from .prefix_capture import install_prefix_capture
 
@@ -208,7 +228,14 @@ class LingBotVLAV2Adapter:
                         "InstinctFlash LingBot-VLA-V2: static vision/prefill CUDA Graph "
                         "backend installed."
                     )
-                print("InstinctFlash LingBot-VLA-V2: static-KV CUDA Graph backend installed.")
+                print("InstinctFlash LingBot-VLA-V2: static-KV CUDA Graph backend installed — "
+                      "the family default on capture-capable devices. The first capture is "
+                      "gated by a startup self-check (replay vs upstream eager on staged "
+                      "inputs it was not captured from) against the family's recorded "
+                      f"stock-vs-stock envelope ({NULL_ENVELOPE:.3e} — this family's fused-MoE "
+                      "kernel is nondeterministic even against itself, so its capture tier is "
+                      "NUMERIC, not BITEXACT); a miss releases every graph and falls back to "
+                      f"eager, loudly. Kill-switch: {CAPTURE_KILL_SWITCH}=1.")
             return driver
         if mode == "compile":
             print("InstinctFlash LingBot-VLA-V2: using upstream torch.compile backend.")
@@ -295,6 +322,28 @@ class _LingBotVLAV2Loop:
         if preprocess is not None:
             preprocess.close()
         self._server = None
+
+
+def _release_prefix_graphs_on_fail(recorder, server):
+    """Wrap the plan recorder so a FAILED denoise self-check also closes the prefix graphs.
+
+    The vision/prefill graphs are the same replay bet as the denoise graph; evidence that
+    replay disagrees with eager in this process is evidence against all of them, so the
+    fallback is ALL upstream, not a mixed state.
+    """
+    def on_verdict(res: dict) -> None:
+        recorder(res)
+        if res.get("passed"):
+            return
+        prefix = getattr(server, "_instinctflash_prefix_capture", None)
+        if prefix is not None:
+            prefix.close()
+            server._instinctflash_prefix_capture = None
+            import sys
+            print("InstinctFlash LingBot-VLA-V2: vision/prefill graphs released with the "
+                  "rejected denoise graph — the whole capture arm falls back together.",
+                  file=sys.stderr, flush=True)
+    return on_verdict
 
 
 def _source_root(*, required: bool = True) -> Path | None:

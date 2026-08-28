@@ -182,8 +182,12 @@ def test_install_reads_the_plan_instead_of_decorating_it():
     previous = os.environ.get("IFL_VLA4B_BACKEND")
     try:
         os.environ["IFL_VLA4B_BACKEND"] = "eager"
-        applied = SimpleNamespace(results=[SimpleNamespace(name="graph_capture", applies=True)])
+        applied = SimpleNamespace(results=[
+            SimpleNamespace(name="graph_capture", applies=True, params={})])
         assert adapter.install(server, applied, device="cuda:0") is None
+        # the eager selector is RECORDED on the plan's capture entry, like the kill-switch
+        assert any("IFL_VLA4B_BACKEND=eager" in line
+                   for line in applied.results[0].params["decision"])
         os.environ["IFL_VLA4B_BACKEND"] = "sometimes"
         try:
             adapter.install(server, applied, device="cuda:0")

@@ -39,8 +39,25 @@ Gates and the published pair (H100): `verify_static_capture.py` — bitexact (ma
 captured input, three unseen noise/observation cases and two cases on a different prompt with
 prefix refill; end-to-end **672.7 → 184.0 ms in-process (3.66x)**, 54.7 → 11.9 ms/step. The
 README table's stock arm is the official websocket server (670.9 ms — the ws hop costs ~2 ms).
-The backend installs when the plan applies `graph_capture`; `IFL_VLA4B_BACKEND=eager` keeps the
-stock loop for A/B runs.
+
+## Graph capture is the default, and the self-check is the reason it can be
+
+The backend installs when the plan applies `graph_capture` — for every 4B-class checkpoint,
+fresh fine-tunes included. What makes that safe is not the gate table above (evidence measured
+on *other* checkpoints): it is the runtime **self-check**. Immediately after the first capture,
+replay is compared against upstream eager `predict_velocity` (run through the stock
+concat-per-step KV path) on staged inputs the capture never saw — fresh `x_t` draws from a
+dedicated generator, up to three warmed schedule timesteps, and a synthetically *refilled*
+prefix so a graph that baked K/V values instead of reading the live buffers cannot pass. Exact
+equality (`atol=0`; this family's capture tier is BITEXACT). PASS → replay serves and the plan's
+`graph_capture` entry gains the verdict line. FAIL → the graph is released, `predict_velocity`
+is rebound to upstream, the observed delta is printed and recorded on the plan, and serving
+continues on eager arithmetic. The check costs seconds, once per process, at first capture.
+
+Kill-switch: `IFL_VLA4B_NO_CAPTURE=1` serves eager (recorded on the plan, printed).
+`IFL_VLA4B_BACKEND=eager` keeps the stock loop for A/B runs — the same eager arm.
+`IFL_VLA4B_SELFCHECK_FAULT=1` is the drill switch: it rebinds the x buffer between capture and
+check so the loud-fallback path stays demonstrable on demand.
 
 ## Reproduce the README H100 row
 

@@ -92,6 +92,25 @@ refills the 286-token prefix and Qwen3-VL 3D-RoPE position ids. At each flow ste
 51-token state/action suffix, noisy action, and timestep, then replays the same graph. MoE routing
 remains data-dependent and is recomputed on device during replay.
 
+## Graph capture is the default, and the self-check is the reason it can be
+
+The capture arm installs whenever the plan applies `graph_capture` — for every V2-class
+checkpoint, fresh fine-tunes included — and the first capture is gated by a runtime
+**self-check**: replay vs upstream eager `predict_velocity` (through the stock concat-per-step
+KV path) on staged inputs the capture never saw, including a synthetically *refilled* prefix so
+a graph that baked K/V values cannot pass. The gate is NOT `atol=0`, and that is a statement
+about upstream, not the graph: the fused-MoE kernel disagrees with itself on identical seeds, so
+the check gates on the family's recorded stock-vs-stock envelope (**5.08e-02**,
+`moe_kernel_results.json` null_control_deltas — the same standard the published 4.54x row was
+verified under), and the printed verdict states the threshold and its provenance. PASS → replay
+serves and the plan's `graph_capture` entry gains the verdict line. FAIL → the denoise graph AND
+the vision/prefill graphs are released together, `predict_velocity` is rebound to upstream, and
+serving continues on eager arithmetic.
+
+Kill-switch: `IFL_VLA2_NO_CAPTURE=1` disables the whole capture arm (recorded on the plan,
+printed). `IFL_VLA2_SELFCHECK_FAULT=1` is the drill switch: it rebinds the x buffer between
+capture and check so the loud-fallback path stays demonstrable on demand.
+
 ## Validation and measured artifacts
 
 `verify_static_capture.py` is the hardware validation entry point behind the published H100 row

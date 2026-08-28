@@ -24,6 +24,10 @@ from instinctflash.adapters.base import GuidanceMode, ObservationField, Observat
 
 BACKBONE = "lingbot_vla"
 MODEL_ID = "robbyant/lingbot-vla-4b-posttrain-robotwin"
+#: The kill-switch for the family's DEFAULT static-KV graph capture. Family-scoped on purpose
+#: (the IFL_PI05_NO_CAPTURE convention): the default it disables is this family's, and other
+#: families' capture policies are their own. Honored by `install`, recorded on the plan, printed.
+CAPTURE_KILL_SWITCH = "IFL_VLA4B_NO_CAPTURE"
 #: Where the upstream checkout is looked for when LINGBOT_VLA_ROOT is unset. The env var is the
 #: contract; these are the documented conventions.
 SOURCE_ROOT_CANDIDATES = (
@@ -140,14 +144,20 @@ class LingBotVLA4BAdapter:
 
         The plan is READ, not decorative (same rule as GR00T and VLA-V2): a plan whose capture
         pass declined, or was excluded by the caller, must not be optimized around anyway.
-        ``IFL_VLA4B_BACKEND=eager`` keeps the stock loop for A/B runs.
+
+        CAPTURE IS THE DEFAULT, and what makes that safe is not the history of measurements on
+        OTHER checkpoints — it is the runtime SELF-CHECK: the first capture is compared against
+        upstream eager on staged inputs it was not captured from (exact equality — this family's
+        capture tier is BITEXACT — seconds of startup, once per process), and a mismatch
+        releases the graph and falls back to eager loudly while serving continues.
+
+        ``IFL_VLA4B_NO_CAPTURE=1`` is the kill-switch (recorded on the plan, printed).
+        ``IFL_VLA4B_BACKEND=eager`` keeps the stock loop for A/B runs — the same eager arm,
+        honored, and pointed at the kill-switch by name.
         """
         mode = os.environ.get("IFL_VLA4B_BACKEND", "static").strip().lower()
         if mode not in {"static", "eager"}:
             raise RuntimeError("IFL_VLA4B_BACKEND must be one of: static, eager")
-        if mode == "eager":
-            print("InstinctFlash LingBot-VLA-4B: using the upstream eager backend.")
-            return None
         wanted = {
             getattr(result, "name", "")
             for result in getattr(plan, "results", ())
@@ -159,11 +169,29 @@ class LingBotVLA4BAdapter:
                 "static-KV CUDA Graph backend is not installed; running the upstream path."
             )
             return None
+        capture = next(r for r in plan.results if r.name == "graph_capture" and r.applies)
+        killed = os.environ.get(CAPTURE_KILL_SWITCH) == "1"
+        if killed or mode == "eager":
+            cause = (f"{CAPTURE_KILL_SWITCH}=1" if killed else "IFL_VLA4B_BACKEND=eager")
+            note = (f"{cause} — the default static-KV capture is disabled by the caller; "
+                    f"running eager (upstream's arithmetic exactly)")
+            capture.params["decision"] = tuple(capture.params.get("decision", ())) + (note,)
+            extra = ("" if killed else
+                     f" ({CAPTURE_KILL_SWITCH}=1 is the family kill-switch for the same arm)")
+            print(f"InstinctFlash LingBot-VLA-4B: {note}.{extra}")
+            return None
+        from instinctflash.runtime.capture_self_check import record_self_check_on_plan
+
         from .static_capture import install_static_capture
 
-        driver = install_static_capture(server.vla.model)
-        print("InstinctFlash LingBot-VLA-4B: static-KV CUDA Graph backend installed "
-              "(bitexact-gated; see examples/lingbot_vla/verify_static_capture.py).")
+        driver = install_static_capture(
+            server.vla.model,
+            on_self_check=record_self_check_on_plan(capture, "LingBot-VLA-4B"))
+        print("InstinctFlash LingBot-VLA-4B: static-KV CUDA Graph backend installed — the "
+              "family default on capture-capable devices. The first capture is gated by a "
+              "bit-exact self-check (replay vs upstream eager on staged inputs it was not "
+              "captured from, exact equality); a mismatch releases the graph and falls back "
+              f"to eager, loudly. Kill-switch: {CAPTURE_KILL_SWITCH}=1.")
         return driver
 
 

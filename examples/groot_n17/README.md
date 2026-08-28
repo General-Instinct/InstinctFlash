@@ -43,10 +43,18 @@ action = result["action"]       # (40, 17)
 split = result["actions"]       # eef_9d / gripper_position / joint_position
 ```
 
-Runtime keeps CUDA Graph opt-in explicit (release policy):
+The DiT CUDA Graph is the **default** on capture-capable devices — the old
+`IFL_GROOT_STATIC_CAPTURE=1` opt-in (a release policy that predates the startup self-check) is
+superseded and is now a no-op with a notice (an explicit `=0` is honored as an opt-out). What
+makes the default safe is the runtime **self-check**: immediately after each signature's
+capture, replay is compared against the upstream eager DiT forward on staged inputs the capture
+never saw — every floating-point input redrawn from a dedicated generator, backbone features
+included, so a graph that baked any input cannot pass. Exact equality (`atol=0`; the family's
+capture tier is BITEXACT). A mismatch releases the graphs, falls back to upstream eager loudly,
+and serving continues. Kill-switch (recorded on the plan, printed):
 
 ```bash
-export IFL_GROOT_STATIC_CAPTURE=1
+export IFL_GROOT_NO_CAPTURE=1     # serve eager; IFL_GROOT_SELFCHECK_FAULT=1 drills the FAIL arm
 ```
 
 `fast_decode` and `backbone_fastpath` default to true in this package and can be

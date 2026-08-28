@@ -30,7 +30,13 @@ class GR00TN17Adapter:
     """N1.7: one vision/language backbone pass plus four action-flow steps."""
 
     HOST_REQUIRES = ("torch", "transformers", "safetensors", "numpy")
+    #: RETIRED opt-in (the old release policy predating the startup self-check): "1" is a
+    #: no-op with a notice — capture is the default now; "0" is honored as an explicit
+    #: opt-out with a notice naming the kill-switch that replaces it.
     STATIC_CAPTURE_ENV = "IFL_GROOT_STATIC_CAPTURE"
+    #: The kill-switch for the family's DEFAULT DiT graph capture. Family-scoped, the
+    #: IFL_PI05_NO_CAPTURE convention. Honored by `install`, recorded on the plan, printed.
+    CAPTURE_KILL_SWITCH = "IFL_GROOT_NO_CAPTURE"
     CPU_THREADS_ENV = "IFL_GROOT_CPU_THREADS"
     FAST_DECODE_ENV = "IFL_GROOT_FAST_DECODE"
     BACKBONE_FASTPATH_ENV = "IFL_GROOT_BACKBONE_FASTPATH"
@@ -183,12 +189,23 @@ class GR00TN17Adapter:
 
     @classmethod
     def install(cls, policy, plan, *, device=None) -> list[str]:
-        """Install the planned DiT graph when explicitly enabled.
+        """Act on the plan: the DiT graph is the FAMILY DEFAULT, gated by the self-check.
 
-        The standalone gate merged in ``3142eee`` is bitexact across unseen
-        observations and prompt shapes. Runtime keeps that release-policy
-        opt-in explicit through ``IFL_GROOT_STATIC_CAPTURE=1``.
+        This SUPERSEDES the old release policy that kept capture opt-in through
+        ``IFL_GROOT_STATIC_CAPTURE=1``. That policy predates the startup self-check: the
+        standalone gate merged in ``3142eee`` was bitexact, but it was a one-time measurement
+        on OTHER checkpoints, so defaulting the graph on for a fresh fine-tune had nothing
+        per-process to stand on. Now it does — the first capture of every signature is
+        compared against the upstream eager DiT forward on staged inputs it was not captured
+        from (exact equality, seconds of startup, once per process), and a mismatch releases
+        the graphs and falls back to eager loudly while serving continues.
+
+        ``IFL_GROOT_NO_CAPTURE=1`` is the kill-switch (recorded on the plan, printed). The
+        retired opt-in stays recognized: "1" is a no-op with a notice, an explicit "0" is
+        honored as an opt-out with a notice naming the kill-switch.
         """
+        import os
+
         wanted = {
             getattr(result, "name", "")
             for result in getattr(plan, "results", ())
@@ -196,22 +213,41 @@ class GR00TN17Adapter:
         }
         if "graph_capture" not in wanted:
             return []
-        if not _env_flag(cls.STATIC_CAPTURE_ENV, default=False):
-            print(
-                "InstinctFlash GR00T N1.7: graph_capture is planned but disabled; "
-                f"set {cls.STATIC_CAPTURE_ENV}=1 to enable the bitexact DiT graph."
-            )
-            return []
         import torch
 
         if not (device and str(device).startswith("cuda") and torch.cuda.is_available()):
             print("InstinctFlash GR00T N1.7: CUDA Graph needs CUDA; running eager.")
             return []
+        capture = next(r for r in plan.results if r.name == "graph_capture" and r.applies)
+        legacy = os.environ.get(cls.STATIC_CAPTURE_ENV)
+        legacy_off = legacy is not None and not _env_flag(cls.STATIC_CAPTURE_ENV, default=True)
+        if os.environ.get(cls.CAPTURE_KILL_SWITCH) == "1" or legacy_off:
+            cause = (f"{cls.CAPTURE_KILL_SWITCH}=1" if not legacy_off
+                     else f"{cls.STATIC_CAPTURE_ENV}={legacy} (the retired opt-in's explicit "
+                          f"opt-out, honored; use {cls.CAPTURE_KILL_SWITCH}=1)")
+            note = (f"{cause} — the default DiT graph capture is disabled by the caller; "
+                    f"running eager (upstream's arithmetic exactly)")
+            capture.params["decision"] = tuple(capture.params.get("decision", ())) + (note,)
+            print(f"InstinctFlash GR00T N1.7: {note}.")
+            return []
+        if legacy is not None:
+            print(f"InstinctFlash GR00T N1.7: {cls.STATIC_CAPTURE_ENV}={legacy} is a no-op — "
+                  f"the DiT graph is the default for N1.7-class checkpoints on capture-capable "
+                  f"devices now ({cls.CAPTURE_KILL_SWITCH}=1 disables it).")
+        from instinctflash.runtime.capture_self_check import record_self_check_on_plan
+
         from .static_capture import install_static_capture
 
-        driver = install_static_capture(policy.model)
+        driver = install_static_capture(
+            policy.model,
+            on_self_check=record_self_check_on_plan(capture, "GR00T N1.7"))
         policy._instinctflash_static_capture = driver
-        print("InstinctFlash GR00T N1.7: bitexact DiT CUDA Graph installed.")
+        print("InstinctFlash GR00T N1.7: DiT CUDA Graph installed — the family default on "
+              "capture-capable devices, superseding the retired IFL_GROOT_STATIC_CAPTURE "
+              "opt-in. Each captured signature is gated by a bit-exact self-check (replay vs "
+              "upstream eager on staged inputs it was not captured from, exact equality); a "
+              "mismatch releases the graphs and falls back to eager, loudly. Kill-switch: "
+              f"{cls.CAPTURE_KILL_SWITCH}=1.")
         return ["graph_capture"]
 
 
