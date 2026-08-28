@@ -112,6 +112,7 @@ class Pi05Adapter:
         """
         import torch
         from lerobot.policies.factory import make_pre_post_processors
+        from lerobot.policies.pi05.configuration_pi05 import PI05Config
         from lerobot.policies.pi05.modeling_pi05 import PI05Policy
 
         repo = (checkpoint.execution.extra or {}).get("base_weights")
@@ -120,9 +121,16 @@ class Pi05Adapter:
                 f"{checkpoint.model_id}: no local weights and no execution.base_weights, so there is "
                 f"nothing to load. Declare the upstream repo id in base_weights.")
         _require_processor_steps(repo)
-        policy = PI05Policy.from_pretrained(repo)
-        policy.eval()
         dev = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        # A CONCRETE config object, mutated before PI05Policy constructs any modules: the
+        # compile_model flag is consumed inside the model __init__ (lerobot 0.6.1
+        # modeling_pi05.py wraps sample_actions/forward in torch.compile there — and also flips
+        # torch.set_float32_matmul_precision("high") process-wide before the wrappers), so any
+        # decision that needs the plan has to precede construction.
+        config = PI05Config.from_pretrained(repo)
+        _neutralize_compile_model_for_planned_capture(config, plan, dev)
+        policy = PI05Policy.from_pretrained(repo, config=config)
+        policy.eval()
         policy.to(dev)
 
         n = dict(nfe or checkpoint.execution.nfe or {})
@@ -174,15 +182,23 @@ class Pi05Adapter:
         hoisted = surface.hoist_loop_constants()          # BITEXACT, and the prerequisite
 
         import os
-        if os.environ.get(Pi05Surface.STATIC_CAPTURE_OPT_IN) == "1":
+        capture = next(r for r in plan.results if r.name == "graph_capture" and r.applies)
+        compile_superseded = bool(capture.params.get("compile_model_superseded"))
+        if compile_superseded or os.environ.get(Pi05Surface.STATIC_CAPTURE_OPT_IN) == "1":
             # The replay-safe path: static max-extent KV buffers, gate numbers in
             # pi05_iwm/static_capture.py and verify_static_capture.py (bitexact on unseen
             # inputs and prompts; 3.55x denoise step, 1.65x chunk on H100/pi05_base).
+            # Taken on env opt-in, and ALWAYS when build neutralized the checkpoint's
+            # compile_model in favor of this plan's capture: that print promised a faster
+            # bit-exact loop, and a promise the installer does not keep is the plan lying.
             from pi05_iwm.static_capture import install_static_capture
             install_static_capture(policy.model)
             for h in hoisted:
                 print(f"InstinctFlash pi05: hoisted {h}")
-            print("InstinctFlash pi05: static-KV graph capture installed (bitexact-verified path).")
+            because = (" — installed in place of the checkpoint's neutralized compile_model"
+                       if compile_superseded else "")
+            print(f"InstinctFlash pi05: static-KV graph capture installed "
+                  f"(bitexact-verified path{because}).")
             return ["loop_constant_hoist", "graph_capture_static_kv"]
 
         result = run_pass(GraphCapture(), surface, device=torch.device(str(device)))
@@ -238,6 +254,61 @@ class _Pi05Loop:
 
     def close(self) -> None:
         self._p = None
+
+
+#: Why a planned graph_capture outranks a checkpoint-published ``compile_model: true``. Every
+#: number is measured on the same machine and checkpoint (H100, v044, full action chunk): the
+#: static-KV captured chunk runs 72.8 ms against torch.compile max-autotune's 173.3 ms, capture
+#: replay is BITEXACT against eager on inputs it never saw while inductor's numerics carry no
+#: equivalence evidence at all, and capture warms up in seconds where the compiled first start
+#: burned 171 s+ of autotune (a 738 s cold `serve --serve.smoke=true`, eight-family UX pass).
+COMPILE_SUPERSEDED_REASON = ("superseded by graph_capture: bit-exact, faster "
+                             "(72.8 vs 173.3 ms measured), no compile wait")
+
+
+def _neutralize_compile_model_for_planned_capture(config, plan, device) -> bool:
+    """Turn off a checkpoint-published ``compile_model: true`` when this plan captures instead.
+
+    ``compile_model`` is a publisher's deployment assumption, and when the plan's
+    ``graph_capture`` pass APPLIES the runtime's own static-KV capture serves the same denoise
+    loop for less on every axis that assumption is about — see COMPILE_SUPERSEDED_REASON for
+    the measurements. Honoring the flag on top of capture would buy nothing and cost the
+    compile wait, so the flag is neutralized and ``install`` takes the verified static-capture
+    path: the promise this print makes is kept by the same plan object carrying
+    ``compile_model_superseded`` down to the installer.
+
+    Scope, deliberately narrow:
+
+      * the plan's ``graph_capture`` must APPLY — a device where the planner declines it (CPU,
+        or the measured bandwidth-bound-edge class) keeps the publisher's key untouched, so
+        the checkpoint author's choice stands everywhere our capture has no case;
+      * the build device must be CUDA — an APPLICABILITY-UNCHECKED plan built onto a CPU
+        cannot install capture, and neutralizing compile_model there would replace the
+        author's choice with nothing.
+
+    Printed, never silent, and recorded as a Decision on the plan's ``graph_capture`` entry so
+    ``plan.explain()`` / ``runtime.explain()`` show it. Returns True when the key was
+    neutralized.
+    """
+    if not getattr(config, "compile_model", False):
+        return False
+    if not str(device or "").startswith("cuda"):
+        return False
+    capture = next((r for r in getattr(plan, "results", ())
+                    if getattr(r, "name", "") == "graph_capture"
+                    and getattr(r, "applies", False)), None)
+    if capture is None:
+        return False
+    config.compile_model = False
+    capture.params["compile_model_superseded"] = True
+    # PassResult is frozen but params is the runtime-facing dict by contract; explain()
+    # surfaces this as a 'decision:' line.
+    capture.params["decision"] = tuple(capture.params.get("decision", ())) + (
+        f"checkpoint publishes compile_model=true — neutralized: {COMPILE_SUPERSEDED_REASON}",)
+    print(f"InstinctFlash pi05: the checkpoint publishes compile_model=true — "
+          f"{COMPILE_SUPERSEDED_REASON}. compile_model neutralized; the plan's static-KV "
+          f"capture serves the denoise loop instead.")
+    return True
 
 
 def _require_processor_steps(repo: str) -> None:

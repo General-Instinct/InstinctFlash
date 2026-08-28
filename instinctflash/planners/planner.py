@@ -117,6 +117,10 @@ class Plan:
             out.append(f"  {mark} {r.name:26s} [{r.tier.name:10s}] {r.reason}")
             if r.applies and r.expected_win != "unknown":
                 out.append(f"         expected: {r.expected_win}")
+            # A construction-time Decision recorded by the installer (params['decision']): what
+            # the backend actually chose, e.g. pi05's compile_model neutralization.
+            for line in r.params.get("decision", ()):
+                out.append(f"         decision: {line}")
         if self.tier() > Tier.BITEXACT:
             lossy = [r.name for r in self.applied if r.tier > Tier.BITEXACT]
             out += [
