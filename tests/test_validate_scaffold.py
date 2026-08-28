@@ -243,6 +243,70 @@ def lora_adapter_fixture(td: Path) -> Path:
     return d
 
 
+def _stats_file(d: Path, name: str, tensors: dict) -> None:
+    """A minimal REAL safetensors file: 8-byte LE header length + header JSON + zeroed data."""
+    offset, entries = 0, {}
+    for tname, shape in tensors.items():
+        n = 4
+        for x in shape:
+            n *= x
+        entries[tname] = {"dtype": "F32", "shape": shape, "data_offsets": [offset, offset + n]}
+        offset += n
+    header = json.dumps(entries).encode()
+    (d / name).write_bytes(len(header).to_bytes(8, "little") + header + b"\x00" * offset)
+
+
+def test_pi05_state_dim_comes_from_the_trained_normalizer_stats():
+    print("\n=== 7b. pi05 obs_features: the trained stats outrank config.json's padded dim ===")
+    # lerobot >= 0.6 keeps pi05_base's padded input_features (observation.state [32]) in the
+    # fine-tune's config.json, while the saved preprocessor normalizes the wire observation with
+    # dataset-shaped stats ([8] for LIBERO) BEFORE the policy pads it. Transcribing config.json
+    # made the smoke observation fail inside the checkpoint's own pipeline ("size of tensor a
+    # (32) must match ... b (8)", first real lerobot-train SFT served, 2026-08-28). The stats
+    # tensors are the arithmetic the model applies: they are the wire contract.
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "pi05-lerobot-ft"
+        d.mkdir()
+        (d / "config.json").write_text(json.dumps({
+            "type": "pi05", "num_inference_steps": 10,
+            "input_features": {
+                "observation.images.base_0_rgb": {"type": "VISUAL", "shape": [3, 224, 224]},
+                "observation.state": {"type": "STATE", "shape": [32]},
+            }}))
+        (d / "model.safetensors").write_bytes(b"\x00" * 2048)
+        (d / "policy_preprocessor.json").write_text("{}")
+        _stats_file(d, "policy_preprocessor_step_3_normalizer_processor.safetensors",
+                    {"observation.state.mean": [8], "observation.state.std": [8],
+                     "observation.images.base_0_rgb.mean": [3, 1, 1]})
+        rc, out = run(["validate", str(d), "--validate.scaffold=auto"])
+        ex = json.loads((d / "instinctflash.json").read_text())["execution"]
+        check(ex["obs_features"]["observation.state"] == [8],
+              "state dim is the stats' [8], not config.json's padded [32]",
+              str(ex["obs_features"]))
+        check(ex["obs_features"]["observation.images.base_0_rgb"] == [3, 224, 224],
+              "image geometry untouched — image stats are per-channel [C,1,1], not geometry")
+        check("normalizer stats" in out
+              and "policy_preprocessor_step_3_normalizer_processor.safetensors" in out,
+              "the correction is announced with the stats file quoted as evidence")
+        check(rc == 0, "still zero FILL_ME", str(rc))
+
+    # stats that AGREE with config.json change nothing (the v044-class exports)
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "pi05-agree"
+        d.mkdir()
+        (d / "config.json").write_text(json.dumps({
+            "type": "pi05", "num_inference_steps": 10,
+            "input_features": {"observation.state": {"type": "STATE", "shape": [8]}}}))
+        (d / "model.safetensors").write_bytes(b"\x00" * 2048)
+        (d / "policy_preprocessor.json").write_text("{}")
+        _stats_file(d, "policy_preprocessor_step_2_normalizer_processor.safetensors",
+                    {"observation.state.mean": [8]})
+        rc, out = run(["validate", str(d), "--validate.scaffold=auto"])
+        ex = json.loads((d / "instinctflash.json").read_text())["execution"]
+        check(ex["obs_features"]["observation.state"] == [8], "agreeing stats leave [8] as-is")
+        check("normalizer stats" not in out, "and no correction is announced")
+
+
 def test_unmerged_lora_adapter_is_refused_with_the_merge_command():
     print("\n=== 9. an unmerged LoRA adapter is refused everywhere, with the exact merge command ===")
     # Before this check existed, the scaffold on this fixture wrote a declaration that VALIDATED
@@ -324,6 +388,7 @@ def main_() -> int:
     test_existing_declaration_is_never_overwritten_without_force()
     test_fill_me_is_flagged_by_every_later_plain_validate()
     test_round_trip_scaffold_fill_validate_pass()
+    test_pi05_state_dim_comes_from_the_trained_normalizer_stats()
     test_unmerged_lora_adapter_is_refused_with_the_merge_command()
     test_adapters_treat_fill_me_as_undeclared()
     print("\n" + "=" * 78)

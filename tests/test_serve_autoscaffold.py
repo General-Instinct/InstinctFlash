@@ -236,6 +236,35 @@ def test_unmerged_adapter_hits_the_merge_command_wall():
               "a pre-existing declaration does not launder the adapter", str(rc))
 
 
+def test_wrong_level_dir_stops_with_the_servable_path():
+    print("\n=== 6b. serve at a lerobot-train run root: pointed at the real checkpoint ===")
+    # The first REAL lerobot-train fine-tune served (2026-08-28): the user's natural argument is
+    # the --output_dir they passed to lerobot-train, but the servable model is two levels down.
+    # The old refusal ("no built-in declaration matches ... pass --validate.scaffold=<base>") was
+    # true and useless; the wall must name the exact path and the rerun.
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td) / "pi05_libero_sft"
+        step = root / "checkpoints" / "000400"
+        pm = step / "pretrained_model"
+        pm.mkdir(parents=True)
+        (pm / "config.json").write_text(json.dumps({"type": "pi05"}))
+        (pm / "model.safetensors").write_bytes(b"\x00" * 2048)
+        (pm / "policy_preprocessor.json").write_text("{}")
+        (step / "training_state").mkdir()
+        (root / "checkpoints" / "last").symlink_to(step, target_is_directory=True)
+
+        rc, out = run(["serve", str(root), "--serve.smoke=true"])
+        check(rc == 2, "the run root stops as a config error", str(rc))
+        check("lerobot-train output" in out, "naming the layout it recognized")
+        check(f"instinctflash serve {pm.resolve()}" in out,
+              "with the exact servable path as the rerun command", out.strip()[-200:])
+        check(not (root / "instinctflash.json").exists(), "and writes nothing at the wrong level")
+
+        rc2, out2 = run(["serve", str(step), "--serve.smoke=true"])
+        check(rc2 == 2 and "pretrained_model" in out2,
+              "the intermediate step dir points one level down too", str(rc2))
+
+
 def test_json_mode_carries_the_stop_structurally():
     print("\n=== 7. --output.format=json: the stop is structured, not just prose ===")
     with tempfile.TemporaryDirectory() as td:
@@ -257,6 +286,7 @@ def main_() -> int:
     test_pi05_second_serve_is_the_plain_fast_path()
     test_existing_declaration_means_zero_behavior_change()
     test_unmerged_adapter_hits_the_merge_command_wall()
+    test_wrong_level_dir_stops_with_the_servable_path()
     test_json_mode_carries_the_stop_structurally()
     print("\n" + "=" * 78)
     if FAILED:

@@ -118,6 +118,13 @@ def unmerged_adapter_problem(ckpt_dir: str | Path) -> "str | None":
     resolves to the PLAIN BASE, and the scaffolded declaration validated and served — answering
     with the base model while the user believes their fine-tune is running. The deltas are the
     fine-tune; a package that drops them on the floor must fail loudly.
+
+    The merge command loads the base with the FINE-TUNE's config (`config=cfg` from this
+    directory, use_peft cleared): the trainer saved the trained features there — measured on a
+    real lerobot-train LoRA (2026-08-28): merging under the base's own config re-padded
+    output_features.action to [32] while the fine-tune's saved postprocessor unnormalizes [7],
+    and the merged model failed inside its own pipeline ("size of tensor a (32) must match
+    ... b (7)"). Same class of silent-wrong as serving the plain base, one config file later.
     """
     d = Path(ckpt_dir)
     markers = peft_adapter_markers(d)
@@ -137,8 +144,10 @@ def unmerged_adapter_problem(ckpt_dir: str | Path) -> "str | None":
         # the loader class comes from the checkpoint's OWN config.json type string — registry
         # data, exactly like the scaffold's family fingerprints, never a model-name branch here.
         merge = (f"python -c \"from lerobot.policies.factory import get_policy_class; "
+                 f"from lerobot.configs.policies import PreTrainedConfig; "
                  f"from peft import PeftModel; "
-                 f"base = get_policy_class('{policy_type}').from_pretrained('{base}'); "
+                 f"cfg = PreTrainedConfig.from_pretrained('{d}'); cfg.use_peft = False; "
+                 f"base = get_policy_class('{policy_type}').from_pretrained('{base}', config=cfg); "
                  f"PeftModel.from_pretrained(base, '{d}').merge_and_unload()"
                  f".save_pretrained('{d}-merged')\"")
     else:
@@ -151,8 +160,10 @@ def unmerged_adapter_problem(ckpt_dir: str | Path) -> "str | None":
             f"declaration written here would describe the plain base and silently serve it "
             f"without the fine-tune. Merge into the base first —\n"
             f"      {merge}\n"
-            f"    then copy the base package's processor/tokenizer sidecar files next to the "
-            f"merged weights and validate the MERGED output")
+            f"    then copy the processor/tokenizer sidecar files next to the merged weights — "
+            f"the ones saved BESIDE the adapter when the trainer wrote them (lerobot's peft flow "
+            f"does; they carry the fine-tune's own normalization stats), else the base "
+            f"package's — and validate the MERGED output")
 
 
 def _training_layout_hint(d: Path) -> "str | None":
@@ -165,15 +176,53 @@ def _training_layout_hint(d: Path) -> "str | None":
     both true and both useless without this line, because the weights are sitting one directory
     down. Only emitted when validation is already failing: a composed upstream package
     legitimately carries a transformer/ component and must not be told to flatten itself.
+
+    Two trainer families are recognized:
+
+      * wan_va-style: `<run>/transformer/*.safetensors` — the package is the flat transformer
+        contents at the root; the fix is one `mv`.
+      * lerobot-train: `<run>/checkpoints/<step>/pretrained_model/` — the servable checkpoint
+        already exists IN FULL one or two levels down; the fix is pointing the command at it.
+        Found by fine-tuning pi05 with lerobot-train and serving the run root: "no built-in
+        declaration matches this checkpoint" was true and useless while the trained model sat
+        under checkpoints/000400/pretrained_model.
     """
     t = d / "transformer"
-    if not t.is_dir() or not any(t.glob("*.safetensors")):
+    if t.is_dir() and any(t.glob("*.safetensors")):
+        return ("this looks like a training-output layout: the weight files sit under transformer/. "
+                "An InstinctFlash package is the FLAT transformer contents at the package root, next "
+                f"to instinctflash.json — run  mv {t}/* {d}/  (config.json and the *.safetensors land "
+                "at the root); the frozen vae/text_encoder/tokenizer are never packaged, they come "
+                "from the execution.base_weights pointer")
+    servable = _lerobot_servable_child(d)
+    if servable is not None:
+        return (f"this looks like a lerobot-train output: the servable checkpoint the trainer "
+                f"wrote is  {servable}  (config.json + weights + the processor pipeline), and "
+                f"the levels above it are run bookkeeping. Point the command there:\n"
+                f"  instinctflash serve {servable}")
+    return None
+
+
+def _lerobot_servable_child(d: Path) -> "Path | None":
+    """The `pretrained_model` dir under a lerobot-train run root or step dir, when this is one.
+
+    lerobot-train writes `<run>/checkpoints/<NNNNNN>/{pretrained_model,training_state}` plus a
+    `checkpoints/last` symlink to the newest step, so both the run root and the step dir are
+    natural wrong answers to "which directory do I serve". Returns the newest servable child as
+    a concrete path: what `last` resolves to when it is valid, else the highest step that
+    actually carries a config.json. None when `d` is not this layout.
+    """
+    if (d / "pretrained_model" / "config.json").is_file():
+        return d / "pretrained_model"
+    ckpts = d / "checkpoints"
+    if not ckpts.is_dir():
         return None
-    return ("this looks like a training-output layout: the weight files sit under transformer/. "
-            "An InstinctFlash package is the FLAT transformer contents at the package root, next "
-            f"to instinctflash.json — run  mv {t}/* {d}/  (config.json and the *.safetensors land "
-            "at the root); the frozen vae/text_encoder/tokenizer are never packaged, they come "
-            "from the execution.base_weights pointer")
+    last = ckpts / "last" / "pretrained_model"
+    if (last / "config.json").is_file():
+        return last.resolve()
+    steps = sorted(p for p in ckpts.iterdir()
+                   if (p / "pretrained_model" / "config.json").is_file())
+    return (steps[-1] / "pretrained_model").resolve() if steps else None
 
 
 def validate_package(ckpt_dir: str | Path) -> PackageReport:

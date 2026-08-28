@@ -8,7 +8,8 @@ the base's built-in declaration (`known.KNOWN_DECLARATIONS`), then goes field by
                 servable) unless its author says otherwise.
     inferred    read out of the checkpoint ITSELF, with the evidence quoted: backbone identity
                 from config.json fingerprints, param_bytes measured from the weight files,
-                pi05 obs_features from the checkpoint's own input_features, and so on.
+                pi05 obs_features from the checkpoint's own input_features reconciled with its
+                trained normalizer stats (the stats are the wire contract), and so on.
     FILL_ME     a fact the checkpoint does not carry and the scaffold refuses to guess. Written
                 into the file as the literal string "FILL_ME" so the follow-up validate flags
                 every one of them; each carries a one-line explanation of what belongs there.
@@ -302,7 +303,7 @@ def _detect_pi05(d: Path) -> list:
     return []
 
 
-def _pi05_input_features(d: Path) -> "tuple[dict, str] | None":
+def _pi05_input_features(d: Path) -> "tuple[dict, str, dict] | None":
     for rel, getter in (("config.json", lambda c: c.get("input_features")),
                         ("train_config.json",
                          lambda c: (c.get("policy") or {}).get("input_features"))):
@@ -310,10 +311,48 @@ def _pi05_input_features(d: Path) -> "tuple[dict, str] | None":
         if isinstance(feats, dict) and feats:
             try:
                 shapes = {str(k): [int(x) for x in v["shape"]] for k, v in feats.items()}
+                types = {str(k): str(v.get("type") or "") for k, v in feats.items()}
             except Exception:                                    # noqa: BLE001 - not the shape we know
                 continue
-            return shapes, rel
+            return shapes, rel, types
     return None
+
+
+def _safetensors_header(p: Path) -> "dict | None":
+    """A safetensors file's JSON header (tensor name -> dtype/shape/offsets), read without torch."""
+    try:
+        with p.open("rb") as f:
+            n = int.from_bytes(f.read(8), "little")
+            if not 0 < n <= 100_000_000:
+                return None
+            doc = json.loads(f.read(n).decode("utf-8"))
+        return doc if isinstance(doc, dict) else None
+    except Exception:                                            # noqa: BLE001 - evidence, not a gate
+        return None
+
+
+def _pi05_trained_state_dims(d: Path, state_keys) -> dict:
+    """{state key: (dim, stats filename)} as the checkpoint's TRAINED normalizer stats carry it.
+
+    lerobot >= 0.6 keeps the policy's own (padded) input_features in the fine-tune's config.json
+    — pi05_base declares observation.state [32], max_state_dim — while the saved preprocessor
+    normalizes the wire observation with dataset-shaped stats BEFORE the policy pads it. The
+    stats tensors are the arithmetic the model actually applies, so they are the wire contract;
+    a declaration transcribing config.json's [32] builds observations the checkpoint's own
+    pipeline rejects ("size of tensor a (32) must match ... b (8)" — the first real lerobot-train
+    fine-tune served, 2026-08-28). Image stats are per-channel [C,1,1], not geometry, so only
+    STATE keys are read. Older exports (pi05_libero_finetuned_v044) already agree with their
+    stats and are unchanged by construction.
+    """
+    out: dict = {}
+    for p in sorted(d.glob("policy_preprocessor_step_*_normalizer_processor.safetensors")):
+        header = _safetensors_header(p) or {}
+        for k in state_keys:
+            ent = header.get(f"{k}.mean")
+            shape = ent.get("shape") if isinstance(ent, dict) else None
+            if isinstance(shape, list) and len(shape) == 1:
+                out.setdefault(k, (int(shape[0]), p.name))
+    return out
 
 
 def _build_pi05(d: Path, base_ex: Mapping, backbone_evidence: str) -> dict:
@@ -321,10 +360,18 @@ def _build_pi05(d: Path, base_ex: Mapping, backbone_evidence: str) -> dict:
     cfg = _json_at(d, "config.json")
     feats = _pi05_input_features(d)
     if feats:
-        decisions["obs_features"] = ScaffoldField(
-            "obs_features", INFERRED, feats[0],
-            f"{feats[1]} input_features ({len(feats[0])} keys) — the same source the two "
-            f"built-in pi05 declarations were transcribed from")
+        shapes, rel, types = feats
+        evidence = (f"{rel} input_features ({len(shapes)} keys) — the same source the two "
+                    f"built-in pi05 declarations were transcribed from")
+        trained = _pi05_trained_state_dims(d, [k for k, t in types.items() if t == "STATE"])
+        for key, (dim, src) in trained.items():
+            if shapes.get(key) != [dim]:
+                evidence += (f"; {key} {shapes.get(key)} -> [{dim}] from the trained normalizer "
+                             f"stats ({src}): lerobot keeps the policy's padded dim in "
+                             f"input_features, but the saved preprocessor normalizes the wire "
+                             f"observation BEFORE padding, so the stats' dim is the contract")
+                shapes[key] = [dim]
+        decisions["obs_features"] = ScaffoldField("obs_features", INFERRED, shapes, evidence)
     else:
         decisions["obs_features"] = ScaffoldField(
             "obs_features", TO_FILL, FILL_ME,
@@ -828,6 +875,13 @@ def run_scaffold(ckpt_dir: str | Path, base: str, *, force: bool = False) -> tup
     if base == "auto":
         matches = detect_base(d)
         if not matches:
+            # A training-output tree is the common way to land here with a REAL model nearby:
+            # the fix is pointing at it, not picking a base. Same knowledge as plain `validate`.
+            from instinctflash.descriptors.package import _training_layout_hint
+            hint = _training_layout_hint(d)
+            if hint is not None:
+                raise ScaffoldError(
+                    f"{d}: no built-in declaration matches this directory — {hint}")
             raise ScaffoldError(
                 f"{d}: no built-in declaration matches this checkpoint. Fingerprints looked "
                 "for:\n  " + "\n  ".join(f"{f.backbone}: {f.fingerprint}"

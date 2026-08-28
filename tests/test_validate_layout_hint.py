@@ -109,6 +109,81 @@ def test_the_cli_verb_shows_the_hint():
     assert HINT_MARK in out and "mv " in out, out
 
 
+# --- the lerobot-train layout: the servable checkpoint is one or two levels DOWN -----------------
+#
+# THE FAILURE THIS PINS. lerobot-train writes <run>/checkpoints/<NNNNNN>/{pretrained_model,
+# training_state} plus a checkpoints/last symlink. Serving the run root (2026-08-28, the first
+# REAL lerobot-train pi05 fine-tune through `instinctflash serve`) answered "no built-in
+# declaration matches this checkpoint ... pass --validate.scaffold=<base>" — true, useless, and
+# actively wrong as advice, while the complete servable model sat under
+# checkpoints/000400/pretrained_model. The hint names that exact path and the rerun command.
+
+LEROBOT_MARK = "lerobot-train output"
+
+
+def _lerobot_run_tree(td: Path, *, with_last: bool = True) -> Path:
+    """The tree lerobot-train 0.6 actually writes (observed on a real pi05 LIBERO SFT run)."""
+    run = td / "pi05_libero_sft"
+    step = run / "checkpoints" / "000400"
+    (step / "pretrained_model").mkdir(parents=True)
+    (step / "pretrained_model" / "config.json").write_text(json.dumps({"type": "pi05"}))
+    (step / "pretrained_model" / "model.safetensors").write_bytes(b"\x00")
+    (step / "pretrained_model" / "policy_preprocessor.json").write_text("{}")
+    (step / "training_state").mkdir()
+    if with_last:
+        (run / "checkpoints" / "last").symlink_to(step, target_is_directory=True)
+    return run
+
+
+def test_lerobot_run_root_points_at_the_servable_checkpoint():
+    with tempfile.TemporaryDirectory() as td:
+        run = _lerobot_run_tree(Path(td))
+        rep = validate_package(run)
+        text = rep.explain()
+        expected = str((run / "checkpoints" / "000400" / "pretrained_model").resolve())
+    assert not rep.ok, "a run root is not a valid package"
+    assert LEROBOT_MARK in text, text
+    assert f"instinctflash serve {expected}" in text, \
+        f"the hint must carry the exact servable path and rerun command:\n{text}"
+
+
+def test_lerobot_step_dir_points_one_level_down():
+    with tempfile.TemporaryDirectory() as td:
+        run = _lerobot_run_tree(Path(td))
+        step = run / "checkpoints" / "000400"
+        rep = validate_package(step)
+        text = rep.explain()
+        assert str(step / "pretrained_model") in text, text
+    assert not rep.ok
+    assert LEROBOT_MARK in text, text
+
+
+def test_lerobot_run_root_without_last_symlink_names_the_highest_step():
+    with tempfile.TemporaryDirectory() as td:
+        run = _lerobot_run_tree(Path(td), with_last=False)
+        pm2 = run / "checkpoints" / "000800" / "pretrained_model"
+        pm2.mkdir(parents=True)
+        (pm2 / "config.json").write_text("{}")
+        text = validate_package(run).explain()
+        assert "000800" in text and "000400" not in text.split(LEROBOT_MARK, 1)[1], \
+            f"the newest step is the one the trainer would resume from:\n{text}"
+
+
+def test_scaffold_no_match_refusal_carries_the_same_hint():
+    # serve's autoscaffold surfaces run_scaffold's refusal verbatim, so the pointed path must
+    # live in the ScaffoldError itself — one rule, both surfaces (validate and serve).
+    from instinctflash.descriptors.scaffold import ScaffoldError, run_scaffold
+    with tempfile.TemporaryDirectory() as td:
+        run = _lerobot_run_tree(Path(td))
+        try:
+            run_scaffold(run, "auto")
+            raise AssertionError("run_scaffold must refuse a lerobot run root")
+        except ScaffoldError as e:
+            msg = str(e)
+        assert LEROBOT_MARK in msg and "pretrained_model" in msg, msg
+        assert "instinctflash serve" in msg, msg
+
+
 if __name__ == "__main__":
     from run_tests import run_module_tests
 
