@@ -28,11 +28,13 @@ from lingbot_vla_v2_iwm.adapter import (
 
 
 def test_example_surface_stays_product_shaped():
-    # The four measurement artifacts (static_capture.py, profile_infer.py,
-    # verify_static_capture.py, static_capture_results.json) are LOAD-BEARING: they back the
-    # published README H100 row (829.1 -> 182.5 ms, 4.54x, 6-case gate) and the Thor wall
-    # record cites static_capture.py as its protocol artifact. This pinned set exists so a
-    # port or cleanup can never silently delete or replace them.
+    # The measurement artifacts are LOAD-BEARING: reproduce_h100.{sh,py} +
+    # reproduce_h100_results.json back the published README H100 row (671.1 -> 127.5 ms, 5.26x,
+    # the Runtime DEFAULT arm, 2026-08-28 re-sweep); static_capture.py +
+    # verify_static_capture.py + static_capture_results.json are the module-level 6-case gate
+    # for the denoise graph, and the Thor wall record cites static_capture.py as its protocol
+    # artifact. This pinned set exists so a port or cleanup can never silently delete or
+    # replace them.
     root_files = {path.name for path in PLUGIN_ROOT.iterdir() if path.is_file()}
     assert root_files == {
         "README.md",
@@ -40,24 +42,35 @@ def test_example_surface_stays_product_shaped():
         "moe_kernel_results.json",
         "profile_infer.py",
         "pyproject.toml",
+        "reproduce_h100.py",
+        "reproduce_h100.sh",
+        "reproduce_h100_results.json",
         "static_capture.py",
         "static_capture_results.json",
         "verify_moe_kernel.py",
         "verify_static_capture.py",
     }
+    assert os.access(PLUGIN_ROOT / "reproduce_h100.sh", os.X_OK)
     assert not (PLUGIN_ROOT / "csrc").exists()
     assert not (PLUGIN_ROOT / "lingbot_vla_v2_iwm" / "moe_cutlass.py").exists()
 
 
 def test_published_h100_artifact_is_the_six_case_protocol():
-    # The results JSON must stay the H100 6-case artifact; a weaker protocol (e.g. an 8-sample
-    # A100 run with a 4-case null threshold) must never stand in for it.
+    # The row artifact must stay the H100 6-case, envelope-judged protocol; a weaker protocol
+    # (e.g. an 8-sample A100 run with a 4-case null threshold) must never stand in for it.
     import json
 
-    doc = json.loads((PLUGIN_ROOT / "static_capture_results.json").read_text())
-    assert doc["stock_ms_p50_inprocess"] == 829.1
-    assert doc["ours_ms_p50_inprocess"] == 182.5
-    assert len(doc["gates"]["cases"]) == 6
+    doc = json.loads((PLUGIN_ROOT / "reproduce_h100_results.json").read_text())
+    assert doc["stock_ms_p50"] == 671.1
+    assert doc["ours_ms_p50"] == 127.5
+    assert len(doc["gates"]) == 6
+    assert all(case["max_abs_d"] <= doc["null_envelope"] for case in doc["gates"])
+
+    # The module-level gate stays the 6-case protocol too (same box, denoise graph alone).
+    module = json.loads((PLUGIN_ROOT / "static_capture_results.json").read_text())
+    assert module["stock_ms_p50_inprocess"] == 667.0
+    assert module["ours_ms_p50_inprocess"] == 165.0
+    assert len(module["gates"]["cases"]) == 6
 
 
 def test_v2_spec_declares_the_published_control_cycle():

@@ -20,7 +20,7 @@ graph: V2's fused-MoE kernel is nondeterministic — two STOCK runs on identical
 up to 5.08e-02 (``moe_kernel_results.json`` null_control_deltas, H100 6-case protocol) — so exact
 equality is unattainable for ANY serving of this model, including upstream's own. The self-check
 therefore gates on that recorded stock-vs-stock envelope (``NULL_ENVELOPE``), the same standard
-the family's published 4.54x row was verified under. PASS → replay serves; FAIL → the graph is
+the family's published row was verified under. PASS → replay serves; FAIL → the graph is
 released (the vision/prefill graphs with it, via the adapter's recorder), ``predict_velocity`` is
 rebound to upstream, and the fallback is announced loudly — serving continues on eager
 arithmetic.

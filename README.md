@@ -15,22 +15,17 @@
 ## What's new 🔥
 
 - **Eight model families, two device classes.** Each measured against its authors' own serving
-  code on the same device — up to 4.54x on H100 (LingBot-VLA-V2) and 7.13x on Jetson Thor
+  code on the same device — up to 5.26x on H100 (LingBot-VLA-V2) and 7.13x on Jetson Thor
   (LingBot-VLA-4B). The two devices need opposite optimizations — the planner measures before
   it applies. Full table in the results section below.
 - **Declared few-step schedules.** LingBot-VA's 2V/4A schedule runs at twenty-three times its
   upstream serving cost, certified non-inferior over 1153 pre-registered RoboTwin episode
   pairs. A few-step distillation framework is under development as an InstinctFlash component.
-- **Bit-exact CUDA-graph capture.** A static max-extent KV buffer makes denoise loops
-  capturable with bit-exact replay on unseen inputs — verified on three model families and two
-  GPU architectures. Sparse-MoE routing re-executes per replay, never baked. For pi05,
-  LingBot-VLA-4B, LingBot-VLA-V2 and GR00T-N1.7 checkpoints — fresh fine-tunes included —
-  capture is the **default** on capture-capable devices: the first capture is gated by a
-  startup self-check (replay vs upstream eager on staged inputs it was not captured from —
-  exact equality for the bit-exact families, V2's own recorded stock-vs-stock envelope for its
-  nondeterministic fused-MoE) and falls back to eager loudly on any mismatch.
-  `IFL_PI05_NO_CAPTURE=1` / `IFL_VLA4B_NO_CAPTURE=1` / `IFL_VLA2_NO_CAPTURE=1` /
-  `IFL_GROOT_NO_CAPTURE=1` disable it per family.
+- **Bit-exact CUDA-graph capture, on by default.** Static max-extent KV buffers make denoise
+  loops capturable with bit-exact replay on unseen inputs. pi05, LingBot-VLA-4B, LingBot-VLA-V2
+  and GR00T-N1.7 — fresh fine-tunes included — serve their family's verified capture arm by
+  default, gated by a startup self-check vs upstream eager (exact equality; V2: its recorded
+  stock-vs-stock envelope) that falls back loudly. Kill-switch: `IFL_<FAMILY>_NO_CAPTURE=1`.
 - **[InstinctCompress](https://github.com/General-Instinct/InstinctCompress)** (customer
   access): a fine-tuned pi05 checkpoint 8.7 GB → 3.2 GB, accuracy trained back on your own
   demonstrations and verified, served through the same stack unchanged.
@@ -42,7 +37,7 @@
 | **LingBot-VA** (5B WAM) | 8448&nbsp;→&nbsp;2583&nbsp;ms,&nbsp;**3.27×** | 18027&nbsp;→&nbsp;5611&nbsp;ms,&nbsp;**3.21×** | NUMERIC |
 | **LingBot-VA @ 2V/4A** (5B WAM) | 8448&nbsp;→&nbsp;360&nbsp;ms,&nbsp;**23×** | 18027&nbsp;→&nbsp;893&nbsp;ms,&nbsp;**20×** | OPERATING-POINT (certified) |
 | **LingBot-VLA-4B** | 671&nbsp;→&nbsp;185&nbsp;ms,&nbsp;**3.62×** | 696&nbsp;→&nbsp;97.5&nbsp;ms,&nbsp;**7.13×** | BITEXACT / engine |
-| **LingBot-VLA-V2-6B** (sparse-MoE) | 829&nbsp;→&nbsp;183&nbsp;ms,&nbsp;**4.54×** | 752&nbsp;→&nbsp;210&nbsp;ms,&nbsp;**3.57×** | NUMERIC / engine |
+| **LingBot-VLA-V2-6B** (sparse-MoE) | 671&nbsp;→&nbsp;128&nbsp;ms,&nbsp;**5.26×** | 752&nbsp;→&nbsp;210&nbsp;ms,&nbsp;**3.57×** | NUMERIC / engine |
 | **Cosmos3-Edge-Policy** (3.86B) | 311&nbsp;→&nbsp;186&nbsp;ms,&nbsp;**1.67×** | 1158&nbsp;→&nbsp;660&nbsp;ms,&nbsp;**1.75×** | NUMERIC |
 | **Cosmos3-Nano-Policy** (15.75B) | 482&nbsp;→&nbsp;325&nbsp;ms,&nbsp;**1.49×** | 3956&nbsp;→&nbsp;2080&nbsp;ms,&nbsp;**1.90×** | NUMERIC |
 | **pi05** | 207&nbsp;→&nbsp;73&nbsp;ms,&nbsp;**2.84×** | 255&nbsp;→&nbsp;57&nbsp;ms,&nbsp;**4.49×** | BITEXACT / engine |
@@ -54,6 +49,11 @@ means measured deltas without a closed-loop certificate, and **OPERATING-POINT**
 few-step schedule — changed computation, carried by its own paired closed-loop certificate.
 Every row is reproducible: `examples/<family>/reproduce_h100.sh` reruns its pair with the exact
 protocol.
+
+H100 cells are the 2026-08-24 sweep; LingBot-VLA-V2 is the 2026-08-28 re-sweep on a different
+H100-80GB box (4xH100 host), both cells remeasured there, after its default arm gained the
+vision/prefill graphs and GPU preprocessing. The re-swept VLA-4B, GR00T and pi05 pairs
+reproduced their rows' class on that box and keep their published cells.
 
 ## Install
 

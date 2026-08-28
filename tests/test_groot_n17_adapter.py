@@ -87,12 +87,27 @@ def test_example_surface_stays_product_shaped():
         "instinctflash.json",
         "profile_runtime.py",
         "pyproject.toml",
+        "reproduce_h100.py",
+        "reproduce_h100.sh",
+        "reproduce_h100_results.json",
         "static_capture.py",
         "verify_backbone_fastpath.py",
         "verify_fast_decode.py",
         "verify_fastpaths.py",
         "verify_static_capture.py",
     }
+    assert os.access(PLUGIN_ROOT / "reproduce_h100.sh", os.X_OK)
+
+
+def test_reproduce_artifact_is_the_bitexact_pair():
+    # The committed reproduction (stock eager vs the Runtime DEFAULT arm) must stay the 6-case
+    # exact-equality protocol; the family tier is BITEXACT.
+    doc = json.loads((PLUGIN_ROOT / "reproduce_h100_results.json").read_text())
+    assert doc["gate_max_abs_d"] == 0.0
+    assert doc["ours_ms_p50"] < doc["stock_ms_p50"]
+    assert doc["backend_stats"]["fast_decode"] is True
+    assert doc["backend_stats"]["backbone_fastpath"] is True
+    assert doc["backend_stats"]["captured"] is True
 
 
 def test_spec_declares_n17_control_cycle_without_persistent_kv():

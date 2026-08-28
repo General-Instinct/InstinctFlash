@@ -3,8 +3,8 @@
 
 What is being judged: the deterministic (expert-sorted, atomics-free) sparse-MoE reduction and the
 fused RMSNorm/AdaRMSNorm kernels, against vendor robby_moe on H100. The prior evidence was a
-4-case A100 gate against a null-derived threshold — weaker than the protocol behind the published
-829.1 -> 182.5 ms row — so the kernels ship DEFAULT OFF until this gate passes.
+4-case A100 gate against a null-derived threshold — weaker than the protocol behind the
+published H100 row — so the kernels ship DEFAULT OFF until this gate passes.
 
 Gate standard (same as verify_static_capture.py): this model is nondeterministic against ITSELF —
 the vendor fused-MoE kernel reduces with atomics — so the null control is three stock runs on

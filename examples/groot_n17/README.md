@@ -10,7 +10,10 @@ against stock under the 6-case protocol (`verify_fastpaths.py`, two prompt-shape
 switches, max|delta| = 0.0; results committed in `fastpath_results.json`).
 
 Measured on our H100 (batch 1, NFE=4): stock 114.8 ms p50, DiT capture only
-66.8 ms, full stack 59.1 ms. CPU thread pinning is host-specific (~2 ms here on
+66.8 ms, full stack 59.1 ms. `reproduce_h100.sh` reruns the pair with the exact protocol,
+stock eager vs the Runtime DEFAULT arm (its committed run, from the 2026-08-28 re-sweep on a
+different H100-80GB box: 94.2 -> 51.8 ms, same 1.8-1.9x class, ours-vs-stock exact equality on
+all six gate cases). CPU thread pinning is host-specific (~2 ms here on
 a 208-CPU host; large only on very-high-CPU-count hosts) and is therefore
 opt-in host configuration, never a package default.
 

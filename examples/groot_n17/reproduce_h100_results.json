@@ -1,0 +1,25 @@
+{
+ "protocol": "verify_fastpaths.py protocol: obs0 timing p50 of 15 x 3 warmup; 6 gate cases, exact equality",
+ "stock_ms_p50": 94.2,
+ "ours_ms_p50": 51.8,
+ "speedup": 1.82,
+ "gate_max_abs_d": 0.0,
+ "backend_stats": {
+  "backend": "upstream_bf16_cuda_graph",
+  "precision": "bfloat16",
+  "captured": true,
+  "graph_captures": 2,
+  "graph_replays": 96,
+  "action_nfe": 4,
+  "cpu_threads": null,
+  "fast_decode": true,
+  "backbone_fastpath": true,
+  "backbone_cache_hits": 68,
+  "backbone_cache_misses": 4
+ },
+ "readme_pair_ms": [
+  114.8,
+  59.1
+ ],
+ "device": "NVIDIA H100 80GB HBM3"
+}

@@ -60,7 +60,7 @@ They were gated on H100 under the same 6-case null-control protocol as the publi
   vendor's atomics replaced, identical seeds reproduce identical actions, which the stock model
   cannot do (envelope up to 5.1e-02 against itself). It stays off by default because it measured
   ~2% slower than vendor robby_moe on the eager path and its interaction with the captured
-  182.5 ms serving path is ungated; set `IFL_VLA2_MOE_KERNEL=1` when deterministic replay
+  serving path is ungated; set `IFL_VLA2_MOE_KERNEL=1` when deterministic replay
   matters more than the last 2%.
 - **fused RMSNorm/AdaRMSNorm** for the 73 action-expert normalization sites — **accuracy FAIL**
   (6.10e-02, outside the envelope). It remains available for measurement via
@@ -101,7 +101,7 @@ KV path) on staged inputs the capture never saw, including a synthetically *refi
 a graph that baked K/V values cannot pass. The gate is NOT `atol=0`, and that is a statement
 about upstream, not the graph: the fused-MoE kernel disagrees with itself on identical seeds, so
 the check gates on the family's recorded stock-vs-stock envelope (**5.08e-02**,
-`moe_kernel_results.json` null_control_deltas — the same standard the published 4.54x row was
+`moe_kernel_results.json` null_control_deltas — the same standard the published row was
 verified under), and the printed verdict states the threshold and its provenance. PASS → replay
 serves and the plan's `graph_capture` entry gains the verdict line. FAIL → the denoise graph AND
 the vision/prefill graphs are released together, `predict_velocity` is rebound to upstream, and
@@ -113,12 +113,19 @@ capture and check so the loud-fallback path stays demonstrable on demand.
 
 ## Validation and measured artifacts
 
-`verify_static_capture.py` is the hardware validation entry point behind the published H100 row
-(829.1 -> 182.5 ms p50, 4.54x, 6-case gate): it compares replay against stock under fixed seeds,
-judged against the model's own nondeterminism envelope (the fused-MoE null control — BITEXACT is
-unattainable for any serving of this model, including upstream's own). Its output is committed as
-`static_capture_results.json`; `profile_infer.py` is the stock-cost decomposition behind the
-840 ms stock figure. These artifacts are load-bearing for the README results table — do not
-replace them with a weaker protocol.
+`reproduce_h100.sh` is the protocol artifact behind the published H100 row
+(671.1 -> 127.5 ms p50, 5.26x — H100 re-sweep 2026-08-28, 4xH100 box): upstream eager vs what
+the Runtime DEFAULT serves (denoise graph + vision/prefill graphs + GPU preprocessing), one
+fresh process per arm, with the 6-case ours-vs-stock gate judged against the model's own
+nondeterminism envelope (the fused-MoE null control — BITEXACT is unattainable for any serving
+of this model, including upstream's own; measured max |d| 2.57e-02 vs the 5.08e-02 envelope).
+Its output is committed as `reproduce_h100_results.json`.
+
+`verify_static_capture.py` is the module-level 6-case gate for the denoise static-KV graph in
+isolation (same box: stock 667.0 -> 165.0 ms; the further drop to 127.5 is the vision/prefill
+graphs plus GPU preprocessing); its output is committed as `static_capture_results.json`.
+`profile_infer.py` is the stock-cost decomposition behind the original 840 ms stock figure.
+These artifacts are load-bearing for the README results table — do not replace them with a
+weaker protocol.
 
 Correctness tier claimed: `NUMERIC`.
