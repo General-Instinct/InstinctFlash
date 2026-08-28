@@ -545,6 +545,28 @@ def _serve_autoscaffold(model: str):
     return sres, "\n".join(lines), fill_me
 
 
+def _serve_package_gate(model: str) -> "str | None":
+    """A local directory that cannot LOAD as a package stops serve NOW, not after preflight.
+
+    This is the same gate `Runtime.from_pretrained` applies (`validate_package`: required files,
+    layout problems), moved before any preflight output, download, or GPU touch. Without it the
+    wan_va training-output layout (weights under transformer/, no root config.json) sailed
+    through a clean dry_run and only hit the loader's refusal after the preflight had said
+    everything looked fine — the one mv the user needed was the last thing they saw, not the
+    first. A Hub id keeps the declaration-only contract: nothing is downloaded to check.
+    """
+    d = Path(model)
+    if not d.is_dir():
+        return None
+    from instinctflash.descriptors.package import validate_package
+    rep = validate_package(d)
+    if rep.is_checkpoint and rep.declaration is not None and not rep.missing and not rep.problems:
+        return None
+    return ("SERVE STOPPED — this directory cannot load as a package; the same check the "
+            "loader runs, before any download:\n" + rep.explain()
+            + f"\n\nFix the layout, then rerun:\n  instinctflash serve {d}")
+
+
 def _serve_smoke(rt, preflight: dict):
     """One zero-filled control cycle: does this checkpoint load HERE and return finite actions."""
     import numpy as np
@@ -608,6 +630,12 @@ def cmd_serve(argv: list[str]) -> int:
                 {"model": s.model, "scaffold": scaffold,
                  "fill_me": [where for where, _ in fill_me]},
                 scaffold_text, False, 1)
+        package_stop = _serve_package_gate(s.model)
+        if package_stop:
+            text = (scaffold_text + "\n\n" if scaffold_text else "") + package_stop
+            return CommandReport(
+                {"model": s.model, "scaffold": scaffold, "package_loadable": False},
+                text, False, 1)
         try:
             preflight, preflight_text = _serve_preflight(s.model, cfg.runtime)
         except Exception:

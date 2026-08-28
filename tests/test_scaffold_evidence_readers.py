@@ -348,6 +348,65 @@ def test_groot_adapter_module_import_stays_dependency_free():
           str(heavy or modules & {"numpy", "torch", "cv2"}))
 
 
+def test_local_bundle_with_checkpoint_subdir_validates_like_its_hub_id():
+    print("\n=== 10. a local nested bundle validates via execution.checkpoint_subdir ===")
+    from instinctflash.descriptors.package import validate_package
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "v2-bundle"
+        nested = d / "checkpoints" / "global_step_10" / "hf_ckpt"
+        nested.mkdir(parents=True)
+        (d / "lingbotvla_cli.yaml").write_text("data:\n  data_name: multi\n")
+        (nested / "config.json").write_text(json.dumps({"vlm_family": "qwen3_vl"}))
+        (nested / "model.safetensors").write_bytes(b"\x00" * 1024)
+        scaffold(d)                                              # writes the declaration
+        # the scaffold leaves robot=FILL_ME (uncorroborated 'multi'); fill it like a user would
+        doc = json.loads((d / "instinctflash.json").read_text())
+        doc["execution"]["robot"] = "robotwin"
+        (d / "instinctflash.json").write_text(json.dumps(doc))
+        rep = validate_package(d)
+        check("config.json" not in rep.missing,
+              "config.json under the declared checkpoint_subdir satisfies the requirement")
+        check(any("checkpoint_subdir" in n for n in rep.notes),
+              "and the report says where the adapter will load it from")
+        check(rep.is_checkpoint and not rep.missing and not rep.problems,
+              "the local copy of the bundle validates exactly like its hub id",
+              f"missing={list(rep.missing)} problems={list(rep.problems)}")
+
+
+def test_serve_stops_early_on_a_training_output_layout():
+    print("\n=== 11. serve: a directory the loader would refuse stops BEFORE preflight ===")
+    from instinctflash.cli import main
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "wanva-nested"
+        (d / "transformer").mkdir(parents=True)
+        (d / "transformer" / "config.json").write_text(json.dumps(
+            {"_class_name": "WanTransformer3DModel", "action_dim": 30}))
+        (d / "transformer" / "diffusion_pytorch_model.safetensors").write_bytes(b"\x00" * 4096)
+        (d / "va_cfg.py").write_text(
+            "cfg.height = 224\ncfg.width = 384\ncfg.env_type = 'none'\n"
+            "cfg.obs_cam_keys = ['observation.images.ego']\n")
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            rc = main(["serve", str(d), "--serve.dry_run=true"])
+        text = out.getvalue()
+        check(rc == 1, "the geometry-complete but unloadable dir still stops", str(rc))
+        check("cannot load as a package" in text, "saying the package would not load")
+        check(f"mv {d / 'transformer'}" in text.replace("/*", "").replace("  ", " ")
+              or "mv " in text and "transformer" in text,
+              "with the exact mv from the layout hint")
+        check("serve preflight" not in text,
+              "and no preflight was printed — the stop comes first")
+        # the user runs the mv and the same command proceeds to a clean preflight
+        for f in (d / "transformer").iterdir():
+            f.rename(d / f.name)
+        out2 = io.StringIO()
+        with contextlib.redirect_stdout(out2):
+            rc2 = main(["serve", str(d), "--serve.dry_run=true"])
+        check(rc2 == 0, "after the mv, the same command completes its preflight", str(rc2))
+        check("plan tier" in out2.getvalue() or "InstinctFlash plan" in out2.getvalue(),
+              "through to the plan")
+
+
 def main_() -> int:
     test_wan_va_training_cfg_artifact_fills_geometry_and_schedule()
     test_wan_va_conflicting_or_nonliteral_evidence_stays_fill_me()
@@ -358,6 +417,8 @@ def main_() -> int:
     test_broken_installed_adapter_reports_the_import_error()
     test_serve_scaffold_announcement_survives_a_failing_preflight()
     test_groot_adapter_module_import_stays_dependency_free()
+    test_local_bundle_with_checkpoint_subdir_validates_like_its_hub_id()
+    test_serve_stops_early_on_a_training_output_layout()
     print()
     if FAILED:
         print(f"FAILED: {len(FAILED)}")

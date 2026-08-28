@@ -210,10 +210,26 @@ def validate_package(ckpt_dir: str | Path) -> PackageReport:
         notes.append("legacy delta.json. Supported as a compatibility layer; publish instinctflash.json "
                      "for anything new. See `migrate_legacy()`.")
 
+    extra: dict = {}
+    try:
+        extra = dict(load_declaration(d).extra or {})
+    except Exception:                                            # reported below by the real load
+        pass
     for f in REQUIRED:
         if f == "instinctflash.json":
             if has_new or has_old:
                 continue                       # any accepted declaration name satisfies it
+        if f == "config.json":
+            # A declaration may state WHERE the backbone config lives: upstream bundles keep the
+            # HF checkpoint nested (execution.checkpoint_subdir), and the hub path's
+            # `_declared_view` already trusts exactly this fact to expose the nested config. A
+            # local copy of such a bundle must validate the same way the hub id does, or the
+            # identical bytes pass by repo id and fail by path.
+            subdir = extra.get("checkpoint_subdir")
+            if isinstance(subdir, str) and subdir and (d / subdir / "config.json").is_file():
+                notes.append(f"config.json is at the declared execution.checkpoint_subdir "
+                             f"({subdir}/config.json); the adapter loads it from there")
+                continue
         if not (d / f).exists():
             missing.append(f)
     # WEIGHTS MAY BE SUPPLIED BY REFERENCE, and until this existed they could not be. `base_weights`
@@ -224,11 +240,7 @@ def validate_package(ckpt_dir: str | Path) -> PackageReport:
     # pointer. Requiring a copy of somebody else's gigabytes to describe them is not a contract, it
     # is a tax. A package with neither local weights nor a pointer is still incomplete.
     has_local = any((d / w).exists() for w in WEIGHTS_ANY)
-    pointer = None
-    try:
-        pointer = (load_declaration(d).extra or {}).get("base_weights")
-    except Exception:                                            # reported below by the real load
-        pass
+    pointer = extra.get("base_weights")
     if not has_local and not pointer:
         missing.append(f"weights -- one of {', '.join(WEIGHTS_ANY)}, "
                        f"or an execution.base_weights pointer")

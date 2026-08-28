@@ -32,8 +32,13 @@ def _pkg(td: Path) -> Path:
         "instinctflash_schema": 1,
         "execution": {"model_id": DECLARED, "backbone": "wan_va", "servable": True,
                       "guidance": {"video": "cfg", "action": "positive_only"},
-                      "nfe": {"video": 2, "action": 4}},
+                      "nfe": {"video": 2, "action": 4},
+                      # weights by reference: serve now runs the loader's package gate before
+                      # preflight, so the fixture must be a LOADABLE package, not a bare
+                      # declaration — the header invariant under test is unchanged.
+                      "base_weights": "robbyant/lingbot-va-posttrain-robotwin"},
     }))
+    (d / "config.json").write_text("{}")
     return d
 
 
