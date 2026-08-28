@@ -68,28 +68,28 @@ you download anything).
 
 ## Load a model
 
-Your fine-tuned checkpoint is the expected case — it loads straight from the training output
-directory:
-
-```python
-from instinctflash import Runtime
-
-runtime = Runtime.from_pretrained("/path/to/your/finetuned/checkpoint")
-```
-
-Serving needs a small `instinctflash.json` **declaration** — and `serve` writes it for you:
+**Your fine-tuned checkpoint** — the expected case. Point `serve` at the training output; it
+detects the family, writes the small `instinctflash.json` declaration from what the checkpoint
+itself proves, and starts serving. One command:
 
 ```bash
 instinctflash serve /path/to/your/checkpoint
 ```
 
-Pointed at a bare training output, `serve` detects the family, writes the declaration from what
-the checkpoint itself proves, and keeps going — server up in one command. Only what the
-checkpoint cannot prove is left for you to fill (never guessed), and a fine-tune inherits every
-optimization and proof tier of its family automatically.
+Anything the checkpoint cannot prove is asked for explicitly, never guessed. Once the
+declaration exists (serve writes it on first run), the same directory also loads in Python:
 
-The stock releases load by Hub id with zero setup, and their built-in declarations double as
-templates for your own:
+```python
+from instinctflash import Runtime
+
+runtime = Runtime.from_pretrained("/path/to/your/checkpoint")
+```
+
+**A stock release** — by Hub id, zero setup, any of the eight families:
+
+```python
+runtime = Runtime.from_pretrained("robbyant/lingbot-va-posttrain-robotwin")
+```
 
 | family | model id |
 |:--|:--|
@@ -101,7 +101,11 @@ templates for your own:
 | Cosmos3 policies | `nvidia/Cosmos3-Edge-Policy-DROID` · `nvidia/Cosmos3-Nano-Policy-DROID` |
 | DreamZero | `GEAR-Dreams/DreamZero-DROID` |
 
+Either way, a fine-tune inherits every optimization and proof tier of its family automatically.
+
 ## Get actions
+
+**In process** — this is the whole Python API:
 
 ```python
 with runtime.episode(prompt="put the bottle in the dustbin") as episode:
@@ -109,17 +113,14 @@ with runtime.episode(prompt="put the bottle in the dustbin") as episode:
         action = episode.predict(observation)
 ```
 
-`observation` is a dict in the model's own format. That is the whole API — no server to start, no
-optimization to choose. If a safety layer changed the action before it reached the robot, pass
-`executed_action=...` and the model conditions on what actually happened.
+`observation` is a dict in the model's own format; `action` comes back ready for the robot. No
+server to start, no optimization to choose. If a safety layer changed the action before it
+reached the robot, pass `executed_action=...` and the model conditions on what actually
+happened.
 
-Or over the network — the same msgpack-over-websocket wire protocol the pi0/openpi ecosystem's
-robot-side clients already speak, so existing clients connect unchanged
-(`pip install openpi-client`):
-
-```bash
-instinctflash serve robbyant/lingbot-va-posttrain-robotwin
-```
+**Over the network** — the `serve` command above hosts the same runtime behind the
+msgpack-over-websocket wire protocol the pi0/openpi ecosystem already speaks, so existing
+robot-side clients connect unchanged (`pip install openpi-client`):
 
 ```python
 from openpi_client.websocket_client_policy import WebsocketClientPolicy
@@ -129,7 +130,7 @@ action = client.infer(observation)
 ```
 
 The prompt rides in the observation; a changed prompt starts a new episode, and a client can
-say it explicitly with `{"reset": True, ...}`.
+say it explicitly with `{"reset": True, ...}`. Four flags cover the rest:
 
 - `--serve.dry_run` — preflight only: device, declaration, plan. No weights, no GPU.
 - `--serve.smoke` — load, produce one action, exit.
