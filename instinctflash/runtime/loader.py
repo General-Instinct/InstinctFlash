@@ -38,8 +38,34 @@ def available_models() -> list[str]:
 #: Packages already scanned, so discovery is idempotent and cheap to call on every lookup.
 _DISCOVERED = False
 
+#: Entry points that were FOUND but failed to import, by name. "You installed the right package
+#: and it is broken here" and "you never installed it" are different user situations, and the
+#: unknown-backbone error tells them apart by reading this.
+_DISCOVERY_PROBLEMS: Dict[str, str] = {}
+
+
+def discovery_problem(name: str) -> "str | None":
+    """The import failure for an advertised-but-broken adapter entry point, or None."""
+    discover_plugins()
+    return _DISCOVERY_PROBLEMS.get(name)
+
 #: The entry-point group an external model family advertises itself under.
 ENTRY_POINT_GROUP = "instinctflash.adapters"
+
+#: First-party adapter packages that ship in the InstinctFlash repository, keyed by the backbone
+#: string a checkpoint declares: backbone -> (pip package name, repo-relative package dir).
+#: REGISTRY DATA the unknown-backbone error quotes, so a family we already wrote the adapter for
+#: stops with "pip install <package>" instead of "write an adapter class". Registration itself
+#: stays with each package's own `instinctflash.adapters` entry point — installing it IS the
+#: integration. (wan_va is absent because its adapter is built in below.)
+FIRST_PARTY_ADAPTER_PACKAGES: Dict[str, tuple] = {
+    "pi05": ("pi05-iwm", "examples/pi05_vla"),
+    "groot_n17": ("groot-n17-iwm", "examples/groot_n17"),
+    "dreamzero": ("dreamzero-iwm", "examples/dreamzero"),
+    "cosmos3_policy": ("cosmos3-iwm", "examples/cosmos3_policy"),
+    "lingbot_vla": ("lingbot-vla-iwm", "examples/lingbot_vla"),
+    "lingbot_vla_v2": ("lingbot-vla-v2-iwm", "examples/lingbot_vla_v2"),
+}
 
 
 def discover_plugins() -> list[str]:
@@ -66,7 +92,7 @@ def discover_plugins() -> list[str]:
     """
     global _DISCOVERED
     if _DISCOVERED:
-        return []
+        return sorted(f"{k}: {v}" for k, v in _DISCOVERY_PROBLEMS.items())
     _DISCOVERED = True
     problems: list[str] = []
     try:
@@ -83,6 +109,7 @@ def discover_plugins() -> list[str]:
         try:
             _REGISTRY[ep.name] = ep.load()
         except Exception as e:                                   # noqa: BLE001
+            _DISCOVERY_PROBLEMS[ep.name] = f"({ep.value}): {type(e).__name__}: {e}"
             problems.append(f"{ep.name} ({ep.value}): {type(e).__name__}: {e}")
     return problems
 

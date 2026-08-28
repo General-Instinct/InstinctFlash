@@ -191,16 +191,74 @@ def _detect_wan_va(d: Path) -> list:
 #: Why each wan_va geometry key is FILL_ME: they are training facts (wan_va/configs/*.py) the
 #: checkpoint does not carry, and the adapter's own rule is declare-or-fail-loud, never guess —
 #: the base's robotwin values are deliberately NOT inherited, because serving a fine-tune under
-#: another robot's cameras corrupts conditioning with no warning.
+#: another robot's cameras corrupts conditioning with no warning. Each note quotes the base's
+#: value, so filling them for a same-robot fine-tune is a copy, not a search.
 _WAN_GEOMETRY_REASONS = {
     "obs_cam_keys": "the camera keys this fine-tune was trained on — copy obs_cam_keys from your "
-                    "wan_va training config; the base's robotwin cameras are not inherited "
-                    "because a wrong camera list silently corrupts conditioning",
+                    "wan_va training config; the base's robotwin cameras "
+                    "(observation.images.cam_high/cam_left_wrist/cam_right_wrist) are not "
+                    "inherited because a wrong camera list silently corrupts conditioning",
     "height": "native frame height from your training config (base declares 256)",
     "width": "native frame width from your training config (base declares 320)",
     "env_type": "view compositing mode from your training config, e.g. 'none' or "
                 "'robotwin_tshape' (base declares 'robotwin_tshape')",
 }
+
+#: The keys `_wan_training_cfg` may read, and the literal type each must parse as. Geometry the
+#: adapter refuses to guess, plus the two denoise-step counts the upstream config states.
+_WAN_TRAIN_CFG_TYPES = {
+    "obs_cam_keys": list, "height": int, "width": int, "env_type": str,
+    "num_inference_steps": int, "action_num_inference_steps": int,
+}
+
+
+def _wan_training_cfg(d: Path) -> "tuple[dict, dict]":
+    """Facts read from a wan_va training-config artifact shipped IN the package, if any.
+
+    Real training-output dirs often carry the config that produced them. The upstream format is
+    a module of EasyDict attribute assignments (``cfg.obs_cam_keys = [...]``) whose values are
+    literals, so a static ``ast`` parse can read them — the file is never imported or executed.
+    Returns ``({key: value}, {key: evidence})``. A key assigned two different literals (in one
+    file or across files) is dropped: evidence that disagrees with itself proves nothing, and
+    the key stays FILL_ME with the disagreement noted.
+    """
+    import ast
+
+    values: dict = {}
+    sources: dict = {}
+    conflicted: set = set()
+    for p in sorted(d.glob("*.py")):
+        try:
+            tree = ast.parse(p.read_text())
+        except Exception:                                        # noqa: BLE001 - not a config artifact
+            continue
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Assign):
+                continue
+            for tgt in node.targets:
+                key = (tgt.attr if isinstance(tgt, ast.Attribute)
+                       else tgt.id if isinstance(tgt, ast.Name) else None)
+                want = _WAN_TRAIN_CFG_TYPES.get(key or "")
+                if want is None:
+                    continue
+                try:
+                    val = ast.literal_eval(node.value)
+                except Exception:                                # noqa: BLE001 - not a literal
+                    continue
+                if not isinstance(val, want) or isinstance(val, bool):
+                    continue
+                if want is list and not (val and all(isinstance(x, str) for x in val)):
+                    continue
+                if key in values and values[key] != val:
+                    conflicted.add(key)
+                    continue
+                values[key] = val
+                sources[key] = (f"{p.name}: {key} = {json.dumps(val, ensure_ascii=False)} "
+                                f"(training-config artifact shipped in the package)")
+    for key in conflicted:
+        values.pop(key, None)
+        sources[key] = "conflicting values across the package's training-config artifacts"
+    return values, sources
 
 
 def _build_wan_va(d: Path, base_ex: Mapping, backbone_evidence: str) -> dict:
@@ -217,8 +275,21 @@ def _build_wan_va(d: Path, base_ex: Mapping, backbone_evidence: str) -> dict:
         decisions["base_weights"] = ScaffoldField(
             "base_weights", INHERITED, base_ex.get("base_weights"),
             "the frozen vae/text_encoder/tokenizer are fetched from this pointer at load")
+    cfg_vals, cfg_src = _wan_training_cfg(d)
     for key, why in _WAN_GEOMETRY_REASONS.items():
-        decisions[key] = ScaffoldField(key, TO_FILL, FILL_ME, why)
+        if key in cfg_vals:
+            decisions[key] = ScaffoldField(key, INFERRED, cfg_vals[key], cfg_src[key])
+        else:
+            conflict = cfg_src.get(key)
+            decisions[key] = ScaffoldField(key, TO_FILL, FILL_ME,
+                                           f"{why} ({conflict})" if conflict else why)
+    steps = cfg_vals.get("num_inference_steps"), cfg_vals.get("action_num_inference_steps")
+    if all(isinstance(s, int) and s > 0 for s in steps):
+        decisions["nfe"] = ScaffoldField(
+            "nfe", INFERRED, {"video": steps[0], "action": steps[1]},
+            f"{cfg_src['num_inference_steps'].split(':')[0]}: num_inference_steps / "
+            f"action_num_inference_steps — the schedule this fine-tune was configured with, "
+            f"not the base's operating point")
     return decisions
 
 
@@ -283,23 +354,37 @@ def _sole_metadata_tag(d: Path) -> "str | None":
 def _detect_groot(d: Path) -> list:
     cfg = _json_at(d, "config.json")
     if cfg.get("type") == "groot":
-        return [("nvidia/GR00T-N1.7-3B", 'config.json: type == "groot"')]
+        return [("nvidia/GR00T-N1.7-3B", 'config.json: type == "groot" (the lerobot-converted '
+                                         "layout)")]
+    if cfg.get("model_type") == "Gr00tN1d7" or "Gr00tN1d7" in (cfg.get("architectures") or []):
+        return [("nvidia/GR00T-N1.7-3B", 'config.json: model_type == "Gr00tN1d7" (the native '
+                                         "Isaac-GR00T N1.7 release layout)")]
     return []
 
 
 def _build_groot(d: Path, base_ex: Mapping, backbone_evidence: str) -> dict:
     decisions: dict = {}
     cfg = _json_at(d, "config.json")
-    tag = cfg.get("embodiment_tag") or _sole_metadata_tag(d)
+    # The evidence chain for the action-space head, strongest first: the checkpoint's own
+    # config.json, the sole key of the lerobot-converted metadata, the sole key of the native
+    # layout's statistics.json. A multi-head statistics.json is genuinely ambiguous — the
+    # scaffold lists this checkpoint's own candidates rather than picking one.
+    stats = _json_at(d, "statistics.json")
+    tag = (cfg.get("embodiment_tag") or _sole_metadata_tag(d)
+           or (list(stats)[0] if len(stats) == 1 else None))
     if tag:
         src = ("config.json embodiment_tag" if cfg.get("embodiment_tag")
-               else "the sole statistics key of experiment_cfg/metadata.json")
+               else "the sole statistics key of experiment_cfg/metadata.json"
+               if _sole_metadata_tag(d) else "the sole statistics key of statistics.json")
         decisions["embodiment_tag"] = ScaffoldField("embodiment_tag", INFERRED, str(tag), src)
     else:
+        candidates = (f"; this checkpoint's own statistics.json carries {len(stats)} heads to "
+                      f"choose from: {', '.join(sorted(stats))}" if len(stats) > 1
+                      else " (your training config states it)")
         decisions["embodiment_tag"] = ScaffoldField(
             "embodiment_tag", TO_FILL, FILL_ME,
-            "names the action-space head; the base's OXE_DROID tag is not inherited because a "
-            "fine-tune usually retargets it (your training config states it)")
+            "names the action-space head; the base's OXE_DROID_RELATIVE_EEF_RELATIVE_JOINT tag "
+            "is not inherited because a fine-tune usually retargets it" + candidates)
     if isinstance(cfg.get("num_inference_timesteps"), int):
         decisions["nfe"] = ScaffoldField(
             "nfe", INFERRED, {"backbone": 1, "action": int(cfg["num_inference_timesteps"])},
@@ -337,10 +422,14 @@ def _build_gear_wam(d: Path, base_ex: Mapping, backbone_evidence: str) -> dict:
             "embodiment_tag", INFERRED, str(tag),
             "the sole statistics key of experiment_cfg/metadata.json")
     else:
+        meta = _json_at(d, "experiment_cfg/metadata.json")
+        candidates = (f" — this checkpoint's own metadata carries {len(meta)}: "
+                      f"{', '.join(sorted(meta))}" if len(meta) > 1 else "")
         decisions["embodiment_tag"] = ScaffoldField(
             "embodiment_tag", TO_FILL, FILL_ME,
             "which experiment_cfg/metadata.json statistics entry this checkpoint acts as "
-            "(several are present, so the scaffold refuses to pick)")
+            f"(several are present, so the scaffold refuses to pick{candidates}; "
+            f"the DROID base declares 'oxe_droid')")
     decisions["dynamic_cache_schedule"] = ScaffoldField(
         "dynamic_cache_schedule", INHERITED, bool(base_ex.get("dynamic_cache_schedule", False)),
         "upstream's velocity-cosine skipper: SCREEN-tier, it changes outputs, never default-on")
@@ -389,8 +478,23 @@ _COSMOS3_SERVING_REASONS = {
 
 def _build_cosmos3(d: Path, base_ex: Mapping, backbone_evidence: str) -> dict:
     decisions: dict = {}
+    # checkpoint.json is upstream's own serving artifact (its policy block is what the Cosmos3
+    # inference stack reads), so a policy fact stated there is checkpoint evidence, not a guess.
+    # The Edge DROID release states domain_name and action_chunk_size; the Nano release ships an
+    # empty checkpoint.json, and its keys honestly stay FILL_ME.
+    policy = _json_at(d, "checkpoint.json").get("policy")
+    policy = policy if isinstance(policy, dict) else {}
     for key, why in _COSMOS3_SERVING_REASONS.items():
-        decisions[key] = ScaffoldField(key, TO_FILL, FILL_ME, why)
+        val = policy.get(key)
+        want = str if key == "domain_name" else int
+        if isinstance(val, want) and not isinstance(val, bool):
+            note = f"checkpoint.json policy.{key} — upstream's own serving artifact"
+            if key in base_ex and base_ex[key] != val:
+                note += (f" (differs from the DROID base declaration's measured "
+                         f"{json.dumps(base_ex[key])})")
+            decisions[key] = ScaffoldField(key, INFERRED, val, note)
+        else:
+            decisions[key] = ScaffoldField(key, TO_FILL, FILL_ME, why)
     m = _measure_weights(d)
     if m:
         decisions["param_bytes"] = ScaffoldField("param_bytes", INFERRED, m[0],
@@ -410,18 +514,64 @@ def _detect_lingbot_vla(d: Path) -> list:
     return []
 
 
+def _lingbot_cli_data(d: Path) -> dict:
+    """The `data:` block of lingbotvla_cli.yaml — the training config the upstream release ships
+    next to its weights, and the same file the family fingerprint already trusts for identity."""
+    p = d / "lingbotvla_cli.yaml"
+    if not p.is_file():
+        return {}
+    try:
+        import yaml  # ships with huggingface_hub, the one core dependency
+        doc = yaml.safe_load(p.read_text())
+    except Exception:                                            # noqa: BLE001 - evidence only
+        return {}
+    data = doc.get("data") if isinstance(doc, dict) else None
+    return data if isinstance(data, dict) else {}
+
+
+def _lingbot_robot_decision(d: Path, base_ex: Mapping, base_note: str) -> ScaffoldField:
+    """`robot` from the training config, only when two of its statements corroborate.
+
+    `data.data_name` names what the model was trained as, and the serving profile is selected
+    by that same name upstream — but `data_name` can also name a dataset mix ('multi' in the V2
+    release), which is not a servable profile. The scaffold therefore writes it only when the
+    yaml's own `data.norm_stats_file` is named after it (robotwin -> robotwin_50.json): two
+    independent statements in the checkpoint's own config agreeing. Anything less stays FILL_ME
+    with the yaml's value quoted for the human who knows.
+    """
+    data = _lingbot_cli_data(d)
+    name = data.get("data_name")
+    stats_file = data.get("norm_stats_file")
+    if (isinstance(name, str) and name and isinstance(stats_file, str)
+            and Path(stats_file).name.startswith(name)):
+        return ScaffoldField(
+            "robot", INFERRED, name,
+            f"lingbotvla_cli.yaml: data.data_name = {name!r}, corroborated by "
+            f"data.norm_stats_file = {stats_file!r}")
+    seen = (f" (lingbotvla_cli.yaml says data.data_name = {name!r}, but that names the training "
+            f"data mix and nothing in the config corroborates it as a serving profile)"
+            if isinstance(name, str) and name else "")
+    return ScaffoldField("robot", TO_FILL, FILL_ME, base_note + seen)
+
+
 def _build_lingbot_vla(d: Path, base_ex: Mapping, backbone_evidence: str) -> dict:
     decisions: dict = {}
-    decisions["robot"] = ScaffoldField(
-        "robot", TO_FILL, FILL_ME,
+    decisions["robot"] = _lingbot_robot_decision(
+        d, base_ex,
         "selects the upstream serving profile (norm stats, action channel map); the base "
         "declares 'robotwin' and a fine-tune on another robot must not inherit it")
     stats = sorted((d / "assets" / "norm_stats").glob("*.json")) \
         if (d / "assets" / "norm_stats").is_dir() else []
+    yaml_stats = _lingbot_cli_data(d).get("norm_stats_file")
     if len(stats) == 1:
         decisions["norm_stats"] = ScaffoldField(
             "norm_stats", INFERRED, str(stats[0].relative_to(d)),
             "the only norm-stats file shipped in the package")
+    elif not stats and isinstance(yaml_stats, str) and yaml_stats:
+        decisions["norm_stats"] = ScaffoldField(
+            "norm_stats", INFERRED, yaml_stats,
+            "lingbotvla_cli.yaml data.norm_stats_file — the stats ship with the upstream "
+            "checkout when not in the package; the path is resolved and verified at load")
     else:
         decisions["norm_stats"] = ScaffoldField(
             "norm_stats", TO_FILL, FILL_ME,
@@ -471,8 +621,8 @@ def _build_lingbot_vla_v2(d: Path, base_ex: Mapping, backbone_evidence: str) -> 
             "which checkpoints/*/hf_ckpt to serve"
             + (f" ({len(subs)} present: {', '.join(map(str, subs))})" if subs else
                " (none found under checkpoints/)"))
-    decisions["robot"] = ScaffoldField(
-        "robot", TO_FILL, FILL_ME,
+    decisions["robot"] = _lingbot_robot_decision(
+        d, base_ex,
         "selects the upstream serving profile; the base declares 'robotwin' and a fine-tune "
         "on another robot must not inherit it")
     return decisions
@@ -485,17 +635,20 @@ _FAMILIES: dict[str, _Family] = {
         _detect_wan_va, _build_wan_va,
         depth="deep — backbone proven from the transformer config, param_bytes measured from "
               "the weight files, frozen-stack pointer resolved; the four observation-geometry "
-              "keys are training facts the checkpoint does not carry, so they are FILL_ME"),
+              "keys are training facts, read (never executed) from a training-config artifact "
+              "shipped in the package when one is, FILL_ME otherwise"),
     "pi05": _Family(
         "pi05", 'config.json with type == "pi05"',
         _detect_pi05, _build_pi05,
         depth="deep — backbone, observation contract (obs_features), denoise schedule and "
               "param_bytes are all read from the checkpoint's own config.json and weight files"),
     "groot_n17": _Family(
-        "groot_n17", 'config.json with type == "groot"',
+        "groot_n17", 'config.json with type == "groot" (lerobot-converted) or model_type == '
+                     '"Gr00tN1d7" (the native Isaac-GR00T release)',
         _detect_groot, _build_groot,
         depth="medium — backbone and param_bytes inferred; embodiment_tag read from the "
-              "checkpoint's own config/metadata when it states one, FILL_ME otherwise"),
+              "checkpoint's own config/metadata/statistics when unambiguous, FILL_ME with the "
+              "checkpoint's own candidates listed otherwise"),
     "dreamzero": _Family(
         "dreamzero", 'config.json with model_type == "vla", architectures == ["VLA"] and an '
                      "action_horizon",
@@ -506,21 +659,24 @@ _FAMILIES: dict[str, _Family] = {
         "cosmos3_policy", 'config.json with model_type == "cosmos3_omni" (the text tower '
                           "distinguishes Edge from Nano)",
         _detect_cosmos3, _build_cosmos3,
-        depth="shallow — backbone identity (Edge vs Nano) and param_bytes inferred; the five "
-              "serving-config keys are measurement facts the adapter refuses to guess, so all "
-              "five are FILL_ME with the DROID base's values quoted",
+        depth="medium — backbone identity (Edge vs Nano) and param_bytes inferred, and any "
+              "serving-config key stated in the checkpoint's own checkpoint.json policy block "
+              "is read from it; the rest are measurement facts the adapter refuses to guess, "
+              "FILL_ME with the DROID base's values quoted",
         strict_ids=True),
     "lingbot_vla": _Family(
         "lingbot_vla", 'config.json with type == "pi0" next to lingbotvla_cli.yaml',
         _detect_lingbot_vla, _build_lingbot_vla,
-        depth="medium — backbone and param_bytes inferred, norm_stats found when the package "
-              "ships exactly one; the robot profile is FILL_ME"),
+        depth="medium — backbone and param_bytes inferred; norm_stats and the robot profile "
+              "read from the shipped lingbotvla_cli.yaml when its statements corroborate, "
+              "FILL_ME otherwise"),
     "lingbot_vla_v2": _Family(
         "lingbot_vla_v2", "lingbotvla_cli.yaml next to a checkpoints/*/hf_ckpt/config.json "
                           "declaring vlm_family",
         _detect_lingbot_vla_v2, _build_lingbot_vla_v2,
         depth="medium — backbone, checkpoint_subdir and param_bytes inferred from the bundle "
-              "layout; the robot profile is FILL_ME"),
+              "layout; the robot profile is read from lingbotvla_cli.yaml only when its "
+              "statements corroborate, FILL_ME otherwise"),
 }
 
 

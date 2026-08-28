@@ -13,8 +13,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-import numpy as np
-
 from instinctflash import AdapterSpec, GuidanceRule, KVLifetime, PhaseSpec, PurityKey
 from instinctflash.adapters.base import GuidanceMode, ObservationField, ObservationSpec
 
@@ -295,6 +293,8 @@ class _GR00TN17Loop:
 
 
 def _normalise_observation(policy, observation, *, prompt, state_dims):
+    import numpy as np
+
     cfg = policy.modality_configs
     video_keys = tuple(cfg["video"].modality_keys)
     state_keys = tuple(cfg["state"].modality_keys)
@@ -357,6 +357,8 @@ def _normalise_observation(policy, observation, *, prompt, state_dims):
 
 
 def _format_actions(policy, actions):
+    import numpy as np
+
     keys = tuple(policy.modality_configs["action"].modality_keys)
     arrays = {key: np.asarray(actions[key], dtype=np.float32) for key in keys}
     joined = np.concatenate([arrays[key] for key in keys], axis=-1)
@@ -366,6 +368,8 @@ def _format_actions(policy, actions):
 
 
 def _video_batch(value, horizon, key):
+    import numpy as np
+
     array = np.asarray(value)
     if array.dtype != np.uint8:
         if not np.issubdtype(array.dtype, np.floating):
@@ -393,6 +397,8 @@ def _video_batch(value, horizon, key):
 
 
 def _state_batch(value, horizon, width, key):
+    import numpy as np
+
     array = np.asarray(value, dtype=np.float32)
     if array.ndim == 1:
         array = array[None, None]
@@ -408,6 +414,8 @@ def _state_batch(value, horizon, width, key):
 
 
 def _split_state(value, keys, dimensions):
+    import numpy as np
+
     array = np.asarray(value, dtype=np.float32)
     expected = sum(dimensions[key] for key in keys)
     if array.ndim not in (1, 2, 3) or array.shape[-1] != expected:

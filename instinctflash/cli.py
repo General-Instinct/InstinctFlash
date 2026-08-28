@@ -608,7 +608,15 @@ def cmd_serve(argv: list[str]) -> int:
                 {"model": s.model, "scaffold": scaffold,
                  "fill_me": [where for where, _ in fill_me]},
                 scaffold_text, False, 1)
-        preflight, preflight_text = _serve_preflight(s.model, cfg.runtime)
+        try:
+            preflight, preflight_text = _serve_preflight(s.model, cfg.runtime)
+        except Exception:
+            # The scaffold just WROTE a declaration into the user's directory; a preflight
+            # failure (unknown backbone, refused plan) must not swallow that announcement —
+            # the user needs to know the file exists, what was inferred, and on what evidence.
+            if scaffold_text:
+                print(scaffold_text + "\n", file=sys.stderr)
+            raise
         if scaffold is not None:
             preflight["scaffold"] = scaffold
             preflight_text = scaffold_text + "\n\n" + preflight_text

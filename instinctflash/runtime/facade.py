@@ -253,17 +253,56 @@ class Episode:
 
 
 def _unknown_backbone_message(ckpt: Checkpoint, registered: list[str]) -> str:
-    return (
+    backbone = str(ckpt.execution.backbone)
+    head = (
         f"checkpoint {ckpt.model_id!r} declares\n"
         f"  execution.backbone = {ckpt.execution.backbone!r}\n"
-        f"but no adapter is registered for it.\n\n"
-        f"Registered backbones: {', '.join(registered) or '(none)'}\n\n"
+        f"but no adapter is registered for it in this environment.\n\n"
+        f"Registered backbones: {', '.join(registered) or '(none)'}\n\n")
+    from instinctflash.runtime.loader import discovery_problem
+    broken = discovery_problem(backbone)
+    if broken:
+        # The right package IS installed; its adapter failed to import. Repeating the install
+        # hint here would send the user in a circle — the import error is the actionable fact.
+        return head + (
+            f"A package advertising this backbone is installed, but its adapter failed to "
+            f"import:\n\n    {backbone} {broken}\n\n"
+            f"Fix that import (usually a missing dependency in the adapter's environment) and "
+            f"rerun the same command.")
+    first_party = _first_party_adapter_hint(backbone)
+    if first_party:
+        return head + first_party
+    return head + (
         f"An adapter tells InstinctFlash the SHAPE of a control step -- streams, phases, guidance. It is\n"
         f"a small Python class, it lives in your project rather than in InstinctFlash, and you register\n"
         f"it with:\n\n"
         f"    instinctflash.register({ckpt.execution.backbone!r}, MyAdapter)\n\n"
         f"Worked example : examples/tiny_wam/adapter.py\n"
         f"Why it is required, and what would remove the requirement: CHECKPOINTS.md, 'Scope'.")
+
+
+def _first_party_adapter_hint(backbone: str) -> str:
+    """The exact install command when the missing adapter is one WE ship, else ''.
+
+    Before this, a pi05 checkpoint whose scaffold had just proven every field stopped with
+    "write an adapter class" — advice that is wrong by omission when a finished adapter package
+    sits in the repository. The hint points at the local checkout when the CLI is running from
+    one (the path is verified, never assumed), and at the repository otherwise.
+    """
+    from instinctflash.runtime.loader import FIRST_PARTY_ADAPTER_PACKAGES
+    hit = FIRST_PARTY_ADAPTER_PACKAGES.get(backbone)
+    if hit is None:
+        return ""
+    pip_name, subdir = hit
+    local = Path(__file__).resolve().parents[2] / subdir
+    where = str(local) if (local / "pyproject.toml").is_file() \
+        else f"<your InstinctFlash checkout>/{subdir}"
+    return (
+        f"The {backbone!r} adapter already ships with InstinctFlash as the package "
+        f"{pip_name!r}.\nInstall it into this environment and rerun the same command:\n\n"
+        f"    pip install {where}\n\n"
+        f"It registers itself through the 'instinctflash.adapters' entry point; nothing else "
+        f"to configure.")
 
 
 def load_declaration_ref(model_id_or_path: str | Path, *, revision: str | None = None):
