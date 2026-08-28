@@ -50,6 +50,30 @@ declared stream lifetimes, so `AdapterSpec.shapes_static_across_cycles()` derive
 Whole-cycle graph capture measured **1.43x slower** on LingBot-VA and is the headline optimization of
 hand-tuned VLA engines. Both are consequences of that one line.
 
+## Graph capture is the default, and the self-check is the reason it can be
+
+On capture-capable devices (CUDA with graph support; the measured bandwidth-bound-edge class
+declines at plan time with its 1.04x reason), every pi05-class checkpoint — `pi05_base`, published
+fine-tunes, and a directory fresh out of `lerobot-train` — serves on the replay-safe **static-KV
+CUDA-graph capture** by default (`pi05_iwm/static_capture.py`; measured 206.7 → 72.8 ms/chunk on
+H100/v044). No flag, no `compile_model` trigger. It used to be opt-in because capture was gated on
+evidence measured on *other* checkpoints; what makes the default safe is that the evidence is now
+re-earned **per process**:
+
+- **The bit-exact self-check.** Immediately after the first capture, replay is compared against
+  upstream eager `denoise_step` on staged inputs the capture never saw — fresh `x_t` draws from a
+  dedicated generator, every warmed schedule timestep, and a synthetically *refilled* prefix so a
+  graph that baked K/V values instead of reading the live buffers cannot pass. Exact equality
+  (`atol=0`). PASS → replay serves, and the plan's `graph_capture` entry gains the line
+  `self-check bit-exact on N inputs`. FAIL → the graphs are released, `denoise_step` is rebound to
+  upstream, the observed delta is printed and recorded on the plan, and serving continues on eager
+  arithmetic. The check costs seconds, once per process, at first capture.
+- **Kill-switch:** `IFL_PI05_NO_CAPTURE=1` serves eager (recorded on the plan, printed). It is
+  refused on checkpoints that *declare* the TF32 static-KV operating point, because there eager
+  would be a different execution semantics than the declared one.
+- **Retired opt-ins:** `IFL_PI05_STATIC_CAPTURE=1` (now the default) and `IFL_PI05_CAPTURE=1`
+  (the DynamicCache experiment, measured replay-unsafe) are no-ops with a notice.
+
 ## Run it
 
 ```bash

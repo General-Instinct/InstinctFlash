@@ -24,9 +24,22 @@ caller still holds. Chunk boundaries are detected by cache-object identity: `sam
 builds one prefill cache per chunk and passes the same object to all 10 steps, so a new object
 means a new chunk and triggers the (out-of-graph) prefix refill.
 
-Opt-in: `install_static_capture(policy.model)`, or IFL_PI05_STATIC_CAPTURE=1 through the adapter.
-The graph is captured on the first step of the SECOND chunk: chunk 1 runs the static path eagerly,
-which both warms kernels and proves the path before anything is frozen.
+DEFAULT, GATED BY A SELF-CHECK. `Pi05Adapter.install` routes every pi05-class checkpoint here on
+capture-capable devices — fresh fine-tunes included (IFL_PI05_NO_CAPTURE=1 is the kill-switch).
+The graph is captured after WARMUP_STEPS eager steps on the static path, and the capture is not
+trusted by construction: immediately after it is taken, `_self_check` replays it against the
+UPSTREAM eager `denoise_step` on staged inputs the capture never saw — fresh `x_t` draws from a
+dedicated generator (the model's own RNG stream must not move), every timestep of the warmed
+schedule, and a synthetically REFILLED prefix so a graph that baked K/V values instead of reading
+the live buffers cannot pass. Exact equality is required (`atol=0`: replay re-runs the same
+kernels at the same addresses, so any drift is evidence something is not being re-read). PASS →
+replay serves; FAIL → the graph is released, `denoise_step` is rebound to upstream, and the
+fallback is announced loudly with the observed delta — serving continues on eager arithmetic.
+The check costs a few seconds, once per process, at first capture.
+
+IFL_PI05_SELFCHECK_FAULT=1 is the drill switch: it rebinds the x buffer between capture and
+check — exactly the stale-address bug class the check exists for — so the loud-fallback path
+stays demonstrable on demand.
 """
 
 from __future__ import annotations
@@ -128,7 +141,13 @@ class _StaticKV:
 class StaticDenoiser:
     """pi05's denoise step over static buffers: eager until warm, then captured and replayed."""
 
-    def __init__(self, model, step_tables: bool = True):
+    #: staged inputs the post-capture self-check compares on. Chosen to cover the protocol's
+    #: axes compactly: fresh x_t on every input, up to three distinct schedule timesteps, and
+    #: the second half runs against a synthetically refilled prefix.
+    SELF_CHECK_INPUTS = 6
+
+    def __init__(self, model, step_tables: bool = True, orig_denoise=None,
+                 on_self_check=None, self_check_inputs: "int | None" = None):
         self._m = model
         self._kv: "_StaticKV | None" = None
         self._last_cache_obj = None
@@ -139,6 +158,20 @@ class StaticDenoiser:
         self._out = None
         self._steps = 0
         self.replays = 0
+        #: the UPSTREAM denoise_step, bound before install patched it. It is both the reference
+        #: arm of the self-check and the landing spot of a rejected capture. None (a caller that
+        #: installed by hand without one) disables the check — capture is then trusted the way
+        #: it was before the check existed, which standalone measurement scripts rely on.
+        self._orig_denoise = orig_denoise
+        self._on_self_check = on_self_check
+        self._self_check_n = (self.SELF_CHECK_INPUTS if self_check_inputs is None
+                              else int(self_check_inputs))
+        #: the verdict, once taken: {n, bitexact, max_abs_delta, seconds, cases}
+        self.self_check: "dict | None" = None
+        #: True once the self-check failed. Permanent for the process, like the engine pass's
+        #: `rejected` set: a capture that replays wrong once will replay wrong again.
+        self.rejected = False
+        self._last_pad_masks = None
         # -- per-step constant tables (the serving engine's style-table absorb) ---------------------------
         self._step_tables = step_tables
         self._table: dict[float, tuple] = {}       # t -> (adarms_cond, [dense outs])
@@ -196,6 +229,7 @@ class StaticDenoiser:
     # -- per-chunk, outside the graph ------------------------------------------------------------
     def _begin_chunk(self, prefix_pad_masks, past_key_values) -> None:
         m = self._m
+        self._last_pad_masks = prefix_pad_masks
         suffix_len = m.config.chunk_size
         if self._kv is None:
             self._kv = _StaticKV(past_key_values, suffix_len)
@@ -247,6 +281,10 @@ class StaticDenoiser:
         return m.action_out_proj(suffix_out.to(dtype=torch.float32))
 
     def __call__(self, prefix_pad_masks, past_key_values, x_t, timestep):
+        if self.rejected:
+            # a caller still holding the pre-rejection binding: same eager answer, no capture
+            return self._orig_denoise(prefix_pad_masks=prefix_pad_masks,
+                                      past_key_values=past_key_values, x_t=x_t, timestep=timestep)
         if past_key_values is not self._last_cache_obj:
             self._begin_chunk(prefix_pad_masks, past_key_values)
             self._last_cache_obj = past_key_values
@@ -290,26 +328,176 @@ class StaticDenoiser:
                 self._out = self._forward_static()
         finally:
             self._tabled_active = False
+
+        # FAULT DRILL, between capture and check on purpose: rebinding the x buffer makes every
+        # later copy_ land at an address the graph does not read — the stale-address bug class
+        # the self-check exists to catch. Documented in the module docstring; consumed here so
+        # the loud-fallback path can be demonstrated on demand without touching the code.
+        import os
+        import sys
+        if os.environ.get("IFL_PI05_SELFCHECK_FAULT") == "1":
+            # stderr: a live `serve` defers stdout until the command returns (cli_config.execute),
+            # which for a persistent server is never — a drill nobody can watch proves nothing
+            print("[pi05 static_capture] FAULT INJECTED (IFL_PI05_SELFCHECK_FAULT=1): x buffer "
+                  "rebound between capture and self-check — the check must now fail.",
+                  file=sys.stderr, flush=True)
+            self._x_buf = self._x_buf.clone()
+
+        # THE GATE. Capturing successfully proves nothing about replaying (measured: the
+        # DynamicCache region replayed 1.55x and WRONG by up to 48% of the signal while three
+        # separate checks read clean). The graph serves only if replay equals upstream eager
+        # EXACTLY on staged inputs it was not captured from.
+        if self._orig_denoise is not None and self._self_check_n > 0:
+            if not self._self_check(prefix_pad_masks, past_key_values, x_t, timestep):
+                return self._orig_denoise(prefix_pad_masks=prefix_pad_masks,
+                                          past_key_values=past_key_values,
+                                          x_t=x_t, timestep=timestep)
+
         # capture runs the region once on a side stream but its output tensor content is not
         # trustworthy on all driver versions; replay once so _out holds this call's real answer
         self._graph.replay()
         self.replays += 1
         return self._out.clone()
 
+    # -- the post-capture gate ---------------------------------------------------------------
+    def _self_check(self, prefix_pad_masks, past_key_values, x_t, timestep) -> bool:
+        """Replay vs upstream eager on staged inputs the capture never saw. Exact equality.
 
-def install_static_capture(model, step_tables: "bool | None" = None) -> StaticDenoiser:
+        Startup-only: runs once, at capture time, and restores every buffer it touched — the
+        model's own RNG stream never moves (staged draws come from a dedicated generator, the
+        eager arm is deterministic, replay consumes no randomness), so a PASSing check leaves
+        the served action stream bitwise identical to a build without the check.
+        """
+        import time
+
+        n = self._self_check_n
+        torch.cuda.synchronize()
+        t0 = time.perf_counter()
+        gen = torch.Generator(device=x_t.device)
+        gen.manual_seed(0x51F)
+
+        if self._step_tables and self._table:
+            t_values = [float(k) for k in list(self._table)[:3]]
+        else:
+            t_values = [float(timestep.reshape(-1)[0])]
+
+        worst, cases = 0.0, []
+        staged_cache = None
+        try:
+            for i in range(n):
+                if i == (n + 1) // 2 and staged_cache is None:
+                    # second half: a synthetically REFILLED prefix. A graph that baked the K/V
+                    # values it was captured with — instead of reading the live buffers the
+                    # per-chunk refill writes — is exactly wrong here and nowhere milder.
+                    staged_cache = self._perturbed_prefix(past_key_values, gen)
+                    self._kv.refill(staged_cache)
+                x = torch.empty_like(x_t)
+                x.normal_(generator=gen)
+                t = torch.full_like(timestep, t_values[i % len(t_values)])
+                cache = staged_cache if staged_cache is not None else past_key_values
+                with torch.no_grad():
+                    ref = self._orig_denoise(prefix_pad_masks=prefix_pad_masks,
+                                             past_key_values=cache, x_t=x, timestep=t)
+                self._x_buf.copy_(x)
+                self._t_buf.copy_(t)
+                if self._step_tables:
+                    self._load_step(t)
+                self._graph.replay()
+                d = float((ref.detach().float() - self._out.detach().float()).abs().max().item())
+                worst = max(worst, d)
+                cases.append({"input": i + 1, "timestep": t_values[i % len(t_values)],
+                              "prefix": "refilled" if staged_cache is not None else "captured-chunk",
+                              "max_abs_delta": d})
+        finally:
+            # restore the real chunk state whatever the verdict: the caller's step must see the
+            # answer to ITS inputs, and a later refill must start from the real prefix
+            if staged_cache is not None:
+                self._kv.refill(past_key_values)
+            self._x_buf.copy_(x_t)
+            self._t_buf.copy_(timestep)
+            if self._step_tables:
+                self._load_step(timestep)
+            torch.cuda.synchronize()
+
+        passed = worst == 0.0
+        self.self_check = {"n": n, "bitexact": passed, "max_abs_delta": worst,
+                           "seconds": time.perf_counter() - t0, "cases": cases}
+        if not passed:
+            self._release_and_fall_back(worst)
+        if self._on_self_check is not None:
+            self._on_self_check(dict(self.self_check))
+        return passed
+
+    def _perturbed_prefix(self, past_key_values, gen):
+        """A DynamicCache shaped exactly like the real prefix, with values the capture never saw."""
+        from pi05_iwm.surface import Pi05CacheBinder
+
+        binder = Pi05CacheBinder()
+        leaves, spec = binder.flatten(past_key_values)
+        staged = []
+        for leaf in leaves:
+            noise = torch.empty(leaf.shape, device=leaf.device, dtype=torch.float32)
+            noise.normal_(generator=gen)
+            scale = leaf.detach().float().std().clamp_min(1e-3) * 0.02
+            staged.append((leaf.detach().float() + noise * scale).to(leaf.dtype))
+        return binder.unflatten(staged, spec)
+
+    def _release_and_fall_back(self, delta: float) -> None:
+        """The FAIL arm: graphs released, upstream rebound, said out loud. Serving continues."""
+        self.rejected = True
+        self._graph = None
+        self._out = None
+        # undo the table swap: the eager path must run the REAL projections as real modules
+        if self._denses is not None and self._adarms_buf is not None:
+            for norm, real in self._denses:
+                norm.dense = real
+            self._adarms_buf = None
+            self._dense_bufs = None
+        try:
+            self._m.denoise_step = self._orig_denoise
+        except Exception:                                          # noqa: BLE001
+            pass                       # the __call__ guard still routes every call to eager
+        import sys
+        # stderr, deliberately: the running server's log stream. cli_config.execute defers
+        # stdout until the command returns, and a policy server returns never — a fallback
+        # printed where nobody can see it until shutdown is not LOUD.
+        print(f"[pi05 static_capture] SELF-CHECK FAILED: replay disagrees with eager by "
+              f"{delta:.3e} on a staged input it was not captured from. Graphs released; "
+              f"denoise_step rebound to upstream — serving continues on eager arithmetic "
+              f"(upstream's, exactly).", file=sys.stderr, flush=True)
+
+
+def install_static_capture(model, step_tables: "bool | None" = None,
+                           on_self_check=None,
+                           self_check: bool = True) -> StaticDenoiser:
     """Route `model.denoise_step` through a StaticDenoiser. Returns it (for its counters).
 
     `step_tables` (default on; IFL_PI05_STEP_TABLES=0 disables) additionally hoists the time MLP
     and the 37 AdaRMS modulation projections out of the captured region into per-timestep tables.
+
+    `self_check` (default on) gates the first capture on the bit-exact replay-vs-eager check —
+    see the module docstring. It needs the model's own `denoise_step` still bound at install
+    time (it is; the hoists patch `embed_suffix`, never the step). `on_self_check` receives the
+    verdict dict so an installer can put it on the plan.
     """
     if step_tables is None:
         import os
         step_tables = os.environ.get("IFL_PI05_STEP_TABLES", "1") != "0"
-    d = StaticDenoiser(model, step_tables=step_tables)
+    # INSTANCE-scoped, and idempotent — a correctness prerequisite of the self-check, not
+    # hygiene: a class-level patch makes the SECOND install in a process read the FIRST
+    # install's wrapper back as "upstream", so the reference arm compares replay against a
+    # wrapper instead of the model, and a rejected capture would rebind to that wrapper too.
+    existing = getattr(model, "_ifl_static_denoiser", None)
+    if existing is not None:
+        return existing
+    orig = getattr(model, "denoise_step", None) if self_check else None
+    d = StaticDenoiser(model, step_tables=step_tables, orig_denoise=orig,
+                       on_self_check=on_self_check)
 
     def denoise_step(self_m, prefix_pad_masks, past_key_values, x_t, timestep):
         return d(prefix_pad_masks, past_key_values, x_t, timestep)
 
-    type(model).denoise_step = denoise_step
+    import types
+    model.denoise_step = types.MethodType(denoise_step, model)
+    model._ifl_static_denoiser = d
     return d

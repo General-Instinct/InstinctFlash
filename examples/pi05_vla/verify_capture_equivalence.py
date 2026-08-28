@@ -42,7 +42,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 BASE = "lerobot/pi05_base"
 PROMPT = "Put the exhaust fans back to the slots."
-CALLS = 105                     # spans three chunk boundaries at chunk_size 50
+CALLS = 205                     # spans four chunk boundaries at chunk_size 50
 
 
 def declare(into: Path) -> Path:
@@ -94,8 +94,9 @@ A = np.stack(acts)
 np.save(OUT.with_suffix(".npy"), A)
 slow = [(i, t) for i, t in enumerate(times) if t > 50]
 fast = [t for t in times if t <= 50]
-# skip the first boundary: it carries warm-up, and for the captured arm it also carries the capture
-chunks = [t for _, t in slow[1:]] or [t for _, t in slow]
+# skip the first TWO boundaries: the first carries warm-up, and for the captured arm the second
+# carries the capture plus its startup-only bit-exact self-check (seconds, by design)
+chunks = [t for _, t in slow[2:]] or [t for _, t in slow]
 OUT.write_text(json.dumps({
     "arm": ARM, "chunk_ms": statistics.median(chunks), "dequeue_ms": statistics.median(fast),
     "boundaries": [i + 1 for i, _ in slow], "first_ms": times[0],
@@ -164,11 +165,11 @@ def main() -> int:
               "or the capture is. Do not ship this until one of them changes.")
         ok = False
     if speedup < 1.05:
-        print(f"  note  {speedup:.2f}x -- no win, and that is the shipped state. pi05's denoise "
-              f"region is not replay-safe (measured: see pi05_iwm/surface.py), so the site declares "
-              f"capturable=False and the generic pass refuses it. What this script asserts is the "
-              f"thing that matters: upstream's actions, byte for byte. Set IFL_PI05_CAPTURE=1 to run "
-              f"the capture anyway and watch this comparison fail.")
+        print(f"  note  {speedup:.2f}x -- no win, which is NOT the shipped state anymore: the "
+              f"static-KV capture is the pi05 default and should collect ~2.8x here. Either "
+              f"IFL_PI05_NO_CAPTURE=1 is set, or the runtime self-check rejected the capture "
+              f"(the captured arm's log says which, loudly). What this script asserts is still "
+              f"the thing that matters: upstream's actions, byte for byte.")
     print("\n" + ("PASS: same actions, byte for byte, at " f"{speedup:.2f}x." if ok else "FAILED"))
     return 0 if ok else 1
 

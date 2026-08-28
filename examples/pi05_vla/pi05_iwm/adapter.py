@@ -12,6 +12,11 @@ from instinctflash.adapters.base import GuidanceMode, ObservationField, Observat
 
 BACKBONE = "pi05"
 
+#: The kill-switch for the family's DEFAULT static-KV graph capture. Family-scoped on purpose
+#: (the IFL_PI05_* convention): the default it disables is pi05's, and other families' capture
+#: policies are their own. Honored by `Pi05Adapter.install`, recorded on the plan, printed.
+CAPTURE_KILL_SWITCH = "IFL_PI05_NO_CAPTURE"
+
 
 class Pi05Adapter:
     """A vision-language-action policy: one observation in, a 50-action chunk out."""
@@ -160,13 +165,25 @@ class Pi05Adapter:
 
         The runtime asks the adapter to do this because a plan is a claim, and a claim nobody acts on
         is worse than no claim: pi05 previously ran with a plan reporting an APPLIED pass and nothing
-        installed, silently. The generic `GraphCapture` pass does the work -- see `surface.py` for why
-        pi05 can be captured when LingBot-VA cannot, and for the one constant that blocked it.
-        """
-        import torch
+        installed, silently.
 
-        from instinctflash.passes.graph_capture import GraphCapture
-        from instinctflash.passes.interface import run_pass
+        CAPTURE IS THE DEFAULT. When the plan's graph_capture APPLIES and the build device is
+        CUDA, the replay-safe static-KV capture (pi05_iwm/static_capture.py) is installed for
+        every pi05-class checkpoint — fresh fine-tunes included. It used to key on things fresh
+        fine-tunes lack (a published compile_model=true to supersede, or an env opt-in), so a
+        checkpoint straight out of lerobot-train served EAGER at ~207 ms/chunk while the same
+        weights measured bit-exact at ~73 ms captured. What makes defaulting it safe is not the
+        history of measurements on OTHER checkpoints — it is the runtime SELF-CHECK: the first
+        capture is compared against upstream eager on staged inputs it was not captured from
+        (exact equality, seconds of startup, once per process), and a mismatch releases the
+        graphs and falls back to eager loudly while serving continues.
+
+        `IFL_PI05_NO_CAPTURE=1` is the kill-switch (recorded on the plan, printed). The old
+        opt-in flags stay recognized as no-ops with a notice.
+        """
+        import os
+
+        import torch
 
         from pi05_iwm.surface import Pi05Surface
 
@@ -178,45 +195,50 @@ class Pi05Adapter:
             print("InstinctFlash pi05: graph_capture is planned but needs CUDA; running eager.")
             return []
 
+        capture = next(r for r in plan.results if r.name == "graph_capture" and r.applies)
+        if os.environ.get(CAPTURE_KILL_SWITCH) == "1":
+            surface = Pi05Surface(policy.model)
+            hoisted = surface.hoist_loop_constants()
+            note = (f"{CAPTURE_KILL_SWITCH}=1 — the default static-KV capture is disabled by "
+                    f"the caller; running eager (upstream's arithmetic exactly)")
+            capture.params["decision"] = tuple(capture.params.get("decision", ())) + (note,)
+            print(f"InstinctFlash pi05: {note}. {len(hoisted)} bit-exact hoist(s) applied "
+                  f"(no measurable win alone).")
+            return ["loop_constant_hoist"]
+
+        # The retired opt-ins. Both used to select what is now simply the default, so they
+        # change nothing — said out loud rather than silently ignored.
+        if os.environ.get(Pi05Surface.STATIC_CAPTURE_OPT_IN) == "1":
+            print(f"InstinctFlash pi05: {Pi05Surface.STATIC_CAPTURE_OPT_IN}=1 is a no-op — "
+                  f"static-KV capture is the default for pi05-class checkpoints on "
+                  f"capture-capable devices now ({CAPTURE_KILL_SWITCH}=1 disables it).")
+        if os.environ.get(Pi05Surface.CAPTURE_OPT_IN) == "1":
+            print(f"InstinctFlash pi05: {Pi05Surface.CAPTURE_OPT_IN}=1 is a no-op — the "
+                  f"DynamicCache capture experiment is retired from install (measured "
+                  f"replay-unsafe; the negative result is documented in pi05_iwm/surface.py). "
+                  f"The default static-KV capture serves instead.")
+
         surface = Pi05Surface(policy.model)
         hoisted = surface.hoist_loop_constants()          # BITEXACT, and the prerequisite
 
-        import os
-        capture = next(r for r in plan.results if r.name == "graph_capture" and r.applies)
+        # The replay-safe path, BY DEFAULT: static max-extent KV buffers, gate numbers in
+        # pi05_iwm/static_capture.py and verify_static_capture.py (bitexact on unseen inputs
+        # and prompts; 3.55x denoise step, 1.65x chunk on H100/pi05_base; 206.7 -> 72.8 ms
+        # on v044). The per-process proof is the runtime self-check wired here.
+        from pi05_iwm.static_capture import install_static_capture
         compile_superseded = bool(capture.params.get("compile_model_superseded"))
-        if compile_superseded or os.environ.get(Pi05Surface.STATIC_CAPTURE_OPT_IN) == "1":
-            # The replay-safe path: static max-extent KV buffers, gate numbers in
-            # pi05_iwm/static_capture.py and verify_static_capture.py (bitexact on unseen
-            # inputs and prompts; 3.55x denoise step, 1.65x chunk on H100/pi05_base).
-            # Taken on env opt-in, and ALWAYS when build neutralized the checkpoint's
-            # compile_model in favor of this plan's capture: that print promised a faster
-            # bit-exact loop, and a promise the installer does not keep is the plan lying.
-            from pi05_iwm.static_capture import install_static_capture
-            install_static_capture(policy.model)
-            for h in hoisted:
-                print(f"InstinctFlash pi05: hoisted {h}")
-            because = (" — installed in place of the checkpoint's neutralized compile_model"
-                       if compile_superseded else "")
-            print(f"InstinctFlash pi05: static-KV graph capture installed "
-                  f"(bitexact-verified path{because}).")
-            return ["loop_constant_hoist", "graph_capture_static_kv"]
-
-        result = run_pass(GraphCapture(), surface, device=torch.device(str(device)))
-        if getattr(result, "skipped_reason", None) or not surface.install():
-            # Declining is the EXPECTED outcome here, not a failure. pi05's denoise region is not
-            # replay-safe -- measured, see surface.py -- so the site declares capturable=False and the
-            # generic pass refuses it. The hoists are bit-exact and stay; they buy nothing on their
-            # own, and saying so beats implying the run was optimized.
-            print(f"InstinctFlash pi05: graph_capture declined "
-                  f"({getattr(result, 'skipped_reason', 'no rewrite applied')}). Running eager, which "
-                  f"is upstream's arithmetic exactly. {len(hoisted)} bit-exact hoist(s) applied "
-                  f"(no measurable win alone).")
-            return ["loop_constant_hoist"]
+        install_static_capture(policy.model,
+                               on_self_check=_record_self_check_on_plan(capture))
         for h in hoisted:
             print(f"InstinctFlash pi05: hoisted {h}")
-        print("InstinctFlash pi05: graph_capture installed on the denoise step. NOTE: this path is "
-              "opt-in and not equivalence-verified -- see pi05_iwm/surface.py.")
-        return ["loop_constant_hoist", "graph_capture"]
+        because = (" — installed in place of the checkpoint's neutralized compile_model"
+                   if compile_superseded else
+                   " — the pi05-family default on capture-capable devices")
+        print(f"InstinctFlash pi05: static-KV graph capture installed{because}. The first "
+              f"capture is gated by a bit-exact self-check (replay vs eager on staged inputs, "
+              f"exact equality); a mismatch releases the graphs and falls back to eager, "
+              f"loudly. Kill-switch: {CAPTURE_KILL_SWITCH}=1.")
+        return ["loop_constant_hoist", "graph_capture_static_kv"]
 
 
 class _Pi05Loop:
@@ -254,6 +276,36 @@ class _Pi05Loop:
 
     def close(self) -> None:
         self._p = None
+
+
+def _record_self_check_on_plan(capture):
+    """The self-check verdict, put where a reader will look: the plan's graph_capture entry.
+
+    `plan.explain()` / `runtime.explain()` render params['decision'] lines, and the plan object
+    is the same one the facade holds — so the line the serve log prints at first capture is the
+    line every later explain() shows. The full verdict (per-input deltas, the startup cost)
+    rides on params['self_check'] for programmatic readers.
+    """
+    def on_result(res: dict) -> None:
+        if res["bitexact"]:
+            refilled = sum(1 for c in res["cases"] if c["prefix"] == "refilled")
+            line = (f"self-check bit-exact on {res['n']} inputs (replay == eager exactly, "
+                    f"{refilled} on a refilled prefix; {res['seconds']:.1f} s startup cost, "
+                    f"once per process)")
+        else:
+            line = (f"self-check FAILED — replay differs from eager by "
+                    f"{res['max_abs_delta']:.3e} on staged inputs it was not captured from; "
+                    f"graphs released, running eager (upstream's arithmetic exactly), "
+                    f"serve continues")
+        capture.params["decision"] = tuple(capture.params.get("decision", ())) + (
+            f"graph_capture: {line}",)
+        capture.params["self_check"] = res
+        # stderr, deliberately: the verdict lands at FIRST CAPTURE, i.e. during serving, and
+        # cli_config.execute defers stdout until the command returns — which for a persistent
+        # `instinctflash serve` is never. The server's live log stream is stderr.
+        import sys
+        print(f"InstinctFlash pi05: graph_capture {line}.", file=sys.stderr, flush=True)
+    return on_result
 
 
 #: Why a planned graph_capture outranks a checkpoint-published ``compile_model: true``. Every

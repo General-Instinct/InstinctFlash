@@ -189,16 +189,20 @@ class Pi05Surface:
         return list(self.hoisted)
 
     # -- AdapterSurface --------------------------------------------------------------------------
-    #: Publish the denoise step as capturable. OFF, on evidence -- see the module docstring. Set
-    #: IFL_PI05_CAPTURE=1 to reproduce the negative result; it is an opt-in rather than a deletion
-    #: because the measurement is the useful artifact and it should stay runnable.
+    #: Publish the denoise step as capturable for the GENERIC engine pass. OFF, on evidence --
+    #: see the module docstring. IFL_PI05_CAPTURE=1 still flips the site attr so the negative
+    #: result stays reproducible through `run_pass` (the measurement is the useful artifact),
+    #: but `Pi05Adapter.install` no longer routes through this site at all: the DynamicCache
+    #: region is retired from serving, and the flag is a no-op-with-notice there.
     #:
     #: The DynamicCache decision, stated plainly: replay is 1.53x on the chunk and the actions are
     #: wrong (1.139e-02 end-to-end delta after the engine pass's replay check; not bit-exact, no
     #: non-inferiority evidence, no tier under which it can ship). The SHIPPABLE capture is the
-    #: static-KV path in `static_capture.py` (`install_static_capture(model)`, opt-in
-    #: IFL_PI05_STATIC_CAPTURE=1): bitexact on unseen inputs and prompts, 3.55x on the denoise
-    #: step, 1.65x on the chunk -- see the module docstring for the gate numbers.
+    #: static-KV path in `static_capture.py`: bitexact on unseen inputs and prompts, 3.55x on the
+    #: denoise step, 1.65x on the chunk -- see its module docstring for the gate numbers. It is
+    #: the DEFAULT for pi05-class checkpoints on capture-capable devices, gated per process by
+    #: the post-capture bit-exact self-check; IFL_PI05_NO_CAPTURE=1 is the kill-switch and
+    #: IFL_PI05_STATIC_CAPTURE=1 (the old opt-in) is a no-op-with-notice.
     CAPTURE_OPT_IN = "IFL_PI05_CAPTURE"
     STATIC_CAPTURE_OPT_IN = "IFL_PI05_STATIC_CAPTURE"
 

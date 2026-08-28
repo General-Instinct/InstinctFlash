@@ -23,7 +23,11 @@
   pairs. A few-step distillation framework is under development as an InstinctFlash component.
 - **Bit-exact CUDA-graph capture.** A static max-extent KV buffer makes denoise loops
   capturable with bit-exact replay on unseen inputs — verified on three model families and two
-  GPU architectures. Sparse-MoE routing re-executes per replay, never baked.
+  GPU architectures. Sparse-MoE routing re-executes per replay, never baked. For pi05-class
+  checkpoints — fresh fine-tunes included — capture is the **default** on capture-capable
+  devices: the first capture is gated by a startup self-check (replay vs eager on staged
+  inputs, exact equality, seconds, once per process) and falls back to eager loudly on any
+  mismatch. `IFL_PI05_NO_CAPTURE=1` disables it.
 - **[InstinctCompress](https://github.com/General-Instinct/InstinctCompress)** (customer
   access): a fine-tuned pi05 checkpoint 8.7 GB → 3.2 GB, accuracy trained back on your own
   demonstrations and verified, served through the same stack unchanged.
