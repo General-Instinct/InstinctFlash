@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """An operating point is a declared fact, and every placement path must obey it.
 
-Four defects lived here at once, all of them silent, all found while costing a step-reduction
-decision. Each one served something other than what the checkpoint declared:
+Five defects lived here, all of them silent, all found while costing a step-reduction decision.
+Each one served something other than what the checkpoint declared:
 
   1. `worker_command` read only the `nfe=` override, so a checkpoint declaring 2V/4A ran at the
      upstream 25/50 default in a worker and at 2/4 in-process. One declaration, two behaviours.
@@ -10,6 +10,15 @@ decision. Each one served something other than what the checkpoint declared:
      loaded the BASE transformer and ignored the published package.
   3. `execution.guidance` was parsed, echoed by describe(), and applied nowhere.
   4. The planner priced `adapter.spec()`'s 79-forward cycle while a 10-forward cycle ran.
+  5. A numeric guidance scale on the worker path (`--guidance video=3`, a CLI STRING) fell
+     through every case and applied NOTHING (found 2026-08-31 preparing the guidance x NFE
+     sweep); and the planner priced batch-2 forwards for a checkpoint whose declared guidance
+     the server ran at batch-1.
+
+The few-step campaign's consequence (RFC §11) is what section 6 pins: an operating point is the
+tuple (schedule grid, per-stream guidance scale, CFG batching) -- the same 1V/4A schedule scored
+0.752 at w=5 and 0.885 at w=1 -- so the declaration, the served scale, the worker flag and the
+plan's pricing must all carry the same tuple, and the plan must print it.
 
 No GPU, no weights: these are all about whether the declaration reaches the thing that acts on it.
 """
@@ -113,6 +122,39 @@ def test_declared_guidance_is_applied():
     check(c4.guidance_scale == 7.0, "and so does a {mode, scale} form")
     apply_declared_guidance(c4, {"nonexistent_stream": "cfg"})
     check(True, "an unknown stream is ignored rather than raising")
+    c5 = Cfg()
+    got5 = apply_declared_guidance(c5, {"video": "3"})
+    check(c5.guidance_scale == 3.0 and got5 == {"video": 3.0},
+          "a numeric scale as a CLI STRING applies (the worker path always sends strings; "
+          "before 2026-08-31 '--guidance video=3' silently applied nothing)",
+          str(c5.guidance_scale))
+    c6 = Cfg()
+    try:
+        apply_declared_guidance(c6, {"video": "bogus"})
+    except ValueError as e:
+        check("bogus" in str(e) and c6.guidance_scale == 5.0,
+              "an unreadable value is REFUSED by name, not silently ignored (the failure class "
+              "this module exists to prevent is serving something other than the declaration)")
+    else:
+        check(False, "an unreadable value is REFUSED by name, not silently ignored")
+    c7 = Cfg()
+    got7 = apply_declared_guidance(c7, {"video": {"mode": "cfg", "scale": 1.0}})
+    check(c7.guidance_scale == 1.0 and got7 == {"video": 1.0},
+          "cfg at a declared scale of 1.0 writes 1.0 -- the guidance-off, batch-1 point the "
+          "campaign found free (h1_report §4b: 1V/4A@w1 0.885 vs 0.752 at the shipped w=5)")
+    c8 = Cfg()
+    try:
+        apply_declared_guidance(c8, {"action": {"mode": "positive_only", "scale": 3.0}})
+    except ValueError as e:
+        check("negative branch" in str(e) and c8.action_guidance_scale == 1.0,
+              "positive_only WITH a scale > 1 is a contradiction and is refused before it turns "
+              "the action combine on")
+    else:
+        check(False, "positive_only WITH a scale > 1 is refused")
+    c9 = Cfg()
+    got9 = apply_declared_guidance(c9, {"video": "cfg"})
+    check(c9.guidance_scale == 5.0 and got9 == {},
+          "'cfg' by name is the family default, recorded as inherited: nothing is written")
 
 
 def test_both_placements_serve_the_same_declaration():
@@ -164,6 +206,103 @@ def test_both_placements_serve_the_same_declaration():
             Ck(), None, port=1234, python="python3", device=None, nfe={"action": 2})
         check("--degrade-nfe 2,2" in " ".join(argv2), "an explicit override still wins")
 
+        class ExScale(Ex):
+            guidance = {"video": {"mode": "cfg", "scale": 3.0}, "action": "positive_only"}
+
+        class CkScale(Ck):
+            execution = ExScale()
+
+        os.environ["IFL_CACHE"] = str(Path(td) / "cache")
+        try:
+            argv_w, _ = LingBotVA().worker_command(
+                CkScale(), None, port=1234, python="python3", device=None, nfe=None)
+        finally:
+            os.environ.pop("IFL_CACHE", None)
+        flag = argv_w[argv_w.index("--guidance") + 1]
+        check(flag == "action=positive_only,video=3",
+              "a {mode, scale} declaration travels to the worker as the SERVED scale (a number "
+              "the worker re-parses through the same resolver), positive_only as its mode name",
+              flag)
+        from instinctflash.adapters.lingbot_va import apply_declared_guidance
+
+        class Cfg2:
+            guidance_scale = 5.0
+            action_guidance_scale = 1.0
+
+        c = Cfg2()
+        apply_declared_guidance(c, dict(p.split("=", 1) for p in flag.split(",")))
+        check(c.guidance_scale == 3.0 and c.action_guidance_scale == 1.0,
+              "and the worker-side parse of that flag serves the identical scales")
+
+
+def test_plan_is_priced_at_the_declared_guidance_and_prints_the_tuple():
+    print("\n=== 6. the operating point is (schedule, guidance, CFG batching), and the plan says so ===")
+    from instinctflash import Optimizer, load
+    from instinctflash.adapters.base import GuidanceMode
+    spec = load("wan_va").spec().with_nfe({"video": 1, "action": 4})
+
+    shipped = spec.with_guidance({"video": "cfg", "action": "positive_only"})
+    check(shipped.guidance["video"].scale == 5.0
+          and shipped.guidance_resolution["video"] == "inherited from the family default",
+          "the string form inherits the family scale and RECORDS that it was inherited",
+          str(shipped.guidance_resolution))
+    b = shipped.cfg_batching()
+    check(b["batch2_forwards"] == 7 and b["batch1_forwards"] == 0,
+          "video cfg@5 makes every declared forward batch-2 (the action branch is computed then "
+          "discarded -- the fact cfg_branch_elision exploits)", str(b))
+
+    off = spec.with_guidance({"video": "positive_only"})
+    check(off.guidance["video"].mode is GuidanceMode.POSITIVE_ONLY and off.guidance["video"].scale == 1.0,
+          "positive_only rewrites the video rule to scale 1")
+    b = off.cfg_batching()
+    check(b["batch2_forwards"] == 0 and b["batch1_forwards"] == 7 and not b["negative_branch_requested_by"],
+          "and with no stream requesting a negative branch every forward is batch-1", str(b))
+    w1 = spec.with_guidance({"video": {"mode": "cfg", "scale": 1.0}})
+    check(not w1.guidance["video"].requests_negative_branch and w1.cfg_batching()["batch2_forwards"] == 0,
+          "cfg at w=1 requests no negative branch either: CFG batching is DERIVED from the served "
+          "scale, never declared")
+    w3 = spec.with_guidance({"video": 3})
+    check(w3.guidance["video"].scale == 3.0 and w3.guidance_resolution["video"] == "declared"
+          and w3.cfg_batching()["batch2_forwards"] == 7,
+          "a numeric declaration is a served CFG scale: w=3, batch-2")
+
+    from instinctflash.planners.planner import Tier
+    plan_on = Optimizer(tier_ceiling=Tier.NUMERIC).compile(shipped)
+    plan_off = Optimizer(tier_ceiling=Tier.NUMERIC).compile(off)
+    by_name = lambda plan: {r.name: r for r in plan.results}  # noqa: E731
+    check(by_name(plan_on)["cfg_branch_elision"].applies,
+          "at the shipped guidance cfg_branch_elision has a discarded branch to elide (NUMERIC ceiling)",
+          by_name(plan_on)["cfg_branch_elision"].reason)
+    check(not by_name(plan_off)["cfg_branch_elision"].applies
+          and "batch-1" in by_name(plan_off)["cfg_branch_elision"].reason,
+          "at guidance-off it declines, because the batch it would trim is not there",
+          by_name(plan_off)["cfg_branch_elision"].reason)
+    check("operating point:" in plan_off.explain() and "batch-1 on all 7 declared forwards" in plan_off.explain(),
+          "the plan PRINTS the tuple", plan_off.explain().splitlines()[2])
+    check("video=cfg@5 [inherited from the family default]" in plan_on.operating_point()
+          if callable(getattr(plan_on, "operating_point", None)) else
+          "video=cfg@5 [inherited from the family default]" in plan_on.operating_point,
+          "...including where an inherited scale came from")
+    some_pass = plan_off.results[0].name
+    check(plan_off.without(some_pass).operating_point == plan_off.operating_point
+          and plan_off.bitexact_subset().operating_point == plan_off.operating_point,
+          "derived plans keep the operating point")
+
+    # the facade applies the DECLARATION's guidance, not just its nfe
+    from instinctflash.runtime.facade import plan_declaration
+    with tempfile.TemporaryDirectory() as td:
+        Path(td, "instinctflash.json").write_text(json.dumps({
+            "instinctflash_schema": 1,
+            "execution": {"model_id": "org/va-1v4a-w1", "backbone": "wan_va", "servable": True,
+                          "nfe": {"video": 1, "action": 4},
+                          "guidance": {"video": {"mode": "cfg", "scale": 1.0},
+                                       "action": "positive_only"}}}))
+        _, _, plan, _ = plan_declaration(td, probe_device=False)
+    check("video=cfg@1" in plan.operating_point and "batch-1 on all 7" in plan.operating_point,
+          "plan_declaration prices the checkpoint's declared guidance", plan.operating_point)
+    check(not {r.name: r for r in plan.results}["cfg_branch_elision"].applies,
+          "so the guidance-off checkpoint's plan does not claim an elision that cannot happen")
+
 
 def main() -> int:
     test_with_nfe_rewrites_the_schedule()
@@ -171,6 +310,7 @@ def main() -> int:
     test_planner_plans_the_declared_schedule()
     test_declared_guidance_is_applied()
     test_both_placements_serve_the_same_declaration()
+    test_plan_is_priced_at_the_declared_guidance_and_prints_the_tuple()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")

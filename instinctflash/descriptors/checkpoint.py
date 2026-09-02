@@ -119,6 +119,9 @@ def _from_legacy_delta(meta: Mapping[str, Any], source: str) -> ExecutionDeclara
     it to produce `servable` -- a recipe-agnostic boolean -- so that no caller has to. `recipe`,
     `solver`, `endpoint_rmse` and friends are present in the same dict and are deliberately ignored.
     """
+    from instinctflash.descriptors.guidance import validate_declared_guidance
+
+    validate_declared_guidance(dict(meta.get("guidance", {})), where=f"{source}: guidance")
     op = None
     if "n_intervals" in meta and "block" in meta:
         op = OutputProjection(
@@ -180,6 +183,14 @@ def load_declaration(ckpt_dir: str | Path) -> ExecutionDeclaration:
                 f"{new}: provenance keys {leaked} appear in the `execution` block. These describe how "
                 f"the checkpoint was TRAINED and the runtime must not read them; move them under "
                 f"`provenance`. See CHECKPOINTS.md.")
+        # The guidance block is checked here, at the boundary: per stream a mode name, a numeric
+        # scale, or {mode, scale} (descriptors/guidance.py). A value the runtime could not serve
+        # as written is refused now, not ignored at serve time.
+        from instinctflash.descriptors.guidance import GuidanceDeclarationError, validate_declared_guidance
+        try:
+            validate_declared_guidance(dict(ex.get("guidance") or {}), where=f"{new}: execution.guidance")
+        except GuidanceDeclarationError as e:
+            raise RuntimeError(str(e)) from None
         opd = dict(ex.pop("output_projection", {}) or {})
         op = OutputProjection(
             kind=str(opd.get("kind", "")),

@@ -87,6 +87,18 @@ class GuidanceRule:
     # model cannot batch-duplicate and must run branches as separate forwards (Cosmos3-Edge).
     batchable: bool = True
 
+    @property
+    def requests_negative_branch(self) -> bool:
+        """Is a negative branch computed AND combined for this stream as declared?
+
+        The mode alone does not decide it: `cfg` at scale 1.0 is the positive branch by
+        arithmetic and the LingBot server's own `guidance_scale > 1` test turns the batch
+        off for it. This is the derivation behind the CFG-batching leg of an operating point
+        (descriptors/guidance.py): a forward is batch-2 iff it touches a stream for which this
+        is True.
+        """
+        return self.mode is GuidanceMode.CFG and self.scale > 1.0
+
 
 @dataclass(frozen=True)
 class PhaseSpec:
@@ -229,6 +241,10 @@ class AdapterSpec:
     #: left to guess -- see ObservationSpec for why this cannot be a convention.
     observation: ObservationSpec = field(default_factory=ObservationSpec)
     notes: Mapping[str, str] = field(default_factory=dict)
+    #: Per stream, where the served guidance scale came from once a checkpoint declaration has
+    #: been applied (`with_guidance`): "declared", "inherited from the family default", ...
+    #: Empty means the spec is the family's own statement, untouched by any declaration.
+    guidance_resolution: Mapping[str, str] = field(default_factory=dict)
 
     def phase(self, name: str) -> PhaseSpec:
         for p in self.phases:
@@ -297,6 +313,91 @@ class AdapterSpec:
                 (new - 1) if c == p.nfe - 1 else min(c, new - 1) for c in p.commit_steps)
             out.append(dataclasses.replace(p, nfe=new, commit_steps=commits))
         return dataclasses.replace(self, phases=tuple(out))
+
+    def with_guidance(self, declared: Mapping[str, object] | None) -> "AdapterSpec":
+        """This spec at a checkpoint's declared per-stream guidance. Streams matched by name.
+
+        The second leg of the operating-point tuple (schedule grid, per-stream guidance scale,
+        CFG batching). An adapter states the model's OWN guidance -- LingBot-VA: video cfg@5,
+        action positive-only -- and a checkpoint may declare a different served point: a
+        re-tuned scale (`{"video": 3}`), the negative branch off (`{"video": "positive_only"}`
+        or `{"video": {"mode": "cfg", "scale": 1.0}}`), or, in the string form, the family's
+        scale explicitly INHERITED. Without this the planner priced batch-2 forwards for a
+        checkpoint the server ran at batch-1, and `cfg_branch_elision` reasoned about a
+        negative branch that was never computed.
+
+        Resolution rules live in `descriptors/guidance.py` (one parser for the runtime, the
+        planner, the scaffold, the sweep and the control gate). Streams the declaration names
+        but this spec does not model are ignored here, exactly as the serving path ignores them.
+        """
+        import dataclasses
+
+        from instinctflash.descriptors.guidance import resolve
+
+        family = {name: (rule.mode.value, float(rule.scale)) for name, rule in self.guidance.items()}
+        resolved = resolve(declared, family)
+        rules = dict(self.guidance)
+        sources: dict[str, str] = {}
+        for name, r in resolved.items():
+            if name not in rules:
+                continue
+            rules[name] = dataclasses.replace(
+                rules[name], mode=GuidanceMode(r.mode),
+                scale=float(rules[name].scale if r.scale is None else r.scale))
+            sources[name] = r.scale_source
+        return dataclasses.replace(self, guidance=rules, guidance_resolution=sources)
+
+    def cfg_batching(self) -> dict:
+        """The CFG-batching leg of the operating point, DERIVED from guidance + phase structure.
+
+        A stream requests its negative branch iff `GuidanceRule.requests_negative_branch`; a
+        phase's forwards are batch-2 iff the phase reads or writes such a stream (LingBot-VA:
+        every phase reads both streams, so video cfg@5 makes all ten 2V/4A forwards batch-2 and
+        the action stream's branch is computed then discarded -- the fact `cfg_branch_elision`
+        exploits). With no stream requesting one, every forward is batch-1: the campaign's
+        guidance-off points. Returns per-phase branch counts and the batch-1 / batch-2 forward
+        totals a latency table reports separately (bandwidth-bound devices see the difference;
+        Amdahl on an H100 does not).
+        """
+        requesting = sorted(n for n, g in self.guidance.items() if g.requests_negative_branch)
+        batched = all(self.guidance[n].batchable for n in requesting)
+        per_phase: dict[str, int] = {}
+        batch1 = batch2 = separate = 0
+        for p in self.phases:
+            touches = bool((set(p.reads) | set(p.writes)) & set(requesting))
+            per_phase[p.name] = 2 if touches else 1
+            if not touches:
+                batch1 += p.nfe
+            elif batched:
+                batch2 += p.nfe
+            else:
+                separate += p.nfe  # branches run as separate forwards (non-batchable families)
+        return {
+            "negative_branch_requested_by": requesting,
+            "per_phase_branches": per_phase,
+            "batch1_forwards": batch1,
+            "batch2_forwards": batch2,
+            "separate_branch_forwards": separate,
+        }
+
+    def operating_point(self) -> str:
+        """The operating point as the tuple every report must print: (schedule, guidance, batching)."""
+        guidance = []
+        for name, rule in sorted(self.guidance.items()):
+            src = self.guidance_resolution.get(name)
+            tail = f" [{src}]" if src and src != "declared" else ""
+            guidance.append(f"{name}={rule.mode.value}@{rule.scale:g}{tail}")
+        b = self.cfg_batching()
+        total = self.total_forwards()
+        if b["negative_branch_requested_by"]:
+            kind = "batch-2" if b["batch2_forwards"] else "separate-branch"
+            n = b["batch2_forwards"] or b["separate_branch_forwards"]
+            batching = (f"{kind} on {n} of {total} declared forwards (negative branch requested by "
+                        f"{', '.join(b['negative_branch_requested_by'])}); batch-1 on {b['batch1_forwards']}")
+        else:
+            batching = f"batch-1 on all {total} declared forwards (no stream requests a negative branch)"
+        return (f"schedule {{{self.forwards_breakdown()}}} | guidance {{{', '.join(guidance) or 'none'}}} "
+                f"| cfg batching {{{batching}}}")
 
     def total_forwards(self) -> int:
         """Every transformer forward in one control step, across all phases.

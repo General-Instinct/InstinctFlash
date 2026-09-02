@@ -4,8 +4,11 @@
 "a training output with no declaration" to "a package `validate` can judge". The scaffold copies
 the base's built-in declaration (`known.KNOWN_DECLARATIONS`), then goes field by field:
 
-    inherited   copied from the base — facts a fine-tune keeps (guidance mode, step schedule,
-                servable) unless its author says otherwise.
+    inherited   copied from the base — facts a fine-tune keeps (step schedule, servable) unless
+                its author says otherwise. Guidance is inherited too, and CLASSIFIED honestly:
+                a per-stream guidance scale is a SERVING choice (the operating point's second
+                leg), not a training fact and not a base invariant — so it is inheritable, but
+                the scaffold prints the resolved (mode@scale, CFG batching) it will serve.
     inferred    read out of the checkpoint ITSELF, with the evidence quoted: backbone identity
                 from config.json fingerprints, param_bytes measured from the weight files,
                 pi05 obs_features from the checkpoint's own input_features reconciled with its
@@ -796,6 +799,9 @@ def scaffold_declaration(ckpt_dir: str | Path, base_id: str) -> ScaffoldPlan:
         decisions["nfe"] = ScaffoldField(
             "nfe", INHERITED, copy.deepcopy(base_ex["nfe"]),
             "the base's declared step schedule; a step-distilled fine-tune declares its own")
+    if "guidance" not in decisions and "guidance" in base_ex:
+        decisions["guidance"] = _guidance_decision(
+            backbone, base_ex, decisions["nfe"].value if "nfe" in decisions else None)
     if "param_bytes" not in decisions and "param_bytes" in base_ex:
         decisions["param_bytes"] = ScaffoldField(
             "param_bytes", INHERITED, base_ex["param_bytes"],
@@ -820,6 +826,42 @@ def scaffold_declaration(ckpt_dir: str | Path, base_id: str) -> ScaffoldPlan:
         },
     }
     return ScaffoldPlan(str(d), base_id, backbone, fam.depth, fields, document)
+
+
+def _guidance_decision(backbone: str, base_ex: Mapping, nfe) -> ScaffoldField:
+    """Guidance is INHERITED, with its classification stated rather than assumed.
+
+    The honest call, made once here: a per-stream guidance scale is a SERVING choice -- the
+    second leg of the operating point (schedule grid, per-stream guidance scale, CFG batching;
+    docs/rfc/fewstep-distillation.md §11) -- not a training fact the checkpoint carries and not
+    an invariant of the base weights. A fine-tune of the same family inherits the base's served
+    point by default (same sampler, same combine), which is why it is copied; but because the
+    campaign measured the same schedule swinging 60 points across scales, the inheritance is
+    PRINTED as the resolved tuple so the author sees exactly what will run, and knows that a
+    re-tuned scale or a guidance-distilled / CFG-folded student must declare its own {mode, scale}.
+    """
+    declared = base_ex["guidance"]
+    head = ("SERVING choice, not a training fact: inherited from the base and served as ")
+    tail = ("; a re-tuned scale or a CFG-folded student declares its own {mode, scale}")
+    try:
+        from instinctflash.runtime.loader import load as load_adapter
+        spec = load_adapter(backbone).spec()
+        if isinstance(nfe, Mapping) and nfe and all(isinstance(v, int) for v in nfe.values()):
+            spec = spec.with_nfe(nfe)
+        spec = spec.with_guidance(declared)
+        served = ", ".join(
+            f"{name}={rule.mode.value}@{rule.scale:g}"
+            + (" (scale inherited)" if spec.guidance_resolution.get(name, "declared") != "declared" else "")
+            for name, rule in sorted(spec.guidance.items()))
+        b = spec.cfg_batching()
+        batching = (f"batch-2 on {b['batch2_forwards']} of {spec.total_forwards()} declared forwards"
+                    if b["negative_branch_requested_by"] else "batch-1 on every forward")
+        note = f"{head}{served} => {batching}{tail}"
+    except Exception:                                            # noqa: BLE001 - adapter not importable here
+        from instinctflash.descriptors.guidance import describe_guidance, resolve
+        note = (f"{head}{describe_guidance(resolve(declared))} (scales are the family defaults; "
+                f"the {backbone!r} adapter is not importable in this environment){tail}")
+    return ScaffoldField("guidance", INHERITED, copy.deepcopy(declared), note)
 
 
 # --- writing, guarding, and the FILL_ME scan ------------------------------------------------------

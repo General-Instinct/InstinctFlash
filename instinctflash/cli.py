@@ -478,7 +478,9 @@ def _serve_preflight(model: str, r: RuntimeConfig) -> tuple[dict, str]:
     ]
     result = {"model_id": ex.model_id, "backbone": ex.backbone, "servable": ex.servable,
               "device": device, "device_class": device_class,
-              "capabilities": sorted(ckpt.capabilities()), "plan": plan.explain()}
+              "capabilities": sorted(ckpt.capabilities()),
+              # the tuple, not just nfe: (schedule grid, per-stream guidance scale, CFG batching)
+              "operating_point": getattr(plan, "operating_point", ""), "plan": plan.explain()}
     return result, "\n".join(lines)
 
 

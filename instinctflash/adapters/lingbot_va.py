@@ -137,8 +137,13 @@ def lingbot_va_spec() -> AdapterSpec:
 _GUIDANCE_ATTR = {"video": "guidance_scale", "action": "action_guidance_scale"}
 
 
+def _family_guidance() -> dict:
+    """The family's own (mode, scale) per stream, as the spec states it -- the inheritance base."""
+    return {name: (rule.mode.value, float(rule.scale)) for name, rule in lingbot_va_spec().guidance.items()}
+
+
 def apply_declared_guidance(cfg, guidance) -> dict:
-    """Make `execution.guidance` actually take effect. Returns what was applied, for the log.
+    """Make `execution.guidance` actually take effect. Returns {stream: served scale} written.
 
     Before this, the declaration's guidance block was parsed, echoed by `describe()`, and then
     ignored: nothing wrote `cfg.guidance_scale`. A checkpoint declaring `video: positive_only` --
@@ -147,29 +152,29 @@ def apply_declared_guidance(cfg, guidance) -> dict:
     Silently serving something other than what the checkpoint declares is the failure this whole
     two-namespace design exists to prevent, and it was happening in the shipped path.
 
-    The declaration names the MODE; the scale is a model fact and stays in the server config. So
-    `positive_only` pins the scale to 1.0 (the server's own `guidance_scale > 1` test is what turns
-    CFG off), `cfg` leaves the model's configured scale alone, and an explicit numeric scale wins if
-    a checkpoint declares one.
+    The declaration is the guidance leg of the operating point (descriptors/guidance.py, one
+    parser for every consumer): a mode name, a numeric scale, or {mode, scale}. `positive_only`
+    pins the scale to 1.0 (the server's own `guidance_scale > 1` test is what turns CFG off, and
+    with it the batch-2 forward); a declared scale is written as the served w -- 1.0 included,
+    which is the campaign's guidance-off point; `cfg` by name leaves the model's configured scale
+    alone (it is the family default, recorded as inherited). Numeric scales arrive as CLI STRINGS
+    on the worker path (`serve_variant --guidance video=3`); before 2026-08-31 they fell through
+    every case and the flag silently applied NOTHING while the operator believed the scale was
+    re-tuned. An unreadable value is now refused (GuidanceDeclarationError), never ignored.
     """
+    from instinctflash.descriptors.guidance import resolve
+
+    declared = dict(guidance or {})
+    resolved = resolve(declared, _family_guidance())
     applied = {}
-    for stream, mode in dict(guidance or {}).items():
+    for stream, r in resolved.items():
         attr = _GUIDANCE_ATTR.get(stream)
-        if attr is None or not hasattr(cfg, attr):
+        if attr is None or not hasattr(cfg, attr) or stream not in declared:
             continue
-        scale = None
-        if isinstance(mode, (int, float)) and not isinstance(mode, bool):
-            scale = float(mode)
-        elif isinstance(mode, dict):                      # {"mode": "cfg", "scale": 5.0}
-            if mode.get("scale") is not None:
-                scale = float(mode["scale"])
-            elif str(mode.get("mode", "")).lower() in ("positive_only", "none"):
-                scale = 1.0
-        elif str(mode).lower() in ("positive_only", "none"):
-            scale = 1.0
-        if scale is not None:
-            setattr(cfg, attr, scale)
-            applied[stream] = scale
+        if r.scale is None or r.scale_source == "inherited from the family default":
+            continue  # 'cfg' by name: the model's own configured scale stays as it is
+        setattr(cfg, attr, float(r.scale))
+        applied[stream] = float(r.scale)
     return applied
 
 
@@ -604,7 +609,11 @@ class LingBotVA:
         if n:
             cfg.num_inference_steps = int(n.get("video", cfg.num_inference_steps))
             cfg.action_num_inference_steps = int(n.get("action", cfg.action_num_inference_steps))
-        apply_declared_guidance(cfg, checkpoint.execution.guidance)
+        served = apply_declared_guidance(cfg, checkpoint.execution.guidance)
+        point = self.spec().with_nfe(n).with_guidance(checkpoint.execution.guidance) if n else \
+            self.spec().with_guidance(checkpoint.execution.guidance)
+        print(f"InstinctFlash operating point: {point.operating_point()}"
+              + (f" -- server scales written: {served}" if served else ""), flush=True)
 
         # the plan must be installed BEFORE the model is built: fsdp_elision replaces the bound
         # _configure_model that the build calls through.
@@ -663,7 +672,14 @@ class LingBotVA:
 
         g = dict(checkpoint.execution.guidance or {})
         if g:
-            argv += ["--guidance", ",".join(f"{k}={v}" for k, v in sorted(g.items()))]
+            # The RESOLVED per-stream value travels, not the raw declaration: a {mode, scale}
+            # object has no CLI spelling, so the worker receives the served scale as a number
+            # (positive_only stays a mode name), and re-parses it through the same resolver.
+            from instinctflash.descriptors.guidance import resolve, worker_flag_value
+
+            resolved = resolve(g, _family_guidance())
+            argv += ["--guidance", ",".join(f"{k}={worker_flag_value(resolved[k])}"
+                                             for k in sorted(g) if k in resolved)]
 
         if seed is not None:
             # the same per-request seeding as build_in_process, installed by serve_variant

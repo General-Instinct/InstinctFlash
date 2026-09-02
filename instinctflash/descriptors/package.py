@@ -455,8 +455,11 @@ class Checkpoint:
             caps.add(f"output_projection:{p.kind}")
             if p.foldable:
                 caps.add("output_projection:foldable")
+        from instinctflash.descriptors.guidance import capability_token
         for k, v in (self.execution.guidance or {}).items():
-            caps.add(f"guidance:{k}={v}")
+            # the mode-string form keeps its historical token (guidance:video=cfg); a declared
+            # scale is part of the token (guidance:video=cfg@3) -- a plan must tell w=3 from w=5
+            caps.add(capability_token(k, v))
         for k in (self.execution.extra or {}):
             caps.add(f"declares:{k}")
         return frozenset(caps)

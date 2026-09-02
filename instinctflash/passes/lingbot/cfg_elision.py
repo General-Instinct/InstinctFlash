@@ -86,9 +86,12 @@ class CFGBranchElision:
 
     def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
         # Only meaningful if SOME stream forces the batch to be duplicated...
+        # ...at the SERVED scale: cfg at w=1 (the campaign's guidance-off operating point, or a
+        # checkpoint declaring {"mode": "cfg", "scale": 1.0}) never computes a negative branch,
+        # so there is nothing to elide -- see GuidanceRule.requests_negative_branch.
         forces_batch = [
             n for n, g in spec.guidance.items()
-            if g.mode is GuidanceMode.CFG and g.batchable
+            if g.requests_negative_branch and g.batchable
         ]
         # ...while ANOTHER stream pays for that duplication without using it.
         wasteful = [
@@ -98,7 +101,8 @@ class CFGBranchElision:
 
         if not forces_batch:
             return PassResult(self.name, False, Tier.BITEXACT,
-                              "no stream requests CFG, so nothing duplicates the batch")
+                              "no stream requests a negative branch at its served scale, so "
+                              "nothing duplicates the batch (every forward is already batch-1)")
         if not wasteful:
             return PassResult(self.name, False, Tier.BITEXACT,
                               "every stream consumes both guidance branches")

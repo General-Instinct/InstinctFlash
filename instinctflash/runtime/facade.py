@@ -405,6 +405,10 @@ def _compile_declaration(
     schedule = {**dict(ckpt.execution.nfe or {}), **dict(nfe or {})}
     if schedule:
         spec = spec.with_nfe(schedule)
+    # ...and at the guidance that will actually be served. The operating point is the tuple
+    # (schedule grid, per-stream guidance scale, CFG batching); a checkpoint declaring video
+    # guidance off (or w=3) runs batch-1 (or a different combine) and the plan must say so.
+    spec = spec.with_guidance(ckpt.execution.guidance)
 
     # Probe the machine, so hardware requirements are enforced rather than decorative. Probing
     # is best-effort by design: analysing a checkpoint must keep working on a laptop with no

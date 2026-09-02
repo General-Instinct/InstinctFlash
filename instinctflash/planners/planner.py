@@ -63,6 +63,10 @@ class Plan:
 
     model_id: str
     results: list[PassResult]
+    #: The operating point this plan was priced at, as the tuple (schedule grid, per-stream
+    #: guidance scale, CFG batching) -- `AdapterSpec.operating_point()`. Printed by explain()
+    #: because `nfe` alone underspecifies what runs (docs/rfc/fewstep-distillation.md §11).
+    operating_point: str = ""
 
     @property
     def applied(self) -> list[PassResult]:
@@ -80,7 +84,8 @@ class Plan:
         Useful in practice: it is the configuration you can ship without buying a paired
         non-inferiority run, which costs roughly 10x the GPU time of measuring the speedup.
         """
-        return Plan(self.model_id, [r for r in self.results if r.tier == Tier.BITEXACT])
+        return Plan(self.model_id, [r for r in self.results if r.tier == Tier.BITEXACT],
+                    operating_point=self.operating_point)
 
     def without(self, *names: str) -> "Plan":
         """The same plan with the named passes demoted to skipped.
@@ -98,7 +103,7 @@ class Plan:
                        params=r.params, expected_win=r.expected_win)
             if r.name in names else r
             for r in self.results
-        ])
+        ], operating_point=self.operating_point)
 
     def serve(self, model, port: int, **kwargs):
         """Install this plan on `model` and start serving it.
@@ -111,7 +116,10 @@ class Plan:
         return model.serve(self, port=port, **kwargs)
 
     def explain(self) -> str:
-        out = [f"InstinctFlash plan for {self.model_id}", f"  plan tier: {self.tier().name}", ""]
+        out = [f"InstinctFlash plan for {self.model_id}", f"  plan tier: {self.tier().name}"]
+        if self.operating_point:
+            out.append(f"  operating point: {self.operating_point}")
+        out.append("")
         for r in self.results:
             mark = "APPLY " if r.applies else "skip  "
             out.append(f"  {mark} {r.name:26s} [{r.tier.name:10s}] {r.reason}")
@@ -233,4 +241,4 @@ class Optimizer:
                     params=r.params, expected_win=r.expected_win,
                 )
             results.append(r)
-        return Plan(spec.model_id, results)
+        return Plan(spec.model_id, results, operating_point=spec.operating_point())
