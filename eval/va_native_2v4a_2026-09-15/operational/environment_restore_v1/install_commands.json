@@ -1,0 +1,120 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/home/guanming/.local/bin/uv",
+        "pip",
+        "install",
+        "--python",
+        "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/bin/python",
+        "--index-url",
+        "https://pypi.org/simple",
+        "--only-binary",
+        ":all:",
+        "--no-deps",
+        "anyio==4.14.2",
+        "diffusers==0.36.0",
+        "easydict==1.13",
+        "einops==0.8.2",
+        "h11==0.16.0",
+        "httpcore==1.0.9",
+        "httpx==0.28.1",
+        "huggingface-hub==0.34.4",
+        "imageio==2.37.4",
+        "importlib-metadata==9.0.1",
+        "numpy==2.2.6",
+        "opencv-python-headless==4.13.0.92",
+        "pip==24.0",
+        "scipy==1.18.1",
+        "transformers==4.55.2"
+      ],
+      "completed_unix": 1789490890.136202,
+      "label": "install_small",
+      "log_sha256": "f54ed9d2d8810b1942fd36b1b15d28e90989b1c3b082b5644c9c6cd62f16e669",
+      "returncode": 0,
+      "started_unix": 1789490876.964481
+    },
+    {
+      "argv": [
+        "/home/guanming/.local/bin/uv",
+        "pip",
+        "install",
+        "--python",
+        "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/bin/python",
+        "--no-index",
+        "--no-deps",
+        "--reinstall-package",
+        "flash-rt",
+        "/home/guanming/ifl_public_qualification_20260915_v1/bootstrap_va_v1/wheels/lingbot_va-0.0.0-py3-none-any.whl",
+        "/home/guanming/ifl_public_qualification_20260915_v1/native_v1/wheels/flash_rt-0.1.0-cp312-cp312-linux_aarch64.whl"
+      ],
+      "completed_unix": 1789490890.3535156,
+      "label": "install_exact_vendor_native",
+      "log_sha256": "e76d31aad83cd9aaecc04fceff18e90625a8462469101c3c5909a69a568a55d8",
+      "returncode": 0,
+      "started_unix": 1789490890.1364636
+    },
+    {
+      "argv": [
+        "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "completed_unix": 1789490891.6299655,
+      "label": "pip_check",
+      "log_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
+      "returncode": 0,
+      "started_unix": 1789490890.3537009
+    },
+    {
+      "argv": [
+        "/home/guanming/.local/bin/uv",
+        "pip",
+        "check",
+        "--python",
+        "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/bin/python"
+      ],
+      "completed_unix": 1789490891.642598,
+      "label": "uv_pip_check",
+      "log_sha256": "5f455813933654135aeb320750d95c49c67d92134fc9b67d6b8aef12c177687f",
+      "returncode": 0,
+      "started_unix": 1789490891.6300826
+    },
+    {
+      "argv": [
+        "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "pip",
+        "list",
+        "--format=json"
+      ],
+      "completed_unix": 1789490892.4593673,
+      "label": "pip_list",
+      "log_sha256": "0bdcfcc31b273791a35a97bbacd657188081944424780fef34451b1cd4c99565",
+      "returncode": 0,
+      "started_unix": 1789490891.6426637
+    }
+  ],
+  "gpu_used": false,
+  "model_imported": false,
+  "package_cache": "/dev/shm/ifl_va_native_2v4a_install_20260915_v1",
+  "source_script_sha256": "b8bae2fef5b2d9f087e3a3f474cc49203b5b884b9ca677592638e52aa13c02d3",
+  "status": "all_pinned_installs_and_dependency_checks_passed",
+  "wheels": [
+    {
+      "bytes": 61909,
+      "path": "/home/guanming/ifl_public_qualification_20260915_v1/bootstrap_va_v1/wheels/lingbot_va-0.0.0-py3-none-any.whl",
+      "sha256": "e072a01896bffcdcdc2134fc2cb5150753e91b29c1e6336eecfa7701afcb4875"
+    },
+    {
+      "bytes": 23119523,
+      "path": "/home/guanming/ifl_public_qualification_20260915_v1/native_v1/wheels/flash_rt-0.1.0-cp312-cp312-linux_aarch64.whl",
+      "sha256": "3262c54f7094dd3b77ef801e7208b157d891d8f50240374ed4f363c7f13e3c7f"
+    }
+  ]
+}

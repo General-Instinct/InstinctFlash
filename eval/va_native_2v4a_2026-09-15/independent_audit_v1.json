@@ -1,0 +1,246 @@
+{
+  "schema": "instinctflash.va_native_2v4a.independent_audit.v1",
+  "status": "passed_independent_cpu_audit",
+  "created_utc": "2026-09-15T16:55:04.492502+00:00",
+  "auditor": "/root/review_readme_speedups",
+  "inputs": {
+    "eval/va_native_2v4a_2026-09-15/run_native_v1/cells/va-eager_native-2v4a/receipt.json": {
+      "sha256": "79fdd27cf7fb64b1c4ca50dcfeecea201a229bd4b20e0d7511ca66ebe70cf73d"
+    },
+    "eval/va_native_2v4a_2026-09-15/run_native_v1/cells/va-eager_native-2v4a/receipt.npz": {
+      "sha256": "b5025719c981171edb4424684fc9fa8a39aad028cd0799d5e25adf29f22889f1"
+    },
+    "eval/va_native_2v4a_2026-09-15/matrix_v1.json": {
+      "sha256": "aa7a563042994adda2419982e1d025ee6dfdeae92a71de8a18103ee9f3c3ee5c"
+    },
+    "eval/va_native_2v4a_2026-09-15/recipe_review_v1.json": {
+      "sha256": "aaa16e2e9b2642bc406e4225ad6501d9ea15c224475bb32b090e26ead61c1647"
+    },
+    "eval/va_native_2v4a_2026-09-15/validation_v1.json": {
+      "sha256": "14cb3d0442d3ace675d7422496659196070c23186f56c733ead981e515eecfeb"
+    },
+    "eval/va_native_2v4a_2026-09-15/operational/capture_completion_v1.json": {
+      "sha256": "f798f443603769d513fb4576478c407f71d902fc4f03c989c9df31a2cd0b6f26"
+    },
+    "eval/va_native_2v4a_2026-09-15/operational/environment_restore_v1/completion.json": {
+      "sha256": "6b6458a85e6f16c96a599307cc4851757586c8e521b2139737de6c5fab43f4ae"
+    },
+    "eval/va_native_2v4a_2026-09-15/operational/environment_restore_v1/source_comparison.json": {
+      "sha256": "709e45ff7631e1dfa65aef96f2c80cbf7ebe4e89289e089874581bd4a5f1d1ae"
+    },
+    "eval/va_native_2v4a_2026-09-15/operational/environment_restore_v1/restored_packages.json": {
+      "sha256": "1708f05159f625f888af7e8dbd47a2b289232fd9e1fb294f1a7b18a9f7ce0e25"
+    },
+    "eval/va_native_2v4a_2026-09-15/validate_native_v1.py": {
+      "sha256": "4c69cc140ec8da0b5b72bfd8ecb1e98af8f016fafd8987c21d5bb5aae926adbf"
+    },
+    "eval/public_release_2026-09-15/qualification/va/run/cells/va-2v4a-fp8/receipt.json": {
+      "sha256": "036afc3a29ffbbeb2ac55c083502461d96fc1d1fde3e1920b9078d5dae6e9f40"
+    },
+    "eval/public_release_2026-09-15/qualification/va/run/cells/va-2v4a-fp8/receipt.npz": {
+      "sha256": "c664e4851fbab124a4234f453ef0f526ab16839f809244afc408214626915164"
+    },
+    "eval/public_release_2026-09-15/qualification/va/run/cells/va-eager_native/receipt.json": {
+      "sha256": "d6a052db19641dcbffab551092d0b419f5d6a35d4a81b609407aa034016258ca"
+    }
+  },
+  "protocol": {
+    "episodes": 7,
+    "cycles_per_episode": 3,
+    "warmup_episodes": 1,
+    "measured_episodes": 6,
+    "total_calls": 21,
+    "identical_request_cases_to_both_published_controls": true,
+    "request_seeds": [
+      1300,
+      1301,
+      1302,
+      1303,
+      1304,
+      1305,
+      1306,
+      1307,
+      1308,
+      1309,
+      1310,
+      1311,
+      1312,
+      1313,
+      1314,
+      1315,
+      1316,
+      1317,
+      1318,
+      1319,
+      1320
+    ],
+    "primary_indices": [
+      4,
+      5,
+      7,
+      8,
+      10,
+      11,
+      13,
+      14,
+      16,
+      17,
+      19,
+      20
+    ],
+    "primary_metric": "continuation_p50_ms",
+    "fixture": {
+      "path": "benchmarks/regression/fixtures/recorded_inputs_v1.npz",
+      "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+    }
+  },
+  "native": {
+    "receipt": {
+      "path": "eval/va_native_2v4a_2026-09-15/run_native_v1/cells/va-eager_native-2v4a/receipt.json",
+      "sha256": "79fdd27cf7fb64b1c4ca50dcfeecea201a229bd4b20e0d7511ca66ebe70cf73d"
+    },
+    "primary_p50_ms": 2071.2948765140027,
+    "default_schedule": {
+      "action": 50,
+      "video": 25
+    },
+    "effective_schedule": {
+      "action_steps": 4,
+      "nfe": {
+        "action": 4,
+        "video": 2
+      },
+      "sampler": "checkpoint",
+      "video_steps": 2
+    },
+    "observed_nfe_before": {
+      "video": 2,
+      "action": 4
+    },
+    "observed_nfe_after": {
+      "video": 2,
+      "action": 4
+    },
+    "empty_accelerator_metadata": true,
+    "precision": "checkpoint-native BF16 via unchanged upstream constructor",
+    "execution_policy": {
+      "reference": "upstream eager native policy; shared I/O translation only",
+      "checkpoint_nfe": {
+        "action": 50,
+        "video": 25
+      },
+      "native_nfe_override": {
+        "action": 4,
+        "video": 2
+      },
+      "nfe": {
+        "action": 4,
+        "video": 2
+      },
+      "schedule_changed": true
+    },
+    "array": {
+      "path": "eval/va_native_2v4a_2026-09-15/run_native_v1/cells/va-eager_native-2v4a/receipt.npz",
+      "sha256": "b5025719c981171edb4424684fc9fa8a39aad028cd0799d5e25adf29f22889f1",
+      "shape": [
+        21,
+        16,
+        2,
+        16
+      ],
+      "dtype": "float32",
+      "finite": true,
+      "array_bytes_sha256": "88200e9abd596391a2486aaef1c8427f9ac53002b9f8593155e90527e2e15978"
+    }
+  },
+  "fp8_control": {
+    "receipt": {
+      "path": "eval/public_release_2026-09-15/qualification/va/run/cells/va-2v4a-fp8/receipt.json",
+      "sha256": "036afc3a29ffbbeb2ac55c083502461d96fc1d1fde3e1920b9078d5dae6e9f40"
+    },
+    "primary_p50_ms": 459.0979430358857,
+    "precision": "FP8",
+    "effective_schedule": {
+      "action_steps": 4,
+      "nfe": {
+        "action": 4,
+        "video": 2
+      },
+      "sampler": "checkpoint",
+      "video_steps": 2
+    },
+    "array": {
+      "path": "eval/public_release_2026-09-15/qualification/va/run/cells/va-2v4a-fp8/receipt.npz",
+      "sha256": "c664e4851fbab124a4234f453ef0f526ab16839f809244afc408214626915164",
+      "shape": [
+        21,
+        16,
+        2,
+        16
+      ],
+      "dtype": "float32",
+      "finite": true,
+      "array_bytes_sha256": "b8bbb022dcaaeec3fce6b6650bd8c80b6bb32d1eaae37d8644b7702c87b86f5e"
+    },
+    "provenance": "Existing published same-day 2026-09-15 capture; not freshly recaptured with this native run."
+  },
+  "speedup": {
+    "ratio_of_unrounded_p50": 4.511662288916199,
+    "formatted": "4.51\u00d7",
+    "numerator": "New native 2V/4A early continuation p50",
+    "denominator": "Previously published same-day InstinctFlash FP8 2V/4A early continuation p50"
+  },
+  "source_review": {
+    "current_capture_sources": {
+      "benchmarks/regression/user_e2e.py": "45887ebdd48a141178ee0cf053ae288713aa5cbc4e98b55fed02db1ad9f81c6d",
+      "benchmarks/regression/native_reference.py": "5ce9b84ec13f96e57987c971d7e66ea8256901ed25eff498dfe73cb516b4517d",
+      "benchmarks/regression/user_report.py": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+    },
+    "original_qualified_sources": {
+      "benchmarks/regression/user_e2e.py": "057ae88f713d417a49622c97bba353765e2fbb1e81bac6205c250009042c6ce7",
+      "benchmarks/regression/native_reference.py": "f41da87548879b0998ec470bf4424eb6ce0c357df4764e0f64f7c236cad2aa8d",
+      "benchmarks/regression/user_report.py": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+    },
+    "imported_source_records": 36,
+    "unchanged_imported_source_hashes": 35,
+    "changed_imported_sources": [
+      "benchmarks/regression/native_reference.py"
+    ],
+    "exact_two_benchmark_overlays": true,
+    "independent_unchanged_AST_checks": {
+      "RecordedInputs": true,
+      "prompt": true,
+      "request": true,
+      "observed_schedule": true,
+      "gpu_competitors": true,
+      "capture_for_loop": true,
+      "upstream_VA_constructor_branch": true
+    },
+    "recorded_restore_source_checks": 65,
+    "recorded_restore_package_count": 72,
+    "restore_completion": {
+      "path": "eval/va_native_2v4a_2026-09-15/operational/environment_restore_v1/completion.json",
+      "sha256": "6b6458a85e6f16c96a599307cc4851757586c8e521b2139737de6c5fab43f4ae"
+    },
+    "restore_scope": [
+      "Restored from exact original runtime/build version logs; current core and native FlashRT source versions are retained.",
+      "Same-version large installed payloads reuse existing verified DreamZero bytes; this does not assert an unavailable whole-package historical VA fingerprint.",
+      "Source inode link counts and ctime necessarily increased for intentional hardlinks; all original payload bytes, modes and mtimes were verified unchanged.",
+      "Root may subsequently overlay exactly two reviewed benchmark files and run actual GPU qualification separately."
+    ]
+  },
+  "exact_validator_replay": true,
+  "input_artifacts_unchanged_by_audit": true,
+  "gpu_used": false,
+  "ssh_used": false,
+  "git_used": false,
+  "quality_certified": false,
+  "limitations": [
+    "Recorded-input latency comparison; not closed-loop task quality, equivalence, or non-inferiority certification.",
+    "The FP8 control is the bound published same-day run, not an interleaved fresh paired recapture.",
+    "Native BF16 provenance follows the original checkpoint and reviewed upstream construction; no independent native tensor precision inventory was performed.",
+    "Checkpoint identity and unchanged default declaration are verified from persisted receipts; this CPU audit did not reread remote checkpoint weights.",
+    "Environment restoration hashes and its scoped package/source checks are verified as persisted evidence; no unavailable historical whole-package fingerprint is inferred.",
+    "Per-episode reset durations are excluded from prediction timing and are not separately recorded; setup_seconds includes the initial reset."
+  ]
+}

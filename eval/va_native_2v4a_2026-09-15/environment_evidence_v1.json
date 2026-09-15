@@ -1,0 +1,556 @@
+{
+  "schema": "instinctflash.va_native_2v4a.environment_evidence.v1",
+  "status": "passed_cpu_environment_restore",
+  "restored_environment": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1",
+  "package_versions": {
+    "accelerate": "1.14.0",
+    "anyio": "4.14.2",
+    "build": "1.6.1",
+    "certifi": "2026.7.22",
+    "charset-normalizer": "3.5.1",
+    "cuda-bindings": "13.3.1",
+    "cuda-pathfinder": "1.7.0",
+    "cuda-toolkit": "13.0.2",
+    "diffusers": "0.36.0",
+    "easydict": "1.13",
+    "einops": "0.8.2",
+    "filelock": "3.32.4",
+    "flash-rt": "0.1.0",
+    "fsspec": "2026.7.0",
+    "ftfy": "6.3.1",
+    "h11": "0.16.0",
+    "hf-xet": "1.6.0",
+    "httpcore": "1.0.9",
+    "httpx": "0.28.1",
+    "huggingface-hub": "0.34.4",
+    "idna": "3.19",
+    "imageio": "2.37.4",
+    "importlib-metadata": "9.0.1",
+    "instinctflash": "0.1.0",
+    "jinja2": "3.1.6",
+    "lingbot-va": "0.0.0",
+    "markupsafe": "3.0.3",
+    "mpmath": "1.3.0",
+    "msgpack": "1.2.1",
+    "networkx": "3.6.1",
+    "numpy": "2.2.6",
+    "nvidia-cublas": "13.1.0.3",
+    "nvidia-cuda-cupti": "13.0.85",
+    "nvidia-cuda-nvrtc": "13.0.88",
+    "nvidia-cuda-runtime": "13.0.96",
+    "nvidia-cudnn-cu13": "9.19.0.56",
+    "nvidia-cufft": "12.0.0.61",
+    "nvidia-cufile": "1.15.1.6",
+    "nvidia-curand": "10.4.0.35",
+    "nvidia-cusolver": "12.0.4.66",
+    "nvidia-cusparse": "12.6.3.3",
+    "nvidia-cusparselt-cu13": "0.8.0",
+    "nvidia-nccl-cu13": "2.28.9",
+    "nvidia-nvjitlink": "13.0.88",
+    "nvidia-nvshmem-cu13": "3.4.5",
+    "nvidia-nvtx": "13.0.85",
+    "opencv-python-headless": "4.13.0.92",
+    "packaging": "25.0",
+    "pillow": "12.3.0",
+    "pip": "24.0",
+    "psutil": "7.2.2",
+    "pyproject-hooks": "1.2.0",
+    "pyyaml": "6.0.3",
+    "regex": "2026.7.19",
+    "requests": "2.34.2",
+    "safetensors": "0.8.0",
+    "scipy": "1.18.1",
+    "sentencepiece": "0.2.2",
+    "setuptools": "81.0.0",
+    "sympy": "1.14.0",
+    "tokenizers": "0.21.4",
+    "torch": "2.11.0",
+    "torchvision": "0.26.0",
+    "tqdm": "4.70.0",
+    "transformers": "4.55.2",
+    "triton": "3.6.0",
+    "typing-extensions": "4.16.0",
+    "urllib3": "2.7.0",
+    "wcwidth": "0.8.2",
+    "websockets": "17.0.1",
+    "wheel": "0.48.0",
+    "zipp": "4.1.0"
+  },
+  "source_comparison": {
+    "checks": [
+      {
+        "exact": true,
+        "expected_sha256": "11c013b7548d3fdf5656de28b404e69712ae338e8cc7b0827481ff4ee301ab8f",
+        "observed_sha256": "11c013b7548d3fdf5656de28b404e69712ae338e8cc7b0827481ff4ee301ab8f",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/benchmarks/regression/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/benchmarks/regression/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "f41da87548879b0998ec470bf4424eb6ce0c357df4764e0f64f7c236cad2aa8d",
+        "observed_sha256": "f41da87548879b0998ec470bf4424eb6ce0c357df4764e0f64f7c236cad2aa8d",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/benchmarks/regression/native_reference.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/benchmarks/regression/native_reference.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "814a9f0299f22a613f75ef8e0b27e9c22b9f5da41e8b017f66e011370a163782",
+        "observed_sha256": "814a9f0299f22a613f75ef8e0b27e9c22b9f5da41e8b017f66e011370a163782",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "f5ca83eb7373ed640e3af7a62152fe29268c50b34d46aed9ff177b20b92bef0b",
+        "observed_sha256": "f5ca83eb7373ed640e3af7a62152fe29268c50b34d46aed9ff177b20b92bef0b",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/api.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/api.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "e4c1b27738e72b4f0eae98656c39fc38f42353927dc2a5a982ffd5d2eef3255e",
+        "observed_sha256": "e4c1b27738e72b4f0eae98656c39fc38f42353927dc2a5a982ffd5d2eef3255e",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/flash_rt_fa2.cpython-312-aarch64-linux-gnu.so",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/flash_rt_fa2.cpython-312-aarch64-linux-gnu.so"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "9447bb9bf7db93625c3b697ef962a418cc3d9c5e01da173e6f5a365fc10f65b7",
+        "observed_sha256": "9447bb9bf7db93625c3b697ef962a418cc3d9c5e01da173e6f5a365fc10f65b7",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/flash_rt_kernels.cpython-312-aarch64-linux-gnu.so",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/flash_rt_kernels.cpython-312-aarch64-linux-gnu.so"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "bf81cb213e70299c531d31dd584eb574eecd1c909005fa9d0f1c7ea65126b69c",
+        "observed_sha256": "bf81cb213e70299c531d31dd584eb574eecd1c909005fa9d0f1c7ea65126b69c",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/frontends/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/frontends/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "d7d1a83bb513ee7469bad2fa4826ae54def92794e644bdb2d4063d74a6f08d2a",
+        "observed_sha256": "d7d1a83bb513ee7469bad2fa4826ae54def92794e644bdb2d4063d74a6f08d2a",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/frontends/torch/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/frontends/torch/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "25248424702e081d92283fecb588c90cf57afe32ad41c010fe4fccb201019f75",
+        "observed_sha256": "25248424702e081d92283fecb588c90cf57afe32ad41c010fe4fccb201019f75",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/frontends/torch/wan_va_thor.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/frontends/torch/wan_va_thor.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "b311becd8cdb3ee3a26ec1ebb6998678bc5475260765e29fc84bb97d6ad35944",
+        "observed_sha256": "b311becd8cdb3ee3a26ec1ebb6998678bc5475260765e29fc84bb97d6ad35944",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/models/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "8577ac9fac0637a6f9f1dd0be90a34f8671e9aaa58a15964523d798e2937e5b9",
+        "observed_sha256": "8577ac9fac0637a6f9f1dd0be90a34f8671e9aaa58a15964523d798e2937e5b9",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/models/wan_va/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "a4ab484a3464150833700d4915a6cdff58bc7ca6e97feb483455cb6da96dfb20",
+        "observed_sha256": "a4ab484a3464150833700d4915a6cdff58bc7ca6e97feb483455cb6da96dfb20",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/geometry.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/models/wan_va/geometry.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "fe872d9fbf91d190b29663cddbbc759a5a12ad08ee1ea3a546d214200713e393",
+        "observed_sha256": "fe872d9fbf91d190b29663cddbbc759a5a12ad08ee1ea3a546d214200713e393",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/operating_point.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/models/wan_va/operating_point.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "d3fa382f6bdb6c7274d6838d5d1efc1f6d31b51354f6a9fdc50ae3f2bb24886c",
+        "observed_sha256": "d3fa382f6bdb6c7274d6838d5d1efc1f6d31b51354f6a9fdc50ae3f2bb24886c",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/pipeline_thor.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/models/wan_va/pipeline_thor.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "efbb3436afa0676ff4ab307c8cd0022008b42e7dad745759dde330d03d1e3e69",
+        "observed_sha256": "efbb3436afa0676ff4ab307c8cd0022008b42e7dad745759dde330d03d1e3e69",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/ring_ref.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/models/wan_va/ring_ref.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "f5ea2b4fa35310fbad2c3346cde4ebfda3d1d421e87c2d3e0bf6ce1ff184480c",
+        "observed_sha256": "f5ea2b4fa35310fbad2c3346cde4ebfda3d1d421e87c2d3e0bf6ce1ff184480c",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/rope_table.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/models/wan_va/rope_table.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "e71aef2741ab3279762421f8d797c2ecd40842154c8c79ec8c7b1718ca4f7897",
+        "observed_sha256": "e71aef2741ab3279762421f8d797c2ecd40842154c8c79ec8c7b1718ca4f7897",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/step_tables.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/models/wan_va/step_tables.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "9a91935d9f4c7c3afdb62a6487f0112093993c026f01375b68ab678206841eed",
+        "observed_sha256": "9a91935d9f4c7c3afdb62a6487f0112093993c026f01375b68ab678206841eed",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/wan_ref.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/flash_rt/models/wan_va/wan_ref.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "50071567526aab898205d92b382b3ca392aabaf33584379bf436fb48bb488b8f",
+        "observed_sha256": "50071567526aab898205d92b382b3ca392aabaf33584379bf436fb48bb488b8f",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/adapters/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/adapters/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "faddf49c84fe9d087365b3cf566bb68bbe4b2bf08eb7a426006c936b27ef047d",
+        "observed_sha256": "faddf49c84fe9d087365b3cf566bb68bbe4b2bf08eb7a426006c936b27ef047d",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/adapters/base.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/adapters/base.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "969220bbf18a56b301bcd3b801eecc4ffa863e518501b82cb4872d857693e846",
+        "observed_sha256": "969220bbf18a56b301bcd3b801eecc4ffa863e518501b82cb4872d857693e846",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/adapters/lingbot_va.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/adapters/lingbot_va.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/backends/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/backends/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "1509fc2143e21a9513ee11c4389d68b1a31db221d4ddbd9e148cdb81e225e717",
+        "observed_sha256": "1509fc2143e21a9513ee11c4389d68b1a31db221d4ddbd9e148cdb81e225e717",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/backends/sm120_residual.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/backends/sm120_residual.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "0ede242abc15ae802b762f187c5932f0e81bb0617687ebc3f8185882f7745f4d",
+        "observed_sha256": "0ede242abc15ae802b762f187c5932f0e81bb0617687ebc3f8185882f7745f4d",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/backends/sm120_wan_stage2.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/backends/sm120_wan_stage2.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "6c32d9902026f776decf7bd32e13498b67b78e589051d1b5f7454b0129e16c75",
+        "observed_sha256": "6c32d9902026f776decf7bd32e13498b67b78e589051d1b5f7454b0129e16c75",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/descriptors/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "a2949d1fa9ae40fe27c9d4e981616327406604118af72f547f78f00426e387ba",
+        "observed_sha256": "a2949d1fa9ae40fe27c9d4e981616327406604118af72f547f78f00426e387ba",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/checkpoint.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/descriptors/checkpoint.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "75b9e6ca18b3ad6492f2b9ae22bf11390938a4322361c1188cf4841c44216b42",
+        "observed_sha256": "75b9e6ca18b3ad6492f2b9ae22bf11390938a4322361c1188cf4841c44216b42",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/deployment.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/descriptors/deployment.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "3455608a231758fb2a146409f04c6d2253b7f3859cccf22f6dea9dcd93b32d9d",
+        "observed_sha256": "3455608a231758fb2a146409f04c6d2253b7f3859cccf22f6dea9dcd93b32d9d",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/guidance.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/descriptors/guidance.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "05f6d5587a3c8ef543e2560ac0c91d1def49caec3d89851b50c9a190edab6834",
+        "observed_sha256": "05f6d5587a3c8ef543e2560ac0c91d1def49caec3d89851b50c9a190edab6834",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/known.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/descriptors/known.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "93c26dcc782b69705e0e84babaf195740f6990e9413e27722e4eb4170400ffc5",
+        "observed_sha256": "93c26dcc782b69705e0e84babaf195740f6990e9413e27722e4eb4170400ffc5",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/model.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/descriptors/model.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "fa2de5b3d082e99d475d02ef76b8905e26f7abe0089f30ce3251406f956a3c08",
+        "observed_sha256": "fa2de5b3d082e99d475d02ef76b8905e26f7abe0089f30ce3251406f956a3c08",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/package.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/descriptors/package.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "eb1a3dcdaafefd2a49bca96d17784526fef9f3299fd26dcf800d394046e4f7f1",
+        "observed_sha256": "eb1a3dcdaafefd2a49bca96d17784526fef9f3299fd26dcf800d394046e4f7f1",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/contract.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/contract.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "f04a5033aab0d0ace4d3bdd460011049cef662f8aecf7856b0d35c9e45c24113",
+        "observed_sha256": "f04a5033aab0d0ace4d3bdd460011049cef662f8aecf7856b0d35c9e45c24113",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/generic/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/generic/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "d686eef806c88bc559212ad23a5af42ee4a11e6eb3099629d8dfcf14279dcdd1",
+        "observed_sha256": "d686eef806c88bc559212ad23a5af42ee4a11e6eb3099629d8dfcf14279dcdd1",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/generic/engine_offload.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/generic/engine_offload.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "b64169397d0f8091924af835dad8c53aa645d00de7828fccaf18574ab357e1fb",
+        "observed_sha256": "b64169397d0f8091924af835dad8c53aa645d00de7828fccaf18574ab357e1fb",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/generic/graph_capture.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/generic/graph_capture.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "cc153c3e272cd18b7510dec81e625168124e7db3f06909bf6cdb49cfd9e8fd52",
+        "observed_sha256": "cc153c3e272cd18b7510dec81e625168124e7db3f06909bf6cdb49cfd9e8fd52",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/lingbot/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "92a28ff193f10bf19541f0e0a253b31b5b7ae7f4a8b743212debf675d0daf632",
+        "observed_sha256": "92a28ff193f10bf19541f0e0a253b31b5b7ae7f4a8b743212debf675d0daf632",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/action_terminal_elision.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/lingbot/action_terminal_elision.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "41f7b8370bc1b8928b17048dabf54520537ef431ef4d98013ead4efeab9f96d8",
+        "observed_sha256": "41f7b8370bc1b8928b17048dabf54520537ef431ef4d98013ead4efeab9f96d8",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/cfg_elision.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/lingbot/cfg_elision.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "3cbc5e5f2ace0b2d061383698cfd85a0a5190f2a4e8e02fa2c3e6e0b9fc56468",
+        "observed_sha256": "3cbc5e5f2ace0b2d061383698cfd85a0a5190f2a4e8e02fa2c3e6e0b9fc56468",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/conditioning_prefill.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/lingbot/conditioning_prefill.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "10926b28cd68d773d773ec5b884672db9d8cdfac64d9758ae934860c37c204ae",
+        "observed_sha256": "10926b28cd68d773d773ec5b884672db9d8cdfac64d9758ae934860c37c204ae",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/conv_layout_ndhwc.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/lingbot/conv_layout_ndhwc.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "264c0addbbfcff2ba0e8f445af6fe2d7e85f799124749a2a2c6ff3992412e2af",
+        "observed_sha256": "264c0addbbfcff2ba0e8f445af6fe2d7e85f799124749a2a2c6ff3992412e2af",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/ring_kv.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/lingbot/ring_kv.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "ba5addcbabf82d76194aa98c20b738dd3dfba4d267f4e62a747fb6dc91fa5d12",
+        "observed_sha256": "ba5addcbabf82d76194aa98c20b738dd3dfba4d267f4e62a747fb6dc91fa5d12",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/sm120_gated_residual.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/lingbot/sm120_gated_residual.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "3a151b5f00b5144874436cf7570b9a635fbba73e30d724722d5dc7a6e2128b1a",
+        "observed_sha256": "3a151b5f00b5144874436cf7570b9a635fbba73e30d724722d5dc7a6e2128b1a",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/sm120_wan_stage2.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/lingbot/sm120_wan_stage2.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "7f6162ba2d175db9ad56425a3aa8cb68b90f1778c343ba37f381ea02618d3abf",
+        "observed_sha256": "7f6162ba2d175db9ad56425a3aa8cb68b90f1778c343ba37f381ea02618d3abf",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/substrate.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/lingbot/substrate.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "cff56c57748cb40212a2072d8dcfd1b0bd395a8446492f8a71682a31e8afe2a8",
+        "observed_sha256": "cff56c57748cb40212a2072d8dcfd1b0bd395a8446492f8a71682a31e8afe2a8",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/registry.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/passes/registry.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "f4e300ea720721cc0ffbc3ddbf5172d67b3d9f9ba00b64900b3ed071cdf879e8",
+        "observed_sha256": "f4e300ea720721cc0ffbc3ddbf5172d67b3d9f9ba00b64900b3ed071cdf879e8",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/planners/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/planners/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "bc31c3c764fa6c98acbd7b5aa0f46b1030d341b823c0bc01ffb59ebb700d4a80",
+        "observed_sha256": "bc31c3c764fa6c98acbd7b5aa0f46b1030d341b823c0bc01ffb59ebb700d4a80",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/planners/planner.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/planners/planner.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "99c5346ebe437f4d3d26bc8dcd10755e8a2180fe1b4573b45e905ca9597f7a4e",
+        "observed_sha256": "99c5346ebe437f4d3d26bc8dcd10755e8a2180fe1b4573b45e905ca9597f7a4e",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/engine_backend.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/engine_backend.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "27387e1b240a54cb4e525902fe61c6d12e2db69c2a1eece6346dfbd910b35db2",
+        "observed_sha256": "27387e1b240a54cb4e525902fe61c6d12e2db69c2a1eece6346dfbd910b35db2",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/execution.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/execution.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "be2d16d6d4a6df7283223b50d88cf5defebec21d54d4711687d6788584b44f41",
+        "observed_sha256": "be2d16d6d4a6df7283223b50d88cf5defebec21d54d4711687d6788584b44f41",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/facade.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/facade.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "b72a8cd3889e6681250c65f7ef671448e8719ee61e78deb3ecb4f76c59db1435",
+        "observed_sha256": "b72a8cd3889e6681250c65f7ef671448e8719ee61e78deb3ecb4f76c59db1435",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/lingbot_install.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/lingbot_install.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "a2bce76e99f4443089d21bbc12b3bed53afc1fb2df5e796b225c5b94e4688aea",
+        "observed_sha256": "a2bce76e99f4443089d21bbc12b3bed53afc1fb2df5e796b225c5b94e4688aea",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/loader.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/loader.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "6d7714c41045e83c5fd82d3f0d523429e7c8098c746112eef516d57e8dcacbfe",
+        "observed_sha256": "6d7714c41045e83c5fd82d3f0d523429e7c8098c746112eef516d57e8dcacbfe",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/precision.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/precision.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "f3486d11b3ca1f1297222c08787619441fe5e3408f28bc2337db8bc01ac288be",
+        "observed_sha256": "f3486d11b3ca1f1297222c08787619441fe5e3408f28bc2337db8bc01ac288be",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/sm120_install.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/sm120_install.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "7d527ed57b46b6ebe601273ca49d4cda2b31fe1d60dd5af0a8d37f530cda724a",
+        "observed_sha256": "7d527ed57b46b6ebe601273ca49d4cda2b31fe1d60dd5af0a8d37f530cda724a",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/sm120_stage2_install.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/sm120_stage2_install.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/state/__init__.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/state/__init__.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "9d1e43574a1929b73c892cccff56453d2bc71bd02df85a83850208da2e69fc0b",
+        "observed_sha256": "9d1e43574a1929b73c892cccff56453d2bc71bd02df85a83850208da2e69fc0b",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/state/types.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/state/types.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "e60c9f4c9a513abcd2d26ee4f32a7fa72a96a8b511c34a2e0565d40c490fc5b9",
+        "observed_sha256": "e60c9f4c9a513abcd2d26ee4f32a7fa72a96a8b511c34a2e0565d40c490fc5b9",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/step_cache_policy.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/step_cache_policy.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "01e8e6e134a1b9fac17f3951f44d2cbc7c42168e4e10090556ffccbbeb8d51fa",
+        "observed_sha256": "01e8e6e134a1b9fac17f3951f44d2cbc7c42168e4e10090556ffccbbeb8d51fa",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/telemetry.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/telemetry.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "b4b254da55986c2d30c706714d5ae50c6314ef02985b405bf18b446aa50424df",
+        "observed_sha256": "b4b254da55986c2d30c706714d5ae50c6314ef02985b405bf18b446aa50424df",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/wan_va_engine.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/wan_va_engine.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "99736a2ba02973d4731468d04781dd59fc65cdfa6d59c577fac2d5cdfe455fa8",
+        "observed_sha256": "99736a2ba02973d4731468d04781dd59fc65cdfa6d59c577fac2d5cdfe455fa8",
+        "recorded_path": "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/wan_va_engine_build.py",
+        "restored_path": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/instinctflash/runtime/wan_va_engine_build.py"
+      },
+      {
+        "exact": true,
+        "expected_sha256": "9c2a427611db487fea5cf40f184b713bf2088e533990ee00fdcd020d2668b4bf",
+        "observed_sha256": "9c2a427611db487fea5cf40f184b713bf2088e533990ee00fdcd020d2668b4bf",
+        "recorded_path": "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v1/va/wan_va/wan_va_server.py",
+        "restored_path": "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v1/va/wan_va/wan_va_server.py"
+      }
+    ],
+    "reference_sha256": "db01a0a640d01e25548fb1fe7b32bc6f446d68faaba2a5844e78b12197663a94",
+    "status": "passed"
+  },
+  "pip_check": "No broken requirements found.",
+  "uv_pip_check": "Using Python 3.12.3 environment at: /dev/shm/ifl_va_native_2v4a_env_20260915_v1\nChecked 72 packages in 1ms\nAll installed packages are compatible",
+  "original_payload_preservation": {
+    "verified_source_files": 17271,
+    "verified_source_logical_bytes": 4665147301,
+    "original_environment_file_bytes_modes_mtimes_unchanged": true
+  },
+  "scope": [
+    "Restored from exact original runtime/build version logs; current core and native FlashRT source versions are retained.",
+    "Same-version large installed payloads reuse existing verified DreamZero bytes; this does not assert an unavailable whole-package historical VA fingerprint.",
+    "Source inode link counts and ctime necessarily increased for intentional hardlinks; all original payload bytes, modes and mtimes were verified unchanged.",
+    "Root may subsequently overlay exactly two reviewed benchmark files and run actual GPU qualification separately."
+  ],
+  "original_completion_sha256": "6b6458a85e6f16c96a599307cc4851757586c8e521b2139737de6c5fab43f4ae",
+  "full_preservation_manifest_sha256": "a05b4822a85023ec906b1c3d4e5daee322836a6bdd23b726e3e4096445f70d71",
+  "full_preservation_manifest_scope": "Retained operationally in the source environment restore archive; 6.9MB file inventory omitted from this compact published evidence."
+}

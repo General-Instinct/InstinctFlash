@@ -5,12 +5,29 @@ The checkpoint declaration is resolved without constructing a Runtime backend.
 """
 import os
 import sys
+from collections.abc import Mapping
 from types import SimpleNamespace
 
 
-def build(family, checkpoint, *, output_dir):
+def resolve_native_nfe(family, declared, nfe=None):
+    """Resolve an explicit upstream VA schedule without changing checkpoint facts."""
+    steps = dict(declared or {})
+    if nfe is None:
+        return steps
+    if family != 'va':
+        raise ValueError('Native schedule overrides are supported only for LingBot-VA')
+    if (not isinstance(nfe, Mapping) or not nfe or set(nfe) - {'video', 'action'}
+            or any(type(value) is not int or value <= 0 for value in nfe.values())):
+        raise ValueError('Native VA nfe must contain positive integer video/action steps')
+    if any(type(steps.get(key)) is not int or steps[key] <= 0 for key in ('video', 'action')):
+        raise ValueError('Native VA checkpoint must declare positive video/action steps')
+    return {**steps, **nfe}
+
+
+def build(family, checkpoint, *, output_dir, nfe=None):
     extra = dict(checkpoint.execution.extra or {})
-    steps = dict(checkpoint.execution.nfe or {})
+    steps = resolve_native_nfe(family, checkpoint.execution.nfe, nfe)
+    native_nfe = None if nfe is None else dict(nfe)
     dev = 'cuda:0'
     if family == 'pi05':
         from lerobot.policies.factory import make_pre_post_processors
@@ -160,15 +177,21 @@ def build(family, checkpoint, *, output_dir):
             raise
     else:
         raise ValueError(f'No audited upstream constructor for {family}')
-    return Reference(checkpoint, loop)
+    return Reference(checkpoint, loop, native_nfe=native_nfe)
 
 
 class Reference:
-    def __init__(self, checkpoint, loop):
+    def __init__(self, checkpoint, loop, *, native_nfe=None):
         self._checkpoint = checkpoint
         self._backend = SimpleNamespace(_impl=loop)
         self.plan = SimpleNamespace(results=[], explain=lambda: 'Upstream eager; no optimization passes installed')
         self.execution_policy = {'reference': 'upstream eager native policy; shared I/O translation only'}
+        if native_nfe is not None:
+            declared = dict(checkpoint.execution.nfe or {})
+            effective = resolve_native_nfe('va', declared, native_nfe)
+            self.execution_policy.update(
+                checkpoint_nfe=declared, native_nfe_override=dict(native_nfe),
+                nfe=effective, schedule_changed=effective != declared)
 
     @property
     def backend_stats(self):

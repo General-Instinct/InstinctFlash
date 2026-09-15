@@ -208,6 +208,23 @@ def observed_schedule(api, family, expected):
     return result
 
 
+def native_schedule_override(cell):
+    """Validate a declared upstream schedule separately from Runtime options."""
+    if "native_nfe" not in cell:
+        return None
+    if cell.get("arm") != "eager_native":
+        raise ValueError("native_nfe is only valid for the eager_native arm")
+    override = cell["native_nfe"]
+    if not isinstance(override, dict):
+        raise ValueError("native_nfe must be a nonempty video/action mapping")
+    expected = cell.get("effective_schedule", {}).get("nfe")
+    from .native_reference import resolve_native_nfe
+    effective = resolve_native_nfe(cell.get("family"), expected, override)
+    if effective != expected:
+        raise ValueError("native_nfe differs from the frozen effective schedule")
+    return dict(override)
+
+
 def capture(matrix_path, cell_id, output_root, fixture):
     import numpy as np
     import torch
@@ -216,6 +233,7 @@ def capture(matrix_path, cell_id, output_root, fixture):
 
     matrix = json.loads(Path(matrix_path).read_text())
     cell = next(row for row in matrix["cells"] if row["id"] == cell_id)
+    native_nfe = native_schedule_override(cell)
     output = Path(output_root) / cell["receipt"]
     output.parent.mkdir(parents=True, exist_ok=True)
     if output.exists() or output.with_suffix(".npz").exists():
@@ -240,6 +258,8 @@ def capture(matrix_path, cell_id, output_root, fixture):
                         "action_shape": cell["action_shape"]},
         setup_scope="Checkpoint resolution, construction and initial reset; first predict reported separately",
         scope="Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator")
+    if native_nfe is not None:
+        report["native_nfe_override"] = native_nfe
     api = None
     try:
         assert torch.cuda.get_device_capability() == (11, 0), "This study targets Jetson Thor"
@@ -258,7 +278,10 @@ def capture(matrix_path, cell_id, output_root, fixture):
             from instinctflash.descriptors.package import from_pretrained
             from .native_reference import build
             checkpoint = from_pretrained(cell["model_id"], revision=cell["revision"])
-            api = build(family, checkpoint, output_dir=output.parent)
+            if native_nfe is None:
+                api = build(family, checkpoint, output_dir=output.parent)
+            else:
+                api = build(family, checkpoint, output_dir=output.parent, nfe=native_nfe)
         else:
             api = Runtime.from_pretrained(cell["model_id"], revision=cell["revision"], **options)
             report["observation_contract"] = api.observation.describe()
@@ -347,7 +370,8 @@ def capture(matrix_path, cell_id, output_root, fixture):
         report["observed_nfe_after"] = observed_schedule(api, family, cell["effective_schedule"]["nfe"])
         report["guidance"] = str(checkpoint.execution.guidance)
         report["effective_schedule"] = {**cell["effective_schedule"],
-            "nfe": {**report["default_schedule"], **options.get("nfe", {})}}
+            "nfe": {**report["default_schedule"],
+                    **(native_nfe if native_nfe is not None else options.get("nfe", {}))}}
         report["execution_policy"] = api.execution_policy
         if cell["arm"] != "eager_native":
             if dict(report["execution_policy"].get("nfe", {})) != report["effective_schedule"]["nfe"]:

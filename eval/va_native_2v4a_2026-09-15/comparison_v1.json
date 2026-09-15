@@ -1,0 +1,54 @@
+{
+  "schema": "instinctflash.va_native_2v4a.comparison.v1",
+  "status": "passed_recorded_input_latency",
+  "device": "NVIDIA Thor",
+  "measured_date": "2026-09-15",
+  "rows": [
+    {
+      "name": "native_2v4a",
+      "receipt": "eval/va_native_2v4a_2026-09-15/run_native_v1/cells/va-eager_native-2v4a/receipt.json",
+      "receipt_sha256": "79fdd27cf7fb64b1c4ca50dcfeecea201a229bd4b20e0d7511ca66ebe70cf73d",
+      "action_archive_sha256": "b5025719c981171edb4424684fc9fa8a39aad028cd0799d5e25adf29f22889f1",
+      "p50_ms": 2071.2948765140027,
+      "capture": "new capture",
+      "precision": "native",
+      "nfe": {
+        "video": 2,
+        "action": 4
+      },
+      "calls": 21
+    },
+    {
+      "name": "instinctflash_2v4a_fp8",
+      "receipt": "eval/public_release_2026-09-15/qualification/va/run/cells/va-2v4a-fp8/receipt.json",
+      "receipt_sha256": "036afc3a29ffbbeb2ac55c083502461d96fc1d1fde3e1920b9078d5dae6e9f40",
+      "action_archive_sha256": "c664e4851fbab124a4234f453ef0f526ab16839f809244afc408214626915164",
+      "p50_ms": 459.0979430358857,
+      "capture": "unchanged published same-day capture",
+      "precision": "fp8",
+      "nfe": {
+        "video": 2,
+        "action": 4
+      },
+      "calls": 21
+    }
+  ],
+  "primary_indices": [
+    4,
+    5,
+    7,
+    8,
+    10,
+    11,
+    13,
+    14,
+    16,
+    17,
+    19,
+    20
+  ],
+  "identical_21_case_hashes": true,
+  "same_schedule_speedup": 4.511662288916199,
+  "quality_certified": false,
+  "scope": "Single additive upstream native 2V/4A capture compared with frozen same-day Flash FP8 2V/4A. Same checkpoint, requests, feedback, guidance, schedule, timing and package versions; precision and acceleration differ. Not a new task-quality certificate."
+}

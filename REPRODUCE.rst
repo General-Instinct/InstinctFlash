@@ -128,16 +128,19 @@ For Edge, bind the library produced by the native build during preparation::
       --model edge --mode numeric --output edge-inputs \
       --library IFL_BF16_KERNEL_LIBRARY=/path/to/native/libinstinctflash_bf16.so
 
-For both LingBot-VA rows, share one native baseline and explicitly add the
-reduced-step operating point::
+For LingBot-VA, reproduce the full-schedule native reference and both
+InstinctFlash operating points::
 
     python -I -m benchmarks.regression.reproduce prepare \
       --model va --mode fp8 --extra-mode 2v4a-fp8 --output va-inputs
     python -I -m benchmarks.regression.reproduce run \
       --prepared va-inputs --output va-results
 
-The report compares both candidates against original 25V/50A eager execution
-and labels 2V/4A as a different sampling policy.
+This report compares both candidates against original 25V/50A eager execution
+and labels 2V/4A as a different sampling policy. The README's 2V/4A row uses an
+additional native 2V/4A measurement for its same-schedule ratio; run the
+`native 2V/4A recipe <eval/va_native_2v4a_2026-09-15/README.rst>`_
+from the current source installation to reproduce that cell.
 
 For DreamZero, limit concurrent compiler workers before running or serving::
 

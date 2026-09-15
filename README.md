@@ -16,30 +16,30 @@
 
 - **Full source and eight model families.** Public install, paired inference and WebSocket serving paths are qualified for all eight models below.
 - **Cosmos3 at full UniPC4/CFG3.** Edge: **1048.01 ms**; Nano: **4772.38 ms**, both native precision with NUMERIC optimizations.
-- **LingBot-VA @2V/4A.** **459.10 ms / 33.78×** versus the full 25V/50A native reference in early continuations; full 25V/50A FP8: **2891.74 ms**.
+- **LingBot-VA @2V/4A.** **459.10 ms / 4.51×** versus native 2V/4A in early continuations; full 25V/50A FP8: **2891.74 ms**.
 - **pi05 FP8.** **51.85 ms / 7.88×** versus native, retaining NFE10.
 
 ## Results
 
 Prediction p50 on **Jetson Thor** (ms), measured September 15, 2026.
 
-| Model | Native PyTorch | InstinctFlash | Speedup |
-| --- | ---: | ---: | ---: |
-| LingBot-VA | 15506.32 · 25V/50A | **2891.74** · FP8, 25V/50A | **5.36×** |
-| ↳ LingBot-VA @2V/4A | — | **459.10** · FP8, 2V/4A | **33.78×** |
-| LingBot-VLA-4B | 624.22 · NFE10 | **221.53** · FP8, NFE10 | **2.82×** |
-| LingBot-VLA-V2-6B | 734.56 · NFE10 | **394.11** · FP8, NFE10 | **1.86×** |
-| Cosmos3 Edge DROID | 3393.78 · UniPC4 CFG3 | **1048.01** · BF16 NUMERIC, UniPC4 CFG3 | **3.24×** |
-| Cosmos3 Nano DROID | 10184.68 · UniPC4 CFG3 | **4772.38** · BF16 NUMERIC, UniPC4 CFG3 | **2.13×** |
-| pi05 | 408.58 · NFE10 | **51.85** · FP8, NFE10 | **7.88×** |
-| GR00T N1.7 | 139.50 · NFE4 | **117.30** · native, NFE4 | **1.19×** |
-| DreamZero DROID | 23563.08 · fixed 8/16 DiT | **11899.42** · FP8, 16 solver updates, dynamic cache | **1.98×** |
+| Model | Native PyTorch | InstinctFlash |
+| --- | ---: | ---: |
+| LingBot-VA | 15506.32 · 25V/50A | **2891.74 (5.36×)** · FP8, 25V/50A |
+| ↳ LingBot-VA @2V/4A | 2071.29 · 2V/4A | **459.10 (4.51×)** · FP8, 2V/4A |
+| LingBot-VLA-4B | 624.22 · NFE10 | **221.53 (2.82×)** · FP8, NFE10 |
+| LingBot-VLA-V2-6B | 734.56 · NFE10 | **394.11 (1.86×)** · FP8, NFE10 |
+| Cosmos3 Edge DROID | 3393.78 · UniPC4 CFG3 | **1048.01 (3.24×)** · BF16 NUMERIC, UniPC4 CFG3 |
+| Cosmos3 Nano DROID | 10184.68 · UniPC4 CFG3 | **4772.38 (2.13×)** · BF16 NUMERIC, UniPC4 CFG3 |
+| pi05 | 408.58 · NFE10 | **51.85 (7.88×)** · FP8, NFE10 |
+| GR00T N1.7 | 139.50 · NFE4 | **117.30 (1.19×)** · native, NFE4 |
+| DreamZero DROID | 23563.08 · fixed 8/16 DiT | **11899.42 (1.98×)** · FP8, 16 solver updates, dynamic cache |
 
-VA measures early continuations; its 2V/4A speedup uses the full 25V/50A native baseline.
+VA measures early continuations; its speedups use the native schedule in each row.
 DreamZero's native reference uses an eager DiT with vendor encoder compilation.
 These are speed measurements; task quality is evaluated separately.
 
-[Current protocol, raw results and historical comparison scope](eval/public_release_2026-09-15/results.rst) · [Reproduction commands](REPRODUCE.rst)
+[Protocol and raw results](eval/public_release_2026-09-15/results.rst) · [Native VA 2V/4A measurement](eval/va_native_2v4a_2026-09-15/README.rst) · [Reproduction commands](REPRODUCE.rst)
 
 ## Install
 

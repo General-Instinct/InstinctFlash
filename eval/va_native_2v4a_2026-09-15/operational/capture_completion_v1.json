@@ -1,0 +1,50 @@
+{
+  "status": "passed",
+  "started_unix": 1789491034.5824745,
+  "pid": 295969,
+  "initial_gpu_processes": "",
+  "environment_restore_sha256": "6b6458a85e6f16c96a599307cc4851757586c8e521b2139737de6c5fab43f4ae",
+  "benchmark_overlay": [
+    {
+      "source": "/home/guanming/ifl_public_qualification_20260915_v1/va_native_2v4a_20260915_v1/native_reference.py",
+      "installed": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/benchmarks/regression/native_reference.py",
+      "before_sha256": "f41da87548879b0998ec470bf4424eb6ce0c357df4764e0f64f7c236cad2aa8d",
+      "source_sha256": "5ce9b84ec13f96e57987c971d7e66ea8256901ed25eff498dfe73cb516b4517d"
+    },
+    {
+      "source": "/home/guanming/ifl_public_qualification_20260915_v1/va_native_2v4a_20260915_v1/user_e2e.py",
+      "installed": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/lib/python3.12/site-packages/benchmarks/regression/user_e2e.py",
+      "before_sha256": "057ae88f713d417a49622c97bba353765e2fbb1e81bac6205c250009042c6ce7",
+      "source_sha256": "45887ebdd48a141178ee0cf053ae288713aa5cbc4e98b55fed02db1ad9f81c6d"
+    }
+  ],
+  "command": [
+    "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/bin/python",
+    "-I",
+    "-B",
+    "-m",
+    "benchmarks.regression.user_e2e",
+    "--matrix",
+    "/home/guanming/ifl_public_qualification_20260915_v1/va_native_2v4a_20260915_v1/matrix_v1.json",
+    "--cell",
+    "va-eager_native-2v4a",
+    "--output-root",
+    "/home/guanming/ifl_public_qualification_20260915_v1/va_native_2v4a_20260915_v1/run_native_v1",
+    "--fixture",
+    "/home/guanming/ifl_public_qualification_20260915_v1/va_both_fp8_prepared_v2/inputs/recorded_inputs_v1.npz"
+  ],
+  "environment": {
+    "LINGBOT_ROOT": "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v1/va",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "HF_HUB_DISABLE_TELEMETRY": "1",
+    "TMPDIR": "/dev/shm/ifl_va_native_2v4a_run_20260915_v1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "matrix_sha256": "aa7a563042994adda2419982e1d025ee6dfdeae92a71de8a18103ee9f3c3ee5c",
+  "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+  "returncode": 0,
+  "receipt_sha256": "79fdd27cf7fb64b1c4ca50dcfeecea201a229bd4b20e0d7511ca66ebe70cf73d",
+  "total_calls": 21,
+  "completed_unix": 1789491110.2732518
+}

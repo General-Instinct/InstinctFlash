@@ -1,0 +1,60 @@
+{
+  "bindings": [
+    {
+      "path": "inputs/recorded_inputs_v1.npz",
+      "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+    }
+  ],
+  "cells": [
+    {
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "arm": "eager_native",
+      "comparison_group": "va-upstream-2v4a",
+      "default_schedule": {
+        "action": 50,
+        "video": 25
+      },
+      "effective_schedule": {
+        "action_steps": 4,
+        "nfe": {
+          "action": 4,
+          "video": 2
+        },
+        "sampler": "checkpoint",
+        "video_steps": 2
+      },
+      "expected_optimizer_environment": {},
+      "expected_runtime_kwargs": {},
+      "experimental": true,
+      "family": "va",
+      "id": "va-eager_native-2v4a",
+      "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+      "native_nfe": {
+        "action": 4,
+        "video": 2
+      },
+      "receipt": "cells/va-eager_native-2v4a/receipt.json",
+      "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70"
+    }
+  ],
+  "protocol": {
+    "history": {
+      "cycles_per_episode": 3,
+      "measured_episodes": 6,
+      "warmup_episodes": 1
+    },
+    "pi05_queue_calls": 51,
+    "stateless": {
+      "measured": 20,
+      "warmup": 5
+    }
+  },
+  "quality_certified": false,
+  "require_observed_schedule": true,
+  "schema": 1,
+  "scope": "Single additive native upstream changed-schedule measurement. This is not the frozen three-arm checkpoint-default reproduction matrix."
+}

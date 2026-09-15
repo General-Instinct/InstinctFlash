@@ -1,0 +1,350 @@
+{
+  "schema": "instinctflash.va_native_2v4a.recipe_review.v1",
+  "status": "reviewed_recipe_no_execution",
+  "checkpoint": {
+    "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+    "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+    "snapshot_reference": "/home/guanming/.cache/huggingface/hub/models--robbyant--lingbot-va-posttrain-robotwin/snapshots/8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+    "resolved_original": "/home/guanming/ckpt_lingbot/lingbot-va-posttrain-robotwin"
+  },
+  "native_constructor": "benchmarks.regression.native_reference.build -> wan_va_server.VA_Server; shared public I/O wrapper only",
+  "native_schedule": {
+    "video": 2,
+    "action": 4
+  },
+  "original_checkpoint_schedule": {
+    "action": 50,
+    "video": 25
+  },
+  "guidance": {
+    "video": {
+      "mode": "cfg",
+      "scale": 5.0
+    },
+    "action": {
+      "mode": "positive_only",
+      "scale": 1.0
+    }
+  },
+  "precision": "checkpoint-native BF16",
+  "protocol": {
+    "episodes": 7,
+    "cycles_per_episode": 3,
+    "warmup_episodes": 1,
+    "measured_episodes": 6,
+    "total_requests": 21,
+    "primary_indices": [
+      4,
+      5,
+      7,
+      8,
+      10,
+      11,
+      13,
+      14,
+      16,
+      17,
+      19,
+      20
+    ],
+    "primary_metric": "continuation_p50_ms",
+    "construction_seed": 9173,
+    "request_seeds": [
+      1300,
+      1301,
+      1302,
+      1303,
+      1304,
+      1305,
+      1306,
+      1307,
+      1308,
+      1309,
+      1310,
+      1311,
+      1312,
+      1313,
+      1314,
+      1315,
+      1316,
+      1317,
+      1318,
+      1319,
+      1320
+    ],
+    "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+    "feedback": "fixed recorded executed_action included in timed commit"
+  },
+  "request_cases": [
+    {
+      "i": 0,
+      "episode": 0,
+      "cycle": 0,
+      "phase": "warmup",
+      "seed": 1300,
+      "input_sha256": "a19f395355e68189fa433ce31b5bede6e866a0ef09b4ff2ca2ccea6bc5c07bae",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 1,
+      "episode": 0,
+      "cycle": 1,
+      "phase": "warmup",
+      "seed": 1301,
+      "input_sha256": "ded50910667d4e6903ff214c0e04c8a380889006ffae10dd718e392bcd058659",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 2,
+      "episode": 0,
+      "cycle": 2,
+      "phase": "warmup",
+      "seed": 1302,
+      "input_sha256": "2e73f5121166c9ef0d35a6cfe01f4c2f98d9e1be3d5a9eb99cc239f84f97f25e",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    },
+    {
+      "i": 3,
+      "episode": 1,
+      "cycle": 0,
+      "phase": "measured",
+      "seed": 1303,
+      "input_sha256": "861b450ff9041cd10186ea7cb2761de69b555d233178de66ecbaa25dd241ffaf",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 4,
+      "episode": 1,
+      "cycle": 1,
+      "phase": "measured",
+      "seed": 1304,
+      "input_sha256": "32222e2070a3f55c817926a8118ca16e2ed18080f55a542584969f63d52f70cd",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 5,
+      "episode": 1,
+      "cycle": 2,
+      "phase": "measured",
+      "seed": 1305,
+      "input_sha256": "12aa888bfbe604c91ee145f6075e7c2733ba2086d211e7e6974996ed83774c49",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    },
+    {
+      "i": 6,
+      "episode": 2,
+      "cycle": 0,
+      "phase": "measured",
+      "seed": 1306,
+      "input_sha256": "a19f395355e68189fa433ce31b5bede6e866a0ef09b4ff2ca2ccea6bc5c07bae",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 7,
+      "episode": 2,
+      "cycle": 1,
+      "phase": "measured",
+      "seed": 1307,
+      "input_sha256": "ded50910667d4e6903ff214c0e04c8a380889006ffae10dd718e392bcd058659",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 8,
+      "episode": 2,
+      "cycle": 2,
+      "phase": "measured",
+      "seed": 1308,
+      "input_sha256": "2e73f5121166c9ef0d35a6cfe01f4c2f98d9e1be3d5a9eb99cc239f84f97f25e",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    },
+    {
+      "i": 9,
+      "episode": 3,
+      "cycle": 0,
+      "phase": "measured",
+      "seed": 1309,
+      "input_sha256": "861b450ff9041cd10186ea7cb2761de69b555d233178de66ecbaa25dd241ffaf",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 10,
+      "episode": 3,
+      "cycle": 1,
+      "phase": "measured",
+      "seed": 1310,
+      "input_sha256": "32222e2070a3f55c817926a8118ca16e2ed18080f55a542584969f63d52f70cd",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 11,
+      "episode": 3,
+      "cycle": 2,
+      "phase": "measured",
+      "seed": 1311,
+      "input_sha256": "12aa888bfbe604c91ee145f6075e7c2733ba2086d211e7e6974996ed83774c49",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    },
+    {
+      "i": 12,
+      "episode": 4,
+      "cycle": 0,
+      "phase": "measured",
+      "seed": 1312,
+      "input_sha256": "a19f395355e68189fa433ce31b5bede6e866a0ef09b4ff2ca2ccea6bc5c07bae",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 13,
+      "episode": 4,
+      "cycle": 1,
+      "phase": "measured",
+      "seed": 1313,
+      "input_sha256": "ded50910667d4e6903ff214c0e04c8a380889006ffae10dd718e392bcd058659",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 14,
+      "episode": 4,
+      "cycle": 2,
+      "phase": "measured",
+      "seed": 1314,
+      "input_sha256": "2e73f5121166c9ef0d35a6cfe01f4c2f98d9e1be3d5a9eb99cc239f84f97f25e",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    },
+    {
+      "i": 15,
+      "episode": 5,
+      "cycle": 0,
+      "phase": "measured",
+      "seed": 1315,
+      "input_sha256": "861b450ff9041cd10186ea7cb2761de69b555d233178de66ecbaa25dd241ffaf",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 16,
+      "episode": 5,
+      "cycle": 1,
+      "phase": "measured",
+      "seed": 1316,
+      "input_sha256": "32222e2070a3f55c817926a8118ca16e2ed18080f55a542584969f63d52f70cd",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 17,
+      "episode": 5,
+      "cycle": 2,
+      "phase": "measured",
+      "seed": 1317,
+      "input_sha256": "12aa888bfbe604c91ee145f6075e7c2733ba2086d211e7e6974996ed83774c49",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    },
+    {
+      "i": 18,
+      "episode": 6,
+      "cycle": 0,
+      "phase": "measured",
+      "seed": 1318,
+      "input_sha256": "a19f395355e68189fa433ce31b5bede6e866a0ef09b4ff2ca2ccea6bc5c07bae",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 19,
+      "episode": 6,
+      "cycle": 1,
+      "phase": "measured",
+      "seed": 1319,
+      "input_sha256": "ded50910667d4e6903ff214c0e04c8a380889006ffae10dd718e392bcd058659",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 20,
+      "episode": 6,
+      "cycle": 2,
+      "phase": "measured",
+      "seed": 1320,
+      "input_sha256": "2e73f5121166c9ef0d35a6cfe01f4c2f98d9e1be3d5a9eb99cc239f84f97f25e",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    }
+  ],
+  "published_controls": {
+    "native_full": {
+      "path": "eval/public_release_2026-09-15/qualification/va/run/cells/va-eager_native/receipt.json",
+      "sha256": "d6a052db19641dcbffab551092d0b419f5d6a35d4a81b609407aa034016258ca",
+      "primary_p50_ms": 15506.31952600088
+    },
+    "flash_2v4a_fp8": {
+      "path": "eval/public_release_2026-09-15/qualification/va/run/cells/va-2v4a-fp8/receipt.json",
+      "sha256": "036afc3a29ffbbeb2ac55c083502461d96fc1d1fde3e1920b9078d5dae6e9f40",
+      "primary_p50_ms": 459.0979430358857
+    }
+  },
+  "fixture": {
+    "path": "benchmarks/regression/fixtures/recorded_inputs_v1.npz",
+    "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+  },
+  "required_execution_gates": [
+    "Fresh isolated process, installed public package, no competing Thor GPU compute process.",
+    "Original pinned checkpoint and vendor/source unchanged; capture explicit only-native schedule override.",
+    "Independent loaded job_config NFE before and after == video2/action4; CFG video5/action1.",
+    "Empty Runtime kwargs, optimizer environment, applied passes and graph stats; upstream native constructor performs no FP8 conversion (not an independent tensor inventory).",
+    "All21 public action arrays finite, exact shape[21,16,2,16], saved npz with SHA256.",
+    "All21 input/prompt/feedback hashes and seeds exact published cases; primary indices fixed before measurement.",
+    "Synchronize before/after entire predict and feedback commit; preserve warmup/reset timings and full raw21calls.",
+    "CPU user_report._validate_cell with observed schedule required; primary median recomputed independently."
+  ],
+  "implementation_recommendation": {
+    "minimal_optional_support": "native_reference.build optional explicit nfe for VA; user_e2e accepts native_nfe only for eager_native and reports original default and effective override separately.",
+    "reason": "Current installed public native constructor reads only checkpoint.execution.nfe; Runtime precision=native is optimized and is not upstream Native PyTorch.",
+    "public_recipe": "A separate reproducible single-cell matrix and direct user_e2e invocation avoid modifying existing deployment native defaults or frozen four-cell results."
+  },
+  "no_gpu_or_ssh_actions_performed": true,
+  "quality_certified": false,
+  "original_qualified_source_bindings": {
+    "benchmarks/regression/user_e2e.py": "057ae88f713d417a49622c97bba353765e2fbb1e81bac6205c250009042c6ce7",
+    "benchmarks/regression/native_reference.py": "f41da87548879b0998ec470bf4424eb6ce0c357df4764e0f64f7c236cad2aa8d",
+    "benchmarks/regression/user_report.py": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+  },
+  "capture_source_bindings": {
+    "benchmarks/regression/user_e2e.py": "45887ebdd48a141178ee0cf053ae288713aa5cbc4e98b55fed02db1ad9f81c6d",
+    "benchmarks/regression/native_reference.py": "5ce9b84ec13f96e57987c971d7e66ea8256901ed25eff498dfe73cb516b4517d",
+    "benchmarks/regression/user_report.py": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+  },
+  "original_qualified_environment": {
+    "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/va/bin/python",
+    "torch": "2.11.0+cu130",
+    "device": "NVIDIA Thor",
+    "optimizer_environment": {},
+    "numeric_environment": {
+      "matmul_tf32": false,
+      "cudnn_tf32": false,
+      "cudnn_benchmark": false
+    },
+    "guidance_inherited_from_checkpoint": "video CFG5, action positive_only scale1"
+  },
+  "capture_environment": {
+    "interpreter": "/dev/shm/ifl_va_native_2v4a_env_20260915_v1/bin/python",
+    "restoration_receipt": "operational/environment_restore_v1/completion.json",
+    "scope": "Exact versions and model/runtime source restored from the qualified VA environment; two benchmark files add explicit native sampling override."
+  }
+}

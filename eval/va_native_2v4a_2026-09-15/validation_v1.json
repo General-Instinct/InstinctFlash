@@ -1,0 +1,157 @@
+{
+  "schema": "instinctflash.va_native_2v4a.validation.v1",
+  "status": "passed_recorded_input_native_latency",
+  "matrix": {
+    "path": "/home/ubuntu/InstinctFlash/eval/va_native_2v4a_2026-09-15/matrix_v1.json",
+    "sha256": "aa7a563042994adda2419982e1d025ee6dfdeae92a71de8a18103ee9f3c3ee5c"
+  },
+  "recipe": {
+    "path": "/home/ubuntu/InstinctFlash/eval/va_native_2v4a_2026-09-15/recipe_review_v1.json",
+    "sha256": "aaa16e2e9b2642bc406e4225ad6501d9ea15c224475bb32b090e26ead61c1647"
+  },
+  "validator_sha256": "4c69cc140ec8da0b5b72bfd8ecb1e98af8f016fafd8987c21d5bb5aae926adbf",
+  "native": {
+    "id": "va-eager_native-2v4a",
+    "family": "va",
+    "arm": "eager_native",
+    "status": "passed",
+    "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+    "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+    "precision": "native",
+    "comparison_group": "va-upstream-2v4a",
+    "experimental": true,
+    "runtime_kwargs": {},
+    "optimizer_environment": {},
+    "default_schedule": {
+      "action": 50,
+      "video": 25
+    },
+    "effective_schedule": {
+      "action_steps": 4,
+      "nfe": {
+        "action": 4,
+        "video": 2
+      },
+      "sampler": "checkpoint",
+      "video_steps": 2
+    },
+    "guidance": "{'action': 'positive_only', 'video': 'cfg'}",
+    "observed_schedule": {
+      "status": "passed",
+      "nfe_before": {
+        "video": 2,
+        "action": 4
+      },
+      "nfe_after": {
+        "video": 2,
+        "action": 4
+      }
+    },
+    "execution_policy": {
+      "reference": "upstream eager native policy; shared I/O translation only",
+      "checkpoint_nfe": {
+        "action": 50,
+        "video": 25
+      },
+      "native_nfe_override": {
+        "action": 4,
+        "video": 2
+      },
+      "nfe": {
+        "action": 4,
+        "video": 2
+      },
+      "schedule_changed": true
+    },
+    "device": "NVIDIA Thor",
+    "torch": "2.11.0+cu130",
+    "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+    "input_contract": {
+      "family": "va",
+      "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+      "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+      "action_shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    "setup_seconds": 28.645699137006886,
+    "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+    "first_predict_ms": 1834.3359170248732,
+    "measured": {
+      "count": 18,
+      "p50_ms": 1997.8224220103584,
+      "mean_ms": 1877.9879940557294,
+      "min_ms": 1510.5850510299206,
+      "max_ms": 2119.423946016468
+    },
+    "primary_metric": "continuation_p50_ms",
+    "primary": {
+      "count": 12,
+      "p50_ms": 2071.2948765140027,
+      "mean_ms": 2059.6672780811787,
+      "min_ms": 1984.810843016021,
+      "max_ms": 2119.423946016468
+    },
+    "new_episode": {
+      "count": 6,
+      "p50_ms": 1514.7904285113327,
+      "mean_ms": 1514.6294260048307,
+      "min_ms": 1510.5850510299206,
+      "max_ms": 1519.137530005537
+    },
+    "total_calls": 21,
+    "warmup_calls": 3,
+    "timed_session_ms": 39772.92015310377,
+    "timed_session_mean_ms": 1893.948578719227,
+    "setup_plus_first_predict_ms": 30480.03505403176,
+    "setup_plus_timed_calls_mean_ms": 3258.0294900052695,
+    "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+    "action_shape": [
+      16,
+      2,
+      16
+    ],
+    "actions": {
+      "path": "/home/ubuntu/InstinctFlash/eval/va_native_2v4a_2026-09-15/run_native_v1/cells/va-eager_native-2v4a/receipt.npz",
+      "sha256": "b5025719c981171edb4424684fc9fa8a39aad028cd0799d5e25adf29f22889f1",
+      "actions_key": "actions",
+      "shape": [
+        21,
+        16,
+        2,
+        16
+      ],
+      "dtype": "float32",
+      "finite": true,
+      "array_bytes_sha256": "88200e9abd596391a2486aaef1c8427f9ac53002b9f8593155e90527e2e15978",
+      "additional_unverified_arrays": []
+    },
+    "receipt": {
+      "path": "/home/ubuntu/InstinctFlash/eval/va_native_2v4a_2026-09-15/run_native_v1/cells/va-eager_native-2v4a/receipt.json",
+      "sha256": "79fdd27cf7fb64b1c4ca50dcfeecea201a229bd4b20e0d7511ca66ebe70cf73d"
+    },
+    "request_sequence_sha256": "381ae93226814840d1d05035dc9d8fa9cd7e2ebe12abf485610bd0ead50e4ab1",
+    "task_quality_validated": false,
+    "recommended": false,
+    "usability": "succeeded on recorded requests"
+  },
+  "primary_p50_ms": 2071.2948765140027,
+  "primary_indices": [
+    4,
+    5,
+    7,
+    8,
+    10,
+    11,
+    13,
+    14,
+    16,
+    17,
+    19,
+    20
+  ],
+  "quality_certified": false,
+  "scope": "Upstream native BF16 with explicit 2V/4A; numerical/protocol/latency validation, not task quality."
+}
