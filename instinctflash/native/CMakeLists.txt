@@ -84,3 +84,17 @@ target_compile_options(instinctflash_sm120_wan_ring_concat PRIVATE
     -gencode=arch=compute_120,code=sm_120
   >
 )
+
+add_library(instinctflash_sm120_wan_qkv_parallel SHARED wan_qkv_parallel_sm120.cu)
+set_target_properties(instinctflash_sm120_wan_qkv_parallel PROPERTIES
+  POSITION_INDEPENDENT_CODE ON
+  PREFIX "lib"
+  OUTPUT_NAME "instinctflash_sm120_wan_qkv_parallel"
+)
+target_compile_options(instinctflash_sm120_wan_qkv_parallel PRIVATE
+  $<$<COMPILE_LANGUAGE:CUDA>:
+    -O3
+    -gencode=arch=compute_120,code=sm_120
+  >
+)
+target_link_libraries(instinctflash_sm120_wan_qkv_parallel PRIVATE CUDA::cublasLt)

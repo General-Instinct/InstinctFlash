@@ -125,6 +125,9 @@ def main() -> int:
     ap.add_argument("--sm120-wan-ring-concat", action="store_true",
         help="P009-A6: replace wrapped-ring K/V materialization with the exact SM120 copy. "
              "Requires --sm120-wan-gemm and IFL_SM120_RING_CONCAT_LIBRARY.")
+    ap.add_argument("--sm120-wan-qkv-parallel", action="store_true",
+        help="P009-A7: run certified Q/K/V projections on three private streams. Requires "
+             "--sm120-wan-ring-concat and IFL_SM120_QKV_PARALLEL_LIBRARY.")
 
     ap.add_argument("--graph-blocks", action="store_true",
         help="[NOT SHIPPABLE -- 2.17x but NOT bit-exact, max|d action| 1.398 = 136%% of real "
@@ -206,6 +209,8 @@ def main() -> int:
         ap.error("--sm120-wan-gemm requires --sm120-wan-qk-rope")
     if args.sm120_wan_ring_concat and not args.sm120_wan_gemm:
         ap.error("--sm120-wan-ring-concat requires --sm120-wan-gemm")
+    if args.sm120_wan_qkv_parallel and not args.sm120_wan_ring_concat:
+        ap.error("--sm120-wan-qkv-parallel requires --sm120-wan-ring-concat")
 
 
     # Every variant below calls the SAME installer that `plan.serve()` calls. They used to be
@@ -225,6 +230,7 @@ def main() -> int:
         install_sm120_wan_qk_rope,
         install_sm120_wan_gemm,
         install_sm120_wan_ring_concat,
+        install_sm120_wan_qkv_parallel,
     )
 
     S = import_lingbot_server()
@@ -332,6 +338,9 @@ def main() -> int:
 
     if getattr(args, "sm120_wan_ring_concat", False):
         applied += install_sm120_wan_ring_concat(S, S.VA_Server)
+
+    if getattr(args, "sm120_wan_qkv_parallel", False):
+        applied += install_sm120_wan_qkv_parallel(S, S.VA_Server)
 
     if getattr(args, "conv_layout", False):
         from instinctflash.backends.conv.apply import install_conv_layout

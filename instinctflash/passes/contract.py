@@ -108,6 +108,7 @@ KNOWN_FEATURES = frozenset({
     "sm120_qk_rope_kernels",
     "sm120_gemm_kernels",
     "sm120_ring_concat_kernels",
+    "sm120_qkv_parallel_kernels",
 })
 
 
@@ -257,6 +258,15 @@ class DeviceProfile:
 
             if cap == (12, 0) and ring_concat_available():
                 feats.add("sm120_ring_concat_kernels")
+        except Exception:                                    # noqa: BLE001  never fail a probe
+            pass
+        try:
+            from instinctflash.backends.sm120_wan_qkv_parallel import (
+                available as qkv_parallel_available,
+            )
+
+            if cap == (12, 0) and qkv_parallel_available():
+                feats.add("sm120_qkv_parallel_kernels")
         except Exception:                                    # noqa: BLE001  never fail a probe
             pass
         return DeviceProfile(name=p.name, capability=cap, total_memory=p.total_memory,

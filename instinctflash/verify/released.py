@@ -253,6 +253,23 @@ RELEASED = (
         measured_on="RTX 5090, author-measured",
     ),
     Released(
+        pid="P009-A7", name="sm120_wan_qkv_parallel", version="1.0.0", tier=Tier.BITEXACT,
+        step_speedup=1.0153,
+        gates="Independent SM120 ABI v1 retains the certified no-split-K cuBLASLt BF16+bias "
+              "tactics while running Q/K/V on three private non-blocking streams joined by events "
+              "to the one caller stream. Operator gate: 0 differing words over 45,121,536 outputs "
+              "across random/constant/alternating inputs, exponent scales -4/0/4, and rows 64/480; "
+              "all repeats deterministic. Local triplet speedups 1.413x/1.564x. Neutral-prewarmed "
+              "real 5B model 42-cycle A-B-B-A: 168/168 actions bitwise equal, 389.33 -> 383.45 ms "
+              "= 1.0153x; late cycles 423.91 -> 416.66 ms = 1.0174x. Candidate arms executed "
+              "exactly 12,540 A7 triplets each and baseline arms zero; arm spreads <=0.181%. Reset "
+              "replay was bitwise equal with stable output pointers. Static outputs add 0.280 GiB. "
+              "Shape, module-count, dtype, contiguity, alignment, alias, weight-version, pointer, "
+              "device, ABI, Torch/CUDA/cuBLASLt-version, split-K, workspace, and caller-stream "
+              "conditions fail closed.",
+        measured_on="RTX 5090, author-measured",
+    ),
+    Released(
         pid="P010", name="action_terminal_forward_elision", version="1.0.0", tier=Tier.BITEXACT,
         step_speedup=1.098,
         gates="Skips the action loop's padded terminal forward (wan_va_server.py:542-546, action_mode=True "
@@ -462,6 +479,10 @@ DISPOSITIONS = (
                 "Correct and modestly profitable on RTX 5090, but requires A1-A5 and its "
                 "independent dual-K/V copy ABI. It replaces only wrapped P003 ring intervals; "
                 "non-wrapped intervals and all unsupported shapes retain the PyTorch path."),
+    Disposition("P009-A7", AVAILABLE, ("--sm120-wan-qkv-parallel",),
+                "Correct and profitable on RTX 5090, but requires A1-A6 and its independent "
+                "parallel-QKV ABI. It applies only to the two certified production row counts; "
+                "other shapes and changed parameters retain the prior projection path."),
     Disposition("P010", SERVED, ("--action-terminal-elision",),
                 "Bit-exact through the ring wrap on both allocators and both operating points (two "
                 "independent 48-cycle ABBA runs, max|delta action| = 0.000e+00 everywhere), so no "

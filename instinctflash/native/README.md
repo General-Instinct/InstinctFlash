@@ -13,6 +13,7 @@ export IFL_SM120_STAGE3_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_
 export IFL_SM120_QK_ROPE_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_qk_rope.so
 export IFL_SM120_GEMM_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_gemm.so
 export IFL_SM120_RING_CONCAT_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_ring_concat.so
+export IFL_SM120_QKV_PARALLEL_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_qkv_parallel.so
 ```
 
 `DeviceProfile` reports `sm120_kernels` only when the library loads and exports the expected ABI.
@@ -42,3 +43,9 @@ P009-A6 (`sm120_ring_concat_kernels`) requires A1-A5. For a wrapped P003 ring in
 copies K and V together into one shared persistent scratch arena, preserving ascending physical
 slot order exactly. It is certified only for the production `[2,9792,24,128]` BF16 pools;
 shape, wrap state, dtype, contiguity, alignment, device, ABI, and stream mismatches fail closed.
+
+P009-A7 (`sm120_qkv_parallel_kernels`) requires A1-A6 and cuBLASLt 12.8.4. It runs the certified
+M=64/480 Q/K/V projection triplets on three private non-blocking streams, with event dependencies
+from and back to the single Runtime caller stream. It preserves the original no-split-K tactics and
+BF16 bias epilogues; shape, parameter, pointer, alias, version, device, and stream mismatches fail
+closed.
