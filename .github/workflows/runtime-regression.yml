@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python -m pip install '.[test,eval]'
+      - run: python -m pip install '.[test,eval,serve]'
       - run: >-
           python -m pytest -q tests/test_runtime_regression.py
           tests/test_cosmos_numeric_regression.py tests/test_user_report.py
