@@ -25,18 +25,18 @@ Prediction p50: Native PyTorch → InstinctFlash (ms), **speedup**. Measured Sep
 
 | Model | Jetson Thor |
 |:--|:--|
-| LingBot-VA | 15506.32 → 2891.74, **5.36×** · FP8, 25V/50A |
-| ↳ LingBot-VA @2V/4A | 2071.29 → 459.10, **4.51×** · FP8, 2V/4A |
-| LingBot-VLA-4B | 624.22 → 221.53, **2.82×** · FP8, NFE10 |
-| LingBot-VLA-V2-6B | 734.56 → 394.11, **1.86×** · FP8, NFE10 |
-| Cosmos3 Edge DROID | 3393.78 → 1048.01, **3.24×** · BF16 NUMERIC, UniPC4 CFG3 |
-| Cosmos3 Nano DROID | 10184.68 → 4772.38, **2.13×** · BF16 NUMERIC, UniPC4 CFG3 |
-| pi05 | 408.58 → 51.85, **7.88×** · FP8, NFE10 |
-| GR00T N1.7 | 139.50 → 117.30, **1.19×** · native, NFE4 |
-| DreamZero DROID | 23563.08 → 11899.42, **1.98×** · FP8, 16 solver updates, dynamic cache |
+| LingBot-VA | 15506.32 → 2891.74, **5.36×** · FP8 |
+| ↳ LingBot-VA @2V/4A | 2071.29 → 459.10, **4.51×** · FP8 |
+| LingBot-VLA-4B | 624.22 → 221.53, **2.82×** · FP8 |
+| LingBot-VLA-V2-6B | 734.56 → 394.11, **1.86×** · FP8 |
+| Cosmos3 Edge DROID | 3393.78 → 1048.01, **3.24×** · NUMERIC |
+| Cosmos3 Nano DROID | 10184.68 → 4772.38, **2.13×** · NUMERIC |
+| pi05 | 408.58 → 51.85, **7.88×** · FP8 |
+| GR00T N1.7 | 139.50 → 117.30, **1.19×** · Native |
+| DreamZero DROID | 23563.08 → 11899.42, **1.98×** · FP8 |
 
 VA measures early continuations; its speedups use the native schedule in each row.
-DreamZero's native reference uses an eager DiT with a fixed 8/16 mask and vendor encoder compilation.
+Cosmos3 retains full UniPC4/CFG3; detailed execution settings are linked below.
 These are speed measurements; task quality is evaluated separately.
 
 [Protocol and raw results](eval/public_release_2026-09-15/results.rst) · [Native VA 2V/4A measurement](eval/va_native_2v4a_2026-09-15/README.rst) · [Reproduction commands](REPRODUCE.rst)
