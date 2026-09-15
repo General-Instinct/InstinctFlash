@@ -1,0 +1,1885 @@
+{
+  "schema": 1,
+  "cell_id": "va-2v4a-fp8",
+  "family": "va",
+  "arm": "operating_point",
+  "runtime_kwargs": {
+    "device": "cuda:0",
+    "exclude_passes": [
+      "cfg_branch_elision"
+    ],
+    "nfe": {
+      "action": 4,
+      "video": 2
+    },
+    "precision": "fp8",
+    "step_cache": "checkpoint",
+    "tier_ceiling": "behavioral"
+  },
+  "optimizer_environment": {},
+  "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+  "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+  "precision": "fp8",
+  "device": "NVIDIA Thor",
+  "torch": "2.11.0+cu130",
+  "cases": [
+    {
+      "i": 0,
+      "episode": 0,
+      "cycle": 0,
+      "phase": "warmup",
+      "seed": 1300,
+      "input_sha256": "a19f395355e68189fa433ce31b5bede6e866a0ef09b4ff2ca2ccea6bc5c07bae",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 1,
+      "episode": 0,
+      "cycle": 1,
+      "phase": "warmup",
+      "seed": 1301,
+      "input_sha256": "ded50910667d4e6903ff214c0e04c8a380889006ffae10dd718e392bcd058659",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 2,
+      "episode": 0,
+      "cycle": 2,
+      "phase": "warmup",
+      "seed": 1302,
+      "input_sha256": "2e73f5121166c9ef0d35a6cfe01f4c2f98d9e1be3d5a9eb99cc239f84f97f25e",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    },
+    {
+      "i": 3,
+      "episode": 1,
+      "cycle": 0,
+      "phase": "measured",
+      "seed": 1303,
+      "input_sha256": "861b450ff9041cd10186ea7cb2761de69b555d233178de66ecbaa25dd241ffaf",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 4,
+      "episode": 1,
+      "cycle": 1,
+      "phase": "measured",
+      "seed": 1304,
+      "input_sha256": "32222e2070a3f55c817926a8118ca16e2ed18080f55a542584969f63d52f70cd",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 5,
+      "episode": 1,
+      "cycle": 2,
+      "phase": "measured",
+      "seed": 1305,
+      "input_sha256": "12aa888bfbe604c91ee145f6075e7c2733ba2086d211e7e6974996ed83774c49",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    },
+    {
+      "i": 6,
+      "episode": 2,
+      "cycle": 0,
+      "phase": "measured",
+      "seed": 1306,
+      "input_sha256": "a19f395355e68189fa433ce31b5bede6e866a0ef09b4ff2ca2ccea6bc5c07bae",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 7,
+      "episode": 2,
+      "cycle": 1,
+      "phase": "measured",
+      "seed": 1307,
+      "input_sha256": "ded50910667d4e6903ff214c0e04c8a380889006ffae10dd718e392bcd058659",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 8,
+      "episode": 2,
+      "cycle": 2,
+      "phase": "measured",
+      "seed": 1308,
+      "input_sha256": "2e73f5121166c9ef0d35a6cfe01f4c2f98d9e1be3d5a9eb99cc239f84f97f25e",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    },
+    {
+      "i": 9,
+      "episode": 3,
+      "cycle": 0,
+      "phase": "measured",
+      "seed": 1309,
+      "input_sha256": "861b450ff9041cd10186ea7cb2761de69b555d233178de66ecbaa25dd241ffaf",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 10,
+      "episode": 3,
+      "cycle": 1,
+      "phase": "measured",
+      "seed": 1310,
+      "input_sha256": "32222e2070a3f55c817926a8118ca16e2ed18080f55a542584969f63d52f70cd",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 11,
+      "episode": 3,
+      "cycle": 2,
+      "phase": "measured",
+      "seed": 1311,
+      "input_sha256": "12aa888bfbe604c91ee145f6075e7c2733ba2086d211e7e6974996ed83774c49",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    },
+    {
+      "i": 12,
+      "episode": 4,
+      "cycle": 0,
+      "phase": "measured",
+      "seed": 1312,
+      "input_sha256": "a19f395355e68189fa433ce31b5bede6e866a0ef09b4ff2ca2ccea6bc5c07bae",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 13,
+      "episode": 4,
+      "cycle": 1,
+      "phase": "measured",
+      "seed": 1313,
+      "input_sha256": "ded50910667d4e6903ff214c0e04c8a380889006ffae10dd718e392bcd058659",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 14,
+      "episode": 4,
+      "cycle": 2,
+      "phase": "measured",
+      "seed": 1314,
+      "input_sha256": "2e73f5121166c9ef0d35a6cfe01f4c2f98d9e1be3d5a9eb99cc239f84f97f25e",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    },
+    {
+      "i": 15,
+      "episode": 5,
+      "cycle": 0,
+      "phase": "measured",
+      "seed": 1315,
+      "input_sha256": "861b450ff9041cd10186ea7cb2761de69b555d233178de66ecbaa25dd241ffaf",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 16,
+      "episode": 5,
+      "cycle": 1,
+      "phase": "measured",
+      "seed": 1316,
+      "input_sha256": "32222e2070a3f55c817926a8118ca16e2ed18080f55a542584969f63d52f70cd",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 17,
+      "episode": 5,
+      "cycle": 2,
+      "phase": "measured",
+      "seed": 1317,
+      "input_sha256": "12aa888bfbe604c91ee145f6075e7c2733ba2086d211e7e6974996ed83774c49",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    },
+    {
+      "i": 18,
+      "episode": 6,
+      "cycle": 0,
+      "phase": "measured",
+      "seed": 1318,
+      "input_sha256": "a19f395355e68189fa433ce31b5bede6e866a0ef09b4ff2ca2ccea6bc5c07bae",
+      "feedback_sha256": "736b84e4bbe74eafc9799b7a92f5492512dff41c34a9e96270350e9c2cfcdadc",
+      "call_kind": "generation"
+    },
+    {
+      "i": 19,
+      "episode": 6,
+      "cycle": 1,
+      "phase": "measured",
+      "seed": 1319,
+      "input_sha256": "ded50910667d4e6903ff214c0e04c8a380889006ffae10dd718e392bcd058659",
+      "feedback_sha256": "bd9a5a346514569ba682683c1b992a08d530d97df3b58120ab68eac70784bc97",
+      "call_kind": "generation"
+    },
+    {
+      "i": 20,
+      "episode": 6,
+      "cycle": 2,
+      "phase": "measured",
+      "seed": 1320,
+      "input_sha256": "2e73f5121166c9ef0d35a6cfe01f4c2f98d9e1be3d5a9eb99cc239f84f97f25e",
+      "feedback_sha256": "46bee4584f71d22d25c0ae6b56ac3cbdb151c7c039156eb1cc58ee6c107c4f4b",
+      "call_kind": "generation"
+    }
+  ],
+  "calls": [
+    {
+      "i": 0,
+      "ms": 861.4394229953177,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 1,
+      "ms": 526.5357160242274,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 2,
+      "ms": 1004.1238319827244,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 3,
+      "ms": 308.61987901153043,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 4,
+      "ms": 433.4518420509994,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 5,
+      "ms": 501.56074797268957,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 6,
+      "ms": 303.08421998051926,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 7,
+      "ms": 413.51039498113096,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 8,
+      "ms": 484.744044020772,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 9,
+      "ms": 296.7452349839732,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 10,
+      "ms": 412.3365549603477,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 11,
+      "ms": 502.0594419911504,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 12,
+      "ms": 303.9841849822551,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 13,
+      "ms": 414.62593496544287,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 14,
+      "ms": 501.5527600189671,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 15,
+      "ms": 300.3701610141434,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 16,
+      "ms": 414.99327501514927,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 17,
+      "ms": 502.98559898510575,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 18,
+      "ms": 303.8722279598005,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 19,
+      "ms": 418.63411298254505,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 20,
+      "ms": 508.5711340070702,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    }
+  ],
+  "ok": true,
+  "quality_certified": false,
+  "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/va/bin/python",
+  "cwd": "/home/guanming/ifl_public_qualification_20260915_v1/va_both_fp8_run_v2",
+  "input_archive_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+  "matrix_sha256": "25661edc86698980e656308616e8ddcec544ee7ad1eccc1ab44ec938643f2ca5",
+  "input_contract": {
+    "family": "va",
+    "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+    "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+    "action_shape": [
+      16,
+      2,
+      16
+    ]
+  },
+  "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+  "scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+  "checkpoint_snapshot": "/home/guanming/.cache/huggingface/hub/models--robbyant--lingbot-va-posttrain-robotwin/snapshots/8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+  "observation_contract": "a list of 8 under 'obs': observation.images.cam_high (256, 320, 3) uint8; observation.images.cam_left_wrist (256, 320, 3) uint8; observation.images.cam_right_wrist (256, 320, 3) uint8; plus prompt",
+  "package_path": "/home/guanming/.cache/instinctflash/declared/robbyant__lingbot-va-posttrain-robotwin/25c73c83cd83866da8ef6cc9b0bd869b5430f626e6c2814bcb654f2a3dea8b72",
+  "setup_seconds": 30.963500954967458,
+  "observed_nfe_before": {
+    "video": 2,
+    "action": 4
+  },
+  "e4m3_tensors": [
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[0]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[1]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[2]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[3]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[4]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[5]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[6]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[7]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[8]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[9]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[10]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[11]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[12]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[13]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[14]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[15]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[16]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[17]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[18]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[19]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[20]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[21]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[22]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[23]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[24]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[25]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[26]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[27]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[28]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.qkv_w[29]",
+      "shape": [
+        3072,
+        9216
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[0]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[1]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[2]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[3]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[4]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[5]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[6]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[7]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[8]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[9]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[10]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[11]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[12]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[13]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[14]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[15]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[16]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[17]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[18]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[19]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[20]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[21]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[22]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[23]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[24]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[25]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[26]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[27]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[28]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.o_w[29]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[0]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[1]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[2]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[3]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[4]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[5]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[6]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[7]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[8]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[9]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[10]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[11]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[12]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[13]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[14]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[15]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[16]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[17]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[18]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[19]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[20]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[21]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[22]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[23]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[24]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[25]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[26]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[27]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[28]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.cq_w[29]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[0]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[1]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[2]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[3]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[4]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[5]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[6]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[7]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[8]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[9]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[10]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[11]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[12]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[13]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[14]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[15]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[16]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[17]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[18]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[19]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[20]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[21]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[22]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[23]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[24]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[25]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[26]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[27]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[28]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.co_w[29]",
+      "shape": [
+        3072,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[0]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[1]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[2]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[3]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[4]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[5]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[6]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[7]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[8]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[9]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[10]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[11]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[12]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[13]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[14]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[15]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[16]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[17]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[18]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[19]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[20]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[21]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[22]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[23]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[24]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[25]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[26]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[27]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[28]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff1_w[29]",
+      "shape": [
+        3072,
+        14336
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[0]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[1]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[2]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[3]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[4]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[5]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[6]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[7]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[8]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[9]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[10]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[11]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[12]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[13]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[14]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[15]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[16]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[17]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[18]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[19]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[20]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[21]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[22]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[23]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[24]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[25]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[26]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[27]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[28]",
+      "shape": [
+        14336,
+        3072
+      ]
+    },
+    {
+      "path": "backend._loop._server.frontend._blk.ff2_w[29]",
+      "shape": [
+        14336,
+        3072
+      ]
+    }
+  ],
+  "backend_stats": {
+    "status": "available",
+    "backend": "EngineBackend",
+    "stats": {
+      "backend": "native_t5_vae_fp8_dit",
+      "precision": "fp8",
+      "declaration": {
+        "backbone": "wan_va",
+        "frontend": "serving/flash_rt/frontends/torch/wan_va_thor.py",
+        "steps": {
+          "video": 2,
+          "action": 4
+        },
+        "shifts": {
+          "video": 5.0,
+          "action": 1.0
+        },
+        "guidance": {
+          "video": [
+            "cfg",
+            5.0
+          ],
+          "action": [
+            "positive_only",
+            1.0
+          ]
+        },
+        "cfg_batch": 2,
+        "forwards_per_cycle": 10,
+        "forwards_per_cycle_served_p010": 9,
+        "evidence": "the build sizes its AdaLN step tables from the declared grids (video t=[1000.0, 833.3333129882812, 0.0], action t=[1000.0, 750.0, 500.0, 250.0, 0.0]), allocates a 2-stream KV slab, and runs 10 DiT forwards per cycle; WanVaTorchFrontendThor.assert_point refuses any other request",
+        "geometry": {
+          "frame_chunk": 2,
+          "latent_h": 24,
+          "latent_w": 20,
+          "action_per_frame": 16
+        },
+        "pool_slots": 9792,
+        "precision": "fp8",
+        "fp16_families": [],
+        "action_terminal_elision": true,
+        "forwards_per_cycle_served": 9,
+        "slab_rows": 15360,
+        "gate_kernel": "kernel"
+      },
+      "calibrated": true,
+      "graphs_captured": 24,
+      "frame_st_id": 4
+    }
+  },
+  "graph_stats": {},
+  "default_schedule": {
+    "action": 50,
+    "video": 25
+  },
+  "observed_nfe_after": {
+    "video": 2,
+    "action": 4
+  },
+  "guidance": "{'action': 'positive_only', 'video': 'cfg'}",
+  "effective_schedule": {
+    "action_steps": 4,
+    "nfe": {
+      "action": 4,
+      "video": 2
+    },
+    "sampler": "checkpoint",
+    "video_steps": 2
+  },
+  "execution_policy": {
+    "category": "OPERATING-POINT",
+    "precision": "fp8",
+    "tier_ceiling": "behavioral",
+    "transform_tier": "NUMERIC",
+    "nfe": {
+      "action": 4,
+      "video": 2
+    },
+    "changed_schedule": {
+      "action": {
+        "checkpoint": 50,
+        "selected": 4
+      },
+      "video": {
+        "checkpoint": 25,
+        "selected": 2
+      }
+    },
+    "step_cache": null,
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "plan": "InstinctFlash plan for robbyant/lingbot-va-posttrain-robotwin\n  plan tier: NUMERIC\n  operating point: schedule {kv_refresh=2 + video=2 + action=4} | guidance {action=positive_only@1 [implied by mode], video=cfg@5 [inherited from the family default]} | cfg batching {batch-2 on 8 of 8 declared forwards (negative branch requested by video); batch-1 on 0}\n\n  skip   graph_capture              [BITEXACT  ] Thor capture performance is unmeasured for this family/operating point; retain the eager default pending a paired device measurement.\n  APPLY  engine_offload             [NUMERIC   ] engine placement selected: SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation\n         expected: Measure this checkpoint with matched views, action horizon, denoise steps and timing scope. The matched Thor study separates native capture, FP16 engine and FP8 arithmetic; it does not establish robot-facing Runtime parity.\n  skip   fsdp_elision               [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: world_size=1, so every FSDP all-gather is identity while still paying a flat-param copy and stream sync per unit per forward\n  skip   allocator_churn_elision    [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: closed-loop serving has a stable working set, so releasing the pool between control steps only forces re-allocation next step\n  skip   debug_dump_elision         [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: per-chunk tensor dumps do a synchronous D2H on the critical path and are not consumed by the serving client\n  skip   obs_decode_elision         [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: caller wants actions only; ['vae.decoder'] need never be resident or executed\n  skip   conditioning_prefill       [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: ['text_kv', 'negative_text_kv'] declared pure in ['episode'] scope, but recomputed on all 8 forwards per control step (kv_refresh=2 + video=2 + action=4)\n  skip   prompt_encoder_staging     [BITEXACT  ] no memory pressure on this device class (sm_110, 123 GiB): keeping the prompt encoder resident avoids per-reset PCIe moves and allocator churn\n  skip   ring_kv_addressing         [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: streams ['video', 'action'] live across control steps in a pool that is currently addressed by boolean mask, costing a host sync and a full-pool copy per layer per forward\n  skip   action_terminal_forward_elision [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: the action phase's terminal forward writes provisional K/V that clear_pred_cache drops before any forward reads it; its output is discarded by construction\n  skip   sm120_gated_residual       [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  skip   sm120_wan_stage2           [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  skip   conv_layout_ndhwc          [NUMERIC   ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: two Wan VAE Conv3D subgraphs can choose NCDHW or NDHWC by measurement on this device; NDHWC changes convolution accumulation order, so the swap is NUMERIC\n  skip   cfg_branch_elision         [NUMERIC   ] dropped by caller via Plan.without(): streams ['action'] discard their negative branch while ['video'] force batch duplication; forwards that can drop to batch 1 \u2014 action: 3 of 4 (commit steps exempt: their K/V feeds the other stream's negative branch)\n\n  NOTE: plan is NUMERIC because of ['engine_offload'].\n        Any accuracy-neutrality claim for this plan requires a paired\n        non-inferiority run.\n        `plan.bitexact_subset()` is the largest configuration that does not.",
+  "applied_passes": [
+    "engine_offload"
+  ],
+  "peak_allocated_bytes": 32165295616,
+  "numeric_environment": {
+    "matmul_tf32": false,
+    "cudnn_tf32": false,
+    "cudnn_benchmark": false
+  },
+  "actions_sha256": "c664e4851fbab124a4234f453ef0f526ab16839f809244afc408214626915164",
+  "sources": {
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/benchmarks/regression/__init__.py": "11c013b7548d3fdf5656de28b404e69712ae338e8cc7b0827481ff4ee301ab8f",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/adapters/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/adapters/base.py": "faddf49c84fe9d087365b3cf566bb68bbe4b2bf08eb7a426006c936b27ef047d",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/deployment.py": "75b9e6ca18b3ad6492f2b9ae22bf11390938a4322361c1188cf4841c44216b42",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/state/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/state/types.py": "9d1e43574a1929b73c892cccff56453d2bc71bd02df85a83850208da2e69fc0b",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/model.py": "93c26dcc782b69705e0e84babaf195740f6990e9413e27722e4eb4170400ffc5",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/__init__.py": "6c32d9902026f776decf7bd32e13498b67b78e589051d1b5f7454b0129e16c75",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/adapters/lingbot_va.py": "969220bbf18a56b301bcd3b801eecc4ffa863e518501b82cb4872d857693e846",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/loader.py": "a2bce76e99f4443089d21bbc12b3bed53afc1fb2df5e796b225c5b94e4688aea",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/planners/planner.py": "bc31c3c764fa6c98acbd7b5aa0f46b1030d341b823c0bc01ffb59ebb700d4a80",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/planners/__init__.py": "f4e300ea720721cc0ffbc3ddbf5172d67b3d9f9ba00b64900b3ed071cdf879e8",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/contract.py": "eb1a3dcdaafefd2a49bca96d17784526fef9f3299fd26dcf800d394046e4f7f1",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/action_terminal_elision.py": "92a28ff193f10bf19541f0e0a253b31b5b7ae7f4a8b743212debf675d0daf632",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/cfg_elision.py": "41f7b8370bc1b8928b17048dabf54520537ef431ef4d98013ead4efeab9f96d8",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/conditioning_prefill.py": "3cbc5e5f2ace0b2d061383698cfd85a0a5190f2a4e8e02fa2c3e6e0b9fc56468",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/conv_layout_ndhwc.py": "10926b28cd68d773d773ec5b884672db9d8cdfac64d9758ae934860c37c204ae",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/ring_kv.py": "264c0addbbfcff2ba0e8f445af6fe2d7e85f799124749a2a2c6ff3992412e2af",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/sm120_gated_residual.py": "ba5addcbabf82d76194aa98c20b738dd3dfba4d267f4e62a747fb6dc91fa5d12",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/sm120_wan_stage2.py": "3a151b5f00b5144874436cf7570b9a635fbba73e30d724722d5dc7a6e2128b1a",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/substrate.py": "7f6162ba2d175db9ad56425a3aa8cb68b90f1778c343ba37f381ea02618d3abf",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/lingbot/__init__.py": "cc153c3e272cd18b7510dec81e625168124e7db3f06909bf6cdb49cfd9e8fd52",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/checkpoint.py": "a2949d1fa9ae40fe27c9d4e981616327406604118af72f547f78f00426e387ba",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/package.py": "fa2de5b3d082e99d475d02ef76b8905e26f7abe0089f30ce3251406f956a3c08",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/execution.py": "27387e1b240a54cb4e525902fe61c6d12e2db69c2a1eece6346dfbd910b35db2",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/facade.py": "be2d16d6d4a6df7283223b50d88cf5defebec21d54d4711687d6788584b44f41",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/__init__.py": "50071567526aab898205d92b382b3ca392aabaf33584379bf436fb48bb488b8f",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/precision.py": "6d7714c41045e83c5fd82d3f0d523429e7c8098c746112eef516d57e8dcacbfe",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/known.py": "05f6d5587a3c8ef543e2560ac0c91d1def49caec3d89851b50c9a190edab6834",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/descriptors/guidance.py": "3455608a231758fb2a146409f04c6d2253b7f3859cccf22f6dea9dcd93b32d9d",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/step_cache_policy.py": "e60c9f4c9a513abcd2d26ee4f32a7fa72a96a8b511c34a2e0565d40c490fc5b9",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/backends/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/backends/sm120_residual.py": "1509fc2143e21a9513ee11c4389d68b1a31db221d4ddbd9e148cdb81e225e717",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/backends/sm120_wan_stage2.py": "0ede242abc15ae802b762f187c5932f0e81bb0617687ebc3f8185882f7745f4d",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/registry.py": "cff56c57748cb40212a2072d8dcfd1b0bd395a8446492f8a71682a31e8afe2a8",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/generic/engine_offload.py": "d686eef806c88bc559212ad23a5af42ee4a11e6eb3099629d8dfcf14279dcdd1",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/generic/graph_capture.py": "b64169397d0f8091924af835dad8c53aa645d00de7828fccaf18574ab357e1fb",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/passes/generic/__init__.py": "f04a5033aab0d0ace4d3bdd460011049cef662f8aecf7856b0d35c9e45c24113",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/engine_backend.py": "99c5346ebe437f4d3d26bc8dcd10755e8a2180fe1b4573b45e905ca9597f7a4e",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/api.py": "f5ca83eb7373ed640e3af7a62152fe29268c50b34d46aed9ff177b20b92bef0b",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/__init__.py": "814a9f0299f22a613f75ef8e0b27e9c22b9f5da41e8b017f66e011370a163782",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/flash_rt_kernels.cpython-312-aarch64-linux-gnu.so": "9447bb9bf7db93625c3b697ef962a418cc3d9c5e01da173e6f5a365fc10f65b7",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/wan_va_engine_build.py": "99736a2ba02973d4731468d04781dd59fc65cdfa6d59c577fac2d5cdfe455fa8",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/frontends/__init__.py": "bf81cb213e70299c531d31dd584eb574eecd1c909005fa9d0f1c7ea65126b69c",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/frontends/torch/__init__.py": "d7d1a83bb513ee7469bad2fa4826ae54def92794e644bdb2d4063d74a6f08d2a",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/__init__.py": "b311becd8cdb3ee3a26ec1ebb6998678bc5475260765e29fc84bb97d6ad35944",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/__init__.py": "8577ac9fac0637a6f9f1dd0be90a34f8671e9aaa58a15964523d798e2937e5b9",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/geometry.py": "a4ab484a3464150833700d4915a6cdff58bc7ca6e97feb483455cb6da96dfb20",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/step_tables.py": "e71aef2741ab3279762421f8d797c2ecd40842154c8c79ec8c7b1718ca4f7897",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/operating_point.py": "fe872d9fbf91d190b29663cddbbc759a5a12ad08ee1ea3a546d214200713e393",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/pipeline_thor.py": "d3fa382f6bdb6c7274d6838d5d1efc1f6d31b51354f6a9fdc50ae3f2bb24886c",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/ring_ref.py": "efbb3436afa0676ff4ab307c8cd0022008b42e7dad745759dde330d03d1e3e69",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/rope_table.py": "f5ea2b4fa35310fbad2c3346cde4ebfda3d1d421e87c2d3e0bf6ce1ff184480c",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/models/wan_va/wan_ref.py": "9a91935d9f4c7c3afdb62a6487f0112093993c026f01375b68ab678206841eed",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/frontends/torch/wan_va_thor.py": "25248424702e081d92283fecb588c90cf57afe32ad41c010fe4fccb201019f75",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/sm120_install.py": "f3486d11b3ca1f1297222c08787619441fe5e3408f28bc2337db8bc01ac288be",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/sm120_stage2_install.py": "7d527ed57b46b6ebe601273ca49d4cda2b31fe1d60dd5af0a8d37f530cda724a",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/lingbot_install.py": "b72a8cd3889e6681250c65f7ef671448e8719ee61e78deb3ecb4f76c59db1435",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/wan_va_engine.py": "b4b254da55986c2d30c706714d5ae50c6314ef02985b405bf18b446aa50424df",
+    "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v1/va/wan_va/wan_va_server.py": "9c2a427611db487fea5cf40f184b713bf2088e533990ee00fdcd020d2668b4bf",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/flash_rt/flash_rt_fa2.cpython-312-aarch64-linux-gnu.so": "e4c1b27738e72b4f0eae98656c39fc38f42353927dc2a5a982ffd5d2eef3255e",
+    "/dev/shm/ifl_public_envs_20260915_v1/va/lib/python3.12/site-packages/instinctflash/runtime/telemetry.py": "01e8e6e134a1b9fac17f3951f44d2cbc7c42168e4e10090556ffccbbeb8d51fa"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "torch_version": "2.11.0+cu130",
+  "matmul_tf32": false,
+  "cudnn_tf32": false,
+  "cudnn_benchmark": false,
+  "owned_checkpoint_view_released": true,
+  "load_receipt": {
+    "verified_dit_tensors": 1317,
+    "original_checkpoint": "/home/guanming/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+    "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+    "direct_bf16_dit": true,
+    "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+    "initialization_rng_equivalent": false
+  },
+  "ok": true,
+  "precision": "native",
+  "checkpoint": "/home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942",
+  "recipe": null,
+  "executed_fp8_projections": {},
+  "frame_positions": [
+    3,
+    5,
+    7,
+    3,
+    5,
+    7
+  ],
+  "repeated_episodes_equal": true,
+  "scheduler_steps": 16,
+  "dit_step_mask": [
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    true,
+    true,
+    true
+  ],
+  "scope": "Actual public Runtime native/FP8 dispatch with native checkpoint processors and owned direct-BF16 view; recorded RoboTwin cameras and synthetic DROID state. Not speed or task-quality certification.",
+  "comparisons": {
+    "dreamzero-native-public_api": {
+      "byte_equal": false,
+      "mae": 0.00860295258462429,
+      "max_abs": 0.05696102976799011
+    },
+    "dreamzero-native-public_current": {
+      "byte_equal": true,
+      "mae": 0.0,
+      "max_abs": 0.0
+    }
+  },
+  "inference": "Frozen original source reproduces current native exactly. New feedback hook is not required to produce the observed drift; exact cause of earlier/later run-state difference remains unresolved.",
+  "raw_sha256": {
+    "dreamzero-native-frozen_recheck.json": "391133aca53039f78b4a340c41178f3ad84002f26290a1329d9f35a20fcdf788",
+    "dreamzero-native-frozen_recheck-actions.npz": "2063cd10a9ad1c813daaca50c313756523a17786ad0ef372ea85385310f0d801"
+  }
+}

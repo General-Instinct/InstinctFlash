@@ -1,0 +1,152 @@
+{
+  "analysis_pipeline_sha256": "416a127eda92f8ea0bf905f45bfac4bc1883c2528cf7b2d9f27d9e9a42011363",
+  "comparisons": [
+    {
+      "closed_loop": [
+        {
+          "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+          "reason": "1 pairs < min_pairs=100",
+          "suite_id": "robotwin50_easy",
+          "verdict": "INCOMPLETE"
+        },
+        {
+          "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+          "reason": "1 pairs < min_pairs=100",
+          "suite_id": "robotwin50_hard",
+          "verdict": "INCOMPLETE"
+        }
+      ],
+      "closed_loop_actions": [
+        {
+          "control_successes": 1,
+          "details": [
+            {
+              "control_steps": 124,
+              "control_success": true,
+              "pair_id": "5f088bf3c51a05427aa09624",
+              "resolved_seed": 50100,
+              "task": "adjust_bottle",
+              "treatment_steps": 124,
+              "treatment_success": true,
+              "verdict": "PASS"
+            }
+          ],
+          "different_pairs": 0,
+          "encoding": "per-action 14D controller values encoded as big-endian float64",
+          "expected_pairs": 1,
+          "matching_pairs": 1,
+          "missing_pair_ids": [],
+          "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+          "pairs": 1,
+          "protocol": "lingbot_vla-joint-robotwin-paused-v1",
+          "quality_gate": false,
+          "scope": "Executed controller action streams on these paired frozen scenes only; not hidden-state or universal bitexact",
+          "suite_id": "robotwin50_easy",
+          "treatment_successes": 1,
+          "verdict": "PASS"
+        },
+        {
+          "control_successes": 1,
+          "details": [
+            {
+              "control_steps": 119,
+              "control_success": true,
+              "pair_id": "e8095d639377dc60ecb52c1d",
+              "resolved_seed": 60100,
+              "task": "adjust_bottle",
+              "treatment_steps": 119,
+              "treatment_success": true,
+              "verdict": "PASS"
+            }
+          ],
+          "different_pairs": 0,
+          "encoding": "per-action 14D controller values encoded as big-endian float64",
+          "expected_pairs": 1,
+          "matching_pairs": 1,
+          "missing_pair_ids": [],
+          "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+          "pairs": 1,
+          "protocol": "lingbot_vla-joint-robotwin-paused-v1",
+          "quality_gate": false,
+          "scope": "Executed controller action streams on these paired frozen scenes only; not hidden-state or universal bitexact",
+          "suite_id": "robotwin50_hard",
+          "treatment_successes": 1,
+          "verdict": "PASS"
+        }
+      ],
+      "control": "stock",
+      "models": [
+        {
+          "action": {
+            "pairs": 0,
+            "verdict": "NOT_APPLICABLE"
+          },
+          "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+          "performance": {
+            "samples": 0,
+            "verdict": "NOT_APPLICABLE"
+          },
+          "suites": [
+            {
+              "action": {
+                "pairs": 0,
+                "verdict": "NOT_APPLICABLE"
+              },
+              "performance": {
+                "samples": 0,
+                "verdict": "NOT_APPLICABLE"
+              },
+              "suite_id": "robotwin50_easy"
+            },
+            {
+              "action": {
+                "pairs": 0,
+                "verdict": "NOT_APPLICABLE"
+              },
+              "performance": {
+                "samples": 0,
+                "verdict": "NOT_APPLICABLE"
+              },
+              "suite_id": "robotwin50_hard"
+            }
+          ]
+        }
+      ],
+      "paired_jobs": 2,
+      "treatment": "runtime_default"
+    }
+  ],
+  "complete": true,
+  "environment_consistency": [
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "c9cdb0f2131545f4d9c42de2a30c5c887f41667c1e1343e04628c8b9e6f57876"
+      ],
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "a0add2b3d8895138dd8d35e574adb4b93f27971a0ced15564c236d9e216a2067"
+      ],
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "verdict": "PASS"
+    }
+  ],
+  "environment_sha256": "f4f50e808164687385f98356d7d24bb58da8cddf654b84413c5f31f10584a414",
+  "execution_pipeline_sha256": "416a127eda92f8ea0bf905f45bfac4bc1883c2528cf7b2d9f27d9e9a42011363",
+  "expected_results": 4,
+  "gates_passed": false,
+  "issues": [],
+  "plan_id": "e7a46e575aa1f98aa2cff1741706973fef40d298185f33a45373e81cee3f8997",
+  "registry_sha256": "315168bd1a5874e9d38d9be95f0ee1873de6931003fe5692eb18534a0d1bcf47",
+  "repeatability": [],
+  "report_sha256": "ad406ea5b263b60f103000fb89e9bd71716ddd1e610744220ace95c927fd3039",
+  "reportable": false,
+  "results": 4,
+  "schema_version": 1,
+  "screening": true,
+  "synthetic": false
+}

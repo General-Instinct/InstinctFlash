@@ -1,0 +1,220 @@
+{
+  "comparisons": [
+    {
+      "closed_loop": [],
+      "control": "stock",
+      "models": [
+        {
+          "action": {
+            "digest_matches": 9,
+            "incomplete_pairs": [],
+            "max_abs": null,
+            "max_abs_limit": null,
+            "min_cosine_limit": null,
+            "minimum_cosine": null,
+            "mode": "bitexact",
+            "pairs": 9,
+            "verdict": "PASS"
+          },
+          "model_id": "lerobot/pi05_libero_finetuned_v044",
+          "performance": {
+            "control_p50_ms": 205.72119997814298,
+            "min_speedup": 1.2,
+            "samples": 30,
+            "speedup": 2.255680632897597,
+            "treatment_p50_ms": 91.201385948807,
+            "verdict": "PASS"
+          },
+          "suites": [
+            {
+              "action": {
+                "digest_matches": 8,
+                "incomplete_pairs": [],
+                "max_abs": null,
+                "max_abs_limit": null,
+                "min_cosine_limit": null,
+                "minimum_cosine": null,
+                "mode": "bitexact",
+                "pairs": 8,
+                "verdict": "PASS"
+              },
+              "performance": {
+                "samples": 0,
+                "verdict": "NOT_APPLICABLE"
+              },
+              "suite_id": "model_contract"
+            },
+            {
+              "action": {
+                "digest_matches": 1,
+                "incomplete_pairs": [],
+                "max_abs": null,
+                "max_abs_limit": null,
+                "min_cosine_limit": null,
+                "minimum_cosine": null,
+                "mode": "bitexact",
+                "pairs": 1,
+                "verdict": "PASS"
+              },
+              "performance": {
+                "control_p50_ms": 205.72119997814298,
+                "min_speedup": 1.2,
+                "samples": 30,
+                "speedup": 2.255680632897597,
+                "treatment_p50_ms": 91.201385948807,
+                "verdict": "PASS"
+              },
+              "suite_id": "single_gpu_latency"
+            }
+          ]
+        }
+      ],
+      "paired_jobs": 9,
+      "treatment": "runtime_default"
+    }
+  ],
+  "complete": true,
+  "environment_consistency": [
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "4e67df361b66dc827b076a2e2df5395c19bad3229be4bb1b3050fcb7637917d5"
+      ],
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "4e67df361b66dc827b076a2e2df5395c19bad3229be4bb1b3050fcb7637917d5"
+      ],
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "verdict": "PASS"
+    }
+  ],
+  "environment_sha256": "71082496c1f765c9d89c906117506967791c471798db7a211ff5e18228c4e226",
+  "expected_results": 18,
+  "gates_passed": true,
+  "issues": [],
+  "plan_id": "60c478ebdd4af21293cc81e371906548ef6265120cfb559fd982c8bcb408b419",
+  "registry_sha256": "b1174c86e86015f57df75f79ffcc6dc4c86b47c5d9fc28d300fc60fd493ee8aa",
+  "repeatability": [
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "4e67df361b66dc827b076a2e2df5395c19bad3229be4bb1b3050fcb7637917d5"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "repeats": 2,
+      "seed": 30100,
+      "suite_id": "model_contract",
+      "task": "changed_prompt",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "4e67df361b66dc827b076a2e2df5395c19bad3229be4bb1b3050fcb7637917d5"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "repeats": 2,
+      "seed": 30100,
+      "suite_id": "model_contract",
+      "task": "changed_prompt",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "4e67df361b66dc827b076a2e2df5395c19bad3229be4bb1b3050fcb7637917d5"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "repeats": 2,
+      "seed": 40100,
+      "suite_id": "model_contract",
+      "task": "reset_replay",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "4e67df361b66dc827b076a2e2df5395c19bad3229be4bb1b3050fcb7637917d5"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "repeats": 2,
+      "seed": 40100,
+      "suite_id": "model_contract",
+      "task": "reset_replay",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "4e67df361b66dc827b076a2e2df5395c19bad3229be4bb1b3050fcb7637917d5"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "repeats": 2,
+      "seed": 10100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_a",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "4e67df361b66dc827b076a2e2df5395c19bad3229be4bb1b3050fcb7637917d5"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "repeats": 2,
+      "seed": 10100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_a",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "4e67df361b66dc827b076a2e2df5395c19bad3229be4bb1b3050fcb7637917d5"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "repeats": 2,
+      "seed": 20100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_b",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "4e67df361b66dc827b076a2e2df5395c19bad3229be4bb1b3050fcb7637917d5"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "repeats": 2,
+      "seed": 20100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_b",
+      "verdict": "PASS"
+    }
+  ],
+  "report_sha256": "b9a3db0c7020bf233b9a516c2237db568edf2ce8ef25e6bd2bbd39fce522ccc9",
+  "reportable": true,
+  "results": 18,
+  "schema_version": 1,
+  "synthetic": false
+}

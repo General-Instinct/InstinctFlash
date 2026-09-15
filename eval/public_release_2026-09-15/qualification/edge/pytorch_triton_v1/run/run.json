@@ -1,0 +1,81 @@
+{
+  "attempts": [
+    {
+      "cell": "edge-eager_native",
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/matrix.json",
+        "--cell",
+        "edge-eager_native",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/inputs/recorded_inputs_v1.npz"
+      ],
+      "exit_code": 0,
+      "log_sha256": "fb0e7aba36c26284bab1d99abb860de49f7641709464fe658b7285d189522305",
+      "optimizer_environment": {}
+    },
+    {
+      "cell": "edge-runtime_default",
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/matrix.json",
+        "--cell",
+        "edge-runtime_default",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/inputs/recorded_inputs_v1.npz"
+      ],
+      "exit_code": 0,
+      "log_sha256": "471719bda18d2d91ca88166a49844818ceb7542f27466ab36dcbe2bee2ca439b",
+      "optimizer_environment": {}
+    },
+    {
+      "cell": "edge-runtime_selected",
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/matrix.json",
+        "--cell",
+        "edge-runtime_selected",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/inputs/recorded_inputs_v1.npz"
+      ],
+      "exit_code": 0,
+      "log_sha256": "19d00502de5903d40659f0f1fda14c0c972d836cba5a443946fbafa184ea3371",
+      "optimizer_environment": {
+        "IFL_BF16_KERNEL_LIBRARY": "/home/guanming/ifl_public_qualification_20260915_v1/native_v1/native/libinstinctflash_bf16.so",
+        "IFL_BF16_LINEAR_RELU2": "1",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+        "IFL_COSMOS3_GEN_REGIONS": "1",
+        "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1"
+      }
+    }
+  ],
+  "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+  "plan_sha256": "17bbc7c257e29948968bb473b12bc79419bbc9dd1e5595246aa1b1fa5f820306",
+  "prepared": "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_prepared_v1",
+  "report_status": "passed",
+  "schema": "instinctflash.public_reproduction.v1",
+  "status": "passed",
+  "task_quality_validated": false
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "followup_v19_independent_numerical_audit",
+  "status": "success",
+  "valid": true,
+  "protocol": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/evaluation_protocol_v19.json",
+    "bytes": 215783,
+    "sha256": "a85e84e7205520695c66f33ed490f6427ac62f3e7323648f5be9b3ea4b906430"
+  },
+  "admission": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/evaluation_admission_v19.json",
+    "bytes": 1151,
+    "sha256": "f0b70a9f618f28bac378639346b9ba2fc64bff5c31de43f0c853bdaa14a667d2"
+  },
+  "analysis": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/quality_analysis_v19.json",
+    "bytes": 1097762,
+    "sha256": "3888726585211da983bb5679742788270ed9fd53e7ee3dfe31878e7a80a2abb4"
+  },
+  "source": {
+    "path": "/home/ubuntu/InstinctCompress/examples/audit_cosmos3_followup_v19_v2.py",
+    "bytes": 17750,
+    "sha256": "a07748abc98daddc9202187548c2b812a0a52aa99357997059b86c4087bd2725"
+  },
+  "correction": "V19 native merged one-step exports have no temporary LoRA role binding; all native weight, gate, RNG, padding and numerical checks retained.",
+  "files_verified": 1467,
+  "new_compute": {
+    "requests": 640,
+    "callbacks": 4992,
+    "branches": 9600
+  },
+  "coverage": {
+    "raw_requests": 640,
+    "configurations": 5,
+    "metric_vectors": 480,
+    "comparisons": 672,
+    "teacher_reference_vectors": 56,
+    "episodes": 16,
+    "k": 8
+  },
+  "limits": [
+    "Independent NumPy RF policy scores and bootstrap; no native inference replay.",
+    "Historical development and unadjusted intervals; no task success, equivalence or realtime admission."
+  ]
+}

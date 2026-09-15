@@ -1,0 +1,27 @@
+{
+  "scope": "Experimental QKV plus dense MLP FP8 after device reboot. One process, 12 measured calls per model. Prior native/QKV timings precede reboot; same-boot controls and closed-loop quality are not established. Not promoted to default FP8 recipe.",
+  "models": {
+    "edge": {
+      "p50_ms": 4278.109524499996,
+      "executed_mlp_projections": 112,
+      "all_first_call_projection_counts_positive": true,
+      "finite_action_shape": [
+        15,
+        32,
+        8
+      ],
+      "actions_sha256": "463ae1a39855d84c6267908552071ba0b1ffc3b4cb79b608623d31fa54cc5e76"
+    },
+    "nano": {
+      "p50_ms": 11037.798537000015,
+      "executed_mlp_projections": 216,
+      "all_first_call_projection_counts_positive": true,
+      "finite_action_shape": [
+        15,
+        32,
+        8
+      ],
+      "actions_sha256": "d1313f8b6dbf4c102ccb1a38f03af374be2e535af9111b484e82c9160d322172"
+    }
+  }
+}

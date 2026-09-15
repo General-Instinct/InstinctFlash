@@ -1,0 +1,191 @@
+{
+  "action_archive_sha256": "4e343d8de6fe0fd243cc8b160e0e486d8c476ebc18d3c8ae4d93b046351fe3ec",
+  "calls": [
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        24,
+        8
+      ],
+      "cycle": 0,
+      "episode": 0,
+      "request_sha256": "1af2929957615722c32d0e0fce7b303212c9e8053aae747ffad50a700be6dccc",
+      "roundtrip_ms": 104868.54217998916,
+      "server_timing": {
+        "infer_ms": 104866.81037198287,
+        "prev_total_ms": 83.9346750290133
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        24,
+        8
+      ],
+      "cycle": 1,
+      "episode": 0,
+      "request_sha256": "186e20743b224b0a620008b30dd29b00c098f2575d8c2a2b186c4de387bb5ee5",
+      "roundtrip_ms": 26911.19117499329,
+      "server_timing": {
+        "infer_ms": 26906.06008999748,
+        "prev_total_ms": 104869.09425305203
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        24,
+        8
+      ],
+      "cycle": 2,
+      "episode": 0,
+      "request_sha256": "998862e8327f8816ad09353ba6f0a3f1dfc2c0dd2d1ed24852628d39c4e950fe",
+      "roundtrip_ms": 65535.96721997019,
+      "server_timing": {
+        "infer_ms": 65532.16467000311,
+        "prev_total_ms": 26913.983642996754
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        24,
+        8
+      ],
+      "cycle": 0,
+      "episode": 1,
+      "request_sha256": "32666c46495c4c7d8695ba9b7aa38e89db0959cd58adc21222cec20ae9529d29",
+      "roundtrip_ms": 10324.68747900566,
+      "server_timing": {
+        "infer_ms": 10323.650607955642,
+        "prev_total_ms": 1.2810039916075766
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        24,
+        8
+      ],
+      "cycle": 1,
+      "episode": 1,
+      "request_sha256": "33581579b3a7d27bca7a78d5628bd8d844d10a350b1738d45beffef70057df01",
+      "roundtrip_ms": 11435.983412957285,
+      "server_timing": {
+        "infer_ms": 11433.031900960486,
+        "prev_total_ms": 10327.225107990671
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        24,
+        8
+      ],
+      "cycle": 2,
+      "episode": 1,
+      "request_sha256": "2077f92b0bc695b3bb2dd1d7d3e7727bca647f2dca744e8e9b48baa4578ca56a",
+      "roundtrip_ms": 12371.62279500626,
+      "server_timing": {
+        "infer_ms": 12368.171028967481,
+        "prev_total_ms": 11438.299010973424
+      }
+    }
+  ],
+  "cell_id": "dreamzero-dynamic-fp8",
+  "checkpoint": {
+    "model_id": "GEAR-Dreams/DreamZero-DROID",
+    "revision": "96ad344138c66e82536422432ad742f015784942"
+  },
+  "checkpoint_path": "/home/guanming/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID/f573c50c421a3349138066dcc01e93468742d8e83b734a2edbcf0e45d7983610",
+  "command": [
+    "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/bin/python",
+    "-I",
+    "-m",
+    "instinctflash.cli",
+    "serve",
+    "--config_path=/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_serving_v1/serve.json"
+  ],
+  "config_sha256": "e4f8c10557d4c76922f458db30c9d24fe57e73504c23bfc81277b73f2c22d25e",
+  "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+  "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/bin/python",
+  "latency_benchmark": false,
+  "metadata": {
+    "backbone": "dreamzero",
+    "checkpoint_nfe": {
+      "video_action": 16
+    },
+    "execution_policy": {
+      "category": "OPERATING-POINT",
+      "changed_schedule": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+      "nfe": {
+        "video_action": 16
+      },
+      "precision": "fp8",
+      "schedule_options": {
+        "dreamzero_schedule": {
+          "computed_steps": null,
+          "config": {
+            "max_bytes": 67108864,
+            "profile": "dreamzero_velocity_v1",
+            "skip_counts": [
+              4,
+              2
+            ],
+            "thresholds": [
+              0.95,
+              0.93
+            ]
+          },
+          "dynamic_cache_schedule": true,
+          "fixed_mask_steps": 8,
+          "grid_steps": 16,
+          "profile": "dreamzero_velocity_v1",
+          "source": "runtime.step_cache=dynamic"
+        }
+      },
+      "step_cache": {
+        "dynamic": true,
+        "fixed_steps": 8,
+        "profile": "dreamzero_velocity_v1",
+        "source": "runtime.step_cache=dynamic"
+      },
+      "tier_ceiling": "behavioral",
+      "transform_tier": "BEHAVIORAL"
+    },
+    "extra": {
+      "base_weights": "GEAR-Dreams/DreamZero-DROID",
+      "dynamic_cache_schedule": false,
+      "embodiment_tag": "oxe_droid",
+      "param_bytes": 45848344232
+    },
+    "guidance": {
+      "video_action": "cfg"
+    },
+    "instinctflash_version": "0.1.0",
+    "model_id": "GEAR-Dreams/DreamZero-DROID",
+    "nfe": {
+      "video_action": 16
+    },
+    "observation": "flat keys: observation/exterior_image_0_left (4, 160, 320, 3) uint8; observation/exterior_image_1_left (4, 160, 320, 3) uint8; observation/wrist_image_left (4, 160, 320, 3) uint8; observation/joint_position (7,) float32; observation/gripper_position (1,) float32; plus prompt",
+    "observation_source": "the adapter's static declaration",
+    "precision": "fp8",
+    "protocol": {
+      "prompt_rotation": true,
+      "reset_extension": true,
+      "wire": "openpi-websocket-msgpack-numpy"
+    }
+  },
+  "plan_sha256": "dd05cff0bde6cf7dbd4ee944332f91c7c825ded127defdd3c319c11ef09b2904",
+  "request_timeout_s": 600,
+  "rng_scope": "unseeded FP8 transport check",
+  "schema": "instinctflash.serving_smoke.v1",
+  "scope": "Installed CLI and loopback WebSocket; two episodes, three calls each",
+  "seed": null,
+  "server_exit_code": 0,
+  "server_pid": 291163,
+  "startup_timeout_s": 1200,
+  "status": "passed",
+  "task_quality_validated": false
+}

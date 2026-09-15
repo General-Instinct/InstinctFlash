@@ -1,0 +1,107 @@
+InstinctFlash serve preflight for 'robbyant/lingbot-vla-4b-posttrain-robotwin' (declaration-only; no weights fetched)
+  device      : NVIDIA Thor  sm110  132 GB
+  features    : cublas, cuda, cuda_graphs, cudnn, fp8, nvfp4, tma, triton, wgmma
+  class       : bandwidth-bound-edge — Thor (sm110): capture benefit depends on the model and execution scope; the matched 2026-09-09 study supersedes the older pi05-only timing. Capture defaults require family/operating-point evidence
+  precision   : fp8
+  declaration : /home/guanming/.cache/instinctflash/declared/robbyant__lingbot-vla-4b-posttrain-robotwin/dc8ecd2400cccbfcebb00bdde639a9fe635b84e919d8533ce6f8427e03438214
+  backbone    : lingbot_vla
+  servable    : True
+  capabilities: backbone:lingbot_vla, declares:base_weights, declares:norm_stats, declares:param_bytes, declares:robot, declares:tokenizer_repo, declares:use_length, guidance:action=none, servable
+
+InstinctFlash plan for robbyant/lingbot-vla-4b-posttrain-robotwin
+  plan tier: NUMERIC
+  operating point: schedule {prefix=1 + action=10} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 11 declared forwards (no stream requests a negative branch)}
+
+  APPLY  graph_capture              [BITEXACT  ] all streams (prefix) are rebuilt within a control cycle, so shapes repeat, so one capture serves every cycle; 11 forward(s) per control step (prefix=1 + action=10) each pay full dispatch cost today; lingbot_vla native NFE=10 on Thor: the 2026-09-09 matched study measured capture gains with byte-equal actions on its inputs; see eval/fp8_comparison_2026-09-09. The family startup exact self-check still decides admission for this checkpoint and process.
+         expected: removes per-forward dispatch cost where the region is replay-safe. Measured ON pi05 (H100, pi05_base, 50-step chunk): a denoise step is 2187 kernel launches, 17.25 ms of CPU submit against 9.48 ms of GPU work -- 99.9% submit-bound, the GPU idle ~45% of the step. The naive region (per-step DynamicCache clone+append) replays fast and WRONG and stays discarded; the static-KV region (pi05_iwm/static_capture.py) is replay-safe by construction and collected the prize: denoise step 16.25 -> 4.57 ms (3.55x), chunk 298.7 -> 181.3 ms (1.65x), bitexact on unseen inputs and prompts. Both halves are this model's -- a backbone whose forwards are already compute-bound has nothing here to win either way, so measure the submit-vs-busy split, then measure replay against eager on a SECOND input
+  APPLY  engine_offload             [NUMERIC   ] SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation; baked denoise operating point: action=10 steps; guidance action=none@1
+         expected: Measure this checkpoint with matched views, action horizon, denoise steps and timing scope. The matched Thor study separates native capture, FP16 engine and FP8 arithmetic; it does not establish robot-facing Runtime parity.
+  skip   fsdp_elision               [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   allocator_churn_elision    [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   debug_dump_elision         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   obs_decode_elision         [BITEXACT  ] model declares no observation-decode modules
+  skip   conditioning_prefill       [BITEXACT  ] ['prefix_kv'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist
+  skip   prompt_encoder_staging     [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   ring_kv_addressing         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   action_terminal_forward_elision [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   sm120_gated_residual       [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   sm120_wan_stage2           [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   conv_layout_ndhwc          [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   cfg_branch_elision         [BITEXACT  ] no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)
+
+  NOTE: plan is NUMERIC because of ['engine_offload'].
+        Any accuracy-neutrality claim for this plan requires a paired
+        non-inferiority run.
+        `plan.bitexact_subset()` is the largest configuration that does not.
+
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+2026-09-14 20:18:26,059 flash_rt.frontends.torch.vla4b_thor Weights loaded + quantized in 8.3s
+2026-09-14 20:18:26,068 flash_rt.frontends.torch.vla4b_thor Vla4bTorchFrontendThor initialised
+loaded 'robbyant/lingbot-vla-4b-posttrain-robotwin'; binding ws://127.0.0.1:57891 (clients: openpi_client.WebsocketClientPolicy, or GET /healthz)
+2026-09-14 20:18:29,194 websockets.server server listening on 127.0.0.1:57891
+2026-09-14 20:18:29,195 instinctflash.serving.ws_server serving 'robbyant/lingbot-vla-4b-posttrain-robotwin' on ws://127.0.0.1:57891
+2026-09-14 20:18:29,350 websockets.server connection open
+2026-09-14 20:18:29,350 instinctflash.serving.ws_server connection from ('127.0.0.1', 49104) opened
+2026-09-14 20:18:29,434 instinctflash.serving.ws_server new episode: conditioning keys ['prompt']
+/home/guanming/ifl_public_qualification_20260915_v1/vendors_v3/vla4/deploy/lingbot_vla_policy.py:261: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+  observation[k] = torch.from_numpy(v)
+2026-09-14 20:18:30,209 flash_rt.frontends.torch.vla4b_thor CUDA graphs captured (Se=200)
+2026-09-14 20:18:30,209 flash_rt.frontends.torch.vla4b_thor set_prompt done (n_lang=8, Se=200)
+2026-09-14 20:18:31,542 flash_rt.frontends.torch.vla4b_thor Real-data FP8 calibration done (no recapture)
+2026-09-14 20:18:31,915 instinctflash.serving.ws_server new episode: conditioning keys ['prompt']
+2026-09-14 20:18:31,932 flash_rt.frontends.torch.vla4b_thor set_prompt reused buffers (n_lang=8, Se=200)
+2026-09-14 20:18:32,087 flash_rt.frontends.torch.vla4b_thor Real-data FP8 calibration done (no recapture)
+2026-09-14 20:18:32,449 websockets.server connection closed
+2026-09-14 20:18:32,450 instinctflash.serving.ws_server connection from ('127.0.0.1', 49104) closed
+2026-09-14 20:18:32,451 websockets.server server closing
+2026-09-14 20:18:32,451 websockets.server server closed
+✅ Merged LLM: num_attention_heads = 16
+✅ Merged LLM: num_key_value_heads = 2
+✅ Merged LLM: hidden_act = silu
+✅ Merged LLM: hidden_size = 2048
+✅ Merged LLM: rms_norm_eps = 1e-06
+✅ Merged LLM: intermediate_size = 11008
+✅ Merged LLM: vocab_size = 151936
+✅ Merged LLM: rope_theta = 1000000.0
+✅ Merged LLM: max_position_embeddings = 128000
+✅ Merged LLM: tie_word_embeddings = True
+✅ Merged LLM: num_hidden_layers = 36
+Loading normalization stats from: /home/guanming/ifl_public_qualification_20260915_v1/vendors_v3/vla4/assets/norm_stats/robotwin_50.json
+Loading normalization stats from: /home/guanming/ifl_public_qualification_20260915_v1/vendors_v3/vla4/assets/norm_stats/robotwin_50.json
+sample action time:  2.1246888637542725
+sample action time:  0.13567852973937988
+sample action time:  0.13665413856506348
+Loading normalization stats from: /home/guanming/ifl_public_qualification_20260915_v1/vendors_v3/vla4/assets/norm_stats/robotwin_50.json
+sample action time:  0.20952939987182617
+sample action time:  0.13596653938293457
+[LingBot-VLA-4B GPU preprocess] bit-exact on 6 live batches; pinned H2D + CUDA normalize enabled.
+sample action time:  0.13577485084533691
+{
+  "instinctflash_cli_schema": 1,
+  "command": "serve",
+  "version": "0.1.0",
+  "ok": true,
+  "result": {
+    "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+    "backbone": "lingbot_vla",
+    "servable": true,
+    "device": "NVIDIA Thor  sm110  132 GB",
+    "device_class": "bandwidth-bound-edge — Thor (sm110): capture benefit depends on the model and execution scope; the matched 2026-09-09 study supersedes the older pi05-only timing. Capture defaults require family/operating-point evidence",
+    "precision": "fp8",
+    "capabilities": [
+      "backbone:lingbot_vla",
+      "declares:base_weights",
+      "declares:norm_stats",
+      "declares:param_bytes",
+      "declares:robot",
+      "declares:tokenizer_repo",
+      "declares:use_length",
+      "guidance:action=none",
+      "servable"
+    ],
+    "operating_point": "schedule {prefix=1 + action=10} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 11 declared forwards (no stream requests a negative branch)}",
+    "plan": "InstinctFlash plan for robbyant/lingbot-vla-4b-posttrain-robotwin\n  plan tier: NUMERIC\n  operating point: schedule {prefix=1 + action=10} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 11 declared forwards (no stream requests a negative branch)}\n\n  APPLY  graph_capture              [BITEXACT  ] all streams (prefix) are rebuilt within a control cycle, so shapes repeat, so one capture serves every cycle; 11 forward(s) per control step (prefix=1 + action=10) each pay full dispatch cost today; lingbot_vla native NFE=10 on Thor: the 2026-09-09 matched study measured capture gains with byte-equal actions on its inputs; see eval/fp8_comparison_2026-09-09. The family startup exact self-check still decides admission for this checkpoint and process.\n         expected: removes per-forward dispatch cost where the region is replay-safe. Measured ON pi05 (H100, pi05_base, 50-step chunk): a denoise step is 2187 kernel launches, 17.25 ms of CPU submit against 9.48 ms of GPU work -- 99.9% submit-bound, the GPU idle ~45% of the step. The naive region (per-step DynamicCache clone+append) replays fast and WRONG and stays discarded; the static-KV region (pi05_iwm/static_capture.py) is replay-safe by construction and collected the prize: denoise step 16.25 -> 4.57 ms (3.55x), chunk 298.7 -> 181.3 ms (1.65x), bitexact on unseen inputs and prompts. Both halves are this model's -- a backbone whose forwards are already compute-bound has nothing here to win either way, so measure the submit-vs-busy split, then measure replay against eager on a SECOND input\n  APPLY  engine_offload             [NUMERIC   ] SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation; baked denoise operating point: action=10 steps; guidance action=none@1\n         expected: Measure this checkpoint with matched views, action horizon, denoise steps and timing scope. The matched Thor study separates native capture, FP16 engine and FP8 arithmetic; it does not establish robot-facing Runtime parity.\n  skip   fsdp_elision               [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   allocator_churn_elision    [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   debug_dump_elision         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   obs_decode_elision         [BITEXACT  ] model declares no observation-decode modules\n  skip   conditioning_prefill       [BITEXACT  ] ['prefix_kv'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist\n  skip   prompt_encoder_staging     [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   ring_kv_addressing         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   action_terminal_forward_elision [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_gated_residual       [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_wan_stage2           [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   conv_layout_ndhwc          [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   cfg_branch_elision         [BITEXACT  ] no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)\n\n  NOTE: plan is NUMERIC because of ['engine_offload'].\n        Any accuracy-neutrality claim for this plan requires a paired\n        non-inferiority run.\n        `plan.bitexact_subset()` is the largest configuration that does not.",
+    "host": "127.0.0.1",
+    "port": 57891
+  }
+}

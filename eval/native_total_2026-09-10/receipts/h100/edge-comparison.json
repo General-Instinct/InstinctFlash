@@ -1,0 +1,153 @@
+{
+  "family": "edge",
+  "device": "NVIDIA H100 80GB HBM3",
+  "status": "BITEXACT",
+  "baseline_p50_ms": 989.5002711564302,
+  "current_p50_ms": 1003.0201396439224,
+  "repeated_baseline_p50_ms": 958.6245603859425,
+  "speedup_range": [
+    0.9557380978673662,
+    0.9865208404566116
+  ],
+  "applied_passes": [],
+  "baseline_applied_passes": [],
+  "unchanged_transform_plan": true,
+  "execution_policy": {
+    "category": "BITEXACT",
+    "precision": "native",
+    "tier_ceiling": "bitexact",
+    "transform_tier": "BITEXACT",
+    "nfe": {
+      "prefix": 1,
+      "action": 4
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "source_drift": {
+    "current": [],
+    "baseline_b": []
+  },
+  "backend_stats": {
+    "precision": "native",
+    "fp8_recipe": null,
+    "action_chunk_size": 32,
+    "action_steps": 4,
+    "guidance": 3.0,
+    "conditioning_fps": 15.0,
+    "captured": false
+  },
+  "reference_scope": "Direct upstream eager policy versus full default native Runtime; same I/O wrappers, weights, dtype and steps",
+  "comparisons": {
+    "baseline_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/edge-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/edge-current.json",
+      "baseline_sha256": "9d66edf38d7c46e509a13887375bc55437438eee47402bf33266a480a9b1fb67",
+      "candidate_sha256": "0def298c96d78db04a1ba2ded384f3868341008c72bb7ba3e71659941056c587",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            32,
+            8
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "precision": "native",
+        "fp8_recipe": null,
+        "action_chunk_size": 32,
+        "action_steps": 4,
+        "guidance": 3.0,
+        "conditioning_fps": 15.0,
+        "captured": false
+      },
+      "baseline_p50_ms": 989.5002711564302,
+      "candidate_p50_ms": 1003.0201396439224,
+      "speedup": 0.9865208404566116,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    },
+    "baseline_repeat": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/edge-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/edge-baseline_b.json",
+      "baseline_sha256": "9d66edf38d7c46e509a13887375bc55437438eee47402bf33266a480a9b1fb67",
+      "candidate_sha256": "51538e0225b0d2df5c5937cee7011e0614e9bf41b3cddd410cf466dc21287d74",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            32,
+            8
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "precision": "native",
+        "fp8_recipe": null,
+        "action_chunk_size": 32,
+        "action_steps": 4,
+        "guidance": 3.0,
+        "conditioning_fps": 15.0,
+        "captured": false
+      },
+      "baseline_p50_ms": 989.5002711564302,
+      "candidate_p50_ms": 958.6245603859425,
+      "speedup": 1.0322083452129134,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    },
+    "repeat_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/edge-baseline_b.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/edge-current.json",
+      "baseline_sha256": "51538e0225b0d2df5c5937cee7011e0614e9bf41b3cddd410cf466dc21287d74",
+      "candidate_sha256": "0def298c96d78db04a1ba2ded384f3868341008c72bb7ba3e71659941056c587",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            32,
+            8
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "precision": "native",
+        "fp8_recipe": null,
+        "action_chunk_size": 32,
+        "action_steps": 4,
+        "guidance": 3.0,
+        "conditioning_fps": 15.0,
+        "captured": false
+      },
+      "baseline_p50_ms": 958.6245603859425,
+      "candidate_p50_ms": 1003.0201396439224,
+      "speedup": 0.9557380978673662,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    }
+  },
+  "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+}

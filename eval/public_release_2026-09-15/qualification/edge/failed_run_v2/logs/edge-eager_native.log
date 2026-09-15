@@ -1,0 +1,121 @@
+[09-14 20:38:32|job=|INFO|../../../../dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/inference/common/init.py:127:_init_log_files] Console log saved to /tmp/cosmos3_action_server/robolab/console.log
+[09-14 20:38:32|job=|INFO|../../../../dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/inference/common/init.py:128:_init_log_files] Debug log saved to /tmp/cosmos3_action_server/robolab/debug.log
+[09-14 20:38:32|job=|INFO|../../../../dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/scripts/action_policy_server_utils.py:94:disable_runtime_ema_for_frozen_config] [action-server] disabled runtime EMA for frozen config model load
+[09-14 20:38:32|job=|INFO|../../../../dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/scripts/action_policy_server_robolab.py:372:__init__] [robolab-policy-server] loading model: checkpoint_path='/home/guanming/.cache/instinctflash/declared/nvidia__Cosmos3-Edge-Policy-DROID/d8f7f39bd182ff1319d6e857b88849812132d5edf2939bdb58169a264535b76b' config_file='/home/guanming/.cache/instinctflash/declared/nvidia__Cosmos3-Edge-Policy-DROID/d8f7f39bd182ff1319d6e857b88849812132d5edf2939bdb58169a264535b76b/config.json' experiment=''
+[09-14 20:38:32|job=|INFO|../../../../dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/inference/inference.py:1236:_create] VLM processor: using checkpoint-bundled processor files at /home/guanming/.cache/instinctflash/declared/nvidia__Cosmos3-Edge-Policy-DROID/d8f7f39bd182ff1319d6e857b88849812132d5edf2939bdb58169a264535b76b
+[09-14 20:38:32|job=|INFO|cosmos_framework/model/generator/omni_mot_model.py:83:__init__] OmniMoTModel: config {'tokenizer': {'bucket_name': '', 'object_store_credential_path_pretrained': '', 'vae_path': 'pretrained/tokenizers/video/wan2pt2/Wan2.2_VAE.pth', 'chunk_duration': 93, 'keep_decoder_cache': False, 'use_streaming_encode': False, 'encode_chunk_frames': {'256': 68, '480': 24, '720': 12}, 'encode_exact_durations': [33], 'spatial_compression_factor': 16, 'temporal_compression_factor': 4, 'temporal_window': None, 'encode_bucket_multiple': None, 'causal': True, '_target_': 'cosmos_framework.model.generator.tokenizers.wan2pt2_vae_4x16x16.Wan2pt2VAEInterface'}, 'net': None, 'ema': {'enabled': False, 'rate': 0.1, 'iteration_shift': 0, '_type': 'cosmos_framework.configs.base.defaults.ema.EMAConfig'}, 'parallelism': {'data_parallel_shard_degree': 1, 'data_parallel_replicate_degree': 1, 'context_parallel_shard_degree': 1, 'attention_io_layout': 'sequence_sharded', 'cfg_parallel_shard_degree': 1, 'enable_inference_mode': True, 'fsdp_master_dtype': 'float32', '_type': 'cosmos_framework.configs.base.defaults.parallelism.ParallelismConfig'}, 'compile': {'enabled': False, 'compiled_region': 'all', 'compile_dynamic': True, 'use_cuda_graphs': False, 'cudagraphs_via_options': False, 'max_autotune_pointwise': False, 'coordinate_descent_tuning': False, '_type': 'cosmos_framework.configs.base.defaults.compile.CompileConfig'}, 'activation_checkpointing': {'mode': 'none', 'preserve_rng_state': True, 'determinism_check': 'default', 'save_ops_regex': ['fmha'], '_type': 'cosmos_framework.configs.base.defaults.activation_checkpointing.ActivationCheckpointingConfig'}, 'precision': 'bfloat16', 'lora_enabled': False, 'lora_rank': 16, 'lora_alpha': 32, 'lora_target_modules': 'q_proj_moe_gen,k_proj_moe_gen,v_proj_moe_gen,o_proj_moe_gen', 'rectified_flow_training_config': {'shift': {'256': 3, '480': 5}, 'use_dynamic_shift': False, 'train_time_image_distribution': 'logitnormal', 'train_time_video_distribution': 'waver', 'train_time_action_distribution': 'logitnormal', 'train_time_sound_distribution': 'logitnormal', 'train_time_weight': 'uniform', 'loss_scale': 10.0, 'image_loss_scale': None, 'sound_loss_scale': None, 'use_discrete_rf': False, 'action_loss_weight': 10.0, 'independent_action_schedule': False, 'shift_action': None, 'independent_sound_schedule': False, 'shift_sound': None, 'normalize_loss_by_active': False, '_type': 'cosmos_framework.configs.base.defaults.model_config.RectifiedFlowTrainingConfig'}, 'rectified_flow_inference_config': {'scheduler_type': 'unipc', 'num_train_timesteps': 1000, 'shift': 1, 'use_dynamic_shifting': False, '_type': 'cosmos_framework.configs.base.defaults.model_config.RectifiedFlowInferenceConfig'}, 'fixed_step_sampler_config': None, 'vlm_config': {'model_name': 'nvidia/Cosmos3-Edge-Policy-DROID', 'safetensors_path': '', 'pretrained_weights': {'enabled': False, 'backbone_path': '', 'credentials_path': '', 'enable_gcs_patch_in_boto3': False, 'checkpoint_format': 'nemotron_3_dense_vl', '_type': 'cosmos_framework.configs.base.defaults.reasoner.PretrainedWeightsConfig'}, 'model_instance': {'_target_': 'cosmos_framework.model.generator.mot.unified_mot.Nemotron3DenseVLTextForCausalLM', 'config': {'_target_': 'cosmos_framework.configs.base.defaults.reasoner.create_vlm_config', 'base_config': {'_target_': 'cosmos_framework.model.generator.mot.unified_mot.Nemotron3DenseVLMoTConfig.from_json_file', 'json_file': 'cosmos_framework/model/generator/reasoner/nemotron_3_dense_vl/configs/Nemotron-2B-Dense-VL.json'}, 'qk_norm_for_text': False, 'use_und_k_norm_for_gen': True}}, 'tokenizer': {'repository': None, 'revision': None, 'subdir': '', '_target_': 'cosmos_framework.data.generator.processors.build_processor_lazy', 'config_variant': 'hf', 'tokenizer_type': '/home/guanming/.cache/instinctflash/declared/nvidia__Cosmos3-Edge-Policy-DROID/d8f7f39bd182ff1319d6e857b88849812132d5edf2939bdb58169a264535b76b'}, 'layer_module': None, 'qk_norm': False, 'tie_word_embeddings': False, 'use_system_prompt': False, '_type': 'cosmos_framework.configs.base.defaults.reasoner.VLMConfig'}, 'diffusion_expert_config': {'timestep_range': 1.0, 'load_weights_from_pretrained': False, 'patch_spatial': 2, 'max_vae_latent_side_after_patchify': 20, 'enable_fps_modulation': True, 'base_fps': 24, 'sound_base_temporal_compression_factor': None, 'vision_temporal_position_mode': 'latent_index', 'unified_3d_mrope_reset_spatial_ids': True, 'unified_3d_mrope_temporal_modality_margin': 15000, '_type': 'cosmos_framework.configs.base.defaults.model_config.DiffusionExpertConfig'}, 'input_video_key': 'video', 'input_image_key': 'images', 'input_caption_key': 'ai_caption', 'state_ch': 48, 'state_t': 300, 'latent_downsample_factor': 16, 'resolution': '480', 'max_num_tokens_after_packing': -1, 'joint_attn_implementation': 'two_way', 'natten_parameter_list': None, 'video_temporal_causal': False, 'causal_training_strategy': 'none', 'lbl': {'method': 'local', 'coeff_und': None, 'coeff_gen': None, '_type': 'cosmos_framework.configs.base.defaults.model_config.LBLConfig'}, 'vision_gen': True, 'action_gen': True, 'max_action_dim': 64, 'num_embodiment_domains': 32, 'sound_gen': False, 'sound_tokenizer': None, 'sound_dim': None, 'sound_latent_fps': 25, 'enable_input_bias': True, 'log_enc_time_every_n': 100, 'exclude_reasoner_weights_from_checkpoint': False, 'quantization': {'method': None, 'include_regex': ['language_model.model.layers'], 'exclude_regex': [], '_type': 'cosmos_framework.configs.base.defaults.quantization.QuantizationConfig'}, '_type': 'cosmos_framework.configs.base.defaults.model_config.OmniMoTModelConfig'}
+[09-14 20:38:32|job=|WARNING|cosmos_framework/model/generator/omni_mot_model.py:109:set_precision] OmniMoTModel: precision torch.bfloat16
+This processor does not use the `size` parameter. It will be ignored.
+[09-14 20:38:32|job=|INFO|cosmos_framework/data/generator/processors/base.py:131:__init__] Successfully loaded processor from local cache
+[09-14 20:38:32|job=|INFO|cosmos_framework/utils/checkpoint_db.py:321:download] Downloading checkpoint Wan2.2/vae(01a5b7799dac4e6cabe99f803704f219)
+[09-14 20:38:32|job=|INFO|cosmos_framework/utils/checkpoint_db.py:158:_hf_download] uvx --with click hf@1.16.4 download --format=json Wan-AI/Wan2.2-TI2V-5B --repo-type model --revision 921dbaf3f1674a56f47e83fb80a34bac8a8f203e Wan2.2_VAE.pth
+Traceback (most recent call last):
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/hydra/_internal/instantiate/_instantiate2.py", line 92, in _call_target
+    return _target_(*args, **kwargs)
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/model/generator/omni_mot_model.py", line 92, in __init__
+    self.set_up_tokenizers()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/utils/timer.py", line 153, in wrapper
+    result = func(*args, **kwargs)
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/model/generator/omni_mot_model.py", line 162, in set_up_tokenizers
+    self.tokenizer_vision_gen: VideoTokenizerInterface = lazy_instantiate(self.config.tokenizer)
+                                                         ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/utils/lazy_config/instantiate.py", line 103, in instantiate
+    return cls(*args, **instantiate_kwargs)
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/model/generator/tokenizers/wan2pt2_vae_4x16x16.py", line 1353, in __init__
+    self.model = WanVAE(
+                 ~~~~~~^
+        dtype=torch.bfloat16,
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        encode_exact_durations=encode_exact_durations,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/model/generator/tokenizers/wan2pt2_vae_4x16x16.py", line 1156, in __init__
+    self.model = _video_vae(
+                 ~~~~~~~~~~^
+        pretrained_path=vae_pth,
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        encode_exact_durations=encode_exact_durations,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/model/generator/tokenizers/wan2pt2_vae_4x16x16.py", line 997, in _video_vae
+    pretrained_path = download_checkpoint_v2(pretrained_path)
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/utils/checkpoint_db.py", line 467, in download_checkpoint_v2
+    return registered.download()
+           ~~~~~~~~~~~~~~~~~~~^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/utils/checkpoint_db.py", line 322, in download
+    path = self.hf.download()
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/utils/checkpoint_db.py", line 197, in download
+    self._path = self._download()
+                 ~~~~~~~~~~~~~~^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/utils/checkpoint_db.py", line 218, in _download
+    path = _hf_download(cmd_args)
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/utils/checkpoint_db.py", line 159, in _hf_download
+    output = subprocess.run(
+        cmd,
+    ...<3 lines>...
+        check=True,
+    )
+  File "/home/guanming/.local/share/uv/python/cpython-3.13.15-linux-aarch64-gnu/lib/python3.13/subprocess.py", line 554, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/.local/share/uv/python/cpython-3.13.15-linux-aarch64-gnu/lib/python3.13/subprocess.py", line 1039, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        pass_fds, cwd, env,
+                        ^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+                        gid, gids, uid, umask,
+                        ^^^^^^^^^^^^^^^^^^^^^^
+                        start_new_session, process_group)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/.local/share/uv/python/cpython-3.13.15-linux-aarch64-gnu/lib/python3.13/subprocess.py", line 1991, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'uvx'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/benchmarks/regression/user_e2e.py", line 261, in capture
+    api = build(family, checkpoint, output_dir=output.parent)
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/benchmarks/regression/native_reference.py", line 82, in build
+    service = EagerService(RobolabServerArgs(
+        checkpoint_path=str(_resolve_model_path(checkpoint)),
+    ...<2 lines>...
+        num_steps=int(steps['action']), guidance=3.0,
+        shift=float(extra.get('shift', 5.0)), seed=int(extra.get('seed', 0))))
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/scripts/action_policy_server_robolab.py", line 376, in __init__
+    pipe = OmniInference.create(setup_args)
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/inference/common/inference.py", line 136, in create
+    return cls._create(setup_args, guardrails=guardrails, _timer=timer)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/inference/inference.py", line 1281, in _create
+    model = Cosmos3OmniModel.from_pretrained_dcp(
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        checkpoint_path,
+        ^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        quantization_config=quantization_config,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ).model
+    ^
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/inference/model.py", line 533, in from_pretrained_dcp
+    model = cls(config)
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/inference/model.py", line 510, in __init__
+    self.model: "OmniMoTModel" = hydra.utils.instantiate(model_dict)
+                                 ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/hydra/_internal/instantiate/_instantiate2.py", line 226, in instantiate
+    return instantiate_node(
+        config, *args, recursive=_recursive_, convert=_convert_, partial=_partial_
+    )
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/hydra/_internal/instantiate/_instantiate2.py", line 347, in instantiate_node
+    return _call_target(_target_, partial, args, kwargs, full_key)
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/hydra/_internal/instantiate/_instantiate2.py", line 97, in _call_target
+    raise InstantiationException(msg) from e
+hydra.errors.InstantiationException: Error in call to target 'cosmos_framework.model.generator.omni_mot_model.OmniMoTModel':
+FileNotFoundError(2, 'No such file or directory')
+[rank0]:[W914 20:38:33.883053513 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())

@@ -1,0 +1,251 @@
+{
+  "CPU_validation": {
+    "actual_parent_compute_functions_AST_equal": true,
+    "ruff": "passed",
+    "tests": 13,
+    "tests_command": "CUDA_VISIBLE_DEVICES='' .venv-dev/bin/python -m pytest -q /home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/test_compiler_diagnostic_v1.py"
+  },
+  "analysis_command": [
+    ".venv-dev/bin/python",
+    "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/analyze_compiler_diagnostic_v1.py",
+    "--run",
+    "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/observed_v1",
+    "--prior-observed",
+    "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_conditioning_diagnostic_v1/observed_v1",
+    "--queue-config",
+    "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/queue_config_v1.json",
+    "--external-completion",
+    "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/queue_run_v1/completion.json",
+    "--historical-actions",
+    "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/nano-runtime_selected/receipt.npz",
+    "--fresh-actions",
+    "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/run/cells/nano-runtime_selected/receipt.npz",
+    "--worker-sha256",
+    "d9d32f526d34e7fb5758c9e08ce8db9f2ff0483428af94a0ed20200b90e8615b",
+    "--compiler-binding-sha256",
+    "41c536a582d3c318e07bbdaf1f4b90787eb25c4e6fcf387425d727a98f3ed211",
+    "--output",
+    "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/comparison_v1.json"
+  ],
+  "commands": {
+    "cpu_import": {
+      "argv": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/run_compiler_diagnostic_v1.py",
+        "--binding",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/original_binding_v1.json",
+        "--binding-sha256",
+        "bcbd3a70f95018403ccfe4fc0d50a60ae23597f5b28ee3c604115e3f1aa15daa",
+        "--compiler-binding",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/compiler_binding_v1.json",
+        "--compiler-binding-sha256",
+        "41c536a582d3c318e07bbdaf1f4b90787eb25c4e6fcf387425d727a98f3ed211",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1/matrix.json",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1/inputs/recorded_inputs_v1.npz",
+        "--mode",
+        "observed",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/cpu_import_v1",
+        "--cpu-import-check"
+      ],
+      "environment_after_activation": {
+        "CUDA_VISIBLE_DEVICES": "",
+        "IFL_BF16_LINEAR_RELU2": "0",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+        "IFL_COSMOS3_GEN_REGIONS": "1",
+        "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1",
+        "TORCHINDUCTOR_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/cpu_import_v1/compiler_caches/inductor",
+        "TRITON_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/cpu_import_v1/compiler_caches/triton",
+        "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda/bin/ptxas",
+        "TRITON_PTXAS_PATH": "/usr/local/cuda/bin/ptxas",
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "maximum_seconds": 120,
+      "output_must_not_exist": "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/cpu_import_v1",
+      "unset_environment": [
+        "PYTHONPATH",
+        "CUBLAS_WORKSPACE_CONFIG",
+        "CUDA_MODULE_LOADING"
+      ]
+    },
+    "native_observed": {
+      "argv": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/run_compiler_diagnostic_v1.py",
+        "--binding",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/original_binding_v1.json",
+        "--binding-sha256",
+        "bcbd3a70f95018403ccfe4fc0d50a60ae23597f5b28ee3c604115e3f1aa15daa",
+        "--compiler-binding",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/compiler_binding_v1.json",
+        "--compiler-binding-sha256",
+        "41c536a582d3c318e07bbdaf1f4b90787eb25c4e6fcf387425d727a98f3ed211",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1/matrix.json",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1/inputs/recorded_inputs_v1.npz",
+        "--mode",
+        "observed",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/observed_v1"
+      ],
+      "environment_after_activation": {
+        "IFL_BF16_LINEAR_RELU2": "0",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+        "IFL_COSMOS3_GEN_REGIONS": "1",
+        "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1",
+        "TORCHINDUCTOR_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/observed_v1/compiler_caches/inductor",
+        "TRITON_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/observed_v1/compiler_caches/triton",
+        "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda/bin/ptxas",
+        "TRITON_PTXAS_PATH": "/usr/local/cuda/bin/ptxas",
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "maximum_seconds": 900,
+      "output_must_not_exist": "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/observed_v1",
+      "unset_environment": [
+        "PYTHONPATH",
+        "CUBLAS_WORKSPACE_CONFIG",
+        "CUDA_MODULE_LOADING",
+        "CUDA_VISIBLE_DEVICES"
+      ]
+    },
+    "static": {
+      "argv": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/run_compiler_diagnostic_v1.py",
+        "--binding",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/original_binding_v1.json",
+        "--binding-sha256",
+        "bcbd3a70f95018403ccfe4fc0d50a60ae23597f5b28ee3c604115e3f1aa15daa",
+        "--compiler-binding",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/compiler_binding_v1.json",
+        "--compiler-binding-sha256",
+        "41c536a582d3c318e07bbdaf1f4b90787eb25c4e6fcf387425d727a98f3ed211",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1/matrix.json",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1/inputs/recorded_inputs_v1.npz",
+        "--mode",
+        "observed",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/static_v1",
+        "--check-only"
+      ],
+      "environment_after_activation": {
+        "CUDA_VISIBLE_DEVICES": "",
+        "IFL_BF16_LINEAR_RELU2": "0",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+        "IFL_COSMOS3_GEN_REGIONS": "1",
+        "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1",
+        "TORCHINDUCTOR_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/static_v1/compiler_caches/inductor",
+        "TRITON_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/static_v1/compiler_caches/triton",
+        "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda/bin/ptxas",
+        "TRITON_PTXAS_PATH": "/usr/local/cuda/bin/ptxas",
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "maximum_seconds": 120,
+      "output_must_not_exist": "/home/guanming/ifl_public_qualification_20260915_v1/nano_compiler_diagnostic_v1/static_v1",
+      "unset_environment": [
+        "PYTHONPATH",
+        "CUBLAS_WORKSPACE_CONFIG",
+        "CUDA_MODULE_LOADING"
+      ]
+    }
+  },
+  "created_utc": "2026-09-15T05:08:48.493331+00:00",
+  "environment_installs_by_author": 0,
+  "exact_new_prefix": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1",
+  "files": {
+    "analyze_compiler_diagnostic_v1.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/analyze_compiler_diagnostic_v1.py",
+      "sha256": "0a5533abdd7502c4f19b75ebb8575fa1077e6d8bd3d89a3b11f2d6e6d313fd42"
+    },
+    "compiler_binding_v1.json": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/compiler_binding_v1.json",
+      "sha256": "41c536a582d3c318e07bbdaf1f4b90787eb25c4e6fcf387425d727a98f3ed211"
+    },
+    "compiler_tools_v1.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/compiler_tools_v1.py",
+      "sha256": "496fd708b6d56dd91a2f33e307b7c0abc4db638da52c166adc705e621fe7b382"
+    },
+    "original_binding_v1.json": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/original_binding_v1.json",
+      "sha256": "bcbd3a70f95018403ccfe4fc0d50a60ae23597f5b28ee3c604115e3f1aa15daa"
+    },
+    "parent_analysis_tools_6b.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/parent_analysis_tools_6b.py",
+      "sha256": "6b94690b550dac34364d0e6ffecd1061c6b7132c033f1f364dc3c7b7b9fd0347"
+    },
+    "parent_worker_1214.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/parent_worker_1214.py",
+      "sha256": "1214f969447402461256775b98f1e792450677efbbd5306ed5815d5f367be8a7"
+    },
+    "run_compiler_diagnostic_v1.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/run_compiler_diagnostic_v1.py",
+      "sha256": "d9d32f526d34e7fb5758c9e08ce8db9f2ff0483428af94a0ed20200b90e8615b"
+    },
+    "test_compiler_diagnostic_v1.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/test_compiler_diagnostic_v1.py",
+      "sha256": "dca5023c210b3b723bc415812b740f656697042fe097ba7a69a33f07b8852f61"
+    }
+  },
+  "independent_review": {
+    "GPUTarget_dataclass_issue": "fixed and covered by actual pinned AST regression",
+    "latest_cold_kernel_cache_tightening_review": "pending final hash confirmation",
+    "reviewer": "/root/formal_remaining_scene_risk",
+    "scope": "read-only source review, no independent test rerun/native work"
+  },
+  "native_jobs_by_author": 0,
+  "normal_requalification_after_matching_diagnostic": {
+    "assembler": "A later additive assemblerV4 must use an explicit frozen per-family revised-root selection map only after actual evidence arrives; historical/action/source gates remain unchanged.",
+    "families": [
+      "edge",
+      "nano"
+    ],
+    "new_local_roots": [
+      "qualification/edge/pytorch_triton_v1",
+      "qualification/nano/pytorch_triton_v1"
+    ],
+    "preserve_originals": "Existing qualification/{edge,nano}/run, serving, historical_action_comparison and failed_evidence stay at their exact paths and hashes.",
+    "required": true,
+    "scope": "Run full unchanged public three-arm eager/default/selected paired benchmark and selected native WebSocket6calls/two resets for each family under corrected public compiler. Recompute medians, source/precision/contracts and exact own-arm historical arrays. No instrumented diagnostic timing enters README."
+  },
+  "public_compiler_wheel": {
+    "package": "triton",
+    "sha256": "58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09",
+    "url": "https://download.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl",
+    "version": "3.6.0"
+  },
+  "queue_config_template": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/queue_config_template_v1.json",
+    "sha256": "2446f015ffffbaa8b36cd58a28443aac10445104e22b5a15d727427208cba58b"
+  },
+  "required_root_owned_activation": [
+    "bootstrap_edge_v3/run.env",
+    "native_hf_tool_v1/prepared/run.env",
+    "auxiliary_assets_v2/nano/run.env"
+  ],
+  "root_execution_contract": [
+    "Create the new isolated environment without changing original edge_v3. Install the full SHA-pinned public PyTorch Triton wheel, never replace only a .so. Root binds whole package/source correspondence and original unchanged proof.",
+    "Run stdlib-only static check first, then isolated CUDA-hidden import/config check. Each uses a different create-only output and fresh empty compiler cache directories.",
+    "Only after those gates, root owns exclusive idle Thor scheduling and one native observed arm, max900s including all cold compilation and provenance work. No retry or bypass rerun.",
+    "Clear all inherited IFL_* before applying exact five declared values. Activate exact original assets/HF tool, override VIRTUAL_ENV to the new prefix, unset PYTHONPATH/CUBLAS_WORKSPACE_CONFIG/CUDA_MODULE_LOADING; native CUDA_VISIBLE_DEVICES is unset.",
+    "Both cache directories must be absent. The worker creates only these new directories and rejects source/launcher artifacts from old/shared caches. Do not delete shared caches.",
+    "Collect actual queue exit0, source/config receipts, native25-case trace/actions, generated_code and cache evidence. Diagnostic times include cold compilation and tracing and are not benchmark values."
+  ],
+  "runtime_source_edits": 0,
+  "schema": "instinctflash.nano_compiler_diagnostic_handoff.v1",
+  "status": "CPU_ready_pending_root_environment_static_import_and_native_gates",
+  "task_quality_certified": false
+}

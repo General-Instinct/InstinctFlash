@@ -1,0 +1,159 @@
+{
+  "bindings": [
+    {
+      "path": "inputs/recorded_inputs_v1.npz",
+      "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+    }
+  ],
+  "cells": [
+    {
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "arm": "eager_native",
+      "comparison_group": "va-checkpoint",
+      "effective_schedule": {
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        },
+        "sampler": "checkpoint",
+        "video_steps": 25
+      },
+      "expected_optimizer_environment": {},
+      "expected_runtime_kwargs": {},
+      "experimental": false,
+      "family": "va",
+      "id": "va-eager_native",
+      "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+      "receipt": "cells/va-eager_native/receipt.json",
+      "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70"
+    },
+    {
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "arm": "runtime_default",
+      "comparison_group": "va-checkpoint",
+      "effective_schedule": {
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        },
+        "sampler": "checkpoint",
+        "video_steps": 25
+      },
+      "expected_optimizer_environment": {},
+      "expected_runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "experimental": false,
+      "family": "va",
+      "id": "va-runtime_default",
+      "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+      "receipt": "cells/va-runtime_default/receipt.json",
+      "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70"
+    },
+    {
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "arm": "runtime_selected",
+      "comparison_group": "va-checkpoint",
+      "effective_schedule": {
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        },
+        "sampler": "checkpoint",
+        "video_steps": 25
+      },
+      "expected_optimizer_environment": {},
+      "expected_runtime_kwargs": {
+        "device": "cuda:0",
+        "exclude_passes": [
+          "cfg_branch_elision"
+        ],
+        "precision": "fp8",
+        "step_cache": "checkpoint",
+        "tier_ceiling": "numeric"
+      },
+      "experimental": false,
+      "family": "va",
+      "id": "va-runtime_selected",
+      "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+      "receipt": "cells/va-runtime_selected/receipt.json",
+      "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70"
+    },
+    {
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "arm": "operating_point",
+      "comparison_baseline": true,
+      "comparison_group": "va-2v4a-fp8",
+      "cross_policy_baseline": "va-eager_native",
+      "effective_schedule": {
+        "action_steps": 4,
+        "nfe": {
+          "action": 4,
+          "video": 2
+        },
+        "sampler": "checkpoint",
+        "video_steps": 2
+      },
+      "expected_optimizer_environment": {},
+      "expected_runtime_kwargs": {
+        "device": "cuda:0",
+        "exclude_passes": [
+          "cfg_branch_elision"
+        ],
+        "nfe": {
+          "action": 4,
+          "video": 2
+        },
+        "precision": "fp8",
+        "step_cache": "checkpoint",
+        "tier_ceiling": "behavioral"
+      },
+      "experimental": true,
+      "family": "va",
+      "id": "va-2v4a-fp8",
+      "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+      "receipt": "cells/va-2v4a-fp8/receipt.json",
+      "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70"
+    }
+  ],
+  "expected_families": [
+    "va"
+  ],
+  "expected_main_cells": 3,
+  "expected_operating_point_cells": 1,
+  "expected_runtime_update_cells": 0,
+  "protocol": {
+    "history": {
+      "cycles_per_episode": 3,
+      "measured_episodes": 6,
+      "warmup_episodes": 1
+    },
+    "pi05_queue_calls": 51,
+    "stateless": {
+      "measured": 20,
+      "warmup": 5
+    }
+  },
+  "quality_certified": false,
+  "require_observed_schedule": true,
+  "schema": 1
+}

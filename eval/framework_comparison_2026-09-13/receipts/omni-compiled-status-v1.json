@@ -1,0 +1,72 @@
+{
+  "pid": 186871,
+  "status": "complete",
+  "jobs": [
+    {
+      "name": "omni-edge-compiled-v1",
+      "status": "complete",
+      "started": 1789323208.2525048,
+      "command": [
+        "/home/guanming/ifl_eval/framework_comparison_20260913/omni-env/bin/python",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/benchmark_omni_cosmos_v2.py",
+        "--model",
+        "nvidia/Cosmos3-Edge-Policy-DROID",
+        "--deploy",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/vllm-omni-benchmark-20260913/vllm_omni/deploy/cosmos3_policy_droid.yaml",
+        "--fixture",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz",
+        "--compile",
+        "--output",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/omni-edge-compiled-v1.json"
+      ],
+      "exit_code": 0,
+      "p50_ms": 1083.1387325015385,
+      "error": null,
+      "ended": 1789323298.4107156
+    },
+    {
+      "name": "omni-nano-compiled-v1",
+      "status": "complete",
+      "started": 1789323298.4111032,
+      "command": [
+        "/home/guanming/ifl_eval/framework_comparison_20260913/omni-env/bin/python",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/benchmark_omni_cosmos_v2.py",
+        "--model",
+        "nvidia/Cosmos3-Nano-Policy-DROID",
+        "--deploy",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/vllm-omni-benchmark-20260913/vllm_omni/deploy/cosmos3_policy_droid.yaml",
+        "--fixture",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz",
+        "--compile",
+        "--output",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/omni-nano-compiled-v1.json"
+      ],
+      "exit_code": 0,
+      "p50_ms": 4466.3664944819175,
+      "error": null,
+      "ended": 1789323539.6798549
+    },
+    {
+      "name": "omni-dreamzero-compiled-v1",
+      "status": "complete",
+      "started": 1789323539.6802304,
+      "command": [
+        "/home/guanming/ifl_eval/framework_comparison_20260913/omni-env/bin/python",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/benchmark_omni_dreamzero_v4.py",
+        "--model",
+        "GEAR-Dreams/DreamZero-DROID",
+        "--deploy",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/vllm-omni-benchmark-20260913/vllm_omni/deploy/dreamzero.yaml",
+        "--fixture",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz",
+        "--compile",
+        "--output",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/omni-dreamzero-compiled-v1.json"
+      ],
+      "exit_code": 0,
+      "p50_ms": 8543.684475007467,
+      "error": null,
+      "ended": 1789324346.4482048
+    }
+  ]
+}

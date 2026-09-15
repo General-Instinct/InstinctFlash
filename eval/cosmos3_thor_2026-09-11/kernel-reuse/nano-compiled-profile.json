@@ -1,0 +1,1299 @@
+{
+  "family": "nano",
+  "upstream_compiled": true,
+  "phases": [
+    {
+      "phase": "service._build_sample",
+      "ms": 9.508827002719045
+    },
+    {
+      "phase": "model.encode",
+      "ms": 69.56919998629019
+    },
+    {
+      "phase": "model.get_data_and_condition",
+      "ms": 76.74840398249216
+    },
+    {
+      "phase": "model._prepare_inference_data",
+      "ms": 89.77673601475544
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 964.4199300091714
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 965.0639870087616
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 954.2522149858996
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 954.8192710208241
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 898.1060869991779
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 898.673207993852
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 889.2342550097965
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 889.7769229952246
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 899.1298559994902
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 899.6748279896565
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 888.0025239777751
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 888.5268379817717
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 897.3504469904583
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 897.910197993042
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 891.2440220010467
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 891.763039981015
+    },
+    {
+      "phase": "model.generate_samples_from_batch",
+      "ms": 7388.626469997689
+    },
+    {
+      "phase": "service._build_sample",
+      "ms": 9.531160001643002
+    },
+    {
+      "phase": "model.encode",
+      "ms": 69.61212499300018
+    },
+    {
+      "phase": "model.get_data_and_condition",
+      "ms": 76.71309798024595
+    },
+    {
+      "phase": "model._prepare_inference_data",
+      "ms": 89.50207600719295
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 962.9251289879903
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 963.5636839957442
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 957.8943939995952
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 958.4715340170078
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 897.5741580070462
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 898.1947510037571
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 891.7219340219162
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 892.3362490022555
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 897.274312999798
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 897.8614240186289
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 892.0534669887275
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 892.6011710136663
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 898.8821159873623
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 899.444905022392
+    },
+    {
+      "phase": "model.denoise",
+      "ms": 891.962722002063
+    },
+    {
+      "phase": "model._get_velocity",
+      "ms": 892.5266309815925
+    },
+    {
+      "phase": "model.generate_samples_from_batch",
+      "ms": 7397.3124619806185
+    }
+  ],
+  "kernels": [
+    {
+      "name": "## Call CompiledFxGraph ftevnjpsojvyfpnmmrzsasydbho7wawstcnpluqo3bzrh62ms6v3 ##",
+      "count": 210,
+      "cuda_us": 4879811.6400000015,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "natten::cuda::fmha::fmha_64x64x128_sm80_bfloat16(natten::cuda::fmha::AttentionKernel<cutlass::bfloat16_t, cutlass::arch::Sm80, true, 64, 64, 128>::Params)",
+      "count": 360,
+      "cuda_us": 2884626.591000003,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "## Call CompiledFxGraph fxpzwl7zw5lfv56rlv6btopgpm456m43gsaibbr75xngo7fi7lyx ##",
+      "count": 72,
+      "cuda_us": 1855286.9479999999,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "aten::mm",
+      "count": 576,
+      "cuda_us": 1482454.3560000078,
+      "cpu_us": 6732.952999993635,
+      "shapes": [
+        [
+          3094,
+          4096
+        ],
+        [
+          4096,
+          12288
+        ],
+        [
+          3094,
+          12288
+        ]
+      ]
+    },
+    {
+      "name": "nvjet_sm110_tst_384x160_64x3_1x2_h_bz_TNT",
+      "count": 576,
+      "cuda_us": 1482454.3560000078,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "natten::fmha_forward",
+      "count": 144,
+      "cuda_us": 1457636.2189999982,
+      "cpu_us": 10128.56300000033,
+      "shapes": [
+        [
+          1,
+          3094,
+          32,
+          128
+        ],
+        [
+          1,
+          3182,
+          32,
+          128
+        ],
+        [
+          1,
+          3182,
+          32,
+          128
+        ],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "natten::fmha_forward",
+      "count": 144,
+      "cuda_us": 1425976.2270000044,
+      "cpu_us": 10641.072999991477,
+      "shapes": [
+        [
+          1,
+          3094,
+          32,
+          128
+        ],
+        [
+          1,
+          3103,
+          32,
+          128
+        ],
+        [
+          1,
+          3103,
+          32,
+          128
+        ],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "nvjet_sm110_tst_256x208_64x4_2x1_2cta_v_badd_TNT",
+      "count": 576,
+      "cuda_us": 1338668.1849999926,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "aten::addmm",
+      "count": 288,
+      "cuda_us": 1069580.0709999977,
+      "cpu_us": 5696.7559999986115,
+      "shapes": [
+        [
+          3094,
+          4096
+        ],
+        [
+          3094,
+          12288
+        ],
+        [
+          12288,
+          4096
+        ],
+        [],
+        [],
+        [
+          3094,
+          4096
+        ]
+      ]
+    },
+    {
+      "name": "nvjet_sm110_tst_256x208_64x4_2x1_2cta_v_bz_TNT",
+      "count": 864,
+      "cuda_us": 434362.7390000126,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "Command Buffer Full",
+      "count": 534,
+      "cuda_us": 371508.94200000365,
+      "cpu_us": 580264.4490000006,
+      "shapes": []
+    },
+    {
+      "name": "aten::addmm",
+      "count": 288,
+      "cuda_us": 369672.0280000046,
+      "cpu_us": 8172.810999987632,
+      "shapes": [
+        [
+          3094,
+          4096
+        ],
+        [
+          3094,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ],
+        [],
+        [],
+        [
+          3094,
+          4096
+        ]
+      ]
+    },
+    {
+      "name": "aten::mm",
+      "count": 288,
+      "cuda_us": 295426.7330000004,
+      "cpu_us": 7596.373000001331,
+      "shapes": [
+        [
+          3094,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ],
+        [
+          3094,
+          4096
+        ]
+      ]
+    },
+    {
+      "name": "triton_poi_fused_mul_silu_5",
+      "count": 216,
+      "cuda_us": 190761.39300000598,
+      "cpu_us": 1993.3909999988973,
+      "shapes": [
+        [
+          3094,
+          12288
+        ],
+        [
+          3094,
+          12288
+        ],
+        []
+      ]
+    },
+    {
+      "name": "triton_poi_fused_mul_silu_5",
+      "count": 216,
+      "cuda_us": 190761.39300000598,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "## Call CompiledFxGraph f6k5cqrvphfaih2mbqheibxuye7x76jnlc723kmtell5yuwrhs7q ##",
+      "count": 6,
+      "cuda_us": 139518.70999999903,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "aten::mm",
+      "count": 576,
+      "cuda_us": 138936.00600001213,
+      "cpu_us": 8020.863000003839,
+      "shapes": [
+        [
+          3094,
+          4096
+        ],
+        [
+          4096,
+          1024
+        ],
+        [
+          3094,
+          1024
+        ]
+      ]
+    },
+    {
+      "name": "Memcpy DtoD (Device -> Device)",
+      "count": 1030,
+      "cuda_us": 105152.02100000776,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "triton_poi_fused_mul_silu_14",
+      "count": 72,
+      "cuda_us": 63574.96499999988,
+      "cpu_us": 582.8320000016392,
+      "shapes": [
+        [
+          3094,
+          12288
+        ],
+        [
+          3094,
+          12288
+        ],
+        []
+      ]
+    },
+    {
+      "name": "triton_poi_fused_mul_silu_14",
+      "count": 72,
+      "cuda_us": 63574.96499999988,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "triton_poi_fused__to_copy_add_cat_clone_expand_fmha_forward_mean_mul_pow_rsqrt_slice_unsqueeze_view_3",
+      "count": 432,
+      "cuda_us": 52488.55200000084,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "triton_per_fused__to_copy_add_cat_clone_expand_fmha_forward_mean_mul_neg_pow_rsqrt_slice_unsqueeze_view_1",
+      "count": 288,
+      "cuda_us": 48287.07799999784,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "triton_per_fused__to_copy_add_cat_clone_expand_fmha_forward_mean_mul_neg_pow_rsqrt_slice_unsqueeze_view_1",
+      "count": 216,
+      "cuda_us": 47933.573999997694,
+      "cpu_us": 3119.7079999984708,
+      "shapes": [
+        [
+          1,
+          3094,
+          32,
+          128
+        ],
+        [
+          3094,
+          4096
+        ],
+        [
+          128
+        ],
+        [],
+        [
+          3094,
+          128
+        ],
+        [
+          3094,
+          128
+        ],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "triton_red_fused__to_copy_mean_mul_pow_rsqrt_0",
+      "count": 288,
+      "cuda_us": 40256.37899999402,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "triton_red_fused__to_copy_arange_lt_mean_mul_new_zeros_pow_rsqrt_unsqueeze_where_4",
+      "count": 216,
+      "cuda_us": 40094.80399999861,
+      "cpu_us": 2892.2050000044983,
+      "shapes": [
+        [
+          3094,
+          4096
+        ],
+        [
+          4096
+        ],
+        [],
+        [
+          3094,
+          4096
+        ],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "triton_red_fused__to_copy_arange_lt_mean_mul_new_zeros_pow_rsqrt_unsqueeze_where_4",
+      "count": 216,
+      "cuda_us": 40094.80399999861,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "triton_red_fused__to_copy_mean_mul_pow_rsqrt_0",
+      "count": 216,
+      "cuda_us": 39800.66499999445,
+      "cpu_us": 3076.8839999849442,
+      "shapes": [
+        [
+          3094,
+          4096
+        ],
+        [
+          4096
+        ],
+        [],
+        [
+          3094,
+          4096
+        ],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "nvjet_sm110_tst_192x16_64x8_2x1_2cta_v_bz_splitK_TNT",
+      "count": 144,
+      "cuda_us": 30718.854000000516,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "aten::mm",
+      "count": 72,
+      "cuda_us": 29256.196000001393,
+      "cpu_us": 933.2740000009071,
+      "shapes": [
+        [
+          11,
+          4096
+        ],
+        [
+          4096,
+          12288
+        ],
+        [
+          11,
+          12288
+        ]
+      ]
+    },
+    {
+      "name": "aten::mm",
+      "count": 72,
+      "cuda_us": 28854.372000000207,
+      "cpu_us": 836.0330000000395,
+      "shapes": [
+        [
+          90,
+          4096
+        ],
+        [
+          4096,
+          12288
+        ],
+        [
+          90,
+          12288
+        ]
+      ]
+    },
+    {
+      "name": "nvjet_sm110_tst_448x64_64x3_1x2_h_bz_TNT",
+      "count": 72,
+      "cuda_us": 28854.372000000207,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "triton_poi_fused__to_copy_add_clone_expand_fmha_forward_mean_mul_pow_rsqrt_unsqueeze_view_10",
+      "count": 144,
+      "cuda_us": 17204.2750000004,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "aten::addmm",
+      "count": 36,
+      "cuda_us": 16974.71100000001,
+      "cpu_us": 836.3620000000519,
+      "shapes": [
+        [
+          90,
+          4096
+        ],
+        [
+          90,
+          12288
+        ],
+        [
+          12288,
+          4096
+        ],
+        [],
+        [],
+        [
+          90,
+          4096
+        ]
+      ]
+    },
+    {
+      "name": "triton_per_fused__to_copy_add_cat_clone_expand_fmha_forward_mean_mul_neg_pow_rsqrt_slice_unsqueeze_view_5",
+      "count": 72,
+      "cuda_us": 16260.537000000462,
+      "cpu_us": 901.9499999987165,
+      "shapes": [
+        [
+          1,
+          3094,
+          32,
+          128
+        ],
+        [
+          3094,
+          4096
+        ],
+        [
+          128
+        ],
+        [],
+        [
+          3094,
+          128
+        ],
+        [
+          3094,
+          128
+        ],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "triton_per_fused__to_copy_add_cat_clone_expand_fmha_forward_mean_mul_neg_pow_rsqrt_slice_unsqueeze_view_5",
+      "count": 72,
+      "cuda_us": 16260.537000000462,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "aten::cudnn_convolution",
+      "count": 4,
+      "cuda_us": 16245.172999999999,
+      "cpu_us": 166.43600000001243,
+      "shapes": [
+        [
+          1,
+          160,
+          3,
+          274,
+          370
+        ],
+        [
+          160,
+          160,
+          3,
+          3,
+          3
+        ],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "cutlass3x_sm100_tensorop_s128x64x16implicit_gemm_fprop_bf16_bf16_f32_void_bf16_f32_128x64x64_dyn_cga_ndhwc_ndhwc_ndhwc_align8_2sm_relu_valpha",
+      "count": 8,
+      "cuda_us": 16075.668000000012,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "nvjet_sm110_tst_512x96_64x3_2x1_2cta_v_bx_splitK_TNT",
+      "count": 36,
+      "cuda_us": 15417.39599999963,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "cutlass3x_sm100_tensorop_s128x128x16implicit_gemm_fprop_bf16_bf16_f32_void_bf16_f32_128x128x64_dyn_cga_ndhwc_ndhwc_ndhwc_align8_2sm_relu_valpha",
+      "count": 15,
+      "cuda_us": 14757.909000000018,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "aten::addmm",
+      "count": 36,
+      "cuda_us": 14644.979000000982,
+      "cpu_us": 818.5589999994263,
+      "shapes": [
+        [
+          11,
+          4096
+        ],
+        [
+          11,
+          12288
+        ],
+        [
+          12288,
+          4096
+        ],
+        [],
+        [],
+        [
+          11,
+          4096
+        ]
+      ]
+    },
+    {
+      "name": "triton_poi_fused__to_copy_add_cat_clone_expand_fmha_forward_mean_mul_pow_rsqrt_slice_unsqueeze_view_3",
+      "count": 108,
+      "cuda_us": 14284.977000001585,
+      "cpu_us": 672.8979999974836,
+      "shapes": [
+        [
+          1,
+          89,
+          8,
+          128
+        ],
+        [
+          3094,
+          1024
+        ],
+        [
+          1,
+          3182,
+          32,
+          128
+        ],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "nvjet_sm110_tst_512x16_64x3_2x1_2cta_v_bx_splitK_TNT",
+      "count": 36,
+      "cuda_us": 14276.561000001151,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "triton_red_fused__to_copy_arange_lt_mean_mul_new_zeros_pow_rsqrt_unsqueeze_where_13",
+      "count": 72,
+      "cuda_us": 14069.458000000246,
+      "cpu_us": 789.446000001757,
+      "shapes": [
+        [
+          3094,
+          4096
+        ],
+        [
+          4096
+        ],
+        [],
+        [
+          3094,
+          4096
+        ],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "triton_red_fused__to_copy_arange_lt_mean_mul_new_zeros_pow_rsqrt_unsqueeze_where_13",
+      "count": 72,
+      "cuda_us": 14069.458000000246,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "triton_poi_fused__to_copy_add_cat_clone_expand_fmha_forward_mean_mul_pow_rsqrt_slice_unsqueeze_view_3",
+      "count": 108,
+      "cuda_us": 13942.580999997444,
+      "cpu_us": 682.785999993328,
+      "shapes": [
+        [
+          1,
+          10,
+          8,
+          128
+        ],
+        [
+          3094,
+          1024
+        ],
+        [
+          1,
+          3103,
+          32,
+          128
+        ],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "triton_red_fused__to_copy_mean_mul_pow_rsqrt_4",
+      "count": 72,
+      "cuda_us": 13844.781999999497,
+      "cpu_us": 945.3819999988191,
+      "shapes": [
+        [
+          3094,
+          4096
+        ],
+        [
+          4096
+        ],
+        [],
+        [
+          3094,
+          4096
+        ],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "triton_red_fused__to_copy_mean_mul_pow_rsqrt_4",
+      "count": 72,
+      "cuda_us": 13844.781999999497,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "## Call CompiledFxGraph ftcmtfjzcz7eapma2t52o2qoiuf2mfp6t2vvqr3ogwm76my4cx5z ##",
+      "count": 8,
+      "cuda_us": 12837.681999999928,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "## Call CompiledFxGraph fvdtgywip6nogynz4xhjz5wbc254twlavcqnolzhnto3zan3wxgw ##",
+      "count": 8,
+      "cuda_us": 12286.510999999417,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "triton_poi_fused__to_copy_add_cat_clone_expand_fmha_forward_mean_mul_pow_rsqrt_slice_unsqueeze_view_3",
+      "count": 108,
+      "cuda_us": 12278.963000004645,
+      "cpu_us": 921.213999994332,
+      "shapes": [
+        [
+          1,
+          89,
+          8,
+          128
+        ],
+        [
+          3094,
+          8,
+          128
+        ],
+        [
+          1,
+          3182,
+          32,
+          128
+        ],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "triton_poi_fused__to_copy_add_cat_clone_expand_fmha_forward_mean_mul_pow_rsqrt_slice_unsqueeze_view_3",
+      "count": 108,
+      "cuda_us": 11982.030999997165,
+      "cpu_us": 920.0839999974705,
+      "shapes": [
+        [
+          1,
+          10,
+          8,
+          128
+        ],
+        [
+          3094,
+          8,
+          128
+        ],
+        [
+          1,
+          3103,
+          32,
+          128
+        ],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "void cudnn::engines_precompiled::nchwToNhwcKernel<__nv_bfloat16, __nv_bfloat16, float, false, true, (cudnnKernelDataType_t)0>(cudnn::engines_precompiled::nchw2nhwc_params_t<float>, __nv_bfloat16 const*, __nv_bfloat16*)",
+      "count": 50,
+      "cuda_us": 11138.927999999978,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "aten::cudnn_convolution",
+      "count": 3,
+      "cuda_us": 9870.476000000017,
+      "cpu_us": 98.99200000000565,
+      "shapes": [
+        [
+          1,
+          320,
+          3,
+          138,
+          186
+        ],
+        [
+          320,
+          320,
+          3,
+          3,
+          3
+        ],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "triton_poi_fused__to_copy_add_clone_expand_fmha_forward_mean_mul_pow_rsqrt_unsqueeze_view_10",
+      "count": 72,
+      "cuda_us": 8735.62400000033,
+      "cpu_us": 414.3969999998517,
+      "shapes": [
+        [
+          3182,
+          8,
+          128
+        ],
+        [
+          1,
+          3182,
+          32,
+          128
+        ],
+        []
+      ]
+    },
+    {
+      "name": "triton_poi_fused__to_copy_add_clone_expand_fmha_forward_mean_mul_pow_rsqrt_unsqueeze_view_10",
+      "count": 72,
+      "cuda_us": 8468.65100000007,
+      "cpu_us": 381.82599999941885,
+      "shapes": [
+        [
+          3103,
+          8,
+          128
+        ],
+        [
+          1,
+          3103,
+          32,
+          128
+        ],
+        []
+      ]
+    },
+    {
+      "name": "aten::cudnn_convolution",
+      "count": 3,
+      "cuda_us": 7346.377000000022,
+      "cpu_us": 91.85399999999936,
+      "shapes": [
+        [
+          1,
+          640,
+          3,
+          70,
+          94
+        ],
+        [
+          640,
+          640,
+          3,
+          3,
+          3
+        ],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "triton_per_fused__to_copy_add_cat_mean_mul_neg_pow_rsqrt_slice_unsqueeze_view_2",
+      "count": 288,
+      "cuda_us": 7324.968000006251,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "## Call CompiledFxGraph flnhteshewqgysrsjpshpbdzz54y5af3clxvsykvncpaz4xwyvks ##",
+      "count": 8,
+      "cuda_us": 7246.986000000499,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "triton_per_fused__to_copy_add_cat_mean_mul_neg_pow_rsqrt_slice_unsqueeze_view_2",
+      "count": 216,
+      "cuda_us": 7000.20000000624,
+      "cpu_us": 2651.4339999980293,
+      "shapes": [
+        [
+          3094,
+          8,
+          128
+        ],
+        [
+          3094,
+          1024
+        ],
+        [
+          128
+        ],
+        [],
+        [
+          3094,
+          128
+        ],
+        [
+          3094,
+          128
+        ],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "aten::addmm",
+      "count": 36,
+      "cuda_us": 5880.682000000728,
+      "cpu_us": 1268.442999998806,
+      "shapes": [
+        [
+          11,
+          4096
+        ],
+        [
+          11,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ],
+        [],
+        [],
+        [
+          11,
+          4096
+        ]
+      ]
+    },
+    {
+      "name": "aten::copy_",
+      "count": 16,
+      "cuda_us": 5708.96699999948,
+      "cpu_us": 83.2509999985923,
+      "shapes": [
+        [
+          3094,
+          4096
+        ],
+        [
+          3094,
+          4096
+        ],
+        []
+      ]
+    },
+    {
+      "name": "nvjet_sm110_tst_128x16_64x12_2x1_2cta_v_bx_splitK_TNT",
+      "count": 36,
+      "cuda_us": 5512.234000000404,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "void at::native::elementwise_kernel<128, 4, at::native::gpu_kernel_impl_nocast<at::native::BinaryFunctor<c10::BFloat16, c10::BFloat16, c10::BFloat16, at::native::binary_internal::MulFunctor<float> > >(at::TensorIteratorBase&, at::native::BinaryFunctor<c10::BFloat16, c10::BFloat16, c10::BFloat16, at::native::binary_internal::MulFunctor<float> > const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::BinaryFunctor<c10::BFloat16, c10::BFloat16, c10::BFloat16, at::native::binary_internal::MulFunctor<float> > >(at::TensorIteratorBase&, at::native::BinaryFunctor<c10::BFloat16, c10::BFloat16, c10::BFloat16, at::native::binary_internal::MulFunctor<float> > const&)::{lambda(int)#1})",
+      "count": 49,
+      "cuda_us": 5326.982999998938,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "aten::mm",
+      "count": 36,
+      "cuda_us": 5316.141999999993,
+      "cpu_us": 1156.3729999994393,
+      "shapes": [
+        [
+          11,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ],
+        [
+          11,
+          4096
+        ]
+      ]
+    },
+    {
+      "name": "aten::addmm",
+      "count": 36,
+      "cuda_us": 5248.83900000024,
+      "cpu_us": 1206.2850000003527,
+      "shapes": [
+        [
+          90,
+          4096
+        ],
+        [
+          90,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ],
+        [],
+        [],
+        [
+          90,
+          4096
+        ]
+      ]
+    },
+    {
+      "name": "nvjet_sm110_tst_128x16_64x12_2x1_2cta_v_bz_splitK_TNT",
+      "count": 36,
+      "cuda_us": 5047.24499999918,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "aten::cudnn_convolution",
+      "count": 8,
+      "cuda_us": 5029.223999999987,
+      "cpu_us": 266.5520000000106,
+      "shapes": [
+        [
+          1,
+          640,
+          3,
+          36,
+          48
+        ],
+        [
+          640,
+          640,
+          3,
+          3,
+          3
+        ],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "name": "nvjet_sm110_tst_256x96_64x4_4x1_v_badd_TNT",
+      "count": 36,
+      "cuda_us": 4973.125999999989,
+      "cpu_us": 0,
+      "shapes": []
+    },
+    {
+      "name": "aten::mm",
+      "count": 36,
+      "cuda_us": 4951.011999999828,
+      "cpu_us": 1073.9130000002187,
+      "shapes": [
+        [
+          90,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ],
+        [
+          90,
+          4096
+        ]
+      ]
+    },
+    {
+      "name": "nvjet_sm110_tst_256x96_64x4_4x1_v_bz_TNT",
+      "count": 36,
+      "cuda_us": 4951.011999999828,
+      "cpu_us": 0,
+      "shapes": []
+    }
+  ],
+  "stats": {
+    "precision": "native",
+    "fp8_recipe": null,
+    "action_chunk_size": 32,
+    "action_steps": 4,
+    "guidance": 3.0,
+    "conditioning_fps": 15.0,
+    "native_optimizations": {},
+    "exact_pointwise": null,
+    "layer_graphs": null,
+    "captured": false
+  }
+}

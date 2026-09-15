@@ -1,0 +1,68 @@
+{
+  "ok": true,
+  "checks": [
+    "changed conditioning between requests",
+    "CFG branch order",
+    "LRU eviction",
+    "retained output ownership",
+    "in-place weight update",
+    "parameter replacement",
+    "invariance violation returns original output",
+    "partial prefill failure",
+    "successful retry after failure",
+    "idempotent close restores forwards"
+  ],
+  "torch": "2.10.0+cu130",
+  "graphs": {
+    "requests": 6,
+    "prefills": 12,
+    "decodes": 36,
+    "module_hits": 342,
+    "verified_tensors": 54,
+    "evictions": 4,
+    "modules": 9,
+    "bypasses": 0,
+    "admitted_branches": 6,
+    "rejected": [],
+    "slots": 2,
+    "verify": false,
+    "disabled": false,
+    "closed": false,
+    "graph_stats": [
+      {
+        "captures": 2,
+        "checks": 4,
+        "replays": 4,
+        "rejected": []
+      },
+      {
+        "captures": 2,
+        "checks": 4,
+        "replays": 4,
+        "rejected": []
+      }
+    ]
+  },
+  "closed": true,
+  "verification": {
+    "requests": 1,
+    "prefills": 2,
+    "decodes": 6,
+    "module_hits": 54,
+    "verified_tensors": 54,
+    "evictions": 0,
+    "modules": 9,
+    "bypasses": 0,
+    "admitted_branches": 2,
+    "rejected": [],
+    "slots": 2,
+    "verify": true,
+    "disabled": false,
+    "closed": false,
+    "graph_stats": []
+  },
+  "sources": {
+    "probe.py": "f2f2c1c9ab5f4c58f865b44b6e20ec65d5fb55171030c1b4e3f71acbf7cd4cab",
+    "conditioning_cache.py": "ff3c7ece6e4f8cb8c6e8618bbd5b7400f6362e7709c13f4cf6bd104988b15878"
+  }
+}

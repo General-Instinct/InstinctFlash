@@ -1,0 +1,98 @@
+{
+  "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+  "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e",
+  "precision": "fp8",
+  "setup_seconds": 26.46844189800322,
+  "calls": [
+    {
+      "index": 0,
+      "phase": "initial",
+      "ms": 12496.587482048199
+    },
+    {
+      "index": 1,
+      "phase": "warmup",
+      "ms": 11706.334728980437
+    },
+    {
+      "index": 2,
+      "phase": "warmup",
+      "ms": 11703.50308297202
+    },
+    {
+      "index": 3,
+      "phase": "measured",
+      "ms": 11701.690269052051
+    },
+    {
+      "index": 4,
+      "phase": "measured",
+      "ms": 11704.274429939687
+    },
+    {
+      "index": 5,
+      "phase": "measured",
+      "ms": 11707.317086984403
+    },
+    {
+      "index": 6,
+      "phase": "measured",
+      "ms": 11686.744175036438
+    },
+    {
+      "index": 7,
+      "phase": "measured",
+      "ms": 11693.496159976348
+    },
+    {
+      "index": 8,
+      "phase": "measured",
+      "ms": 11710.796664934605
+    },
+    {
+      "index": 9,
+      "phase": "measured",
+      "ms": 11693.862471031025
+    },
+    {
+      "index": 10,
+      "phase": "measured",
+      "ms": 11695.748787955381
+    },
+    {
+      "index": 11,
+      "phase": "measured",
+      "ms": 11705.942030064762
+    },
+    {
+      "index": 12,
+      "phase": "measured",
+      "ms": 11697.49677600339
+    },
+    {
+      "index": 13,
+      "phase": "measured",
+      "ms": 11704.488366958685
+    },
+    {
+      "index": 14,
+      "phase": "measured",
+      "ms": 11698.75427801162
+    }
+  ],
+  "torch": "2.10.0+cu130",
+  "matmul_tf32": false,
+  "cudnn_tf32": false,
+  "cudnn_benchmark": false,
+  "chunk_size": 32,
+  "guidance": 3,
+  "steps": 4,
+  "conditioning_fps": 15,
+  "scope": "Short one-process public API performance diagnostic; alternating recorded camera frames, prompts and synthetic states. No transport, simulator, sustained tail or quality certificate.",
+  "measured": {
+    "count": 12,
+    "p50_ms": 11700.222273531836,
+    "p99_ms": 11710.413911360083,
+    "max_ms": 11710.796664934605
+  }
+}

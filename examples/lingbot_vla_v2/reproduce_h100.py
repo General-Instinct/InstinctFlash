@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-"""Rerun the README LingBot-VLA-V2 H100 pair: upstream eager vs the Runtime DEFAULT arm.
+"""Rerun the README LingBot-VLA-V2 H100 pair: upstream eager vs the Runtime NUMERIC capture arm.
 
 Protocol, exactly as the published row: in-process ``infer``, p50 of 12 timed calls after
 3 warmup calls, one idle H100. The stock arm is the upstream server with ``use_compile=False``
 (their eager reference — their own compile default is a separate arm in the eval archive).
-The ours arm is ``Runtime.from_pretrained`` with no flags: what the family DEFAULT serves —
+The ours arm is ``Runtime.from_pretrained(..., tier_ceiling="numeric", placement="in_process")``:
+the published capture arm, explicitly selected because its self-check accepts nonzero deltas —
 the static-KV denoise CUDA graph, the vision/prefill graphs, and GPU preprocessing, gated at
 startup by the capture self-check.
 
 Each arm runs in its OWN subprocess. That is protocol, not convenience: the upstream deploy
 stack keeps process-global state, and a second model built in the same process was measured to
 fail the capture self-check (which falls back loudly, exactly as designed — but then this
-script would be timing the fallback, not the default arm). A fresh process per arm is also
+script would be timing the fallback, not the capture arm). A fresh process per arm is also
 what any real deployment of either arm looks like.
 
 Quality gate, compared across the two arms: six fixed-seed cases (two on a second prompt,
@@ -114,7 +115,7 @@ def run_ours_arm():
     from instinctflash import Runtime
 
     ckpt = os.environ.get("IFL_VLA2_CKPT", "robbyant/lingbot-vla-v2-6b-robotwin")
-    runtime = Runtime.from_pretrained(ckpt)
+    runtime = Runtime.from_pretrained(ckpt, tier_ceiling="numeric", placement="in_process")
     with runtime, runtime.episode(prompt=PROMPT_A) as episode:
         return measure(lambda obs: episode.predict(obs)["action"])
 
@@ -141,7 +142,7 @@ def main() -> int:
     stock = np.load(HERE / ".reproduce_stock.npz")
     ours = np.load(HERE / ".reproduce_ours.npz")
     print(f"stock (upstream eager, in-process)      p50 = {stock_p50:.1f} ms")
-    print(f"ours (Runtime default arm)              p50 = {ours_p50:.1f} ms")
+    print(f"ours (Runtime NUMERIC capture arm)              p50 = {ours_p50:.1f} ms")
 
     from lingbot_vla_v2_iwm.static_capture import NULL_ENVELOPE
 

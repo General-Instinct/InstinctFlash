@@ -1,0 +1,78 @@
+{
+  "budget": {
+    "control_hz": 20,
+    "executed_actions": 50,
+    "max_deadline_miss_fraction": 0.01,
+    "scheduling": "pipelined",
+    "target_device": "Thor"
+  },
+  "candidates": [
+    {
+      "assessment": null,
+      "eligible": false,
+      "precision": "native",
+      "profile_id": "3aa008cbf1ed5f1e808deb6965bb36dcad32919d0f350bed425993abf589bef7",
+      "quality_status": "screen",
+      "reasons": [
+        "measurement device differs from budget target"
+      ]
+    },
+    {
+      "assessment": null,
+      "eligible": false,
+      "precision": "native",
+      "profile_id": "cf8aed88b65ed22c7df83eeba49b26489fd0b97ba516baf294bab60bd487782d",
+      "quality_status": "screen",
+      "reasons": [
+        "measurement device differs from budget target",
+        "no matching paired closed-loop certificate; screening/repeats do not authorize selection"
+      ]
+    }
+  ],
+  "deployment_certified": false,
+  "policy": {
+    "allow_step_change": false,
+    "allowed_precisions": [
+      "native"
+    ],
+    "baseline_profile_id": "3aa008cbf1ed5f1e808deb6965bb36dcad32919d0f350bed425993abf589bef7",
+    "max_quality_loss": 0.05,
+    "quality_registry_sha256": "f30cb4ccedcb9906af4a57f7e48a79961ccbbb9b428e20ef2a58b11742a41a7c",
+    "required_suites": [
+      "robotwin50_easy",
+      "robotwin50_hard"
+    ],
+    "required_tasks": {
+      "robotwin50_easy": [
+        "adjust_bottle",
+        "beat_block_hammer",
+        "blocks_ranking_rgb",
+        "blocks_ranking_size",
+        "click_alarmclock",
+        "click_bell",
+        "dump_bin_bigbin",
+        "grab_roller",
+        "handover_block",
+        "handover_mic"
+      ],
+      "robotwin50_hard": [
+        "adjust_bottle",
+        "beat_block_hammer",
+        "blocks_ranking_rgb",
+        "blocks_ranking_size",
+        "click_alarmclock",
+        "click_bell",
+        "dump_bin_bigbin",
+        "grab_roller",
+        "handover_block",
+        "handover_mic"
+      ]
+    },
+    "tier_ceiling": "numeric"
+  },
+  "reason": "no_configuration_has_both_matching_evidence_and_budget_compliance",
+  "schema_version": 1,
+  "scope": "Offline evidence-based selection, not automatic model loading or an end-to-end realtime guarantee. Prefers native precision and lower transformation tier; does not infer minimum true task loss from small samples.",
+  "selected_profile_id": null,
+  "selection_sha256": "f8695678e76664088bc74ffb35e6d5a9db36514583df17ab03c967dcb28c611d"
+}

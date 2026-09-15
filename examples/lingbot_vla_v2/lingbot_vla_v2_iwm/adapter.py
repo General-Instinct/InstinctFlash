@@ -36,9 +36,12 @@ class LingBotVLAV2Adapter:
     """Three-camera RobotWin VLA: one Qwen3-VL prefill and ten action-flow steps."""
 
     HOST_REQUIRES = (
-        "torch", "torchvision", "transformers", "safetensors", "yaml", "flash_attn",
-        "qwen_vl_utils", "lerobot",
+        "torch", "torchvision", "transformers", "safetensors", "yaml", "lerobot",
     )
+    # The Qwen3 serving path does not import qwen_vl_utils, and the qualified
+    # Thor checkout uses SDPA. A blanket flash_attn requirement incorrectly sends
+    # that working native stack to a worker. Upstream still validates whichever
+    # attention implementation its actual model constructor selects.
 
     def spec(self) -> AdapterSpec:
         # At the published 256x256 processor size each image contributes 64 visual tokens plus
@@ -69,8 +72,15 @@ class LingBotVLAV2Adapter:
             ),
             notes={
                 "family": "vla",
+                # "backbone" identifies this spec to backbone-keyed planner checks (the engine
+                # operating-point gate in passes/generic/engine_offload.py keys on it: the
+                # vla2_thor frontend bakes a 10-step schedule, and a plan at any other nfe
+                # must decline the engine rather than print one schedule and run another).
+                "backbone": BACKBONE,
                 "chunk_size": "50",
                 "numeric_tier": "NUMERIC (upstream fused-MoE is nondeterministic)",
+                # The capture gate accepts nonzero deltas; the planner must enforce that tier.
+                "capture_tier": "NUMERIC",
             },
         )
 
@@ -97,6 +107,7 @@ class LingBotVLAV2Adapter:
             raise RuntimeError(f"LingBot-VLA-V2 only supports a CUDA device, got {dev!r}")
         if ":" in dev:
             torch.cuda.set_device(int(dev.rsplit(":", 1)[1]))
+        toolchain = _configure_thor_ptxas(torch.cuda.get_device_capability())
 
         root = _source_root()
         if str(root) not in sys.path:
@@ -112,6 +123,16 @@ class LingBotVLAV2Adapter:
         mode = os.environ.get("IFL_VLA2_BACKEND", "static").strip().lower()
         if mode not in {"static", "compile", "eager"}:
             raise RuntimeError("IFL_VLA2_BACKEND must be one of: static, compile, eager")
+
+        if mode == "compile":
+            from instinctflash.runtime.precision import require_transform_permission
+            from instinctflash.planners.planner import Tier, PassResult
+            require_transform_permission(plan, Tier.NUMERIC, "IFL_VLA2_BACKEND=compile")
+            if any(r.name == "graph_capture" and getattr(r, "excluded", False)
+                   for r in plan.results):
+                raise ValueError("compile conflicts with excluded graph_capture")
+            plan.results.append(PassResult("vla2_torch_compile", True, Tier.NUMERIC,
+                                           "Explicit torch.compile backend; numerical changes permitted"))
 
         # transformers 4.57.3 _patch_mistral_regex probes the Hub API even in offline mode when
         # the Qwen3-VL tokenizer loads; the tokenizer is not a mistral model, skip it. Same
@@ -133,9 +154,12 @@ class LingBotVLAV2Adapter:
             str(model_path), use_length=50, chunk_ret=True, use_bf16=True, use_fp32=False,
             use_compile=(mode == "compile"),
         )
+        server._instinctflash_ptxas = toolchain
         schedule = {**dict(checkpoint.execution.nfe or {}), **dict(nfe or {})}
         server.vla.model.config.num_steps = int(schedule.get("action", 10))
 
+        from instinctflash.runtime.precision import install_requested_fp8
+        install_requested_fp8(server.vla.model, plan, "lingbot_vla_v2")
         driver = self.install(server, plan, mode=mode, device=dev)
 
         robot = str(extra.get("robot") or "robotwin")
@@ -156,20 +180,20 @@ class LingBotVLAV2Adapter:
                 if getattr(result, "applies", False)
             }
             capture_planned = "graph_capture" in wanted
+            from instinctflash.planners.planner import Tier
+            if capture_planned:
+                capture = next(r for r in plan.results if r.name == "graph_capture" and r.applies)
+                if capture.tier < Tier.NUMERIC:
+                    raise ValueError("LingBot-VLA-V2 capture requires a NUMERIC plan: its self-check accepts nonzero deltas")
+            extras = (_env_flag("IFL_VLA2_CUDA_KERNELS", default=False)
+                      or _env_flag("IFL_VLA2_MOE_KERNEL", default=False)
+                      or _env_flag("IFL_VLA2_RMSNORM_KERNEL", default=False))
+            if extras and (not capture_planned or os.environ.get(CAPTURE_KILL_SWITCH) == "1"):
+                raise ValueError("experimental numeric kernels require an active NUMERIC capture plan")
             if not capture_planned:
                 print(
                     "InstinctFlash LingBot-VLA-V2: the plan does not apply graph_capture, so the "
                     "static-KV CUDA Graph backend is not installed; running the upstream path."
-                )
-            if _env_flag("IFL_VLA2_GPU_PREPROCESS", default=True):
-                # FeatureTransform is created by the first server.reset(), which the Runtime loop
-                # performs after installing compute backends. Defer this one transform-dependent
-                # installer until that reset has completed.
-                server._instinctflash_gpu_preprocess_pending = (
-                    str(device or "cuda"),
-                    os.environ.get("IFL_VLA2_GPU_PREPROCESS_MODE", "processor")
-                    .strip()
-                    .lower(),
                 )
             # The Triton kernels DEFAULT OFF, now with the H100 6-case gate on record
             # (verify_moe_kernel.py / moe_kernel_results.json): the MoE kernel PASSES the
@@ -209,12 +233,25 @@ class LingBotVLAV2Adapter:
                 print(f"InstinctFlash LingBot-VLA-V2: {note}.")
                 capture_planned = False
             if capture_planned:
+                if _env_flag("IFL_VLA2_GPU_PREPROCESS", default=True):
+                    # FeatureTransform is created by the first server.reset(), which the Runtime loop
+                    # performs after installing compute backends. Defer this one transform-dependent
+                    # installer until that reset has completed.
+                    server._instinctflash_gpu_preprocess_pending = (
+                        str(device or "cuda"),
+                        os.environ.get("IFL_VLA2_GPU_PREPROCESS_MODE", "processor")
+                        .strip()
+                        .lower(),
+                    )
                 from instinctflash.runtime.capture_self_check import record_self_check_on_plan
 
                 from .static_capture import NULL_ENVELOPE, install_static_capture
 
                 capture = next(r for r in plan.results
                                if r.name == "graph_capture" and r.applies)
+                from instinctflash.planners.planner import Tier
+                if capture.tier < Tier.NUMERIC:
+                    raise ValueError("LingBot-VLA-V2 capture requires a NUMERIC plan: its self-check accepts nonzero deltas")
                 driver = install_static_capture(
                     server.vla.model,
                     on_self_check=_release_prefix_graphs_on_fail(
@@ -229,10 +266,10 @@ class LingBotVLAV2Adapter:
                         "backend installed."
                     )
                 print("InstinctFlash LingBot-VLA-V2: static-KV CUDA Graph backend installed — "
-                      "the family default on capture-capable devices. The first capture is "
+                      "the NUMERIC arm on eligible devices. The first capture is "
                       "gated by a startup self-check (replay vs upstream eager on staged "
-                      "inputs it was not captured from) against the family's recorded "
-                      f"stock-vs-stock envelope ({NULL_ENVELOPE:.3e} — this family's fused-MoE "
+                      "inputs it was not captured from, three comparisons per input) against a legacy "
+                      f"cross-domain implementation guard ({NULL_ENVELOPE:.3e} — not a calibrated velocity envelope; the fused-MoE "
                       "kernel is nondeterministic even against itself, so its capture tier is "
                       "NUMERIC, not BITEXACT); a miss releases every graph and falls back to "
                       f"eager, loudly. Kill-switch: {CAPTURE_KILL_SWITCH}=1.")
@@ -284,7 +321,27 @@ class _LingBotVLAV2Loop:
         if not prompt:
             raise ValueError("LingBot-VLA-V2 requires a prompt (in reset() or predict())")
         obs["prompt"] = obs["task"] = prompt
+        if getattr(self._server, "_instinctflash_fallback_refused", False):
+            raise RuntimeError("capture rejected with experimental kernels; reload a native eager Runtime")
+        # A rejection can happen midway through a policy call, after its preprocessing and
+        # prefix already ran. Discard that mixed call and replay the original observation
+        # with its RNG/counter state restored after all capture-side transforms are removed.
+        pending = self._driver is not None and not self._driver.rejected and self._driver.graph is None
+        if pending:
+            import random
+            import numpy as np
+            import torch
+            rng = (random.getstate(), np.random.get_state(), torch.get_rng_state(),
+                   torch.cuda.get_rng_state() if torch.cuda.is_available() else None)
+            state = {key:getattr(self._server,key) for key in
+                     ("global_step","last_action_chunk","last_normalized_action_chunk")
+                     if hasattr(self._server,key)}
         result = self._server.infer(obs)
+        if pending and self._driver.rejected:
+            random.setstate(rng[0]);np.random.set_state(rng[1]);torch.set_rng_state(rng[2])
+            if rng[3] is not None:torch.cuda.set_rng_state(rng[3])
+            for key,value in state.items():setattr(self._server,key,value)
+            result = self._server.infer(dict(observation,prompt=prompt,task=prompt))
         if "action" not in result:
             raise RuntimeError(f"upstream LingBot-VLA-V2 returned no 'action': {result.keys()}")
         return {"action": result["action"]}
@@ -307,6 +364,7 @@ class _LingBotVLAV2Loop:
             "vision_replays": int(prefix.vision.replays if prefix else 0),
             "prefill_graph": bool(prefix and prefix.prefill.graph is not None),
             "prefill_replays": int(prefix.prefill.replays if prefix else 0),
+            "ptxas": getattr(self._server, "_instinctflash_ptxas", {}),
         }
 
     def close(self) -> None:
@@ -329,12 +387,23 @@ def _release_prefix_graphs_on_fail(recorder, server):
 
     The vision/prefill graphs are the same replay bet as the denoise graph; evidence that
     replay disagrees with eager in this process is evidence against all of them, so the
-    fallback is ALL upstream, not a mixed state.
+    loop discards the in-flight mixed call and reruns upstream after restoring its RNG/counters.
+    Experimental custom kernels cannot claim this fallback and instead refuse further serving.
     """
     def on_verdict(res: dict) -> None:
         recorder(res)
         if res.get("passed"):
             return
+        preprocess = getattr(server, "_instinctflash_gpu_preprocess", None)
+        if preprocess is not None:
+            preprocess.close()
+            server._instinctflash_gpu_preprocess = None
+        if hasattr(server, "_instinctflash_gpu_preprocess_pending"):
+            delattr(server, "_instinctflash_gpu_preprocess_pending")
+        if any(getattr(server,key,None) is not None for key in
+               ("_instinctflash_moe_kernel","_instinctflash_rmsnorm_kernel")):
+            server._instinctflash_fallback_refused = True
+            raise RuntimeError("capture rejected with experimental kernels; automatic native fallback is unavailable")
         prefix = getattr(server, "_instinctflash_prefix_capture", None)
         if prefix is not None:
             prefix.close()
@@ -358,6 +427,40 @@ def _source_root(*, required: bool = True) -> Path | None:
             "LingBot-VLA-V2 upstream source not found. Set LINGBOT_VLA_V2_ROOT to the checkout "
             f"(searched: {[str(c) for c in SOURCE_ROOT_CANDIDATES]}).")
     return None
+
+
+def _configure_thor_ptxas(capability):
+    """Use a Thor-capable system assembler for upstream MoE compilation.
+
+    Some Triton wheels bundle a ptxas which rejects sm_110a. Preserve explicit
+    user choices; fill absent overrides only when the toolkit advertises Thor.
+    This selects a compiler, not a different MoE implementation or precision.
+    """
+    import shutil
+    import subprocess
+    if tuple(capability) != (11, 0):
+        return {}
+    names = ('TRITON_PTXAS_PATH', 'TRITON_PTXAS_BLACKWELL_PATH')
+    missing = [name for name in names if not os.environ.get(name)]
+    if missing:
+        cuda_root = os.environ.get('CUDA_HOME') or os.environ.get('CUDA_PATH')
+        candidates = ([str(Path(cuda_root)/'bin/ptxas')] if cuda_root else [])
+        candidates += ['/usr/local/cuda/bin/ptxas', shutil.which('ptxas')]
+        for candidate in dict.fromkeys(candidates):
+            if not candidate or not Path(candidate).is_file():
+                continue
+            try:
+                probe = subprocess.run([candidate, '--help'], capture_output=True,
+                                       text=True, timeout=5, check=False)
+            except (OSError, subprocess.TimeoutExpired):
+                continue
+            if probe.returncode == 0 and 'sm_110a' in probe.stdout + probe.stderr:
+                for name in missing:
+                    os.environ[name] = candidate
+                print(f'InstinctFlash LingBot-VLA-V2: Thor MoE compiler {candidate} '
+                      f"({', '.join(missing)}).")
+                break
+    return {name: os.environ.get(name) for name in names}
 
 
 def _triton_kernels_allowed(flag_name: str) -> bool:

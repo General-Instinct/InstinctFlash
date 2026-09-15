@@ -1,0 +1,63 @@
+{
+  "status": "complete_numerical_latency_screen",
+  "quality_certified": false,
+  "default_enabled": false,
+  "latency_p50_ms": {
+    "reference-a": 1158.3304975065403,
+    "fused-up": 1089.4354589981958,
+    "reference-b": 1160.6875249999575
+  },
+  "latency_reduction_percent_vs_a": 5.947787669982796,
+  "latency_reduction_percent_vs_b": 6.138781064418208,
+  "reference_ab_byte_equal": true,
+  "reference_ab_max_abs": 0.0,
+  "candidate_byte_equal_to_a": true,
+  "candidate_action_mae": 0.0,
+  "candidate_action_max_abs": 0.0,
+  "candidate_joint_mae": 0.0,
+  "candidate_gripper_mae": 0.0,
+  "coverage": {
+    "reference-a": {
+      "measured_requests": 10,
+      "compiled_layers_per_request": 224,
+      "compiled_prefill_layers_per_request": 56
+    },
+    "fused-up": {
+      "measured_requests": 10,
+      "compiled_layers_per_request": 224,
+      "compiled_prefill_layers_per_request": 56
+    },
+    "reference-b": {
+      "measured_requests": 10,
+      "compiled_layers_per_request": 224,
+      "compiled_prefill_layers_per_request": 56
+    }
+  },
+  "prefill_extraction_checks": 84,
+  "total_compiled_prefill_layers": 812,
+  "schedule": {
+    "action_chunk_size": 32,
+    "action_steps": 4,
+    "guidance": 3.0,
+    "conditioning_fps": 15.0
+  },
+  "receipts": [
+    {
+      "path": "edge-reference-a.json",
+      "sha256": "456b6ec263b7f302153a7308526bfce4c3b6e7b5f7a1d43d3770b23931316a2c"
+    },
+    {
+      "path": "edge-fused-up.json",
+      "sha256": "eb39e0a40879ca94f4b85b5ed195f1dd394c1a33ff95d38fe6623b861dd45324"
+    },
+    {
+      "path": "edge-reference-b.json",
+      "sha256": "63cfb0b23fff7a7dec2b40f2348b0bff88d2724abc22b25b97a6169ea3efe352"
+    }
+  ],
+  "regression_thresholds": {
+    "exact_actions_required": true,
+    "minimum_paired_latency_reduction_percent": 3.0
+  },
+  "regression_passed": true
+}

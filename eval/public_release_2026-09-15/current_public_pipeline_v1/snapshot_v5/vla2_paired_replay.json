@@ -1,0 +1,461 @@
+{
+  "bindings": [
+    {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/inputs/recorded_inputs_v1.npz",
+      "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+      "status": "passed"
+    }
+  ],
+  "cells": [
+    {
+      "action_shape": [
+        50,
+        14
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "c6c9df1d80836788ca1c7793ec7e8670bfd8383da2cd99a77395856115226bef",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-eager_native/receipt.npz",
+        "sha256": "c8bc8dc2639267c49144bd6ed35bd9622784a9a3be988fbf7c525d9714be23f0",
+        "shape": [
+          25,
+          50,
+          14
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "eager_native",
+      "comparison_group": "vla2-checkpoint",
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "experimental": false,
+      "family": "vla2",
+      "first_predict_ms": 1254.3899339507334,
+      "guidance": "{'action': 'none'}",
+      "id": "vla2-eager_native",
+      "input_contract": {
+        "action_shape": [
+          50,
+          14
+        ],
+        "family": "vla2",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 740.8360529807396,
+        "mean_ms": 735.1071185985347,
+        "min_ms": 731.1948369606398,
+        "p50_ms": 734.55526449834
+      },
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 740.8360529807396,
+        "mean_ms": 735.1071185985347,
+        "min_ms": 731.1948369606398,
+        "p50_ms": 734.55526449834
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 10
+        },
+        "nfe_before": {
+          "action": 10
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 20,
+        "max_ms": 740.8360529807396,
+        "mean_ms": 735.1071185985347,
+        "min_ms": 731.1948369606398,
+        "p50_ms": 734.55526449834
+      },
+      "primary_metric": "generation_p50_ms",
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-eager_native/receipt.json",
+        "sha256": "f00a80efa87b9ccf6cb4cd375822480cc1f95c552114174723d669b446fa93ee"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "920aad6a8cf3951ae04b7c54132a0ddc2addbb1570a3172c719f5334d531a7c0",
+      "revision": "0451855729ec904f970600e0aec8b84661423afe",
+      "runtime_kwargs": {},
+      "setup_plus_first_predict_ms": 61718.76508393325,
+      "setup_plus_timed_calls_mean_ms": 3173.960766158998,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 60.464375149982516,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 755.3857601596974,
+      "timed_session_ms": 18884.644003992435,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.11.0+cu130",
+      "total_calls": 25,
+      "usability": "succeeded on recorded requests",
+      "warmup_calls": 5
+    },
+    {
+      "action_shape": [
+        50,
+        14
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "c6c9df1d80836788ca1c7793ec7e8670bfd8383da2cd99a77395856115226bef",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-runtime_default/receipt.npz",
+        "sha256": "c8bc8dc2639267c49144bd6ed35bd9622784a9a3be988fbf7c525d9714be23f0",
+        "shape": [
+          25,
+          50,
+          14
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "runtime_default",
+      "comparison_group": "vla2-checkpoint",
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "changed_schedule": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "precision": "native",
+        "schedule_options": {},
+        "step_cache": null,
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT"
+      },
+      "experimental": false,
+      "family": "vla2",
+      "first_predict_ms": 1240.431966027245,
+      "guidance": "{'action': 'none'}",
+      "id": "vla2-runtime_default",
+      "input_contract": {
+        "action_shape": [
+          50,
+          14
+        ],
+        "family": "vla2",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 780.9534459956922,
+        "mean_ms": 770.534550253069,
+        "min_ms": 764.5245280000381,
+        "p50_ms": 769.8706935043447
+      },
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 780.9534459956922,
+        "mean_ms": 770.534550253069,
+        "min_ms": 764.5245280000381,
+        "p50_ms": 769.8706935043447
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 10
+        },
+        "nfe_before": {
+          "action": 10
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 20,
+        "max_ms": 780.9534459956922,
+        "mean_ms": 770.534550253069,
+        "min_ms": 764.5245280000381,
+        "p50_ms": 769.8706935043447
+      },
+      "primary_metric": "generation_p50_ms",
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-runtime_default/receipt.json",
+        "sha256": "095fb00107cf835d6aa492fa125d8089b553fc2e8adc8d06fb73843a5f905b7d"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "920aad6a8cf3951ae04b7c54132a0ddc2addbb1570a3172c719f5334d531a7c0",
+      "revision": "0451855729ec904f970600e0aec8b84661423afe",
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "setup_plus_first_predict_ms": 61985.135698050726,
+      "setup_plus_timed_calls_mean_ms": 3218.5160331684165,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 60.74470373202348,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 788.7278838874772,
+      "timed_session_ms": 19718.19709718693,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.11.0+cu130",
+      "total_calls": 25,
+      "usability": "public default succeeded on recorded requests",
+      "warmup_calls": 5
+    },
+    {
+      "action_shape": [
+        50,
+        14
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "f5a42195821da68dcc6ceec646073225537d408afada2d3449a106b54aedde9e",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-runtime_selected/receipt.npz",
+        "sha256": "1b1bbe9be51597980cdd0249f3c1e269ec60c8ecc99da091526998771ed8fb6d",
+        "shape": [
+          25,
+          50,
+          14
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "runtime_selected",
+      "comparison_group": "vla2-checkpoint",
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "execution_policy": {
+        "category": "FP8",
+        "changed_schedule": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "precision": "fp8",
+        "schedule_options": {},
+        "step_cache": null,
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC"
+      },
+      "experimental": false,
+      "family": "vla2",
+      "first_predict_ms": 1484.42969401367,
+      "guidance": "{'action': 'none'}",
+      "id": "vla2-runtime_selected",
+      "input_contract": {
+        "action_shape": [
+          50,
+          14
+        ],
+        "family": "vla2",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 412.90201497031376,
+        "mean_ms": 394.52740710112266,
+        "min_ms": 384.46855399524793,
+        "p50_ms": 394.1138549998868
+      },
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 412.90201497031376,
+        "mean_ms": 394.52740710112266,
+        "min_ms": 384.46855399524793,
+        "p50_ms": 394.1138549998868
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 10
+        },
+        "nfe_before": {
+          "action": 10
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "fp8",
+      "primary": {
+        "count": 20,
+        "max_ms": 412.90201497031376,
+        "mean_ms": 394.52740710112266,
+        "min_ms": 384.46855399524793,
+        "p50_ms": 394.1138549998868
+      },
+      "primary_metric": "generation_p50_ms",
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-runtime_selected/receipt.json",
+        "sha256": "ab926a54474abe2887086647a3cf62ad4719a9cf810ff48b9a7dc804e69ed9c6"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "920aad6a8cf3951ae04b7c54132a0ddc2addbb1570a3172c719f5334d531a7c0",
+      "revision": "0451855729ec904f970600e0aec8b84661423afe",
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8",
+        "step_cache": "checkpoint",
+        "tier_ceiling": "numeric"
+      },
+      "setup_plus_first_predict_ms": 28094.1891510156,
+      "setup_plus_timed_calls_mean_ms": 1501.6117918444797,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 26.60975945700193,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 437.2214135644026,
+      "timed_session_ms": 10930.535339110065,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.11.0+cu130",
+      "total_calls": 25,
+      "usability": "explicit numerical candidate on recorded requests",
+      "warmup_calls": 5
+    }
+  ],
+  "comparisons": [
+    {
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "metric_overflow": false,
+        "rmse": 0.0,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "baseline": "vla2-eager_native",
+      "baseline_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "candidate": "vla2-runtime_default",
+      "candidate_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "kind": "matched_policy_latency_ratio",
+      "median_paired_ratio": 0.9559149113830735,
+      "paired_samples": 20,
+      "ratio_of_p50": 0.9541281031945069,
+      "recommended": false,
+      "same_sampling_policy": true,
+      "status": "passed",
+      "task_quality_validated": false
+    },
+    {
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.10081000626087189,
+        "metric_overflow": false,
+        "rmse": 0.009328359350090812,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "baseline": "vla2-eager_native",
+      "baseline_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "candidate": "vla2-runtime_selected",
+      "candidate_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "kind": "matched_policy_latency_ratio",
+      "median_paired_ratio": 1.8653656613140561,
+      "paired_samples": 20,
+      "ratio_of_p50": 1.863814872731513,
+      "recommended": false,
+      "same_sampling_policy": true,
+      "status": "passed",
+      "task_quality_validated": false
+    }
+  ],
+  "counts": {
+    "expected_cells": 3,
+    "failed_cells": 0,
+    "failed_comparisons": 0,
+    "finite_public_actions": 75,
+    "finite_queue_actions": 0,
+    "incomplete_cells": 0,
+    "main_cells": 3,
+    "operating_point_cells": 0,
+    "passed_cells": 3,
+    "runtime_update_cells": 0
+  },
+  "errors": [],
+  "matrix": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/matrix.json",
+    "sha256": "ab0b60645c068681977702b948f7e829cb6b1b27a25be12b0683b995b2f9ead0"
+  },
+  "pending": [],
+  "recommended": false,
+  "require_observed_schedule": true,
+  "schema": "instinctflash.user_report.v1",
+  "scope": "CPU artifact/protocol validation on recorded requests; no simulator or task-quality admission",
+  "status": "passed",
+  "task_quality_validated": false,
+  "validator": {
+    "path": "/home/ubuntu/ifl-public-full-stage-20260915-v9-docfix1/source/benchmarks/regression/user_report.py",
+    "sha256": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+  }
+}

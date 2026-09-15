@@ -1,0 +1,136 @@
+{
+  "scope": "One paired LIBERO-10 task 0 seed 0 closed-loop wiring smoke through actual Thor public Runtime. Not task success-rate, non-inferiority, real-time, or isolated FP8 arithmetic certification. Simulator waits for each network response.",
+  "initial_observations_byte_equal": true,
+  "wire_trace_hashes_and_saved_actions_verified": true,
+  "arms": {
+    "native": {
+      "ok": true,
+      "success": true,
+      "steps": 276,
+      "task": 0,
+      "seed": 0,
+      "identity": {
+        "protocol": "pi05-public-libero-50-v1",
+        "model_id": "lerobot/pi05_libero_finetuned_v044",
+        "model_revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "precision": "native",
+        "n_action_steps": 50,
+        "action_dim": 7,
+        "action_nfe": 10,
+        "observation_processor": "native LeRobot preprocess_observation + LiberoProcessorStep",
+        "seed_rule": "per request torch/numpy/python seed = episode_seed + action_index; no queue resets within episode",
+        "sources": {
+          "Runtime": "eba50f93043e075ddce7cfb9304e247d08a63f89d809dd37831b1fed63e7f795",
+          "LiberoProcessorStep": "41cf74048b233652b2b03d38c79b30d6f1d341592d553a5625f971de555f3a3a",
+          "preprocess_observation": "4a37ce5d9ac70a22f88e63c02b84ef3e30be72725e52fe6a03ec7e3407c143e7"
+        }
+      },
+      "simulator_identity": {
+        "revision": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+        "tree_sha256": "fa6da4d20c9ab1a67e45f6aec4c7ec38a4adfd9cf42dea65bb5519d311c63e48",
+        "environment": {
+          "numpy": "1.26.4",
+          "scipy": "1.13.1",
+          "mujoco": "2.3.7",
+          "robosuite": "1.4.1",
+          "torch": "2.7.0"
+        },
+        "render_environment": {
+          "MUJOCO_GL": "osmesa",
+          "PYOPENGL_PLATFORM": "osmesa",
+          "LP_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        }
+      },
+      "scene_sha256": "03698c149e265021c64a7c69acd09c2c3a53ae1c8f07d5e6818821322fb41538",
+      "settle_steps": 10,
+      "settle_action": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -1
+      ],
+      "camera_size": [
+        360,
+        360
+      ],
+      "wall_seconds": 127.7921356218867,
+      "scope": "Single-scene closed-loop wiring smoke, native LeRobot environment conversion on server, original 50-action queue; not a success-rate certificate."
+    },
+    "fp8": {
+      "ok": true,
+      "success": true,
+      "steps": 257,
+      "task": 0,
+      "seed": 0,
+      "identity": {
+        "protocol": "pi05-public-libero-50-v1",
+        "model_id": "lerobot/pi05_libero_finetuned_v044",
+        "model_revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "precision": "fp8",
+        "n_action_steps": 50,
+        "action_dim": 7,
+        "action_nfe": 10,
+        "observation_processor": "native LeRobot preprocess_observation + LiberoProcessorStep",
+        "seed_rule": "per request torch/numpy/python seed = episode_seed + action_index; no queue resets within episode",
+        "sources": {
+          "Runtime": "eba50f93043e075ddce7cfb9304e247d08a63f89d809dd37831b1fed63e7f795",
+          "LiberoProcessorStep": "41cf74048b233652b2b03d38c79b30d6f1d341592d553a5625f971de555f3a3a",
+          "preprocess_observation": "4a37ce5d9ac70a22f88e63c02b84ef3e30be72725e52fe6a03ec7e3407c143e7"
+        }
+      },
+      "simulator_identity": {
+        "revision": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+        "tree_sha256": "fa6da4d20c9ab1a67e45f6aec4c7ec38a4adfd9cf42dea65bb5519d311c63e48",
+        "environment": {
+          "numpy": "1.26.4",
+          "scipy": "1.13.1",
+          "mujoco": "2.3.7",
+          "robosuite": "1.4.1",
+          "torch": "2.7.0"
+        },
+        "render_environment": {
+          "MUJOCO_GL": "osmesa",
+          "PYOPENGL_PLATFORM": "osmesa",
+          "LP_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        }
+      },
+      "scene_sha256": "03698c149e265021c64a7c69acd09c2c3a53ae1c8f07d5e6818821322fb41538",
+      "settle_steps": 10,
+      "settle_action": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -1
+      ],
+      "camera_size": [
+        360,
+        360
+      ],
+      "wall_seconds": 123.53373270807788,
+      "scope": "Single-scene closed-loop wiring smoke, native LeRobot environment conversion on server, original 50-action queue; not a success-rate certificate."
+    }
+  },
+  "artifacts": {
+    "pi05-public-sim-native-task0-seed0.json": "752e9dcaeb9338d7287074a6c15e82a6b7245b15ba1f5bf29c890ec52934f511",
+    "pi05-public-sim-native-task0-seed0.npz": "fc70cc4012fc4fe7a7d22fe796365493426f116b88c8bceafaf6b36d37bc12c4",
+    "pi05-public-sim-native-task0-seed0.trace/trace.json": "48b32c8a75e8b4704e1b6741be9ca85655dceee0896a40969aafb73a1bdbc34d",
+    "pi05-public-sim-native-identity.json": "e464bd27ea868d0c8200f249b42c53e18afaf4164c751793777b140ea5a2e933",
+    "pi05-public-sim-native.log": "c6c71a42f2fb423c046e53d02ac4e990fa4ca7d017880eb051ca2e0d625c163e",
+    "pi05-public-sim-fp8-task0-seed0.json": "e651e925c17b9eaf8952a40ffd76e7f99f87a9df6ef4db6d11c48e0251b11527",
+    "pi05-public-sim-fp8-task0-seed0.npz": "346e0ce6cc2acf7026cfb309b416531b8d6e635af9c2dfdd01caa3468c6efbdc",
+    "pi05-public-sim-fp8-task0-seed0.trace/trace.json": "667d3223ab439659ccb1315bec6325c3cfe46bd9653e260698da5ccfed3ca214",
+    "pi05-public-sim-fp8-identity.json": "1d583c103d3ac0d78eb82d9bf3ae10c3e487a4801ac080d45122ebf1aec346be",
+    "pi05-public-sim-fp8.log": "32500ce52bf9fb8afb222023668e287b21f8e2e20027a73e94a169d7d122a66b",
+    "serve_pi05_runtime_libero.py": "2f598f10dfd71a63c5cb108db92e56d14b93938ecc85f5062492375365d2b48d",
+    "probe_pi05_runtime_libero_scene.py": "f2339849e838612aa47c2d38808cff2f6bb2f5bc735595f46e0397d0cb8f4134",
+    "run_pi05_runtime_libero.sh": "f825b94b2be6af75a126b29558f4841c849534d81d8a98171611a84b15172add"
+  }
+}

@@ -1,0 +1,922 @@
+{
+  "load_receipt": {
+    "verified_dit_tensors": 1317,
+    "original_checkpoint": "/home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942",
+    "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+    "direct_bf16_dit": true,
+    "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+    "loaded_dit_values_byte_equal": 1317
+  },
+  "ok": true,
+  "precision": "fp8",
+  "checkpoint": "/home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942",
+  "recipe": {
+    "recipe": "dreamzero_causal_qkv_e4m3fn_weights_dynamic_per_tensor_activations_fp32_accum_bf16_output",
+    "attention_layers": 40,
+    "projections": [
+      {
+        "path": "blocks.0.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.0.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.0.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.1.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.1.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.1.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.2.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.2.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.2.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.3.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.3.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.3.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.4.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.4.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.4.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.5.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.5.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.5.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.6.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.6.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.6.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.7.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.7.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.7.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.8.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.8.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.8.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.9.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.9.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.9.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.10.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.10.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.10.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.11.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.11.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.11.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.12.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.12.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.12.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.13.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.13.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.13.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.14.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.14.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.14.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.15.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.15.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.15.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.16.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.16.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.16.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.17.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.17.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.17.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.18.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.18.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.18.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.19.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.19.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.19.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.20.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.20.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.20.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.21.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.21.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.21.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.22.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.22.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.22.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.23.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.23.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.23.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.24.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.24.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.24.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.25.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.25.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.25.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.26.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.26.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.26.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.27.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.27.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.27.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.28.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.28.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.28.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.29.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.29.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.29.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.30.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.30.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.30.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.31.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.31.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.31.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.32.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.32.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.32.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.33.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.33.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.33.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.34.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.34.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.34.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.35.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.35.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.35.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.36.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.36.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.36.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.37.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.37.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.37.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.38.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.38.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.38.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.39.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.39.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.39.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      }
+    ],
+    "scheduler_steps": 16,
+    "dit_step_mask": [
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true
+    ],
+    "scope": "Causal self-attention Q/K/V only; all other computation and history remain native"
+  },
+  "executed_fp8_projections": {
+    "blocks.0.self_attn.q": 108,
+    "blocks.0.self_attn.k": 108,
+    "blocks.0.self_attn.v": 108,
+    "blocks.1.self_attn.q": 108,
+    "blocks.1.self_attn.k": 108,
+    "blocks.1.self_attn.v": 108,
+    "blocks.2.self_attn.q": 108,
+    "blocks.2.self_attn.k": 108,
+    "blocks.2.self_attn.v": 108,
+    "blocks.3.self_attn.q": 108,
+    "blocks.3.self_attn.k": 108,
+    "blocks.3.self_attn.v": 108,
+    "blocks.4.self_attn.q": 108,
+    "blocks.4.self_attn.k": 108,
+    "blocks.4.self_attn.v": 108,
+    "blocks.5.self_attn.q": 108,
+    "blocks.5.self_attn.k": 108,
+    "blocks.5.self_attn.v": 108,
+    "blocks.6.self_attn.q": 108,
+    "blocks.6.self_attn.k": 108,
+    "blocks.6.self_attn.v": 108,
+    "blocks.7.self_attn.q": 108,
+    "blocks.7.self_attn.k": 108,
+    "blocks.7.self_attn.v": 108,
+    "blocks.8.self_attn.q": 108,
+    "blocks.8.self_attn.k": 108,
+    "blocks.8.self_attn.v": 108,
+    "blocks.9.self_attn.q": 108,
+    "blocks.9.self_attn.k": 108,
+    "blocks.9.self_attn.v": 108,
+    "blocks.10.self_attn.q": 108,
+    "blocks.10.self_attn.k": 108,
+    "blocks.10.self_attn.v": 108,
+    "blocks.11.self_attn.q": 108,
+    "blocks.11.self_attn.k": 108,
+    "blocks.11.self_attn.v": 108,
+    "blocks.12.self_attn.q": 108,
+    "blocks.12.self_attn.k": 108,
+    "blocks.12.self_attn.v": 108,
+    "blocks.13.self_attn.q": 108,
+    "blocks.13.self_attn.k": 108,
+    "blocks.13.self_attn.v": 108,
+    "blocks.14.self_attn.q": 108,
+    "blocks.14.self_attn.k": 108,
+    "blocks.14.self_attn.v": 108,
+    "blocks.15.self_attn.q": 108,
+    "blocks.15.self_attn.k": 108,
+    "blocks.15.self_attn.v": 108,
+    "blocks.16.self_attn.q": 108,
+    "blocks.16.self_attn.k": 108,
+    "blocks.16.self_attn.v": 108,
+    "blocks.17.self_attn.q": 108,
+    "blocks.17.self_attn.k": 108,
+    "blocks.17.self_attn.v": 108,
+    "blocks.18.self_attn.q": 108,
+    "blocks.18.self_attn.k": 108,
+    "blocks.18.self_attn.v": 108,
+    "blocks.19.self_attn.q": 108,
+    "blocks.19.self_attn.k": 108,
+    "blocks.19.self_attn.v": 108,
+    "blocks.20.self_attn.q": 108,
+    "blocks.20.self_attn.k": 108,
+    "blocks.20.self_attn.v": 108,
+    "blocks.21.self_attn.q": 108,
+    "blocks.21.self_attn.k": 108,
+    "blocks.21.self_attn.v": 108,
+    "blocks.22.self_attn.q": 108,
+    "blocks.22.self_attn.k": 108,
+    "blocks.22.self_attn.v": 108,
+    "blocks.23.self_attn.q": 108,
+    "blocks.23.self_attn.k": 108,
+    "blocks.23.self_attn.v": 108,
+    "blocks.24.self_attn.q": 108,
+    "blocks.24.self_attn.k": 108,
+    "blocks.24.self_attn.v": 108,
+    "blocks.25.self_attn.q": 108,
+    "blocks.25.self_attn.k": 108,
+    "blocks.25.self_attn.v": 108,
+    "blocks.26.self_attn.q": 108,
+    "blocks.26.self_attn.k": 108,
+    "blocks.26.self_attn.v": 108,
+    "blocks.27.self_attn.q": 108,
+    "blocks.27.self_attn.k": 108,
+    "blocks.27.self_attn.v": 108,
+    "blocks.28.self_attn.q": 108,
+    "blocks.28.self_attn.k": 108,
+    "blocks.28.self_attn.v": 108,
+    "blocks.29.self_attn.q": 108,
+    "blocks.29.self_attn.k": 108,
+    "blocks.29.self_attn.v": 108,
+    "blocks.30.self_attn.q": 108,
+    "blocks.30.self_attn.k": 108,
+    "blocks.30.self_attn.v": 108,
+    "blocks.31.self_attn.q": 108,
+    "blocks.31.self_attn.k": 108,
+    "blocks.31.self_attn.v": 108,
+    "blocks.32.self_attn.q": 108,
+    "blocks.32.self_attn.k": 108,
+    "blocks.32.self_attn.v": 108,
+    "blocks.33.self_attn.q": 108,
+    "blocks.33.self_attn.k": 108,
+    "blocks.33.self_attn.v": 108,
+    "blocks.34.self_attn.q": 108,
+    "blocks.34.self_attn.k": 108,
+    "blocks.34.self_attn.v": 108,
+    "blocks.35.self_attn.q": 108,
+    "blocks.35.self_attn.k": 108,
+    "blocks.35.self_attn.v": 108,
+    "blocks.36.self_attn.q": 108,
+    "blocks.36.self_attn.k": 108,
+    "blocks.36.self_attn.v": 108,
+    "blocks.37.self_attn.q": 108,
+    "blocks.37.self_attn.k": 108,
+    "blocks.37.self_attn.v": 108,
+    "blocks.38.self_attn.q": 108,
+    "blocks.38.self_attn.k": 108,
+    "blocks.38.self_attn.v": 108,
+    "blocks.39.self_attn.q": 108,
+    "blocks.39.self_attn.k": 108,
+    "blocks.39.self_attn.v": 108
+  },
+  "frame_positions": [
+    3,
+    5,
+    7,
+    3,
+    5,
+    7
+  ],
+  "repeated_episodes_equal": true,
+  "scheduler_steps": 16,
+  "dit_step_mask": [
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    true,
+    true,
+    true
+  ],
+  "scope": "Native DreamZero adapter, recorded RoboTwin cameras and synthetic DROID state; not public FP8 Runtime, speed or task-quality certification",
+  "retained_action_shape": [
+    6,
+    24,
+    8
+  ],
+  "locally_verified_actions_finite_and_episodes_equal": true,
+  "sha256": {
+    "dreamzero-fp8-directbf16_av15.json": "0850f9aae01111e928ecd2708441669e9e5e89fc5df6622cf391050ecfa36c61",
+    "dreamzero-fp8-directbf16_av15-actions.npz": "bae63f2a284abb5d1168d43d39ddda43ff3200c58dfb293d376916ceface02ff",
+    "dreamzero-fp8-directbf16_av15.log": "84027e1f00b9566b6babd73160cd443048df8f3a2fb1aa883b295a12f7efd951",
+    "probe_dreamzero_fp8_directbf16_av15.py": "b15d582bad43c69008b135b17bbb4337443ff4ab454549c4fc62eedd58b0545c"
+  }
+}

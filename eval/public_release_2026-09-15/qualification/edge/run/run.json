@@ -1,0 +1,81 @@
+{
+  "attempts": [
+    {
+      "cell": "edge-eager_native",
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_run_v3/matrix.json",
+        "--cell",
+        "edge-eager_native",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_run_v3",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_run_v3/inputs/recorded_inputs_v1.npz"
+      ],
+      "exit_code": 0,
+      "log_sha256": "03a8d409b9ecf9cdaf3ceb80ba0aa7fbbecd495a4f6ee8b09df61c6c90ae43b8",
+      "optimizer_environment": {}
+    },
+    {
+      "cell": "edge-runtime_default",
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_run_v3/matrix.json",
+        "--cell",
+        "edge-runtime_default",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_run_v3",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_run_v3/inputs/recorded_inputs_v1.npz"
+      ],
+      "exit_code": 0,
+      "log_sha256": "974b4bd819e77c1abdf1af593cab3d875789977dd480d79cc77d2a68751221b9",
+      "optimizer_environment": {}
+    },
+    {
+      "cell": "edge-runtime_selected",
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_run_v3/matrix.json",
+        "--cell",
+        "edge-runtime_selected",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_run_v3",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_run_v3/inputs/recorded_inputs_v1.npz"
+      ],
+      "exit_code": 0,
+      "log_sha256": "b807661c75fd61d102f7908f202d82000674e12e493967561f3912575fbd8b52",
+      "optimizer_environment": {
+        "IFL_BF16_KERNEL_LIBRARY": "/home/guanming/ifl_public_qualification_20260915_v1/native_v1/native/libinstinctflash_bf16.so",
+        "IFL_BF16_LINEAR_RELU2": "1",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+        "IFL_COSMOS3_GEN_REGIONS": "1",
+        "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1"
+      }
+    }
+  ],
+  "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+  "plan_sha256": "17bbc7c257e29948968bb473b12bc79419bbc9dd1e5595246aa1b1fa5f820306",
+  "prepared": "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_prepared_v1",
+  "report_status": "passed",
+  "schema": "instinctflash.public_reproduction.v1",
+  "status": "passed",
+  "task_quality_validated": false
+}

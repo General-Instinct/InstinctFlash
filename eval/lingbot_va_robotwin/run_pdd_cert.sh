@@ -44,7 +44,7 @@ start_arm() {   # start_arm <label> <first_gpu> <n_gpus> <extra args...>
         --nproc_per_node 1 --master_port $((29800 + g0 + i)) \
         "$IFL_ROOT/eval/lingbot_va_robotwin/serve_variant.py" --config-name robotwin \
         --port $port --save_root /home/ubuntu/iwm_vis/pdd_cert \
-        --no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout \
+        --no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout --action-terminal-elision \
         "$@" > "$LOGD/${label}_$port.log" 2>&1 & )
   done
 }

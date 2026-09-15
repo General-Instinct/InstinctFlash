@@ -1,0 +1,49 @@
+{
+  "execution": {
+    "action_chunk_size": 32,
+    "action_dim": 8,
+    "action_padding": "zero",
+    "backbone": "cosmos3_policy_action_realtime_v16",
+    "conditioning_fps": 15.0,
+    "domain_name": "droid_lerobot",
+    "format_prompt_as_json": true,
+    "guidance": {
+      "action": {
+        "mode": "cfg",
+        "scale": 1
+      }
+    },
+    "image_height": 540,
+    "image_width": 640,
+    "model_id": "cosmos3-edge-v17-sde2-cfg1-seed12031",
+    "nfe": {
+      "action": 2,
+      "prefix": 2
+    },
+    "sampling": {
+      "kind": "rectified_flow_fixed_step",
+      "num_train_timesteps": 1000.0,
+      "sample_type": "sde",
+      "sigmas": [
+        1.0,
+        0.5,
+        0.0
+      ]
+    },
+    "servable": false,
+    "shift": 1.0
+  },
+  "instinctflash_schema": 1,
+  "provenance": {
+    "arm_id": "edge_sde2_cfg1_seed12031",
+    "completion_sha256": "6456914cec25707ce6fbe983ca335a062c697c7331177eeefc4849db2054042b",
+    "export_gate_sha256": "a5fe15fb449e176695809af936ad89ea9cba6fec0bbe1e828d631e9ff8f30a5e",
+    "original_export": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/twostep_v17/training/edge_sde2_cfg1_seed12031/export_roundtrip",
+    "scope": "Copied Edge final-online64 V17 export; Thor and quality unqualified",
+    "state_key": "student",
+    "student_state_sha256": "3f2982e027d025ee7013e35211d8d401bb703ed38ef5e9bd524acec5047873bd",
+    "student_updates": 64,
+    "training_audit_sha256": "1f1064f7b8ab855978998d3cc820294f4942d7da0a5b88e984d8d255ebfeeab2",
+    "training_seed": 12031
+  }
+}

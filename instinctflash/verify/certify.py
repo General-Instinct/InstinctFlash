@@ -25,6 +25,26 @@ Three rules, each of which exists because the obvious alternative is wrong:
 
 Incomplete or unpaired inputs are refused outright rather than partially analysed, matching
 `aggregate.py`'s `REPORTABLE: NO`.
+
+TWO INTERVAL METHODS, EXPLICITLY NAMED — a migration note (2026-08-27, PR #4 port):
+
+* ``interval="wald_central95"`` (the default, and the only method that ever existed here):
+  ``ci95`` is the paired Wald central 95% interval, the decision rule is its lower bound, and
+  the serialized certificate is byte-identical to every certificate this module has stamped
+  before the port. Nothing about the default flow changed; re-stamping prior outcomes (verified
+  on the VA 2V/4A pooled run) reproduces the old block exactly.
+* ``interval="tango_one_sided95"`` (opt-in; the preregistered pi0.5 TF32 closed-loop gate):
+  the decision is Tango's matched-pair score ONE-SIDED 95% lower confidence bound
+  (z=1.6448536269514722), which stays non-degenerate at zero discordance where Wald collapses
+  to [0, 0]. The two one-sided bounds land in their own explicitly named field
+  ``tango_central90`` — named for what the pair IS (a central 90% interval), never serialized
+  as ``ci95`` — alongside ``lower_confidence_bound``/``ci_method``/``p_value_kind``. ``ci95``
+  keeps its Wald meaning in both modes. The exact McNemar p is descriptive in this mode and
+  never decides non-inferiority.
+
+The PR that brought Tango silently rebound the ``ci95`` field to the central-90 pair and made
+z=1.6449 the default for every family's stamp flow; this port keeps the repo-wide certificate
+stable and makes the new rule a deliberate, named choice per certificate.
 """
 
 from __future__ import annotations
@@ -33,6 +53,20 @@ import json
 import math
 from dataclasses import asdict, dataclass, field
 from typing import Mapping, Sequence
+
+#: z for a one-sided 95% bound (nominal alpha 0.05). Used only by the tango_one_sided95 mode.
+ONE_SIDED_95_Z = 1.6448536269514722
+
+#: The interval methods certify() accepts. Adding one here is a release decision, not a default
+#: change: the default stays wald_central95 so every existing stamp flow is byte-stable.
+INTERVAL_METHODS = ("wald_central95", "tango_one_sided95")
+
+#: Certificate fields that exist only for the opt-in modes/gates. None-valued entries are
+#: dropped from to_json() so a default-mode certificate serializes exactly as it always has.
+_OPTIONAL_FIELDS = (
+    "ci_method", "p_value_kind", "tango_central90", "lower_confidence_bound",
+    "lower_confidence_level", "alpha", "task_collapse_gate", "collapsed_tasks",
+)
 
 
 class NotCertifiable(RuntimeError):
@@ -69,6 +103,21 @@ class Certificate:
     per_task: Mapping[str, tuple] = field(default_factory=dict)
     notes: tuple[str, ...] = field(default_factory=tuple)
 
+    # ---- opt-in fields (tango_one_sided95 mode / task-collapse gate). None means "this
+    # certificate was produced by a flow that did not use the feature" and the field is then
+    # omitted from to_json(), keeping default-mode certificates byte-identical to the pre-port
+    # format. See the module docstring's migration note.
+    ci_method: str | None = None
+    p_value_kind: str | None = None
+    #: The two Tango one-sided 95% bounds. Named for what the pair IS — a central 90% interval —
+    #: so it can never be mistaken for (or silently replace) ci95.
+    tango_central90: tuple[float, float] | None = None
+    lower_confidence_bound: float | None = None
+    lower_confidence_level: float | None = None
+    alpha: float | None = None
+    task_collapse_gate: bool | None = None
+    collapsed_tasks: tuple[str, ...] | None = None
+
     @property
     def passed(self) -> bool:
         return self.verdict.startswith("PASS")
@@ -78,6 +127,13 @@ class Certificate:
         d["ci95"] = list(self.ci95)
         d["discordant"] = list(self.discordant)
         d["per_task"] = {t: list(v) for t, v in self.per_task.items()}
+        if self.tango_central90 is not None:
+            d["tango_central90"] = list(self.tango_central90)
+        if self.collapsed_tasks is not None:
+            d["collapsed_tasks"] = list(self.collapsed_tasks)
+        for k in _OPTIONAL_FIELDS:
+            if d.get(k) is None:
+                del d[k]
         return json.dumps(d, indent=2, **kw)
 
     def per_task_table(self) -> str:
@@ -92,6 +148,17 @@ class Certificate:
 
     def __str__(self) -> str:
         b, c = self.discordant
+        if self.ci_method is not None:
+            return (
+                f"teacher {self.teacher_success:.4f}   student {self.student_success:.4f}\n"
+                f"delta   {self.delta:+.4f}   one-sided 95% lower bound "
+                f"{self.lower_confidence_bound:+.4f}   (Wald 95% CI "
+                f"[{self.ci95[0]:+.4f}, {self.ci95[1]:+.4f}] reported, not deciding)\n"
+                f"paired  n={self.n_pairs}  discordant: teacher-only {b}, student-only {c}\n"
+                f"CI      {self.ci_method}; {self.p_value_kind} p={self.p_value:.4g} "
+                f"(descriptive)\n"
+                f"margin declared BEFORE the run: {self.margin_declared:+.4f}\n"
+                f"VERDICT: {self.verdict}")
         return (
             f"teacher {self.teacher_success:.4f}   student {self.student_success:.4f}\n"
             f"delta   {self.delta:+.4f}   95% CI [{self.ci95[0]:+.4f}, {self.ci95[1]:+.4f}]\n"
@@ -133,6 +200,73 @@ def _paired_delta_ci(pairs: Sequence[tuple[bool, bool]], z: float = 1.96) -> tup
     return (mean - half, mean + half)
 
 
+def _tango_paired_score_bounds(
+    pairs: Sequence[tuple[bool, bool]], z: float = ONE_SIDED_95_Z
+) -> tuple[float, float]:
+    """Tango score bounds on the paired risk difference ``student - teacher``. Opt-in.
+
+    Wald intervals have poor coverage for sparse discordance and collapse to ``[0, 0]`` when both
+    arms agree everywhere. Tango's score interval inverts the efficient score statistic for
+    matched binary proportions; it remains non-degenerate at that boundary and is the standard CI
+    paired with the Nam/Tango risk-difference non-inferiority test.
+
+    ``b`` is teacher-only success and ``c`` student-only success. This is the iterative form of
+    Tango's interval (Statistics in Medicine 17 (1998), 891-908), verified against an independent
+    brute-force constrained-MLE reference to <5e-6 including the 16-vs-17 discordant decision
+    boundary at n=500. With the default ``z`` each endpoint is a ONE-SIDED 95% bound; the pair is
+    a central 90% interval — which is why it is serialized as ``tango_central90``, never ``ci95``.
+    """
+    n = len(pairs)
+    if n == 0:
+        return (0.0, 0.0)
+    b = sum(1 for teacher, student in pairs if teacher and not student)
+    c = sum(1 for teacher, student in pairs if student and not teacher)
+    estimate = (c - b) / n
+    pa = 2.0 * n
+
+    def score(candidate: float) -> float:
+        pb = -b - c + (2 * n - c + b) * candidate
+        pc = -b * candidate * (1.0 - candidate)
+        discriminant = max(0.0, pb * pb - 4.0 * pa * pc)
+        constrained_p10 = (math.sqrt(discriminant) - pb) / (2.0 * pa)
+        variance = n * (2.0 * constrained_p10 + candidate * (1.0 - candidate))
+        if variance <= 0.0:
+            return math.copysign(math.inf, c - b - n * candidate)
+        return (c - b - n * candidate) / math.sqrt(variance)
+
+    def upper() -> float:
+        if c == n:
+            return 1.0
+        root, step = estimate, 1.0 - estimate
+        candidate = root
+        for _ in range(80):
+            step *= 0.5
+            candidate = root + step
+            value = score(candidate)
+            if abs(value) < z:
+                root = candidate
+            if step < 1e-10 or abs(z - value) < 1e-8:
+                break
+        return min(1.0, candidate)
+
+    def lower() -> float:
+        if b == n:
+            return -1.0
+        root, step = estimate, 1.0 + estimate
+        candidate = root
+        for _ in range(80):
+            step *= 0.5
+            candidate = root - step
+            value = score(candidate)
+            if abs(value) < z:
+                root = candidate
+            if step < 1e-10 or abs(z - value) < 1e-8:
+                break
+        return max(-1.0, candidate)
+
+    return (lower(), upper())
+
+
 def required_pairs(pairs: Sequence[tuple[bool, bool]], margin: float, z: float = 1.96) -> int:
     """How many paired episodes would be needed to decide non-inferiority at this margin.
 
@@ -170,13 +304,25 @@ def _index(outcomes: Sequence[Outcome], arm: str) -> dict[tuple[str, int], Outco
 def certify(teacher: Sequence[Outcome], student: Sequence[Outcome], *,
             margin: float, teacher_hash: str = "?", student_hash: str = "?",
             harness: str = "?", recipe: str = "?", seeds: str = "?",
-            min_pairs: int = 1) -> Certificate:
+            min_pairs: int = 1, interval: str = "wald_central95",
+            fail_on_task_collapse: bool = False) -> Certificate:
     """Paired non-inferiority certificate. `margin` MUST be supplied and is recorded.
 
     `margin` is the largest success-rate drop that is still acceptable, as a NEGATIVE number:
     -0.05 means "the student may be up to 5 points worse". Non-inferiority holds when the lower
     bound of the CI on (student - teacher) is above the margin.
+
+    `interval` selects the decision rule — see the module docstring's migration note. The default
+    is the historical Wald central 95% interval and is byte-stable; `tango_one_sided95` decides on
+    Tango's one-sided 95% lower score bound and must be chosen deliberately (and preregistered).
+
+    `fail_on_task_collapse` adds the secondary gate: any task where the teacher had at least one
+    success and the student none fails the certificate regardless of the aggregate result.
     """
+    if interval not in INTERVAL_METHODS:
+        raise NotCertifiable(
+            f"interval={interval!r} is not a certificate method; one of {INTERVAL_METHODS}. "
+            f"The decision rule is part of the certificate and cannot be guessed.")
     if margin > 0:
         raise NotCertifiable(
             f"margin={margin} is positive. A non-inferiority margin is the acceptable LOSS and "
@@ -216,30 +362,78 @@ def certify(teacher: Sequence[Outcome], student: Sequence[Outcome], *,
     b = sum(1 for t, s in pairs if t and not s)      # teacher-only wins
     c = sum(1 for t, s in pairs if s and not t)      # student-only wins
     p = _mcnemar_exact(b, c)
-    lo, hi = _paired_delta_ci(pairs)
+    wald = _paired_delta_ci(pairs)
+    tango: dict = {}
 
-    if lo > margin:
-        verdict = f"PASS non-inferiority at margin {margin:+.4f} (CI lower bound {lo:+.4f})"
-    elif hi < margin:
-        # the whole interval is below the margin: a regression, detected
-        verdict = (f"FAIL (regression detected) at margin {margin:+.4f}: the entire 95% CI "
-                   f"[{lo:+.4f}, {hi:+.4f}] lies below the margin")
+    if interval == "wald_central95":
+        # THE HISTORICAL DEFAULT, byte-for-byte: decide on the Wald central 95% interval.
+        lo, hi = wald
+        if lo > margin:
+            verdict = f"PASS non-inferiority at margin {margin:+.4f} (CI lower bound {lo:+.4f})"
+        elif hi < margin:
+            # the whole interval is below the margin: a regression, detected
+            verdict = (f"FAIL (regression detected) at margin {margin:+.4f}: the entire 95% CI "
+                       f"[{lo:+.4f}, {hi:+.4f}] lies below the margin")
+        else:
+            # the interval straddles the margin: we cannot tell, and saying so is honest
+            need = required_pairs(pairs, margin)
+            verdict = (f"FAIL (insufficient evidence) at margin {margin:+.4f}: CI [{lo:+.4f}, "
+                       f"{hi:+.4f}] straddles it. n={n} is too small to decide; "
+                       f"~{need} paired episodes are needed at the observed discordance rate")
+            notes.append(f"underpowered: {n} pairs, ~{need} needed for margin {margin:+.4f}")
     else:
-        # the interval straddles the margin: we cannot tell, and saying so is the honest answer
-        need = required_pairs(pairs, margin)
-        verdict = (f"FAIL (insufficient evidence) at margin {margin:+.4f}: CI [{lo:+.4f}, "
-                   f"{hi:+.4f}] straddles it. n={n} is too small to decide; "
-                   f"~{need} paired episodes are needed at the observed discordance rate")
-        notes.append(f"underpowered: {n} pairs, ~{need} needed for margin {margin:+.4f}")
+        # tango_one_sided95, chosen deliberately: decide on the one-sided 95% lower score bound.
+        lo, hi = _tango_paired_score_bounds(pairs, z=ONE_SIDED_95_Z)
+        if lo > margin:
+            verdict = (f"PASS non-inferiority at margin {margin:+.4f} "
+                       f"(one-sided 95% lower bound {lo:+.4f})")
+        elif hi < margin:
+            verdict = (f"FAIL (regression detected) at margin {margin:+.4f}: the one-sided 95% "
+                       f"upper bound {hi:+.4f} lies below the margin")
+        else:
+            need = required_pairs(pairs, margin, z=ONE_SIDED_95_Z)
+            if need:
+                tail = f"~{need} paired episodes are needed at the observed discordance rate"
+                notes.append(f"underpowered: {n} pairs, ~{need} needed for margin {margin:+.4f}")
+            else:
+                tail = ("the point estimate is at/below the margin, so more data at this effect "
+                        "cannot establish NI")
+                notes.append("point estimate is at/below the non-inferiority margin")
+            verdict = (f"FAIL (insufficient evidence) at margin {margin:+.4f}: one-sided 95% "
+                       f"bounds [{lo:+.4f}, {hi:+.4f}] straddle it. {tail}")
+        tango = dict(
+            ci_method=("Tango paired score one-sided 95% lower confidence bound "
+                       f"(nominal alpha=0.05; z={ONE_SIDED_95_Z})"),
+            # the ROLE ("descriptive, never deciding") is rendered by __str__; the field states
+            # only what the number is, so downstream tooling can match on the test's name.
+            p_value_kind="two-sided exact McNemar equality test",
+            tango_central90=(lo, hi),
+            lower_confidence_bound=lo, lower_confidence_level=0.95, alpha=0.05,
+        )
+
+    collapse: dict = {}
+    if fail_on_task_collapse:
+        collapsed = tuple(
+            task for task, (_task_n, teacher_wins, student_wins) in sorted(per_task.items())
+            if teacher_wins > 0 and student_wins == 0
+        )
+        collapse = dict(task_collapse_gate=True, collapsed_tasks=collapsed)
+        if collapsed:
+            notes.append(f"task collapse: {', '.join(collapsed)}")
+            verdict = (
+                "FAIL (secondary task-collapse gate): teacher had at least one success and "
+                f"student had zero successes on {', '.join(collapsed)}"
+            )
     if b + c == 0:
         notes.append("zero discordant pairs: the arms agreed on every episode, so McNemar has no "
                      "information and p=1 by construction")
     return Certificate(
         teacher_hash=teacher_hash, student_hash=student_hash, n_pairs=n,
-        teacher_success=t_rate, student_success=s_rate, delta=delta, ci95=(lo, hi),
+        teacher_success=t_rate, student_success=s_rate, delta=delta, ci95=wald,
         margin_declared=margin, verdict=verdict, p_value=p, discordant=(b, c),
         harness=harness, recipe=recipe, seeds=seeds,
-        per_task={t: tuple(v) for t, v in sorted(per_task.items())}, notes=tuple(notes))
+        per_task={t: tuple(v) for t, v in sorted(per_task.items())}, notes=tuple(notes),
+        **tango, **collapse)
 
 
 def load_jsonl(path: str) -> list[Outcome]:
@@ -252,8 +446,13 @@ def load_jsonl(path: str) -> list[Outcome]:
                 continue
             try:
                 d = json.loads(line)
+                success = d["success"]
+                if not isinstance(success, bool):
+                    # bool("false") is True; a truthiness cast here silently scores a string
+                    # column as all-success. Outcomes must be JSON true/false, nothing else.
+                    raise TypeError("success must be JSON true/false")
                 out.append(Outcome(str(d["episode_id"]), int(d["seed"]), str(d["task"]),
-                                   bool(d["success"])))
+                                   success))
             except (KeyError, ValueError, TypeError) as e:
                 raise NotCertifiable(f"{path}:{i} is not a valid outcome record ({e}). "
                                      f"Required: episode_id, seed, task, success") from e

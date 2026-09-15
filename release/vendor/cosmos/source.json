@@ -1,0 +1,81 @@
+{
+  "baseline_semantics": "Matches recorded Thor vendor source; not a new comparison to untouched upstream arithmetic.",
+  "checkout_instructions": [
+    "Clone the public repository into a NEW destination with GIT_LFS_SKIP_SMUDGE=1.",
+    "Check out source.revision detached; verify exact git rev-parse HEAD before applying anything.",
+    "If patch is present, verify its SHA256 and use git apply --check followed by git apply.",
+    "Verify every expected_patched_files SHA256. Existing vendor directories must remain untouched."
+  ],
+  "expected_patched_files": {
+    "cosmos_framework/configs/base/config.py": {
+      "bytes": 4064,
+      "sha256": "f108a0cbde362b528b28e68eafa371764aeb010bd36590556725856c261be4f6"
+    },
+    "cosmos_framework/configs/base/defaults/compile.py": {
+      "bytes": 2973,
+      "sha256": "ccb81ab9cb51646e2bfc32d97e9c32ad653460ce85d0d622f394eddec4d59449"
+    },
+    "cosmos_framework/configs/base/experiment/action/posttrain_config/action_policy_robotwin_edge.py": {
+      "bytes": 13486,
+      "sha256": "02663db5e41ed0d333db160770f1d5b227df61f5a80471d9d5ae8f54ef90dc42"
+    },
+    "cosmos_framework/data/generator/action/datasets/action_sft_dataset.py": {
+      "bytes": 12269,
+      "sha256": "dd6a69493aa9763ff5442cfd9f880ce524dd1c030bdbbac150129fef43111911"
+    },
+    "cosmos_framework/data/generator/action/datasets/robotwin_lerobot_dataset.py": {
+      "bytes": 21120,
+      "sha256": "126227154e46f38b2aec29f90fbec6249c877d22cf5462e66d3fc5169cb6e952"
+    },
+    "cosmos_framework/data/generator/action/domain_utils.py": {
+      "bytes": 2950,
+      "sha256": "7fc791902f923660d4ff0e536fe66ff6ba3d56f7c77a12ed5e7bd3869607985c"
+    },
+    "cosmos_framework/inference/common/args.py": {
+      "bytes": 37452,
+      "sha256": "48e7a3d146edb4943a86b059337f64022c29a883cc6cf9a082d0ac1318794018"
+    },
+    "cosmos_framework/inference/inference.py": {
+      "bytes": 95902,
+      "sha256": "78f09d605c99d3073bfb8cd29cbd555e76c1f15ecf067055e8fb7560db7279ca"
+    },
+    "cosmos_framework/model/generator/mot/parallelize_unified_mot.py": {
+      "bytes": 19529,
+      "sha256": "2a53fec799dc68dcfc1395619fc4265bf1a10a2f9ed5e522500372138618d67d"
+    },
+    "cosmos_framework/model/generator/mot/parallelize_vfm_network.py": {
+      "bytes": 5928,
+      "sha256": "9d81f2fd225af6ca03c9dbef0b56da2b1b0dd5a3df4c92125f16d7baf8d91173"
+    },
+    "cosmos_framework/scripts/action_policy_server_robotwin.py": {
+      "bytes": 86285,
+      "sha256": "d240b671305404c3e1ac07d1dadea93f1fef36170aebd28d3075a05a860af582"
+    },
+    "examples/toml/sft_config/action_policy_robotwin_edge.toml": {
+      "bytes": 4472,
+      "sha256": "516a79aa831a14906492bea4dc8320840a61f8e1ebd45f5b683e97d259fe0ee5"
+    },
+    "uv.lock": {
+      "bytes": 2974171,
+      "sha256": "6df54ed0928bb3698a161fa9219451b00b03c36d35c221e517c2d23a17d69e7d"
+    }
+  },
+  "fresh_environment_inference_qualified": false,
+  "patch": {
+    "path": "recorded_thor.patch",
+    "sha256": "f04f1af5d70c7ec95665fa0fe11b1ef3849454688de40b4102ca668b631403f5"
+  },
+  "patch_summary": "Recorded source closure: optional cudagraphs_via_options plumbing, historical RoboTwin dataset/domain/config registration and lockfile changes. Preserve closure for reproduction; do not infer that RoboTwin additions are required by DROID.",
+  "schema": "instinctflash.vendor_source.v1",
+  "source": {
+    "commit_url": "https://github.com/NVIDIA/cosmos-framework/commit/f734253f0f6af3e268372402f44435c38f55ef3e",
+    "public_commit_verified": true,
+    "repository": "https://github.com/NVIDIA/cosmos-framework",
+    "revision": "f734253f0f6af3e268372402f44435c38f55ef3e"
+  },
+  "source_bootstrap_qualified_CPU": true,
+  "upstream_notices": {
+    "LICENSE": "6bd3fdb9356edb6e4c1f00ad9cd6639a1cf06ca0a415a5071fd70d68799209e6",
+    "NOTICE": "0a3ebe37fb632d02a6a4d1cfce96109bb026b7833d8a3f0853091bb303c21ad9"
+  }
+}

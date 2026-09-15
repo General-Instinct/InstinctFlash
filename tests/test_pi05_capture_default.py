@@ -40,13 +40,20 @@ from pi05_iwm.adapter import (  # noqa: E402
 )
 from pi05_iwm.surface import Pi05Surface  # noqa: E402
 
-CAPTURE_FLAGS = (CAPTURE_KILL_SWITCH, Pi05Surface.STATIC_CAPTURE_OPT_IN,
-                 Pi05Surface.CAPTURE_OPT_IN, "IFL_PI05_SELFCHECK_FAULT")
+CAPTURE_FLAGS = (
+    CAPTURE_KILL_SWITCH,
+    Pi05Surface.STATIC_CAPTURE_OPT_IN,
+    Pi05Surface.CAPTURE_OPT_IN,
+    "IFL_PI05_SELFCHECK_FAULT",
+    "IFL_PI05_FULL_CHUNK_GRAPH",
+    "IFL_PI05_PREFIX_GRAPH",
+    "IFL_PI05_FULL_STEP_TABLES",
+)
 
 
 def _fake_cuda_torch():
     torch = ModuleType("torch")
-    torch.cuda = SimpleNamespace(is_available=lambda: True)
+    torch.cuda = SimpleNamespace(is_available=lambda: True, get_device_capability=lambda device=None: (0, 0))
     torch.get_float32_matmul_precision = lambda: "high"
     torch.backends = SimpleNamespace(
         cuda=SimpleNamespace(matmul=SimpleNamespace(allow_tf32=True)))
@@ -64,7 +71,10 @@ def _install_env(env: dict | None = None):
     """Fake CUDA torch + stubbed surface/static-capture, with the capture env vars controlled."""
     installed = {}
 
-    def fake_install(model, step_tables=None, on_self_check=None, self_check=True):
+    def fake_install(
+        model, step_tables=None, on_self_check=None, self_check=True,
+        full_chunk=None, prefix_graph=None,
+    ):
         installed["model"] = model
         installed["step_tables"] = step_tables
         installed["on_self_check"] = on_self_check
@@ -223,3 +233,32 @@ def test_rejection_releases_the_graph_and_rebinds_upstream():
 if __name__ == "__main__":
     from run_tests import run_module_tests
     raise SystemExit(run_module_tests(globals()))
+
+
+def test_checkpoint_compile_flag_cannot_bypass_bitexact_when_capture_is_disabled():
+    from pi05_iwm.adapter import _apply_compile_permission
+    from instinctflash.planners.planner import Plan, Tier
+    from types import SimpleNamespace
+    strict = Plan('checkpoint', [])
+    config = SimpleNamespace(compile_model=True)
+    _apply_compile_permission(config, strict)
+    assert not config.compile_model and strict.tier() == Tier.BITEXACT
+    numeric = Plan('checkpoint', [], tier_ceiling=Tier.NUMERIC)
+    config = SimpleNamespace(compile_model=True)
+    _apply_compile_permission(config, numeric)
+    assert config.compile_model and numeric.tier() == Tier.NUMERIC
+
+
+def test_native_graph_defaults_honor_explicit_opt_outs(monkeypatch):
+    from pi05_iwm.adapter import _native_capture_options
+    for flag in ('IFL_PI05_FULL_CHUNK_GRAPH', 'IFL_PI05_PREFIX_GRAPH', 'IFL_PI05_FULL_STEP_TABLES'):
+        monkeypatch.delenv(flag, raising=False)
+    assert _native_capture_options((9, 0)) == dict(full_chunk=True, prefix_graph=True, step_tables=True)
+    assert _native_capture_options((11, 0)) == dict(full_chunk=True, prefix_graph=True, step_tables=True)
+    assert not _native_capture_options((8, 0))['full_chunk']
+    monkeypatch.setenv('IFL_PI05_FULL_CHUNK_GRAPH', '0')
+    assert _native_capture_options((9, 0)) == dict(full_chunk=False, prefix_graph=False, step_tables=None)
+    monkeypatch.delenv('IFL_PI05_FULL_CHUNK_GRAPH')
+    monkeypatch.setenv('IFL_PI05_PREFIX_GRAPH', '0')
+    monkeypatch.setenv('IFL_PI05_FULL_STEP_TABLES', '0')
+    assert _native_capture_options((9, 0)) == dict(full_chunk=True, prefix_graph=False, step_tables=None)

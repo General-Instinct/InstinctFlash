@@ -1,0 +1,224 @@
+{
+  "family": "va",
+  "precision": "native",
+  "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+  "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+  "device": "NVIDIA Thor",
+  "torch": "2.11.0+cu130",
+  "scope": "Matched public Runtime generation latency, synchronized wall time; recorded cameras and synthetic state, no network or simulator. No task-quality certificate.",
+  "calls": [
+    {
+      "i": 0,
+      "cycle": 0,
+      "phase": "warmup",
+      "ms": 5910.018542999751,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 1,
+      "cycle": 1,
+      "phase": "warmup",
+      "ms": 5618.828095000936,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 2,
+      "cycle": 2,
+      "phase": "warmup",
+      "ms": 5743.586148993927,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 3,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 5349.265989993,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 4,
+      "cycle": 1,
+      "phase": "measured",
+      "ms": 5575.591387998429,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 5,
+      "cycle": 2,
+      "phase": "measured",
+      "ms": 5733.608157999697,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 6,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 5346.2184719974175,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 7,
+      "cycle": 1,
+      "phase": "measured",
+      "ms": 5569.222631995217,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 8,
+      "cycle": 2,
+      "phase": "measured",
+      "ms": 5726.46326701215,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 9,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 5351.3949939952,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 10,
+      "cycle": 1,
+      "phase": "measured",
+      "ms": 5576.295033999486,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 11,
+      "cycle": 2,
+      "phase": "measured",
+      "ms": 5739.668869005982,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    }
+  ],
+  "setup_seconds": 27.404115725003066,
+  "backend_stats": {},
+  "physical_gpu": "0",
+  "schedule_override": null,
+  "default_schedule": {
+    "video": 25,
+    "action": 50
+  },
+  "guidance": "{'video': 'cfg', 'action': 'positive_only'}",
+  "history_feedback": "fixed recorded actions",
+  "plan": "InstinctFlash plan for robbyant/lingbot-va-posttrain-robotwin\n  plan tier: NUMERIC\n  operating point: schedule {kv_refresh=2 + video=25 + action=50} | guidance {action=positive_only@1 [implied by mode], video=cfg@5 [inherited from the family default]} | cfg batching {batch-2 on 77 of 77 declared forwards (negative branch requested by video); batch-1 on 0}\n\n  skip   graph_capture              [BITEXACT  ] Thor capture performance is unmeasured for this family/operating point; retain the eager default pending a paired device measurement.\n  skip   engine_offload             [NUMERIC   ] precision='native': FP8 engine is not authorized; SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation\n  skip   pi05_tf32_numeric          [BITEXACT  ] checkpoint does not declare ['backbone:pi05', 'declares:pi05_tf32_numeric']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  APPLY  fsdp_elision               [BITEXACT  ] world_size=1, so every FSDP all-gather is identity while still paying a flat-param copy and stream sync per unit per forward\n         expected: measured 1.75x standalone on LingBot-VA\n  APPLY  allocator_churn_elision    [BITEXACT  ] closed-loop serving has a stable working set, so releasing the pool between control steps only forces re-allocation next step\n         expected: small alone; larger once per-layer KV gathers stop churning the pool\n  APPLY  debug_dump_elision         [BITEXACT  ] per-chunk tensor dumps do a synchronous D2H on the critical path and are not consumed by the serving client\n         expected: measured ~1.10x on top of fsdp_elision\n  APPLY  obs_decode_elision         [BITEXACT  ] caller wants actions only; ['vae.decoder'] need never be resident or executed\n         expected: no latency win on this model (already skipped); frees resident memory, which is what sets episodes-per-GPU\n  APPLY  conditioning_prefill       [BITEXACT  ] ['text_kv', 'negative_text_kv'] declared pure in ['episode'] scope, but recomputed on all 77 forwards per control step (kv_refresh=2 + video=25 + action=50)\n         expected: hoists 2 artifact(s) out of the denoise loop. Measured ON LingBot-VA: 89 of 226 TFLOP per control cycle (39%), 67.6% of an action forward's layer FLOPs, 360 MiB resident. Those figures are that model's; for any other backbone the FLOP share and the residency cost follow its own layer count and artifact size. Launch-bound share means the wall-clock win is less than the FLOP win either way \u2014 measure it\n  skip   prompt_encoder_staging     [BITEXACT  ] no memory pressure on this device class (sm_110, 123 GiB): keeping the prompt encoder resident avoids per-reset PCIe moves and allocator churn\n  APPLY  ring_kv_addressing         [BITEXACT  ] streams ['video', 'action'] live across control steps in a pool that is currently addressed by boolean mask, costing a host sync and a full-pool copy per layer per forward\n         expected: measured 1.40x on LingBot-VA; measure this operating point and device (cost model: 223.3 ms)\n  APPLY  action_terminal_forward_elision [BITEXACT  ] the action phase's terminal forward writes provisional K/V that clear_pred_cache drops before any forward reads it; its output is discarded by construction\n         expected: one forward per cycle (the action pred-commit): 1 of 10 at 2V/4A, 1 of 8 at 2V/2A (cost model: 68.4 ms)\n  skip   sm120_gated_residual       [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  skip   sm120_wan_stage2           [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  APPLY  conv_layout_ndhwc          [NUMERIC   ] two Wan VAE Conv3D subgraphs can choose NCDHW or NDHWC by measurement on this device; NDHWC changes convolution accumulation order, so the swap is NUMERIC\n         expected: Measured ON H100: 1.405x complete cycle. RTX 5090 operator screen before integration: NCDHW 2.780 ms vs NDHWC 1.206 ms (2.30x); end-to-end must be measured and SM120 quality evidence is not inherited from H100.\n         decision: autotuned: va_conv_layout chose ndhwc over stock (1.76x), equivalence NUMERIC [cache]\n         decision: streaming_vae: 28 Conv3d weights -> ndhwc [NUMERIC] via cudnn_conv3d\n         decision: streaming_vae_half: 28 Conv3d weights -> ndhwc [NUMERIC] via cudnn_conv3d\n  skip   cfg_branch_elision         [NUMERIC   ] dropped by caller via Plan.without(): streams ['action'] discard their negative branch while ['video'] force batch duplication; forwards that can drop to batch 1 \u2014 action: 49 of 50 (commit steps exempt: their K/V feeds the other stream's negative branch)\n\n  NOTE: plan is NUMERIC because of ['conv_layout_ndhwc'].\n        Any accuracy-neutrality claim for this plan requires a paired\n        non-inferiority run.\n        `plan.bitexact_subset()` is the largest configuration that does not.",
+  "benchmark_sha256": "a1e50db4f6531e92601007149a71eb764d2f8da15ed45bfd88a00b75b4333dbd",
+  "input_archive_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+  "ok": true,
+  "p50_ms": 5575.591387998429,
+  "min_ms": 5346.2184719974175,
+  "max_ms": 5739.668869005982,
+  "measured_count": 9,
+  "peak_allocated_bytes": 30290878976,
+  "numeric_environment": {
+    "matmul_tf32": false,
+    "cudnn_tf32": false,
+    "cudnn_benchmark": false
+  },
+  "actions_sha256": "6be6f5d7501b23d1bdb2914d0c07d9a0e2d72a59fda88a30c0f1f4f22c49f6b1",
+  "sources": {
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/adapters/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/adapters/base.py": "faddf49c84fe9d087365b3cf566bb68bbe4b2bf08eb7a426006c936b27ef047d",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/descriptors/deployment.py": "75b9e6ca18b3ad6492f2b9ae22bf11390938a4322361c1188cf4841c44216b42",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/runtime/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/runtime/state/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/runtime/state/types.py": "9d1e43574a1929b73c892cccff56453d2bc71bd02df85a83850208da2e69fc0b",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/descriptors/model.py": "93c26dcc782b69705e0e84babaf195740f6990e9413e27722e4eb4170400ffc5",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/descriptors/__init__.py": "6c32d9902026f776decf7bd32e13498b67b78e589051d1b5f7454b0129e16c75",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/adapters/lingbot_va.py": "bc4851efd1b09edf3a47f6f45aaa882c45779d1c2daee565c19128add6730cf5",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/runtime/loader.py": "a2bce76e99f4443089d21bbc12b3bed53afc1fb2df5e796b225c5b94e4688aea",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/planners/planner.py": "caf3b9e94fcc8a96f3447974d68bded2abf77cbc3386f7b0c18b4cf2c15bc3b2",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/planners/__init__.py": "f4e300ea720721cc0ffbc3ddbf5172d67b3d9f9ba00b64900b3ed071cdf879e8",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/contract.py": "eb1a3dcdaafefd2a49bca96d17784526fef9f3299fd26dcf800d394046e4f7f1",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/lingbot/action_terminal_elision.py": "92a28ff193f10bf19541f0e0a253b31b5b7ae7f4a8b743212debf675d0daf632",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/lingbot/cfg_elision.py": "41f7b8370bc1b8928b17048dabf54520537ef431ef4d98013ead4efeab9f96d8",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/lingbot/conditioning_prefill.py": "3cbc5e5f2ace0b2d061383698cfd85a0a5190f2a4e8e02fa2c3e6e0b9fc56468",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/lingbot/conv_layout_ndhwc.py": "10926b28cd68d773d773ec5b884672db9d8cdfac64d9758ae934860c37c204ae",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/lingbot/ring_kv.py": "264c0addbbfcff2ba0e8f445af6fe2d7e85f799124749a2a2c6ff3992412e2af",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/lingbot/sm120_gated_residual.py": "ba5addcbabf82d76194aa98c20b738dd3dfba4d267f4e62a747fb6dc91fa5d12",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/lingbot/sm120_wan_stage2.py": "3a151b5f00b5144874436cf7570b9a635fbba73e30d724722d5dc7a6e2128b1a",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/lingbot/substrate.py": "7f6162ba2d175db9ad56425a3aa8cb68b90f1778c343ba37f381ea02618d3abf",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/lingbot/__init__.py": "cc153c3e272cd18b7510dec81e625168124e7db3f06909bf6cdb49cfd9e8fd52",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/descriptors/checkpoint.py": "a2949d1fa9ae40fe27c9d4e981616327406604118af72f547f78f00426e387ba",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/descriptors/package.py": "0766dc55a35d7d2fab55de5aa931699bbcaece7fda78de3d91ee39424087c8d7",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/runtime/execution.py": "517156217658dab812c4109bde99fdb981272bfeece897ad7d656ef291857e7a",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/runtime/facade.py": "eba50f93043e075ddce7cfb9304e247d08a63f89d809dd37831b1fed63e7f795",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/__init__.py": "50071567526aab898205d92b382b3ca392aabaf33584379bf436fb48bb488b8f",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/runtime/precision.py": "6c02041dbc5f65ffa1e52911a2012692b0ed92779d086cbb223ed0a9ccfb49f3",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/descriptors/known.py": "05f6d5587a3c8ef543e2560ac0c91d1def49caec3d89851b50c9a190edab6834",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/descriptors/guidance.py": "3455608a231758fb2a146409f04c6d2253b7f3859cccf22f6dea9dcd93b32d9d",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/backends/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/backends/sm120_residual.py": "1509fc2143e21a9513ee11c4389d68b1a31db221d4ddbd9e148cdb81e225e717",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/backends/sm120_wan_stage2.py": "0ede242abc15ae802b762f187c5932f0e81bb0617687ebc3f8185882f7745f4d",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/registry.py": "cff56c57748cb40212a2072d8dcfd1b0bd395a8446492f8a71682a31e8afe2a8",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/examples/pi05_vla/pi05_iwm/adapter.py": "cfba91ce7d1ad9912144362ed57f475d33bc2c5945efb4c47758e9882cc2e981",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/examples/pi05_vla/pi05_iwm/__init__.py": "86ca6cef657df3d849f0cce4987c09f992a798009bc18e7f74799d522fca0f0e",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/examples/pi05_vla/pi05_iwm/passes.py": "764154b933fab0d28b9d23db2966b138d81eb8e385d27fa96e811443d9a33a58",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/generic/engine_offload.py": "d686eef806c88bc559212ad23a5af42ee4a11e6eb3099629d8dfcf14279dcdd1",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/generic/graph_capture.py": "e8f7bc938a1df5aa36fc551faebf2e3665b960d79a1f597ef9e1a194c679366c",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/passes/generic/__init__.py": "f04a5033aab0d0ace4d3bdd460011049cef662f8aecf7856b0d35c9e45c24113",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/runtime/engine_backend.py": "25f81836f1c649ff3dc007dc54bbd1918a8eb8121ac7d574e0dfe147a90bc1b1",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/runtime/sm120_install.py": "f3486d11b3ca1f1297222c08787619441fe5e3408f28bc2337db8bc01ac288be",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/runtime/sm120_stage2_install.py": "7d527ed57b46b6ebe601273ca49d4cda2b31fe1d60dd5af0a8d37f530cda724a",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/runtime/lingbot_install.py": "b72a8cd3889e6681250c65f7ef671448e8719ee61e78deb3ecb4f76c59db1435",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/backends/conv/semantics.py": "a7894fc64f015c80d76c33b66ff90540ef398a95f25d0db2078c0d85221bba51",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/backends/conv/capabilities.py": "90ff841d7784d93f8b144c007db025db4bb99b50d638e2b6dcbd8675cbca92d2",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/backends/conv/reference.py": "659ecfdd90e7a5d1de601b79f1f885527893b26f62ea47bce8567da6ea5dd594",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/backends/conv/registry.py": "a1073e5db5640c37a7c3a5455d52681b61621d083a2a945c3f28bc2b162e8a50",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/backends/conv/__init__.py": "65e0bb5759513212d7b8d5625979f957d4b32cf8f94f3271254b6220ad20481e",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/autotune.py": "687f307415f6e9fdd398cff468d61efcc8c1ba2fe2cbe30c7a7c4dfcf72d067e",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/backends/conv/apply.py": "0e74a8645db1494847bf653bd09f3328a0ca2981096f92f7524581dd9a896e4f",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/runtime/torch_fp8_linear.py": "9bfd50ba1b4c9893d03d5952e8fcf3878408984c06cfa02befd33920092c8b53",
+    "/home/guanming/ifl_eval/thor_fp8_complete_20260910/source-v1/instinctflash/runtime/h100_fp8.py": "fe7ebc0ef9dffca2405f490431b6eb3df7050715d4f3722a19349bcf22506213"
+  }
+}

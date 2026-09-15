@@ -1,0 +1,93 @@
+[09-11 16:06:15|job=|INFO|../../cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/inference/common/init.py:127:_init_log_files] Console log saved to /tmp/cosmos3_action_server/robolab/console.log
+[09-11 16:06:15|job=|INFO|../../cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/inference/common/init.py:128:_init_log_files] Debug log saved to /tmp/cosmos3_action_server/robolab/debug.log
+[09-11 16:06:15|job=|INFO|../../cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/scripts/action_policy_server_utils.py:94:disable_runtime_ema_for_frozen_config] [action-server] disabled runtime EMA for frozen config model load
+[09-11 16:06:15|job=|INFO|../../cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/scripts/action_policy_server_robolab.py:377:__init__] [robolab-policy-server] loading model: checkpoint_path='/home/guanming/.cache/instinctflash/declared/nvidia__Cosmos3-Edge-Policy-DROID' config_file='/home/guanming/.cache/instinctflash/declared/nvidia__Cosmos3-Edge-Policy-DROID/config.json' experiment=''
+[09-11 16:06:15|job=|INFO|../../cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/inference/inference.py:1261:_create] VLM processor: using checkpoint-bundled processor files at /home/guanming/.cache/instinctflash/declared/nvidia__Cosmos3-Edge-Policy-DROID
+[09-11 16:06:15|job=|INFO|cosmos_framework/model/generator/omni_mot_model.py:245:__init__] OmniMoTModel: config {'tokenizer': {'bucket_name': '', 'object_store_credential_path_pretrained': '', 'vae_path': 'pretrained/tokenizers/video/wan2pt2/Wan2.2_VAE.pth', 'chunk_duration': 93, 'keep_decoder_cache': False, 'use_streaming_encode': False, 'encode_chunk_frames': {'256': 68, '480': 24, '720': 12}, 'encode_exact_durations': [33], 'spatial_compression_factor': 16, 'temporal_compression_factor': 4, 'temporal_window': None, 'encode_bucket_multiple': None, 'causal': True, '_target_': 'cosmos_framework.model.generator.tokenizers.wan2pt2_vae_4x16x16.Wan2pt2VAEInterface'}, 'load_vision_tokenizer': True, 'lidar_tokenizer': None, 'lidar_state_ch': None, 'lidar_fps': None, 'net': None, 'ema': {'enabled': False, 'rate': 0.1, 'iteration_shift': 0, '_type': 'cosmos_framework.configs.base.defaults.ema.EMAConfig'}, 'parallelism': {'data_parallel_shard_degree': 1, 'data_parallel_replicate_degree': 1, 'context_parallel_shard_degree': 1, 'cfg_parallel_shard_degree': 1, 'vae_load_balance_group_size': 1, 'enable_inference_mode': True, 'fsdp_master_dtype': 'float32', 'fsdp_reduce_dtype': None, '_type': 'cosmos_framework.configs.base.defaults.parallelism.ParallelismConfig'}, 'attention_io_layout': 'sequence_sharded', 'compile': {'enabled': True, 'compiled_region': 'all', 'compile_dynamic': True, 'use_cuda_graphs': True, 'ar_post_saturation_mode': 'default', 'max_autotune_pointwise': False, 'coordinate_descent_tuning': False, 'mark_unbacked': False, '_type': 'cosmos_framework.configs.base.defaults.compile.CompileConfig'}, 'quantization': {'method': None, 'fp8_granularity': 'per_row', 'modelopt_fp8_checkpoint_path': None, 'mixed_precision_first_steps': 0, 'mixed_precision_last_steps': 0, 'mixed_precision_reasoner_policy': 'high_precision', 'mixed_precision_w8a16_cache': 'none', 'include_regex': ['language_model.model.layers'], 'exclude_regex': [], 'modelopt_fp8_target_fqns': [], '_type': 'cosmos_framework.configs.base.defaults.quantization.QuantizationConfig'}, 'activation_checkpointing': {'mode': 'none', 'preserve_rng_state': True, 'determinism_check': 'default', 'save_ops_regex': ['fmha'], '_type': 'cosmos_framework.configs.base.defaults.activation_checkpointing.ActivationCheckpointingConfig'}, 'precision': 'bfloat16', 'lora_enabled': False, 'lora_rank': 16, 'lora_alpha': 32, 'lora_target_modules': 'q_proj_moe_gen,k_proj_moe_gen,v_proj_moe_gen,o_proj_moe_gen', 'rectified_flow_training_config': {'shift': {'256': 3, '480': 5}, 'shift_image': None, 'use_dynamic_shift': False, 'train_time_image_distribution': 'logitnormal', 'train_time_video_distribution': 'waver', 'train_time_action_distribution': 'logitnormal', 'train_time_sound_distribution': 'logitnormal', 'train_time_weight': 'uniform', 'loss_scale': 10.0, 'image_loss_scale': None, 'sound_loss_scale': None, 'lidar_loss_scale': None, 'use_discrete_rf': False, 'action_loss_weight': 10.0, 'independent_action_schedule': False, 'shift_action': None, 'independent_sound_schedule': False, 'shift_sound': None, 'normalize_loss_by_active': False, 'sample_level_loss_averaging': False, '_type': 'cosmos_framework.configs.base.defaults.model_config.RectifiedFlowTrainingConfig'}, 'rectified_flow_inference_config': {'scheduler_type': 'unipc', 'num_train_timesteps': 1000, 'shift': 1, 'use_dynamic_shifting': False, '_type': 'cosmos_framework.configs.base.defaults.model_config.RectifiedFlowInferenceConfig'}, 'fixed_step_sampler_config': None, 'vlm_config': {'model_name': 'nvidia/Cosmos3-Edge-Policy-DROID', 'safetensors_path': '', 'pretrained_weights': {'enabled': False, 'backbone_path': '', 'credentials_path': '', 'enable_gcs_patch_in_boto3': False, 'checkpoint_format': 'nemotron_3_dense_vl', '_type': 'cosmos_framework.configs.base.defaults.reasoner.PretrainedWeightsConfig'}, 'model_instance': {'_target_': 'cosmos_framework.model.generator.mot.unified_mot.Nemotron3DenseVLTextForCausalLM', 'config': {'_target_': 'cosmos_framework.configs.base.defaults.reasoner.create_vlm_config', 'base_config': {'_target_': 'cosmos_framework.model.generator.mot.unified_mot.Nemotron3DenseVLMoTConfig.from_json_file', 'json_file': 'cosmos_framework/model/generator/reasoner/nemotron_3_dense_vl/configs/Nemotron-2B-Dense-VL.json'}, 'qk_norm_for_text': False, 'use_und_k_norm_for_gen': True}}, 'tokenizer': {'repository': None, 'revision': None, 'subdir': '', '_target_': 'cosmos_framework.data.generator.processors.build_processor_lazy', 'config_variant': 'hf', 'tokenizer_type': '/home/guanming/.cache/instinctflash/declared/nvidia__Cosmos3-Edge-Policy-DROID'}, 'layer_module': None, 'qk_norm': False, 'tie_word_embeddings': False, 'use_system_prompt': False, '_type': 'cosmos_framework.configs.base.defaults.reasoner.VLMConfig'}, 'diffusion_expert_config': {'timestep_range': 1.0, 'load_weights_from_pretrained': False, 'enable_vision_modality_embeddings': False, 'enable_media_modality_embedding': False, 'enable_action_modality_embedding': True, 'enable_sound_modality_embedding': True, 'patch_spatial': 2, 'max_vae_latent_side_after_patchify': 20, 'enable_fps_modulation': True, 'base_fps': 24, 'sound_base_temporal_compression_factor': None, 'vision_temporal_position_mode': 'latent_index', 'unified_3d_mrope_reset_spatial_ids': True, 'unified_3d_mrope_temporal_modality_margin': 15000, '_type': 'cosmos_framework.configs.base.defaults.model_config.DiffusionExpertConfig'}, 'input_video_key': 'video', 'input_image_key': 'images', 'input_caption_key': 'ai_caption', 'state_ch': 48, 'state_t': 300, 'latent_downsample_factor': 16, 'resolution': '480', 'max_num_tokens_after_packing': -1, 'joint_attn_implementation': 'two_way', 'flex_attention': {'enabled': False, 'backend': 'auto', 'mask': {'attention_scope': 'all_views', 'decomposed_temporal_window_seconds': None, 'control_attends_sensor': False}}, 'natten_parameter_list': None, 'video_temporal_causal': False, 'causal_training_strategy': 'none', 'lbl': {'method': 'local', 'coeff_und': None, 'coeff_gen': None, '_type': 'cosmos_framework.configs.base.defaults.model_config.LBLConfig'}, 'vision_gen': True, 'action_gen': True, 'max_action_dim': 64, 'num_embodiment_domains': 32, 'action_io_projector_type': 'domain_aware', 'sound_gen': False, 'sound_tokenizer': None, 'sound_dim': None, 'sound_latent_fps': 25, 'enable_input_bias': True, 'exclude_reasoner_weights_from_checkpoint': False, 'log_enc_time_every_n': 100, '_type': 'cosmos_framework.configs.base.defaults.model_config.OmniMoTModelConfig'}
+[09-11 16:06:15|job=|WARNING|cosmos_framework/model/generator/omni_mot_model.py:269:set_precision] OmniMoTModel: precision torch.bfloat16
+This processor does not use the `size` parameter. It will be ignored.
+[09-11 16:06:16|job=|INFO|cosmos_framework/data/generator/processors/base.py:131:__init__] Successfully loaded processor from local cache
+[09-11 16:06:16|job=|INFO|cosmos_framework/utils/checkpoint_db.py:338:download] Downloading checkpoint Wan2.2/vae(4054f745a4c84cc69c56e24a88ca19af)
+[09-11 16:06:16|job=|INFO|cosmos_framework/utils/checkpoint_db.py:171:_hf_download] uv run --isolated --project /home/guanming/ifl_eval/cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/utils/hf_cli --locked --no-default-groups hf download --format=json Wan-AI/Wan2.2-TI2V-5B --repo-type model --revision 921dbaf3f1674a56f47e83fb80a34bac8a8f203e Wan2.2_VAE.pth
+Installed 16 packages in 5ms
+[09-11 16:06:17|job=|INFO|cosmos_framework/model/generator/tokenizers/wan2pt2_vae_4x16x16.py:1109:_video_vae] loading /home/guanming/.cache/huggingface/hub/models--Wan-AI--Wan2.2-TI2V-5B/snapshots/921dbaf3f1674a56f47e83fb80a34bac8a8f203e/Wan2.2_VAE.pth
+[09-11 16:06:17|job=|INFO|cosmos_framework/utils/distributed.py:662:sync_model_states] Synchronizing model states from rank 0 to all ranks in process group [0].
+[09-11 16:06:17|job=|INFO|cosmos_framework/utils/timer.py:138:_log] Time spent on OmniMoTModel: set_up_tokenizers: 2.04 s
+[09-11 16:06:17|job=|INFO|cosmos_framework/utils/generator/parallelism.py:139:_validate] dp_replicate is set to -1, will be automatically determined based on world_size 1 // dp_shard 1.
+[09-11 16:06:17|job=|INFO|cosmos_framework/utils/generator/parallelism.py:144:_validate] dp_replicate is set to 1.
+`torch_dtype` is deprecated! Use `dtype` instead!
+[09-11 16:06:18|job=|INFO|cosmos_framework/utils/timer.py:138:_log] Time spent on Creating PyTorch model and ema if enabled: 0.18 s
+[09-11 16:06:18|job=|INFO|cosmos_framework/utils/timer.py:138:_log] Time spent on OmniMoTModel: set_up_model: 0.18 s
+Traceback (most recent call last):
+  File "/home/guanming/thorcol/cosmos-framework/.venv/lib/python3.13/site-packages/hydra/_internal/instantiate/_instantiate2.py", line 92, in _call_target
+    return _target_(*args, **kwargs)
+  File "/home/guanming/ifl_eval/cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/model/generator/omni_mot_model.py", line 260, in __init__
+    self.set_up_model()
+    ~~~~~~~~~~~~~~~~~^^
+  File "/home/guanming/ifl_eval/cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/utils/timer.py", line 154, in wrapper
+    return func(*args, **kwargs)
+  File "/home/guanming/ifl_eval/cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/model/generator/omni_mot_model.py", line 629, in set_up_model
+    self.net = self.build_net(dtype=master_dtype, mp_policy=mp_policy)
+               ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/ifl_eval/cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/model/generator/omni_mot_model.py", line 503, in build_net
+    net = parallelize_vfm_network(
+        net,
+    ...<4 lines>...
+        mp_policy=mp_policy,
+    )
+  File "/home/guanming/ifl_eval/cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/model/generator/mot/parallelize_vfm_network.py", line 95, in parallelize_vfm_network
+    model = apply_compile(model, compile_config)
+  File "/home/guanming/ifl_eval/cosmos_graph_compile_20260911/language_graphs/audit_upstream.py", line 54, in compile_vfm_without_graphs
+    return original_vfm_compile(model, attrs.evolve(config, use_cuda_graphs=False))
+                                       ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/thorcol/cosmos-framework/.venv/lib/python3.13/site-packages/attr/_make.py", line 625, in evolve
+    attrs = fields(cls)
+  File "/home/guanming/thorcol/cosmos-framework/.venv/lib/python3.13/site-packages/attr/_make.py", line 1926, in fields
+    raise NotAnAttrsClassError(msg)
+attr.exceptions.NotAnAttrsClassError: <class 'omegaconf.dictconfig.DictConfig'> is not an attrs-decorated class.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/guanming/ifl_eval/cosmos3_baseline_audit_20260911/source/benchmarks/regression/cosmos.py", line 73, in main
+    api = build(args.family, api)
+  File "/home/guanming/ifl_eval/cosmos3_baseline_audit_20260911/source/eval/native_total_2026-09-10/upstream.py", line 83, in build
+    service = EagerService(RobolabServerArgs(
+        checkpoint_path=str(_resolve_model_path(checkpoint)),
+    ...<2 lines>...
+        num_steps=int(steps['action']), guidance=3.0,
+        shift=float(extra.get('shift', 5.0)), seed=int(extra.get('seed', 0))))
+  File "/home/guanming/ifl_eval/cosmos_graph_compile_20260911/language_graphs/audit_upstream.py", line 63, in initialize
+    original_init(self, args)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/guanming/ifl_eval/cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/scripts/action_policy_server_robolab.py", line 381, in __init__
+    pipe = OmniInference.create(setup_args)
+  File "/home/guanming/ifl_eval/cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/inference/common/inference.py", line 150, in create
+    return cls._create(setup_args, guardrails=guardrails, _timer=timer)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/ifl_eval/cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/inference/inference.py", line 1306, in _create
+    model = Cosmos3OmniModel.from_pretrained_dcp(
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        checkpoint_path,
+        ^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        quantization_config=quantization_config,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ).model
+    ^
+  File "/home/guanming/ifl_eval/cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/inference/model.py", line 712, in from_pretrained_dcp
+    model = cls(config)
+  File "/home/guanming/ifl_eval/cosmos3_baseline_audit_20260911/upstream-2b6c9a7/cosmos_framework/inference/model.py", line 660, in __init__
+    self.model: "OmniMoTModel" = hydra.utils.instantiate(model_dict)
+                                 ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/guanming/thorcol/cosmos-framework/.venv/lib/python3.13/site-packages/hydra/_internal/instantiate/_instantiate2.py", line 226, in instantiate
+    return instantiate_node(
+        config, *args, recursive=_recursive_, convert=_convert_, partial=_partial_
+    )
+  File "/home/guanming/thorcol/cosmos-framework/.venv/lib/python3.13/site-packages/hydra/_internal/instantiate/_instantiate2.py", line 347, in instantiate_node
+    return _call_target(_target_, partial, args, kwargs, full_key)
+  File "/home/guanming/thorcol/cosmos-framework/.venv/lib/python3.13/site-packages/hydra/_internal/instantiate/_instantiate2.py", line 97, in _call_target
+    raise InstantiationException(msg) from e
+hydra.errors.InstantiationException: Error in call to target 'cosmos_framework.model.generator.omni_mot_model.OmniMoTModel':
+NotAnAttrsClassError("<class 'omegaconf.dictconfig.DictConfig'> is not an attrs-decorated class.")
+[rank0]:[W911 16:06:19.492445863 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())

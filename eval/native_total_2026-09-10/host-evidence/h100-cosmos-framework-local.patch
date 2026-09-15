@@ -1,0 +1,238 @@
+diff --git a/cosmos_framework/configs/base/config.py b/cosmos_framework/configs/base/config.py
+index cf67208..7c170b1 100644
+--- a/cosmos_framework/configs/base/config.py
++++ b/cosmos_framework/configs/base/config.py
+@@ -97,6 +97,7 @@ def make_config() -> Config:
+     import cosmos_framework.configs.base.experiment.action.posttrain_config.action_policy_droid_nano  # noqa: F401
+     import cosmos_framework.configs.base.experiment.action.posttrain_config.action_policy_libero_all_nano  # noqa: F401
+     import cosmos_framework.configs.base.experiment.action.posttrain_config.action_policy_libero_nano  # noqa: F401
++    import cosmos_framework.configs.base.experiment.action.posttrain_config.action_policy_robotwin_edge  # noqa: F401
+     import cosmos_framework.configs.base.experiment.sft.vision_sft_nano  # noqa: F401
+     import cosmos_framework.configs.base.experiment.sft.vision_sft_super  # noqa: F401
+     import cosmos_framework.configs.base.experiment.sft.vision_sft_edge  # noqa: F401
+diff --git a/cosmos_framework/configs/base/defaults/compile.py b/cosmos_framework/configs/base/defaults/compile.py
+index 3d5ebf7..22c0d34 100644
+--- a/cosmos_framework/configs/base/defaults/compile.py
++++ b/cosmos_framework/configs/base/defaults/compile.py
+@@ -31,6 +31,21 @@ class CompileConfig:
+     # Whether to use CUDA graphs for faster inference. This option does not work during training.
+     use_cuda_graphs: bool = False
+ 
++    # InstinctWM: get CUDA-graph capture WITHOUT changing kernel selection.
++    #
++    # `use_cuda_graphs` currently sets torch.compile(mode="reduce-overhead"), which switches on
++    # cudagraph trees AND changes inductor's fusion and memory-planning decisions. Measured
++    # consequence: actions move by max|Δ| = 1.72e-02 versus the uncaptured path, so the engine
++    # arm cannot claim bit-exactness and has to buy a non-inferiority certificate instead.
++    #
++    # Capture itself should be numerically neutral -- it records and replays the same kernel
++    # launches, and static addresses do not change arithmetic. So the delta is very likely the
++    # MODE, not the capture. With this on, cudagraphs are requested through
++    # `options={"triton.cudagraphs": True}` with mode left at the default, which keeps
++    # inductor's ordinary decisions. If that turns out bit-exact, the 3.5x at NFE 30 comes for
++    # free and the certificate is unnecessary.
++    cudagraphs_via_options: bool = False
++
+     # Enable autotuning for pointwise/reduction Triton kernels (e.g. RMSNorm).
+     # Explores 6 candidate configs instead of the default 1, improving kernel performance
+     # at the cost of longer first-iteration compilation time.
+diff --git a/cosmos_framework/data/generator/action/datasets/action_sft_dataset.py b/cosmos_framework/data/generator/action/datasets/action_sft_dataset.py
+index 6053259..4865b90 100644
+--- a/cosmos_framework/data/generator/action/datasets/action_sft_dataset.py
++++ b/cosmos_framework/data/generator/action/datasets/action_sft_dataset.py
+@@ -23,6 +23,7 @@ from cosmos_framework.data.generator.action.datasets.droid_lerobot_dataset impor
+     DROIDLeRobotDataset,
+ )
+ from cosmos_framework.data.generator.action.datasets.libero_lerobot_dataset import LIBEROLeRobotDataset
++from cosmos_framework.data.generator.action.datasets.robotwin_lerobot_dataset import RoboTwinLeRobotDataset
+ from cosmos_framework.data.generator.action.transforms import ActionTransformPipeline
+ 
+ 
+@@ -151,6 +152,87 @@ def get_action_droid_sft_dataset(
+     return sft
+ 
+ 
++def get_action_robotwin_sft_dataset(
++    *,
++    root: str,
++    fps: float = 16.0,
++    chunk_length: int = 16,
++    mode: str = "policy",
++    use_state: bool = True,
++    action_normalization: str | None = None,
++    viewpoint: str = "concat_view",
++    use_image_augmentation: bool = False,
++    split: str = "full",
++    val_ratio: float = 0.01,
++    seed: int = 0,
++    resolution: str | int | None = "480",
++    max_action_dim: int = 64,
++    tokenizer_config: dict | None = None,
++    cfg_dropout_rate: float = 0.1,
++    append_viewpoint_info: bool = True,
++    append_duration_fps_timestamps: bool = True,
++    append_resolution_info: bool = True,
++    append_idle_frames: bool = False,
++    format_prompt_as_json: bool = True,
++    iterable_shuffle: bool = True,
++    episode_shuffle_seed: int = 42,
++) -> Dataset:
++    """Build the RoboTwin 2.0 ``aloha-agilex`` action SFT dataset.
++
++    Mirrors :func:`get_action_droid_sft_dataset`: feeds
++    ``RoboTwinLeRobotDataset`` (14-D absolute joint position ``qpos14``,
++    ``use_state=True`` so the current state is conditioning row 0, raw /
++    un-normalized, no gripper flip) through ``ActionTransformPipeline``.
++
++    ``root`` is ONE local LeRobot v3.0 root covering all pilot tasks (one
++    multi-task checkpoint); ``viewpoint="concat_view"`` reads the single
++    pre-composed ``observation.images.mosaic`` video key.
++
++    ``resolution="480"`` is the tier whose closest aspect bucket (``"1,1"`` ->
++    640x640) is >= the 320x360 mosaic in both dimensions, so
++    ``reflection_pad_to_target`` caps ``scaling_ratio`` at 1.0 and the mosaic
++    reaches the model at NATIVE pixel scale (padded, never resampled). The
++    ``"256"`` tier would resolve to 256x256 and downscale the mosaic to 228x256
++    (-29% linear), i.e. crush the 320x240 head camera to 228x171.
++
++    ``use_image_augmentation`` is accepted for signature parity with the DROID
++    factory and must stay ``False``: ``RoboTwinLeRobotDataset`` has no augmentor
++    (random crop/rescale would break the frozen mosaic geometry the policy
++    server reproduces at eval time).
++    """
++    if use_image_augmentation:
++        raise NotImplementedError(
++            "RoboTwinLeRobotDataset has no image augmentor; cropping/rescaling would break the "
++            "frozen mosaic geometry shared with the policy server. Keep use_image_augmentation=False."
++        )
++    dataset: Dataset = RoboTwinLeRobotDataset(
++        root=root,
++        fps=fps,
++        chunk_length=chunk_length,
++        mode=mode,
++        use_state=use_state,
++        viewpoint=viewpoint,
++        action_normalization=action_normalization,
++        split=split,
++        val_ratio=val_ratio,
++        seed=seed,
++    )
++    transform = ActionTransformPipeline(
++        tokenizer_config=tokenizer_config,
++        cfg_dropout_rate=cfg_dropout_rate,
++        max_action_dim=max_action_dim,
++        append_viewpoint_info=append_viewpoint_info,
++        append_duration_fps_timestamps=append_duration_fps_timestamps,
++        append_resolution_info=append_resolution_info,
++        append_idle_frames=append_idle_frames,
++        format_prompt_as_json=format_prompt_as_json,
++    )
++    sft = ActionSFTDataset(dataset, transform, resolution)
++    if iterable_shuffle:
++        return ActionIterableShuffleDataset(sft, seed=episode_shuffle_seed)
++    return sft
++
++
+ def get_action_libero_sft_dataset(
+     *,
+     root: str,
+diff --git a/cosmos_framework/data/generator/action/domain_utils.py b/cosmos_framework/data/generator/action/domain_utils.py
+index 6317a09..2d5db52 100644
+--- a/cosmos_framework/data/generator/action/domain_utils.py
++++ b/cosmos_framework/data/generator/action/domain_utils.py
+@@ -17,6 +17,11 @@ EMBODIMENT_TO_DOMAIN_ID: dict[str, int] = {
+     "embodiment_b": 9,
+     "robomind-franka-dual": 12,
+     "robomind-ur": 13,
++    # RoboTwin 2.0 aloha-agilex (dual ARX arms, 14-D absolute joint position).
++    # Domain id 11 was the only unused slot below num_embodiment_domains and is
++    # provably untrained in the released Cosmos3-Edge weights (its
++    # action_modality_embed bias row is exactly zero).
++    "robotwin_aloha_agilex": 11,
+     "agibotworld": 15,
+     "embodiment_c_gripper": 15,
+     "embodiment_c_gripper_ext": 15,
+@@ -37,6 +42,8 @@ EMBODIMENT_TO_RAW_ACTION_DIM: dict[str, int] = {
+     "robomind-franka": 10,
+     "robomind-franka-dual": 20,
+     "robomind-ur": 10,
++    # [left_arm(6), left_gripper, right_arm(6), right_gripper]
++    "robotwin_aloha_agilex": 14,
+     "embodiment_b": 30,
+     "agibotworld": 29,
+     "embodiment_c_gripper": 29,
+diff --git a/cosmos_framework/inference/common/args.py b/cosmos_framework/inference/common/args.py
+index 83d2fe0..00bc64a 100644
+--- a/cosmos_framework/inference/common/args.py
++++ b/cosmos_framework/inference/common/args.py
+@@ -669,6 +669,7 @@ class ParallelismArgs(ArgsBase):
+     cfgp_size: CfgpSize
+     use_torch_compile: bool
+     use_cuda_graphs: bool
++    cudagraphs_via_options: bool
+     compiled_region: CompiledRegion
+     compile_dynamic: bool
+     use_separate_pipeline_vision_decode_gpu: bool
+@@ -708,6 +709,7 @@ class ParallelismOverrides(OverridesBase):
+     use_torch_compile: bool = True
+     """Whether to use torch compile."""
+     use_cuda_graphs: bool = True
++    cudagraphs_via_options: bool = False
+     """Whether to use CUDA graphs."""
+     compiled_region: CompiledRegion = "all"
+     """Torch compile region."""
+diff --git a/cosmos_framework/inference/inference.py b/cosmos_framework/inference/inference.py
+index 62db733..8aef287 100644
+--- a/cosmos_framework/inference/inference.py
++++ b/cosmos_framework/inference/inference.py
+@@ -1154,6 +1154,7 @@ class OmniInference(Inference):
+             enabled=setup_args.use_torch_compile,
+             use_cuda_graphs=setup_args.use_cuda_graphs
+             and setup_args.dp_shard_size * setup_args.cp_size * setup_args.cfgp_size == 1,
++            cudagraphs_via_options=getattr(setup_args, "cudagraphs_via_options", False),
+             compiled_region=setup_args.compiled_region,
+             compile_dynamic=setup_args.compile_dynamic,
+         )
+diff --git a/cosmos_framework/model/generator/mot/parallelize_unified_mot.py b/cosmos_framework/model/generator/mot/parallelize_unified_mot.py
+index d8f97a8..c61115d 100644
+--- a/cosmos_framework/model/generator/mot/parallelize_unified_mot.py
++++ b/cosmos_framework/model/generator/mot/parallelize_unified_mot.py
+@@ -307,12 +307,16 @@ def apply_compile(model: nn.Module, config: CompileConfig) -> None:
+     if config.coordinate_descent_tuning:
+         compile_options["coordinate_descent_tuning"] = True
+ 
++    # InstinctWM: see CompileConfig.cudagraphs_via_options.
++    _via_options = config.use_cuda_graphs and getattr(config, "cudagraphs_via_options", False)
++    if _via_options:
++        compile_options["triton.cudagraphs"] = True
+     for layer_id, block in model.model.layers.named_children():
+         block = torch.compile(
+             block,
+             fullgraph=True,
+             dynamic=config.compile_dynamic,
+-            mode="reduce-overhead" if config.use_cuda_graphs else None,
++            mode="reduce-overhead" if (config.use_cuda_graphs and not _via_options) else None,
+             options=compile_options or None,
+         )
+         model.model.layers.register_module(layer_id, block)
+diff --git a/cosmos_framework/model/generator/mot/parallelize_vfm_network.py b/cosmos_framework/model/generator/mot/parallelize_vfm_network.py
+index e2279cf..9d98b4b 100644
+--- a/cosmos_framework/model/generator/mot/parallelize_vfm_network.py
++++ b/cosmos_framework/model/generator/mot/parallelize_vfm_network.py
+@@ -27,10 +27,15 @@ def apply_compile(model: torch.nn.Module, config: CompileConfig):
+     if config.coordinate_descent_tuning:
+         inductor_options["coordinate_descent_tuning"] = True
+ 
++    # InstinctWM: cudagraphs through inductor options keeps the default mode, so kernel
++    # selection is unchanged -- see CompileConfig.cudagraphs_via_options.
++    _via_options = config.use_cuda_graphs and getattr(config, "cudagraphs_via_options", False)
++    if _via_options:
++        inductor_options["triton.cudagraphs"] = True
+     compile_options = {
+         "fullgraph": True,
+         "dynamic": True,
+-        "mode": "reduce-overhead" if config.use_cuda_graphs else None,
++        "mode": "reduce-overhead" if (config.use_cuda_graphs and not _via_options) else None,
+         "options": inductor_options or None,
+     }
+ 

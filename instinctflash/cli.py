@@ -1,5 +1,6 @@
-"""`instinctflash` — the command line. Two verbs, no Python required.
+"""`instinctflash` — discover, inspect, deploy and evaluate world-action models.
 
+    instinctflash models                    list known checkpoints and installed adapters
     instinctflash serve     <model-id>       deploy: preflight, then serve over websocket
     instinctflash validate  <dir>            trust: publishable-package check + the certificate
 
@@ -173,6 +174,44 @@ def cmd_describe(a) -> int:
     print(f"  {'capabilities':12} {', '.join(d['capabilities'])}")
     if d.get("has_provenance"):
         print(f"  {'provenance':12} present, and never read by the runtime")
+    return 0
+
+
+def cmd_models(a) -> int:
+    """List declaration support and adapter registration without loading model stacks."""
+    from instinctflash.descriptors.known import KNOWN_DECLARATIONS
+    from instinctflash.runtime.loader import (
+        FIRST_PARTY_ADAPTER_PACKAGES, available_models, discover_plugins,
+    )
+
+    registered = available_models()
+    rows = []
+    for model_id, document in sorted(KNOWN_DECLARATIONS.items()):
+        backbone = document["execution"]["backbone"]
+        package, directory = FIRST_PARTY_ADAPTER_PACKAGES.get(backbone, ("instinctflash", None))
+        rows.append({"model_id": model_id, "backbone": backbone,
+                     "adapter_registered": backbone in registered,
+                     "adapter_package": package, "adapter_source_directory": directory})
+    result = {"instinctflash_models_schema": 1, "known_checkpoints": rows,
+              "registered_adapters": registered,
+              "adapter_discovery_errors": discover_plugins(),
+              "host_dependencies_checked": False}
+    if a.json:
+        print(json.dumps(result, indent=2))
+        return 0
+    print("Known checkpoints (registration does not verify model dependencies or GPU support):")
+    for row in rows:
+        state = "registered" if row["adapter_registered"] else "adapter missing"
+        print(f"  {row['model_id']}\n    {row['backbone']}: {state}; {row['adapter_package']}")
+    missing = sorted({row["adapter_source_directory"] for row in rows
+                      if not row["adapter_registered"] and row["adapter_source_directory"]})
+    if missing:
+        print("\nInstall missing adapters from your InstinctFlash checkout:")
+        for directory in missing:
+            print(f"  python -m pip install <checkout>/{directory}")
+    for problem in result["adapter_discovery_errors"]:
+        print(f"\nAdapter import error: {problem}")
+    print("\nInspect a checkpoint: instinctflash serve <model-id> --serve.dry_run=true")
     return 0
 
 
@@ -355,6 +394,25 @@ def cmd_validate(argv: list[str]) -> int:
                 result["certificate"] = {"status": "tampered"}
                 ok = False
 
+        # A distilled checkpoint's provenance.distillation block is verified on EVERY run, the
+        # certificate's way: integrity by self-hash, honesty by the matched-NFE-control law and
+        # the scaffold's FILL_ME discipline (descriptors/distillation.py). A package with no
+        # such block is simply not a distilled checkpoint and nothing here fires.
+        from instinctflash.descriptors.distillation import verify_distillation
+        dstatus, dblock, dproblems = verify_distillation(Path(v.path))
+        if dstatus != "absent":
+            for problem in dproblems:
+                lines.append(f"  PROBLEM  {problem}")
+            if dstatus == "intact" and not dproblems:
+                control = dblock.get("matched_nfe_control", {})
+                lines.append(
+                    f"  distillation: intact — recipe {dblock['recipe_id']!r} on "
+                    f"{dblock['teacher']['model_id']!r}; matched-NFE control recorded "
+                    f"(B−A delta {control['b_minus_a']['delta']:+.4f}, "
+                    f"C−B delta {control['c_minus_b']['delta']:+.4f}); never read by the runtime")
+            result["distillation"] = {"status": dstatus, "problems": dproblems}
+            ok = ok and dstatus == "intact" and not dproblems
+
         return CommandReport(result, "\n".join(lines), ok, 0 if ok else 1)
 
     return execute("validate", ValidateConfig, run, argv, prog="instinctflash validate",
@@ -436,12 +494,15 @@ def cmd_run(a) -> int:
 
 
 def _serve_preflight(model: str, r: RuntimeConfig) -> tuple[dict, str]:
-    """Device capabilities + declaration + plan, from one metadata file. Never weights."""
+    """Device capabilities + declaration + plan, from checkpoint metadata. Never weights."""
+    from copy import deepcopy
     from instinctflash.runtime.facade import plan_declaration
 
     ckpt, _adapter, plan, probed = plan_declaration(
         model, strict=True, nfe=r.nfe or None,
-        tier_ceiling=r.tier_ceiling, exclude_passes=tuple(r.exclude_passes))
+        precision=r.precision, placement=r.placement, device=r.device,
+        tier_ceiling=r.tier_ceiling, exclude_passes=tuple(r.exclude_passes),
+        step_cache=r.step_cache)
     ex = ckpt.execution
     if probed is not None:
         cap = f"sm{probed.capability[0]}{probed.capability[1]}" if probed.capability != (0, 0) else "cpu"
@@ -463,12 +524,8 @@ def _serve_preflight(model: str, r: RuntimeConfig) -> tuple[dict, str]:
         lines.append(f"  features    : {features}")
     if device_class:
         lines.append(f"  class       : {device_class}")
-    if probed is not None and probed.device_class()[0] == "bandwidth-bound-edge":
-        # Exactly one line, in the preflight rather than the README: the reader it is for is the
-        # one who just saw their sm_110 plan decline capture with the measured reason.
-        lines.append("  an engine tier for this device class is available under commercial "
-                     "access — founders@general-instinct.com")
     lines += [
+        f"  precision   : {r.precision}",
         f"  declaration : {ckpt.path}",
         f"  backbone    : {ex.backbone}",
         f"  servable    : {ex.servable}",
@@ -477,10 +534,16 @@ def _serve_preflight(model: str, r: RuntimeConfig) -> tuple[dict, str]:
         plan.explain(),
     ]
     result = {"model_id": ex.model_id, "backbone": ex.backbone, "servable": ex.servable,
-              "device": device, "device_class": device_class,
+              "device": device, "device_class": device_class, "precision": r.precision,
               "capabilities": sorted(ckpt.capabilities()),
               # the tuple, not just nfe: (schedule grid, per-stream guidance scale, CFG batching)
               "operating_point": getattr(plan, "operating_point", ""), "plan": plan.explain()}
+    resolved_step_cache = getattr(plan, "resolved_step_cache", None)
+    if resolved_step_cache is not None:
+        result["step_cache"] = resolved_step_cache.to_dict()
+        result["schedule_options"] = {
+            item.name: deepcopy(item.params["execution_schedule"])
+            for item in plan.applied if "execution_schedule" in item.params}
     return result, "\n".join(lines)
 
 
@@ -675,8 +738,8 @@ def cmd_serve(argv: list[str]) -> int:
         r = cfg.runtime
         rt = Runtime.from_pretrained(
             s.model, device=r.device, placement=r.placement, nfe=r.nfe or None,
-            tier_ceiling=r.tier_ceiling, exclude_passes=tuple(r.exclude_passes),
-            seed=s.seed)
+            precision=r.precision, tier_ceiling=r.tier_ceiling, exclude_passes=tuple(r.exclude_passes),
+            seed=s.seed, step_cache=r.step_cache)
         try:
             if s.smoke:
                 return _serve_smoke(rt, preflight)
@@ -765,6 +828,9 @@ def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     # The two verbs speak the typed dotted-field syntax and own their help/error contract, so
     # they are dispatched before argparse (whose positional grammar the aliases keep).
+    if argv[:1] == ["eval"]:
+        from benchmarks.vla.cli import main as eval_main
+        return eval_main(argv[1:])
     if argv[:1] == ["serve"]:
         return cmd_serve(argv[1:])
     if argv[:1] == ["validate"]:
@@ -776,7 +842,13 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="instinctflash", description=__doc__.split("\n")[0])
     # metavar hides the alias verbs from usage; registering them without help= hides them from
     # the listing. They still parse — existing scripts keep working — they are just not taught.
-    sub = ap.add_subparsers(dest="cmd", metavar="{serve,validate}")
+    sub = ap.add_subparsers(dest="cmd", metavar="{models,serve,validate,eval}")
+
+    models = sub.add_parser("models", help="list known checkpoints and registered adapters; no model load")
+    models.add_argument("--json", action="store_true", help="machine-readable model and adapter catalog")
+    models.set_defaults(fn=cmd_models)
+
+    sub.add_parser("eval", help="simulation benchmark: adapters, coverage, plans, runs and reports (instinctflash eval -h)")
 
     sub.add_parser("serve", help="deploy: preflight (device + declaration + plan), then serve "
                                  "over websocket on the openpi wire protocol; a local fine-tune "
@@ -804,12 +876,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--any-checkpoint", action="store_true",
                    help="do not refuse a checkpoint declaring servable=false")
     p.add_argument("--tier-ceiling", choices=("bitexact", "numeric", "behavioral"),
-                   default="bitexact",
+                   default=None,
                    help="the strongest accuracy claim the plan may spend (a claim budget, "
-                        "not a speed knob)")
+                        "not a speed knob). Omitted = the runtime's default policy: bitexact, "
+                        "with checkpoint-declared operating points honored up to NUMERIC; "
+                        "passing a value makes it an explicit demand the plan is refused "
+                        "against rather than silently re-tiered")
     p.add_argument("--exclude-pass", action="append", metavar="NAME",
                    help="drop a pass via Plan.without(); a caller exclusion the runtime honors "
-                        "everywhere (repeatable)")
+                        "everywhere, including the engine placement (repeatable)")
     p.set_defaults(fn=cmd_plan)
 
     r = sub.add_parser("run")

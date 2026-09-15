@@ -1,0 +1,1027 @@
+{
+  "analysis_pipeline_sha256": "182ca51cd67a9b3217d0c698548dff4c17e407e2df4aaa228a5980cceb59b006",
+  "analysis_source_sha256": "18c43119f7d66caed19f9d94dd987c7ea23c96f1ce8ed2b8f7cf65d6d16d46a7",
+  "closed_loop": {
+    "aa": {
+      "bundle": "/home/ubuntu/ifl_eval/next_steps_20260906/aa/evidence",
+      "execution_pipeline_sha256": "46308ae91306d99db3b8a2eb6f8568ef198b73a55c026e2e4ded91a59293bdae",
+      "first_calls": [
+        {
+          "action": {
+            "candidate_sha256": "9fe0cdc78b0f9e72e76110dbd5910dbd8324980f2a00f5a0c58c03c677d1ebfe",
+            "identical": false,
+            "max_abs": 0.010167847387492657,
+            "reference_sha256": "88c70622f19d16f278b091b5d7d8b015c9c130413bac074370222a342d98a2d3"
+          },
+          "input_identical": true,
+          "noise_identical": true,
+          "pair_id": "b4d7f9bace6b72f603562676",
+          "suite": "robotwin50_easy",
+          "task": "adjust_bottle"
+        },
+        {
+          "action": {
+            "candidate_sha256": "c1f01635c3956e54bc08e29557ec84c542fb4bf10ed4445997a6d62ebeec0ae1",
+            "identical": true,
+            "max_abs": 0.0,
+            "reference_sha256": "c1f01635c3956e54bc08e29557ec84c542fb4bf10ed4445997a6d62ebeec0ae1"
+          },
+          "input_identical": true,
+          "noise_identical": true,
+          "pair_id": "00032ea07d95015d1a502127",
+          "suite": "robotwin50_easy",
+          "task": "beat_block_hammer"
+        },
+        {
+          "action": {
+            "candidate_sha256": "95d8400b34464b12622a03d290d73123b53fff1f12c2d9465ebf3938123dd219",
+            "identical": true,
+            "max_abs": 0.0,
+            "reference_sha256": "95d8400b34464b12622a03d290d73123b53fff1f12c2d9465ebf3938123dd219"
+          },
+          "input_identical": true,
+          "noise_identical": true,
+          "pair_id": "40ec17226dc84c667bcfab6f",
+          "suite": "robotwin50_hard",
+          "task": "adjust_bottle"
+        },
+        {
+          "action": {
+            "candidate_sha256": "c2d833e337f1e36d32dfa7bdc66373c7c382990de74ee1009a55608f08122ed0",
+            "identical": true,
+            "max_abs": 0.0,
+            "reference_sha256": "c2d833e337f1e36d32dfa7bdc66373c7c382990de74ee1009a55608f08122ed0"
+          },
+          "input_identical": true,
+          "noise_identical": true,
+          "pair_id": "78489506fa83cb6c2e35bfa8",
+          "suite": "robotwin50_hard",
+          "task": "beat_block_hammer"
+        }
+      ],
+      "plan_id": "3461d26d72aa989a399655b28de1cfcc5608ebbf4ff5de60cd0b114a67a8a4a9",
+      "report_sha256": "a3c6c750f23ffff319556398d34781556edabbb4f866ea8ed1be4ec50c81f16b",
+      "settings": [
+        {
+          "complete": true,
+          "control_only_successes": 0,
+          "control_success_rate": 1.0,
+          "control_successes": 2,
+          "delta": 0.0,
+          "expected_pairs": 2,
+          "identical_action_pairs": 0,
+          "interval_assumption": "Matched Bernoulli episode pairs; task clustering is not modeled. Seeds on a fixed task are not new tasks.",
+          "missing_pair_ids": [],
+          "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "pairs": 2,
+          "per_task": {
+            "adjust_bottle": {
+              "control_successes": 1,
+              "pairs": 1,
+              "treatment_successes": 1
+            },
+            "beat_block_hammer": {
+              "control_successes": 1,
+              "pairs": 1,
+              "treatment_successes": 1
+            }
+          },
+          "quality_gate": false,
+          "scope": "Descriptive paired episodes on the selected fixed tasks; not a release verdict or generalization across unseen tasks.",
+          "suite_id": "robotwin50_easy",
+          "tango_central95": [
+            -0.6576197743415833,
+            0.6576197725371458
+          ],
+          "treatment_only_successes": 0,
+          "treatment_success_rate": 1.0,
+          "treatment_successes": 2
+        },
+        {
+          "complete": true,
+          "control_only_successes": 0,
+          "control_success_rate": 1.0,
+          "control_successes": 2,
+          "delta": 0.0,
+          "expected_pairs": 2,
+          "identical_action_pairs": 0,
+          "interval_assumption": "Matched Bernoulli episode pairs; task clustering is not modeled. Seeds on a fixed task are not new tasks.",
+          "missing_pair_ids": [],
+          "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "pairs": 2,
+          "per_task": {
+            "adjust_bottle": {
+              "control_successes": 1,
+              "pairs": 1,
+              "treatment_successes": 1
+            },
+            "beat_block_hammer": {
+              "control_successes": 1,
+              "pairs": 1,
+              "treatment_successes": 1
+            }
+          },
+          "quality_gate": false,
+          "scope": "Descriptive paired episodes on the selected fixed tasks; not a release verdict or generalization across unseen tasks.",
+          "suite_id": "robotwin50_hard",
+          "tango_central95": [
+            -0.6576197743415833,
+            0.6576197725371458
+          ],
+          "treatment_only_successes": 0,
+          "treatment_success_rate": 1.0,
+          "treatment_successes": 2
+        }
+      ],
+      "verification": {
+        "bundle": "/home/ubuntu/ifl_eval/next_steps_20260906/aa/evidence",
+        "bundle_sha256": "d1cf0e9330c926c9844c184d24ebb8d599f75a8f865fe8998cd75c6965a386c1",
+        "evidence": [
+          {
+            "arms": {
+              "candidate": {
+                "episodes": 2,
+                "successes": 2
+              },
+              "stock": {
+                "episodes": 2,
+                "successes": 2
+              }
+            },
+            "backbone": "lingbot_vla_v2",
+            "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+            "episodes": 4,
+            "plan_id": "3461d26d72aa989a399655b28de1cfcc5608ebbf4ff5de60cd0b114a67a8a4a9",
+            "quality_reportable": false,
+            "revision": "0451855729ec904f970600e0aec8b84661423afe",
+            "run": "/home/ubuntu/ifl_eval/next_steps_20260906/aa/evidence",
+            "screening": true,
+            "suite": "robotwin50_easy"
+          },
+          {
+            "arms": {
+              "candidate": {
+                "episodes": 2,
+                "successes": 2
+              },
+              "stock": {
+                "episodes": 2,
+                "successes": 2
+              }
+            },
+            "backbone": "lingbot_vla_v2",
+            "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+            "episodes": 4,
+            "plan_id": "3461d26d72aa989a399655b28de1cfcc5608ebbf4ff5de60cd0b114a67a8a4a9",
+            "quality_reportable": false,
+            "revision": "0451855729ec904f970600e0aec8b84661423afe",
+            "run": "/home/ubuntu/ifl_eval/next_steps_20260906/aa/evidence",
+            "screening": true,
+            "suite": "robotwin50_hard"
+          }
+        ],
+        "files": 103,
+        "valid": true
+      }
+    },
+    "ab": {
+      "bundle": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/evidence",
+      "execution_pipeline_sha256": "46308ae91306d99db3b8a2eb6f8568ef198b73a55c026e2e4ded91a59293bdae",
+      "first_calls": [
+        {
+          "action": {
+            "candidate_sha256": "cc46aca97fbe509731a20d8ddf564c625bb6fc28186df7c2b1b99e213bdc58b8",
+            "identical": false,
+            "max_abs": 0.010167847387492657,
+            "reference_sha256": "70508f74bbf970c24c0615cfe2fbef15fa65ad661527f3639b3299fdcc748fed"
+          },
+          "input_identical": true,
+          "noise_identical": true,
+          "pair_id": "b4d7f9bace6b72f603562676",
+          "suite": "robotwin50_easy",
+          "task": "adjust_bottle"
+        },
+        {
+          "action": {
+            "candidate_sha256": "7bd66aff5d3406facfdeef0448275d099be350cf4f3c374750f93e8b944f15b7",
+            "identical": false,
+            "max_abs": 0.010242396267130971,
+            "reference_sha256": "c1f01635c3956e54bc08e29557ec84c542fb4bf10ed4445997a6d62ebeec0ae1"
+          },
+          "input_identical": true,
+          "noise_identical": true,
+          "pair_id": "00032ea07d95015d1a502127",
+          "suite": "robotwin50_easy",
+          "task": "beat_block_hammer"
+        },
+        {
+          "action": {
+            "candidate_sha256": "95d8400b34464b12622a03d290d73123b53fff1f12c2d9465ebf3938123dd219",
+            "identical": true,
+            "max_abs": 0.0,
+            "reference_sha256": "95d8400b34464b12622a03d290d73123b53fff1f12c2d9465ebf3938123dd219"
+          },
+          "input_identical": true,
+          "noise_identical": true,
+          "pair_id": "40ec17226dc84c667bcfab6f",
+          "suite": "robotwin50_hard",
+          "task": "adjust_bottle"
+        },
+        {
+          "action": {
+            "candidate_sha256": "88802f5de7e2fcc8a636e988e2f08a0472369fdda93f07da394a49630e47c546",
+            "identical": false,
+            "max_abs": 0.010167847387492657,
+            "reference_sha256": "0b912decc11877d19791729962d14ab55f9a04bcc735034795f8386471c841b7"
+          },
+          "input_identical": true,
+          "noise_identical": true,
+          "pair_id": "78489506fa83cb6c2e35bfa8",
+          "suite": "robotwin50_hard",
+          "task": "beat_block_hammer"
+        }
+      ],
+      "plan_id": "d9769ec4158e5d942b5b9fcfd387bb84439729e5e2b2eedc4b30204d55c50b9b",
+      "report_sha256": "5b4d3daa0252e12aba0362b3fcbe1587fa35e4f4110a9f77ea64e3e55292a911",
+      "settings": [
+        {
+          "complete": true,
+          "control_only_successes": 0,
+          "control_success_rate": 1.0,
+          "control_successes": 2,
+          "delta": 0.0,
+          "expected_pairs": 2,
+          "identical_action_pairs": 0,
+          "interval_assumption": "Matched Bernoulli episode pairs; task clustering is not modeled. Seeds on a fixed task are not new tasks.",
+          "missing_pair_ids": [],
+          "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "pairs": 2,
+          "per_task": {
+            "adjust_bottle": {
+              "control_successes": 1,
+              "pairs": 1,
+              "treatment_successes": 1
+            },
+            "beat_block_hammer": {
+              "control_successes": 1,
+              "pairs": 1,
+              "treatment_successes": 1
+            }
+          },
+          "quality_gate": false,
+          "scope": "Descriptive paired episodes on the selected fixed tasks; not a release verdict or generalization across unseen tasks.",
+          "suite_id": "robotwin50_easy",
+          "tango_central95": [
+            -0.6576197743415833,
+            0.6576197725371458
+          ],
+          "treatment_only_successes": 0,
+          "treatment_success_rate": 1.0,
+          "treatment_successes": 2
+        },
+        {
+          "complete": true,
+          "control_only_successes": 0,
+          "control_success_rate": 1.0,
+          "control_successes": 2,
+          "delta": 0.0,
+          "expected_pairs": 2,
+          "identical_action_pairs": 0,
+          "interval_assumption": "Matched Bernoulli episode pairs; task clustering is not modeled. Seeds on a fixed task are not new tasks.",
+          "missing_pair_ids": [],
+          "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "pairs": 2,
+          "per_task": {
+            "adjust_bottle": {
+              "control_successes": 1,
+              "pairs": 1,
+              "treatment_successes": 1
+            },
+            "beat_block_hammer": {
+              "control_successes": 1,
+              "pairs": 1,
+              "treatment_successes": 1
+            }
+          },
+          "quality_gate": false,
+          "scope": "Descriptive paired episodes on the selected fixed tasks; not a release verdict or generalization across unseen tasks.",
+          "suite_id": "robotwin50_hard",
+          "tango_central95": [
+            -0.6576197743415833,
+            0.6576197725371458
+          ],
+          "treatment_only_successes": 0,
+          "treatment_success_rate": 1.0,
+          "treatment_successes": 2
+        }
+      ],
+      "verification": {
+        "bundle": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/evidence",
+        "bundle_sha256": "a99b27a989ddfc4ed2b6a395f14f5104ab343285bf0d6a69113fce6a89deda24",
+        "evidence": [
+          {
+            "arms": {
+              "candidate": {
+                "episodes": 2,
+                "successes": 2
+              },
+              "stock": {
+                "episodes": 2,
+                "successes": 2
+              }
+            },
+            "backbone": "lingbot_vla_v2",
+            "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+            "episodes": 4,
+            "plan_id": "d9769ec4158e5d942b5b9fcfd387bb84439729e5e2b2eedc4b30204d55c50b9b",
+            "quality_reportable": false,
+            "revision": "0451855729ec904f970600e0aec8b84661423afe",
+            "run": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/evidence",
+            "screening": true,
+            "suite": "robotwin50_easy"
+          },
+          {
+            "arms": {
+              "candidate": {
+                "episodes": 2,
+                "successes": 2
+              },
+              "stock": {
+                "episodes": 2,
+                "successes": 2
+              }
+            },
+            "backbone": "lingbot_vla_v2",
+            "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+            "episodes": 4,
+            "plan_id": "d9769ec4158e5d942b5b9fcfd387bb84439729e5e2b2eedc4b30204d55c50b9b",
+            "quality_reportable": false,
+            "revision": "0451855729ec904f970600e0aec8b84661423afe",
+            "run": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/evidence",
+            "screening": true,
+            "suite": "robotwin50_hard"
+          }
+        ],
+        "files": 103,
+        "valid": true
+      }
+    },
+    "bb": {
+      "bundle": "/home/ubuntu/ifl_eval/next_steps_20260906/bb/evidence",
+      "execution_pipeline_sha256": "46308ae91306d99db3b8a2eb6f8568ef198b73a55c026e2e4ded91a59293bdae",
+      "first_calls": [
+        {
+          "action": {
+            "candidate_sha256": "9fe0cdc78b0f9e72e76110dbd5910dbd8324980f2a00f5a0c58c03c677d1ebfe",
+            "identical": true,
+            "max_abs": 0.0,
+            "reference_sha256": "9fe0cdc78b0f9e72e76110dbd5910dbd8324980f2a00f5a0c58c03c677d1ebfe"
+          },
+          "input_identical": true,
+          "noise_identical": true,
+          "pair_id": "b4d7f9bace6b72f603562676",
+          "suite": "robotwin50_easy",
+          "task": "adjust_bottle"
+        },
+        {
+          "action": {
+            "candidate_sha256": "c1f01635c3956e54bc08e29557ec84c542fb4bf10ed4445997a6d62ebeec0ae1",
+            "identical": true,
+            "max_abs": 0.0,
+            "reference_sha256": "c1f01635c3956e54bc08e29557ec84c542fb4bf10ed4445997a6d62ebeec0ae1"
+          },
+          "input_identical": true,
+          "noise_identical": true,
+          "pair_id": "00032ea07d95015d1a502127",
+          "suite": "robotwin50_easy",
+          "task": "beat_block_hammer"
+        },
+        {
+          "action": {
+            "candidate_sha256": "95d8400b34464b12622a03d290d73123b53fff1f12c2d9465ebf3938123dd219",
+            "identical": true,
+            "max_abs": 0.0,
+            "reference_sha256": "95d8400b34464b12622a03d290d73123b53fff1f12c2d9465ebf3938123dd219"
+          },
+          "input_identical": true,
+          "noise_identical": true,
+          "pair_id": "40ec17226dc84c667bcfab6f",
+          "suite": "robotwin50_hard",
+          "task": "adjust_bottle"
+        },
+        {
+          "action": {
+            "candidate_sha256": "88802f5de7e2fcc8a636e988e2f08a0472369fdda93f07da394a49630e47c546",
+            "identical": false,
+            "max_abs": 0.010167847387492657,
+            "reference_sha256": "c2d833e337f1e36d32dfa7bdc66373c7c382990de74ee1009a55608f08122ed0"
+          },
+          "input_identical": true,
+          "noise_identical": true,
+          "pair_id": "78489506fa83cb6c2e35bfa8",
+          "suite": "robotwin50_hard",
+          "task": "beat_block_hammer"
+        }
+      ],
+      "plan_id": "2ff9ef26c5a1f9df11bf3a21150adf4cc09e7fff21b235613aafff27d898dc46",
+      "report_sha256": "7aed282ed1df76e9032687c8f04e8b04b36bf06bd0250bdca9f5b50aa91891a2",
+      "settings": [
+        {
+          "complete": true,
+          "control_only_successes": 0,
+          "control_success_rate": 1.0,
+          "control_successes": 2,
+          "delta": 0.0,
+          "expected_pairs": 2,
+          "identical_action_pairs": 0,
+          "interval_assumption": "Matched Bernoulli episode pairs; task clustering is not modeled. Seeds on a fixed task are not new tasks.",
+          "missing_pair_ids": [],
+          "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "pairs": 2,
+          "per_task": {
+            "adjust_bottle": {
+              "control_successes": 1,
+              "pairs": 1,
+              "treatment_successes": 1
+            },
+            "beat_block_hammer": {
+              "control_successes": 1,
+              "pairs": 1,
+              "treatment_successes": 1
+            }
+          },
+          "quality_gate": false,
+          "scope": "Descriptive paired episodes on the selected fixed tasks; not a release verdict or generalization across unseen tasks.",
+          "suite_id": "robotwin50_easy",
+          "tango_central95": [
+            -0.6576197743415833,
+            0.6576197725371458
+          ],
+          "treatment_only_successes": 0,
+          "treatment_success_rate": 1.0,
+          "treatment_successes": 2
+        },
+        {
+          "complete": true,
+          "control_only_successes": 0,
+          "control_success_rate": 1.0,
+          "control_successes": 2,
+          "delta": 0.0,
+          "expected_pairs": 2,
+          "identical_action_pairs": 0,
+          "interval_assumption": "Matched Bernoulli episode pairs; task clustering is not modeled. Seeds on a fixed task are not new tasks.",
+          "missing_pair_ids": [],
+          "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "pairs": 2,
+          "per_task": {
+            "adjust_bottle": {
+              "control_successes": 1,
+              "pairs": 1,
+              "treatment_successes": 1
+            },
+            "beat_block_hammer": {
+              "control_successes": 1,
+              "pairs": 1,
+              "treatment_successes": 1
+            }
+          },
+          "quality_gate": false,
+          "scope": "Descriptive paired episodes on the selected fixed tasks; not a release verdict or generalization across unseen tasks.",
+          "suite_id": "robotwin50_hard",
+          "tango_central95": [
+            -0.6576197743415833,
+            0.6576197725371458
+          ],
+          "treatment_only_successes": 0,
+          "treatment_success_rate": 1.0,
+          "treatment_successes": 2
+        }
+      ],
+      "verification": {
+        "bundle": "/home/ubuntu/ifl_eval/next_steps_20260906/bb/evidence",
+        "bundle_sha256": "eb4654916160d32263a13d51e57a0b2966806ae3aba727919d789f801d59b35a",
+        "evidence": [
+          {
+            "arms": {
+              "candidate": {
+                "episodes": 2,
+                "successes": 2
+              },
+              "stock": {
+                "episodes": 2,
+                "successes": 2
+              }
+            },
+            "backbone": "lingbot_vla_v2",
+            "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+            "episodes": 4,
+            "plan_id": "2ff9ef26c5a1f9df11bf3a21150adf4cc09e7fff21b235613aafff27d898dc46",
+            "quality_reportable": false,
+            "revision": "0451855729ec904f970600e0aec8b84661423afe",
+            "run": "/home/ubuntu/ifl_eval/next_steps_20260906/bb/evidence",
+            "screening": true,
+            "suite": "robotwin50_easy"
+          },
+          {
+            "arms": {
+              "candidate": {
+                "episodes": 2,
+                "successes": 2
+              },
+              "stock": {
+                "episodes": 2,
+                "successes": 2
+              }
+            },
+            "backbone": "lingbot_vla_v2",
+            "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+            "episodes": 4,
+            "plan_id": "2ff9ef26c5a1f9df11bf3a21150adf4cc09e7fff21b235613aafff27d898dc46",
+            "quality_reportable": false,
+            "revision": "0451855729ec904f970600e0aec8b84661423afe",
+            "run": "/home/ubuntu/ifl_eval/next_steps_20260906/bb/evidence",
+            "screening": true,
+            "suite": "robotwin50_hard"
+          }
+        ],
+        "files": 103,
+        "valid": true
+      }
+    },
+    "new-checkpoint": {
+      "bundle": "/home/ubuntu/ifl_eval/next_steps_20260906/new-checkpoint/evidence",
+      "execution_pipeline_sha256": "23edddc817938a1d691abf1ffdb8d20d56b4107dbba00ae808f306aa8d3974ed",
+      "plan_id": "83d20a12ee6cc9294de5ffb1fdb23952a8463bd611542a773107ef46dc49de24",
+      "report_sha256": "169a560f21a694ebe72c902ddaadbebdbb282abc336b17593a302965cecbe617",
+      "settings": [
+        {
+          "complete": true,
+          "control_only_successes": 0,
+          "control_success_rate": 1.0,
+          "control_successes": 20,
+          "delta": 0.0,
+          "expected_pairs": 20,
+          "identical_action_pairs": 20,
+          "interval_assumption": "Matched Bernoulli episode pairs; task clustering is not modeled. Seeds on a fixed task are not new tasks.",
+          "missing_pair_ids": [],
+          "model_id": "nvidia/GR00T-N1.7-LIBERO",
+          "pairs": 20,
+          "per_task": {
+            "libero_spatial/0": {
+              "control_successes": 2,
+              "pairs": 2,
+              "treatment_successes": 2
+            },
+            "libero_spatial/1": {
+              "control_successes": 2,
+              "pairs": 2,
+              "treatment_successes": 2
+            },
+            "libero_spatial/2": {
+              "control_successes": 2,
+              "pairs": 2,
+              "treatment_successes": 2
+            },
+            "libero_spatial/3": {
+              "control_successes": 2,
+              "pairs": 2,
+              "treatment_successes": 2
+            },
+            "libero_spatial/4": {
+              "control_successes": 2,
+              "pairs": 2,
+              "treatment_successes": 2
+            },
+            "libero_spatial/5": {
+              "control_successes": 2,
+              "pairs": 2,
+              "treatment_successes": 2
+            },
+            "libero_spatial/6": {
+              "control_successes": 2,
+              "pairs": 2,
+              "treatment_successes": 2
+            },
+            "libero_spatial/7": {
+              "control_successes": 2,
+              "pairs": 2,
+              "treatment_successes": 2
+            },
+            "libero_spatial/8": {
+              "control_successes": 2,
+              "pairs": 2,
+              "treatment_successes": 2
+            },
+            "libero_spatial/9": {
+              "control_successes": 2,
+              "pairs": 2,
+              "treatment_successes": 2
+            }
+          },
+          "quality_gate": false,
+          "scope": "Descriptive paired episodes on the selected fixed tasks; not a release verdict or generalization across unseen tasks.",
+          "suite_id": "groot_libero_spatial",
+          "tango_central95": [
+            -0.16112515702843666,
+            0.1611251580179669
+          ],
+          "treatment_only_successes": 0,
+          "treatment_success_rate": 1.0,
+          "treatment_successes": 20
+        }
+      ],
+      "verification": {
+        "bundle": "/home/ubuntu/ifl_eval/next_steps_20260906/new-checkpoint/evidence",
+        "bundle_sha256": "570c51e66a150013b334ef35cf0455fb5147d20b23eed637994f79b22cf9303d",
+        "evidence": [
+          {
+            "arms": {
+              "candidate": {
+                "episodes": 20,
+                "successes": 20
+              },
+              "stock": {
+                "episodes": 20,
+                "successes": 20
+              }
+            },
+            "backbone": "groot_n17",
+            "checkpoint": "nvidia/GR00T-N1.7-LIBERO",
+            "checkpoint_subdir": "libero_spatial",
+            "episodes": 40,
+            "plan_id": "83d20a12ee6cc9294de5ffb1fdb23952a8463bd611542a773107ef46dc49de24",
+            "quality_reportable": false,
+            "revision": "2ea293aa20ba7cf5bbf3ba17a5fbcb1a01cbfe21",
+            "run": "/home/ubuntu/ifl_eval/next_steps_20260906/new-checkpoint/evidence",
+            "screening": true,
+            "suite": "groot_libero_spatial"
+          }
+        ],
+        "files": 127,
+        "valid": true
+      }
+    }
+  },
+  "fixed_input": {
+    "runtime_default": {
+      "all_noise_identical": true,
+      "calls_per_repeat": 12,
+      "file_sha256": "bb7e822fac97125a4437dbb3194dff348fd8c5d2f11d9b716d5d1dc89539c214",
+      "identical_recorded_comparisons": 16,
+      "identical_repeat_comparisons": 6,
+      "max_abs_against_first_repeat": 0.010167847387492657,
+      "max_abs_against_recorded": 0.010167847387492657,
+      "path": "/home/ubuntu/ifl_eval/next_steps_20260906/runtime_default.fixed-input.json",
+      "recorded_comparisons": 36,
+      "repeat_comparisons": 24,
+      "repeats": 3
+    },
+    "stock": {
+      "all_noise_identical": true,
+      "calls_per_repeat": 12,
+      "file_sha256": "73cc32b60bd84f1376a07829ce3b5d8c549635ed516b8913f962149d59427340",
+      "identical_recorded_comparisons": 20,
+      "identical_repeat_comparisons": 13,
+      "max_abs_against_first_repeat": 0.011467218399047852,
+      "max_abs_against_recorded": 0.011467218399047852,
+      "path": "/home/ubuntu/ifl_eval/next_steps_20260906/stock.fixed-input.json",
+      "recorded_comparisons": 36,
+      "repeat_comparisons": 24,
+      "repeats": 3
+    }
+  },
+  "fixed_input_cross_arm": {
+    "comparisons": 36,
+    "identical": 15,
+    "max_abs": 0.013100359588861465,
+    "rows": [
+      {
+        "call": 1,
+        "candidate_sha256": "77b1d4b3bb59feb3c65bbb889a335ef414cdff383308fe31e942a0fffa0f8a42",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "7ce7d31734151bc5af1924ec85ae2716c6a7a540e13d1790bec2235d92dbe401",
+        "repeat": 0,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.9c444ed716438de9a13f26c2.pending.trace"
+      },
+      {
+        "call": 2,
+        "candidate_sha256": "7731411722aad268e2490332a7662cef412677b23f6636f740c97888877e3a8b",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "7731411722aad268e2490332a7662cef412677b23f6636f740c97888877e3a8b",
+        "repeat": 0,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.9c444ed716438de9a13f26c2.pending.trace"
+      },
+      {
+        "call": 3,
+        "candidate_sha256": "fc95af5ee0762cc7d07dd535b4cc44643a4c2342b94373291b7ac523f48ed28a",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "b36df1238dd8794aec1f514eaabb9fde5509b0662f4f5e1a3cf9c1b03a2bdc3f",
+        "repeat": 0,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.9c444ed716438de9a13f26c2.pending.trace"
+      },
+      {
+        "call": 1,
+        "candidate_sha256": "c1f01635c3956e54bc08e29557ec84c542fb4bf10ed4445997a6d62ebeec0ae1",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "c1f01635c3956e54bc08e29557ec84c542fb4bf10ed4445997a6d62ebeec0ae1",
+        "repeat": 0,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.8ed3ffb73eca4a20f472a4dc.pending.trace"
+      },
+      {
+        "call": 2,
+        "candidate_sha256": "c455087a7cd485c144172d6634e4ab01a68ca1ab084badb362eb246e934143f8",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "8265dc1ce0d74e23700ab51ee570f1bbae2e35071776e3c7ca01b97671253f72",
+        "repeat": 0,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.8ed3ffb73eca4a20f472a4dc.pending.trace"
+      },
+      {
+        "call": 3,
+        "candidate_sha256": "1e922110aa3e3e351d6fffea6544ffbf97354ff8d4b4fbffd251d34b4a6362df",
+        "identical": false,
+        "max_abs": 0.010167847271077335,
+        "reference_sha256": "e705ee6f450128bf5088f7e35212b2b321a51245bb04ac593eb5329d255b5378",
+        "repeat": 0,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.8ed3ffb73eca4a20f472a4dc.pending.trace"
+      },
+      {
+        "call": 1,
+        "candidate_sha256": "95d8400b34464b12622a03d290d73123b53fff1f12c2d9465ebf3938123dd219",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "95d8400b34464b12622a03d290d73123b53fff1f12c2d9465ebf3938123dd219",
+        "repeat": 0,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.a94a6e16171e429c00e481b6.pending.trace"
+      },
+      {
+        "call": 2,
+        "candidate_sha256": "c5f421a96beffcb359374bfe4f952b31304ac961d9da22cd2d1a1bb017f02afa",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "c5f421a96beffcb359374bfe4f952b31304ac961d9da22cd2d1a1bb017f02afa",
+        "repeat": 0,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.a94a6e16171e429c00e481b6.pending.trace"
+      },
+      {
+        "call": 3,
+        "candidate_sha256": "5d3ab6eb9246bb73f7aad9d29f0a87a9b6b41e8e4f2d067682140ba2e9f90f94",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "46e65495e7907381a496396f511f1bc25d07596463e715b21900d8957d107527",
+        "repeat": 0,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.a94a6e16171e429c00e481b6.pending.trace"
+      },
+      {
+        "call": 1,
+        "candidate_sha256": "88802f5de7e2fcc8a636e988e2f08a0472369fdda93f07da394a49630e47c546",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "c2d833e337f1e36d32dfa7bdc66373c7c382990de74ee1009a55608f08122ed0",
+        "repeat": 0,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.850a51313baa50efcc0a9f49.pending.trace"
+      },
+      {
+        "call": 2,
+        "candidate_sha256": "fea6cd76fbe26da0e249011b5376607eb735f728dcc26acd6e9821e21f872826",
+        "identical": false,
+        "max_abs": 0.011467218399047852,
+        "reference_sha256": "44e548d03adbc22dc03056942c0a4e25f38037cbc0c1516dae5f689a7b2c6303",
+        "repeat": 0,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.850a51313baa50efcc0a9f49.pending.trace"
+      },
+      {
+        "call": 3,
+        "candidate_sha256": "52c9f93a15c43af37c6189e0d192f4dc507b2cc1307fdfa8d487d7b0d274198b",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "52c9f93a15c43af37c6189e0d192f4dc507b2cc1307fdfa8d487d7b0d274198b",
+        "repeat": 0,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.850a51313baa50efcc0a9f49.pending.trace"
+      },
+      {
+        "call": 1,
+        "candidate_sha256": "8103ea646fa826aa32d92fb3faca565be14d60c75168bb86bdc24193c2ad10e8",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "9fe0cdc78b0f9e72e76110dbd5910dbd8324980f2a00f5a0c58c03c677d1ebfe",
+        "repeat": 1,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.9c444ed716438de9a13f26c2.pending.trace"
+      },
+      {
+        "call": 2,
+        "candidate_sha256": "87c4727b5340f5fed52db6abb68131a91a1a1a3cc4f4b158247e8d01f73b1bc5",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "7731411722aad268e2490332a7662cef412677b23f6636f740c97888877e3a8b",
+        "repeat": 1,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.9c444ed716438de9a13f26c2.pending.trace"
+      },
+      {
+        "call": 3,
+        "candidate_sha256": "77f925c9c1dd1eaca798d081c6d288bedcffc9339b0baf0ab2a8187db5f40117",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "44996fe4d40602e7f1cd0179042ca8052ad1865a3c91e4f64ff4843b8a6d2a35",
+        "repeat": 1,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.9c444ed716438de9a13f26c2.pending.trace"
+      },
+      {
+        "call": 1,
+        "candidate_sha256": "c1f01635c3956e54bc08e29557ec84c542fb4bf10ed4445997a6d62ebeec0ae1",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "c1f01635c3956e54bc08e29557ec84c542fb4bf10ed4445997a6d62ebeec0ae1",
+        "repeat": 1,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.8ed3ffb73eca4a20f472a4dc.pending.trace"
+      },
+      {
+        "call": 2,
+        "candidate_sha256": "8265dc1ce0d74e23700ab51ee570f1bbae2e35071776e3c7ca01b97671253f72",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "8265dc1ce0d74e23700ab51ee570f1bbae2e35071776e3c7ca01b97671253f72",
+        "repeat": 1,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.8ed3ffb73eca4a20f472a4dc.pending.trace"
+      },
+      {
+        "call": 3,
+        "candidate_sha256": "dd83c547d0d3740e1226ea9bcc665d23e9adf3266ac283a6b08ab6921b026958",
+        "identical": false,
+        "max_abs": 0.010167847271077335,
+        "reference_sha256": "e705ee6f450128bf5088f7e35212b2b321a51245bb04ac593eb5329d255b5378",
+        "repeat": 1,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.8ed3ffb73eca4a20f472a4dc.pending.trace"
+      },
+      {
+        "call": 1,
+        "candidate_sha256": "95d8400b34464b12622a03d290d73123b53fff1f12c2d9465ebf3938123dd219",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "95d8400b34464b12622a03d290d73123b53fff1f12c2d9465ebf3938123dd219",
+        "repeat": 1,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.a94a6e16171e429c00e481b6.pending.trace"
+      },
+      {
+        "call": 2,
+        "candidate_sha256": "9c312028310c36f92bf7fb0c87a1f92133c166f3cb6fc34e1a7321f6bcd33cba",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "c5f421a96beffcb359374bfe4f952b31304ac961d9da22cd2d1a1bb017f02afa",
+        "repeat": 1,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.a94a6e16171e429c00e481b6.pending.trace"
+      },
+      {
+        "call": 3,
+        "candidate_sha256": "23f2069b8dd5e290eee30bc7c5fc21a6403dcd9caa733cb763e80f1a5252c0f6",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "46e65495e7907381a496396f511f1bc25d07596463e715b21900d8957d107527",
+        "repeat": 1,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.a94a6e16171e429c00e481b6.pending.trace"
+      },
+      {
+        "call": 1,
+        "candidate_sha256": "c2d833e337f1e36d32dfa7bdc66373c7c382990de74ee1009a55608f08122ed0",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "88802f5de7e2fcc8a636e988e2f08a0472369fdda93f07da394a49630e47c546",
+        "repeat": 1,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.850a51313baa50efcc0a9f49.pending.trace"
+      },
+      {
+        "call": 2,
+        "candidate_sha256": "7d77c46091a9c2054a6ee70b0bcfa42c4d29b8aa31a0a188ec62151c46811ef0",
+        "identical": false,
+        "max_abs": 0.010167847271077335,
+        "reference_sha256": "fea6cd76fbe26da0e249011b5376607eb735f728dcc26acd6e9821e21f872826",
+        "repeat": 1,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.850a51313baa50efcc0a9f49.pending.trace"
+      },
+      {
+        "call": 3,
+        "candidate_sha256": "0c36a7689762b71a12acdca74cb67ba2ed056ed5fef06df0805b544951d6f74a",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "378a402a31d492ce23875461ba0417e7a4456f3eb8c5a579ee54668d56bf4510",
+        "repeat": 1,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.850a51313baa50efcc0a9f49.pending.trace"
+      },
+      {
+        "call": 1,
+        "candidate_sha256": "6d963b16f7835636fb02034a628ffa0b713832dd17c7d5caa9709cff291fdd86",
+        "identical": false,
+        "max_abs": 0.013100359588861465,
+        "reference_sha256": "01e005f5655c738aa2e0272238d2e44beb29fd94784ef7cae84e389ff4c26442",
+        "repeat": 2,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.9c444ed716438de9a13f26c2.pending.trace"
+      },
+      {
+        "call": 2,
+        "candidate_sha256": "6d4d0ba2020708a31efdec390a679d418e4f34a22de87913d991c8f21134190a",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "6d4d0ba2020708a31efdec390a679d418e4f34a22de87913d991c8f21134190a",
+        "repeat": 2,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.9c444ed716438de9a13f26c2.pending.trace"
+      },
+      {
+        "call": 3,
+        "candidate_sha256": "b36df1238dd8794aec1f514eaabb9fde5509b0662f4f5e1a3cf9c1b03a2bdc3f",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "b36df1238dd8794aec1f514eaabb9fde5509b0662f4f5e1a3cf9c1b03a2bdc3f",
+        "repeat": 2,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.9c444ed716438de9a13f26c2.pending.trace"
+      },
+      {
+        "call": 1,
+        "candidate_sha256": "c1f01635c3956e54bc08e29557ec84c542fb4bf10ed4445997a6d62ebeec0ae1",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "c1f01635c3956e54bc08e29557ec84c542fb4bf10ed4445997a6d62ebeec0ae1",
+        "repeat": 2,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.8ed3ffb73eca4a20f472a4dc.pending.trace"
+      },
+      {
+        "call": 2,
+        "candidate_sha256": "8265dc1ce0d74e23700ab51ee570f1bbae2e35071776e3c7ca01b97671253f72",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "8265dc1ce0d74e23700ab51ee570f1bbae2e35071776e3c7ca01b97671253f72",
+        "repeat": 2,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.8ed3ffb73eca4a20f472a4dc.pending.trace"
+      },
+      {
+        "call": 3,
+        "candidate_sha256": "e705ee6f450128bf5088f7e35212b2b321a51245bb04ac593eb5329d255b5378",
+        "identical": false,
+        "max_abs": 0.010167847271077335,
+        "reference_sha256": "96cf4b01a5945b301ec5f5b1c72fe0d95109e7573bd4f44ba02056961f41575f",
+        "repeat": 2,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.8ed3ffb73eca4a20f472a4dc.pending.trace"
+      },
+      {
+        "call": 1,
+        "candidate_sha256": "95d8400b34464b12622a03d290d73123b53fff1f12c2d9465ebf3938123dd219",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "95d8400b34464b12622a03d290d73123b53fff1f12c2d9465ebf3938123dd219",
+        "repeat": 2,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.a94a6e16171e429c00e481b6.pending.trace"
+      },
+      {
+        "call": 2,
+        "candidate_sha256": "9c312028310c36f92bf7fb0c87a1f92133c166f3cb6fc34e1a7321f6bcd33cba",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "c5f421a96beffcb359374bfe4f952b31304ac961d9da22cd2d1a1bb017f02afa",
+        "repeat": 2,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.a94a6e16171e429c00e481b6.pending.trace"
+      },
+      {
+        "call": 3,
+        "candidate_sha256": "46e65495e7907381a496396f511f1bc25d07596463e715b21900d8957d107527",
+        "identical": false,
+        "max_abs": 0.010167847387492657,
+        "reference_sha256": "8d3c9332f5d9773b53c515fdb7e783fc22a38f72a148e675429d8772604e8e0f",
+        "repeat": 2,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.a94a6e16171e429c00e481b6.pending.trace"
+      },
+      {
+        "call": 1,
+        "candidate_sha256": "c2d833e337f1e36d32dfa7bdc66373c7c382990de74ee1009a55608f08122ed0",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "c2d833e337f1e36d32dfa7bdc66373c7c382990de74ee1009a55608f08122ed0",
+        "repeat": 2,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.850a51313baa50efcc0a9f49.pending.trace"
+      },
+      {
+        "call": 2,
+        "candidate_sha256": "fea6cd76fbe26da0e249011b5376607eb735f728dcc26acd6e9821e21f872826",
+        "identical": true,
+        "max_abs": 0.0,
+        "reference_sha256": "fea6cd76fbe26da0e249011b5376607eb735f728dcc26acd6e9821e21f872826",
+        "repeat": 2,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.850a51313baa50efcc0a9f49.pending.trace"
+      },
+      {
+        "call": 3,
+        "candidate_sha256": "52c9f93a15c43af37c6189e0d192f4dc507b2cc1307fdfa8d487d7b0d274198b",
+        "identical": false,
+        "max_abs": 0.010242462158203125,
+        "reference_sha256": "d7d11dfff020b9867ca83721c8be97a881b97f7b1eeae55f96c8fac853370cd7",
+        "repeat": 2,
+        "trace": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/run/results/.850a51313baa50efcc0a9f49.pending.trace"
+      }
+    ]
+  },
+  "schema_version": 1,
+  "scope": "Attribution screening and distinct native checkpoint validation; not release certification",
+  "synthetic": false
+}

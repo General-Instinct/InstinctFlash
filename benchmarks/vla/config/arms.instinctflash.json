@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "control_arm": "stock",
+  "arms": [
+    {
+      "id": "stock",
+      "role": "control",
+      "driver": {
+        "command": ["${IFL_BENCH_FAMILY_PYTHON}", "${IFL_BENCH_IFL_DRIVER}"],
+        "revision": "${IFL_BENCH_DRIVER_REVISION}",
+        "environment": {"IFL_BENCH_EXECUTION": "stock_upstream"},
+        "timeout_seconds": 3600
+      },
+      "operating_point": {"name": "stock_upstream", "tier": "BITEXACT"}
+    },
+    {
+      "id": "runtime_default",
+      "role": "treatment",
+      "driver": {
+        "command": ["${IFL_BENCH_FAMILY_PYTHON}", "${IFL_BENCH_IFL_DRIVER}"],
+        "revision": "${IFL_BENCH_DRIVER_REVISION}",
+        "environment": {"IFL_BENCH_EXECUTION": "runtime_default"},
+        "timeout_seconds": 3600
+      },
+      "operating_point": {"name": "runtime_default", "tier": "NUMERIC"},
+      "gates": {
+        "performance": {"min_speedup": 1.2},
+        "action": {"mode": "registry"},
+        "success": {"margin": -0.05, "interval": "tango_one_sided95", "min_pairs": 50}
+      }
+    }
+  ]
+}

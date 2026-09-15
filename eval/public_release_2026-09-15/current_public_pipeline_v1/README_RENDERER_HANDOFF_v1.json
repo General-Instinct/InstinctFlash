@@ -1,0 +1,61 @@
+{
+  "README_modified": false,
+  "accepted_summary": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v4/summary.json",
+  "actual_fragment_created": false,
+  "actual_summary_read": false,
+  "created_utc": "2026-09-15T06:28:34.132289+00:00",
+  "expected_summary_sha256": "Required from the completed actual V4 assembly; no placeholder value accepted.",
+  "future_command": [
+    "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+    "-I",
+    "-B",
+    "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/render_readme_v1.py",
+    "--summary",
+    "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v4/summary.json",
+    "--summary-sha256",
+    "ACTUAL_COMPLETED_SUMMARY_SHA256",
+    "--output",
+    "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/readme_candidate_v1"
+  ],
+  "future_outputs": [
+    "candidate.md",
+    "binding.json"
+  ],
+  "independent_source_review": "Requested from thor_quality_worker; result may be recorded additively.",
+  "native_or_remote_actions": false,
+  "owner": "Root reviews final prose and applies README; formatter has no Git/publication operation.",
+  "publication_performed": false,
+  "requirements": [
+    "Exact source/contract/baseline bindings; completed8main+6foreign,9rows,passed source/paired/WS gates.",
+    "Fixed published cell mapping: DreamZero dynamic-fp8; four paired controls retained, VA LeRobot only2V4A subrow.",
+    "P50 values cross-checked inside summary against paired/foreign rows; finite positive values and full Cosmos UniPC4/CFG3.",
+    "Speedups divide unrounded selected and native p50;2V4A uses explicitly labeled full25V50A native reference.",
+    "Native PyTorch column has no global eager label; DreamZero encoder compilation and dynamic cache disclosed.",
+    "Candidate links current evidence and discloses protocol differences, historical drift/failed attempts and separate task scope."
+  ],
+  "schema": "instinctflash.readme_renderer_handoff.v1",
+  "sources": {
+    "render_readme_v1.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/render_readme_v1.py",
+      "sha256": "b7ce9de829c44b7274ea9575af6745717eae2013e1f7b8273a4f66fea8e73bf8"
+    },
+    "test_render_readme_v1.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/test_render_readme_v1.py",
+      "sha256": "550f3a4a7f69fa8fe7dd6ab0b2ffb61155ad970d454237ff92608dade3f16a11"
+    }
+  },
+  "status": "prospective_formatter_CPU_checked_no_actual_render",
+  "validation": {
+    "Ruff": "passed",
+    "command": [
+      "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/test_render_readme_v1.py"
+    ],
+    "result": "passed",
+    "scope": "Only synthetic representative summaries rendered in memory; no current table or pending native value rendered.",
+    "synthetic_CPU_cases": 9
+  }
+}

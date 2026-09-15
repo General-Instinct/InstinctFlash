@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "report_sha256": "2a0a5e8f85b7d5b1362d1a98b4c2ef910678e80582b43ac6768ee0ec2ad8046c",
+  "provenance_report_sha256": "3457e775b14927a0659d253d41ac7185419a99e2ae5dda153860dd881a5f995b",
+  "validator_sha256": "b33425fd33ba4adef3d1b7d6a9cc4ed0afb32658f3e05af23ee3ae0df49ba031",
+  "gates": {
+    "vla4-runtime_update": {
+      "status": "passed",
+      "exact_action_bytes": true,
+      "action_shape": [
+        25,
+        25,
+        14
+      ],
+      "action_dtype": "float32",
+      "graph_stats": {
+        "captured": true,
+        "replays": 25,
+        "full_graph": false,
+        "prefix_replays": 0,
+        "chunk_replays": 0,
+        "gpu_preprocess": true,
+        "gpu_preprocess_passed": true,
+        "gpu_preprocess_checks": 6,
+        "gpu_preprocess_max_abs_delta": 0.0,
+        "vision_graph": true,
+        "vision_self_check": {
+          "passed": true,
+          "comparisons": 3,
+          "max_abs_delta": 0.0
+        },
+        "language_action_graph": true,
+        "prompt_updates": 25,
+        "prompt_buffer_reuses": 24,
+        "prompt_graph_captures": 1
+      },
+      "loaded_frontend_sha256": [
+        "80b3754702892878075e646c9712c62da14c5a9055c124cf29fa6c279e2ee574"
+      ],
+      "errors": [],
+      "task_quality_validated": false,
+      "scope": "Same FP8 execution, requests and calibration; setup reuse only; no native/FP8 quality equivalence",
+      "receipt_sha256": "ee6def4cf35a9808eaa5ae3841d8f7d0b5474df0624c65469a0d9187201d8846",
+      "baseline_receipt_sha256": "00a3e0e9ffa025a2e5d6442c10d0252eb68cf9c2deab95688bb3d73fc009581b"
+    },
+    "vla2-runtime_update": {
+      "status": "passed",
+      "exact_action_bytes": true,
+      "action_shape": [
+        25,
+        50,
+        14
+      ],
+      "action_dtype": "float32",
+      "graph_stats": {
+        "captured": true,
+        "replays": 25,
+        "vision_graph": true,
+        "vision_self_check": {
+          "passed": true,
+          "comparisons": 12,
+          "max_abs_delta": 0.0
+        },
+        "language_action_graph": true,
+        "language_action_captures": 1,
+        "language_action_prompt_reuses": 24,
+        "expert_calibrations": 25,
+        "prompt_updates": 25,
+        "prompt_buffer_reuses": 24
+      },
+      "loaded_frontend_sha256": [
+        "e6a4dfd9e96449237028c838b471eec0ac536367065c540ea6e3079c035ec1db"
+      ],
+      "errors": [],
+      "task_quality_validated": false,
+      "scope": "Same FP8 execution, requests and calibration; setup reuse only; no native/FP8 quality equivalence",
+      "receipt_sha256": "5be742f02791d629284860e9a8bd2c84a0123c65e8481d011b11d369bcd45139",
+      "baseline_receipt_sha256": "df40e9567097062a3a50d9e39d12a31f4a5478a97327abfc107ca750fc77b77a"
+    },
+    "vla2-runtime_numeric": {
+      "status": "passed",
+      "receipt_sha256": "213441dbdf08872ad942c05c5d6f83eeab8e2021f737b9563b0076872eee19ae",
+      "graph_stats": {
+        "captured": true,
+        "replays": 238,
+        "cuda_kernels": false,
+        "moe_layers": 0,
+        "rmsnorm_modules": 0,
+        "gpu_image_preprocess": true,
+        "vision_graph": true,
+        "vision_replays": 22,
+        "prefill_graph": true,
+        "prefill_replays": 22,
+        "ptxas": {
+          "TRITON_PTXAS_PATH": "/usr/local/cuda/bin/ptxas",
+          "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda/bin/ptxas"
+        }
+      },
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "scope": "Existing native NUMERIC capture active on paired requests; numerical SCREEN only",
+      "task_quality_validated": false
+    }
+  },
+  "task_quality_validated": false
+}

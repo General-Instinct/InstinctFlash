@@ -39,7 +39,7 @@ start_servers() {   # start_servers <video> <action>
         --nproc_per_node 1 --master_port $((29840+i)) \
         /home/ubuntu/InstinctFlash/eval/lingbot_va_robotwin/serve_variant.py --config-name robotwin \
         --port $((29056+i)) --save_root /home/ubuntu/iwm_vis/sweep \
-        --no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout \
+        --no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout --action-terminal-elision \
         --degrade-nfe "$v,$a" > "$IFL_LOG_DIR/sweep_srv_$((29056+i)).log" 2>&1 & )
   done
   local tries=0

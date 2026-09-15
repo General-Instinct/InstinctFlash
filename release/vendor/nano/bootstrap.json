@@ -1,0 +1,87 @@
+{
+  "adapter_directory": "examples/cosmos3_policy",
+  "audited_pure_python_sdists": {
+    "antlr4-python3-runtime": {
+      "bytes": 117034,
+      "scope": "Official PyPI source inspected: setuptools packages/bin pygrun only; no extensions, compiler calls, CUDA source or runtime imports in setup.py.",
+      "url": "https://files.pythonhosted.org/packages/3e/38/7859ff46355f76f8d19459005ca000b6e7012f2f1ca597746cbcd1fbfe5e/antlr4-python3-runtime-4.9.3.tar.gz#sha256=f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b",
+      "version": "4.9.3"
+    },
+    "iopath": {
+      "bytes": 42226,
+      "scope": "Official PyPI setup.py + version.py inspected; setuptools Python package only, no extensions/compiler/GPU path.",
+      "url": "https://files.pythonhosted.org/packages/72/73/b3d451dfc523756cf177d3ebb0af76dc7751b341c60e2a21871be400ae29/iopath-0.1.10.tar.gz#sha256=3311c16a4d9137223e20f141655759933e1eda24f8bff166af834af3c645ef01",
+      "version": "0.1.10"
+    }
+  },
+  "compiler_wheel_origin": {
+    "bytes": 176135525,
+    "distribution": "triton",
+    "installation_scope": "Install this complete official cp313 aarch64 wheel. The same-version PyPI build has different compiler libraries; do not swap individual native files.",
+    "qualification_scope": "Source-origin pin and CPU command checks only; numerical impact and fresh installation remain separate gates.",
+    "sha256": "58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09",
+    "upstream_source": "Cosmos pyproject.toml tool.uv.sources.triton selects the pytorch index.",
+    "url": "https://download.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl",
+    "version": "3.6.0"
+  },
+  "constraints": {
+    "path": "nano/constraints.txt",
+    "sha256": "c19a61c904c304b17c8430782c97994bf68ad2e8529885f8bb7925cc6c4a0c32"
+  },
+  "explicit_exclusions": [
+    "Training, hardware robot drivers, visualization UI, vendor TensorRT builders, CUDA source compilation are not installed by this inference-only bootstrap.",
+    "FlashAttention/native acceleration remains a separately built and qualified dependency where selected.",
+    "openpi-client/openpi-server are required only by the upstream standalone websocket main(); InstinctFlash uses its own public websocket server and calls the native policy class directly. They are not imported by that policy module at import time."
+  ],
+  "family": "nano",
+  "mandatory_native_host_imports": {
+    "boto3": "1.43.80",
+    "pandas": "3.0.5"
+  },
+  "native_tool": {
+    "path": "cosmos/hf_tool.json",
+    "scope": "Fresh isolated hf1.16.4 closure of23 pinned packages, native uvx unchanged, offline runtime reuse; model weights are prepared separately.",
+    "sha256": "7f12f1e464690b79cd9a1822e16ec23b337be4e7e585afd7e6ce7adc662c100c"
+  },
+  "packaging_patch": {
+    "after": {
+      "pyproject.toml": "c9d17f48939131bfc4fe4c9984569df925825854a550a17f86e3b2e12bb5efb4"
+    },
+    "before": {
+      "pyproject.toml": "f9a476ddb1b66366ad046d93c5a9286b9be1d62caa1f38b2f8a33dfbbbce2d34"
+    },
+    "path": "cosmos/inference_packaging.patch",
+    "scope": "Packaging metadata only. Explicit inference dependencies replace training/UI/native-build requirements and incompatible historical Torch pins. Runtime source files are unchanged; actual inference remains an independent gate.",
+    "sha256": "f2384b6829b0e1df1067043064859c922df4886afcbad367a2ce35a52db309d0"
+  },
+  "public_wheel_overrides": {
+    "natten": "https://github.com/nvidia-cosmos/cosmos-dependencies/releases/download/v1.5.0/natten-0.21.6.dev6%2Bcu130.torch210.gb300-cp313-cp313-linux_aarch64.whl#sha256=cd63a31be0ea73c3f5d8bded442508e02a74fc9827f56f92b89314498a2fde9b",
+    "torch": "https://download-r2.pytorch.org/whl/cu130/torch-2.10.0%2Bcu130-cp313-cp313-manylinux_2_28_aarch64.whl#sha256=75780283308df9fede371eeda01e9607c8862a1803a2f2f31a08a2c0deaed342",
+    "torchcodec": "https://download.pytorch.org/whl/cu130/torchcodec-0.10.0%2Bcu130-cp313-cp313-manylinux_2_28_aarch64.whl#sha256=dd980acc3b97d0033f45979c8b8fe10622db834f8c2a383c10f99ac668d99840",
+    "torchvision": "https://download-r2.pytorch.org/whl/cu130/torchvision-0.25.0%2Bcu130-cp313-cp313-manylinux_2_28_aarch64.whl#sha256=f915e3fbd381602003cc3fe5d4a52b10820765f1fb6ba63722f25055ffd9640c",
+    "triton": "https://download.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl#sha256=58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09"
+  },
+  "qualification": {
+    "GPU_verified": false,
+    "evidence": "release/vendor/qualification.json",
+    "prior_recipe_status": "fresh_package_checks_passed",
+    "status": "compiler_wheel_origin_corrected_installation_pending",
+    "task_quality_certified": false
+  },
+  "requirements": {
+    "path": "nano/inference_requirements.txt",
+    "sha256": "b496c347752b7654ec3f949c8681f2c76e46992167277b9ef0a74c1dcd6eab9f",
+    "unconstrained_direct_packages": [
+      "pip"
+    ]
+  },
+  "root_env": null,
+  "schema": "instinctflash.vendor_bootstrap.v1",
+  "source_manifest": "cosmos/source.json",
+  "target": {
+    "machine": "aarch64",
+    "python_minor": "3.13",
+    "system": "Linux"
+  },
+  "wheel_metadata_repair": "nvidia-cusparselt-cu13-0.8.0-aarch64"
+}

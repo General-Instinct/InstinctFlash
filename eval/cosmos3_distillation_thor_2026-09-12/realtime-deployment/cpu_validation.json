@@ -1,0 +1,39 @@
+{
+  "scope": "CPU native sampler with tiny model fixture, not deployed model or task quality",
+  "tests_passed": 14,
+  "cuda_visible_devices": "",
+  "native_complete_grids": [
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      0.5,
+      0
+    ],
+    [
+      1,
+      0.75,
+      0.5,
+      0.25,
+      0
+    ]
+  ],
+  "literal_guidance": [
+    1,
+    4
+  ],
+  "endpoint_comparison": "torch.equal against producer rollout_deployment for each complete grid and guidance",
+  "source_sha256": {
+    "/home/ubuntu/InstinctFlash/eval/cosmos3_distillation_thor_2026-09-12/realtime-deployment/realtime_adapter.py": "dc82a0eedf8360aa91aa94153828a6e0f7b1721f82055994039f194e32ac2c48",
+    "/home/ubuntu/InstinctFlash/eval/cosmos3_distillation_thor_2026-09-12/realtime-deployment/test_realtime_adapter.py": "4483d38c7046daf267bf79f857b9ab5058bb33779c2a43fff8e1e881bf1dbf43",
+    "/home/ubuntu/InstinctCompress/instinct_compress/flash/cosmos3.py": "0a9b26fc0de02cab788de09d943a786e8c57d75b05bfee6e77715cbc3279eeb7",
+    "/home/ubuntu/InstinctCompress/instinct_compress/flash/cosmos3_action_padding.py": "bf96e731942c6aa338952a595f0277323d202a0232ee8b15dd405afa496a4a27",
+    "/home/ubuntu/InstinctCompress/instinct_compress/models/cosmos3_action_padding.py": "084fcf2fb2b2c9b52f18f01a90eb057797df65781f6bd3a2ebae84fad576eeee",
+    "/home/ubuntu/InstinctCompress/instinct_compress/models/cosmos3_realtime_rollout_v16.py": "13f609e0e22c254c54cd9a3dd2c2a9a3aa938ec14e7b765cc30976224fb1a14a",
+    "/home/ubuntu/InstinctCompress/tests/test_cosmos3_action_padding.py": "0332334ef44892c9934c3d2223d3e856c042f13f57cf5f1fc6bf707867a82a99",
+    "/home/ubuntu/InstinctCompress/tests/test_cosmos3_native_dmd2.py": "399c4fe4c82d4368332cebdd6ae11819ed4a196b3b233bac41709c67fe8c5fd6",
+    "/home/ubuntu/cosmos-framework/cosmos_framework/model/generator/diffusion/samplers/fixed_step.py": "9cde014addbc88e15cbe844877948e6f826d7d6d25c134fe5a03a1c044c83e68"
+  }
+}

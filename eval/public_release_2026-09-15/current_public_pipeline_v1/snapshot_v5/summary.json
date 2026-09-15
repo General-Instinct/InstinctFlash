@@ -1,0 +1,4332 @@
+{
+  "DreamZero_compiler_activation": {
+    "CPU_probe": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/dreamzero_ptxas_v1/completion.json",
+      "sha256": "4dc9f27dea66673b241f7d3fb2283be029f4c1ab40c2b2f40d6dfbe3260c55c0"
+    },
+    "applied_environment": {
+      "TORCHINDUCTOR_CACHE_DIR": "/dev/shm/ifl_public_dreamzero_compile_v6/inductor",
+      "TORCHINDUCTOR_COMPILE_THREADS": "1",
+      "TRITON_CACHE_DIR": "/dev/shm/ifl_public_dreamzero_compile_v6/triton",
+      "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+      "TRITON_PTXAS_PATH": "/usr/local/cuda-13.2/bin/ptxas"
+    },
+    "cache_scope": "One owned V6 compiler-cache namespace is shared serially by the normal paired arms and later WS process. This is not a per-arm cold-compiler measurement; no action/precision/schedule/acceptance rule changes.",
+    "preserved_V5_failure": {
+      "files": {
+        "cells/dreamzero-eager_native/native_loaded_values.json": {
+          "bytes": 495274,
+          "sha256": "97d11e928f608c26c59d04b95d3cef73b9e53770de5558c4c01621e4f410bc8e"
+        },
+        "inputs/recorded_inputs_v1.npz": {
+          "bytes": 1312979,
+          "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+        },
+        "logs/dreamzero-eager_native.log": {
+          "bytes": 49030,
+          "sha256": "37b76112c0255d71ca2ce76fba1d9d7a4a83faeedbf80179df1db8b8306015b7"
+        },
+        "matrix.json": {
+          "bytes": 5365,
+          "sha256": "b660ddc3377cfb0518be4eda572faea02e2e9259b447351ec9ea4ae514a64a52"
+        },
+        "plan.json": {
+          "bytes": 7999,
+          "sha256": "dd05cff0bde6cf7dbd4ee944332f91c7c825ded127defdd3c319c11ef09b2904"
+        },
+        "preparation.json": {
+          "bytes": 1244,
+          "sha256": "de28c29c49106d77c63157b26d0cf940def1f27467b2181f7d4eb8edaddbc230"
+        },
+        "profiles.json": {
+          "bytes": 41271,
+          "sha256": "82f0165c0365b2abf66b53cb8c9855d4ee8f670f41f7d17b04236a73a4ea5cf6"
+        },
+        "run.json": {
+          "bytes": 1265,
+          "sha256": "e39d786095bbdbb781740a5d605ed48e5269ba8be73d0b0f15f23d2d71b37115"
+        },
+        "validated_report/report.csv": {
+          "bytes": 1457,
+          "sha256": "56d7e65345b08c9a451bfd682ca9837ca446d7a3d765fa0ba243d7cb59604bc8"
+        },
+        "validated_report/report.json": {
+          "bytes": 2790,
+          "sha256": "a3ac6251566200c323efe0cc4e8b1ccd8c67494333f88f66982ca3240e489d65"
+        }
+      },
+      "root": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/failed_run_v5"
+    },
+    "ptxas_sha256": "623241c41030050ea9a43130ec03322166ea2822f9c091ec5bd2bed135b2864e",
+    "queue_completion": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/dreamzero_paired_serving_queue_v6/completion.json",
+      "sha256": "f6e99f96d749c5ca75aa56f79010ba3191381b7cdb1d2a8fdc147948569fffe8"
+    },
+    "queue_config": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/dreamzero_memory_preparation_v1/dreamzero_paired_serving_queue_v6.json",
+      "sha256": "9c86963b0adbd4b92f0465e04ca27c7b0775e7fdeb68517a4983d80500b18247"
+    },
+    "queue_source": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/dreamzero_memory_preparation_v1/thor_queue_v5.py",
+      "sha256": "2edf097f3d001fe6db1f5a52f730e2c78889d5274b807409d66fc943faa59844"
+    },
+    "status": "passed"
+  },
+  "assembler": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/assemble_current_v5.py",
+    "sha256": "e21227ad17fbd4b46857aa0f41a0a255e4ab27afd7f9b804381ca303be2f7cbc"
+  },
+  "complete_historical_reproduction": false,
+  "contract": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/contract_v1.json",
+    "sha256": "1086a7e236219f6b8a073bee9e695d870981877cd52dda8646d75dace0146f0d"
+  },
+  "counts": {
+    "foreign_expected": 6,
+    "foreign_passed": 6,
+    "historical_families_assessed": 8,
+    "historical_families_equivalent": 7,
+    "main_expected": 8,
+    "main_passed": 8
+  },
+  "created_utc": "2026-09-15T07:10:04Z",
+  "diagnostic_latency_used": false,
+  "failures": [],
+  "foreign": {
+    "lerobot-groot": {
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-groot/actions.npz",
+        "sha256": "61fbe8a4c04694d6351d5fb50289972389178a4e8ecb47014d25435b20b81387"
+      },
+      "capture": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-groot/capture.json",
+        "sha256": "3c4544fec0ae2906ec39246aa56ee5b5a6a27a5d7611b40dde1b5f8e0e13be30"
+      },
+      "cell": "lerobot-groot",
+      "closed": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-groot/closed.json",
+        "sha256": "c3f0a2bb4d2c38e9dbec822746fd13315a137d7bb1e02106fe1ef6500682359b"
+      },
+      "completion": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-groot/completion.json",
+        "sha256": "e73a11024f1694cebcabe389defee56851e48350198e60da732bbcc1599a6309"
+      },
+      "family": "groot",
+      "framework": "lerobot",
+      "latency": {
+        "all_measured_p50_ms": 247.0066364912782,
+        "classification": "SCREEN",
+        "historical_p50_ms": 247.94665299123153,
+        "p50_ms": 247.0066364912782,
+        "p95_ms": 247.62160770769697,
+        "p99_ms": 247.9903974791523,
+        "selected_count": 30,
+        "selected_indices": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ],
+        "task_quality_certified": false
+      },
+      "limitation": "Prepared asset inventories are bound, not rehashed against remote checkpoint storage in this CPU assembly.",
+      "plan": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/lerobot-groot/plan.json",
+        "sha256": "9e9abba50762d1949734ef79d23277ef5122520058aae6aedfcea33cb98b6a8e"
+      },
+      "preparation": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/lerobot-groot/preparation.json",
+        "sha256": "8db072f91537af113e2898818ec25c1013a80828ea6d3aa42c5b7e5f65e36f83"
+      },
+      "published_report": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-groot/report.json",
+        "sha256": "e200570ce9009f7e8d6298d4de035ff849e48e756ddcd6b4a04cd217a90fc616"
+      },
+      "schedule": {
+        "action": 4
+      },
+      "status": "passed",
+      "task_quality_certified": false
+    },
+    "lerobot-pi05": {
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-pi05/actions.npz",
+        "sha256": "4735e4326063a21fa5a21e569ec0df315fc95c76e23782b8daf826b20247a055"
+      },
+      "capture": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-pi05/capture.json",
+        "sha256": "78f930744832fb8abe5d5884bae9b4f39a0d6bfc9f65ee4f39c67c808328e0bd"
+      },
+      "cell": "lerobot-pi05",
+      "closed": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-pi05/closed.json",
+        "sha256": "ab1e0375df65c1c6584ff8b8e7afbc4446aab95bf62a1029ed476acabe1f7f18"
+      },
+      "completion": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-pi05/completion.json",
+        "sha256": "d23ebaa3c2ff2e585faba6d2b6800da64afdce2a117634d38d43b66a7478d93a"
+      },
+      "family": "pi05",
+      "framework": "lerobot",
+      "latency": {
+        "all_measured_p50_ms": 93.91610501916148,
+        "classification": "SCREEN",
+        "historical_p50_ms": 93.97249150788411,
+        "p50_ms": 93.91610501916148,
+        "p95_ms": 94.12004993355367,
+        "p99_ms": 94.14269157103263,
+        "selected_count": 30,
+        "selected_indices": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ],
+        "task_quality_certified": false
+      },
+      "limitation": "Prepared asset inventories are bound, not rehashed against remote checkpoint storage in this CPU assembly.",
+      "plan": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/lerobot-pi05/plan.json",
+        "sha256": "21bb4ebb9608bdba58e429aa97c95431689097486c46b4bd91732104af60099c"
+      },
+      "preparation": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/lerobot-pi05/preparation.json",
+        "sha256": "2599d2ac94cab653853a9eed26c55b5315f5faba46b067280a63b9a9da6798df"
+      },
+      "published_report": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-pi05/report.json",
+        "sha256": "06256b207a4b2e4e42081d9390cb1fa585c36711b875237feb0dcd830fb7d6da"
+      },
+      "schedule": {
+        "action": 1
+      },
+      "status": "passed",
+      "task_quality_certified": false
+    },
+    "lerobot-va": {
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-va/actions.npz",
+        "sha256": "7ae5334d9040b76bc0491243e9c7a9ad5cae2f73c9f3e16ec8d64fcdeb85266e"
+      },
+      "capture": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-va/capture.json",
+        "sha256": "5223b24558056ec5874251e5a8f58b78ff9e6a9c523766139e79057b50990091"
+      },
+      "cell": "lerobot-va",
+      "closed": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-va/closed.json",
+        "sha256": "345834bc787106f004d5bec5a207d544b8ab647346bce3f59675ef531977a0e6"
+      },
+      "completion": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-va/completion.json",
+        "sha256": "fe1552f93fd143208f6d3809d64247d5cfa373b903c0f02d407103eaba5a1ba7"
+      },
+      "family": "va",
+      "framework": "lerobot",
+      "latency": {
+        "all_measured_p50_ms": 1111.81759450119,
+        "classification": "SCREEN",
+        "historical_p50_ms": 1141.3509449921548,
+        "p50_ms": 1171.0779450077098,
+        "p95_ms": 1239.5764612359926,
+        "p99_ms": 1242.6363618532196,
+        "selected_count": 20,
+        "selected_indices": [
+          4,
+          5,
+          7,
+          8,
+          10,
+          11,
+          13,
+          14,
+          16,
+          17,
+          19,
+          20,
+          22,
+          23,
+          25,
+          26,
+          28,
+          29,
+          31,
+          32
+        ],
+        "task_quality_certified": false
+      },
+      "limitation": "Prepared asset inventories are bound, not rehashed against remote checkpoint storage in this CPU assembly.",
+      "plan": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/lerobot-va/plan.json",
+        "sha256": "fd8fc9616f89f9276031ca42fac38afc828a75326a71574db1345a08a3702525"
+      },
+      "preparation": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/lerobot-va/preparation.json",
+        "sha256": "e1c65e6e9c5fff712f57ea9c65367f2393b1c0a9593694591b2aa7b12765a63b"
+      },
+      "published_report": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/lerobot-va/report.json",
+        "sha256": "3257f50f091793ff42591a9b1bd48bc8ce292620a39852a3296e3cadb7a17d83"
+      },
+      "schedule": {
+        "action": 4,
+        "video": 2
+      },
+      "status": "passed",
+      "task_quality_certified": false
+    },
+    "vllm-omni-dreamzero": {
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-dreamzero/actions.npz",
+        "sha256": "35d16e545e30c8ee72c9269bd82ad55d0eef7ec5d010bfb97f1d22d0026d4829"
+      },
+      "capture": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-dreamzero/capture.json",
+        "sha256": "8d1106bbc81c445169a2c1099690f508fcde65b3c4fdba0c137f49f739872fb9"
+      },
+      "cell": "vllm-omni-dreamzero",
+      "closed": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-dreamzero/closed.json",
+        "sha256": "16dc3f367f88a2fa223f81a1494e7b8c80a3c8e92e4b7e3fade3d58720e63a8c"
+      },
+      "completion": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-dreamzero/completion.json",
+        "sha256": "267bc4d00e1f43093b5eb5f47e7de51acfb32819b5be26926ca8362a79e6272d"
+      },
+      "family": "dreamzero",
+      "framework": "vllm-omni",
+      "latency": {
+        "all_measured_p50_ms": 8376.772580988472,
+        "classification": "SCREEN",
+        "historical_p50_ms": 8755.347033002181,
+        "p50_ms": 8729.643308994127,
+        "p95_ms": 9094.486360167502,
+        "p99_ms": 9102.388919230434,
+        "selected_count": 20,
+        "selected_indices": [
+          4,
+          5,
+          7,
+          8,
+          10,
+          11,
+          13,
+          14,
+          16,
+          17,
+          19,
+          20,
+          22,
+          23,
+          25,
+          26,
+          28,
+          29,
+          31,
+          32
+        ],
+        "task_quality_certified": false
+      },
+      "limitation": "Prepared asset inventories are bound, not rehashed against remote checkpoint storage in this CPU assembly.",
+      "plan": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/vllm-omni-dreamzero/plan.json",
+        "sha256": "07839d040df4c8d787c8740aa5e274aad6247497fb813dd898da8495e7e2b9c2"
+      },
+      "preparation": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/vllm-omni-dreamzero/preparation.json",
+        "sha256": "84a32a26fea551fd9678aed1c3b0683895327b08523efd8101a64f39f7781eeb"
+      },
+      "published_report": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-dreamzero/report.json",
+        "sha256": "4dca3344632f7c0a1f876631758c364e026a7202409a0f98c14c2b398348d179"
+      },
+      "schedule": {
+        "guidance": 5.0,
+        "shift": 5.0,
+        "step_cache": true,
+        "video_action": 16
+      },
+      "status": "passed",
+      "task_quality_certified": false
+    },
+    "vllm-omni-edge": {
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-edge/actions.npz",
+        "sha256": "bc745bf0ce43c49fcaeb6a4910e21ae1af84b200efa2f885caaf8cdf6f59e29e"
+      },
+      "capture": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-edge/capture.json",
+        "sha256": "06f5d527fdb232d73ee611897347676a292bd0e0977afc58e539febecc4f00ef"
+      },
+      "cell": "vllm-omni-edge",
+      "closed": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-edge/closed.json",
+        "sha256": "8f98bd941e2ec2e38d8dffec3619963a2248549722bbee66999234d1fa9e1475"
+      },
+      "completion": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-edge/completion.json",
+        "sha256": "26ebbfad2fcb4413c33ae4e00004bc149b094ebbb590213a3a837ce4cd5f1ae0"
+      },
+      "family": "edge",
+      "framework": "vllm-omni",
+      "latency": {
+        "all_measured_p50_ms": 1074.1128340014257,
+        "classification": "SCREEN",
+        "historical_p50_ms": 1083.1387325015385,
+        "p50_ms": 1074.1128340014257,
+        "p95_ms": 1080.791915685404,
+        "p99_ms": 1083.6092473531608,
+        "selected_count": 30,
+        "selected_indices": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ],
+        "task_quality_certified": false
+      },
+      "limitation": "Prepared asset inventories are bound, not rehashed against remote checkpoint storage in this CPU assembly.",
+      "plan": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/vllm-omni-edge/plan.json",
+        "sha256": "8da39e95cd2d0dcb77f3c76e8be0149e07daabe8e2eb37e9355fcea83ccefbf6"
+      },
+      "preparation": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/vllm-omni-edge/preparation.json",
+        "sha256": "ce7ceb94f328f5b051a0274cf3801441d991a240771d14b37ff03ea678204244"
+      },
+      "published_report": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-edge/report.json",
+        "sha256": "c35e846d28ad9d0a744240b2ddffe202812ff94227fa677b3a7b15b41d2f7efd"
+      },
+      "schedule": {
+        "action": 4,
+        "guidance": 3.0,
+        "shift": 5.0
+      },
+      "status": "passed",
+      "task_quality_certified": false
+    },
+    "vllm-omni-nano": {
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-nano/actions.npz",
+        "sha256": "a01d25c70dddeec7fae272691e641024d394005a2c581bab259eebaa38e79b6b"
+      },
+      "capture": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-nano/capture.json",
+        "sha256": "d5b78633c254bf04664c7fd786c1d33b932f5a586bd8b43f3c5455288065cb85"
+      },
+      "cell": "vllm-omni-nano",
+      "closed": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-nano/closed.json",
+        "sha256": "5b0a2a42498543575d556734aab1271bec1a163c44a8f20f323d0d7c1a1fa70e"
+      },
+      "completion": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-nano/completion.json",
+        "sha256": "8215042fafdc28244375a2095fbac5d4bc72059ff211fd37b1018da860470e34"
+      },
+      "family": "nano",
+      "framework": "vllm-omni",
+      "latency": {
+        "all_measured_p50_ms": 4417.634500510758,
+        "classification": "SCREEN",
+        "historical_p50_ms": 4466.3664944819175,
+        "p50_ms": 4417.634500510758,
+        "p95_ms": 4435.867230067379,
+        "p99_ms": 4440.7496588502545,
+        "selected_count": 30,
+        "selected_indices": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39
+        ],
+        "task_quality_certified": false
+      },
+      "limitation": "Prepared asset inventories are bound, not rehashed against remote checkpoint storage in this CPU assembly.",
+      "plan": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/vllm-omni-nano/plan.json",
+        "sha256": "f4fea2b55eba9059225446c33a92c0159df14dcf674a82cfdaa90e44332d0bae"
+      },
+      "preparation": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/vllm-omni-nano/preparation.json",
+        "sha256": "33cf253f2d0afc900970faa43d1ee0416b745873765e21e36c528d3f513e631d"
+      },
+      "published_report": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-nano/report.json",
+        "sha256": "446e0077c8b21a36dfd20d1171d98fc68162b789ffeb6b61a0dee7771085dcd4"
+      },
+      "schedule": {
+        "action": 4,
+        "guidance": 3.0,
+        "shift": 5.0
+      },
+      "status": "passed",
+      "task_quality_certified": false
+    }
+  },
+  "foreign_checkpoint_resolution": {
+    "collector": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/foreign_checkpoint_resolution_v1/resolve.py",
+      "sha256": "51c86439fc2d39c330bfda6e0a6b17036023c357fff0d674d50bbdb8d8583873"
+    },
+    "new_remote_or_weight_reads": false,
+    "original_resolver_function_ast_sha256": "47bb0ba796b5604f987ba52b8221a68c5eea9475a6c0e1f719e096e0ccf07e4d",
+    "original_runner": {
+      "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/source/benchmarks/regression/framework_compare.py",
+      "sha256": "22643ca4a7ced86a9deea24b24ba285854223dcae895bd6d99e6ea04bf821c0e"
+    },
+    "preserved_V4_relocation_failure": {
+      "actual_selection_v4.json": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v4.json",
+        "sha256": "115508b16a77060b0075fe0189083009a6f0ab1fe64f8126e39fcfec44e2ad54"
+      },
+      "assemble_current_v4.py": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/assemble_current_v4.py",
+        "sha256": "d67aab97892cfd84e404a7bd0cc5b968c6046a0896b900afbbad8d1d2b84fa78"
+      },
+      "assemble_execution_v4.json": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/assemble_execution_v4.json",
+        "sha256": "f1fdebe23800d816a472810618d91ac821bc9682da787c5138d336d060aa206a"
+      },
+      "assemble_v4.log": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/assemble_v4.log",
+        "sha256": "de943494719251bdec5bb03724a8595ddb11df10c7be20272bea84d2095d4b44"
+      },
+      "bind_execution_v4.json": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/bind_execution_v4.json",
+        "sha256": "87500e72212457576334f844e4efbe555c678567678306507e621eac505dcd27"
+      },
+      "bind_v4.log": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/bind_v4.log",
+        "sha256": "818c3ba470e013e2533957795908f98e682c81a6b73dbec66c93a40e60b8aa7f"
+      },
+      "relocation_failure_diagnostic_v1.json": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/relocation_failure_diagnostic_v1.json",
+        "sha256": "c0b43aa4ca6c6ee3d5e4c1739a3e00e5a5f6c7a724e22b0113167427a477b6e5"
+      },
+      "snapshot_v4/summary.json": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v4/summary.json",
+        "sha256": "fdba651e1cf80696e3664cc0b3cdda142740edc3d489dc33223ff94334418f1f"
+      },
+      "source_addendum_v4.json": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/source_addendum_v4.json",
+        "sha256": "9594001ac4fe2b291f73345cf8ca42a3ef6b260d5f4055aeb84b5b24022a0fce"
+      }
+    },
+    "proof": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/foreign_checkpoint_resolution_v1/receipt.json",
+      "sha256": "49278a5148001dfc9291ec6edfcef3ba65eb32c22b6f78f9a6a367b73c47e199"
+    },
+    "request": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/foreign_checkpoint_resolution_v1/request.json",
+      "sha256": "241108f082521e89f366bb487693fffbb6455f4b94b37360de88787cfd384435"
+    },
+    "rows": [
+      {
+        "cell": "vllm-omni-edge",
+        "is_directory": true,
+        "prepared_checkpoint_path": "/home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Edge-Policy-DROID/snapshots/f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+        "raw_evidence": {
+          "capture": {
+            "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-edge/capture.json",
+            "sha256": "06f5d527fdb232d73ee611897347676a292bd0e0977afc58e539febecc4f00ef"
+          },
+          "completion": {
+            "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-edge/completion.json",
+            "sha256": "26ebbfad2fcb4413c33ae4e00004bc149b094ebbb590213a3a837ce4cd5f1ae0"
+          },
+          "preparation": {
+            "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/vllm-omni-edge/preparation.json",
+            "sha256": "ce7ceb94f328f5b051a0274cf3801441d991a240771d14b37ff03ea678204244"
+          }
+        },
+        "resolved_checkpoint_path": "/home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Edge-Policy-DROID/snapshots/f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+        "stat": {
+          "device": 66305,
+          "inode": 39342936,
+          "uid": 1000
+        }
+      },
+      {
+        "cell": "vllm-omni-nano",
+        "is_directory": true,
+        "prepared_checkpoint_path": "/home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Nano-Policy-DROID/snapshots/6706d7680581c255ff61e0f3bb49d90eac55c79e",
+        "raw_evidence": {
+          "capture": {
+            "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-nano/capture.json",
+            "sha256": "d5b78633c254bf04664c7fd786c1d33b932f5a586bd8b43f3c5455288065cb85"
+          },
+          "completion": {
+            "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-nano/completion.json",
+            "sha256": "8215042fafdc28244375a2095fbac5d4bc72059ff211fd37b1018da860470e34"
+          },
+          "preparation": {
+            "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/vllm-omni-nano/preparation.json",
+            "sha256": "33cf253f2d0afc900970faa43d1ee0416b745873765e21e36c528d3f513e631d"
+          }
+        },
+        "resolved_checkpoint_path": "/home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Nano-Policy-DROID/snapshots/6706d7680581c255ff61e0f3bb49d90eac55c79e",
+        "stat": {
+          "device": 66305,
+          "inode": 40501285,
+          "uid": 1000
+        }
+      },
+      {
+        "cell": "vllm-omni-dreamzero",
+        "is_directory": true,
+        "prepared_checkpoint_path": "/home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942",
+        "raw_evidence": {
+          "capture": {
+            "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-dreamzero/capture.json",
+            "sha256": "8d1106bbc81c445169a2c1099690f508fcde65b3c4fdba0c137f49f739872fb9"
+          },
+          "completion": {
+            "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-dreamzero/completion.json",
+            "sha256": "267bc4d00e1f43093b5eb5f47e7de51acfb32819b5be26926ca8362a79e6272d"
+          },
+          "preparation": {
+            "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/vllm-omni-dreamzero/preparation.json",
+            "sha256": "84a32a26fea551fd9678aed1c3b0683895327b08523efd8101a64f39f7781eeb"
+          }
+        },
+        "resolved_checkpoint_path": "/home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942",
+        "stat": {
+          "device": 66305,
+          "inode": 39343143,
+          "uid": 1000
+        }
+      }
+    ],
+    "scope": "Actual Thor strict resolution is bound to exact copied evidence. Offline audit substitutes only that proven dependency result; original foreign source/math/process/array validators remain unchanged.",
+    "status": "passed_actual_remote_strict_resolution_replay"
+  },
+  "foreign_execution_source_origin": {
+    "current_catalog_substitution_permitted": false,
+    "execution_source_inventory": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/source_inventory_v4.json",
+      "sha256": "dedb8784927fde53d87ce0464f87070ef5cf150334bd76a537dbeb2e230d0e6a"
+    },
+    "files": {
+      "benchmarks/regression/FRAMEWORK_COMPARISON.rst": {
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/source/benchmarks/regression/FRAMEWORK_COMPARISON.rst",
+        "sha256": "2a69a92f723db525b613da7f9b5b06c045fc8c6ee35555adc6d2c4245a7a6229"
+      },
+      "benchmarks/regression/fixtures/frameworks/catalog.json": {
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/source/benchmarks/regression/fixtures/frameworks/catalog.json",
+        "sha256": "8da7aa422df2d5d8094a958594bb6265c4859a08a271c9de456a854a4b7eb9a3"
+      },
+      "benchmarks/regression/fixtures/frameworks/omni_thor_startup_patch.json": {
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/source/benchmarks/regression/fixtures/frameworks/omni_thor_startup_patch.json",
+        "sha256": "0fc47a24e00fcd00451f2dddb76b7627a5be3b8c3f2b6ff4e4541e1af01c565a"
+      },
+      "benchmarks/regression/fixtures/frameworks/omni_thor_startup_patch_portable_v2.json": {
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/source/benchmarks/regression/fixtures/frameworks/omni_thor_startup_patch_portable_v2.json",
+        "sha256": "81e990f282999eb98f8d32305a251faec74dbe8eddfa0a79640a6bff472edfee"
+      },
+      "benchmarks/regression/fixtures/frameworks/sources.json": {
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/source/benchmarks/regression/fixtures/frameworks/sources.json",
+        "sha256": "9f62a7992624c1d4b05b1ef51dd0817fa4987587aea839506f4ddad965a93ece"
+      },
+      "benchmarks/regression/fixtures/recorded_inputs_v1.npz": {
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/source/benchmarks/regression/fixtures/recorded_inputs_v1.npz",
+        "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "benchmarks/regression/framework_compare.py": {
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/source/benchmarks/regression/framework_compare.py",
+        "sha256": "22643ca4a7ced86a9deea24b24ba285854223dcae895bd6d99e6ea04bf821c0e"
+      },
+      "release/vendor/wheel_repairs.json": {
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/source/release/vendor/wheel_repairs.json",
+        "sha256": "f8fc3e75d4cdb3dc95f3f3f90ae8dfe619c64d6c10b5919aa73ec66baefdedbb"
+      },
+      "scripts/bootstrap_framework_compare.py": {
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/source/scripts/bootstrap_framework_compare.py",
+        "sha256": "80bb0dbdc0e4154515c8b6a05cfb2b19803ac0f200c73fda329771070b01550e"
+      },
+      "scripts/repair_vendor_wheel.py": {
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/source/scripts/repair_vendor_wheel.py",
+        "sha256": "1f62f053a37b29966202111da5262cb3da0464bba2d4697721cce97f1ea310ff"
+      },
+      "tests/test_framework_compare.py": {
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/source/tests/test_framework_compare.py",
+        "sha256": "a1fd6874656f8487c778c8928562b87a2d1e686b80a6876b367e84f5720ebccb"
+      }
+    },
+    "manifest": {
+      "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/manifest.json",
+      "sha256": "f496286c35bbe5ed7f576d1659a4fb29795251dd3c181612bf1b810d25812a70"
+    },
+    "scope": "Exact original foreign V4 preparation/capture source, separate from the requested main source stage."
+  },
+  "foreign_operating_points_uniformly_matched": false,
+  "historical_equivalence": {
+    "dreamzero": "failed_historical_equivalence",
+    "edge": "passed",
+    "groot": "passed",
+    "nano": "passed",
+    "pi05": "passed",
+    "va": "passed",
+    "vla2": "passed",
+    "vla4": "passed"
+  },
+  "historical_matrix": {
+    "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+    "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+  },
+  "limitations": [
+    "This qualifies only the declared current public pipeline, not complete historical reproduction.",
+    "Historical numerical drift is retained per arm without modified thresholds or task-quality transfer.",
+    "Foreign columns retain their original pinned sources and differing operating points; no uniform matched-compute claim.",
+    "WS checks are six calls/two episodes with close proof, not a latency benchmark or task test.",
+    "No GPU, remote checkpoint rehash, publication or capture was performed by this assembler."
+  ],
+  "main": {
+    "dreamzero": {
+      "historical_equivalence": {
+        "arrays": [
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "dreamzero-eager_native",
+            "comparison_source_sha256": "e21227ad17fbd4b46857aa0f41a0a255e4ab27afd7f9b804381ca303be2f7cbc",
+            "current_precision": "native",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": false,
+            "historical_comparability": "same_declared_route",
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/dreamzero-eager_native/receipt.npz",
+            "historical_file_sha256": "257775d26e45a703f484d252892b73fddaee4a7d4c491a614c363da239c36b77",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_precision": "native",
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-eager_native/receipt.json",
+              "sha256": "55861ea342d9307a1391f87b890ca38a02f542a66d44607c10396b4d6855990b"
+            },
+            "historical_shape": [
+              21,
+              24,
+              8
+            ],
+            "historically_comparable": true,
+            "max_abs": 0.1417696475982666,
+            "new_file": "eval/public_release_2026-09-15/qualification/dreamzero/run/cells/dreamzero-eager_native/receipt.npz",
+            "new_file_sha256": "749e398262f15366dd2683be0bc1b1ff7a44e90e23b422908d4e15fe8d083726",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/run/cells/dreamzero-eager_native/receipt.json",
+              "sha256": "b967e960aa43d950cc2e8b70523a9e961137beb312d2f41b74982df6928dcca8"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Exact own-route bytes for comparable cells; the added native control remains under the normal paired BITEXACT gate.",
+            "shape": [
+              21,
+              24,
+              8
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "dreamzero-runtime_default",
+            "comparison_source_sha256": "e21227ad17fbd4b46857aa0f41a0a255e4ab27afd7f9b804381ca303be2f7cbc",
+            "current_precision": "native",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": false,
+            "historical_comparability": "same_declared_route",
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/dreamzero-runtime_default/receipt.npz",
+            "historical_file_sha256": "346a41b48fda8538fc7abd098a7caa858f9ba66bc9d26eb2420d9b4a5127503b",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_precision": "native",
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-runtime_default/receipt.json",
+              "sha256": "abcd365e0918eac58484256222ab4885cd3136c907781d777a9bbe1e1cd0ab8d"
+            },
+            "historical_shape": [
+              21,
+              24,
+              8
+            ],
+            "historically_comparable": true,
+            "max_abs": 0.06660211086273193,
+            "new_file": "eval/public_release_2026-09-15/qualification/dreamzero/run/cells/dreamzero-runtime_default/receipt.npz",
+            "new_file_sha256": "749e398262f15366dd2683be0bc1b1ff7a44e90e23b422908d4e15fe8d083726",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/run/cells/dreamzero-runtime_default/receipt.json",
+              "sha256": "db145251f5687ed8efadca52932645d1881580083aec7ee5a00c1154ed380df7"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Exact own-route bytes for comparable cells; the added native control remains under the normal paired BITEXACT gate.",
+            "shape": [
+              21,
+              24,
+              8
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "dreamzero-runtime_selected",
+            "comparison_source_sha256": "e21227ad17fbd4b46857aa0f41a0a255e4ab27afd7f9b804381ca303be2f7cbc",
+            "current_precision": "native",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": null,
+            "historical_comparability": "not_comparable_native_control_vs_old_FP8",
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/dreamzero-runtime_selected/receipt.npz",
+            "historical_file_sha256": "ff840de51d9c3eeaeec9c8508bdfe09d22331d7c48f785ca8a797726d028b2a2",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_precision": "fp8",
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-runtime_selected/receipt.json",
+              "sha256": "4f072a57ae03db434d3ddec2e8a7c4716f8fad22f14103befb8b493a5b0b4ee1"
+            },
+            "historical_shape": [
+              21,
+              24,
+              8
+            ],
+            "historically_comparable": false,
+            "max_abs": null,
+            "new_file": "eval/public_release_2026-09-15/qualification/dreamzero/run/cells/dreamzero-runtime_selected/receipt.npz",
+            "new_file_sha256": "749e398262f15366dd2683be0bc1b1ff7a44e90e23b422908d4e15fe8d083726",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/run/cells/dreamzero-runtime_selected/receipt.json",
+              "sha256": "d50c0eecb1a74a1837f90c808887be58173b71a287530471c446b3a2b8a90876"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Exact own-route bytes for comparable cells; the added native control remains under the normal paired BITEXACT gate.",
+            "shape": [
+              21,
+              24,
+              8
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "dreamzero-dynamic-fp8",
+            "comparison_source_sha256": "e21227ad17fbd4b46857aa0f41a0a255e4ab27afd7f9b804381ca303be2f7cbc",
+            "current_precision": "fp8",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": false,
+            "historical_comparability": "same_declared_route",
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/dreamzero-dynamic-fp8/receipt.npz",
+            "historical_file_sha256": "df4b09947eb642f19eabb084d3654e25475318a541b1eb57234ae387d1f2fe4d",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_precision": "fp8",
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-dynamic-fp8/receipt.json",
+              "sha256": "ab6b230574c6ad8ea1928e93d9555cb7b1aeb686d35df7fdd2900900ca6d7d4a"
+            },
+            "historical_shape": [
+              21,
+              24,
+              8
+            ],
+            "historically_comparable": true,
+            "max_abs": 0.11907607316970825,
+            "new_file": "eval/public_release_2026-09-15/qualification/dreamzero/run/cells/dreamzero-dynamic-fp8/receipt.npz",
+            "new_file_sha256": "408419ad84ec399950833f1a86204dd9dd59c3b37a65e45e9691714aace2255a",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/run/cells/dreamzero-dynamic-fp8/receipt.json",
+              "sha256": "29040cb145ec671cf4be6c95f133ea0db34f3c63a550ad308004b4fe633a085f"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Exact own-route bytes for comparable cells; the added native control remains under the normal paired BITEXACT gate.",
+            "shape": [
+              21,
+              24,
+              8
+            ]
+          }
+        ],
+        "assessment_complete": true,
+        "comparable_cells": 3,
+        "comparable_routes_exact": false,
+        "exact_action_equivalence": false,
+        "not_comparable_cells": 1,
+        "scope": "The new native runtime_selected control is independently subject to the unchanged main BITEXACT gate. Its same-ID older FP8 control is not a like-for-like historical precision comparison; report it as not comparable, never exact equivalence.",
+        "status": "failed_historical_equivalence"
+      },
+      "paired": {
+        "cells": [
+          {
+            "action_sha256": "749e398262f15366dd2683be0bc1b1ff7a44e90e23b422908d4e15fe8d083726",
+            "id": "dreamzero-eager_native",
+            "metric": "continuation_p50_ms",
+            "p50_ms": 23563.08018002892,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/run/cells/dreamzero-eager_native/receipt.json",
+              "sha256": "b967e960aa43d950cc2e8b70523a9e961137beb312d2f41b74982df6928dcca8"
+            },
+            "samples": 12,
+            "schedule": {
+              "checkpoint_dit_step_mask": [
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                true,
+                true,
+                true
+              ],
+              "checkpoint_num_dit_steps": 8,
+              "guidance": 5.0,
+              "nfe": {
+                "video_action": 16
+              },
+              "sampler": "checkpoint",
+              "solver_updates": 16,
+              "step_cache": "checkpoint"
+            }
+          },
+          {
+            "action_sha256": "749e398262f15366dd2683be0bc1b1ff7a44e90e23b422908d4e15fe8d083726",
+            "id": "dreamzero-runtime_default",
+            "metric": "continuation_p50_ms",
+            "p50_ms": 23876.198655518238,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/run/cells/dreamzero-runtime_default/receipt.json",
+              "sha256": "db145251f5687ed8efadca52932645d1881580083aec7ee5a00c1154ed380df7"
+            },
+            "samples": 12,
+            "schedule": {
+              "checkpoint_dit_step_mask": [
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                true,
+                true,
+                true
+              ],
+              "checkpoint_num_dit_steps": 8,
+              "guidance": 5.0,
+              "nfe": {
+                "video_action": 16
+              },
+              "sampler": "checkpoint",
+              "solver_updates": 16,
+              "step_cache": "checkpoint"
+            }
+          },
+          {
+            "action_sha256": "749e398262f15366dd2683be0bc1b1ff7a44e90e23b422908d4e15fe8d083726",
+            "id": "dreamzero-runtime_selected",
+            "metric": "continuation_p50_ms",
+            "p50_ms": 23285.73152649915,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/run/cells/dreamzero-runtime_selected/receipt.json",
+              "sha256": "d50c0eecb1a74a1837f90c808887be58173b71a287530471c446b3a2b8a90876"
+            },
+            "samples": 12,
+            "schedule": {
+              "checkpoint_dit_step_mask": [
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                true,
+                true,
+                true
+              ],
+              "checkpoint_num_dit_steps": 8,
+              "guidance": 5.0,
+              "nfe": {
+                "video_action": 16
+              },
+              "sampler": "checkpoint",
+              "solver_updates": 16,
+              "step_cache": "checkpoint"
+            }
+          },
+          {
+            "action_sha256": "408419ad84ec399950833f1a86204dd9dd59c3b37a65e45e9691714aace2255a",
+            "id": "dreamzero-dynamic-fp8",
+            "metric": "continuation_p50_ms",
+            "p50_ms": 11899.423940485576,
+            "precision": "fp8",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/run/cells/dreamzero-dynamic-fp8/receipt.json",
+              "sha256": "29040cb145ec671cf4be6c95f133ea0db34f3c63a550ad308004b4fe633a085f"
+            },
+            "samples": 12,
+            "schedule": {
+              "checkpoint_dit_step_mask": [
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                true,
+                true,
+                true
+              ],
+              "checkpoint_num_dit_steps": 8,
+              "guidance": 5.0,
+              "nfe": {
+                "video_action": 16
+              },
+              "profile": "dreamzero_velocity_v1",
+              "sampler": "checkpoint",
+              "solver_updates": 16,
+              "step_cache": "dynamic"
+            }
+          }
+        ],
+        "comparisons": [
+          {
+            "actions": {
+              "exact_bytes": true,
+              "exact_values": true,
+              "max_abs": 0.0,
+              "metric_overflow": false,
+              "rmse": 0.0,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "dreamzero-eager_native",
+            "baseline_schedule": {
+              "checkpoint_dit_step_mask": [
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                true,
+                true,
+                true
+              ],
+              "checkpoint_num_dit_steps": 8,
+              "guidance": 5.0,
+              "nfe": {
+                "video_action": 16
+              },
+              "sampler": "checkpoint",
+              "solver_updates": 16,
+              "step_cache": "checkpoint"
+            },
+            "candidate": "dreamzero-runtime_default",
+            "candidate_schedule": {
+              "checkpoint_dit_step_mask": [
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                true,
+                true,
+                true
+              ],
+              "checkpoint_num_dit_steps": 8,
+              "guidance": 5.0,
+              "nfe": {
+                "video_action": 16
+              },
+              "sampler": "checkpoint",
+              "solver_updates": 16,
+              "step_cache": "checkpoint"
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 0.9858624276142764,
+            "paired_samples": 12,
+            "ratio_of_p50": 0.9868857484389815,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          },
+          {
+            "actions": {
+              "exact_bytes": true,
+              "exact_values": true,
+              "max_abs": 0.0,
+              "metric_overflow": false,
+              "rmse": 0.0,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "dreamzero-eager_native",
+            "baseline_schedule": {
+              "checkpoint_dit_step_mask": [
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                true,
+                true,
+                true
+              ],
+              "checkpoint_num_dit_steps": 8,
+              "guidance": 5.0,
+              "nfe": {
+                "video_action": 16
+              },
+              "sampler": "checkpoint",
+              "solver_updates": 16,
+              "step_cache": "checkpoint"
+            },
+            "candidate": "dreamzero-runtime_selected",
+            "candidate_schedule": {
+              "checkpoint_dit_step_mask": [
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                true,
+                true,
+                true
+              ],
+              "checkpoint_num_dit_steps": 8,
+              "guidance": 5.0,
+              "nfe": {
+                "video_action": 16
+              },
+              "sampler": "checkpoint",
+              "solver_updates": 16,
+              "step_cache": "checkpoint"
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 1.0071065183584875,
+            "paired_samples": 12,
+            "ratio_of_p50": 1.011910669553763,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          },
+          {
+            "actions": {
+              "exact_bytes": false,
+              "exact_values": false,
+              "max_abs": 0.1953125,
+              "metric_overflow": false,
+              "rmse": 0.05674211485687118,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "dreamzero-eager_native",
+            "baseline_schedule": {
+              "checkpoint_dit_step_mask": [
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                true,
+                true,
+                true
+              ],
+              "checkpoint_num_dit_steps": 8,
+              "guidance": 5.0,
+              "nfe": {
+                "video_action": 16
+              },
+              "sampler": "checkpoint",
+              "solver_updates": 16,
+              "step_cache": "checkpoint"
+            },
+            "candidate": "dreamzero-dynamic-fp8",
+            "candidate_schedule": {
+              "checkpoint_dit_step_mask": [
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                true,
+                true,
+                true
+              ],
+              "checkpoint_num_dit_steps": 8,
+              "guidance": 5.0,
+              "nfe": {
+                "video_action": 16
+              },
+              "profile": "dreamzero_velocity_v1",
+              "sampler": "checkpoint",
+              "solver_updates": 16,
+              "step_cache": "dynamic"
+            },
+            "interpretation": "changes sampling policy; latency ratio is not an architecture-only speedup or quality evidence",
+            "kind": "changed_policy_latency_ratio",
+            "median_paired_ratio": 1.9846389613784807,
+            "paired_samples": 12,
+            "ratio_of_p50": 1.9801866290232693,
+            "recommended": false,
+            "same_sampling_policy": false,
+            "status": "passed",
+            "task_quality_validated": false
+          }
+        ],
+        "matrix": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/run/matrix.json",
+          "sha256": "b660ddc3377cfb0518be4eda572faea02e2e9259b447351ec9ea4ae514a64a52"
+        },
+        "plan": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/run/plan.json",
+          "sha256": "dd05cff0bde6cf7dbd4ee944332f91c7c825ded127defdd3c319c11ef09b2904"
+        },
+        "preparation": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/run/preparation.json",
+          "sha256": "de28c29c49106d77c63157b26d0cf940def1f27467b2181f7d4eb8edaddbc230"
+        },
+        "published_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/run/validated_report/report.json",
+          "sha256": "d530c63caa5aefd2d3c217a737742d0b6f38fa22995165398a9c5fcc68bf36ce"
+        },
+        "replay_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v5/dreamzero_paired_replay.json",
+          "sha256": "102303d18203b69453754d927ad38af71a6c336ce1964982edecb3ffdf344f60"
+        },
+        "run": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/run/run.json",
+          "sha256": "40dade6e6812c7096e4d0cc3c08c17915029135ac2754bf30a3b9a6114d0d6ec"
+        },
+        "status": "passed",
+        "task_quality_certified": false
+      },
+      "serving": {
+        "results": [
+          {
+            "actions": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/serving/actions.npz",
+              "sha256": "4e343d8de6fe0fd243cc8b160e0e486d8c476ebc18d3c8ae4d93b046351fe3ec"
+            },
+            "calls": 6,
+            "cell": "dreamzero-dynamic-fp8",
+            "config": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/serving/serve.json",
+              "sha256": "e4f8c10557d4c76922f458db30c9d24fe57e73504c23bfc81277b73f2c22d25e"
+            },
+            "episodes": 2,
+            "latency_benchmark": false,
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/serving/receipt.json",
+              "sha256": "b12e2cf3561216d28f3b4cf1539cca47bde2c30d7cca22ba13a1bc54d9e1e300"
+            },
+            "reset_scope": "Frozen client sends and validates reset before each episode; individual reset acknowledgments are not separately persisted.",
+            "server_exit_code": 0,
+            "status": "passed",
+            "task_quality_certified": false
+          }
+        ],
+        "status": "passed"
+      },
+      "status": "passed"
+    },
+    "edge": {
+      "historical_equivalence": {
+        "arrays": [
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "edge-eager_native",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/edge-eager_native-path-recovery/receipt.npz",
+            "historical_file_sha256": "b2c3f3c325ad048183d659f102eed53fc315b631d64e3a1a2e07c653f1254a89",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/edge-eager_native-path-recovery/receipt.json",
+              "sha256": "f50c098a7b7162ffb1c52900090c2796cede62762c6e0f123b12c3129158b46c"
+            },
+            "historical_shape": [
+              25,
+              32,
+              8
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/cells/edge-eager_native/receipt.npz",
+            "new_file_sha256": "b2c3f3c325ad048183d659f102eed53fc315b631d64e3a1a2e07c653f1254a89",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/cells/edge-eager_native/receipt.json",
+              "sha256": "5f424699a8af4b42a1474b4a390517cea3d1e31252bdf0fba609593aa13d6507"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              32,
+              8
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "edge-runtime_default",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/edge-runtime_default/receipt.npz",
+            "historical_file_sha256": "b2c3f3c325ad048183d659f102eed53fc315b631d64e3a1a2e07c653f1254a89",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/edge-runtime_default/receipt.json",
+              "sha256": "77124b2a98e26d02019f29b151111b0a882f9f9181cb794616140fdcf4c66951"
+            },
+            "historical_shape": [
+              25,
+              32,
+              8
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/cells/edge-runtime_default/receipt.npz",
+            "new_file_sha256": "b2c3f3c325ad048183d659f102eed53fc315b631d64e3a1a2e07c653f1254a89",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/cells/edge-runtime_default/receipt.json",
+              "sha256": "d76c136c965a2b8f30716b62195a3b351226005cf94f37ad53448a66416318f0"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              32,
+              8
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "edge-runtime_selected",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/edge-runtime_selected/receipt.npz",
+            "historical_file_sha256": "adff00483c22a5f392347c03187d85c3ef5269658d27da1d5a2f7dd40a4d43d3",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/edge-runtime_selected/receipt.json",
+              "sha256": "b2853f975b6325f65a3e32f753328749eb78600f9ad1af5f18c172e36e20f242"
+            },
+            "historical_shape": [
+              25,
+              32,
+              8
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/cells/edge-runtime_selected/receipt.npz",
+            "new_file_sha256": "adff00483c22a5f392347c03187d85c3ef5269658d27da1d5a2f7dd40a4d43d3",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/cells/edge-runtime_selected/receipt.json",
+              "sha256": "d625e2f476d4d8a5e57ce3da2b2c6dd1e819e03008b6f45a7faee88532493553"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              32,
+              8
+            ]
+          }
+        ],
+        "assessment_complete": true,
+        "exact_action_equivalence": true,
+        "scope": "Each current arm versus its own frozen historical arm, exact bytes without tolerance changes.",
+        "status": "passed"
+      },
+      "paired": {
+        "cells": [
+          {
+            "action_sha256": "b2c3f3c325ad048183d659f102eed53fc315b631d64e3a1a2e07c653f1254a89",
+            "id": "edge-eager_native",
+            "metric": "generation_p50_ms",
+            "p50_ms": 3393.7791274802294,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/cells/edge-eager_native/receipt.json",
+              "sha256": "5f424699a8af4b42a1474b4a390517cea3d1e31252bdf0fba609593aa13d6507"
+            },
+            "samples": 20,
+            "schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            }
+          },
+          {
+            "action_sha256": "b2c3f3c325ad048183d659f102eed53fc315b631d64e3a1a2e07c653f1254a89",
+            "id": "edge-runtime_default",
+            "metric": "generation_p50_ms",
+            "p50_ms": 2549.0313799818978,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/cells/edge-runtime_default/receipt.json",
+              "sha256": "d76c136c965a2b8f30716b62195a3b351226005cf94f37ad53448a66416318f0"
+            },
+            "samples": 20,
+            "schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            }
+          },
+          {
+            "action_sha256": "adff00483c22a5f392347c03187d85c3ef5269658d27da1d5a2f7dd40a4d43d3",
+            "id": "edge-runtime_selected",
+            "metric": "generation_p50_ms",
+            "p50_ms": 1048.0067335010972,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/cells/edge-runtime_selected/receipt.json",
+              "sha256": "d625e2f476d4d8a5e57ce3da2b2c6dd1e819e03008b6f45a7faee88532493553"
+            },
+            "samples": 20,
+            "schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            }
+          }
+        ],
+        "comparisons": [
+          {
+            "actions": {
+              "exact_bytes": true,
+              "exact_values": true,
+              "max_abs": 0.0,
+              "metric_overflow": false,
+              "rmse": 0.0,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "edge-eager_native",
+            "baseline_schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            },
+            "candidate": "edge-runtime_default",
+            "candidate_schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 1.3317123437554215,
+            "paired_samples": 20,
+            "ratio_of_p50": 1.3313995089006438,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          },
+          {
+            "actions": {
+              "exact_bytes": false,
+              "exact_values": false,
+              "max_abs": 0.35493433475494385,
+              "metric_overflow": false,
+              "rmse": 0.032459680213897,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "edge-eager_native",
+            "baseline_schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            },
+            "candidate": "edge-runtime_selected",
+            "candidate_schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 3.240100690595937,
+            "paired_samples": 20,
+            "ratio_of_p50": 3.2383180555935582,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          }
+        ],
+        "matrix": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/matrix.json",
+          "sha256": "56b8acfa1e1adac4c2a5aa84f01af7af9ab6e45bf2104b6ab5f891fe33a38fcd"
+        },
+        "plan": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/plan.json",
+          "sha256": "17bbc7c257e29948968bb473b12bc79419bbc9dd1e5595246aa1b1fa5f820306"
+        },
+        "preparation": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/preparation.json",
+          "sha256": "c730920dcaa9909f41d104f1d0fa176cdb2b2d92eb5fb5cd55071cc6c2100f97"
+        },
+        "published_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/validated_report/report.json",
+          "sha256": "51b213e28605fa6140106ce1d4dc10cbb3eb9dbb95de34d610fb798201921d24"
+        },
+        "replay_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v5/edge_paired_replay.json",
+          "sha256": "fee01d1779053b631fe609191551e1d32b48b73a1764f7e5d6a60fc3402fe0ee"
+        },
+        "run": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/run/run.json",
+          "sha256": "c5126ebe4c29a2b68d5cfdd89b3a7e9fee8bc9deaeb8f300d11cd1c4ab86e9bd"
+        },
+        "status": "passed",
+        "task_quality_certified": false
+      },
+      "serving": {
+        "results": [
+          {
+            "actions": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/serving/actions.npz",
+              "sha256": "50a083da36538cf4d35f4079be42154383619bc8ee8c54eadb042780d51c1324"
+            },
+            "calls": 6,
+            "cell": "edge-runtime_selected",
+            "config": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/serving/serve.json",
+              "sha256": "de298e8ea3ca3cacb86d850d23bfbf141ce0b84658332705cc649396ce0fa2bf"
+            },
+            "episodes": 2,
+            "latency_benchmark": false,
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1/serving/receipt.json",
+              "sha256": "3889c0dfe45365df0dc25592cfbad35d42bd693ec87240f889a5d803e8ca2cfa"
+            },
+            "reset_scope": "Frozen client sends and validates reset before each episode; individual reset acknowledgments are not separately persisted.",
+            "server_exit_code": 0,
+            "status": "passed",
+            "task_quality_certified": false
+          }
+        ],
+        "status": "passed"
+      },
+      "status": "passed"
+    },
+    "groot": {
+      "historical_equivalence": {
+        "arrays": [
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "groot-eager_native",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/groot-eager_native/receipt.npz",
+            "historical_file_sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/groot-eager_native/receipt.json",
+              "sha256": "48fefd503cc09b38e17cd364c833c05434825ae4eb9f7f4512c0c59e4314bc59"
+            },
+            "historical_shape": [
+              25,
+              40,
+              17
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/groot/run/cells/groot-eager_native/receipt.npz",
+            "new_file_sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/cells/groot-eager_native/receipt.json",
+              "sha256": "a57230b8457ccc9908f7e7a73c8d2e1cbaf261a0a5c39d8edff9ed722bc06aa2"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              40,
+              17
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "groot-runtime_default",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/groot-runtime_default/receipt.npz",
+            "historical_file_sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/groot-runtime_default/receipt.json",
+              "sha256": "6e6785bb41d6f82290207241a556fb1f6ded0f0056f4c29fac351603ff10d8aa"
+            },
+            "historical_shape": [
+              25,
+              40,
+              17
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/groot/run/cells/groot-runtime_default/receipt.npz",
+            "new_file_sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/cells/groot-runtime_default/receipt.json",
+              "sha256": "8f137232f114c37e7a0b08236423a23be99a46690611db755b1d5182d4ab64c1"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              40,
+              17
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "groot-runtime_selected",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/groot-runtime_selected/receipt.npz",
+            "historical_file_sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/groot-runtime_selected/receipt.json",
+              "sha256": "0030548afe9c885644d1ee5c950ada6c2fbe1eed84142d2109629c699f22ec1c"
+            },
+            "historical_shape": [
+              25,
+              40,
+              17
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/groot/run/cells/groot-runtime_selected/receipt.npz",
+            "new_file_sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/cells/groot-runtime_selected/receipt.json",
+              "sha256": "a81a8c744468329bfb52e46f330013dc4f96d6433c1affba03b068007ec806fe"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              40,
+              17
+            ]
+          }
+        ],
+        "assessment_complete": true,
+        "exact_action_equivalence": true,
+        "scope": "Each current arm versus its own frozen historical arm, exact bytes without tolerance changes.",
+        "status": "passed"
+      },
+      "paired": {
+        "cells": [
+          {
+            "action_sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+            "id": "groot-eager_native",
+            "metric": "generation_p50_ms",
+            "p50_ms": 139.49823949951679,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/cells/groot-eager_native/receipt.json",
+              "sha256": "a57230b8457ccc9908f7e7a73c8d2e1cbaf261a0a5c39d8edff9ed722bc06aa2"
+            },
+            "samples": 20,
+            "schedule": {
+              "nfe": {
+                "action": 4,
+                "backbone": 1
+              },
+              "sampler": "checkpoint"
+            }
+          },
+          {
+            "action_sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+            "id": "groot-runtime_default",
+            "metric": "generation_p50_ms",
+            "p50_ms": 115.03954351064749,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/cells/groot-runtime_default/receipt.json",
+              "sha256": "8f137232f114c37e7a0b08236423a23be99a46690611db755b1d5182d4ab64c1"
+            },
+            "samples": 20,
+            "schedule": {
+              "nfe": {
+                "action": 4,
+                "backbone": 1
+              },
+              "sampler": "checkpoint"
+            }
+          },
+          {
+            "action_sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+            "id": "groot-runtime_selected",
+            "metric": "generation_p50_ms",
+            "p50_ms": 117.29710450163111,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/cells/groot-runtime_selected/receipt.json",
+              "sha256": "a81a8c744468329bfb52e46f330013dc4f96d6433c1affba03b068007ec806fe"
+            },
+            "samples": 20,
+            "schedule": {
+              "nfe": {
+                "action": 4,
+                "backbone": 1
+              },
+              "sampler": "checkpoint"
+            }
+          }
+        ],
+        "comparisons": [
+          {
+            "actions": {
+              "exact_bytes": true,
+              "exact_values": true,
+              "max_abs": 0.0,
+              "metric_overflow": false,
+              "rmse": 0.0,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "groot-eager_native",
+            "baseline_schedule": {
+              "nfe": {
+                "action": 4,
+                "backbone": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "candidate": "groot-runtime_default",
+            "candidate_schedule": {
+              "nfe": {
+                "action": 4,
+                "backbone": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 1.2169459300681535,
+            "paired_samples": 20,
+            "ratio_of_p50": 1.2126112051775093,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          },
+          {
+            "actions": {
+              "exact_bytes": true,
+              "exact_values": true,
+              "max_abs": 0.0,
+              "metric_overflow": false,
+              "rmse": 0.0,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "groot-eager_native",
+            "baseline_schedule": {
+              "nfe": {
+                "action": 4,
+                "backbone": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "candidate": "groot-runtime_selected",
+            "candidate_schedule": {
+              "nfe": {
+                "action": 4,
+                "backbone": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 1.1936369552558703,
+            "paired_samples": 20,
+            "ratio_of_p50": 1.1892726601582646,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          }
+        ],
+        "matrix": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/matrix.json",
+          "sha256": "dac0290d73bce7f01b7860241bceb083690033cc56a697761a7a863b52d92036"
+        },
+        "plan": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/plan.json",
+          "sha256": "995398cd7096526653135be9c513ceae412548da95c249663fa6067777bcd59d"
+        },
+        "preparation": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/preparation.json",
+          "sha256": "691b40fdbef53b6b63dbef65a1ee54f557b40524af50520b3e982afbea51ec22"
+        },
+        "published_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/validated_report/report.json",
+          "sha256": "3686e89d430c43d92db53e2e09147a30fa9283f893ac8160c7b6d7a465fb521f"
+        },
+        "replay_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v5/groot_paired_replay.json",
+          "sha256": "9f6cba67fe2b0db40b2913dbb25819849c55449d7584bb028129875450694b3a"
+        },
+        "run": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/run.json",
+          "sha256": "03eaa6975b3401f760c2c16ad7b2562fdea26247bcf6f1ee4c3056f5096dcb37"
+        },
+        "status": "passed",
+        "task_quality_certified": false
+      },
+      "serving": {
+        "results": [
+          {
+            "actions": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/serving/actions.npz",
+              "sha256": "1e57b4d4c76d3f1093da4ea6b69f94a0c09867e12744d74217d0eedc21ab1f58"
+            },
+            "calls": 6,
+            "cell": "groot-runtime_selected",
+            "config": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/serving/serve.json",
+              "sha256": "0b56d28b429859a7b4d86fa915133b35bb4b2cdf700a9e5591ee2789b8667c7f"
+            },
+            "episodes": 2,
+            "latency_benchmark": false,
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/serving/receipt.json",
+              "sha256": "0274c57cf24a2f38fbfc53605bd480a5fa378038879f33a19c76fdd9c9b7b40a"
+            },
+            "reset_scope": "Frozen client sends and validates reset before each episode; individual reset acknowledgments are not separately persisted.",
+            "server_exit_code": 0,
+            "status": "passed",
+            "task_quality_certified": false
+          }
+        ],
+        "status": "passed"
+      },
+      "status": "passed"
+    },
+    "nano": {
+      "historical_equivalence": {
+        "arrays": [
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "nano-eager_native",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/nano-eager_native/receipt.npz",
+            "historical_file_sha256": "b5339d0905dbcb415af12e49eb6c9ff7886bcbeb2ef52d530b1c1eaa40fddf32",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/nano-eager_native/receipt.json",
+              "sha256": "85e53fd3cc1f8a9172288b8ca31cb9bc2cc4ae9522c9aa7b111e16a152e5111c"
+            },
+            "historical_shape": [
+              25,
+              32,
+              8
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/cells/nano-eager_native/receipt.npz",
+            "new_file_sha256": "b5339d0905dbcb415af12e49eb6c9ff7886bcbeb2ef52d530b1c1eaa40fddf32",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/cells/nano-eager_native/receipt.json",
+              "sha256": "1702a597b487b681e1c898970032c7b75f978715bde6819b80a13dc6c9c7b4ec"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              32,
+              8
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "nano-runtime_default",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/nano-runtime_default/receipt.npz",
+            "historical_file_sha256": "b5339d0905dbcb415af12e49eb6c9ff7886bcbeb2ef52d530b1c1eaa40fddf32",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/nano-runtime_default/receipt.json",
+              "sha256": "e1f14dd51c3c109da0b1e9051b8ab132039d6ac6620ed247abece8a9dcbc16d8"
+            },
+            "historical_shape": [
+              25,
+              32,
+              8
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/cells/nano-runtime_default/receipt.npz",
+            "new_file_sha256": "b5339d0905dbcb415af12e49eb6c9ff7886bcbeb2ef52d530b1c1eaa40fddf32",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/cells/nano-runtime_default/receipt.json",
+              "sha256": "265e68fddd41be5d924ab924e214f26e5c2e3ab8553f0bc33c57b50bb21def3f"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              32,
+              8
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "nano-runtime_selected",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/nano-runtime_selected/receipt.npz",
+            "historical_file_sha256": "c3d85891daced8d6a96a7c2cc34ea4a2b5f5fc32a1636cc15a3d5c96f9a38a01",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/nano-runtime_selected/receipt.json",
+              "sha256": "23f98fe419c72a0453c7be3d193be14c07fd612b80cd3a5d71e38406baba976e"
+            },
+            "historical_shape": [
+              25,
+              32,
+              8
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/cells/nano-runtime_selected/receipt.npz",
+            "new_file_sha256": "c3d85891daced8d6a96a7c2cc34ea4a2b5f5fc32a1636cc15a3d5c96f9a38a01",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/cells/nano-runtime_selected/receipt.json",
+              "sha256": "27f3e93ba1af9d8f25bb97897a9e05bad4b5246508493b49eda1cee59bb7224c"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              32,
+              8
+            ]
+          }
+        ],
+        "assessment_complete": true,
+        "exact_action_equivalence": true,
+        "scope": "Each current arm versus its own frozen historical arm, exact bytes without tolerance changes.",
+        "status": "passed"
+      },
+      "paired": {
+        "cells": [
+          {
+            "action_sha256": "b5339d0905dbcb415af12e49eb6c9ff7886bcbeb2ef52d530b1c1eaa40fddf32",
+            "id": "nano-eager_native",
+            "metric": "generation_p50_ms",
+            "p50_ms": 10184.677023993572,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/cells/nano-eager_native/receipt.json",
+              "sha256": "1702a597b487b681e1c898970032c7b75f978715bde6819b80a13dc6c9c7b4ec"
+            },
+            "samples": 20,
+            "schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            }
+          },
+          {
+            "action_sha256": "b5339d0905dbcb415af12e49eb6c9ff7886bcbeb2ef52d530b1c1eaa40fddf32",
+            "id": "nano-runtime_default",
+            "metric": "generation_p50_ms",
+            "p50_ms": 8557.831917016301,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/cells/nano-runtime_default/receipt.json",
+              "sha256": "265e68fddd41be5d924ab924e214f26e5c2e3ab8553f0bc33c57b50bb21def3f"
+            },
+            "samples": 20,
+            "schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            }
+          },
+          {
+            "action_sha256": "c3d85891daced8d6a96a7c2cc34ea4a2b5f5fc32a1636cc15a3d5c96f9a38a01",
+            "id": "nano-runtime_selected",
+            "metric": "generation_p50_ms",
+            "p50_ms": 4772.384611977031,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/cells/nano-runtime_selected/receipt.json",
+              "sha256": "27f3e93ba1af9d8f25bb97897a9e05bad4b5246508493b49eda1cee59bb7224c"
+            },
+            "samples": 20,
+            "schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            }
+          }
+        ],
+        "comparisons": [
+          {
+            "actions": {
+              "exact_bytes": true,
+              "exact_values": true,
+              "max_abs": 0.0,
+              "metric_overflow": false,
+              "rmse": 0.0,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "nano-eager_native",
+            "baseline_schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            },
+            "candidate": "nano-runtime_default",
+            "candidate_schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 1.1898409227576168,
+            "paired_samples": 20,
+            "ratio_of_p50": 1.1901001471812584,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          },
+          {
+            "actions": {
+              "exact_bytes": false,
+              "exact_values": false,
+              "max_abs": 0.9997949600219727,
+              "metric_overflow": false,
+              "rmse": 0.15466817023254822,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "nano-eager_native",
+            "baseline_schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            },
+            "candidate": "nano-runtime_selected",
+            "candidate_schedule": {
+              "guidance": 3.0,
+              "nfe": {
+                "action": 4,
+                "prefix": 1
+              },
+              "sampler": "unipc",
+              "shift": 5.0,
+              "steps": 4
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 2.1345553975570843,
+            "paired_samples": 20,
+            "ratio_of_p50": 2.13408554675865,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          }
+        ],
+        "matrix": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/matrix.json",
+          "sha256": "fb808b7b720b0616d23f672baaa843276baa0b17788d202b34a15bcfddce6452"
+        },
+        "plan": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/plan.json",
+          "sha256": "51ed54d80f9069db4b9f119905a4cc7deecd2f2718e2a79c9f63190da2bac8a9"
+        },
+        "preparation": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/preparation.json",
+          "sha256": "28febc7a5ae4a903ea0469a770aa0acf62a39e4b563a28da2c35a3a4ebf575cc"
+        },
+        "published_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/validated_report/report.json",
+          "sha256": "7d0f554081e50519b7223d1c9b3d908c7a4ac70449fe2b39f791c7079881102b"
+        },
+        "replay_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v5/nano_paired_replay.json",
+          "sha256": "446ee49ee2102c0dc9870d181966177321e2533c76a512cf10d183011f3a89bb"
+        },
+        "run": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/run/run.json",
+          "sha256": "815a08c893a69fd044a278d2dd7e9878faacff07422251d8c50309f946f787e7"
+        },
+        "status": "passed",
+        "task_quality_certified": false
+      },
+      "serving": {
+        "results": [
+          {
+            "actions": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/serving/actions.npz",
+              "sha256": "db9576a785f543ac51f09f90c5cc78575a49093e9d79ae996bc7f9fa85bfc622"
+            },
+            "calls": 6,
+            "cell": "nano-runtime_selected",
+            "config": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/serving/serve.json",
+              "sha256": "b29bb21085b95d3bf49eb513ecffefbcb8cad82d132c023bffde25d9c0940eee"
+            },
+            "episodes": 2,
+            "latency_benchmark": false,
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1/serving/receipt.json",
+              "sha256": "5f16050952f2fdfe06d90789a7ef91dc16bc91e96264cb4f15d218b4aa5540ac"
+            },
+            "reset_scope": "Frozen client sends and validates reset before each episode; individual reset acknowledgments are not separately persisted.",
+            "server_exit_code": 0,
+            "status": "passed",
+            "task_quality_certified": false
+          }
+        ],
+        "status": "passed"
+      },
+      "status": "passed"
+    },
+    "pi05": {
+      "historical_equivalence": {
+        "arrays": [
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "pi05-eager_native",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/pi05-eager_native/receipt.npz",
+            "historical_file_sha256": "f3169f697ae1e05fbe8aa5d39b606ff5023e9c0cf0f40234c4ed2bc749090737",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-eager_native/receipt.json",
+              "sha256": "e62ef26e7f09db4a43726085a20f43f955cf5ed2522da65e14c43b9b998bdb9c"
+            },
+            "historical_shape": [
+              25,
+              7
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-eager_native/receipt.npz",
+            "new_file_sha256": "f3169f697ae1e05fbe8aa5d39b606ff5023e9c0cf0f40234c4ed2bc749090737",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-eager_native/receipt.json",
+              "sha256": "b8bfbb51481b9282845f97cd7b6b35bc5383e1761500011ae085138c5107550d"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              7
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "pi05-eager_native",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.queue.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/pi05-eager_native/receipt.queue.npz",
+            "historical_file_sha256": "28959d8a53e24a1d63dd60f872f8f9dd14e79ba15c69bbe100b9ea94f2286800",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-eager_native/receipt.json",
+              "sha256": "e62ef26e7f09db4a43726085a20f43f955cf5ed2522da65e14c43b9b998bdb9c"
+            },
+            "historical_shape": [
+              51,
+              7
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-eager_native/receipt.queue.npz",
+            "new_file_sha256": "28959d8a53e24a1d63dd60f872f8f9dd14e79ba15c69bbe100b9ea94f2286800",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-eager_native/receipt.json",
+              "sha256": "b8bfbb51481b9282845f97cd7b6b35bc5383e1761500011ae085138c5107550d"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              51,
+              7
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "pi05-runtime_default",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/pi05-runtime_default/receipt.npz",
+            "historical_file_sha256": "f3169f697ae1e05fbe8aa5d39b606ff5023e9c0cf0f40234c4ed2bc749090737",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-runtime_default/receipt.json",
+              "sha256": "c089598a6dd228bcdef727cee7f303e6b17c2317ba10492d9ad21e16437aac84"
+            },
+            "historical_shape": [
+              25,
+              7
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-runtime_default/receipt.npz",
+            "new_file_sha256": "f3169f697ae1e05fbe8aa5d39b606ff5023e9c0cf0f40234c4ed2bc749090737",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-runtime_default/receipt.json",
+              "sha256": "dd2239c94c29a06336e5bf94d61120ee87957ca2c957922cc76eb9bfc34dab58"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              7
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "pi05-runtime_default",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.queue.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/pi05-runtime_default/receipt.queue.npz",
+            "historical_file_sha256": "28959d8a53e24a1d63dd60f872f8f9dd14e79ba15c69bbe100b9ea94f2286800",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-runtime_default/receipt.json",
+              "sha256": "c089598a6dd228bcdef727cee7f303e6b17c2317ba10492d9ad21e16437aac84"
+            },
+            "historical_shape": [
+              51,
+              7
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-runtime_default/receipt.queue.npz",
+            "new_file_sha256": "28959d8a53e24a1d63dd60f872f8f9dd14e79ba15c69bbe100b9ea94f2286800",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-runtime_default/receipt.json",
+              "sha256": "dd2239c94c29a06336e5bf94d61120ee87957ca2c957922cc76eb9bfc34dab58"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              51,
+              7
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "pi05-runtime_selected",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/pi05-runtime_selected/receipt.npz",
+            "historical_file_sha256": "b74afa7ec8d317e9f2690057c95f121782d81c41c29d5d7306da86e09aeedb17",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-runtime_selected/receipt.json",
+              "sha256": "a6f2b3c4492ecf9e164f989ca715e1bd29974f2442b6c74d343777f3876b3148"
+            },
+            "historical_shape": [
+              25,
+              7
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-runtime_selected/receipt.npz",
+            "new_file_sha256": "b74afa7ec8d317e9f2690057c95f121782d81c41c29d5d7306da86e09aeedb17",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-runtime_selected/receipt.json",
+              "sha256": "b9cf21ec36976ca027a599ea24299903e2f36a96232631bfca85c5f1a3e1a069"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              7
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "pi05-runtime_selected",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.queue.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/pi05-runtime_selected/receipt.queue.npz",
+            "historical_file_sha256": "3db99580fe99db5465d15793521b27faabe888dc6cff131d801abe90f46c6ec7",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-runtime_selected/receipt.json",
+              "sha256": "a6f2b3c4492ecf9e164f989ca715e1bd29974f2442b6c74d343777f3876b3148"
+            },
+            "historical_shape": [
+              51,
+              7
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-runtime_selected/receipt.queue.npz",
+            "new_file_sha256": "3db99580fe99db5465d15793521b27faabe888dc6cff131d801abe90f46c6ec7",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-runtime_selected/receipt.json",
+              "sha256": "b9cf21ec36976ca027a599ea24299903e2f36a96232631bfca85c5f1a3e1a069"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              51,
+              7
+            ]
+          }
+        ],
+        "assessment_complete": true,
+        "exact_action_equivalence": true,
+        "scope": "Each current arm versus its own frozen historical arm, exact bytes without tolerance changes.",
+        "status": "passed"
+      },
+      "paired": {
+        "cells": [
+          {
+            "action_sha256": "f3169f697ae1e05fbe8aa5d39b606ff5023e9c0cf0f40234c4ed2bc749090737",
+            "id": "pi05-eager_native",
+            "metric": "generation_p50_ms",
+            "p50_ms": 408.58450400992297,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-eager_native/receipt.json",
+              "sha256": "b8bfbb51481b9282845f97cd7b6b35bc5383e1761500011ae085138c5107550d"
+            },
+            "samples": 20,
+            "schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            }
+          },
+          {
+            "action_sha256": "f3169f697ae1e05fbe8aa5d39b606ff5023e9c0cf0f40234c4ed2bc749090737",
+            "id": "pi05-runtime_default",
+            "metric": "generation_p50_ms",
+            "p50_ms": 306.8672350200359,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-runtime_default/receipt.json",
+              "sha256": "dd2239c94c29a06336e5bf94d61120ee87957ca2c957922cc76eb9bfc34dab58"
+            },
+            "samples": 20,
+            "schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            }
+          },
+          {
+            "action_sha256": "b74afa7ec8d317e9f2690057c95f121782d81c41c29d5d7306da86e09aeedb17",
+            "id": "pi05-runtime_selected",
+            "metric": "generation_p50_ms",
+            "p50_ms": 51.84710197499953,
+            "precision": "fp8",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/cells/pi05-runtime_selected/receipt.json",
+              "sha256": "b9cf21ec36976ca027a599ea24299903e2f36a96232631bfca85c5f1a3e1a069"
+            },
+            "samples": 20,
+            "schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            }
+          }
+        ],
+        "comparisons": [
+          {
+            "actions": {
+              "exact_bytes": true,
+              "exact_values": true,
+              "max_abs": 0.0,
+              "metric_overflow": false,
+              "rmse": 0.0,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "pi05-eager_native",
+            "baseline_schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "candidate": "pi05-runtime_default",
+            "candidate_schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 1.329924378041785,
+            "paired_samples": 20,
+            "queue_drain_actions": {
+              "exact_bytes": true,
+              "exact_values": true,
+              "max_abs": 0.0,
+              "metric_overflow": false,
+              "rmse": 0.0,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "queue_drain_total_ratio": 1.2468422487484063,
+            "ratio_of_p50": 1.3314699563257244,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          },
+          {
+            "actions": {
+              "exact_bytes": false,
+              "exact_values": false,
+              "max_abs": 0.3901025354862213,
+              "metric_overflow": false,
+              "rmse": 0.06737675194679091,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "pi05-eager_native",
+            "baseline_schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "candidate": "pi05-runtime_selected",
+            "candidate_schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 7.879489175193317,
+            "paired_samples": 20,
+            "queue_drain_actions": {
+              "exact_bytes": false,
+              "exact_values": false,
+              "max_abs": 0.27249082922935486,
+              "metric_overflow": false,
+              "rmse": 0.05958034820122958,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "queue_drain_total_ratio": 5.367849996972843,
+            "ratio_of_p50": 7.880565903315884,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          }
+        ],
+        "matrix": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/matrix.json",
+          "sha256": "0adeb5d3b930498942ee8173383ee2e92a23d363b320129a12cf5d6471b0909d"
+        },
+        "plan": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/plan.json",
+          "sha256": "1ea6a5051492a63e1d7c7449507486e40e61b6eea9271488aeade7b337d9d3bb"
+        },
+        "preparation": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/preparation.json",
+          "sha256": "98293e85908d2f93cc8ad354b7deb2a42c184a84602f043920bea588e64c7a97"
+        },
+        "published_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/validated_report/report.json",
+          "sha256": "0007d4958da92f657ead092f1a6ac6e403e57fcae28d6fcb4606f3f9ce76adb0"
+        },
+        "replay_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v5/pi05_paired_replay.json",
+          "sha256": "438298fde5168c75a3090843748a6f56caac9c143251f32e0bbae1365e7f7089"
+        },
+        "run": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/run/run.json",
+          "sha256": "be4d7eef4cfb5bb56cdf1d18dac6212b042bcafc6b752b170f65eee38b4a3fa5"
+        },
+        "status": "passed",
+        "task_quality_certified": false
+      },
+      "serving": {
+        "results": [
+          {
+            "actions": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/serving_fp8_v2/actions.npz",
+              "sha256": "8377cc9e32d65269ee946c8694723deae1eb1fc3fd701520d570a557d0e1e3c7"
+            },
+            "calls": 6,
+            "cell": "pi05-runtime_selected",
+            "config": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/serving_fp8_v2/serve.json",
+              "sha256": "9a7bc9d518230b15c154160fb9bbb27ef04aec592225d4624db83a2d6409311a"
+            },
+            "episodes": 2,
+            "latency_benchmark": false,
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05/serving_fp8_v2/receipt.json",
+              "sha256": "ee2df1a42d11f9690eca43dedc41f0c239dbe381bc5bf4ff1a3f88fa3ebda329"
+            },
+            "reset_scope": "Frozen client sends and validates reset before each episode; individual reset acknowledgments are not separately persisted.",
+            "server_exit_code": 0,
+            "status": "passed",
+            "task_quality_certified": false
+          }
+        ],
+        "status": "passed"
+      },
+      "status": "passed"
+    },
+    "va": {
+      "historical_equivalence": {
+        "arrays": [
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "va-eager_native",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/va-eager_native/receipt.npz",
+            "historical_file_sha256": "9ec5a12fa2e802f4a3349bef062a2414d1a5c794881de829941b6bfcdef47cb4",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-eager_native/receipt.json",
+              "sha256": "1af8f85271fb6bdebdd4d5331271aab8444d77ce70546c77965215dacc17db8b"
+            },
+            "historical_shape": [
+              21,
+              16,
+              2,
+              16
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/va/run/cells/va-eager_native/receipt.npz",
+            "new_file_sha256": "9ec5a12fa2e802f4a3349bef062a2414d1a5c794881de829941b6bfcdef47cb4",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/run/cells/va-eager_native/receipt.json",
+              "sha256": "d6a052db19641dcbffab551092d0b419f5d6a35d4a81b609407aa034016258ca"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              21,
+              16,
+              2,
+              16
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "va-runtime_default",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/va-runtime_default/receipt.npz",
+            "historical_file_sha256": "9ec5a12fa2e802f4a3349bef062a2414d1a5c794881de829941b6bfcdef47cb4",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-runtime_default/receipt.json",
+              "sha256": "e0e6faed8ea2090fcfd5cda59a3c7b6cbb48536f7b5831c3d1452286596f8e6b"
+            },
+            "historical_shape": [
+              21,
+              16,
+              2,
+              16
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/va/run/cells/va-runtime_default/receipt.npz",
+            "new_file_sha256": "9ec5a12fa2e802f4a3349bef062a2414d1a5c794881de829941b6bfcdef47cb4",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/run/cells/va-runtime_default/receipt.json",
+              "sha256": "ba370425cdce6b406db4297008ea02f94d9ee168fb80d62c22167e5ef9039ba5"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              21,
+              16,
+              2,
+              16
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "va-runtime_selected",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/va-runtime_selected/receipt.npz",
+            "historical_file_sha256": "71ad5839f6851b70eafa896129cd3cfc637a9c743fe7825ff0013c06880c56fc",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-runtime_selected/receipt.json",
+              "sha256": "4107339b13a31007a37fcefce89e8d0ac8e0c4b6270ad772f8ddc3fd8287e494"
+            },
+            "historical_shape": [
+              21,
+              16,
+              2,
+              16
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/va/run/cells/va-runtime_selected/receipt.npz",
+            "new_file_sha256": "71ad5839f6851b70eafa896129cd3cfc637a9c743fe7825ff0013c06880c56fc",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/run/cells/va-runtime_selected/receipt.json",
+              "sha256": "374c2408e70d3a2743b70d03fd3ac82e6d35c29f974b01a67ee4587f7c35d886"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              21,
+              16,
+              2,
+              16
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "va-2v4a-fp8",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/va-2v4a-fp8/receipt.npz",
+            "historical_file_sha256": "c664e4851fbab124a4234f453ef0f526ab16839f809244afc408214626915164",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-2v4a-fp8/receipt.json",
+              "sha256": "c4c60f02432f28cc9a6c40b371acaf28652eb03633167991273a79990588490a"
+            },
+            "historical_shape": [
+              21,
+              16,
+              2,
+              16
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/va/run/cells/va-2v4a-fp8/receipt.npz",
+            "new_file_sha256": "c664e4851fbab124a4234f453ef0f526ab16839f809244afc408214626915164",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/run/cells/va-2v4a-fp8/receipt.json",
+              "sha256": "036afc3a29ffbbeb2ac55c083502461d96fc1d1fde3e1920b9078d5dae6e9f40"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              21,
+              16,
+              2,
+              16
+            ]
+          }
+        ],
+        "assessment_complete": true,
+        "exact_action_equivalence": true,
+        "scope": "Each current arm versus its own frozen historical arm, exact bytes without tolerance changes.",
+        "status": "passed"
+      },
+      "paired": {
+        "cells": [
+          {
+            "action_sha256": "9ec5a12fa2e802f4a3349bef062a2414d1a5c794881de829941b6bfcdef47cb4",
+            "id": "va-eager_native",
+            "metric": "continuation_p50_ms",
+            "p50_ms": 15506.31952600088,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/run/cells/va-eager_native/receipt.json",
+              "sha256": "d6a052db19641dcbffab551092d0b419f5d6a35d4a81b609407aa034016258ca"
+            },
+            "samples": 12,
+            "schedule": {
+              "action_steps": 50,
+              "nfe": {
+                "action": 50,
+                "video": 25
+              },
+              "sampler": "checkpoint",
+              "video_steps": 25
+            }
+          },
+          {
+            "action_sha256": "9ec5a12fa2e802f4a3349bef062a2414d1a5c794881de829941b6bfcdef47cb4",
+            "id": "va-runtime_default",
+            "metric": "continuation_p50_ms",
+            "p50_ms": 5704.887348489137,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/run/cells/va-runtime_default/receipt.json",
+              "sha256": "ba370425cdce6b406db4297008ea02f94d9ee168fb80d62c22167e5ef9039ba5"
+            },
+            "samples": 12,
+            "schedule": {
+              "action_steps": 50,
+              "nfe": {
+                "action": 50,
+                "video": 25
+              },
+              "sampler": "checkpoint",
+              "video_steps": 25
+            }
+          },
+          {
+            "action_sha256": "71ad5839f6851b70eafa896129cd3cfc637a9c743fe7825ff0013c06880c56fc",
+            "id": "va-runtime_selected",
+            "metric": "continuation_p50_ms",
+            "p50_ms": 2891.7381335049868,
+            "precision": "fp8",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/run/cells/va-runtime_selected/receipt.json",
+              "sha256": "374c2408e70d3a2743b70d03fd3ac82e6d35c29f974b01a67ee4587f7c35d886"
+            },
+            "samples": 12,
+            "schedule": {
+              "action_steps": 50,
+              "nfe": {
+                "action": 50,
+                "video": 25
+              },
+              "sampler": "checkpoint",
+              "video_steps": 25
+            }
+          },
+          {
+            "action_sha256": "c664e4851fbab124a4234f453ef0f526ab16839f809244afc408214626915164",
+            "id": "va-2v4a-fp8",
+            "metric": "continuation_p50_ms",
+            "p50_ms": 459.0979430358857,
+            "precision": "fp8",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/run/cells/va-2v4a-fp8/receipt.json",
+              "sha256": "036afc3a29ffbbeb2ac55c083502461d96fc1d1fde3e1920b9078d5dae6e9f40"
+            },
+            "samples": 12,
+            "schedule": {
+              "action_steps": 4,
+              "nfe": {
+                "action": 4,
+                "video": 2
+              },
+              "sampler": "checkpoint",
+              "video_steps": 2
+            }
+          }
+        ],
+        "comparisons": [
+          {
+            "actions": {
+              "exact_bytes": true,
+              "exact_values": true,
+              "max_abs": 0.0,
+              "metric_overflow": false,
+              "rmse": 0.0,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "va-eager_native",
+            "baseline_schedule": {
+              "action_steps": 50,
+              "nfe": {
+                "action": 50,
+                "video": 25
+              },
+              "sampler": "checkpoint",
+              "video_steps": 25
+            },
+            "candidate": "va-runtime_default",
+            "candidate_schedule": {
+              "action_steps": 50,
+              "nfe": {
+                "action": 50,
+                "video": 25
+              },
+              "sampler": "checkpoint",
+              "video_steps": 25
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 2.7272365240714023,
+            "paired_samples": 12,
+            "ratio_of_p50": 2.7180763753569157,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          },
+          {
+            "actions": {
+              "exact_bytes": false,
+              "exact_values": false,
+              "max_abs": 0.03124961256980896,
+              "metric_overflow": false,
+              "rmse": 0.005553425842466127,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "va-eager_native",
+            "baseline_schedule": {
+              "action_steps": 50,
+              "nfe": {
+                "action": 50,
+                "video": 25
+              },
+              "sampler": "checkpoint",
+              "video_steps": 25
+            },
+            "candidate": "va-runtime_selected",
+            "candidate_schedule": {
+              "action_steps": 50,
+              "nfe": {
+                "action": 50,
+                "video": 25
+              },
+              "sampler": "checkpoint",
+              "video_steps": 25
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 5.3409130445418285,
+            "paired_samples": 12,
+            "ratio_of_p50": 5.362283446878417,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          },
+          {
+            "actions": {
+              "exact_bytes": false,
+              "exact_values": false,
+              "max_abs": 1.121094286441803,
+              "metric_overflow": false,
+              "rmse": 0.12598099500086474,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "va-eager_native",
+            "baseline_schedule": {
+              "action_steps": 50,
+              "nfe": {
+                "action": 50,
+                "video": 25
+              },
+              "sampler": "checkpoint",
+              "video_steps": 25
+            },
+            "candidate": "va-2v4a-fp8",
+            "candidate_schedule": {
+              "action_steps": 4,
+              "nfe": {
+                "action": 4,
+                "video": 2
+              },
+              "sampler": "checkpoint",
+              "video_steps": 2
+            },
+            "interpretation": "changes sampling policy; latency ratio is not an architecture-only speedup or quality evidence",
+            "kind": "changed_policy_latency_ratio",
+            "median_paired_ratio": 33.44832139398498,
+            "paired_samples": 12,
+            "ratio_of_p50": 33.775624049765824,
+            "recommended": false,
+            "same_sampling_policy": false,
+            "status": "passed",
+            "task_quality_validated": false
+          }
+        ],
+        "matrix": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/run/matrix.json",
+          "sha256": "25661edc86698980e656308616e8ddcec544ee7ad1eccc1ab44ec938643f2ca5"
+        },
+        "plan": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/run/plan.json",
+          "sha256": "c24ae9c9383803d998e37cdf704cb139217d7370a2712d27e5d915e0071583ec"
+        },
+        "preparation": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/run/preparation.json",
+          "sha256": "869a0565afd2e3f06678623de2fae9a537d2b0f18a506c24bd8618bb31b98c33"
+        },
+        "published_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/run/validated_report/report.json",
+          "sha256": "71946b712971e0c002a8445a1eb44f8280e5f192ad240f02ff2dc74c7b27e4be"
+        },
+        "replay_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v5/va_paired_replay.json",
+          "sha256": "453ee362ac5050a4612c145b6f732f467998164e7c7e5904c9e8df195c4afa1e"
+        },
+        "run": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/run/run.json",
+          "sha256": "4ae8585002e5d5e3070c06ffb9a995ad6bbfa4dfe5e94c2255aaee7376b993d9"
+        },
+        "status": "passed",
+        "task_quality_certified": false
+      },
+      "serving": {
+        "results": [
+          {
+            "actions": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/serving_full/actions.npz",
+              "sha256": "3a75cf7299097ac279d965a908f118f09ea7550748a039881163855e323bf594"
+            },
+            "calls": 6,
+            "cell": "va-runtime_selected",
+            "config": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/serving_full/serve.json",
+              "sha256": "2337e15980cae15485371282d3ed8f57374e851815864027dab8568736cc5c09"
+            },
+            "episodes": 2,
+            "latency_benchmark": false,
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/serving_full/receipt.json",
+              "sha256": "c58f4607c35e9cd5c1b259069648b9c36e576c8fceb558c3e44c696d9963dbff"
+            },
+            "reset_scope": "Frozen client sends and validates reset before each episode; individual reset acknowledgments are not separately persisted.",
+            "server_exit_code": 0,
+            "status": "passed",
+            "task_quality_certified": false
+          },
+          {
+            "actions": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/serving_2v4a/actions.npz",
+              "sha256": "e1588e1b3948b9a2f74f03253dcd4a6ddffcc730b67375312d4175ade261d03f"
+            },
+            "calls": 6,
+            "cell": "va-2v4a-fp8",
+            "config": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/serving_2v4a/serve.json",
+              "sha256": "202b4b9ff082e9ca0f668d6c7566670964e007db2833fb0ca8ab4161b3d52f6b"
+            },
+            "episodes": 2,
+            "latency_benchmark": false,
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va/serving_2v4a/receipt.json",
+              "sha256": "4e2f47037163a1bd31b005f411072cedc1b31236972417603ac9c69c834cfe0f"
+            },
+            "reset_scope": "Frozen client sends and validates reset before each episode; individual reset acknowledgments are not separately persisted.",
+            "server_exit_code": 0,
+            "status": "passed",
+            "task_quality_certified": false
+          }
+        ],
+        "status": "passed"
+      },
+      "status": "passed"
+    },
+    "vla2": {
+      "historical_equivalence": {
+        "arrays": [
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "vla2-eager_native",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/vla2-eager_native/receipt.npz",
+            "historical_file_sha256": "c8bc8dc2639267c49144bd6ed35bd9622784a9a3be988fbf7c525d9714be23f0",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla2-eager_native/receipt.json",
+              "sha256": "3985bcd2433625b5f96ab52d4d8213b4d05db3118cfde357b72275418dc1f771"
+            },
+            "historical_shape": [
+              25,
+              50,
+              14
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-eager_native/receipt.npz",
+            "new_file_sha256": "c8bc8dc2639267c49144bd6ed35bd9622784a9a3be988fbf7c525d9714be23f0",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-eager_native/receipt.json",
+              "sha256": "f00a80efa87b9ccf6cb4cd375822480cc1f95c552114174723d669b446fa93ee"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              50,
+              14
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "vla2-runtime_default",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/vla2-runtime_default/receipt.npz",
+            "historical_file_sha256": "c8bc8dc2639267c49144bd6ed35bd9622784a9a3be988fbf7c525d9714be23f0",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla2-runtime_default/receipt.json",
+              "sha256": "cc323432eadb55f47217a47f0efaedd345f60e0f3875dc3a6221a8b932d32f41"
+            },
+            "historical_shape": [
+              25,
+              50,
+              14
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-runtime_default/receipt.npz",
+            "new_file_sha256": "c8bc8dc2639267c49144bd6ed35bd9622784a9a3be988fbf7c525d9714be23f0",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-runtime_default/receipt.json",
+              "sha256": "095fb00107cf835d6aa492fa125d8089b553fc2e8adc8d06fb73843a5f905b7d"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              50,
+              14
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "vla2-runtime_selected",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/vla2-runtime_selected/receipt.npz",
+            "historical_file_sha256": "1b1bbe9be51597980cdd0249f3c1e269ec60c8ecc99da091526998771ed8fb6d",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla2-runtime_selected/receipt.json",
+              "sha256": "df40e9567097062a3a50d9e39d12a31f4a5478a97327abfc107ca750fc77b77a"
+            },
+            "historical_shape": [
+              25,
+              50,
+              14
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-runtime_selected/receipt.npz",
+            "new_file_sha256": "1b1bbe9be51597980cdd0249f3c1e269ec60c8ecc99da091526998771ed8fb6d",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-runtime_selected/receipt.json",
+              "sha256": "ab926a54474abe2887086647a3cf62ad4719a9cf810ff48b9a7dc804e69ed9c6"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              50,
+              14
+            ]
+          }
+        ],
+        "assessment_complete": true,
+        "exact_action_equivalence": true,
+        "scope": "Each current arm versus its own frozen historical arm, exact bytes without tolerance changes.",
+        "status": "passed"
+      },
+      "paired": {
+        "cells": [
+          {
+            "action_sha256": "c8bc8dc2639267c49144bd6ed35bd9622784a9a3be988fbf7c525d9714be23f0",
+            "id": "vla2-eager_native",
+            "metric": "generation_p50_ms",
+            "p50_ms": 734.55526449834,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-eager_native/receipt.json",
+              "sha256": "f00a80efa87b9ccf6cb4cd375822480cc1f95c552114174723d669b446fa93ee"
+            },
+            "samples": 20,
+            "schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            }
+          },
+          {
+            "action_sha256": "c8bc8dc2639267c49144bd6ed35bd9622784a9a3be988fbf7c525d9714be23f0",
+            "id": "vla2-runtime_default",
+            "metric": "generation_p50_ms",
+            "p50_ms": 769.8706935043447,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-runtime_default/receipt.json",
+              "sha256": "095fb00107cf835d6aa492fa125d8089b553fc2e8adc8d06fb73843a5f905b7d"
+            },
+            "samples": 20,
+            "schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            }
+          },
+          {
+            "action_sha256": "1b1bbe9be51597980cdd0249f3c1e269ec60c8ecc99da091526998771ed8fb6d",
+            "id": "vla2-runtime_selected",
+            "metric": "generation_p50_ms",
+            "p50_ms": 394.1138549998868,
+            "precision": "fp8",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/cells/vla2-runtime_selected/receipt.json",
+              "sha256": "ab926a54474abe2887086647a3cf62ad4719a9cf810ff48b9a7dc804e69ed9c6"
+            },
+            "samples": 20,
+            "schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            }
+          }
+        ],
+        "comparisons": [
+          {
+            "actions": {
+              "exact_bytes": true,
+              "exact_values": true,
+              "max_abs": 0.0,
+              "metric_overflow": false,
+              "rmse": 0.0,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "vla2-eager_native",
+            "baseline_schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "candidate": "vla2-runtime_default",
+            "candidate_schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 0.9559149113830735,
+            "paired_samples": 20,
+            "ratio_of_p50": 0.9541281031945069,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          },
+          {
+            "actions": {
+              "exact_bytes": false,
+              "exact_values": false,
+              "max_abs": 0.10081000626087189,
+              "metric_overflow": false,
+              "rmse": 0.009328359350090812,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "vla2-eager_native",
+            "baseline_schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "candidate": "vla2-runtime_selected",
+            "candidate_schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 1.8653656613140561,
+            "paired_samples": 20,
+            "ratio_of_p50": 1.863814872731513,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          }
+        ],
+        "matrix": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/matrix.json",
+          "sha256": "ab0b60645c068681977702b948f7e829cb6b1b27a25be12b0683b995b2f9ead0"
+        },
+        "plan": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/plan.json",
+          "sha256": "c108c60bb4697252c4041278e2224ee0c17ec9cf440f9e523007ac4f8e7f8639"
+        },
+        "preparation": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/preparation.json",
+          "sha256": "369e9604c22dbdd2867cc42d3e5136e2c278e9631b815c1174590f9caf147ed7"
+        },
+        "published_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/validated_report/report.json",
+          "sha256": "3a5c632ed952b9f834f107ef6789bb3bf0e65c77cf328658eec8b9c238e0b51e"
+        },
+        "replay_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v5/vla2_paired_replay.json",
+          "sha256": "3250ff5906e0156819360855f431ca4d1a70754d514c58d9036900dc1ae26f90"
+        },
+        "run": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/run/run.json",
+          "sha256": "f3a3d45076970f279aab63754bfd79318134f96a9bdf2aee3ca4d1120c559ab9"
+        },
+        "status": "passed",
+        "task_quality_certified": false
+      },
+      "serving": {
+        "results": [
+          {
+            "actions": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/serving/actions.npz",
+              "sha256": "0a4e8fe02c548fe418c283782b3b4d48a9768dee0b227fae6bdd131fed6db061"
+            },
+            "calls": 6,
+            "cell": "vla2-runtime_selected",
+            "config": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/serving/serve.json",
+              "sha256": "9b1a0b0b67a55d85394177f956f93d340f55a1fc8cd5e1c69c2739d045faa485"
+            },
+            "episodes": 2,
+            "latency_benchmark": false,
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2/serving/receipt.json",
+              "sha256": "233de04d25e21b667c5f66e1fdd6b9aecaa0c13adabd1eeeab175b86e2e8d56e"
+            },
+            "reset_scope": "Frozen client sends and validates reset before each episode; individual reset acknowledgments are not separately persisted.",
+            "server_exit_code": 0,
+            "status": "passed",
+            "task_quality_certified": false
+          }
+        ],
+        "status": "passed"
+      },
+      "status": "passed"
+    },
+    "vla4": {
+      "historical_equivalence": {
+        "arrays": [
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "vla4-eager_native",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/vla4-eager_native/receipt.npz",
+            "historical_file_sha256": "66a170074d6437cd8ae36bfdaa105123d2a9725f3b75e30512ba5f3c185610f9",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla4-eager_native/receipt.json",
+              "sha256": "ae1aaa5154aec22cff218c9da31501d54c2b8cfe9426b45c8493a28d4e38533d"
+            },
+            "historical_shape": [
+              25,
+              25,
+              14
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/vla4/run/cells/vla4-eager_native/receipt.npz",
+            "new_file_sha256": "66a170074d6437cd8ae36bfdaa105123d2a9725f3b75e30512ba5f3c185610f9",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/run/cells/vla4-eager_native/receipt.json",
+              "sha256": "eb0c2e9b5a1619c992f1110a11a90394f7a1000ceb2d2a3ad7d4fb8fcb651e6f"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              25,
+              14
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "vla4-runtime_default",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/vla4-runtime_default/receipt.npz",
+            "historical_file_sha256": "66a170074d6437cd8ae36bfdaa105123d2a9725f3b75e30512ba5f3c185610f9",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla4-runtime_default/receipt.json",
+              "sha256": "99f204d3318a79e40c54982c0a71ab43e79c26a09eee3c2a38da6e83f17d21f4"
+            },
+            "historical_shape": [
+              25,
+              25,
+              14
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/vla4/run/cells/vla4-runtime_default/receipt.npz",
+            "new_file_sha256": "66a170074d6437cd8ae36bfdaa105123d2a9725f3b75e30512ba5f3c185610f9",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/run/cells/vla4-runtime_default/receipt.json",
+              "sha256": "f4b06876d549adaec934be465c168616c8d01a78eb5a9a79ba2de05777e0fa69"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              25,
+              14
+            ]
+          },
+          {
+            "assembler_source_sha256": "45b8abe781a1141deacf4c1f7f100f176844ec8ab64ada526286d3a50dd2085b",
+            "cell": "vla4-runtime_selected",
+            "comparison_source_sha256": "f68138b3b2f6830bdf570ff266c676940a1b007a783006bf1754c34fda245e6e",
+            "dtype": "float32",
+            "file": "receipt.npz",
+            "historical_actions_match_bytes": true,
+            "historical_dtype": "float32",
+            "historical_file": "eval/user_e2e_2026-09-14/cells/vla4-runtime_selected/receipt.npz",
+            "historical_file_sha256": "0ee32248118947d677e8d0bfbe8d88fd33be0e2eed79c037f91c849005c2bcc3",
+            "historical_matrix": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+              "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+            },
+            "historical_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla4-runtime_selected/receipt.json",
+              "sha256": "00a3e0e9ffa025a2e5d6442c10d0252eb68cf9c2deab95688bb3d73fc009581b"
+            },
+            "historical_shape": [
+              25,
+              25,
+              14
+            ],
+            "max_abs": 0.0,
+            "new_file": "eval/public_release_2026-09-15/qualification/vla4/run/cells/vla4-runtime_selected/receipt.npz",
+            "new_file_sha256": "0ee32248118947d677e8d0bfbe8d88fd33be0e2eed79c037f91c849005c2bcc3",
+            "new_receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/run/cells/vla4-runtime_selected/receipt.json",
+              "sha256": "80854b992bbe734904a47647a9ace73f4435cec8cbf93d581db5625fac193524"
+            },
+            "qualification_selection": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+              "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+            },
+            "same_dtype": true,
+            "same_shape": true,
+            "scope": "Each new arm versus its declared historical arm; no task-quality claim.",
+            "shape": [
+              25,
+              25,
+              14
+            ]
+          }
+        ],
+        "assessment_complete": true,
+        "exact_action_equivalence": true,
+        "scope": "Each current arm versus its own frozen historical arm, exact bytes without tolerance changes.",
+        "status": "passed"
+      },
+      "paired": {
+        "cells": [
+          {
+            "action_sha256": "66a170074d6437cd8ae36bfdaa105123d2a9725f3b75e30512ba5f3c185610f9",
+            "id": "vla4-eager_native",
+            "metric": "generation_p50_ms",
+            "p50_ms": 624.216369993519,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/run/cells/vla4-eager_native/receipt.json",
+              "sha256": "eb0c2e9b5a1619c992f1110a11a90394f7a1000ceb2d2a3ad7d4fb8fcb651e6f"
+            },
+            "samples": 20,
+            "schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            }
+          },
+          {
+            "action_sha256": "66a170074d6437cd8ae36bfdaa105123d2a9725f3b75e30512ba5f3c185610f9",
+            "id": "vla4-runtime_default",
+            "metric": "generation_p50_ms",
+            "p50_ms": 251.30686745978892,
+            "precision": "native",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/run/cells/vla4-runtime_default/receipt.json",
+              "sha256": "f4b06876d549adaec934be465c168616c8d01a78eb5a9a79ba2de05777e0fa69"
+            },
+            "samples": 20,
+            "schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            }
+          },
+          {
+            "action_sha256": "0ee32248118947d677e8d0bfbe8d88fd33be0e2eed79c037f91c849005c2bcc3",
+            "id": "vla4-runtime_selected",
+            "metric": "generation_p50_ms",
+            "p50_ms": 221.52941150125116,
+            "precision": "fp8",
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/run/cells/vla4-runtime_selected/receipt.json",
+              "sha256": "80854b992bbe734904a47647a9ace73f4435cec8cbf93d581db5625fac193524"
+            },
+            "samples": 20,
+            "schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            }
+          }
+        ],
+        "comparisons": [
+          {
+            "actions": {
+              "exact_bytes": true,
+              "exact_values": true,
+              "max_abs": 0.0,
+              "metric_overflow": false,
+              "rmse": 0.0,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "vla4-eager_native",
+            "baseline_schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "candidate": "vla4-runtime_default",
+            "candidate_schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 2.4866831376943375,
+            "paired_samples": 20,
+            "ratio_of_p50": 2.4838810666143,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          },
+          {
+            "actions": {
+              "exact_bytes": false,
+              "exact_values": false,
+              "max_abs": 0.8350388966500759,
+              "metric_overflow": false,
+              "rmse": 0.04834691319376125,
+              "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+            },
+            "baseline": "vla4-eager_native",
+            "baseline_schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "candidate": "vla4-runtime_selected",
+            "candidate_schedule": {
+              "nfe": {
+                "action": 10,
+                "prefix": 1
+              },
+              "sampler": "checkpoint"
+            },
+            "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+            "kind": "matched_policy_latency_ratio",
+            "median_paired_ratio": 2.8177403630847166,
+            "paired_samples": 20,
+            "ratio_of_p50": 2.817758444638822,
+            "recommended": false,
+            "same_sampling_policy": true,
+            "status": "passed",
+            "task_quality_validated": false
+          }
+        ],
+        "matrix": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/run/matrix.json",
+          "sha256": "18d60e2e74bf667ddf180d6fc3ca6fb60d7d5e01809b9f6d7e423a06be9d17d1"
+        },
+        "plan": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/run/plan.json",
+          "sha256": "6edd3f91796361cea0a5a1792db5b4c7471e6ec4aa300b0a2b9a18a74a4799f9"
+        },
+        "preparation": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/run/preparation.json",
+          "sha256": "19f17bd2b3a209097b619988ded1a00d89203dd2f5931052e09bd2add8c35614"
+        },
+        "published_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/run/validated_report/report.json",
+          "sha256": "55a91f128b0dadfc7a1a7c7dd071b05fa582c16b201a8c4b8eb3451cd9fb7455"
+        },
+        "replay_report": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v5/vla4_paired_replay.json",
+          "sha256": "929a598f7d8921510c1251962fed469a5bbb48cfec839f1937c50af2e815bf52"
+        },
+        "run": {
+          "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/run/run.json",
+          "sha256": "24bf54483aa28711153a7b01c2e33bfdf93c7d1277a04e83cc27fd3793f61717"
+        },
+        "status": "passed",
+        "task_quality_certified": false
+      },
+      "serving": {
+        "results": [
+          {
+            "actions": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/serving/actions.npz",
+              "sha256": "c0b5d3d8c1b3d5e4561e46309e61e1b88454503a5a423b9fa91d0c7795c0d158"
+            },
+            "calls": 6,
+            "cell": "vla4-runtime_selected",
+            "config": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/serving/serve.json",
+              "sha256": "19c4dbcc297952004be75579e54ed190e58550db5089452ad00123ad3a49833d"
+            },
+            "episodes": 2,
+            "latency_benchmark": false,
+            "receipt": {
+              "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4/serving/receipt.json",
+              "sha256": "484e2b775017d557fd66fb931b9765652c27d50cfe83a0a67d2319d1d392264c"
+            },
+            "reset_scope": "Frozen client sends and validates reset before each episode; individual reset acknowledgments are not separately persisted.",
+            "server_exit_code": 0,
+            "status": "passed",
+            "task_quality_certified": false
+          }
+        ],
+        "status": "passed"
+      },
+      "status": "passed"
+    }
+  },
+  "omni_dependency_closure": {
+    "actual_native_symbol_guard": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/omni_missing_dependencies_v1/native_evidence/native_symbol_cpu_guard_v2.receipt.json",
+      "sha256": "d5023da580c62ae5cbf964abc84417ed42a02d9d25cf7fd407d26438af8b7df6"
+    },
+    "added_package_versions": {
+      "iopath": "0.1.10",
+      "portalocker": "4.3.0"
+    },
+    "completion": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/omni_missing_dependencies_v1/native_evidence/completion_v2.json",
+      "sha256": "f9bb92cbb03ae55ef5cd9b70c771e82c7146085c6e0392ef2140a91c042e9f95"
+    },
+    "copied_inventory": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/omni_missing_dependencies_v1/copied_native_evidence.json",
+      "sha256": "4e6b68b5400aba949119d8770b063625caacc7464a03bcccefee52bde51f4b52"
+    },
+    "existing_package_version_changes": [],
+    "gpu_capture_qualified": false,
+    "metadata_changes": {
+      "cosmos-framework": {
+        "after": "13f0bbee93e7539d6642b5726d12d2458bb4dc56db7120cca7efef54452d36f3",
+        "before": "5406a7c3bfd2b4126b36f2a80cf0d95e5f0d65f40392063d194c3228cf68c0a2"
+      }
+    },
+    "old_prepared_plan_or_catalog_modified": false,
+    "preserved_native_source_files": 2305,
+    "preserved_vendor_payload_members": 767,
+    "scope": "Replayed hash-bound CPU closure only. The actual foreign captures retain their original package/catalog fields and independent process gates.",
+    "status": "passed"
+  },
+  "preserved_prior_nano_diagnostic": {
+    "comparison": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/comparison_v1.json",
+      "sha256": "109d524882c5dd56ea7090558c8f571e6d2c84737eefc83d87e46bd61664c172"
+    },
+    "independent_audit": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/actual_independent_audit_v1.json",
+      "sha256": "2c6a5ca5af6ef263be4a2933a1a697a45b454455fac0cbbcf90e576a319b4296"
+    },
+    "no_established_cause": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/next_cause_source_review_v1.json",
+      "sha256": "6a6e60ad8f8ffee2a5555b93418911edd31cff174aa2a13fc7a8f71db2d2214a"
+    },
+    "status": "failed_historical_equivalence"
+  },
+  "prior_cosmos_SCREEN_transferred": false,
+  "published_selected_cell_ids": {
+    "dreamzero": "dreamzero-dynamic-fp8",
+    "edge": "edge-runtime_selected",
+    "groot": "groot-runtime_selected",
+    "nano": "nano-runtime_selected",
+    "pi05": "pi05-runtime_selected",
+    "va": "va-runtime_selected",
+    "vla2": "vla2-runtime_selected",
+    "vla4": "vla4-runtime_selected"
+  },
+  "schema": "instinctflash.current_public_pipeline_qualification.v1",
+  "selected_qualification_roots": {
+    "dreamzero": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero",
+    "edge": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/edge/pytorch_triton_v1",
+    "groot": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot",
+    "nano": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/pytorch_triton_v1",
+    "pi05": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/pi05",
+    "va": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/va",
+    "vla2": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla2",
+    "vla4": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/vla4"
+  },
+  "selection": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v5.json",
+    "sha256": "ceea06cd9ae71c9aa0f6a953cb2b448165b0928fde7e6336f73863785554c402"
+  },
+  "source_correspondence": {
+    "covered_cells": [
+      "dreamzero-dynamic-fp8",
+      "dreamzero-eager_native",
+      "dreamzero-runtime_default",
+      "dreamzero-runtime_selected",
+      "edge-eager_native",
+      "edge-runtime_default",
+      "edge-runtime_selected",
+      "groot-eager_native",
+      "groot-runtime_default",
+      "groot-runtime_selected",
+      "nano-eager_native",
+      "nano-runtime_default",
+      "nano-runtime_selected",
+      "pi05-eager_native",
+      "pi05-runtime_default",
+      "pi05-runtime_selected",
+      "va-2v4a-fp8",
+      "va-eager_native",
+      "va-runtime_default",
+      "va-runtime_selected",
+      "vla2-eager_native",
+      "vla2-runtime_default",
+      "vla2-runtime_selected",
+      "vla4-eager_native",
+      "vla4-runtime_default",
+      "vla4-runtime_selected"
+    ],
+    "receipt": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v5/source_correspondence/receipt.json",
+      "sha256": "d6f8627e942f49821f484925018ee123f1f2b138abfba6d0b347952e330965b9"
+    },
+    "status": "passed"
+  },
+  "source_stage_admission": {
+    "baseline": {
+      "path": "/home/ubuntu/ifl-public-full-stage-20260915-v8/manifest.json",
+      "sha256": "dc0a7cf93775cf493a630753d3fe1fcc29f0912154218586e6410169648d3197"
+    },
+    "changed_source_paths": [
+      "INSTALL.rst",
+      "README.md",
+      "REPRODUCE.rst",
+      "examples/cosmos3_sde1/README.rst",
+      "scripts/bootstrap_vendor.py",
+      "scripts/build_public_release.py",
+      "tests/test_bootstrap_vendor.py"
+    ],
+    "manifest": {
+      "path": "/home/ubuntu/ifl-public-full-stage-20260915-v9-docfix1/manifest.json",
+      "sha256": "a316bd918ae4426460f0779f90f34985b31a8639f3b6be7f9dd20e86c9cbdbc4"
+    },
+    "source_addendum": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/source_addendum_v5.json",
+      "sha256": "e751698fc99d3d4771a2940b02b33a0f1b99a267420ad89ea671a86dace7458a"
+    }
+  },
+  "source_stage_manifest": {
+    "path": "/home/ubuntu/ifl-public-full-stage-20260915-v9-docfix1/manifest.json",
+    "sha256": "a316bd918ae4426460f0779f90f34985b31a8639f3b6be7f9dd20e86c9cbdbc4"
+  },
+  "status": "current_pipeline_qualified",
+  "table": [
+    {
+      "InstinctFlash_p50_ms": 51.84710197499953,
+      "LeRobot_p50_ms": 93.91610501916148,
+      "LeRobot_status": "passed",
+      "comparison_reference_default_p50_ms": null,
+      "comparison_reference_native_p50_ms": null,
+      "comparison_reference_scope": null,
+      "current_pipeline_status": "passed",
+      "historical_equivalence": "passed",
+      "model": "pi05",
+      "native_p50_ms": 408.58450400992297,
+      "published_cell": "pi05-runtime_selected",
+      "runtime_default_p50_ms": 306.8672350200359,
+      "vLLM_Omni_p50_ms": null,
+      "vLLM_Omni_status": "unsupported"
+    },
+    {
+      "InstinctFlash_p50_ms": 117.29710450163111,
+      "LeRobot_p50_ms": 247.0066364912782,
+      "LeRobot_status": "passed",
+      "comparison_reference_default_p50_ms": null,
+      "comparison_reference_native_p50_ms": null,
+      "comparison_reference_scope": null,
+      "current_pipeline_status": "passed",
+      "historical_equivalence": "passed",
+      "model": "groot",
+      "native_p50_ms": 139.49823949951679,
+      "published_cell": "groot-runtime_selected",
+      "runtime_default_p50_ms": 115.03954351064749,
+      "vLLM_Omni_p50_ms": null,
+      "vLLM_Omni_status": "not_qualified"
+    },
+    {
+      "InstinctFlash_p50_ms": 221.52941150125116,
+      "LeRobot_p50_ms": null,
+      "LeRobot_status": "unsupported",
+      "comparison_reference_default_p50_ms": null,
+      "comparison_reference_native_p50_ms": null,
+      "comparison_reference_scope": null,
+      "current_pipeline_status": "passed",
+      "historical_equivalence": "passed",
+      "model": "vla4",
+      "native_p50_ms": 624.216369993519,
+      "published_cell": "vla4-runtime_selected",
+      "runtime_default_p50_ms": 251.30686745978892,
+      "vLLM_Omni_p50_ms": null,
+      "vLLM_Omni_status": "unsupported"
+    },
+    {
+      "InstinctFlash_p50_ms": 394.1138549998868,
+      "LeRobot_p50_ms": null,
+      "LeRobot_status": "unsupported",
+      "comparison_reference_default_p50_ms": null,
+      "comparison_reference_native_p50_ms": null,
+      "comparison_reference_scope": null,
+      "current_pipeline_status": "passed",
+      "historical_equivalence": "passed",
+      "model": "vla2",
+      "native_p50_ms": 734.55526449834,
+      "published_cell": "vla2-runtime_selected",
+      "runtime_default_p50_ms": 769.8706935043447,
+      "vLLM_Omni_p50_ms": null,
+      "vLLM_Omni_status": "unsupported"
+    },
+    {
+      "InstinctFlash_p50_ms": 2891.7381335049868,
+      "LeRobot_p50_ms": null,
+      "LeRobot_status": "unmeasured",
+      "comparison_reference_default_p50_ms": null,
+      "comparison_reference_native_p50_ms": null,
+      "comparison_reference_scope": null,
+      "current_pipeline_status": "passed",
+      "historical_equivalence": "passed",
+      "model": "va",
+      "native_p50_ms": 15506.31952600088,
+      "published_cell": "va-runtime_selected",
+      "runtime_default_p50_ms": 5704.887348489137,
+      "vLLM_Omni_p50_ms": null,
+      "vLLM_Omni_status": "unsupported"
+    },
+    {
+      "InstinctFlash_p50_ms": 459.0979430358857,
+      "LeRobot_p50_ms": 1171.0779450077098,
+      "LeRobot_status": "passed",
+      "comparison_reference_default_p50_ms": 5704.887348489137,
+      "comparison_reference_native_p50_ms": 15506.31952600088,
+      "comparison_reference_scope": "Full VA 25V50A; not a native/default 2V4A measurement",
+      "current_pipeline_status": "passed",
+      "historical_equivalence": "passed",
+      "model": "va-2v4a-fp8",
+      "native_p50_ms": null,
+      "published_cell": "va-2v4a-fp8",
+      "runtime_default_p50_ms": null,
+      "vLLM_Omni_p50_ms": null,
+      "vLLM_Omni_status": "unsupported"
+    },
+    {
+      "InstinctFlash_p50_ms": 1048.0067335010972,
+      "LeRobot_p50_ms": null,
+      "LeRobot_status": "unsupported",
+      "comparison_reference_default_p50_ms": null,
+      "comparison_reference_native_p50_ms": null,
+      "comparison_reference_scope": null,
+      "current_pipeline_status": "passed",
+      "historical_equivalence": "passed",
+      "model": "edge",
+      "native_p50_ms": 3393.7791274802294,
+      "published_cell": "edge-runtime_selected",
+      "runtime_default_p50_ms": 2549.0313799818978,
+      "vLLM_Omni_p50_ms": 1074.1128340014257,
+      "vLLM_Omni_status": "passed"
+    },
+    {
+      "InstinctFlash_p50_ms": 4772.384611977031,
+      "LeRobot_p50_ms": null,
+      "LeRobot_status": "unsupported",
+      "comparison_reference_default_p50_ms": null,
+      "comparison_reference_native_p50_ms": null,
+      "comparison_reference_scope": null,
+      "current_pipeline_status": "passed",
+      "historical_equivalence": "passed",
+      "model": "nano",
+      "native_p50_ms": 10184.677023993572,
+      "published_cell": "nano-runtime_selected",
+      "runtime_default_p50_ms": 8557.831917016301,
+      "vLLM_Omni_p50_ms": 4417.634500510758,
+      "vLLM_Omni_status": "passed"
+    },
+    {
+      "InstinctFlash_p50_ms": 11899.423940485576,
+      "LeRobot_p50_ms": null,
+      "LeRobot_status": "unsupported",
+      "comparison_reference_default_p50_ms": null,
+      "comparison_reference_native_p50_ms": null,
+      "comparison_reference_scope": null,
+      "current_pipeline_status": "passed",
+      "historical_equivalence": "failed_historical_equivalence",
+      "model": "dreamzero",
+      "native_p50_ms": 23563.08018002892,
+      "published_cell": "dreamzero-dynamic-fp8",
+      "runtime_default_p50_ms": 23876.198655518238,
+      "vLLM_Omni_p50_ms": 8729.643308994127,
+      "vLLM_Omni_status": "passed"
+    }
+  ],
+  "task_quality_certified": false
+}

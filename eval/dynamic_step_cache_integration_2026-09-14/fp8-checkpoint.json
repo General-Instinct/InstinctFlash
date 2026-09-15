@@ -1,0 +1,2681 @@
+{
+  "status": "passed",
+  "precision": "fp8",
+  "schedule": "checkpoint",
+  "model": "GEAR-Dreams/DreamZero-DROID",
+  "revision": "96ad344138c66e82536422432ad742f015784942",
+  "torch": "2.11.0+cu130",
+  "device": "NVIDIA Thor",
+  "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+  "scope": "Bounded Thor API latency and native-loop parity SCREEN; no task-quality certificate",
+  "timing_scope": {
+    "included": "public predict and NumPy action conversion, synchronized before/after",
+    "excluded": [
+      "model loading",
+      "episode reset",
+      "observation assembly",
+      "seeding",
+      "diagnostic observers",
+      "tensor hashing",
+      "receipt writes"
+    ],
+    "warmup_episodes": 1,
+    "measured_episodes": 2,
+    "continuation_cycles_per_episode": 2
+  },
+  "quality_certified": false,
+  "timings": [
+    {
+      "episode": 0,
+      "cycle": 0,
+      "seed": 17000,
+      "ms": 34967.80654299073,
+      "phase": "warmup",
+      "step_cache": null
+    },
+    {
+      "episode": 0,
+      "cycle": 1,
+      "seed": 17001,
+      "ms": 22813.684532011393,
+      "phase": "warmup",
+      "step_cache": null
+    },
+    {
+      "episode": 0,
+      "cycle": 2,
+      "seed": 17002,
+      "ms": 22889.768433000427,
+      "phase": "warmup",
+      "step_cache": null
+    },
+    {
+      "episode": 1,
+      "cycle": 0,
+      "seed": 17017,
+      "ms": 18169.7868820047,
+      "phase": "measured",
+      "step_cache": null
+    },
+    {
+      "episode": 1,
+      "cycle": 1,
+      "seed": 17018,
+      "ms": 20134.707565011922,
+      "phase": "measured",
+      "step_cache": null
+    },
+    {
+      "episode": 1,
+      "cycle": 2,
+      "seed": 17019,
+      "ms": 21727.645392005797,
+      "phase": "measured",
+      "step_cache": null
+    },
+    {
+      "episode": 2,
+      "cycle": 0,
+      "seed": 17034,
+      "ms": 18476.821815012954,
+      "phase": "measured",
+      "step_cache": null
+    },
+    {
+      "episode": 2,
+      "cycle": 1,
+      "seed": 17035,
+      "ms": 20175.601993047167,
+      "phase": "measured",
+      "step_cache": null
+    },
+    {
+      "episode": 2,
+      "cycle": 2,
+      "seed": 17036,
+      "ms": 21733.624639979098,
+      "phase": "measured",
+      "step_cache": null
+    }
+  ],
+  "captures": {},
+  "competing_processes": [],
+  "preload_execution_policy": {
+    "category": "FP8",
+    "precision": "fp8",
+    "tier_ceiling": "behavioral",
+    "transform_tier": "NUMERIC",
+    "nfe": {
+      "video_action": 16
+    },
+    "changed_schedule": {},
+    "step_cache": {
+      "dynamic": false,
+      "fixed_steps": 8,
+      "profile": null,
+      "source": "runtime.step_cache=checkpoint"
+    },
+    "schedule_options": {
+      "dreamzero_schedule": {
+        "grid_steps": 16,
+        "computed_steps": 8,
+        "fixed_mask_steps": 8,
+        "dynamic_cache_schedule": false,
+        "profile": null,
+        "source": "runtime.step_cache=checkpoint"
+      }
+    },
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "loading": {
+    "scope": "malloc_trim(0) during loading only; thread joined before warmup/timing",
+    "samples": 480,
+    "release_calls": 479,
+    "min_available_kib": 64626684,
+    "max_rss_kib": 104333104,
+    "trace_file": "fp8-checkpoint.load-memory.jsonl"
+  },
+  "setup_seconds": 123.98261675197864,
+  "native_head_seed": 1140,
+  "fp8_recipe": {
+    "recipe": "dreamzero_causal_qkv_ffn_e4m3fn_weights_dynamic_per_tensor_activations_fp32_accum_bf16_output",
+    "attention_layers": 40,
+    "projections": [
+      {
+        "path": "blocks.0.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.0.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.0.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.1.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.1.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.1.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.2.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.2.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.2.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.3.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.3.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.3.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.4.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.4.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.4.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.5.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.5.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.5.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.6.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.6.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.6.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.7.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.7.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.7.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.8.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.8.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.8.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.9.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.9.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.9.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.10.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.10.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.10.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.11.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.11.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.11.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.12.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.12.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.12.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.13.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.13.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.13.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.14.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.14.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.14.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.15.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.15.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.15.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.16.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.16.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.16.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.17.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.17.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.17.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.18.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.18.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.18.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.19.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.19.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.19.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.20.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.20.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.20.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.21.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.21.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.21.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.22.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.22.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.22.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.23.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.23.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.23.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.24.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.24.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.24.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.25.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.25.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.25.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.26.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.26.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.26.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.27.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.27.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.27.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.28.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.28.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.28.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.29.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.29.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.29.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.30.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.30.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.30.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.31.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.31.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.31.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.32.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.32.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.32.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.33.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.33.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.33.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.34.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.34.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.34.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.35.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.35.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.35.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.36.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.36.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.36.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.37.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.37.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.37.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.38.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.38.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.38.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.39.self_attn.q",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.39.self_attn.k",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.39.self_attn.v",
+        "in_features": 5120,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.0.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.0.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.1.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.1.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.2.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.2.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.3.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.3.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.4.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.4.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.5.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.5.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.6.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.6.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.7.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.7.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.8.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.8.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.9.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.9.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.10.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.10.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.11.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.11.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.12.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.12.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.13.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.13.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.14.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.14.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.15.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.15.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.16.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.16.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.17.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.17.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.18.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.18.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.19.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.19.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.20.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.20.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.21.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.21.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.22.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.22.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.23.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.23.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.24.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.24.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.25.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.25.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.26.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.26.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.27.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.27.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.28.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.28.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.29.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.29.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.30.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.30.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.31.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.31.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.32.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.32.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.33.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.33.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.34.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.34.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.35.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.35.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.36.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.36.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.37.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.37.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.38.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.38.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      },
+      {
+        "path": "blocks.39.ffn.0",
+        "in_features": 5120,
+        "out_features": 13824,
+        "bias": true
+      },
+      {
+        "path": "blocks.39.ffn.2",
+        "in_features": 13824,
+        "out_features": 5120,
+        "bias": true
+      }
+    ],
+    "scheduler_steps": 16,
+    "dit_step_mask": [
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true
+    ],
+    "dynamic_cache_schedule": false,
+    "scope": "Causal self-attention Q/K/V and block FFN; other computation and history remain native",
+    "quality_certificate": null
+  },
+  "stage": "public_timing",
+  "continuation_p50_ms": 20951.623692526482,
+  "continuation_sample_count": 4,
+  "execution_policy": {
+    "category": "FP8",
+    "precision": "fp8",
+    "tier_ceiling": "behavioral",
+    "transform_tier": "NUMERIC",
+    "nfe": {
+      "video_action": 16
+    },
+    "changed_schedule": {},
+    "step_cache": {
+      "dynamic": false,
+      "fixed_steps": 8,
+      "profile": null,
+      "source": "runtime.step_cache=checkpoint"
+    },
+    "schedule_options": {
+      "dreamzero_schedule": {
+        "grid_steps": 16,
+        "computed_steps": 8,
+        "fixed_mask_steps": 8,
+        "dynamic_cache_schedule": false,
+        "profile": null,
+        "source": "runtime.step_cache=checkpoint"
+      }
+    },
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "backend_stats": {
+    "dynamic_cache_schedule": false,
+    "tier": "upstream shipped mask",
+    "precision": "fp8",
+    "fp8_recipe": {
+      "recipe": "dreamzero_causal_qkv_ffn_e4m3fn_weights_dynamic_per_tensor_activations_fp32_accum_bf16_output",
+      "attention_layers": 40,
+      "projections": [
+        {
+          "path": "blocks.0.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.0.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.0.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.1.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.1.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.1.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.2.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.2.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.2.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.3.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.3.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.3.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.4.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.4.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.4.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.5.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.5.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.5.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.6.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.6.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.6.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.7.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.7.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.7.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.8.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.8.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.8.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.9.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.9.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.9.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.10.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.10.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.10.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.11.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.11.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.11.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.12.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.12.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.12.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.13.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.13.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.13.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.14.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.14.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.14.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.15.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.15.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.15.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.16.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.16.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.16.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.17.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.17.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.17.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.18.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.18.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.18.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.19.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.19.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.19.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.20.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.20.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.20.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.21.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.21.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.21.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.22.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.22.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.22.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.23.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.23.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.23.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.24.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.24.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.24.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.25.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.25.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.25.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.26.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.26.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.26.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.27.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.27.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.27.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.28.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.28.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.28.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.29.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.29.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.29.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.30.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.30.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.30.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.31.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.31.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.31.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.32.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.32.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.32.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.33.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.33.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.33.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.34.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.34.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.34.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.35.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.35.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.35.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.36.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.36.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.36.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.37.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.37.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.37.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.38.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.38.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.38.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.39.self_attn.q",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.39.self_attn.k",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.39.self_attn.v",
+          "in_features": 5120,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.0.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.0.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.1.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.1.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.2.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.2.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.3.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.3.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.4.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.4.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.5.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.5.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.6.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.6.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.7.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.7.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.8.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.8.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.9.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.9.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.10.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.10.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.11.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.11.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.12.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.12.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.13.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.13.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.14.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.14.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.15.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.15.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.16.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.16.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.17.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.17.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.18.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.18.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.19.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.19.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.20.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.20.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.21.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.21.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.22.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.22.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.23.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.23.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.24.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.24.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.25.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.25.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.26.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.26.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.27.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.27.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.28.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.28.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.29.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.29.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.30.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.30.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.31.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.31.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.32.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.32.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.33.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.33.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.34.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.34.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.35.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.35.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.36.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.36.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.37.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.37.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.38.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.38.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        },
+        {
+          "path": "blocks.39.ffn.0",
+          "in_features": 5120,
+          "out_features": 13824,
+          "bias": true
+        },
+        {
+          "path": "blocks.39.ffn.2",
+          "in_features": 13824,
+          "out_features": 5120,
+          "bias": true
+        }
+      ],
+      "scheduler_steps": 16,
+      "dit_step_mask": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        true,
+        true
+      ],
+      "dynamic_cache_schedule": false,
+      "scope": "Causal self-attention Q/K/V and block FFN; other computation and history remain native",
+      "quality_certificate": null
+    },
+    "build": {
+      "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+      "steps": {
+        "video_action": 16,
+        "kv_commit": 1
+      },
+      "guidance": {
+        "video_action": [
+          "cfg",
+          5.0
+        ]
+      },
+      "dit_step_mask": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        true,
+        true
+      ],
+      "dynamic_cache_schedule": false,
+      "evidence": "Loaded native DreamZero action head; not a task-quality certificate",
+      "step_cache_selection": {
+        "dynamic": false,
+        "fixed_steps": 8,
+        "profile": null,
+        "source": "runtime.step_cache=checkpoint"
+      }
+    },
+    "loading": {
+      "verified_dit_tensors": 1317,
+      "original_checkpoint": "/home/guanming/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+      "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+      "direct_bf16_dit": true,
+      "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+      "initialization_rng_equivalent": false
+    },
+    "step_cache": null
+  },
+  "actions_sha256": "71f2d86fe1dc2eb1726957cab4a8d0b7e763f6e47ffaaf63c818fffb67bea898",
+  "completed_utc_epoch": 1789349480.9215605
+}

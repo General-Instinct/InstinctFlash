@@ -1,0 +1,40 @@
+{
+  "instinctflash_schema": 1,
+  "execution": {
+    "model_id": "instinctflash/pi05-base-tf32-h100",
+    "backbone": "pi05",
+    "servable": true,
+    "base_weights": "lerobot/pi05_base",
+    "guidance": {
+      "action": "none"
+    },
+    "nfe": {
+      "prefix": 1,
+      "action": 10
+    },
+    "obs_features": {
+      "observation.images.base_0_rgb": [3, 224, 224],
+      "observation.images.left_wrist_0_rgb": [3, 224, 224],
+      "observation.images.right_wrist_0_rgb": [3, 224, 224],
+      "observation.state": [32]
+    },
+    "pi05_tf32_numeric": {
+      "enabled": true,
+      "tier": "NUMERIC",
+      "math_mode": "tf32",
+      "parameter_dtype": "float32",
+      "compile_model": false,
+      "static_kv_graph": true,
+      "hardware": "sm90",
+      "max_abs_action_delta": 0.002482,
+      "evidence": "examples/pi05_vla/tf32_static_h100_results.json"
+    }
+  },
+  "provenance": {
+    "base_revision": "b211f3d44c36b6acfcf7ae94a64e8e96f75a64ba",
+    "measurement_device": "NVIDIA H100 80GB HBM3 (SM90)",
+    "measurement_date": "2026-08-26",
+    "closed_loop_certificate": "PENDING: see examples/pi05_vla/tf32_closed_loop_preregistration.json",
+    "note": "Pointer-only operating-point package; weights remain in lerobot/pi05_base."
+  }
+}

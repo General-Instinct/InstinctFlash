@@ -99,7 +99,7 @@ def test_plan_verb_exclusion_shows_in_the_plan():
         buf = io.StringIO()
         try:
             with contextlib.redirect_stdout(buf):
-                rc = main(["plan", "org/model", "--exclude-pass", "graph_capture"])
+                rc = main(["plan", "org/model", "--exclude-pass", "engine_offload"])
         finally:
             hub.hf_hub_download, hub.snapshot_download = old_file, old_snapshot
     out = buf.getvalue()

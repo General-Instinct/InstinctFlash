@@ -1,0 +1,972 @@
+No model config overrides provided
+Loading model from pretrained directly
+loading pretrained@@@@@
+Loading sharded safetensors using index: /tmp/instinctflash-dreamzero-full-f725yrkv/model.safetensors.index.json
+Loading shard: /tmp/instinctflash-dreamzero-full-f725yrkv/model-00001-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-f725yrkv/model-00002-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-f725yrkv/model-00009-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-f725yrkv/model-00004-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-f725yrkv/model-00006-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-f725yrkv/model-00010-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-f725yrkv/model-00003-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-f725yrkv/model-00008-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-f725yrkv/model-00005-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-f725yrkv/model-00007-of-00010.safetensors
+loading config@@
+loading model
+config.action_head_cfg {'_convert_': 'object', '_target_': 'groot.vla.model.dreamzero.action_head.wan_flow_matching_action_tf.WANPolicyHead', 'config': {'_recursive_': False, '_target_': 'groot.vla.model.dreamzero.action_head.wan_flow_matching_action_tf.WANPolicyHeadConfig', 'action_dim': 32, 'action_horizon': 24, 'action_loss_embodiment_ids': [26, 17], 'add_pos_embed': True, 'backbone_embedding_dim': 0, 'backbone_features_projector_cfg': None, 'decouple_inference_noise': False, 'decouple_video_action_noise': False, 'diffusion_model_cfg': {'_convert_': 'object', '_target_': 'groot.vla.model.dreamzero.modules.wan_video_dit_action_casual_chunk.CausalWanModel', 'diffusion_model_pretrained_path': None, 'dim': 5120, 'eps': 1e-06, 'ffn_dim': 13824, 'frame_seqlen': 880, 'freq_dim': 256, 'in_dim': 36, 'max_chunk_size': 4, 'model_type': 'i2v', 'num_action_per_block': 24, 'num_frame_per_block': 2, 'num_heads': 40, 'num_layers': 40, 'num_state_per_block': 1, 'out_dim': 16}, 'expand_batch': None, 'freeze_decode_layer': False, 'hidden_size': 64, 'high_noise_beta_alpha': 3.0, 'image_encoder_cfg': {'_convert_': 'object', '_target_': 'groot.vla.model.dreamzero.modules.wan_video_image_encoder.WanImageEncoder', 'image_encoder_pretrained_path': None}, 'init_lora_weights': 'kaiming', 'input_embedding_dim': 1536, 'load_pretrained_det_decode_layer_path': '/mnt/aws-lfs-02/shared/ckpts/eagle_sim_real_gr1_localization_finetuned_decode_layer.pt', 'lora_alpha': 4, 'lora_rank': 4, 'lora_target_modules': 'q,k,v,o,ffn.0,ffn.2', 'max_action_dim': 32, 'max_state_dim': 64, 'model_dtype': 'float32', 'noise_beta_alpha': 1.5, 'noise_beta_beta': 1.0, 'noise_s': 0.999, 'num_frame_per_block': 2, 'num_frames': 33, 'num_inference_timesteps': 4, 'num_timestep_buckets': 1000, 'repa_coeff': 1.0, 'repa_layer': 8, 'text_encoder_cfg': {'_convert_': 'object', '_target_': 'groot.vla.model.dreamzero.modules.wan_video_text_encoder.WanTextEncoder', 'text_encoder_pretrained_path': None}, 'tile_size_height': 34, 'tile_size_width': 34, 'tile_stride_height': 18, 'tile_stride_width': 16, 'tiled': False, 'train_architecture': 'full', 'tune_diffusion_model': True, 'tune_projector': True, 'use_gradient_checkpointing': True, 'use_high_noise_emphasis': False, 'use_vlln': True, 'vae_cfg': {'_convert_': 'object', '_target_': 'groot.vla.model.dreamzero.modules.wan_video_vae.WanVideoVAE', 'vae_pretrained_path': None}, 'video_inference_final_noise': 0.8, 'video_noise_beta_alpha': 3.0, 'video_noise_beta_beta': 1.0, 'vl_self_attention_cfg': {'_target_': 'groot.vla.model.n1_5.modules.cross_attention_dit.SelfAttentionTransformer', 'attention_head_dim': 64, 'dropout': 0.2, 'final_dropout': True, 'num_attention_heads': 24, 'num_layers': 4, 'positional_embeddings': None}, 'skip_component_loading': True}}
+/home/guanming/frt_env/lib/python3.12/site-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Skipping individual component loading (loading from full pretrained model)
+defer_lora_injection@@ False
+Tune action head projector: True
+Tune action head diffusion model: True
+Total parameters in diffusion model: 16,484,292,448
+Trainable parameters in diffusion model: 16,484,292,448
+Total parameters in diffusion model: 16,484,292,448
+Trainable parameters in diffusion model: 16,484,292,448
+model VLA(
+  (backbone): IdentityBackbone()
+  (action_head): WANPolicyHead(
+    (text_encoder): WanTextEncoder(
+      (token_embedding): Embedding(256384, 4096)
+      (dropout): Dropout(p=0.1, inplace=False)
+      (blocks): ModuleList(
+        (0-23): 24 x T5SelfAttention(
+          (norm1): T5LayerNorm()
+          (attn): T5Attention(
+            (q): Linear(in_features=4096, out_features=4096, bias=False)
+            (k): Linear(in_features=4096, out_features=4096, bias=False)
+            (v): Linear(in_features=4096, out_features=4096, bias=False)
+            (o): Linear(in_features=4096, out_features=4096, bias=False)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (norm2): T5LayerNorm()
+          (ffn): T5FeedForward(
+            (gate): Sequential(
+              (0): Linear(in_features=4096, out_features=10240, bias=False)
+              (1): GELU()
+            )
+            (fc1): Linear(in_features=4096, out_features=10240, bias=False)
+            (fc2): Linear(in_features=10240, out_features=4096, bias=False)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+          (pos_embedding): T5RelativeEmbedding(
+            (embedding): Embedding(32, 64)
+          )
+        )
+      )
+      (norm): T5LayerNorm()
+    )
+    (image_encoder): WanImageEncoder(
+      (model): XLMRobertaCLIP(
+        (visual): VisionTransformer(
+          (patch_embedding): Conv2d(3, 1280, kernel_size=(14, 14), stride=(14, 14), bias=False)
+          (dropout): Dropout(p=0.0, inplace=False)
+          (pre_norm): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+          (transformer): Sequential(
+            (0): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (1): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (2): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (3): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (4): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (5): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (6): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (7): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (8): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (9): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (10): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (11): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (12): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (13): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (14): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (15): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (16): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (17): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (18): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (19): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (20): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (21): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (22): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (23): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (24): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (25): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (26): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (27): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (28): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (29): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (30): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+            (31): AttentionBlock(
+              (norm1): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (attn): SelfAttention(
+                (to_qkv): Linear(in_features=1280, out_features=3840, bias=True)
+                (proj): Linear(in_features=1280, out_features=1280, bias=True)
+              )
+              (norm2): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+              (mlp): Sequential(
+                (0): Linear(in_features=1280, out_features=5120, bias=True)
+                (1): GELU(approximate='none')
+                (2): Linear(in_features=5120, out_features=1280, bias=True)
+                (3): Dropout(p=0.0, inplace=False)
+              )
+            )
+          )
+          (post_norm): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+        )
+      )
+    )
+    (vae): WanVideoVAE(
+      (model): VideoVAE_(
+        (encoder): Encoder3d(
+          (conv1): CausalConv3d(3, 96, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+          (downsamples): Sequential(
+            (0): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(96, 96, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(96, 96, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (1): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(96, 96, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(96, 96, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (2): Resample(
+              (resample): Sequential(
+                (0): ZeroPad2d((0, 1, 0, 1))
+                (1): Conv2d(96, 96, kernel_size=(3, 3), stride=(2, 2))
+              )
+            )
+            (3): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(96, 192, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(192, 192, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): CausalConv3d(96, 192, kernel_size=(1, 1, 1), stride=(1, 1, 1))
+            )
+            (4): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(192, 192, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(192, 192, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (5): Resample(
+              (resample): Sequential(
+                (0): ZeroPad2d((0, 1, 0, 1))
+                (1): Conv2d(192, 192, kernel_size=(3, 3), stride=(2, 2))
+              )
+              (time_conv): CausalConv3d(192, 192, kernel_size=(3, 1, 1), stride=(2, 1, 1))
+            )
+            (6): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(192, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): CausalConv3d(192, 384, kernel_size=(1, 1, 1), stride=(1, 1, 1))
+            )
+            (7): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (8): Resample(
+              (resample): Sequential(
+                (0): ZeroPad2d((0, 1, 0, 1))
+                (1): Conv2d(384, 384, kernel_size=(3, 3), stride=(2, 2))
+              )
+              (time_conv): CausalConv3d(384, 384, kernel_size=(3, 1, 1), stride=(2, 1, 1))
+            )
+            (9): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (10): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+          )
+          (middle): Sequential(
+            (0): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (1): AttentionBlock(
+              (norm): RMS_norm()
+              (to_qkv): Conv2d(384, 1152, kernel_size=(1, 1), stride=(1, 1))
+              (proj): Conv2d(384, 384, kernel_size=(1, 1), stride=(1, 1))
+            )
+            (2): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+          )
+          (head): Sequential(
+            (0): RMS_norm()
+            (1): SiLU()
+            (2): CausalConv3d(384, 32, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+          )
+        )
+        (conv1): CausalConv3d(32, 32, kernel_size=(1, 1, 1), stride=(1, 1, 1))
+        (conv2): CausalConv3d(16, 16, kernel_size=(1, 1, 1), stride=(1, 1, 1))
+        (decoder): Decoder3d(
+          (conv1): CausalConv3d(16, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+          (middle): Sequential(
+            (0): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (1): AttentionBlock(
+              (norm): RMS_norm()
+              (to_qkv): Conv2d(384, 1152, kernel_size=(1, 1), stride=(1, 1))
+              (proj): Conv2d(384, 384, kernel_size=(1, 1), stride=(1, 1))
+            )
+            (2): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+          )
+          (upsamples): Sequential(
+            (0): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (1): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (2): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (3): Resample(
+              (resample): Sequential(
+                (0): Upsample(scale_factor=(2.0, 2.0), mode='nearest-exact')
+                (1): Conv2d(384, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              )
+              (time_conv): CausalConv3d(384, 768, kernel_size=(3, 1, 1), stride=(1, 1, 1))
+            )
+            (4): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(192, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): CausalConv3d(192, 384, kernel_size=(1, 1, 1), stride=(1, 1, 1))
+            )
+            (5): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (6): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(384, 384, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (7): Resample(
+              (resample): Sequential(
+                (0): Upsample(scale_factor=(2.0, 2.0), mode='nearest-exact')
+                (1): Conv2d(384, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              )
+              (time_conv): CausalConv3d(384, 768, kernel_size=(3, 1, 1), stride=(1, 1, 1))
+            )
+            (8): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(192, 192, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(192, 192, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (9): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(192, 192, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(192, 192, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (10): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(192, 192, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(192, 192, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (11): Resample(
+              (resample): Sequential(
+                (0): Upsample(scale_factor=(2.0, 2.0), mode='nearest-exact')
+                (1): Conv2d(192, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+              )
+            )
+            (12): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(96, 96, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(96, 96, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (13): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(96, 96, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(96, 96, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+            (14): ResidualBlock(
+              (residual): Sequential(
+                (0): RMS_norm()
+                (1): SiLU()
+                (2): CausalConv3d(96, 96, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+                (3): RMS_norm()
+                (4): SiLU()
+                (5): Dropout(p=0.0, inplace=False)
+                (6): CausalConv3d(96, 96, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+              )
+              (shortcut): Identity()
+            )
+          )
+          (head): Sequential(
+            (0): RMS_norm()
+            (1): SiLU()
+            (2): CausalConv3d(96, 3, kernel_size=(3, 3, 3), stride=(1, 1, 1))
+          )
+        )
+      )
+    )
+    (normalize_video): Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], inplace=False)
+    (model): CausalWanModel(
+      (state_encoder): CategorySpecificMLP(
+        (layer1): CategorySpecificLinear()
+        (layer2): CategorySpecificLinear()
+      )
+      (action_encoder): MultiEmbodimentActionEncoder(
+        (W1): CategorySpecificLinear()
+        (W2): CategorySpecificLinear()
+        (W3): CategorySpecificLinear()
+        (pos_encoding): SinusoidalPositionalEncoding()
+      )
+      (action_decoder): CategorySpecificMLP(
+        (layer1): CategorySpecificLinear()
+        (layer2): CategorySpecificLinear()
+      )
+      (patch_embedding): Conv3d(36, 5120, kernel_size=(1, 2, 2), stride=(1, 2, 2))
+      (text_embedding): Sequential(
+        (0): Linear(in_features=4096, out_features=5120, bias=True)
+        (1): GELU(approximate='tanh')
+        (2): Linear(in_features=5120, out_features=5120, bias=True)
+      )
+      (time_embedding): Sequential(
+        (0): Linear(in_features=256, out_features=5120, bias=True)
+        (1): SiLU()
+        (2): Linear(in_features=5120, out_features=5120, bias=True)
+      )
+      (time_projection): Sequential(
+        (0): SiLU()
+        (1): Linear(in_features=5120, out_features=30720, bias=True)
+      )
+      (blocks): ModuleList(
+        (0-39): 40 x CausalWanAttentionBlock(
+          (norm1): WanLayerNorm((5120,), eps=1e-06, elementwise_affine=False)
+          (self_attn): CausalWanSelfAttention(
+            (q): Linear(in_features=5120, out_features=5120, bias=True)
+            (k): Linear(in_features=5120, out_features=5120, bias=True)
+            (v): Linear(in_features=5120, out_features=5120, bias=True)
+            (o): Linear(in_features=5120, out_features=5120, bias=True)
+            (norm_q): WanRMSNorm()
+            (norm_k): WanRMSNorm()
+            (attn): AttentionModule()
+            (causal_attn): AttentionModule()
+          )
+          (norm3): WanLayerNorm((5120,), eps=1e-06, elementwise_affine=True)
+          (cross_attn): WanI2VCrossAttention(
+            (q): Linear(in_features=5120, out_features=5120, bias=True)
+            (k): Linear(in_features=5120, out_features=5120, bias=True)
+            (v): Linear(in_features=5120, out_features=5120, bias=True)
+            (o): Linear(in_features=5120, out_features=5120, bias=True)
+            (norm_q): WanRMSNorm()
+            (norm_k): WanRMSNorm()
+            (k_img): Linear(in_features=5120, out_features=5120, bias=True)
+            (v_img): Linear(in_features=5120, out_features=5120, bias=True)
+            (norm_k_img): WanRMSNorm()
+          )
+          (norm2): WanLayerNorm((5120,), eps=1e-06, elementwise_affine=False)
+          (ffn): Sequential(
+            (0): Linear(in_features=5120, out_features=13824, bias=True)
+            (1): GELU(approximate='tanh')
+            (2): Linear(in_features=13824, out_features=5120, bias=True)
+          )
+        )
+      )
+      (head): CausalHead(
+        (norm): WanLayerNorm((5120,), eps=1e-06, elementwise_affine=False)
+        (head): Linear(in_features=5120, out_features=64, bias=True)
+      )
+      (img_emb): MLPProj(
+        (proj): Sequential(
+          (0): LayerNorm((1280,), eps=1e-05, elementwise_affine=True)
+          (1): Linear(in_features=1280, out_features=1280, bias=True)
+          (2): GELU(approximate='none')
+          (3): Linear(in_features=1280, out_features=5120, bias=True)
+          (4): LayerNorm((5120,), eps=1e-05, elementwise_affine=True)
+        )
+      )
+    )
+  )
+)
+Successfully loaded pretrained weights
+<class 'groot.vla.model.dreamzero.base_vla.VLA'>
+
+Skipping merging LoRA weights into main model weights

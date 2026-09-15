@@ -1,0 +1,43 @@
+{
+  "interpreter": "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+  "passed": [
+    "tests/test_device_class.py",
+    "tests/test_lingbot_vla_v2_adapter.py",
+    "tests/test_capture_default_families.py",
+    "tests/test_pi05_compile_neutralize.py",
+    "tests/test_realtime_budget.py (PYTHONPATH=.)",
+    "tests/test_vla_benchmark_pipeline.py (PYTHONPATH=.)",
+    "tests/test_vla_adapter_contracts.py (PYTHONPATH=.)",
+    "tests/test_shipped_config.py (PYTHONPATH=.)",
+    "measure-policy CLI forwards the explicit precision ceiling; stock rejects Runtime precision policy",
+    "Python compilation of changed benchmark entry points",
+    "git diff --check",
+    "tests/test_runtime_precision.py (7 policy/dispatch/preflight checks)",
+    "tests/test_engine_exclusion.py (5 checks)",
+    "tests/test_engine_geometry_gate.py (14 checks)",
+    "tests/test_engine_operating_point_gate.py (16 checks)",
+    "tests/test_runtime_facade.py",
+    "tests/test_cli_preflight.py",
+    "tests/test_cli_config.py",
+    "tests/test_runtime_boundary.py (PYTHONPATH=.)",
+    "tests/test_runtime.py (PYTHONPATH=.)",
+    "Rebuilt core and V2 plugin wheels; isolated installed-package strict/numeric/native plans and unsupported FP8 refusal, invoked from /tmp",
+    "Analyzer rejects saved-action / per-cycle hash mismatch"
+  ],
+  "additional_checks_not_passing": [
+    {
+      "test": "tests/test_generic_pass.py",
+      "reason": "The unrelated Cosmos3 environment dependency loguru is unavailable in this interpreter."
+    },
+    {
+      "test": "tests/test_hardware_probe.py",
+      "reason": "Existing H100 convolution performance-band assertion failed: observed 1.28x versus expected 4.35-7.24x. Other hardware checks passed. The assertion and kernel were not changed."
+    }
+  ],
+  "scope": "Targeted checks, not a claim that the complete repository test suite passes. GPU experiment completion is tracked separately.",
+  "gpu_source_scope": {
+    "v2_production_snapshot": "final-source.tar",
+    "pipeline_sha256": "37b90a9bc07b7ba53e54740f66ad5cc83eab253b2e5894a17758d2a50789ba51",
+    "subsequent_changes": "Legacy plugin numeric-tier fallback and explicit precision dispatch have CPU and installed-package validation; final-source.tar timings do not claim GPU execution of these subsequent edits."
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "comparisons": [
+    {
+      "closed_loop": [],
+      "control": "stock",
+      "models": [
+        {
+          "action": {
+            "digest_matches": 9,
+            "incomplete_pairs": [],
+            "max_abs": null,
+            "max_abs_limit": null,
+            "min_cosine_limit": null,
+            "minimum_cosine": null,
+            "mode": "bitexact",
+            "pairs": 9,
+            "verdict": "PASS"
+          },
+          "model_id": "nvidia/GR00T-N1.7-3B",
+          "performance": {
+            "control_p50_ms": 92.09930617362261,
+            "min_speedup": 1.2,
+            "samples": 30,
+            "speedup": 1.8065590812333763,
+            "treatment_p50_ms": 50.98051158711314,
+            "verdict": "PASS"
+          },
+          "suites": [
+            {
+              "action": {
+                "digest_matches": 8,
+                "incomplete_pairs": [],
+                "max_abs": null,
+                "max_abs_limit": null,
+                "min_cosine_limit": null,
+                "minimum_cosine": null,
+                "mode": "bitexact",
+                "pairs": 8,
+                "verdict": "PASS"
+              },
+              "performance": {
+                "samples": 0,
+                "verdict": "NOT_APPLICABLE"
+              },
+              "suite_id": "model_contract"
+            },
+            {
+              "action": {
+                "digest_matches": 1,
+                "incomplete_pairs": [],
+                "max_abs": null,
+                "max_abs_limit": null,
+                "min_cosine_limit": null,
+                "minimum_cosine": null,
+                "mode": "bitexact",
+                "pairs": 1,
+                "verdict": "PASS"
+              },
+              "performance": {
+                "control_p50_ms": 92.09930617362261,
+                "min_speedup": 1.2,
+                "samples": 30,
+                "speedup": 1.8065590812333763,
+                "treatment_p50_ms": 50.98051158711314,
+                "verdict": "PASS"
+              },
+              "suite_id": "single_gpu_latency"
+            }
+          ]
+        }
+      ],
+      "paired_jobs": 9,
+      "treatment": "runtime_default"
+    }
+  ],
+  "complete": true,
+  "environment_consistency": [
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "3253995160873ba5e8d76d081af658853285a58b5b3383505425a25f96f97129"
+      ],
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "3253995160873ba5e8d76d081af658853285a58b5b3383505425a25f96f97129"
+      ],
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "verdict": "PASS"
+    }
+  ],
+  "environment_sha256": "abecb302864470401e6c4e70574105cafa512430c3719769d51c832f3302896d",
+  "expected_results": 18,
+  "gates_passed": true,
+  "issues": [],
+  "plan_id": "a6c42cab08254f63147e2fb9e9c21459965cd16acfe019e136d5727df40d9383",
+  "registry_sha256": "b1174c86e86015f57df75f79ffcc6dc4c86b47c5d9fc28d300fc60fd493ee8aa",
+  "repeatability": [
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "3253995160873ba5e8d76d081af658853285a58b5b3383505425a25f96f97129"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "repeats": 2,
+      "seed": 30100,
+      "suite_id": "model_contract",
+      "task": "changed_prompt",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "3253995160873ba5e8d76d081af658853285a58b5b3383505425a25f96f97129"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "repeats": 2,
+      "seed": 30100,
+      "suite_id": "model_contract",
+      "task": "changed_prompt",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "3253995160873ba5e8d76d081af658853285a58b5b3383505425a25f96f97129"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "repeats": 2,
+      "seed": 40100,
+      "suite_id": "model_contract",
+      "task": "reset_replay",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "3253995160873ba5e8d76d081af658853285a58b5b3383505425a25f96f97129"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "repeats": 2,
+      "seed": 40100,
+      "suite_id": "model_contract",
+      "task": "reset_replay",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "3253995160873ba5e8d76d081af658853285a58b5b3383505425a25f96f97129"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "repeats": 2,
+      "seed": 10100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_a",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "3253995160873ba5e8d76d081af658853285a58b5b3383505425a25f96f97129"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "repeats": 2,
+      "seed": 10100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_a",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "3253995160873ba5e8d76d081af658853285a58b5b3383505425a25f96f97129"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "repeats": 2,
+      "seed": 20100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_b",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "3253995160873ba5e8d76d081af658853285a58b5b3383505425a25f96f97129"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "repeats": 2,
+      "seed": 20100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_b",
+      "verdict": "PASS"
+    }
+  ],
+  "report_sha256": "6b7948ed075bee5a6691116561a56c69eed8dad421861a447e82f87a53ed72d6",
+  "reportable": true,
+  "results": 18,
+  "schema_version": 1,
+  "synthetic": false
+}

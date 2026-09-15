@@ -1,0 +1,87 @@
+{
+  "CPU_tests": {
+    "Ruff": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/ruff_v1.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "passed": 21,
+    "test_log": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/tests_v1.log",
+      "sha256": "ac32a86ac518bd40c0a367b0c3d0b243ad6f87d4cc82f6881290cd771d564dfa"
+    }
+  },
+  "commands_after_inputs_exist": {
+    "copy_only_after_reviewed_plan_hash": [
+      "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+      "-I",
+      "-B",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/curate.py",
+      "copy",
+      "--checkout",
+      "/home/ubuntu/InstinctFlash-public-release-20260915",
+      "--manifest",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/final_plan_v1/manifest.json",
+      "--manifest-sha256",
+      "SHA256_PRINTED_BY_PLAN",
+      "--output",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/copy_v1.json"
+    ],
+    "force_add_by_root_only": "git add -f --pathspec-from-file=/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/final_plan_v1/approved_force_add_paths.txt",
+    "plan_only": [
+      "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+      "-I",
+      "-B",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/curate.py",
+      "plan",
+      "--checkout",
+      "/home/ubuntu/InstinctFlash-public-release-20260915",
+      "--summary",
+      "FINAL_CURRENT_SUMMARY_JSON",
+      "--summary-sha256",
+      "FINAL_CURRENT_SUMMARY_SHA256",
+      "--output",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/final_plan_v1"
+    ]
+  },
+  "created_utc": "2026-09-15T06:02:27.092153+00:00",
+  "current_blocking_inputs": [
+    "eval/public_release_2026-09-15/qualification/dreamzero/run",
+    "eval/public_release_2026-09-15/qualification/dreamzero/serving",
+    "Final current qualification summary+selection",
+    "Root-owned results.rst"
+  ],
+  "limitations": [
+    "V1 pins assemblerV2/V9-docfix1. Root reported DreamZeroV5 OOM after preview; an additive V2 curation policy/helper must bind the future assemblerV3 and include the separately preservedV5 failure before final copying.",
+    "Frozen administrative assembly sources keep original absolute provenance; the path+hash index labels bundled/already-public/local-only references without rewriting evidence. Portable reproduce, serve_smoke and framework_compare commands use the public installed package and documented model assets.",
+    "Pattern-based credential checks are bounded review aids; not a general secret scanner or publication authorization.",
+    "Prior preview failed before output because LeRobot pi05 legitimately stores queued_actions_N arrays; the rule was narrowed to explicitly admit those numeric action queues, with CPU regression. No array or raw evidence bytes changed."
+  ],
+  "preview": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/preview_v2/manifest.json",
+    "sha256": "0fdf7acbeaa219039967d596e3bff0bb0caecde7fda86c67c9e3d03cf8121318"
+  },
+  "preview_approved_paths": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/preview_v2/approved_force_add_paths.txt",
+  "preview_counts": {
+    "files": 402,
+    "largest_file_bytes": 3137086,
+    "logical_bytes": 33739043,
+    "unique_Git_blob_bytes": 13068192
+  },
+  "public_copies_Git_staging_or_publication": false,
+  "schema": "instinctflash.public_evidence_curation_handoff.v1",
+  "sources": {
+    "curate.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/curate.py",
+      "sha256": "b05e10acb0314127deb76ba296ce63447d200f27b40a2c7c3dfa44995b1debc6"
+    },
+    "policy_v1.json": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/policy_v1.json",
+      "sha256": "18fd6d470ad7bef170d9a9b8fdbde80c1b4c3ac499092f2fe36679ff7a219384"
+    },
+    "test_curate.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/test_curate.py",
+      "sha256": "1934915f8ded771dde482b1157a1e4aea11984b2c37f8ad8ebf272d9da8523bd"
+    }
+  },
+  "status": "CPU_qualified_preview_only_no_public_copy"
+}

@@ -1,0 +1,13 @@
+{
+ "model": "pi05 (lerobot/pi05_libero_finetuned_v044, snapshot 8e174154)",
+ "hardware": "Jetson Thor (SM110), single GPU, measured under /tmp/thor_gpu.lock",
+ "torch_ms": 254.9,
+ "ours_ms": 56.72,
+ "speedup": 4.49,
+ "notes": {
+  "torch_arm": "lerobot 0.6.1 eager in frt_env (torch 2.11 cu130), bf16 params (v044 ships bf16), 3 views 224x224, chunk_size 10, 10 denoise steps, prefill + denoise loop (same bench pattern as the earlier three-arm bench), p50 of 15 chunks (min 253.3 / max 259.0)",
+  "ours_arm": "InstinctFlash engine via Runtime, fp8 W+A, state-in-prompt length-bucket CUDA graphs; REUSED from T3 REAL certificate latency_stats.server_ms.p50 = 56.72 ms over n=6241 chunks (engine time on Thor, same v044 weights, chunk 10) \u2014 not re-measured",
+  "consistency": "the certified pair: same weights both arms; engine arm carries the T3 paired non-inferiority certificate"
+ },
+ "walls": []
+}

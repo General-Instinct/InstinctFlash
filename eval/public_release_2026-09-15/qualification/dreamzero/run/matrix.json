@@ -1,0 +1,222 @@
+{
+  "bindings": [
+    {
+      "path": "inputs/recorded_inputs_v1.npz",
+      "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+    }
+  ],
+  "cells": [
+    {
+      "action_shape": [
+        24,
+        8
+      ],
+      "arm": "eager_native",
+      "comparison_group": "dreamzero-checkpoint",
+      "effective_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint"
+      },
+      "expected_optimizer_environment": {},
+      "expected_runtime_kwargs": {},
+      "experimental": false,
+      "family": "dreamzero",
+      "id": "dreamzero-eager_native",
+      "model_id": "GEAR-Dreams/DreamZero-DROID",
+      "receipt": "cells/dreamzero-eager_native/receipt.json",
+      "revision": "96ad344138c66e82536422432ad742f015784942"
+    },
+    {
+      "action_shape": [
+        24,
+        8
+      ],
+      "arm": "runtime_default",
+      "comparison_group": "dreamzero-checkpoint",
+      "effective_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint"
+      },
+      "expected_optimizer_environment": {},
+      "expected_runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "experimental": false,
+      "family": "dreamzero",
+      "id": "dreamzero-runtime_default",
+      "model_id": "GEAR-Dreams/DreamZero-DROID",
+      "receipt": "cells/dreamzero-runtime_default/receipt.json",
+      "revision": "96ad344138c66e82536422432ad742f015784942"
+    },
+    {
+      "action_shape": [
+        24,
+        8
+      ],
+      "arm": "runtime_selected",
+      "comparison_group": "dreamzero-checkpoint",
+      "effective_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint"
+      },
+      "expected_optimizer_environment": {},
+      "expected_runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "native",
+        "step_cache": "checkpoint",
+        "tier_ceiling": "bitexact"
+      },
+      "experimental": false,
+      "family": "dreamzero",
+      "id": "dreamzero-runtime_selected",
+      "model_id": "GEAR-Dreams/DreamZero-DROID",
+      "receipt": "cells/dreamzero-runtime_selected/receipt.json",
+      "revision": "96ad344138c66e82536422432ad742f015784942"
+    },
+    {
+      "action_shape": [
+        24,
+        8
+      ],
+      "arm": "operating_point",
+      "comparison_baseline": true,
+      "comparison_group": "dreamzero-dynamic-fp8",
+      "cross_policy_baseline": "dreamzero-eager_native",
+      "effective_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "profile": "dreamzero_velocity_v1",
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "dynamic"
+      },
+      "expected_optimizer_environment": {},
+      "expected_runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8",
+        "step_cache": "dynamic",
+        "tier_ceiling": "behavioral"
+      },
+      "experimental": true,
+      "family": "dreamzero",
+      "id": "dreamzero-dynamic-fp8",
+      "model_id": "GEAR-Dreams/DreamZero-DROID",
+      "receipt": "cells/dreamzero-dynamic-fp8/receipt.json",
+      "revision": "96ad344138c66e82536422432ad742f015784942"
+    }
+  ],
+  "expected_families": [
+    "dreamzero"
+  ],
+  "expected_main_cells": 3,
+  "expected_operating_point_cells": 1,
+  "expected_runtime_update_cells": 0,
+  "protocol": {
+    "history": {
+      "cycles_per_episode": 3,
+      "measured_episodes": 6,
+      "warmup_episodes": 1
+    },
+    "pi05_queue_calls": 51,
+    "stateless": {
+      "measured": 20,
+      "warmup": 5
+    }
+  },
+  "quality_certified": false,
+  "require_observed_schedule": true,
+  "schema": 1
+}

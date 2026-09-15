@@ -1,0 +1,256 @@
+{
+  "schema_version": 20,
+  "status": "success",
+  "stage": "cold-raw-serving",
+  "plan": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/fullpath_v20/export_1_v1.json",
+    "bytes": 12654,
+    "sha256": "d66391fe3402516ef23278e1a1d7756db956be742aa8abb0fbba6195789aed1e"
+  },
+  "source_report": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/fullpath_v20/pilot/edge_sde2_complete_path_seed12041/export_roundtrip/source_report.json",
+    "bytes": 10236,
+    "sha256": "6ad29b35bdc0f7f5f638e8a610d774757724903c9efd1c185acefe4b1567d836"
+  },
+  "pid": 1803603,
+  "process_nonce": "5932404b7ddf4a0d8e4b9a0fc234fba8",
+  "runtime": {
+    "python": "3.13.14 (main, Jul 18 2026, 17:02:37) [Clang 22.1.3 ]",
+    "numpy": "2.2.6",
+    "torch": "2.10.0+cu130",
+    "cuda": "13.0",
+    "device": "NVIDIA H100 80GB HBM3",
+    "capability": [
+      9,
+      0
+    ],
+    "tf32_matmul": false,
+    "tf32_cudnn": false
+  },
+  "outputs": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/fullpath_v20/pilot/edge_sde2_complete_path_seed12041/export_roundtrip/cold_outputs.pt",
+    "bytes": 9162981,
+    "sha256": "ed07dbcc4e11a43e5abb81eeaf6f87e5d1d110efdcea244666c13aa64b1f3d7f"
+  },
+  "native_backbone_state": "be6addf81e6f5040b8ed88cd0ee0666aaf3a9d389ab4f3a259ba81506b163e64",
+  "execution": {
+    "sampler_calls": 1,
+    "preparation_calls": 1,
+    "sampler_denoiser_callbacks": 2,
+    "model_velocity_branch_calls": 2,
+    "sampler_class": "cosmos_framework.model.generator.diffusion.samplers.fixed_step.FixedStepSampler",
+    "sample_type": "sde",
+    "rf_grid": [
+      1.0,
+      0.5,
+      0.0
+    ],
+    "num_train_timesteps": 1000.0,
+    "effective_sampler_arguments": {
+      "num_steps": 2,
+      "shift": 0.0,
+      "seed": [
+        1824758510
+      ]
+    },
+    "native_conditioning_passed": true,
+    "sampler_host_seconds": 0.3550786506384611,
+    "callback_timesteps": [
+      1000.0,
+      500.0
+    ],
+    "native_initial_noise": [
+      {
+        "shape": [
+          572352
+        ],
+        "dtype": "torch.float32",
+        "sha256": "3165e226ef27bb61aad8e97027dc47502953c66ba071b6a3692f299b25698974"
+      }
+    ],
+    "native_condition_reference": [
+      {
+        "shape": [
+          572352
+        ],
+        "dtype": "torch.float32",
+        "sha256": "68b3291c974b4fd1ba11ab7ae961391cc1ed0f697378d9fbfcd60eb1b12292dc"
+      }
+    ],
+    "native_condition_mask": [
+      {
+        "shape": [
+          572352
+        ],
+        "dtype": "torch.float32",
+        "sha256": "6fa59985d67811da17dba7b3f3b2ba27ee3739b09e7cbc779284a45e5997c653"
+      }
+    ],
+    "generation_arguments": {
+      "seed": [
+        1824758510
+      ],
+      "guidance": 1.0,
+      "num_steps": 2,
+      "shift": 1.0,
+      "guidance_interval": null,
+      "normalize_cfg": false,
+      "skip_text_tokens_for_cfg": false
+    },
+    "action_padding_intervention": {
+      "schema_version": 1,
+      "policy": "droid_rf_training_zero_action_padding",
+      "raw_action_dim": 8,
+      "padded_action_dim": 64,
+      "sampler_change": "padded_coordinates_are_zero_reference_constraints",
+      "velocity_change": "project_only_padded_action_inputs_before_native_packing",
+      "prepared_calls": 1,
+      "prepared_original": {
+        "noise": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "3165e226ef27bb61aad8e97027dc47502953c66ba071b6a3692f299b25698974"
+          }
+        ],
+        "condition_reference": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "68b3291c974b4fd1ba11ab7ae961391cc1ed0f697378d9fbfcd60eb1b12292dc"
+          }
+        ],
+        "condition_mask": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "ca5c3496af371a05aa7e2a130553cd65821796c10e9bc94df897a87d820f5012"
+          }
+        ]
+      },
+      "prepared_effective": {
+        "noise": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "3165e226ef27bb61aad8e97027dc47502953c66ba071b6a3692f299b25698974"
+          }
+        ],
+        "condition_reference": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "68b3291c974b4fd1ba11ab7ae961391cc1ed0f697378d9fbfcd60eb1b12292dc"
+          }
+        ],
+        "condition_mask": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "6fa59985d67811da17dba7b3f3b2ba27ee3739b09e7cbc779284a45e5997c653"
+          }
+        ]
+      },
+      "nonpadding_unchanged": true,
+      "mask_delta_coordinates": [
+        1792
+      ],
+      "initial_padding_max_before": [
+        0.0
+      ],
+      "initial_padding_max_after": [
+        0.0
+      ],
+      "projected_velocity_branches": 2,
+      "velocity_padding_max_before": [
+        0.0,
+        0.0
+      ],
+      "velocity_padding_max_after": [
+        0.0,
+        0.0
+      ],
+      "hooks_restored": true
+    },
+    "action_offset": 570240,
+    "action_shape": [
+      33,
+      64
+    ],
+    "normalizer": {
+      "raw_action_dim": 8,
+      "qualified_class": null,
+      "offset": null,
+      "scale": null,
+      "forward_clamp": null,
+      "forward_clamp_mask": null
+    },
+    "native_module_bindings_restored": true,
+    "sampling_rng_restored": true,
+    "role_binding": false,
+    "output_arrays": {
+      "action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "29aea7361ca5d23dd1801258883c556cfdcd40433a5f6b958f7c537e8b038953"
+      },
+      "model_action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "c53b79459f3727cbdb66f1b750d18caea7dfb2816ec91247d389c8a327726d9c"
+      },
+      "measured_action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "9a69b99f9ce0181348ba3c38df5f87640570a6daf0b50d78c86cf456779af79f"
+      },
+      "model_measured_action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "3872e03e37d96b250019fc50633cde7ac097e1aa59ec641ac3da63c18b63166f"
+      }
+    },
+    "generation_host_seconds": 0.8596292827278376,
+    "full_joint_fp32": {
+      "shape": [
+        572352
+      ],
+      "dtype": "float32",
+      "sha256": "f6eab064fb605b4e0d3d35937a8e2dad4b2313689ddd636758d21f6316561b00"
+    }
+  },
+  "full_endpoint_bitexact": true,
+  "normalized_actions_bitexact": true,
+  "decoded_actions_bitexact": true,
+  "condition_and_seed_bitexact": true,
+  "fresh_process": true,
+  "no_duplicate_lora": true,
+  "actual_callbacks": 2,
+  "actual_branches": 2,
+  "source_and_input_postcheck": "unchanged",
+  "seconds": 48.7787616327405
+}

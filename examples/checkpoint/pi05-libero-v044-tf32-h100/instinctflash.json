@@ -1,0 +1,39 @@
+{
+  "instinctflash_schema": 1,
+  "execution": {
+    "model_id": "instinctflash/pi05-libero-v044-tf32-h100",
+    "backbone": "pi05",
+    "servable": true,
+    "base_weights": "lerobot/pi05_libero_finetuned_v044",
+    "guidance": {
+      "action": "none"
+    },
+    "nfe": {
+      "prefix": 1,
+      "action": 10
+    },
+    "obs_features": {
+      "observation.images.image": [3, 256, 256],
+      "observation.images.image2": [3, 256, 256],
+      "observation.images.empty_camera_0": [3, 224, 224],
+      "observation.state": [8]
+    },
+    "pi05_tf32_numeric": {
+      "enabled": true,
+      "tier": "NUMERIC",
+      "math_mode": "tf32",
+      "parameter_dtype": "float32",
+      "compile_model": false,
+      "static_kv_graph": true,
+      "hardware": "sm90",
+      "max_abs_action_delta": 0.0008987784385681152,
+      "evidence": "examples/pi05_vla/tf32_v044_static_h100_results.json"
+    }
+  },
+  "provenance": {
+    "base_revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+    "measurement_device": "NVIDIA H100 80GB HBM3 (SM90)",
+    "closed_loop_certificate": "PENDING: see examples/pi05_vla/tf32_closed_loop_preregistration.json",
+    "note": "LIBERO-v044 pointer package for the preregistered paired FP32/TF32 gate."
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "started_utc": "2026-09-14T02:40:34.115534+00:00",
+  "finished_utc": "2026-09-14T02:40:35.183928+00:00",
+  "elapsed_seconds": 1.068,
+  "interpreter": "/home/ubuntu/cosmos-framework/.venv/bin/python",
+  "command": "CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 PYTHONPATH=/home/ubuntu/InstinctFlash:/home/ubuntu/InstinctFlash/tests /home/ubuntu/cosmos-framework/.venv/bin/python -B; tests.run_tests.run_test for each listed file",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "OMP_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "results": [
+    {
+      "file": "test_user_provenance.py",
+      "verdict": "PASS",
+      "detail": "46 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 0.718,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-55rwa27p/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_user_provenance.py"
+      ]
+    },
+    {
+      "file": "test_assemble_user_provenance.py",
+      "verdict": "PASS",
+      "detail": "14 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 0.35,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-5j_mkouu/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_assemble_user_provenance.py"
+      ]
+    }
+  ],
+  "counts": {
+    "PASS": 2,
+    "SKIP": 0,
+    "FAIL": 0
+  },
+  "inputs_sha256": {
+    "tests/test_user_provenance.py": "c36ddb3a2c9babad9f8b1025e06518acc65d92be8d4c6b637399b49be1b04f1a",
+    "tests/test_assemble_user_provenance.py": "142b070d7b7e6617fe7d6987c0c74675b59daa953dcd25db8e87a27643e8a393",
+    "benchmarks/regression/user_provenance.py": "bf8aa2cf07861605134fb3d6897798972d1db8a30fc8f9d5276fe3a62303eea0",
+    "eval/user_e2e_2026-09-14/assemble_provenance.py": "fc3073fc958a7f8f7d94c2a669f07370a7017679ffed58427e91967629a365a4",
+    "tests/run_tests.py": "b1d4b0dce4aac951e0f6ebc929b06f541ee23011cb8bb5ba6f2b7ac180e4507e",
+    "tests/__init__.py": "e5dfa1f4ef7fe8dc45766eacb4999111c10f5a17acbf2a7dcd684949b3517d98",
+    "pyproject.toml": "51eeb11f36e46fa16a04d28fac0cc43e58cfaab1d4470c0dd26bcbff0497d2ab"
+  },
+  "inputs_changed_during_run": [],
+  "log": "eval/user_e2e_2026-09-14/validation/cpu_provenance_final_recheck.log",
+  "exit_code": 0
+}

@@ -1,0 +1,53 @@
+{
+  "architecture": "aarch64",
+  "checkpoint": {
+    "model_id": "GEAR-Dreams/DreamZero-DROID",
+    "revision": "96ad344138c66e82536422432ad742f015784942"
+  },
+  "constraints": {
+    "kind": "observed_effective_versions_not_install_requirements",
+    "package_count": 134,
+    "path": "constraints.txt",
+    "sha256": "3ee61277c758f6f2f0a860e2523172e1527049cba058bae95abad3fc0c9e533c"
+  },
+  "family": "dreamzero",
+  "key_packages": {
+    "NATTEN": null,
+    "diffusers": "0.30.2",
+    "huggingface-hub": "0.36.2",
+    "lerobot": "0.6.1",
+    "numpy": "1.26.4",
+    "tokenizers": "0.21.4",
+    "torch": "2.11.0",
+    "torchvision": "0.26.0",
+    "transformers": "4.51.3",
+    "triton": "3.6.0"
+  },
+  "package_source_origin": "Pinned Git source plus installed package metadata; see source.json.",
+  "python": "3.12.3",
+  "qualification": {
+    "GPU_test_in_this_capture": false,
+    "fresh_dependency_resolution": false,
+    "fresh_environment_inference": false,
+    "historical_source_hashes_checked": 71,
+    "historical_source_hashes_matched": 71
+  },
+  "remaining_steps": [
+    "Resolve target CUDA/Torch wheel artifact and record its public URL/hash.",
+    "Resolve upstream dependencies under these constraints in a new per-family environment.",
+    "Run public_deploy doctor before explicitly fetching checkpoint/tokenizer assets.",
+    "Run actual public Python/CLI/WebSocket and reproduction gates; metadata alone does not establish acceleration."
+  ],
+  "schema": "instinctflash.vendor_environment.v1",
+  "source_manifest": "../dreamzero/source.json",
+  "torch_artifact": {
+    "build_version": "2.11.0+cu130",
+    "cuda": "13.0",
+    "distribution_version": "2.11.0",
+    "source_commit": "70d99e998b4955e0049d13a98d77ae1b14db1f45",
+    "status": "exact_original_wheel_artifact_origin_not_recorded",
+    "wheel_sha256": null,
+    "wheel_url": null
+  },
+  "upstream_package_repository": null
+}

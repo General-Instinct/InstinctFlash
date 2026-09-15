@@ -10,6 +10,7 @@ Usage:
 """
 
 import ctypes
+from collections import OrderedDict
 import json
 import math
 import logging
@@ -72,19 +73,43 @@ class Pi05TorchFrontendThor:
         infer(observation) -> {"actions": np.ndarray}
     """
 
+    MODEL_ACTION_DIM = 32
+
     # -----------------------------------------------------------------------
     # Construction
     # -----------------------------------------------------------------------
 
     def __init__(self, checkpoint_dir: str, num_views: int = 2,
                  use_cuda_graph: bool = True, autotune: int = 3,
-                 use_fp8: bool = True):
+                 use_fp8: bool = True, action_chunk: int = 10,
+                 action_output: str = "libero", prompt_cache_size: int = 8):
         """
         Args:
             autotune: CUDA Graph autotune trials per set_prompt().
                 0 = off, 3 = default (fast), 5+ = thorough.
                 Torch usually finds fast graph on trial 0-1.
+            action_chunk: Number of actions computed per inference; denoise steps
+                remain unchanged. Runtime must pass the checkpoint's own horizon.
+            action_output: "normalized" returns all 32 model dimensions for the
+                checkpoint's native postprocessor. "libero" preserves the legacy
+                standalone seven-dimensional decoded output.
+            prompt_cache_size: Maximum retained normalized-mode prompt-length
+                profiles. Weights and large scratch buffers are shared; each
+                profile owns its graphs and calibration allocations. Zero disables
+                reuse across lengths (same-length updates still reuse the graph).
         """
+        if isinstance(action_chunk, bool) or not isinstance(action_chunk, int) or action_chunk <= 0:
+            raise ValueError("action_chunk must be a positive integer")
+        if action_output not in {"libero", "normalized"}:
+            raise ValueError("action_output must be 'libero' or 'normalized'")
+        if isinstance(prompt_cache_size, bool) or not isinstance(prompt_cache_size, int) or prompt_cache_size < 0:
+            raise ValueError("prompt_cache_size must be a nonnegative integer")
+        self._prompt_cache_size = prompt_cache_size
+        self._prompt_profiles = OrderedDict()
+        self.prompt_cache_hits = 0
+        self.prompt_cache_misses = 0
+        self.action_chunk = action_chunk
+        self.action_output = action_output
         checkpoint_dir = pathlib.Path(checkpoint_dir)
         self.num_views = num_views
         self.use_cuda_graph = use_cuda_graph
@@ -142,7 +167,8 @@ class Pi05TorchFrontendThor:
             logger.warning("CUTLASS strided FMHA not found — SigLIP will use cuBLAS attention fallback")
 
         # ---- Norm stats ----
-        self._load_norm_stats(checkpoint_dir)
+        if self.action_output == "libero":
+            self._load_norm_stats(checkpoint_dir)
 
         # ---- Weights (safetensors only — JAX/Orbax uses ThorPipelineJax) ----
         safetensors_path = checkpoint_dir / "model.safetensors"
@@ -157,6 +183,11 @@ class Pi05TorchFrontendThor:
     # -----------------------------------------------------------------------
     # norm_stats
     # -----------------------------------------------------------------------
+
+    def _decode_actions(self, raw_actions):
+        if self.action_output == "normalized":
+            return raw_actions.copy()
+        return unnormalize_actions(raw_actions, self.norm_stats)[:, :LIBERO_ACTION_DIM]
 
     def _load_norm_stats(self, checkpoint_dir):
         from flash_rt.core.utils.norm_stats import (
@@ -340,7 +371,7 @@ class Pi05TorchFrontendThor:
         self._enc_rope = torch.empty(Se_max, 256, dtype=fp16, device='cuda')
 
         # KV cache
-        Sa, Da, Ha, La = 10, 1024, 4096, 18
+        Sa, Da, Ha, La = self.action_chunk, 1024, 4096, 18
         self.Sa = Sa; self.Da = Da; self.Ha = Ha; self.La = La
         total_keys_max = Se_max + Sa
         self._Kc = torch.zeros(Le, total_keys_max, HDe, dtype=fp16, device='cuda')
@@ -404,7 +435,7 @@ class Pi05TorchFrontendThor:
         self._ae_xn  = torch.empty(Sa, Da, dtype=fp16, device='cuda')
         self._ae_gate = torch.empty(Sa, Da, dtype=fp16, device='cuda')
         self._ae_qkv = torch.empty(Sa, 2560, dtype=fp16, device='cuda')
-        self._ae_logits = torch.empty(Sa * 8, total_keys_max, dtype=fp16, device='cuda')
+        self._ae_logits = torch.empty(Sa * 8, total_keys_max + 1, dtype=fp16, device='cuda')
         self._ae_attn = torch.empty(Sa * 8, 256, dtype=fp16, device='cuda')
         self._ae_hid  = torch.empty(Sa, 2 * Ha, dtype=fp16, device='cuda')
         self._ae_fg   = torch.empty(Sa, 2 * Ha, dtype=fp16, device='cuda')  # must fit Gate+Up GEMM output [Sa, 2H]
@@ -516,7 +547,7 @@ class Pi05TorchFrontendThor:
         self._ae_xn_b2  = torch.empty(B * Sa, Da, dtype=fp16, device='cuda')
         self._ae_gate_b2 = torch.empty(B * Sa, Da, dtype=fp16, device='cuda')
         self._ae_qkv_b2 = torch.empty(B * Sa, 2560, dtype=fp16, device='cuda')
-        self._ae_logits_b2 = torch.empty(Sa * 8, total_keys_max,
+        self._ae_logits_b2 = torch.empty(Sa * 8, total_keys_max + 1,
                                           dtype=fp16, device='cuda')  # scratch reused per sample
         self._ae_attn_b2 = torch.empty(B * Sa * 8, 256, dtype=fp16, device='cuda')
         self._ae_fg_b2   = torch.empty(B * Sa, 2 * Ha, dtype=fp16, device='cuda')
@@ -573,6 +604,8 @@ class Pi05TorchFrontendThor:
                 positive advantage tag (the standard "select for high
                 advantage" use case). Set ``False`` only for debugging.
         """
+        if cfg_enable and self.action_output == "normalized":
+            raise ValueError("checkpoint-native normalized mode currently serves positive-branch inference only")
         if not cfg_enable:
             self._rl_config = None
             self._lang_emb_cond = None
@@ -880,14 +913,45 @@ class Pi05TorchFrontendThor:
         latency_ms = (time.perf_counter() - t0) * 1000
         self.latency_records.append(latency_ms)
 
-        unnorm = unnormalize_actions(raw_actions, self.norm_stats)
-        robot_actions = unnorm[:, :LIBERO_ACTION_DIM]
+        robot_actions = self._decode_actions(raw_actions)
         if debug:
             logger.info(
                 "CFG raw[0,:5]: %s, latency: %.1f ms (beta=%.2f)",
                 raw_actions[0, :5], latency_ms,
                 self._cfg_pipeline.cfg_beta)
         return {"actions": robot_actions}
+
+    _PROMPT_PROFILE_FIELDS = (
+        "Se", "prefix_tokens", "total_keys", "_S_lang", "_lang_emb", "_attn",
+        "_siglip_graph", "_enc_ae_graph", "_enc_calib_scales", "_ae_calib_scales",
+        "_enc_alpha_host", "_sa_all", "_sf_all", "_fs_all", "_real_data_calibrated",
+    )
+
+    def _remember_prompt_profile(self):
+        # Save only when leaving a profile: infer/calibrate may have replaced
+        # its graph and scales after set_prompt returned. Keep those allocations
+        # alive for every raw device pointer captured in the saved graph.
+        if not self.graph_captured or not self._prompt_cache_size:
+            return
+        key = self.prefix_tokens
+        self._prompt_profiles[key] = {name: getattr(self, name)
+                                      for name in self._PROMPT_PROFILE_FIELDS}
+        self._prompt_profiles.move_to_end(key)
+        while len(self._prompt_profiles) > self._prompt_cache_size:
+            self._prompt_profiles.popitem(last=False)
+
+    def _update_prompt_rope(self):
+        # Scratch and RoPE storage are shared across profiles; graph restore
+        # must refresh the logical decoder offset, not just restore Python attrs.
+        Se = self.Se
+        self._enc_rope[:Se].copy_(
+            torch.cat([self._kc_t[:Se, :, None], self._ks_t[:Se, :, None]], dim=2)
+            .reshape(Se, 256))
+        start = self.prefix_tokens
+        self._dec_rope.copy_(
+            torch.cat([self._kc_t[start:start + self.Sa, :, None],
+                       self._ks_t[start:start + self.Sa, :, None]], dim=2)
+            .reshape(self.Sa, 256))
 
     def set_prompt(self, prompt_text):
         """Tokenize prompt, compute time conditioning, calibrate scales, capture graphs.
@@ -923,11 +987,45 @@ class Pi05TorchFrontendThor:
         else:
             embeds, prompt_len = embed_prompt(prompt_text, self.embedding_weight, max_len=48)
 
-        # Se must be EVEN for cuBLASLt FP8
+        if prompt_len < 1 or prompt_len > 256:
+            raise ValueError("pi05 engine requires between 1 and 256 active prompt tokens")
+        # TMA GEMMs require aligned physical rows. Normalized mode excludes
+        # the alignment row from attention and packs decoder KV at prefix_tokens;
+        # that row is storage padding, not an extra language token.
         Se = S_sig + prompt_len
-        if Se % 2 != 0:
+        if self.action_output == "normalized":
+            Se = (Se + 15) // 16 * 16
+        elif Se % 2 != 0:
             Se += 1
+        if (self.action_output == "normalized" and self.graph_captured
+                and getattr(self, "_rl_config", None) is None
+                and not self._batched and self.Se == Se
+                and self.prefix_tokens == S_sig + prompt_len):
+            # Captured consumers reference this allocation. Updating embeddings
+            # in place keeps state-to-prompt fresh without recapturing the graph.
+            self._lang_emb[:prompt_len].copy_(embeds)
+            if self._lang_emb.shape[0] > prompt_len:
+                self._lang_emb[prompt_len:].zero_()
+            return
+        if self.action_output == "normalized":
+            profile = self._prompt_profiles.pop(S_sig + prompt_len, None)
+            # Remove the target before saving the current profile so an LRU
+            # eviction cannot discard the very graph we are switching to.
+            self._remember_prompt_profile()
+            if profile is not None:
+                for name, value in profile.items():
+                    setattr(self, name, value)
+                self._lang_emb[:prompt_len].copy_(embeds)
+                self._lang_emb[prompt_len:].zero_()
+                self._update_prompt_rope()
+                self.prompt_cache_hits += 1
+                return
+            self.prompt_cache_misses += 1
+            # New logical lengths need their own real-observation calibration;
+            # a previous length's completion flag does not certify this profile.
+            self._real_data_calibrated = False
         self.Se = Se
+        self.prefix_tokens = S_sig + prompt_len if self.action_output == "normalized" else Se
         self.total_keys = Se + self.Sa
 
         # Stage 1.4 — build AttentionBackend. total_keys must be set first
@@ -972,54 +1070,75 @@ class Pi05TorchFrontendThor:
 
         actual_lang = Se - S_sig
         if actual_lang > prompt_len:
-            embeds = torch.cat([embeds, embeds[-1:]], dim=0)
-        self._lang_emb = embeds
+            padding = (embeds.new_zeros((actual_lang - prompt_len, embeds.shape[-1]))
+                       if self.action_output == "normalized" else embeds[-1:])
+            embeds = torch.cat([embeds, padding], dim=0)
+        # IN-PLACE, never reallocate-when-sized-right — same hazard class as
+        # Pi05Pipeline.set_language_embeds on the RTX path: any captured CUDA graph bakes this
+        # buffer's device pointer (the SigLIP graph via _postln_project_ops; the CFG-batched
+        # graph via its lang gpu_copys). The B=1 graphs are recaptured at the end of this
+        # method so they cannot dangle, but keeping the allocation pointer-stable is what makes
+        # every baked consumer safe by construction rather than by call-order luck.
+        _old_lang = getattr(self, "_lang_emb", None)
+        if (_old_lang is not None and _old_lang.shape == embeds.shape
+                and _old_lang.dtype == embeds.dtype and _old_lang.device == embeds.device):
+            _old_lang.copy_(embeds)
+        else:
+            self._lang_emb = embeds
         self._S_lang = actual_lang
 
+        # DROP any surviving batched graph. ``_enc_ae_graph_b2`` is captured lazily by
+        # ``infer_batch`` / ``_build_cfg_batched_pipeline`` and — unlike the B=1 graphs — is
+        # NOT recaptured by this method, while this method reallocates buffers it baked
+        # (``_sa_all_b2`` / ``_sf_all_b2`` / ``_fs_all_b2`` style tables, calibration scales)
+        # and changes Se-dependent strides. Replaying it after a prompt swap sourced freed
+        # memory: the exact bug the RTX ``set_language_embeds`` fix removed. Lazy recapture
+        # rebuilds it against the new pointers on the next batched call.
+        if getattr(self, "_enc_ae_graph_b2", None) is not None:
+            self._enc_ae_graph_b2 = None
+
         # ---- RoPE tables ----
-        self._enc_rope[:Se].copy_(
-            torch.cat([self._kc_t[:Se, :, None],
-                       self._ks_t[:Se, :, None]], dim=2).reshape(Se, 256))
-        dec_start = Se
-        self._dec_rope.copy_(
-            torch.cat([self._kc_t[dec_start:dec_start + self.Sa, :, None],
-                       self._ks_t[dec_start:dec_start + self.Sa, :, None]], dim=2)
-            .reshape(self.Sa, 256))
+        self._update_prompt_rope()
 
         # ---- Time conditioning (precompute per-step AdaRMSNorm styles) ----
         Sa, Da, La = self.Sa, self.Da, self.La
         steps = 10; D3a = 3 * Da
-        sa_all = torch.zeros(steps * La * Sa, D3a, dtype=fp16, device='cuda')
-        sf_all = torch.zeros(steps * La * Sa, D3a, dtype=fp16, device='cuda')
-        fs_all = torch.zeros(steps * Sa, D3a, dtype=fp16, device='cuda')
+        if self.action_output == "normalized" and hasattr(self, "_sa_all"):
+            # These tables depend only on immutable weights, horizon and NFE,
+            # not on the prompt. Sharing them also bounds profile-cache memory.
+            sa_all, sf_all, fs_all = self._sa_all, self._sf_all, self._fs_all
+        else:
+            sa_all = torch.zeros(steps * La * Sa, D3a, dtype=fp16, device='cuda')
+            sf_all = torch.zeros(steps * La * Sa, D3a, dtype=fp16, device='cuda')
+            fs_all = torch.zeros(steps * Sa, D3a, dtype=fp16, device='cuda')
 
-        time_embeds = []
-        for step in range(steps):
-            t_val = 1.0 - step / steps
-            t_tensor = torch.tensor([t_val], device='cuda')
-            fraction = torch.linspace(0, 1, Da // 2, device='cuda', dtype=torch.float64)
-            period = 4e-3 * (4.0 / 4e-3) ** fraction
-            scaling = 1.0 / period * 2 * math.pi
-            sin_input = scaling * t_tensor.double()
-            emb = torch.cat([torch.sin(sin_input), torch.cos(sin_input)], dim=-1).to(fp16)
-            time_embeds.append(emb)
+            time_embeds = []
+            for step in range(steps):
+                t_val = 1.0 - step / steps
+                t_tensor = torch.tensor([t_val], device='cuda')
+                fraction = torch.linspace(0, 1, Da // 2, device='cuda', dtype=torch.float64)
+                period = 4e-3 * (4.0 / 4e-3) ** fraction
+                scaling = 1.0 / period * 2 * math.pi
+                sin_input = scaling * t_tensor.double()
+                emb = torch.cat([torch.sin(sin_input), torch.cos(sin_input)], dim=-1).to(fp16)
+                time_embeds.append(emb)
 
-        for step in range(steps):
-            te = time_embeds[step].unsqueeze(0)
-            tmp = (te @ self._time_mlp_in_w.t() + self._time_mlp_in_b.unsqueeze(0)).float()
-            tmp = (tmp * torch.sigmoid(tmp)).to(fp16)
-            tmp2 = (tmp @ self._time_mlp_out_w.t() + self._time_mlp_out_b.unsqueeze(0)).float()
-            tmp2 = (tmp2 * torch.sigmoid(tmp2)).to(fp16)
-            time_emb = tmp2.expand(Sa, -1).contiguous()
-            for layer in range(La):
-                idx = (step * La + layer) * Sa
-                sa_all[idx:idx + Sa] = (time_emb @ self._attn_mod_w[layer].t()
-                                        + self._attn_mod_b[layer].unsqueeze(0))
-                sf_all[idx:idx + Sa] = (time_emb @ self._ffn_mod_w[layer].t()
-                                        + self._ffn_mod_b[layer].unsqueeze(0))
-            fidx = step * Sa
-            fs_all[fidx:fidx + Sa] = (time_emb @ self._final_mod_w.t()
-                                      + self._final_mod_b.unsqueeze(0))
+            for step in range(steps):
+                te = time_embeds[step].unsqueeze(0)
+                tmp = (te @ self._time_mlp_in_w.t() + self._time_mlp_in_b.unsqueeze(0)).float()
+                tmp = (tmp * torch.sigmoid(tmp)).to(fp16)
+                tmp2 = (tmp @ self._time_mlp_out_w.t() + self._time_mlp_out_b.unsqueeze(0)).float()
+                tmp2 = (tmp2 * torch.sigmoid(tmp2)).to(fp16)
+                time_emb = tmp2.expand(Sa, -1).contiguous()
+                for layer in range(La):
+                    idx = (step * La + layer) * Sa
+                    sa_all[idx:idx + Sa] = (time_emb @ self._attn_mod_w[layer].t()
+                                            + self._attn_mod_b[layer].unsqueeze(0))
+                    sf_all[idx:idx + Sa] = (time_emb @ self._ffn_mod_w[layer].t()
+                                            + self._ffn_mod_b[layer].unsqueeze(0))
+                fidx = step * Sa
+                fs_all[fidx:fidx + Sa] = (time_emb @ self._final_mod_w.t()
+                                          + self._final_mod_b.unsqueeze(0))
 
         self._sa_all = sa_all
         self._sf_all = sf_all
@@ -1076,7 +1195,9 @@ class Pi05TorchFrontendThor:
         total_keys = self.total_keys
 
         # Try cache first
-        cached = load_calibration(self._checkpoint_path, Se)
+        # The historical cache does not identify action horizon, masking or
+        # calibration inputs. Do not reuse it for checkpoint-native execution.
+        cached = None if self.action_output == "normalized" else load_calibration(self._checkpoint_path, Se)
         if cached is not None:
             self._enc_calib_scales = torch.tensor(
                 cached["enc_scales"], dtype=torch.float32, device='cuda')
@@ -1119,7 +1240,7 @@ class Pi05TorchFrontendThor:
         }
         enc_dims = {
             'Se': Se, 'D': De, 'H': He, 'NH': NHe, 'HD': HDe,
-            'L': Le, 'total_keys': total_keys,
+            'L': Le, 'total_keys': total_keys, 'valid_Se': self.prefix_tokens,
         }
 
         # Encoder calibration — scratch buffers allocated by caller
@@ -1185,7 +1306,7 @@ class Pi05TorchFrontendThor:
         }
         ae_dims = {
             'S': Sa, 'D': Da, 'H': Ha, 'NH': 8, 'HD': 256,
-            'steps': 10, 'layers': self.La, 'enc_seq': Se,
+            'steps': 10, 'layers': self.La, 'enc_seq': self.prefix_tokens, 'valid_keys': self.prefix_tokens + Sa,
             'total_keys': total_keys,
         }
 
@@ -1208,6 +1329,9 @@ class Pi05TorchFrontendThor:
 
         self._ae_calib_scales = ae_max
         logger.info("Decoder calibrated: %d scales", La * 4)
+
+        if self.action_output == "normalized":
+            return
 
         # Save to cache
         try:
@@ -1337,7 +1461,7 @@ class Pi05TorchFrontendThor:
         }
         enc_dims = {
             'Se': Se, 'D': De, 'H': He, 'NH': NHe, 'HD': HDe,
-            'L': Le, 'total_keys': total_keys,
+            'L': Le, 'total_keys': total_keys, 'valid_Se': self.prefix_tokens,
         }
 
         # Build dicts for decoder_forward
@@ -1375,7 +1499,7 @@ class Pi05TorchFrontendThor:
         }
         ae_dims = {
             'S': Sa, 'D': Da, 'H': Ha, 'NH': 8, 'HD': 256,
-            'steps': 10, 'layers': La, 'enc_seq': Se,
+            'steps': 10, 'layers': La, 'enc_seq': self.prefix_tokens, 'valid_keys': self.prefix_tokens + Sa,
             'total_keys': total_keys,
         }
 
@@ -1469,7 +1593,7 @@ class Pi05TorchFrontendThor:
         }
         enc_dims_b2 = {
             'Se': Se, 'D': De, 'H': He, 'NH': NHe, 'HD': HDe,
-            'L': Le, 'total_keys': total_keys,
+            'L': Le, 'total_keys': total_keys, 'valid_Se': self.prefix_tokens,
         }
 
         ae_bufs_b2 = {
@@ -1508,7 +1632,7 @@ class Pi05TorchFrontendThor:
         }
         ae_dims_b2 = {
             'S': Sa, 'D': Da, 'H': Ha, 'NH': 8, 'HD': 256,
-            'steps': 10, 'layers': La, 'enc_seq': Se,
+            'steps': 10, 'layers': La, 'enc_seq': self.prefix_tokens, 'valid_keys': self.prefix_tokens + Sa,
             'total_keys': total_keys,
         }
 
@@ -1616,7 +1740,7 @@ class Pi05TorchFrontendThor:
         }
         enc_dims_b2 = {
             'Se': Se, 'D': De, 'H': He, 'NH': NHe, 'HD': HDe,
-            'L': Le, 'total_keys': total_keys,
+            'L': Le, 'total_keys': total_keys, 'valid_Se': self.prefix_tokens,
         }
 
         ae_bufs_b2 = {
@@ -1653,7 +1777,7 @@ class Pi05TorchFrontendThor:
         }
         ae_dims_b2 = {
             'S': Sa, 'D': Da, 'H': Ha, 'NH': 8, 'HD': 256,
-            'steps': 10, 'layers': La, 'enc_seq': Se,
+            'steps': 10, 'layers': La, 'enc_seq': self.prefix_tokens, 'valid_keys': self.prefix_tokens + Sa,
             'total_keys': total_keys,
         }
 
@@ -1792,6 +1916,8 @@ class Pi05TorchFrontendThor:
         Mirrors :meth:`flash_rt.frontends.torch.pi05_rtx.Pi05TorchFrontendRtx.set_batched_mode`
         (line 1140) at the API level.
         """
+        if enable and self.action_output == "normalized":
+            raise ValueError("checkpoint-native normalized mode currently serves one observation at a time")
         if not enable:
             self._batched = False
             self._enc_ae_graph_b2 = None
@@ -1801,6 +1927,28 @@ class Pi05TorchFrontendThor:
             raise ValueError(
                 f"set_batched_mode requires batch_size >= 2; "
                 f"got {batch_size}. Use the standard infer() for B=1.")
+
+        # T2 root-cause (previously a silent NaN on the first
+        # infer_batch): the batched pipeline functions
+        # (shared_primitives_batched.encoder_forward_b2 /
+        # pipeline_thor_batched.decoder_forward_b2) are FP8-only —
+        # they have no ``use_fp8`` parameter. In FP16 mode
+        # (``use_fp8=False``) the weight spec skips Quant() so the
+        # weight buffers hold FP16 bytes, and calibration is skipped so
+        # ``_enc_calib_scales`` / ``_ae_calib_scales`` stay ZERO. The b2
+        # capture then runs FP8 kernels that (a) reinterpret FP16
+        # weights as E4M3 bytes and (b) descale by max(0, 1e-12) —
+        # activations saturate at ±448, garbage propagates and the
+        # attention softmax overflows to NaN. Fail loudly instead.
+        if not self.use_fp8:
+            raise RuntimeError(
+                "Batched (B>=2) Thor inference requires use_fp8=True: "
+                "encoder_forward_b2/decoder_forward_b2 have no FP16 "
+                "path (FP16 weights would be reinterpreted as FP8 and "
+                "the zeroed calibration scales saturate every "
+                "activation — this used to NaN silently on the first "
+                "infer_batch). Use the B=1 infer() for the FP16 "
+                "baseline, or construct the frontend with use_fp8=True.")
 
         # Lazy alloc on first enable (or on B change).
         if self._Kc_b2 is None or self.B != batch_size:
@@ -1901,9 +2049,7 @@ class Pi05TorchFrontendThor:
         for b in range(self.B):
             raw = self._g_noise_b2[b * self.Sa : (b + 1) * self.Sa
                                     ].float().cpu().numpy()
-            unnorm = unnormalize_actions(raw, self.norm_stats)
-            results.append(
-                {"actions": unnorm[:, :LIBERO_ACTION_DIM]})
+            results.append({"actions": self._decode_actions(raw)})
         return results
 
     # -----------------------------------------------------------------------
@@ -1979,7 +2125,8 @@ class Pi05TorchFrontendThor:
             observation: dict with 'image' and 'wrist_image' (or 'images' list).
                          Each image is (224,224,3) uint8 or float16 numpy.
         Returns:
-            {"actions": np.ndarray}  shape (Sa, LIBERO_ACTION_DIM)
+            {"actions": np.ndarray}: (Sa, 32) when action_output="normalized",
+            otherwise the legacy decoded (Sa, LIBERO_ACTION_DIM).
         """
         if self._rl_config is not None:
             return self._infer_cfg(observation, debug)
@@ -2019,6 +2166,11 @@ class Pi05TorchFrontendThor:
             torch.cuda.synchronize()
             self._recalibrate_with_real_data()
             self._real_data_calibrated = True
+            if self.action_output == "normalized":
+                # Calibration and capture warmup consume/overwrite enc_x. The
+                # first real action must start from the observation prefix just
+                # like every subsequent call, not from warmup's hidden states.
+                self._siglip_graph.replay()
 
         # ---- Graph 2: Encoder + Decoder ----
         # numpy CPU RNG so the bit pattern matches the JAX frontend's
@@ -2036,8 +2188,7 @@ class Pi05TorchFrontendThor:
 
         # ---- Post-process ----
         raw_actions = self._g_noise.float().cpu().numpy()
-        unnorm = unnormalize_actions(raw_actions, self.norm_stats)
-        robot_actions = unnorm[:, :LIBERO_ACTION_DIM]
+        robot_actions = self._decode_actions(raw_actions)
 
         if debug:
             logger.info("Raw actions[0,:5]: %s", raw_actions[0, :5])
@@ -2140,7 +2291,7 @@ class Pi05TorchFrontendThor:
         }
         enc_dims = {
             'Se': Se, 'D': De, 'H': He, 'NH': NHe, 'HD': HDe,
-            'L': Le, 'total_keys': total_keys,
+            'L': Le, 'total_keys': total_keys, 'valid_Se': self.prefix_tokens,
         }
 
         # Scratch buffers for recalibration
@@ -2204,7 +2355,7 @@ class Pi05TorchFrontendThor:
         }
         ae_dims = {
             'S': Sa, 'D': Da, 'H': Ha, 'NH': 8, 'HD': 256,
-            'steps': 10, 'layers': self.La, 'enc_seq': Se,
+            'steps': 10, 'layers': self.La, 'enc_seq': self.prefix_tokens, 'valid_keys': self.prefix_tokens + Sa,
             'total_keys': total_keys,
         }
 
@@ -2296,7 +2447,7 @@ class Pi05TorchFrontendThor:
         }
         enc_dims = {
             'Se': Se, 'D': De, 'H': He, 'NH': NHe, 'HD': HDe,
-            'L': Le, 'total_keys': total_keys,
+            'L': Le, 'total_keys': total_keys, 'valid_Se': self.prefix_tokens,
         }
         ae_weights = {
             'ain_w':      self._ain_w.data_ptr(),
@@ -2317,7 +2468,7 @@ class Pi05TorchFrontendThor:
         }
         ae_dims = {
             'S': Sa, 'D': Da, 'H': Ha, 'NH': 8, 'HD': 256,
-            'steps': 10, 'layers': La, 'enc_seq': Se,
+            'steps': 10, 'layers': La, 'enc_seq': self.prefix_tokens, 'valid_keys': self.prefix_tokens + Sa,
             'total_keys': total_keys,
         }
 

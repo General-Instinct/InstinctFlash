@@ -1,0 +1,23 @@
+==============================================================================
+PAIRED NON-INFERIORITY CERTIFICATE  --  2V/4A vs teacher NFE, pooled n=1200 (pre-registered extension of the n=600 interim)
+==============================================================================
+  control   cert4a_pool_teacher      0.9211
+  treat     cert4a_pool_student      0.9046
+  paired episodes 1153   tasks 50
+  NOTE 22 control episodes absent from treat, dropped (never imputed): ['beat_block_hammer/21', 'dump_bin_bigbin/21', 'lift_pot/19']...
+  delta -0.0165   discordant 53 for / 72 against (10.8%)
+
+  exact McNemar two-sided p      0.1070   (no detectable difference)
+  McNemar-SE normal 95% CI       [-0.0355, +0.0025]
+  bootstrap 95% CI, iid episodes [-0.0356, +0.0026]
+  bootstrap 95% CI, TASK cluster [-0.0364, +0.0017]  <-- primary (most conservative)
+  one-sided normal p vs margin   0.00027
+
+  NOISE FLOOR from two runs of the CONTROL configuration (500 pairs):
+    discordance 19+21 = 8.0%, delta -0.0040
+    observed treat discordance is 10.8%; ABOVE the floor
+
+  margin declared -0.050   primary lower bound -0.0364 (bootstrap_task_cluster)   slack +0.0136
+  VERDICT: NON-INFERIOR  (robust)
+
+  wrote /home/ubuntu/iwm_distill/thor_column/va_2v4a_certificate_final.json

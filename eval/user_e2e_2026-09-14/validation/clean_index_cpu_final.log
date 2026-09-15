@@ -1,0 +1,2954 @@
+SKIP  test_action_terminal_elision.py: 7 passed; needs easydict
+STDOUT
+.......FF                                                                [100%]
+=================================== FAILURES ===================================
+________________ test_vendor_invariants_refuse_a_foreign_server ________________
+
+    def test_vendor_invariants_refuse_a_foreign_server():
+        src = "def _infer(self):\n    return 1\n"
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "fake_server.py")
+            open(path, "w").write(src)
+            spec = importlib.util.spec_from_file_location("fake_server", path)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+    
+            try:
+                check_vendor_invariants(mod)
+            except RuntimeError as e:
+                assert "no longer matches the trace" in str(e)
+            else:
+                raise AssertionError("a server without the traced structure was accepted")
+        # and the real vendor tree passes it (this is what install() calls before patching anything)
+        from instinctflash.runtime.lingbot_install import import_lingbot_server
+>       check_vendor_invariants(import_lingbot_server())
+                                ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_action_terminal_elision.py:176: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+instinctflash/runtime/lingbot_install.py:657: in import_lingbot_server
+    import wan_va_server  # noqa: E402  (importable only after the sys.path insert above)
+    ^^^^^^^^^^^^^^^^^^^^
+/home/ubuntu/lingbot-va/wan_va/wan_va_server.py:20: in <module>
+    from configs import VA_CONFIGS
+/home/ubuntu/lingbot-va/wan_va/configs/__init__.py:2: in <module>
+    from .va_franka_cfg import va_franka_cfg
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    # Copyright 2024-2025 The Robbyant Team Authors. All rights reserved.
+    import torch
+>   from easydict import EasyDict
+E   ModuleNotFoundError: No module named 'easydict'
+
+/home/ubuntu/lingbot-va/wan_va/configs/va_franka_cfg.py:3: ModuleNotFoundError
+----------------------------- Captured stderr call -----------------------------
+flash_attn is installed but failed to import: cannot import name 'flash_attn_varlen_func' from 'flash_attn' (/home/ubuntu/iwm_shims/flash_attn/__init__.py). Falling back to native PyTorch attention.
+_____________________ test_config_gate_on_the_real_classes _____________________
+
+    def test_config_gate_on_the_real_classes():
+        """Install on the real vendor module + server class; drive the `_infer` wrapper with a fake self."""
+        from instinctflash.runtime.lingbot_install import import_lingbot_server
+>       S = import_lingbot_server()
+            ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_action_terminal_elision.py:182: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+instinctflash/runtime/lingbot_install.py:657: in import_lingbot_server
+    import wan_va_server  # noqa: E402  (importable only after the sys.path insert above)
+    ^^^^^^^^^^^^^^^^^^^^
+/home/ubuntu/lingbot-va/wan_va/wan_va_server.py:20: in <module>
+    from configs import VA_CONFIGS
+/home/ubuntu/lingbot-va/wan_va/configs/__init__.py:2: in <module>
+    from .va_franka_cfg import va_franka_cfg
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    # Copyright 2024-2025 The Robbyant Team Authors. All rights reserved.
+    import torch
+>   from easydict import EasyDict
+E   ModuleNotFoundError: No module named 'easydict'
+
+/home/ubuntu/lingbot-va/wan_va/configs/va_franka_cfg.py:3: ModuleNotFoundError
+=============================== warnings summary ===============================
+tests/test_action_terminal_elision.py::test_vendor_invariants_refuse_a_foreign_server
+  /home/ubuntu/cosmos-framework/.venv/lib/python3.13/site-packages/torchao/dtypes/uintx/__init__.py:1: DeprecationWarning: Importing from torchao.dtypes.uintx.dyn_int8_act_int4_wei_cpu_layout is deprecated. Please use 'from torchao.prototype.dtypes import Int8DynamicActInt4WeightCPULayout' instead. This import path will be removed in a future release of torchao. See https://github.com/pytorch/ao/issues/2752 for more details.
+    from .dyn_int8_act_int4_wei_cpu_layout import (
+
+tests/test_action_terminal_elision.py::test_vendor_invariants_refuse_a_foreign_server
+  /home/ubuntu/cosmos-framework/.venv/lib/python3.13/site-packages/torchao/dtypes/uintx/__init__.py:22: DeprecationWarning: Importing from torchao.dtypes.uintx.uintx_layout is deprecated. Please use 'from torchao.prototype.dtypes import UintxLayout, UintxTensor' instead. This import path will be removed in a future release of torchao. See https://github.com/pytorch/ao/issues/2752 for more details.
+    from .uintx_layout import (
+
+tests/test_action_terminal_elision.py::test_vendor_invariants_refuse_a_foreign_server
+  /home/ubuntu/cosmos-framework/.venv/lib/python3.13/site-packages/torchao/dtypes/__init__.py:23: DeprecationWarning: Importing BlockSparseLayout from torchao.dtypes is deprecated. Please use 'from torchao.prototype.dtypes import BlockSparseLayout' instead. This import path will be removed in a future torchao release. Please check issue: https://github.com/pytorch/ao/issues/2752 for more details. 
+    from .uintx.block_sparse_layout import BlockSparseLayout
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_action_terminal_elision.py::test_vendor_invariants_refuse_a_foreign_server
+FAILED tests/test_action_terminal_elision.py::test_config_gate_on_the_real_classes
+2 failed, 7 passed, 3 warnings in 5.04s
+
+STDERR
+
+PASS  test_adapter.py: 12 tests passed
+STDOUT
+............                                                             [100%]
+12 passed in 0.24s
+
+STDERR
+
+PASS  test_assemble_user_provenance.py: 14 tests passed
+STDOUT
+..............                                                           [100%]
+14 passed in 0.13s
+
+STDERR
+
+PASS  test_attention_backend.py: 
+STDOUT
+
+=== 1. an adapter can declare a site, and a malformed one is rejected ===
+  OK   declared semantics round-trips   softmax_full
+  OK   declared KV extent round-trips   9792
+  OK   forwards/cycle present -- the profitability denominator
+  OK   a site missing `semantics` is rejected, not defaulted
+
+=== 2. THE IMPORTANT ONE: different semantics is never a candidate ===
+  OK   hybrid backend refused for a full-attention site
+  OK   and the reason says why it is not a speed question   semantics mismatch: site computes softmax_full, backend implemen...
+  OK   the same backend IS legal when the checkpoint declares hybrid semantics
+  OK   full-attention backend refused for a hybrid site
+
+=== 3. the mask envelope, which is what P003 actually bought ===
+  OK   flash is legal against a ring SLICE, which needs no mask at all (post-P003)
+  OK   flash is ILLEGAL against a data-dependent dense mask (the stock KV path)
+  OK   SDPA still accepts it -- a wider envelope, not a faster kernel
+  OK   and its BHSD requirement is legal-with-a-transpose, not illegal   eds a bshd->bhsd transpose of Q/K/V, 0 us/call as declared
+  OK   with the adaptation recorded so the planner can charge for it
+  OK   shape-staticness is expressible on the mask itself
+
+=== 4. distribution is a deployment fact, not a checkpoint fact ===
+  OK   ring attention is ILLEGAL at world_size 1
+  OK   and says so   needs world_size >= 2, have 1
+  OK   and legal at world_size 8, with no change to the checkpoint
+
+=== 5. tiers are derived from declared numerics ===
+  OK   the incumbent is bit-exact by construction
+  OK   online softmax cannot claim bit-exactness, however correct it is
+  OK   and a BITEXACT plan ceiling excludes it
+  OK   for the stated reason   tier: backend can only support NUMERIC, plan ceiling is BITEXACT (its ...
+  OK   while the incumbent survives a BITEXACT ceiling
+
+=== 6. a capture-hostile backend is charged for what it forfeits ===
+  OK   FlashInfer declares itself capture-hostile (host plan() per forward)
+  OK   forfeiting a 1.205x capture on a 2325 ms cycle costs ~396 ms   395.5 ms
+  OK   and costs nothing when capture is not in the plan
+  OK   a capture-safe backend is never charged
+       -> a backend must beat attention by MORE than 396 ms/cycle to be worth selecting at Quality; attention is ~163 ms of that cycle in total, so it cannot.
+
+=== 7. nothing can be installed yet, and the refusal explains itself ===
+  OK   all declared envelopes register   7 backends
+  OK   select() raises NotImplementedError
+  OK   and points at the document
+  OK   exactly 3 of 7 are legal for the real LingBot video site   adapter_native, flash_attn, torch_sdpa
+  OK   FlashInfer and cuDNN are excluded by KV ADDRESSING -- our own ring interval, not by speed
+  OK   ring attention by deployment
+  OK   sana by semantics
+       -> ring-interval KV is the binding constraint at Layer 4: it is what makes flash legal
+          and what excludes every paged-KV backend. A Layer 3 decision set the Layer 4 menu.
+  OK   the incumbent is always among them, so candidates() is never empty
+  OK   every declared backend refuses measure()/bind() -- declaration only
+
+=== 8. adding a backend requires no planner or adapter change ===
+  OK   a backend written today is a candidate immediately   3 -> 4
+  OK   with no edit to any planner, adapter, or existing backend
+
+========================================================================
+(global registry empty by design)
+========================================================================
+PASS: attention backend architecture -- legality discriminates, selection refuses
+
+STDERR
+
+PASS  test_attribution.py: 
+STDOUT
+device: cpu
+
+=== 1. two callsites for one operator are reported separately ===
+  OK    cat resolved to 2 distinct callsites   expected >= 2
+  OK    both source functions are named   alpha, beta
+  OK    alpha's call count is exact   7 of 7
+  OK    beta's call count is exact   2 of 2
+       => calls alone would rank alpha 3.5x above beta.
+
+=== 2. bytes distinguish 'called often' from 'moves data' ===
+  OK    beta moves more bytes despite 3.5x fewer calls   alpha 1.75 MiB / 14 calls, beta 8.00 MiB / 4
+       => this is exactly the copy_ (1.9 us, launch-bound) vs cat (114 us,
+          bandwidth-bound) distinction that operator totals hid.
+
+=== 3. shapes per callsite, because a fusion target needs a stable shape ===
+  OK    every row carries at least one shape
+  OK    and a dominant shape   (64, 256)
+
+=== 4. THE ONE THAT MATTERS: it knows when it cannot rank ===
+  OK    coverage computed against the profiler's own count: 82%   22 calls seen by the profiler
+  OK    a 900-of-34,710 sample reports 2.6% coverage
+  OK    and is explicitly declared not rankable
+  OK    rankable() agrees
+  OK    120% coverage is NOT rankable   over-attribution is a non-stationarity alarm, not a rounding artefact
+  OK    and is labelled non-stationary
+  OK    with the flag in the table too
+  OK    the table itself carries the flag, so a reader cannot miss it
+       => attempt 4 would have printed '47.4% of watched calls' with no such flag.
+          That is the specific mistake this check exists to prevent.
+
+=== 5. watching is opt-in; nothing else is intercepted ===
+  OK    only the watched operator is reported   ['cat']
+
+=== 6. a no-kernel operator ranks by calls, not by its (zero) device time ===
+  OK    the dominant callsite sorts first despite being inserted last   ['[x] dominant.py:3 f', '[x] mid.py:2 f', '[x] rare.py:1 f']
+  OK    and the whole ordering is by calls descending
+  OK    so format_table(top=1) prints the dominant row, not an arbitrary one
+  OK    a timed operator still ranks by device time, not by calls
+
+==============================================================================
+PASS: attribution is correct on a known distribution, and reports its own coverage
+
+STDERR
+/home/ubuntu/cosmos-framework/.venv/lib/python3.13/site-packages/torch/profiler/profiler.py:203: UserWarning: CUDA is not available, disabling CUDA profiling
+  self.profiler = prof.profile(
+/home/ubuntu/cosmos-framework/.venv/lib/python3.13/site-packages/torch/profiler/profiler.py:217: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+  _warn_once(
+ERROR:2026-09-14 03:08:57 2235212:2235212 DeviceProperties.cpp:47] gpuGetDeviceCount failed with code 100
+
+PASS  test_autotune.py: 10 tests passed
+STDOUT
+..........                                                               [100%]
+10 passed in 0.12s
+
+STDERR
+
+PASS  test_bf16_linear.py: 14 tests passed
+STDOUT
+..............                                                           [100%]
+14 passed in 1.38s
+
+STDERR
+
+PASS  test_campaign_doctor.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 0.50s
+
+STDERR
+
+PASS  test_capture_default_families.py: 19 tests passed
+STDOUT
+...................                                                      [100%]
+19 passed in 1.43s
+
+STDERR
+
+PASS  test_capture_reference_integrity.py: 6 tests passed
+STDOUT
+......                                                                   [100%]
+6 passed in 1.36s
+
+STDERR
+
+PASS  test_certify.py: 
+STDOUT
+=== 1. a real regression must FAIL ===
+    teacher 0.9200   student 0.8500
+    delta   -0.0700   95% CI [-0.1203, -0.0197]
+    paired  n=100  discordant: teacher-only 7, student-only 0  p=0.01562
+    margin declared BEFORE the run: -0.0500
+    VERDICT: FAIL (insufficient evidence) at margin -0.0500: CI [-0.1203, -0.0197] straddles it. n=100 is too small to decide; ~0 paired episodes are needed at the observed discordance rate
+  OK   7-point drop fails a 5-point margin
+  OK   delta is negative  -- delta=-0.070
+
+=== 2. a genuinely equivalent student must PASS ===
+  OK   identical outcomes pass  -- PASS non-inferiority at margin -0.0500 (CI low
+  OK   zero discordant pairs is noted, not hidden
+  OK   default mode carries no tango fields (byte-stable certificate)
+
+=== 2b. the opt-in tango_one_sided95 mode is explicitly named, never ci95 ===
+  OK   identical outcomes pass under the tango rule  -- PASS non-inferiority at margin -0.0500 (one-sided 95% lower 
+  OK   paired score interval stays non-degenerate at zero discordance  -- tango_central90=(-0.026342720724642277, 0.026342720782849938)
+  OK   NI decides on Tango while McNemar is descriptive
+  OK   ci95 keeps its Wald meaning in both modes  -- ci95=(0.0, 0.0)
+  OK   the decision bound is serialized under its own name
+
+=== 2c. the secondary task-collapse gate fails a collapsed task ===
+  OK   collapse gate overrides an aggregate pass  -- FAIL (secondary task-collapse gate): teacher had at least on
+  OK   collapsed task is named
+  OK   gate off by default
+
+=== 3. a small drop inside the margin passes ===
+  OK   2-point drop passes a 10-point margin  -- delta=-0.020
+
+=== 4. refusals: inputs that cannot support a certificate ===
+  OK   unpaired arms (different episodes)  -- no (episode, seed) pairs are common to both arms; the runs
+  OK   partial overlap  -- arms are not on the same episodes: 2 teacher-only, 0 stude
+  OK   duplicate episode in an arm  -- teacher: duplicate episode ('ep0', 10000)
+  OK   positive margin (would certify a worse model)  -- margin=0
+  OK   task mismatch on the same episode id  -- episode ('e0', 1) is task 'taskA' for the teacher and 'tas
+
+=== 5. the margin is recorded, so it cannot be chosen afterwards ===
+  OK   margin appears in the certificate
+  OK   margin appears in the JSON
+
+PASS: 21/21 checks
+
+STDERR
+
+PASS  test_checkpoint_platform.py: 
+STDOUT
+
+=== 1. load_declaration() cannot hand the runtime a training fact ===
+  OK    execution declaration does not carry 'parallel_decoding_distillation'
+  OK    execution declaration does not carry 'robotwin_2.0'
+  OK    execution declaration does not carry 'adamw'
+  OK    execution declaration does not carry 'arXiv'
+  OK    execution.extra does not carry 'recipe'
+  OK    execution.extra does not carry 'training_method'
+  OK    execution.extra does not carry 'teacher'
+  OK    execution.extra does not carry 'student'
+  OK    execution.extra does not carry 'solver'
+  OK    execution.extra does not carry 'dataset'
+  OK    execution.extra does not carry 'optimizer'
+  OK    execution.extra does not carry 'coverage_gate_pass'
+  OK    execution.extra does not carry 'min_updates_per_head'
+  OK    execution.extra does not carry 'head_updates_min'
+  OK    execution.extra does not carry 'endpoint_rmse'
+  OK    execution.extra does not carry 'trainable'
+  OK    execution.extra does not carry 'paper'
+  OK    execution.extra does not carry 'training_diagnostics'
+  OK    execution.extra does not carry 'certification'
+  OK    execution.extra does not carry 'distillation'
+  OK    provenance_of() still gives tools the full record
+
+=== 2. a mis-stamped checkpoint fails loudly, not quietly ===
+  OK    a provenance key in `execution` is rejected, and the error says where to move it
+
+=== 3. THE PLATFORM CLAIM: identical execution -> identical plan ===
+  OK    capabilities are identical   6 tokens
+  OK    no capability token mentions 'pdd'
+  OK    no capability token mentions 'distill'
+  OK    no capability token mentions 'teacher'
+  OK    no capability token mentions 'dataset'
+  OK    no capability token mentions 'recipe'
+  OK    no capability token mentions 'adamw'
+  OK    the two plans are byte-identical
+
+=== 4. capability gating: declared, or the pass is skipped ===
+  OK    admitted when the capability is declared
+  OK    skipped when it is not
+  OK    and the reason says it is a capability decision
+  OK    capabilities=None does not filter -- every existing pass composes with every checkpoint
+
+=== 5. a checkpoint can be published with provenance stripped ===
+  OK    publishable: the runtime can serve it with provenance removed   ['provenance present with 9 keys -- it will be published unless you remove it. The runtime never reads it either way.']
+  OK    and a package with provenance={} validates   /tmp/tmpt9g2k7um/stripped |   servable package: YES |   model_id='example/wm-blockheads-2v4a' backbone='wan_va' servable=True  |   output_projection: per_interval_velocity_heads n_intervals=8 block=4 convention=sigma_descending |   note     no README.md. Not required, but a published checkpoint without a model card is hard to adopt.
+  OK    and is still servable
+
+=== 6. delta.json still serves, and migrates ===
+  OK    legacy checkpoint still loads and is servable
+  OK    and its capability survives the mapping
+  OK    validate_package flags it as legacy
+  OK    and it is NOT publishable -- one flat namespace cannot hide training keys
+  OK    migrate_legacy puts the recipe in provenance, where the runtime cannot reach it
+
+=== 7. examples/checkpoint/wm-blockheads-2v4a validates ===
+  OK    the example package exists
+  OK    it validates as a servable package
+  OK    and is publishable with provenance stripped   ['provenance present with 5 keys -- it will be published unless you remove it. The runtime never reads it either way.']
+  OK    from_pretrained loads it   example-org/wm-blockheads-2v4a
+  OK    and its capabilities are the documented ones   ['backbone:wan_va', 'guidance:action=positive_only', 'guidance:video=cfg', 'output_projection:foldable', 'output_projection:per_interval_velocity_heads', 'servable']
+  OK    the model card documents capability backbone:wan_va
+  OK    the model card documents capability guidance:action=positive_only
+  OK    the model card documents capability guidance:video=cfg
+  OK    the model card documents capability output_projection:foldable
+  OK    the model card documents capability output_projection:per_interval_velocity_heads
+  OK    the model card documents capability servable
+
+=== 8. architecture dispatch is allowed; training-recipe decisions are not ===
+  OK    runtime/planning control flow does not select a training recipe   0 found
+  OK    REGISTRY contains only supported models   ['cosmos3-edge', 'lingbot-va']
+  OK    unvalidated sketches are segregated and never in REGISTRY   ['gr00t', 'pi-0']
+  OK    a training-recipe branch is detected
+  OK    a training-recipe branch is detected
+  OK    a training-recipe branch is detected
+  OK    a training-recipe branch is detected
+  OK    family-specific execution dispatch does not imply training provenance
+  OK    the deprecated CLI alias remains a narrowly scoped compatibility spelling
+  OK    the CLI compatibility exception does not apply in model execution code
+
+==============================================================================
+PASS: one runtime, many checkpoints, and planning cannot see the recipe.
+
+STDERR
+
+PASS  test_checkpoint_revision_views.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 0.11s
+
+STDERR
+
+PASS  test_checkpoint_variants.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 0.16s
+
+STDERR
+
+PASS  test_clean_wheel_snapshot.py: 8 tests passed
+STDOUT
+........                                                                 [100%]
+8 passed in 0.04s
+
+STDERR
+
+PASS  test_cli.py: 
+STDOUT
+
+=== 1. two documented verbs; the old five stay as hidden aliases ===
+  OK    bare invocation exits 2 and prints usage   2
+  OK    serve is listed
+  OK    validate is listed
+  OK    devices is hidden from the help (still parses)
+  OK    describe is hidden from the help (still parses)
+  OK    plan is hidden from the help (still parses)
+  OK    certify is hidden from the help (still parses)
+  OK    the devices alias still answers   0
+
+=== 2. describe and validate are offline verbs ===
+  OK    describe succeeds on a declaration alone   0
+  OK    and reports the backbone
+  OK    without leaking a provenance value
+  OK    while saying provenance exists
+  OK    validate succeeds   0
+  OK    and reports publishability
+  OK    a missing path exits 1   1
+  OK    and does not print a traceback at the user
+
+=== 3. devices reports a machine, or explains why there is none ===
+  OK    devices always exits 0: it answers a question rather than gating on hardware   0
+  OK    with a device it lists what that device can do
+  OK    and what an absent feature means for a plan
+
+=== 4. serve exists, and refuses bad input before touching a socket ===
+  OK    serve -h shows the typed dotted fields, including the shared runtime section
+  OK    and the three stop-early/observability flags
+  OK    serve without a model exits 2   2
+  OK    and says exactly what is missing
+  OK    an unknown --serve field is a hard error, not a silent ignore   2
+
+=== 5. serve --serve.dry_run: device + declaration + plan, offline ===
+  OK    dry_run exits 0 with no torch and no weights   0
+  OK    and says what it is
+  OK    reports the device (or its absence)
+  OK    and prints the plan
+  OK    a bad model path exits 1   1
+  OK    without a traceback at the user
+
+==============================================================================
+PASS: the CLI exists, and its offline verbs work offline.
+
+STDERR
+note: `instinctflash devices` is a compatibility alias — its report is part of `instinctflash serve <model-id> --serve.dry_run=true`
+note: `instinctflash describe` is a compatibility alias — use `instinctflash serve <model-id> --serve.dry_run=true`
+note: `instinctflash describe` is a compatibility alias — use `instinctflash serve <model-id> --serve.dry_run=true`
+note: `instinctflash devices` is a compatibility alias — its report is part of `instinctflash serve <model-id> --serve.dry_run=true`
+instinctflash serve: config error: unknown option --serve.bogus
+
+PASS  test_cli_config.py: 8 tests passed
+STDOUT
+........                                                                 [100%]
+8 passed in 0.17s
+
+STDERR
+
+PASS  test_cli_preflight.py: 4 tests passed
+STDOUT
+....                                                                     [100%]
+4 passed in 1.51s
+
+STDERR
+
+PASS  test_closed_loop_action_report.py: 6 tests passed
+STDOUT
+......                                                                   [100%]
+6 passed in 0.11s
+
+STDERR
+
+PASS  test_compiled_region.py: 7 tests passed
+STDOUT
+.......                                                                  [100%]
+7 passed in 2.22s
+
+STDERR
+
+PASS  test_controller_trace_validation.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 0.11s
+
+STDERR
+
+PASS  test_conv_autotune_site.py: 7 tests passed
+STDOUT
+.......                                                                  [100%]
+7 passed in 1.39s
+
+STDERR
+
+PASS  test_conv_backend.py: 
+STDOUT
+
+=== 1. the fallback's cause is expressible: a kernel legal in one layout, not another ===
+  OK    cuDNN REFUSES a 3x3x3 kernel in NCDHW
+  OK    and the reason names the layout, not a missing kernel
+  OK    cuDNN ACCEPTS the same kernel in NDHWC
+       => same operator, same weights, same arithmetic. Only the layout differs.
+
+=== 2. pointwise kernels were never on the slow path ===
+  OK    cuDNN accepts 1x1x1 in NCDHW, matching the 16 of 62 convs that were already fast
+
+=== 3. the tier is a property of (backend, layout), not of the backend ===
+  OK    reaching cuDNN via a conversion is NUMERIC   accumulation order changes
+  OK    with no conversion needed, no conversion is charged   needs_conversion=False
+
+=== 4. a conversion is illegal when it cannot amortise ===
+  OK    converting for a SINGLE operator is refused
+  OK    because per-operator conversion costs more than it saves
+  OK    and legal for the whole 62-conv encoder subgraph
+
+=== 5. selection cannot downgrade a bit-exactness claim by itself ===
+  OK    with no measurement, the incumbent is kept   EASUREMENT SUPPLIED, so the incumbent was kept
+  OK    with measurement but the default ceiling, STILL the incumbent   a NUMERIC pair must not win silently
+  OK    only with the ceiling explicitly raised does the fast pair win   cudnn_conv3d/ndhwc [NUMERIC]
+  OK    and the plan records that a measurement drove it
+
+==============================================================================
+PASS: conv backend dispatch -- layout is a capability, selection requires consent
+
+STDERR
+
+PASS  test_core_stability.py: 
+STDOUT
+
+=== 1. the ratchet: model names in executable code, generic layers ===
+  OK    at most 0 model-name reference(s)   found 0
+
+=== 2. no conditional on which model is being served ===
+  OK    the core never branches on model identity   []
+
+=== 3. passes come from a registry, symmetric with adapters ===
+  OK    the group is stable   instinctflash.passes
+  OK    discovery reports no problems   []
+  OK    the in-tree passes register as a provider   ['generic', 'lingbot']
+  OK    and the default set is non-empty   14
+  OK    an external provider's pass appears in the default set
+  OK    and can be withdrawn
+
+=== 4. one bad pass package cannot stop an unrelated model planning ===
+  OK    the other providers still supply their passes   14
+
+=== 5. every family declares what predict() expects ===
+  OK    wan_va declares its observation fields   3
+  OK    wan_va can build an example from its declaration
+  OK    wan_va: conditioning key 'prompt' is present
+  OK    wan_va: 8 frames under 'obs'
+  OK    pi05 declares its observation fields   4
+  OK    pi05 can build an example from its declaration
+  OK    pi05: conditioning key 'prompt' is present
+  OK    pi05: flat keys present
+  OK    the contracts are distinct   {'wan_va': (8, 'obs', False), 'pi05': (1, None, True)}
+  OK    the CLI's run command does not mention 'family'
+  OK    the CLI's run command does not mention 'cam_high'
+  OK    the CLI's run command does not mention 'observation.images.top'
+  OK    the CLI's run command does not mention '240, 320'
+  OK    and it reads the contract through the public property, not rt._adapter
+  OK    Runtime.observation is public, so a user with only a Hub id can ask what predict() wants
+
+=== 6. the README's comparison describes this code, not an aspiration ===
+  SKIP: no comparison section
+
+==============================================================================
+PASS: the generic layers name no model, and passes are discovered like adapters.
+
+STDERR
+
+PASS  test_cosmos3_conditioning_cache.py: 11 tests passed
+STDOUT
+...........                                                              [100%]
+11 passed in 1.18s
+
+STDERR
+
+SKIP  test_cosmos3_engine.py: needs CUDA
+STDOUT
+SKIP: needs CUDA
+
+STDERR
+
+PASS  test_cosmos3_nano_action_only.py: 5 tests passed
+STDOUT
+.....                                                                    [100%]
+5 passed in 1.76s
+
+STDERR
+
+PASS  test_cosmos3_persistent_text_kv.py: 8 tests passed
+STDOUT
+........                                                                 [100%]
+8 passed in 0.15s
+
+STDERR
+
+PASS  test_cosmos3_policy_adapter.py: 10 tests passed
+STDOUT
+..........                                                               [100%]
+10 passed in 0.18s
+
+STDERR
+
+PASS  test_cosmos3_thor_graphs.py: 9 tests passed, 1 skipped
+STDOUT
+...s......                                                               [100%]
+9 passed, 1 skipped in 1.38s
+
+STDERR
+
+PASS  test_cosmos3_thor_pointwise.py: 3 tests passed, 2 skipped
+STDOUT
+..ss.                                                                    [100%]
+3 passed, 2 skipped in 1.44s
+
+STDERR
+
+PASS  test_cosmos_backend_dispatch.py: 4 tests passed
+STDOUT
+....                                                                     [100%]
+4 passed in 1.16s
+
+STDERR
+
+PASS  test_cosmos_dense_mlp_fp8.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 1.16s
+
+STDERR
+
+PASS  test_cosmos_droid_loop.py: 4 tests passed
+STDOUT
+....                                                                     [100%]
+4 passed in 0.15s
+
+STDERR
+
+PASS  test_cosmos_fp8_install.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 1.16s
+
+STDERR
+
+PASS  test_cosmos_generation_region.py: 13 tests passed
+STDOUT
+.............                                                            [100%]
+13 passed in 1.19s
+
+STDERR
+
+PASS  test_cosmos_numeric_attention.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 1.37s
+
+STDERR
+
+PASS  test_cosmos_numeric_regression.py: 8 tests passed
+STDOUT
+........                                                                 [100%]
+8 passed in 0.10s
+
+STDERR
+
+PASS  test_cosmos_real_weights_probe.py: 5 tests passed
+STDOUT
+.....                                                                    [100%]
+5 passed in 1.12s
+
+STDERR
+
+PASS  test_cosmos_timestep_cache.py: 6 tests passed
+STDOUT
+......                                                                   [100%]
+6 passed in 1.39s
+
+STDERR
+
+SKIP  test_deps.py: needs CUDA
+STDOUT
+SKIP: needs CUDA
+
+STDERR
+
+PASS  test_device_class.py: 7 tests passed
+STDOUT
+.......                                                                  [100%]
+7 passed in 0.10s
+
+STDERR
+
+PASS  test_distill_control_gate.py: 8 tests passed
+STDOUT
+........                                                                 [100%]
+8 passed in 0.18s
+
+STDERR
+
+PASS  test_distill_evidence.py: 4 tests passed
+STDOUT
+....                                                                     [100%]
+4 passed in 0.14s
+
+STDERR
+
+PASS  test_distill_provenance.py: 
+STDOUT
+
+=== 1. a complete block stamps, validates intact, exit 0 ===
+  OK    the builder self-hashes the block
+  OK    stamped under provenance
+  OK    without disturbing the rest of provenance
+  OK    plain validate exits 0   0
+  OK    and reports the block intact
+  OK    quoting B−A and C−B separately     distillation: intact — recipe 'fewstep_video_cd_v1' on 'robbyant/lingbot-va-posttrain-robotwin'; matched-NFE control recorded (B−A delta -0.1600, C−B delta +0.1200); never read by the runtime
+
+=== 2. FILL_ME control sentinels keep validate failing ===
+  OK    control=None stamps sentinels, never absence
+  OK    a trained point without its control fails validation   1
+  OK    each sentinel is flagged with why it blocks
+  OK    intact but dishonest: one problem per sentinel   7
+
+=== 3. a control object missing entirely is refused ===
+  OK    missing control is a PROBLEM, not a pass   ["provenance.distillation is missing ['matched_nfe_control'] — a distilled checkpoint must state what it was distilled from, on, at which schedule, and against which control"]
+  OK    and fails the verb   1
+  OK    the builder refuses a partial control outright
+
+=== 4. an edited block is detected by the self-hash ===
+  OK    an edited C−B is tampering   tampered
+  OK    and fails a plain validate loudly   1
+
+=== 5. 'distillation' may not appear in the execution namespace ===
+  OK    load_declaration refuses the leak by name
+
+=== 6. certificate and distillation blocks coexist independently ===
+  OK    stamping a certificate alongside an intact distillation block   0
+  OK    both blocks present
+  OK    and both verified on the plain run   0
+
+==============================================================================
+PASS: the distillation block states its control, hashes its claims, and cannot be edited quietly.
+
+STDERR
+
+PASS  test_dreamzero_adapter.py: 8 tests passed
+STDOUT
+........                                                                 [100%]
+8 passed in 1.17s
+
+STDERR
+
+PASS  test_dreamzero_backend_dispatch.py: 9 tests passed
+STDOUT
+.........                                                                [100%]
+9 passed in 1.18s
+
+STDERR
+
+PASS  test_dreamzero_checkpoint_geometry.py: 7 tests passed
+STDOUT
+.......                                                                  [100%]
+7 passed in 0.09s
+
+STDERR
+
+PASS  test_dreamzero_checkpoint_loading.py: 9 tests passed
+STDOUT
+.........                                                                [100%]
+9 passed in 1.40s
+
+STDERR
+
+PASS  test_dreamzero_fp8_builder.py: 29 tests passed
+STDOUT
+.............................                                            [100%]
+29 passed in 1.19s
+
+STDERR
+
+PASS  test_dreamzero_fp8_install.py: 4 tests passed
+STDOUT
+....                                                                     [100%]
+4 passed in 1.16s
+
+STDERR
+
+PASS  test_dreamzero_owned_loading.py: 5 tests passed
+STDOUT
+.....                                                                    [100%]
+5 passed in 0.12s
+
+STDERR
+
+PASS  test_dreamzero_step_cache.py: 13 tests passed
+STDOUT
+.............                                                            [100%]
+13 passed in 1.25s
+
+STDERR
+
+SKIP  test_dynamic_fp8_pack.py: 1 tests skipped
+STDOUT
+s                                                                        [100%]
+1 skipped in 1.31s
+
+STDERR
+
+PASS  test_end_to_end_example.py: 
+STDOUT
+
+==============================================================================
+1. The package validates against the published layout
+==============================================================================
+/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/examples/checkpoint/tiny-wam-2v2a
+  servable package: YES
+  model_id='example-org/tiny-wam-2v2a' backbone='tiny-wam' servable=True 
+  output_projection: per_interval_velocity_heads n_intervals=8 block=4 convention=sigma_descending
+  OK    servable package
+
+==============================================================================
+2. It can be published without exposing training internals
+==============================================================================
+  - provenance present with 3 keys -- it will be published unless you remove it. The runtime never reads it either way.
+  OK    publishable with provenance stripped
+
+==============================================================================
+3. from_pretrained() loads it
+==============================================================================
+  model_id : example-org/tiny-wam-2v2a
+  backbone : tiny-wam
+  servable : True
+  OK    loaded by declaration
+
+==============================================================================
+4. Its backbone resolves to a REGISTERED adapter
+==============================================================================
+  registered before: ['cosmos3_policy', 'cosmos3_policy_action_fixed_step', 'cosmos3_policy_fixed_step', 'lingbot-va-posttrain-robotwin', 'wan_va']
+  OK    the backbone is NOT built in -- this is a third-party adapter
+  registered after : ['cosmos3_policy', 'cosmos3_policy_action_fixed_step', 'cosmos3_policy_fixed_step', 'lingbot-va-posttrain-robotwin', 'tiny-wam', 'wan_va']
+  OK    declared backbone 'tiny-wam' now resolves
+  OK    instinctflash.load() returns the adapter
+
+==============================================================================
+5. capabilities() -- derived from the execution block, and nothing else
+==============================================================================
+  backbone:tiny-wam
+  declares:param_bytes
+  guidance:action=positive_only
+  guidance:video=cfg
+  output_projection:foldable
+  output_projection:per_interval_velocity_heads
+  servable
+  OK    no capability token mentions how it was trained
+
+==============================================================================
+6. The adapter describes the control step
+==============================================================================
+  model_id    : example-org/tiny-wam-2v2a
+  param_bytes : 323,008
+  stream video  tokens/frame=8 lifetime=episode
+  stream action tokens/frame=8 lifetime=chunk
+  phase  video  nfe=2 reads=[] writes=['video']
+  phase  action nfe=2 reads=['video'] writes=['action']
+  guidance video  mode=cfg scale=2.0 batchable=True
+  guidance action mode=positive_only scale=1.0 batchable=True
+  OK    param_bytes matches the published weights
+
+==============================================================================
+7. A Plan is compiled FROM THE DECLARED CAPABILITIES
+==============================================================================
+InstinctFlash plan for example-org/tiny-wam-2v2a
+  plan tier: BITEXACT
+  operating point: schedule {video=2 + action=2} | guidance {action=positive_only@1, video=cfg@2} | cfg batching {batch-2 on 4 of 4 declared forwards (negative branch requested by video); batch-1 on 0}
+
+  skip   graph_capture              [BITEXACT  ] streams ['video'] outlive a control cycle, so their extent grows and per-cycle shapes change, so a captured graph is invalidated every cycle and recapture costs more than replay saves (measured 1.43x SLOWER on LingBot-VA)
+  skip   engine_offload             [NUMERIC   ] device capability None is not SM110: this engine route is supported on Thor only; other devices require their own implementation and measurements
+  skip   fsdp_elision               [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   allocator_churn_elision    [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   debug_dump_elision         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   obs_decode_elision         [BITEXACT  ] model declares no observation-decode modules
+  skip   conditioning_prefill       [BITEXACT  ] model declares no episode- or chunk-constant conditioning
+  skip   prompt_encoder_staging     [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   ring_kv_addressing         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   action_terminal_forward_elision [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   sm120_gated_residual       [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   sm120_wan_stage2           [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   conv_layout_ndhwc          [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   cfg_branch_elision         [NUMERIC   ] legal but tier NUMERIC exceeds ceiling BITEXACT: streams ['action'] discard their negative branch while ['video'] force batch duplication; forwards that can drop to batch 1 — action: 2 of 2 (commit steps exempt: their K/V feeds the other stream's negative branch)
+  applied: (none)
+  NOTE: fsdp/allocator/debug-dump are SUBSTRATE passes -- they describe the serving
+        environment, not the model, so they apply to every checkpoint. Step 8 accounts
+        for each one. This surprised me when writing the example, which is why it is here.
+  OK    the plan is for this checkpoint
+
+==============================================================================
+8. The plan installs -- and every applied pass is accounted for
+==============================================================================
+  installed: (none)
+  OK    every applied pass is either installed or shown vacuous -- none silently dropped
+  OK    and nothing is counted twice
+
+==============================================================================
+9. One real inference, with the real published weights
+==============================================================================
+  obs           (1, 32)
+  nfe (declared)  2    cfg scale 2.0
+  action chunk  (1, 8, 14)  dtype=torch.float32
+  first row     [-0.3554, 0.184, -0.4923, 0.0165, 0.193, -0.1824] ...
+  OK    action chunk has the declared shape
+  OK    and is finite
+  OK    output_projection.foldable is TRUE of these weights: folded == unfolded   max|delta| = 5.960e-08
+
+==============================================================================
+PASS: declared -> published -> resolved -> planned -> served, on real weights.
+      No runtime code was modified to support this checkpoint.
+
+STDERR
+
+PASS  test_engine_available_kernels.py: 5 tests passed
+STDOUT
+.....                                                                    [100%]
+5 passed in 0.11s
+
+STDERR
+
+PASS  test_engine_exclusion.py: 5 tests passed
+STDOUT
+.....                                                                    [100%]
+5 passed in 0.09s
+
+STDERR
+
+PASS  test_engine_geometry_gate.py: 15 tests passed
+STDOUT
+...............                                                          [100%]
+15 passed in 1.18s
+
+STDERR
+
+SKIP  test_engine_graph.py: needs CUDA
+STDOUT
+SKIP: needs CUDA
+
+STDERR
+flash_attn is installed but failed to import: cannot import name 'flash_attn_varlen_func' from 'flash_attn' (/home/ubuntu/iwm_shims/flash_attn/__init__.py). Falling back to native PyTorch attention.
+
+SKIP  test_engine_lang_embeds_stability.py: 1 tests skipped
+STDOUT
+
+1 skipped in 1.30s
+
+STDERR
+
+PASS  test_engine_operating_point_gate.py: 16 tests passed
+STDOUT
+................                                                         [100%]
+16 passed in 1.47s
+
+STDERR
+
+PASS  test_eval_integration.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 0.14s
+
+STDERR
+
+PASS  test_evidence_bundle.py: 4 tests passed
+STDOUT
+....                                                                     [100%]
+4 passed in 0.11s
+
+STDERR
+
+PASS  test_exact_tensor_contract.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 1.37s
+
+STDERR
+
+PASS  test_execution_selection.py: 17 tests passed
+STDOUT
+.................                                                        [100%]
+17 passed in 0.23s
+
+STDERR
+
+PASS  test_external_plugin.py: 
+STDOUT
+
+=== 1. plugins are discovered from installed metadata, not import order ===
+  OK    the group is stable and documented   instinctflash.adapters
+  OK    discovery runs on lookup, so no user import is needed
+  OK    discovery reports failures instead of raising   []
+
+=== 2. LingBot's passes decline models they cannot rewrite ===
+  OK    fsdp_elision declares its backbone requirement   {'backbone:wan_va'}
+  OK    allocator_churn_elision declares its backbone requirement   {'backbone:wan_va'}
+  OK    debug_dump_elision declares its backbone requirement   {'backbone:wan_va'}
+
+=== 3. an external impl implements predict(), not LingBot's infer() ===
+  OK    predict is preferred
+  OK    infer remains as compatibility
+  OK    commit is an OPTIONAL adapter hook, so predict stays loopable
+
+=== 4. the public lifecycle is model / episode / cycle -- and nothing else ===
+  OK    Runtime.from_pretrained
+  OK    Runtime.predict
+  OK    Runtime.reset
+  OK    Runtime.episode
+  OK    Runtime.close
+  OK    Runtime has NO step()
+  OK    Runtime has NO commit()
+  OK    Runtime has NO warmup()
+  OK    Runtime has NO flush()
+  OK    Episode.predict
+  OK    Episode.close
+  OK    Episode.steps
+  OK    Episode has NO commit() -- phases stay private
+  OK    both lifetimes are context managers
+
+=== 5. model knowledge stays in the adapter, not in instinctflash.json ===
+  (built artifact absent; run examples/external_plugin/build_checkpoint.py)
+
+=== 6. a VLA plans on its own declared merits, not LingBot's ===
+  OK    the VLA declares its own phase structure   prefix=1 + action=10
+  OK    conditioning_prefill declines: upstream already hoists this prefix   skip   conditioning_prefill       [BITEXACT  ] ['prefix_kv'] is chunk- or episod
+  OK    cfg_branch_elision declines: no CFG declared
+  OK    obs_decode_elision declines: a VLA has no decoder
+  OK    fsdp_elision is not silently endorsed for another family
+  OK    allocator_churn_elision is not silently endorsed for another family
+  OK    debug_dump_elision is not silently endorsed for another family
+  OK    a declared checkpoint filters the pass out entirely
+
+=== 9. a declaration can adopt an upstream checkpoint without vendoring it ===
+  OK    a pointer-only package is servable   no missing
+  OK    and the report says where the weights actually live
+  OK    it is publishable too
+  OK    but a package with neither is refused   weights -- one of model.safetensors, model.safetensors.index.json, diffusion_pytorch_model.safetensors, diffusion_pytorch_model.safetensors.index.json, or an execution.base_weights pointer
+
+==============================================================================
+PASS: a second model family integrates by entry point, and the lifecycle is closed.
+
+STDERR
+
+PASS  test_fixed_input_replay.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 0.18s
+
+STDERR
+
+PASS  test_fp8_projection_evidence.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 1.16s
+
+STDERR
+
+SKIP  test_generic_pass.py: needs CUDA
+STDOUT
+SKIP: needs CUDA
+
+STDERR
+
+PASS  test_groot_action_generator.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 1.16s
+
+STDERR
+
+PASS  test_groot_backbone_refresh.py: 5 tests passed
+STDOUT
+.....                                                                    [100%]
+5 passed in 1.14s
+
+STDERR
+
+PASS  test_groot_checkpoint_embodiments.py: 9 tests passed
+STDOUT
+.........                                                                [100%]
+9 passed in 1.13s
+
+STDERR
+
+PASS  test_groot_engine_native_options.py: 4 tests passed
+STDOUT
+....                                                                     [100%]
+4 passed in 1.16s
+
+STDERR
+
+PASS  test_groot_fast_decode_selection.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 0.09s
+
+STDERR
+
+PASS  test_groot_fp8_install.py: 1 tests passed
+STDOUT
+.                                                                        [100%]
+1 passed in 1.37s
+
+STDERR
+
+PASS  test_groot_full_capture_reference.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 1.17s
+
+STDERR
+
+PASS  test_groot_gpu_collate.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 1.17s
+
+STDERR
+
+PASS  test_groot_libero_driver.py: 5 tests passed
+STDOUT
+.....                                                                    [100%]
+5 passed in 0.18s
+
+STDERR
+
+PASS  test_groot_n17_adapter.py: 14 tests passed
+STDOUT
+..............                                                           [100%]
+14 passed in 1.19s
+
+STDERR
+
+PASS  test_groot_policy_server_precision.py: 11 tests passed
+STDOUT
+...........                                                              [100%]
+11 passed in 1.21s
+
+STDERR
+
+PASS  test_guidance_schema.py: 
+STDOUT
+
+=== 1. three declaration forms, one canonical (mode, scale) ===
+  OK    a mode string takes the family scale and RECORDS the inheritance
+  OK    positive_only implies scale 1 and no negative branch
+  OK    cfg@5 requests the negative branch
+  OK    a bare number is a CFG scale
+  OK    a numeric CLI string is the same scale (the worker path always sends strings)
+  OK    cfg at w=1 keeps its mode and requests no negative branch (batch-1)
+  OK    identical serving canonicalises identically across forms
+  OK    an undeclared stream is the family default, recorded as inherited
+  OK    each form is named
+  OK    refused: 'bogus'   t: 'bogus' is neither a guidance mode nor a numeric scale; accepted: a
+  OK    refused: {'mode': 'positive_only', 'scale': 3}   t: mode 'positive_only' discards the negative branch, but scale 3 > 1 
+  OK    refused: {'mode': 'none', 'scale': 2}   t: mode 'none' discards the negative branch, but scale 2 > 1 would tur
+  OK    refused: True   t: a boolean is not a guidance declaration; accepted: a mode name ("cf
+  OK    refused: -1   t: guidance scale must be a non-negative number, got -1
+  OK    refused: {}   t: an empty object declares nothing; accepted: a mode name ("cfg" | "p
+  OK    refused: {'mode': 'cfg', 'extra': 1}   t: unknown keys ['extra']; accepted: a mode name ("cfg" | "positive_on
+  OK    refused: [5]   t: list is not a guidance declaration; accepted: a mode name ("cfg" | 
+
+=== 2. the declaration boundary refuses what the runtime could not serve as written ===
+  OK    accepted verbatim: {'video': 'cfg', 'action': 'positive_only'}
+  OK    accepted verbatim: {'video': 3.0}
+  OK    accepted verbatim: {'video': {'mode': 'cfg', 'scale': 1.0}, 'action': 'positive_only'}
+  OK    refused at load: {'video': 'bogus'}   /tmp/tmp4gc97im5/pkg/instinctflash.json: execution.guidance.video: 'bogus' is ne
+  OK    refused at load: {'action': {'mode': 'positive_only', 'scale': 3}}   /tmp/tmp4gc97im5/pkg/instinctflash.json: execution.guidance.action: mode 'positi
+  OK    refused at load: {'video': True}   /tmp/tmp4gc97im5/pkg/instinctflash.json: execution.guidance.video: a boolean is 
+  OK    the legacy reader refuses too
+
+=== 3. capability tokens: historical spelling kept, scales carried ===
+  OK    the string form's tokens are unchanged   ['guidance:action=positive_only', 'guidance:video=cfg']
+  OK    a declared scale is part of the token (w=3 is not w=5)   ['guidance:action=cfg@1', 'guidance:video=cfg@3']
+
+=== 4. the scaffold inherits guidance as a SERVING choice, and prints the tuple ===
+  OK    inherited, value untouched (the string form stays valid)
+  OK    the classification is stated: a serving choice, inheritable, not a training fact
+  OK    the resolved per-stream tuple is printed   SERVING choice, not a training fact: inherited from the base and served as action=positive_only@1 (scale inherited), video=cfg@5 (scale inherited) => batch-2 on 77 of 77 declared forwards; a re-tuned scale or a CFG-folded student declares its own {mode, scale}
+  OK    the inherited schedule preserves the native 25V/50A operating point
+  OK    native 25V/50A plus two KV refreshes retain the declared CFG batching   SERVING choice, not a training fact: inherited from the base and served as action=positive_only@1 (scale inherited), video=cfg@5 (scale inherited) => batch-2 on 77 of 77 declared forwards; a re-tuned scale or a CFG-folded student declares its own {mode, scale}
+  OK    and says what a re-tuned or CFG-folded checkpoint must do instead
+  OK    explain() carries it
+
+=== 5. `instinctflash plan` prints the operating point as the tuple ===
+  OK    plan exits 0   ecision, not a model one.
+  skip   cfg_branch_elision         [BITEXACT  ] no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)
+
+  OK    schedule leg     operating point: schedule {kv_refresh=2 + video=2 + action=2} | guidance {action=positive_only@1 [implied by mode], video=cfg@1} | cfg batching {batch-1 on all 6 declared forwards (no stream requests a negative branch)}
+  OK    guidance leg     operating point: schedule {kv_refresh=2 + video=2 + action=2} | guidance {action=positive_only@1 [implied by mode], video=cfg@1} | cfg batching {batch-1 on all 6 declared forwards (no stream requests a negative branch)}
+  OK    CFG-batching leg, derived     operating point: schedule {kv_refresh=2 + video=2 + action=2} | guidance {action=positive_only@1 [implied by mode], video=cfg@1} | cfg batching {batch-1 on all 6 declared forwards (no stream requests a negative branch)}
+  OK    and the capability token carries the scale
+
+==============================================================================
+PASS: one guidance schema, and every consumer reads the same operating-point tuple.
+
+STDERR
+note: `instinctflash plan` is a compatibility alias — use `instinctflash serve <model-id> --serve.dry_run=true`
+
+PASS  test_h100_fp8.py: 3 tests passed, 1 skipped
+STDOUT
+...s                                                                     [100%]
+3 passed, 1 skipped in 1.37s
+
+STDERR
+
+PASS  test_hardware_probe.py: 
+STDOUT
+
+=== 1. every declared requirement is a name the probe can emit ===
+  declared across the tree : ['cuda', 'cuda_graphs', 'cudnn', 'sm120_kernels', 'sm120_stage2_kernels', 'triton']
+  nameable by the probe    : ['cpu', 'cublas', 'cuda', 'cuda_graphs', 'cudnn', 'fp8', 'nvfp4', 'sm120_kernels', 'sm120_stage2_kernels', 'tma', 'triton', 'wgmma']
+  OK    no backend requires a feature the probe cannot name   []
+
+=== 2. the probe reports what is actually installed ===
+  SKIP: needs a CUDA device
+
+=== 3. the shipped conv selection survives its own hardware gate ===
+  SKIP: needs a CUDA device
+
+=== 4. the conv layout decision can be measured on THIS device ===
+  SKIP: needs a CUDA device
+
+=== 5. a CPU is a device, not the absence of one ===
+  OK    a real GPU-less probe reports cpu only   ['cpu']
+  OK    'cpu' is in the closed vocabulary
+  OK    and the profile uses only known names
+  OK    a cuda_graphs-requiring pass declines on CPU   device lacks ['cuda_graphs']
+  OK    a cudnn-requiring pass declines on CPU   device lacks ['cudnn']
+  OK    a fp8-requiring pass declines on CPU   device lacks ['fp8']
+  OK    an unconstrained pass still admits on CPU
+
+==============================================================================
+PASS: the hardware vocabulary is closed and the shipped selection is admissible.
+
+STDERR
+
+SKIP  test_hoist_pass.py: needs CUDA
+STDOUT
+SKIP: needs CUDA
+
+STDERR
+
+PASS  test_install_preflight.py: 15 tests passed
+STDOUT
+...............                                                          [100%]
+15 passed in 0.28s
+
+STDERR
+
+PASS  test_joint_policy_server_precision.py: 33 tests passed
+STDOUT
+.................................                                        [100%]
+33 passed in 1.22s
+
+STDERR
+
+PASS  test_joint_robotwin_driver.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 0.17s
+
+STDERR
+
+PASS  test_kernel_framework.py: 
+STDOUT
+=== 1. tier DERIVED from structure, not declared ===
+  post_attn_gated_residual_fused     -> NUMERIC    'post_attn_gated_residual_fused' does not declare matches_reference_contraction; the bac
+  post_attn_gated_residual_exact     -> NUMERIC    'post_attn_gated_residual_exact' does not declare matches_reference_contraction; the bac
+  post_attn_gated_residual_bf16      -> NUMERIC    'post_attn_gated_residual_bf16' does not declare matches_reference_contraction; the back
+  post_attn_gated_residual_triton    -> BITEXACT   elementwise chain with 1 rounding point(s), all reproduced; no reduction reordering; no 
+  pre_attn_modulated_norm_fused      -> NUMERIC    region contains a reduction and 'pre_attn_modulated_norm_fused' does not declare preserv
+
+=== 2. legality: a numerics contract is enforced before anything runs ===
+  post_attn_gated_residual_fused     legal=False ["hardware: device lacks ['triton']"]
+  post_attn_gated_residual_exact     legal=False ["hardware: device lacks ['triton']"]
+  post_attn_gated_residual_bf16      legal=False ["hardware: device lacks ['triton']", "op 'residual_add' must stay fp32, kernel computes in bf16"]
+  post_attn_gated_residual_triton    legal=False ["hardware: device lacks ['triton']"]
+
+=== 3 + 4. selection by MEASUREMENT on real shapes, eager is the floor ===
+  eager: 1.2919 ms
+  SKIP post_attn_gated_residual_fused: device lacks ['triton']
+  SKIP post_attn_gated_residual_exact: device lacks ['triton']
+  SKIP post_attn_gated_residual_bf16: device lacks ['triton']
+  SKIP post_attn_gated_residual_triton: device lacks ['triton']
+
+  BITEXACT ceiling -> EAGER
+    no legal kernel for 'post_attention_gated_residual' at tier <= BITEXACT
+  NUMERIC ceiling  -> EAGER
+    no legal kernel for 'post_attention_gated_residual' at tier <= NUMERIC
+
+=== 5. a legal-but-slower kernel must be rejected ===
+  OK eager fallback at both ceilings
+  SKIP slower-kernel comparison: no compatible kernel on this device
+
+descriptor: lingbot-va-posttrain-robotwin, 2 regions, 7 eager launches per layer per forward
+
+STDERR
+
+PASS  test_l3_noop.py: 
+STDOUT
+=== G0-NOOP: L3 on a stateless model ===
+
+GR00T no-op: PASS
+
+=== positive control: L3 must NOT no-op on models that do have state ===
+  lingbot-va   has_state=True  E_mat=7.37 GB  E_recompute=0 ms  syncs=1
+  cosmos3-edge has_state=True  E_mat=0.00 GB  E_recompute=0 ms  syncs=2
+
+=== capacity, with the binding term named (invariant I10) ===
+  lingbot-va   N=  0  binding=deadline  (mem=9.3, deadline=0.4, serving=8)
+  cosmos3-edge N=  1  binding=deadline  (mem=14794.7, deadline=1.7, serving=8)
+
+=== the four discovery signatures, per model ===
+  lingbot-va   ['d1']
+  cosmos3-edge ['d3']
+
+STDERR
+
+PASS  test_layer5_flow.py: 
+STDOUT
+
+=== 1. a non-BITEXACT release without a certificate is NOT verified ===
+  OK    P001 substrate_elision: bit-exactness gates recorded
+  OK    P002 conditioning_prefill: bit-exactness gates recorded
+  OK    P004 hoist_invariant_casts: bit-exactness gates recorded
+  OK    P005 graph_block_stack: bit-exactness gates recorded
+  OK    P006 stable_state_pools: bit-exactness gates recorded
+  OK    P003 ring_kv_addressing: bit-exactness gates recorded
+  OK    P007 conv_layout_ndhwc: NUMERIC/BEHAVIORAL, so a paired certificate is REQUIRED   798 chars
+  OK    P007: evidence kind is reported as paired non-inferiority
+  OK    P009 sm120_gated_residual: bit-exactness gates recorded
+  OK    P009-A2 sm120_wan_stage2: bit-exactness gates recorded
+  OK    P010 action_terminal_forward_elision: bit-exactness gates recorded
+  OK    every release is verified
+
+=== 2. the refusal can fail -- otherwise it is decoration ===
+  OK    there is at least one non-BITEXACT release to test with   P007
+  OK    stripping the certificate makes it UNVERIFIED   a NUMERIC pass cannot be verified by bit-exactness gates it never ran
+  OK    while a BITEXACT pass needs no certificate   its gates are the right evidence
+
+=== 3. the chain's tier is stated, not left to be inferred ===
+  OK    summary() warns the chain is no longer bit-exact end to end
+  OK    and names the pass responsible   P007
+  OK    evidence kind appears beside each pass, so NUMERIC cannot read as BITEXACT
+
+=== 4. the planner will not leave BITEXACT on its own ===
+  OK    no measurement -> incumbent
+  OK    measurement showing a 10x win, default ceiling -> STILL the incumbent
+  OK    only explicit consent selects the NUMERIC pair   cudnn_conv3d/ndhwc
+
+==============================================================================
+PASS: the Layer 5 flow is enforced -- evidence must match the tier
+
+STDERR
+
+PASS  test_lingbot_vla4b_adapter.py: 9 tests passed
+STDOUT
+.........                                                                [100%]
+9 passed in 1.18s
+
+STDERR
+
+PASS  test_lingbot_vla4b_full_path.py: 8 tests passed
+STDOUT
+........                                                                 [100%]
+8 passed in 1.17s
+
+STDERR
+
+PASS  test_lingbot_vla_v2_adapter.py: 11 tests passed
+STDOUT
+...........                                                              [100%]
+11 passed in 1.18s
+
+STDERR
+
+SKIP  test_moe_schedule_site.py: 1 tests skipped
+STDOUT
+
+1 skipped in 1.31s
+
+STDERR
+
+PASS  test_native_coverage_comparison.py: 7 tests passed
+STDOUT
+.......                                                                  [100%]
+7 passed in 0.19s
+
+STDERR
+
+PASS  test_native_total_comparison.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 1.16s
+
+STDERR
+
+PASS  test_numeric_total_comparison.py: 4 tests passed
+STDOUT
+....                                                                     [100%]
+4 passed in 0.09s
+
+STDERR
+
+PASS  test_operating_point.py: 
+STDOUT
+
+=== 1. AdapterSpec.with_nfe reprices the declared schedule ===
+  OK    the adapter states the model's own schedule   79
+  OK    phases named in the declaration change; others do not   kv_refresh=2 + video=2 + action=4
+  OK    declared denoise forwards at 2V/4A   8
+  OK    executed forwards = declared + one cache-only per truncatable phase   10
+  OK    the original spec is untouched (frozen dataclass)
+
+=== 2. a terminal commit stays terminal ===
+  OK    video commits on its last forward   [25]
+  OK    and still does after the rewrite   [1]
+  OK    no commit index is out of range
+  OK    same for the action phase   [3]
+  OK    a phase not named keeps both its commits
+  OK    below min_nfe is raised to it   nfe=1
+
+=== 3. the plan is priced at the schedule that will run ===
+  OK    the teacher schedule reports 79 forwards somewhere
+  OK    the shipped plan does NOT quote a 79-forward cycle
+  OK    from_pretrained applies the declaration before compiling
+  OK    and the declaration is the base, not just the override
+
+=== 4. execution.guidance reaches the server ===
+  OK    'cfg' leaves the model's own scale alone   5.0
+  OK    'positive_only' pins the scale to 1.0
+  OK    a guidance-distilled student turns video CFG OFF   1.0
+  OK    an explicit numeric scale wins   3.5
+  OK    and so does a {mode, scale} form
+  OK    an unknown stream is ignored rather than raising
+  OK    a numeric scale as a CLI STRING applies (the worker path always sends strings; before 2026-08-31 '--guidance video=3' silently applied nothing)   3.0
+  OK    an unreadable value is REFUSED by name, not silently ignored (the failure class this module exists to prevent is serving something other than the declaration)
+  OK    cfg at a declared scale of 1.0 writes 1.0 -- the guidance-off, batch-1 point the campaign found free (h1_report §4b: 1V/4A@w1 0.885 vs 0.752 at the shipped w=5)
+  OK    positive_only WITH a scale > 1 is a contradiction and is refused before it turns the action combine on
+  OK    'cfg' by name is the family default, recorded as inherited: nothing is written
+
+=== 5. worker and in-process obey the same declaration ===
+  OK    the worker gets the DECLARED nfe with no override passed   ['--degrade-nfe', '2,4', '--guidance', 'action=positive_only,video=cfg']
+  OK    and the declared guidance
+  OK    LINGBOT_CKPT is NOT the base pointer
+  OK    it is the composed tree, as in-process uses   mp/tmp_xeremue/cache/composed/e1033e9dddd52808
+  OK    an explicit override still wins
+  OK    a {mode, scale} declaration travels to the worker as the SERVED scale (a number the worker re-parses through the same resolver), positive_only as its mode name   action=positive_only,video=3
+  OK    and the worker-side parse of that flag serves the identical scales
+  OK    worker keeps a pass applied by the plan
+  OK    worker honors the low-memory allocator exclusion
+  OK    worker does not exceed a BITEXACT plan with NUMERIC P007
+
+=== 6. the operating point is (schedule, guidance, CFG batching), and the plan says so ===
+  OK    the string form inherits the family scale and RECORDS that it was inherited   {'video': 'inherited from the family default', 'action': 'implied by mode'}
+  OK    video cfg@5 makes every declared forward batch-2 (the action branch is computed then discarded -- the fact cfg_branch_elision exploits)   {'negative_branch_requested_by': ['video'], 'per_phase_branches': {'kv_refresh': 2, 'video': 2, 'action': 2}, 'batch1_forwards': 0, 'batch2_forwards': 7, 'separate_branch_forwards': 0}
+  OK    positive_only rewrites the video rule to scale 1
+  OK    and with no stream requesting a negative branch every forward is batch-1   {'negative_branch_requested_by': [], 'per_phase_branches': {'kv_refresh': 1, 'video': 1, 'action': 1}, 'batch1_forwards': 7, 'batch2_forwards': 0, 'separate_branch_forwards': 0}
+  OK    cfg at w=1 requests no negative branch either: CFG batching is DERIVED from the served scale, never declared
+  OK    a numeric declaration is a served CFG scale: w=3, batch-2
+  OK    at the shipped guidance cfg_branch_elision has a discarded branch to elide (NUMERIC ceiling)   streams ['action'] discard their negative branch while ['video'] force batch duplication; forwards that can drop to batch 1 — action: 3 of 4 (commit steps exempt: their K/V feeds the other stream's negative branch)
+  OK    at guidance-off it declines, because the batch it would trim is not there   no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)
+  OK    the plan PRINTS the tuple     operating point: schedule {kv_refresh=2 + video=1 + action=4} | guidance {action=positive_only@1 [inherited from the family default], video=positive_only@1 [implied by mode]} | cfg batching {batch-1 on all 7 declared forwards (no stream requests a negative branch)}
+  OK    ...including where an inherited scale came from
+  OK    derived plans keep the operating point
+  OK    plan_declaration prices the checkpoint's declared guidance   schedule {kv_refresh=2 + video=1 + action=4} | guidance {action=positive_only@1 [implied by mode], video=cfg@1} | cfg batching {batch-1 on all 7 declared forwards (no stream requests a negative branch)}
+  OK    so the guidance-off checkpoint's plan does not claim an elision that cannot happen
+
+==============================================================================
+PASS: the operating point is declaration-driven in every placement path.
+
+STDERR
+
+PASS  test_optimizer.py: 17 tests passed
+STDOUT
+.................                                                        [100%]
+17 passed in 0.12s
+
+STDERR
+
+PASS  test_p3_cosmos3.py: 
+STDOUT
+=== applicability: does P3 fire on the right models? ===
+  OK  lingbot-va    applies=False (want False)  no slice declares D3 (an index re-materialised per forward from declared g
+  OK  cosmos3-edge  applies=True  (want True)  slices ['gen_sequence'] rebuild an index tensor that is a pure function of
+
+=== correctness gate: memoized vs freshly computed ===
+  distinct cache entries after 5 identical calls: 1 (want 1)
+  max abs delta: 0.000000e+00
+
+=== performance gate: pack metadata construction per control step ===
+  16 packs/control step, mean over 50 steps (CPU, no checkpoint)
+  before :    0.721 ms/control step
+  after  :    0.008 ms/control step   (87.08x)
+
+==============================================================================
+applicability: PASS
+both gates   : ACCEPT
+  accept: 0.7 -> 0.0 ms (87.08x), BITEXACT, max|delta| = 0.000e+00
+
+STDERR
+
+PASS  test_p8_scratch_arena.py: 
+STDOUT
+=== applicability: derived from the declared FACT, not configured ===
+  OK  lingbot-va    applies=False  no FORWARD-scoped MANAGED TRANSIENT slice with a host-evaluable ex
+  OK  cosmos3-edge  applies=True   slices ['attn_reassembly_scratch'] are allocated and destroyed ins
+=== Q1: can two acquires in one scope ever alias? ===
+  OK  n=  2: 2 distinct within scope, reused across scopes
+  OK  n=  3: 3 distinct within scope, reused across scopes
+  OK  n=  8: 8 distinct within scope, reused across scopes
+  OK  n= 64: 64 distinct within scope, reused across scopes
+  OK  K and V from one scope are distinct storages (0x70d0a59bb040 vs 0x70d0a554c040)
+
+=== Q2: bit-exactness against the real get_all_seq ===
+  max abs delta over 3 scopes x 4 packs: 0.000000e+00
+  cosmos3_get_all_seq: 3 scopes, 12 acquires, 4 allocations, high-water [[567, 16, 128]x4], 18.58 MB resident
+
+=== Q3: end-to-end over a full control step (28 layers x NFE 16) ===
+  device=cpu dtype=torch.float32  896 get_all_seq calls per control step
+  alloc+scatter traffic: 4.16 GB per control step
+  before :   674.84 ms per control step
+  after  :   490.92 ms per control step   (1.37x)
+  cosmos3_get_all_seq: 468 scopes, 936 acquires, 2 allocations, high-water [[567, 16, 128]x2], 9.29 MB resident
+
+==============================================================================
+applicability  : PASS
+aliasing safety: PASS
+bit-exactness  : PASS (max abs delta 0.000e+00)
+end-to-end     : saves 183.92 ms of a 602.8 ms control cycle = 30.51%  -> 1.4391x on the full cycle
+
+STDERR
+
+PASS  test_paired_runner.py: 4 tests passed
+STDOUT
+....                                                                     [100%]
+4 passed in 4.31s
+
+STDERR
+
+SKIP  test_pdd_lingbot_parity.py: Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests
+STDOUT
+
+STDERR
+Traceback (most recent call last):
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/test_pdd_lingbot_parity.py", line 20, in <module>
+    pytest.importorskip("instinct_pdd", reason="the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests")
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/cosmos-framework/.venv/lib/python3.13/site-packages/_pytest/outcomes.py", line 293, in importorskip
+    raise skipped
+Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests
+
+SKIP  test_pdd_parity.py: Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests
+STDOUT
+
+STDERR
+Traceback (most recent call last):
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/test_pdd_parity.py", line 32, in <module>
+    pytest.importorskip("instinct_pdd", reason="the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests")
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/cosmos-framework/.venv/lib/python3.13/site-packages/_pytest/outcomes.py", line 293, in importorskip
+    raise skipped
+Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests
+
+SKIP  test_pdd_recipe.py: Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests
+STDOUT
+
+STDERR
+Traceback (most recent call last):
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/test_pdd_recipe.py", line 23, in <module>
+    pytest.importorskip("instinct_pdd", reason="the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests")
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/cosmos-framework/.venv/lib/python3.13/site-packages/_pytest/outcomes.py", line 293, in importorskip
+    raise skipped
+Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests
+
+PASS  test_pi05_adapter.py: 8 tests passed
+STDOUT
+........                                                                 [100%]
+8 passed in 1.17s
+
+STDERR
+
+PASS  test_pi05_capture_default.py: 10 tests passed
+STDOUT
+..........                                                               [100%]
+10 passed in 1.20s
+
+STDERR
+
+PASS  test_pi05_compile_neutralize.py: 8 tests passed
+STDOUT
+........                                                                 [100%]
+8 passed in 0.12s
+
+STDERR
+
+PASS  test_pi05_engine_loop.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 1.16s
+
+STDERR
+
+PASS  test_pi05_legacy_cache.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 1.86s
+
+STDERR
+
+PASS  test_pi05_libero_driver.py: 7 tests passed
+STDOUT
+.......                                                                  [100%]
+7 passed in 0.86s
+
+STDERR
+
+PASS  test_pi05_runtime_libero_campaign.py: 9 tests passed
+STDOUT
+.........                                                                [100%]
+9 passed in 0.11s
+
+STDERR
+
+PASS  test_pi05_runtime_libero_compare.py: 6 tests passed
+STDOUT
+......                                                                   [100%]
+6 passed in 0.23s
+
+STDERR
+
+PASS  test_pi05_scenes.py: 4 tests passed
+STDOUT
+....                                                                     [100%]
+4 passed in 0.15s
+
+STDERR
+
+PASS  test_pi05_static_capture.py: 15 tests passed
+STDOUT
+...............                                                          [100%]
+15 passed in 1.21s
+
+STDERR
+
+PASS  test_pi05_tf32_closed_loop.py: 12 tests passed
+STDOUT
+............                                                             [100%]
+12 passed in 0.20s
+
+STDERR
+
+PASS  test_pi05_tf32_operating_point.py: 18 tests passed
+STDOUT
+..................                                                       [100%]
+18 passed in 0.39s
+
+STDERR
+
+PASS  test_pi05_weights.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 1.19s
+
+STDERR
+
+PASS  test_plan_header_model_id.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 1.41s
+
+STDERR
+
+PASS  test_policy_trace.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 1.18s
+
+STDERR
+
+SKIP  test_promote_operand.py: needs CUDA
+STDOUT
+SKIP: needs CUDA
+
+STDERR
+
+PASS  test_prompt_update_gate.py: 21 tests passed
+STDOUT
+.....................                                                    [100%]
+21 passed in 0.09s
+
+STDERR
+
+PASS  test_qualification.py: 7 tests passed
+STDOUT
+.......                                                                  [100%]
+7 passed in 0.14s
+
+STDERR
+
+PASS  test_realtime_budget.py: 6 tests passed
+STDOUT
+......                                                                   [100%]
+6 passed in 0.13s
+
+STDERR
+
+SKIP  test_recipe.py: Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests
+STDOUT
+
+STDERR
+Traceback (most recent call last):
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/test_recipe.py", line 13, in <module>
+    pytest.importorskip("instinct_pdd", reason="the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests")
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/cosmos-framework/.venv/lib/python3.13/site-packages/_pytest/outcomes.py", line 293, in importorskip
+    raise skipped
+Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests
+
+PASS  test_render_user_summary.py: 23 tests passed
+STDOUT
+.......................                                                  [100%]
+23 passed in 0.11s
+
+STDERR
+
+PASS  test_repo_surface.py: 
+STDOUT
+
+=== 1. the root reads as a framework, not a notebook ===
+  OK    no research documents at the root
+  OK    exactly README + ARCHITECTURE + CHECKPOINTS   ['README.md']
+
+=== 2. the first screen answers what / install / load / actions ===
+  OK    install, load and get-actions all appear up front   [3236, 3596, 5307]
+  OK    and in that order
+  OK    the load example is the public Runtime API
+  OK    the actions example loops
+  OK    the first screen does not mention 'Optimizer('
+  OK    the first screen does not mention 'port='
+  OK    the first screen does not mention 'plan.serve'
+
+=== 3. no research chronology or profiling tables ===
+  OK    README does not mention 'Layer 6'
+  OK    README does not mention 'Layer 5'
+  OK    README does not mention 'P001'
+  OK    README does not mention 'P007'
+  OK    README does not mention 'marginal slope'
+  OK    README does not mention 'NOT EVALUATED'
+  OK    README does not mention 'ABBA'
+  OK    README does not mention 'RETRACTED'
+  OK    README does not mention 'PROPOSED API'
+  OK    README does not mention 'operating point'
+  OK    README does not mention 'Quality (25'
+  OK    no date-stamped changelog entries
+  OK    the news section is not a results table
+  OK    ## Results has its own scope outside news
+  OK    table rows inside actual news remain rejected
+  OK    ### Results has its own scope outside news
+  OK    table rows inside actual news remain rejected
+
+=== 4. every link in the README points at something ===
+  OK    all 20 local links resolve
+
+=== 5. the canonical docs describe main, not its history ===
+  OK    README.md does not contain 'PROPOSED API'
+  OK    README.md does not contain 'RETRACTED'
+  OK    README.md does not contain 'not implemented yet'
+  OK    README.md does not contain 'PROFILE.md'
+  OK    README.md does not contain '3.38'
+  OK    README.md does not contain 'Fast runs'
+  OK    README.md does not contain '566 matched pairs'
+  OK    README.md links no deleted document
+
+==============================================================================
+PASS: the root and the README present a maintained framework.
+
+STDERR
+
+PASS  test_ring_allocator.py: 
+STDOUT
+pool=9792  committed/cycle=272  first wrap ~cycle 36  forwards/cycle=8 (1+3 transient)
+cycles simulated=120  observations=1080
+
+live set NON-contiguous in ascending index order : 161
+returned slots NON-contiguous                    : 0
+max live                                         : 9792
+
+first 5 non-contiguous live sets (this is what breaks a naive ring):
+   video_commit       live= 9760 lo=    0 hi= 9791
+   after_clear_pred   live= 9520 lo=    0 hi= 9791
+   video_commit       live= 9760 lo=    0 hi= 9791
+   after_clear_pred   live= 9520 lo=    0 hi= 9791
+   video_commit       live= 9760 lo=    0 hi= 9791
+
+steady state (last 8 observations):
+   video_prov         live= 9792 lo=    0 hi= 9791 live_contig=True slots_contig=True
+   action_transient   live= 9792 lo=    0 hi= 9791 live_contig=True slots_contig=True
+   action_transient   live= 9792 lo=    0 hi= 9791 live_contig=True slots_contig=True
+   action_transient   live= 9792 lo=    0 hi= 9791 live_contig=True slots_contig=True
+   action_prov        live= 9792 lo=    0 hi= 9791 live_contig=True slots_contig=True
+   after_clear_pred   live= 9520 lo=    0 hi= 9791 live_contig=False slots_contig=True
+   video_commit       live= 9760 lo=    0 hi= 9791 live_contig=False slots_contig=True
+   action_commit      live= 9792 lo=    0 hi= 9791 live_contig=True slots_contig=True
+
+=== PARITY: ring view order vs stock mask.nonzero() ===
+cycles=120  (~3.3 full ring wraps)  checks=960  (1+3 transient forwards per cycle)  mismatches=0
+PASS: identical indices, in identical order, through every wrap.
+
+=== ELISION BOOKKEEPING vs NAIVE SKIP, 2V/4A, 80 cycles (~2.2 wraps), reference = stock ON ===
+  OK    STOCK-EL     exact   [expected exact; 640 compared reads]
+  OK    RING-EL      exact   [expected exact; 640 compared reads]
+  OK    STOCK-NAIVE  exact   [expected exact; 640 compared reads]
+  OK    RING-NAIVE   DIVERGES at cycle 36 after_clear_pred: RING-NAIVE keeps 9552 slots vs ON 9520   [expected divergence; 296 compared reads]
+  OK    RING-ON      exact   [expected exact; 640 compared reads]
+
+=== ELISION BOOKKEEPING vs NAIVE SKIP, 2V/1A, 80 cycles (~2.2 wraps), reference = stock ON ===
+  OK    STOCK-EL     exact   [expected exact; 400 compared reads]
+  OK    RING-EL      exact   [expected exact; 400 compared reads]
+  OK    STOCK-NAIVE  DIVERGES at cycle 36 after_clear_pred: STOCK-NAIVE keeps 9552 slots vs ON 9520   [expected divergence; 185 compared reads]
+  OK    RING-NAIVE   DIVERGES at cycle 36 after_clear_pred: RING-NAIVE keeps 9552 slots vs ON 9520   [expected divergence; 185 compared reads]
+  OK    RING-ON      exact   [expected exact; 400 compared reads]
+
+=== ELISION BOOKKEEPING vs NAIVE SKIP, 1V/2A, 80 cycles (~2.2 wraps), reference = stock ON ===
+  OK    STOCK-EL     exact   [expected exact; 400 compared reads]
+  OK    RING-EL      exact   [expected exact; 400 compared reads]
+  OK    STOCK-NAIVE  exact   [expected exact; 400 compared reads]
+  OK    RING-NAIVE   DIVERGES at cycle 36 after_clear_pred: RING-NAIVE keeps 9552 slots vs ON 9520   [expected divergence; 185 compared reads]
+  OK    RING-ON      exact   [expected exact; 400 compared reads]
+
+PASS: replaying only the allocation of the skipped action pred-commit forward is exact through every wrap on both allocators;
+      the naive skip fails where predicted.
+
+STDERR
+flash_attn is installed but failed to import: cannot import name 'flash_attn_varlen_func' from 'flash_attn' (/home/ubuntu/iwm_shims/flash_attn/__init__.py). Falling back to native PyTorch attention.
+
+PASS  test_robotwin_driver.py: 11 tests passed
+STDOUT
+...........                                                              [100%]
+11 passed in 0.20s
+
+STDERR
+
+PASS  test_robotwin_reset_bounds.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 0.11s
+
+STDERR
+
+PASS  test_robotwin_transport.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 0.25s
+
+STDERR
+
+SKIP  test_rope_kernel.py: no CUDA
+STDOUT
+SKIP: no CUDA
+
+STDERR
+
+PASS  test_runtime.py: 6 tests passed
+STDOUT
+......                                                                   [100%]
+6 passed in 1.18s
+
+STDERR
+
+PASS  test_runtime_boundary.py: 
+STDOUT
+
+=== 1. the runtime path cannot reach a training package ===
+  OK    governing 79 modules across 5 directories
+  OK    no module under runtime/planners/executors/descriptors/backends reaches ['instinct_pdd', 'instinctflash.train']   transitively, including function-local imports
+
+=== 2. the runtime path cannot read a provenance field ===
+  OK    no runtime module reads training provenance ['coverage_gate_pass', 'training_method', 'recipe', 'endpoint_rmse', 'min_updates_per_head', 'head_updates_min', 'training_diagnostics']   legacy boundary contexts and exact FP8 output-metadata expressions only
+
+=== 2b. FP8 execution metadata is distinct from checkpoint training provenance ===
+  OK    instinctflash/runtime/cosmos_fp8.py: the audited FP8 metadata value is allowed
+  OK    instinctflash/runtime/cosmos_fp8.py: the audited FP8 metadata value is allowed
+  OK    instinctflash/runtime/cosmos_fp8.py: a provenance read in the same module remains rejected
+  OK    instinctflash/runtime/cosmos_fp8.py: a provenance read in the same module remains rejected
+  OK    instinctflash/runtime/cosmos_fp8.py: a provenance read in the same module remains rejected
+  OK    instinctflash/runtime/dreamzero_fp8.py: the audited FP8 metadata value is allowed
+  OK    instinctflash/runtime/dreamzero_fp8.py: a provenance read in the same module remains rejected
+  OK    instinctflash/runtime/dreamzero_fp8.py: a provenance read in the same module remains rejected
+  OK    instinctflash/runtime/dreamzero_fp8.py: a provenance read in the same module remains rejected
+  OK    instinctflash/runtime/h100_fp8.py: the audited FP8 metadata value is allowed
+  OK    instinctflash/runtime/h100_fp8.py: the audited FP8 metadata value is allowed
+  OK    instinctflash/runtime/h100_fp8.py: a provenance read in the same module remains rejected
+  OK    instinctflash/runtime/h100_fp8.py: a provenance read in the same module remains rejected
+  OK    instinctflash/runtime/h100_fp8.py: a provenance read in the same module remains rejected
+  OK    combining local FP8 receipts is allowed at its exact output assignment
+  OK    changing the metadata source to checkpoint provenance is rejected
+  OK    the output-metadata exception does not apply to an unrelated module
+
+=== 3. the one exception is where it claims to be ===
+  OK    instinctflash/descriptors/checkpoint.py still defines FORBIDDEN_IN_EXECUTION   if it is renamed or moved, the exemption must move with it
+  OK    instinctflash/descriptors/checkpoint.py still defines _from_legacy_delta   if it is renamed or moved, the exemption must move with it
+  OK    instinctflash/descriptors/checkpoint.py still defines provenance_of   if it is renamed or moved, the exemption must move with it
+  OK    and it lives in _from_legacy_delta, not in a loader hot path
+  OK    provenance is reachable deliberately, via provenance_of(), never from load_declaration
+
+=== 4. the gate can fail -- otherwise it is decoration ===
+  OK    a function-local `from instinct_pdd import Grid` IS caught   instinctflash/runtime/tmp_ytta78o/planted_violation.py -> instinct_pdd
+  OK    and so is an import of a module that imports it   instinctflash/runtime/tmp_ytta78o/planted_indirect.py -> instinctflash.train.oracles.lingbot_velocity
+
+========================================================================
+PASS: the runtime/training boundary is enforced by construction
+
+STDERR
+
+PASS  test_runtime_bundle.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 0.03s
+
+STDERR
+
+PASS  test_runtime_facade.py: 
+STDOUT
+
+=== 1. the public API is five names, not eighteen ===
+  OK    instinctflash.Runtime exists
+  OK    instinctflash.from_pretrained exists
+  OK    instinctflash.describe exists
+  OK    Runtime leads __all__   Runtime
+  OK    no public signature mentions 'socket'
+  OK    no public signature mentions 'websocket'
+  OK    no public signature mentions 'port'
+  OK    no public signature mentions 'subprocess'
+
+=== 2. describe() returns execution facts only ===
+  OK    no provenance value leaks into describe()
+  OK    but it reports that provenance EXISTS
+  OK    and returns the execution facts
+
+=== 3. an unregistered backbone produces an error that teaches ===
+  OK    names the declared backbone
+  OK    lists what IS registered
+  OK    shows the exact fix
+  OK    points at a worked example
+
+=== 4. servable=false is refused, without asking why ===
+  OK    refuses it, citing servable
+  OK    and says the reason lives in provenance
+
+=== 5. placement is chosen, not declared ===
+  this interpreter: the model stack imports here
+  OK    the declaration schema has no notion of 'websocket'
+  OK    the declaration schema has no notion of 'socket'
+  OK    the declaration schema has no notion of 'worker'
+  OK    the declaration schema has no notion of 'in_process'
+  OK    the declaration schema has no notion of 'placement'
+  OK    the runtime chooses placement at load time
+
+=== 6. no Fast/Quality preset table lives in the runtime ===
+  OK    no operating_point parameter in the implementation
+  OK    nfe override IS available -- an explicit override of a declared field
+  OK    from_pretrained has no operating_point argument
+  OK    from_pretrained takes nfe=   ['model_id_or_path', 'revision', 'nfe', 'device', 'placement', 'precision', 'step_cache', 'strict', 'tier_ceiling', 'exclude_passes', 'startup_timeout_s', 'seed']
+
+=== 7. the composed tree is a cache artifact, not a package member ===
+  OK    nothing was written inside the package
+  OK    the composed tree lives under the cache   /tmp/tmp7ngc34u_/cache/composed/2a6fb67aa94e8401
+  OK    the trainable side is symlinked, not copied
+  OK    the package directory is byte-for-byte what it was before loading
+  OK    materialize() is idempotent
+
+==============================================================================
+PASS: one handle, a teaching error, no presets, and no transport in the API.
+
+STDERR
+
+PASS  test_runtime_precision.py: 15 tests passed
+STDOUT
+...............                                                          [100%]
+15 passed in 0.18s
+
+STDERR
+
+PASS  test_runtime_regression.py: 13 tests passed
+STDOUT
+.............                                                            [100%]
+13 passed in 0.15s
+
+STDERR
+
+PASS  test_runtime_telemetry.py: 10 tests passed
+STDOUT
+..........                                                               [100%]
+10 passed in 0.11s
+
+STDERR
+
+PASS  test_scaffold_evidence_readers.py: 
+STDOUT
+
+=== 1. wan_va: a shipped training-config artifact proves geometry + schedule ===
+  OK    obs_cam_keys read from the artifact
+  OK    height/width/env_type read from the artifact
+  OK    nfe is the artifact's schedule, not the base's operating point   {'video': 25, 'action': 50}
+  OK    the citation names the artifact file
+  OK    and says what kind of evidence it is
+  OK    nothing left to fill
+
+=== 2. wan_va: conflicting/non-literal artifact values prove nothing ===
+  OK    a key assigned two different literals stays FILL_ME
+  OK    and the stop message says why
+  OK    an uncontested key is still read
+  OK    a computed (non-literal) value is never evaluated
+  OK    a wrong-typed literal is not evidence
+  OK    an empty camera list is not evidence
+  OK    one step count alone does not rewrite the schedule (both or neither)
+
+=== 3. cosmos3: checkpoint.json policy block is upstream's own serving artifact ===
+  OK    domain_name inferred from the policy block
+  OK    action_chunk_size inferred from the policy block
+  OK    with the citation
+  OK    32 actions agrees with the current DROID base declaration
+  OK    action_dim is not in the artifact, stays FILL_ME
+  OK    image_height is not in the artifact, stays FILL_ME
+  OK    image_width is not in the artifact, stays FILL_ME
+  OK    a checkpoint's explicit action horizon is preserved
+  OK    an explicitly different horizon is identified as a different operating point
+  OK    empty artifact: domain_name honestly stays FILL_ME
+  OK    empty artifact: action_dim honestly stays FILL_ME
+  OK    empty artifact: action_chunk_size honestly stays FILL_ME
+  OK    empty artifact: image_height honestly stays FILL_ME
+  OK    empty artifact: image_width honestly stays FILL_ME
+  OK    a wrong-typed policy value is not evidence
+
+=== 4. lingbot_vla: yaml facts only when the config corroborates itself ===
+  OK    robot inferred: data_name corroborated by the stats filename
+  OK    norm_stats read from data.norm_stats_file
+  OK    the citation quotes both yaml statements
+  OK    and says the path is still verified at load
+  OK    an uncorroborated data_name is refused
+  OK    with the yaml value quoted for the human
+  OK    and why it is not written
+  OK    no stats path anywhere: FILL_ME
+  OK    the file actually shipped in the package outranks the yaml pointer
+
+=== 5. groot_n17: the native Isaac-GR00T layout fingerprints and lists heads ===
+  OK    native layout detected
+  OK    with the fingerprint quoted
+  OK    nfe read from config.json num_inference_timesteps
+  OK    a multi-head statistics.json is ambiguous, so FILL_ME
+  OK    and the checkpoint's own candidates are listed in the ask
+  OK    a sole statistics key IS the embodiment, inferred
+  OK    with that evidence stated
+
+=== 6. unknown backbone: a first-party family stops with the exact pip install ===
+  OK    the hint is the install command, pointing at this checkout
+  OK    and names the entry-point mechanism
+  OK    an unknown family gets no first-party claim
+  OK    a genuinely external family still gets the write-an-adapter teaching
+
+=== 7. an installed-but-broken adapter reports its import error, not a circle ===
+  OK    the message says the adapter is installed but broken
+  OK    and carries the actual import error
+  OK    the install hint is NOT repeated — that would be a circle
+
+=== 8. serve: the scaffold announcement survives a failing preflight ===
+  OK    the preflight failure still fails the command   1
+  OK    the user is told a declaration was just written into their directory
+  OK    with the full field-by-field announcement
+  OK    and then the preflight's own error
+
+=== 9. the groot adapter module imports with no numpy (metadata layer stays light) ===
+  OK    no module-level numpy/torch/cv2 import — the registry can always load it   set()
+
+=== 10. a local nested bundle validates via execution.checkpoint_subdir ===
+  OK    config.json under the declared checkpoint_subdir satisfies the requirement
+  OK    and the report says where the adapter will load it from
+  OK    the local copy of the bundle validates exactly like its hub id   missing=[] problems=[]
+
+=== 11. serve: a directory the loader would refuse stops BEFORE preflight ===
+  OK    the geometry-complete but unloadable dir still stops   1
+  OK    saying the package would not load
+  OK    with the exact mv from the layout hint
+  OK    and no preflight was printed — the stop comes first
+  OK    after the mv, the same command completes its preflight   0
+  OK    through to the plan
+
+PASS: the scaffold reads the checkpoint's own artifacts as evidence — with citations, conflicts refused, and every stop message actionable.
+
+STDERR
+
+PASS  test_scene_prepare.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 0.16s
+
+STDERR
+
+PASS  test_schedule_sweep.py: 6 tests passed
+STDOUT
+......                                                                   [100%]
+6 passed in 10.12s
+
+STDERR
+
+PASS  test_screening_summary.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 0.11s
+
+STDERR
+
+PASS  test_serve_autoscaffold.py: 
+STDOUT
+
+=== 1. no-declaration pi05 dir: scaffold inline, announce, continue to preflight ===
+  OK    one command, exit 0 — the deep-inference family proceeds   0
+  OK    the run announces what it is about to do
+  OK    and names the detected base
+  OK    with the fingerprint quoted as evidence
+  OK    per-field provenance is printed
+  OK    with the evidence one-liners for the inferred facts
+  OK    the write is announced
+  OK    and the same command continues into the normal preflight
+  OK    through to the plan
+  OK    the written declaration carries the checkpoint's own obs_features
+  OK    nothing was left to fill
+
+=== 2. no-declaration wan_va dir: scaffold, then STOP with the four geometry asks ===
+  OK    serve exits 1 on the sentinels   1
+  OK    and says it stopped before any download
+  OK    asking for obs_cam_keys
+  OK    asking for height
+  OK    asking for width
+  OK    asking for env_type
+  OK    each ask says where the value comes from
+  OK    and quotes the exact rerun
+  OK    the declaration WAS written, so the user edits a file, not a template
+  OK    no preflight ran — the stop is the whole answer
+  OK    a non-dry serve stops at the same wall   1
+
+=== 3. the stop persists on rerun (file untouched), and filling releases it ===
+  OK    the second serve still stops   1
+  OK    without re-scaffolding
+  OK    and says the existing declaration still carries FILL_ME
+  OK    the file is untouched
+  OK    the filled declaration serves (dry_run preflight passes)   0
+  OK    as a plain fast path — no scaffold vocabulary
+
+=== 4. second serve of the scaffolded pi05 dir: plain fast path, byte-stable ===
+  OK    both runs exit 0   0,0
+  OK    the second run does not scaffold or write
+  OK    the declaration is untouched
+  OK    the first run was exactly scaffold-report + the second run's preflight
+
+=== 5. regression pin: a declared package preflights byte-identically ===
+  OK    dry_run exits 0   0
+  OK    the output is the preflight text alone, byte-for-byte — plan included
+  OK    no scaffold vocabulary
+  OK    the declaration untouched
+
+=== 6. an unmerged LoRA adapter dir: the merge-command wall, before anything ===
+  OK    serve refuses (config error, exit 2)   2
+  OK    naming the layout
+  OK    with the exact merge command over this adapter path
+  OK    loader from the checkpoint's own config type, base from adapter_config
+  OK    and writes nothing
+  OK    a pre-existing declaration does not launder the adapter   2
+
+=== 6b. serve at a lerobot-train run root: pointed at the real checkpoint ===
+  OK    the run root stops as a config error   2
+  OK    naming the layout it recognized
+  OK    with the exact servable path as the rerun command   on + weights + the processor pipeline), and the levels above it are run bookkeeping. Point the command there:
+  instinctflash serve /tmp/tmpaotn_s5v/pi05_libero_sft/checkpoints/000400/pretrained_model
+  OK    and writes nothing at the wrong level
+  OK    the intermediate step dir points one level down too   2
+
+=== 7. --output.format=json: the stop is structured, not just prose ===
+  OK    exit 1, ok false   1
+  OK    result.fill_me lists exactly the four asks
+  OK    and the scaffold record rides along
+
+==============================================================================
+PASS: one command from a bare training output to a serving preflight — announced, written, and stopped loudly exactly where proof runs out.
+
+STDERR
+
+PASS  test_serve_parity.py: 
+STDOUT
+
+=== 1. the two derived quantities, against the retired Grid ===
+  NOT EVALUATED -- instinct_pdd unavailable, so there is no reference to compare against. This is the only test here that needs it.
+
+=== 2. per-block fold weights ===
+  OK    L=1: every block's weights sum to 1   worst 0.00e+00
+  OK    L=2: every block's weights sum to 1   worst 0.00e+00
+  OK    L=4: every block's weights sum to 1   worst 0.00e+00
+  OK    L=8: every block's weights sum to 1   worst 0.00e+00
+
+=== 3. THE INVARIANT THE SERVING PATH RESTS ON ===
+  OK    L=1: sum of block widths == the sampler's dsigma   max|delta| = 1.11e-16
+  OK    L=1: so the normalised weights are a convex combination
+  OK    L=2: sum of block widths == the sampler's dsigma   max|delta| = 1.11e-16
+  OK    L=2: so the normalised weights are a convex combination
+  OK    L=4: sum of block widths == the sampler's dsigma   max|delta| = 5.55e-17
+  OK    L=4: so the normalised weights are a convex combination
+
+=== 4. fold_heads: new signature vs the retired Grid signature ===
+  NOT EVALUATED -- no reference implementation available.
+
+=== 5. reading the schedule must not mutate the server's scheduler ===
+  OK    scheduler sigmas restored after reading   [tensor(1.), tensor(0.5000), tensor(0.)] -> [tensor(1.), tensor(0.5000), tensor(0.)]
+  OK    returns N+1 grid points   9
+  OK    terminal sigma is 0, so the last interval is not lost
+  OK    a schedule that does not end at 0 gets the terminal point padded on   6 pts
+
+========================================================================
+PASS: the serving schedule is bit-identical without the training library
+
+STDERR
+
+PASS  test_serve_seed.py: 6 tests passed
+STDOUT
+......                                                                   [100%]
+6 passed in 1.42s
+
+STDERR
+
+SKIP  test_serve_viz.py: needs rerun
+STDOUT
+
+STDERR
+Traceback (most recent call last):
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/test_serve_viz.py", line 29, in <module>
+    import rerun  # noqa: F401  (skip-if-absent: the whole file needs the viz extra)
+    ^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'rerun'
+
+PASS  test_shared_bf16_pointwise.py: 7 tests passed
+STDOUT
+.......                                                                  [100%]
+7 passed in 1.44s
+
+STDERR
+
+PASS  test_shipped_config.py: 
+STDOUT
+shipped: P001, P002, P003, P007, P010  tier NUMERIC
+
+=== 1. the ledger and the disposition table cover the same passes ===
+  OK    every released pass has exactly one disposition   ledger-only [], disposition-only []
+  OK    no duplicate dispositions
+  OK    P001 status is a known value   SERVED
+  OK    P001 states WHY it holds that status today
+  OK    P002 status is a known value   SERVED
+  OK    P002 states WHY it holds that status today
+  OK    P003 status is a known value   SERVED
+  OK    P003 states WHY it holds that status today
+  OK    P004 status is a known value   AVAILABLE
+  OK    P004 states WHY it holds that status today
+  OK    P005 status is a known value   NOT_RECOMMENDED
+  OK    P005 states WHY it holds that status today
+  OK    P006 status is a known value   NOT_RECOMMENDED
+  OK    P006 states WHY it holds that status today
+  OK    P007 status is a known value   SERVED
+  OK    P007 states WHY it holds that status today
+  OK    P009 status is a known value   AVAILABLE
+  OK    P009 states WHY it holds that status today
+  OK    P009-A2 status is a known value   AVAILABLE
+  OK    P009-A2 states WHY it holds that status today
+  OK    P010 status is a known value   SERVED
+  OK    P010 states WHY it holds that status today
+
+=== 2. THE ONE THAT CAUGHT THE REAL BUG: launchers == shipped_configuration() ===
+  registry says: --no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout --action-terminal-elision
+  OK    run_pdd_cert.sh enables --no-fsdp
+  OK    run_pdd_cert.sh enables --no-empty-cache
+  OK    run_pdd_cert.sh enables --no-debug-dump
+  OK    run_pdd_cert.sh enables --conditioning-prefill
+  OK    run_pdd_cert.sh enables --ring-kv
+  OK    run_pdd_cert.sh enables --conv-layout
+  OK    run_pdd_cert.sh enables --action-terminal-elision
+  OK    run_pdd_cert.sh does NOT enable --graph-blocks (P005, NOT RECOMMENDED)
+  OK    run_pdd_cert.sh does NOT enable --stable-pools (P006, NOT RECOMMENDED)
+  OK    run_sweep.sh enables --no-fsdp
+  OK    run_sweep.sh enables --no-empty-cache
+  OK    run_sweep.sh enables --no-debug-dump
+  OK    run_sweep.sh enables --conditioning-prefill
+  OK    run_sweep.sh enables --ring-kv
+  OK    run_sweep.sh enables --conv-layout
+  OK    run_sweep.sh enables --action-terminal-elision
+  OK    run_sweep.sh does NOT enable --graph-blocks (P005, NOT RECOMMENDED)
+  OK    run_sweep.sh does NOT enable --stable-pools (P006, NOT RECOMMENDED)
+
+=== 3. every shipped flag actually exists on serve_variant.py ===
+  OK    serve_variant.py defines --no-fsdp
+  OK    serve_variant.py defines --no-empty-cache
+  OK    serve_variant.py defines --no-debug-dump
+  OK    serve_variant.py defines --conditioning-prefill
+  OK    serve_variant.py defines --ring-kv
+  OK    serve_variant.py defines --conv-layout
+  OK    serve_variant.py defines --action-terminal-elision
+
+=== 4. a NOT RECOMMENDED pass warns at the point of use ===
+  OK    serve_variant.py defines --graph-blocks
+  OK    --graph-blocks help warns the reader (P005)
+  OK    serve_variant.py defines --stable-pools
+  OK    --stable-pools help warns the reader (P006)
+
+=== 5. the README architecture chapter describes the shipped configuration, THIS one ===
+  OK    the LingBot eval README has a shipped-configuration section
+  OK    the shipped-config doc lists --no-fsdp
+  OK    the shipped-config doc lists --no-empty-cache
+  OK    the shipped-config doc lists --no-debug-dump
+  OK    the shipped-config doc lists --conditioning-prefill
+  OK    the shipped-config doc lists --ring-kv
+  OK    the shipped-config doc lists --conv-layout
+  OK    the shipped-config doc lists --action-terminal-elision
+  OK    the shipped-config doc accounts for P005 (NOT RECOMMENDED)
+  OK    the shipped-config doc accounts for P006 (NOT RECOMMENDED)
+
+=== 6. the served chain's tier is the weakest link ===
+  served: {'P001': 'BITEXACT', 'P002': 'BITEXACT', 'P003': 'BITEXACT', 'P007': 'NUMERIC', 'P010': 'BITEXACT'}
+  OK    served_tier() is NUMERIC, not the best member   NUMERIC
+  OK    P007 is served and non-BITEXACT, so it must carry a certificate
+
+=== 7. every pass module declares runtime status ===
+  OK    action_terminal_elision is registry-backed or declares STATUS   unclassified
+  OK    cfg_elision is registry-backed or declares STATUS
+  OK    conditioning_prefill is registry-backed or declares STATUS   unclassified
+  OK    conv_layout_ndhwc is registry-backed or declares STATUS   unclassified
+  OK    forward_scratch is registry-backed or declares STATUS
+  OK    fused_qkv is registry-backed or declares STATUS
+  OK    graph_capture is registry-backed or declares STATUS   unclassified
+  OK    hoist_invariant_casts is registry-backed or declares STATUS   unclassified
+  OK    persistent_graph is registry-backed or declares STATUS
+  OK    ring_kv is registry-backed or declares STATUS   unclassified
+  OK    sm120_gated_residual is registry-backed or declares STATUS   unclassified
+  OK    sm120_wan_stage2 is registry-backed or declares STATUS   unclassified
+  OK    stable_pools is registry-backed or declares STATUS   unclassified
+  OK    static_partition_hoist is registry-backed or declares STATUS
+  OK    step_scope_cast is registry-backed or declares STATUS
+  OK    substrate is registry-backed or declares STATUS   unclassified
+
+==============================================================================
+PASS: the registry, both launch scripts, serve_variant and the README agree.
+
+STDERR
+
+PASS  test_simulator_campaign.py: 5 tests passed
+STDOUT
+.....                                                                    [100%]
+5 passed in 0.19s
+
+STDERR
+
+PASS  test_simulator_doctor.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 0.11s
+
+STDERR
+
+PASS  test_sm120_native_pass.py: 6 tests passed
+STDOUT
+......                                                                   [100%]
+6 passed in 0.12s
+
+STDERR
+
+PASS  test_sm120_wan_stage2.py: 7 tests passed
+STDOUT
+.......                                                                  [100%]
+7 passed in 1.18s
+
+STDERR
+
+SKIP  test_stable_pools.py: needs CUDA
+STDOUT
+SKIP: needs CUDA
+
+STDERR
+flash_attn is installed but failed to import: cannot import name 'flash_attn_varlen_func' from 'flash_attn' (/home/ubuntu/iwm_shims/flash_attn/__init__.py). Falling back to native PyTorch attention.
+
+SKIP  test_stable_pools_pass.py: needs CUDA
+STDOUT
+SKIP: needs CUDA
+
+STDERR
+
+PASS  test_static_tensor_graph.py: 2 tests passed, 2 skipped
+STDOUT
+.ss.                                                                     [100%]
+2 passed, 2 skipped in 1.36s
+
+STDERR
+
+PASS  test_step_cache.py: 44 tests passed
+STDOUT
+............................................                             [100%]
+44 passed in 2.16s
+
+STDERR
+
+PASS  test_step_cache_policy.py: 19 tests passed
+STDOUT
+...................                                                      [100%]
+19 passed in 1.27s
+
+STDERR
+
+PASS  test_tensor_cache.py: 4 tests passed, 1 skipped
+STDOUT
+...s.                                                                    [100%]
+4 passed, 1 skipped in 1.16s
+
+STDERR
+
+PASS  test_test_runner.py: 44 tests passed
+STDOUT
+............................................                             [100%]
+44 passed in 20.19s
+
+STDERR
+
+PASS  test_trainer.py: 
+STDOUT
+
+=== 5. three declared updates all optimise, trainer unmodified ===
+  OK    student parameters moved
+  OK    fake_score parameters moved
+  OK    discriminator parameters moved
+  OK    loss/student logged
+  OK    gradnorm/student logged
+  OK    loss/fake_score logged
+  OK    gradnorm/fake_score logged
+  OK    loss/discriminator logged
+  OK    gradnorm/discriminator logged
+
+=== 8. a recipe that changes nothing about execution is refused ===
+  OK    empty delta rejected with a reason   no_delta declares no descriptor delta. A recipe that changes nothing a
+
+=== 9. returning floats instead of StepOutput is a TypeError, not a silent no-op ===
+  OK    float return rejected with a reason   float_returner.step() must return StepOutput (losses as tensors so the
+
+=== 10. a NaN loss stops the run instead of producing a checkpoint ===
+  OK    run stopped early
+  OK    reason names the non-finite loss   non-finite loss at step 0: ['loss/student']
+  OK    stopped on the first bad step   steps_done=1
+
+=== 11. a saved checkpoint carries the delta, so the runtime can run it ===
+  OK    weights written
+  OK    delta.json carries per-phase NFE   {'video': 2}
+  OK    delta.json records which recipe produced it   synthetic_three_update
+
+=== 12. identical teacher calls within one step are computed once ===
+  OK    second identical call hit the cache   calls=1 hits=1
+  OK    cache cleared between steps (no stale buffers across steps)
+
+==============================================================
+PASS: trainer is recipe-agnostic and PDD's target is analytically correct
+
+STDERR
+
+SKIP  test_triton_residual.py: needs CUDA
+STDOUT
+SKIP: needs CUDA
+
+STDERR
+
+PASS  test_user_provenance.py: 46 tests passed
+STDOUT
+..............................................                           [100%]
+46 passed in 0.53s
+
+STDERR
+
+PASS  test_user_report.py: 86 tests passed
+STDOUT
+........................................................................ [ 83%]
+..............                                                           [100%]
+86 passed in 0.75s
+
+STDERR
+
+PASS  test_v2_complete_fallback.py: 4 tests passed
+STDOUT
+....                                                                     [100%]
+4 passed in 1.37s
+
+STDERR
+
+PASS  test_v2_vision_capture_metadata.py: 4 tests passed
+STDOUT
+....                                                                     [100%]
+4 passed in 1.10s
+
+STDERR
+
+PASS  test_va_checkpoint_history.py: 9 tests passed
+STDOUT
+.........                                                                [100%]
+9 passed in 0.12s
+
+STDERR
+
+PASS  test_va_geometry.py: 9 tests passed
+STDOUT
+.........                                                                [100%]
+9 passed in 0.10s
+
+STDERR
+
+PASS  test_va_saturated_stress_compare.py: 7 tests passed
+STDOUT
+.......                                                                  [100%]
+7 passed in 0.20s
+
+STDERR
+
+PASS  test_validate_certificate.py: 
+STDOUT
+
+=== 1. stamping: certify + write into provenance, atomically ===
+  OK    structure ok + PASS certificate exits 0   0
+  OK    prints the same certificate text the harnesses produce
+  OK    and says where it wrote
+  OK    provenance.certificate exists
+  OK    stamping does not disturb the rest of provenance
+  OK    the block carries the real sha256 of the teacher outcomes
+  OK    and of the student outcomes
+  OK    block records verdict
+  OK    block records n_pairs
+  OK    block records margin_declared
+  OK    block records ci95
+  OK    block records stamped_at
+  OK    block records content_sha256
+
+=== 2. a plain validate verifies the embedded certificate ===
+  OK    intact certificate keeps exit 0   0
+  OK    and is reported as intact
+
+=== 3. an edited verdict is detected, and fails the validation ===
+  OK    tampered certificate exits 1   1
+  OK    and names the problem
+
+=== 4. a FAILED certificate is stamped anyway, and the verb exits 1 ===
+  OK    a real regression fails the verb   1
+  OK    with the failing verdict printed
+  OK    and the failure is what got stamped — the record of a failure is the point
+  OK    re-validate: the FAIL stamp is intact and REPORTED; like publishability, the verdict itself is informational on the plain path — only integrity gates   rc=0
+
+=== 5. partial certificate flags are a hard error ===
+  OK    margin without outcome files exits 2   2
+  OK    and says which fields are needed together
+
+==============================================================================
+PASS: validate certifies, stamps, and detects tampering.
+
+STDERR
+
+PASS  test_validate_layout_hint.py: 9 tests passed
+STDOUT
+.........                                                                [100%]
+9 passed in 0.14s
+
+STDERR
+
+PASS  test_validate_scaffold.py: 
+STDOUT
+
+=== 1. scaffold from a named base: inherited / inferred(+evidence) / FILL_ME ===
+  OK    the declaration was written
+  OK    backbone inferred   wan_va
+  OK    with the config fingerprint quoted as evidence
+  OK    param_bytes measured from the weight file   4096
+  OK    guidance inherited from the base
+  OK    obs_cam_keys is FILL_ME, never the base's robotwin value
+  OK    height is FILL_ME, never the base's robotwin value
+  OK    width is FILL_ME, never the base's robotwin value
+  OK    env_type is FILL_ME, never the base's robotwin value
+  OK    the per-family inference depth is stated in the output
+  OK    the report names all three field classes
+  OK    each FILL_ME carries a one-line explanation (in provenance, for humans)
+  OK    and the follow-up validate exits non-zero on the sentinels   1
+  OK    flagging them as PROBLEM lines
+
+=== 2. --validate.scaffold=auto fingerprints the checkpoint itself ===
+  OK    a wan_va fine-tune matches the LingBot-VA base
+  OK    a pi05 fine-tune matches lerobot/pi05_base
+  OK    obs_features read from the checkpoint's own input_features
+  OK    the denoise schedule read from num_inference_steps
+  OK    the package itself is the loadable policy, so base_weights points at it
+  OK    pi05 inference is deep enough that nothing is left to fill   0
+
+=== 3. an ambiguous fingerprint lists the candidates and refuses to pick ===
+  OK    refusal is a config error, exit 2   2
+  OK    and says so
+  OK    listing both candidates
+  OK    and writes nothing
+
+=== 4. a base that contradicts the checkpoint, or names nothing, is refused ===
+  OK    a pi05 checkpoint cannot be scaffolded as wan_va   2
+  OK    an unknown base id is refused with the known bases listed   2
+  OK    neither refusal writes anything
+
+=== 5. the no-overwrite guard: print what would change, write only under force ===
+  OK    the file is untouched
+  OK    the refusal names the flag that overrides it
+  OK    and shows the field-level diff
+  OK    plus the would-be document
+  OK    refusing to do the asked work is not a success exit   1
+  OK    force overwrites
+  OK    and says it is overwriting
+
+=== 6. plain validate keeps failing until the last FILL_ME is replaced ===
+  OK    a later plain validate still exits 1   1
+  OK    flagging all four sentinels   4
+  OK    each with the scaffold's explanation of what belongs there
+
+=== 7. round trip: scaffold + filled fields -> validate PASS ===
+  OK    the filled scaffold validates clean   0 /tmp/tmpgh5wqs6k/wanva-ft
+  servable package: YES
+  model_id='wanva-ft' backbone='wan_va' servable=True 
+  note     no README.md. Not required, but a published checkpoint without a model card is hard to adopt.
+  publishable without training internals: YES
+    - provenance present with 1 keys -- it will be published unless you remove it. The runtime never reads it either way.
+
+  OK    as a servable package
+  OK    and the wan_va adapter reads the filled geometry from the declaration
+  OK    as a declaration source   declaration (/tmp/tmpgh5wqs6k/wanva-ft/instinctflash.json)
+
+=== 7b. pi05 obs_features: the trained stats outrank config.json's padded dim ===
+  OK    state dim is the stats' [8], not config.json's padded [32]   {'observation.images.base_0_rgb': [3, 224, 224], 'observation.state': [8]}
+  OK    image geometry untouched — image stats are per-channel [C,1,1], not geometry
+  OK    the correction is announced with the stats file quoted as evidence
+  OK    still zero FILL_ME   0
+  OK    agreeing stats leave [8] as-is
+  OK    and no correction is announced
+
+=== 9. an unmerged LoRA adapter is refused everywhere, with the exact merge command ===
+  OK    scaffold auto refuses (config error, exit 2)   2
+  OK    and names the layout
+  OK    quoting the marker files found
+  OK    with the exact merge command over this adapter path
+  OK    loader from the checkpoint's own config type, base from adapter_config
+  OK    and writes nothing
+  OK    an explicit base is refused the same way   2
+  OK    still writes nothing
+  OK    plain validate gates on the adapter layout   1
+  OK    as a PROBLEM line
+  OK    a pre-existing declaration does not launder the adapter   1
+  OK    with full weights beside the residue, scaffold+validate pass   0
+  OK    and the residue is called out as a note
+
+=== 8. FILL_ME is a sentinel to the adapters, never a value ===
+  OK    wan_va raises its loud declare-or-IFL_CFG error, not int('FILL_ME')
+  OK    pi05 raises its declare-obs_features error
+
+==============================================================================
+PASS: the scaffold proves what it can, refuses what it cannot, and validate polices the difference.
+
+STDERR
+
+PASS  test_vla2_checkpoint_moe.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 0.09s
+
+STDERR
+
+PASS  test_vla2_prompt_reuse.py: 13 tests passed
+STDOUT
+.............                                                            [100%]
+13 passed in 1.39s
+
+STDERR
+
+PASS  test_vla2_scale_accumulator.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 1.16s
+
+STDERR
+
+PASS  test_vla4_engine.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 1.19s
+
+STDERR
+
+PASS  test_vla4_preprocess_ownership.py: 1 tests passed
+STDOUT
+.                                                                        [100%]
+1 passed in 1.15s
+
+STDERR
+
+PASS  test_vla4_prompt_reuse.py: 8 tests passed
+STDOUT
+........                                                                 [100%]
+8 passed in 1.18s
+
+STDERR
+
+PASS  test_vla_adapter_contracts.py: 8 tests passed
+STDOUT
+........                                                                 [100%]
+8 passed in 0.12s
+
+STDERR
+
+PASS  test_vla_benchmark_pipeline.py: 17 tests passed
+STDOUT
+.................                                                        [100%]
+17 passed in 7.22s
+
+STDERR
+
+PASS  test_vla_instinctflash_driver.py: 9 tests passed
+STDOUT
+.........                                                                [100%]
+9 passed in 1.45s
+
+STDERR
+
+PASS  test_vla_replay_driver.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 1.76s
+
+STDERR
+
+PASS  test_wan_va_backend_dispatch.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 1.16s
+
+STDERR
+
+PASS  test_wan_va_checkpoint_geometry.py: 5 tests passed
+STDOUT
+.....                                                                    [100%]
+5 passed in 1.22s
+
+STDERR
+
+PASS  test_wan_va_engine_operating_point.py: 6 tests passed
+STDOUT
+......                                                                   [100%]
+6 passed in 63.77s (0:01:03)
+
+STDERR
+
+PASS  test_wan_va_engine_server.py: 7 tests passed
+STDOUT
+.......                                                                  [100%]
+7 passed in 1.29s
+
+STDERR
+
+PASS  test_wan_va_libero_driver.py: 3 tests passed
+STDOUT
+...                                                                      [100%]
+3 passed in 0.16s
+
+STDERR
+
+PASS  test_wan_va_runtime_robotwin_bridge.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 1.19s
+
+STDERR
+
+PASS  test_wan_va_runtime_robotwin_scene.py: 15 tests passed
+STDOUT
+...............                                                          [100%]
+15 passed in 0.21s
+
+STDERR
+
+PASS  test_wan_va_runtime_rollout.py: 9 tests passed
+STDOUT
+.........                                                                [100%]
+9 passed in 1.20s
+
+STDERR
+
+PASS  test_wan_va_runtime_server.py: 8 tests passed
+STDOUT
+........                                                                 [100%]
+8 passed in 0.19s
+
+STDERR
+
+PASS  test_worker_output.py: 2 tests passed
+STDOUT
+..                                                                       [100%]
+2 passed in 0.67s
+
+STDERR
+
+PASS  test_ws_server.py: 
+STDOUT
+
+=== 1. our frames are byte-identical to openpi-client 0.1.1's ===
+  OK    payload 0: identical bytes   120B vs 120B
+  OK    payload 0: cross round-trip equal
+  OK    payload 1: identical bytes   611537B vs 611537B
+  OK    payload 1: cross round-trip equal
+  OK    payload 2: identical bytes   117B vs 117B
+  OK    payload 2: cross round-trip equal
+  OK    payload 3: identical bytes   1B vs 1B
+  OK    payload 3: cross round-trip equal
+  OK    dtype complex64: both refuse at pack time   'Unsupported dtype: complex64' / 'Unsupported dtype: complex64'
+  OK    dtype object: both refuse at pack time   'Unsupported dtype: object' / 'Unsupported dtype: object'
+
+=== 2. loopback: metadata first, obs in, action + server_timing out ===
+  OK    metadata advertises model_id   stub-org/toy-wam
+  OK    metadata advertises the reset extension
+  OK    metadata advertises prompt rotation
+  OK    a dict prediction passes through unwrapped   ['action', 'server_timing']
+  OK    server_timing.infer_ms present
+  OK    prompt is NOT stripped from the observation (pi0-class reads it)
+  OK    no executed_action -> None
+  OK    executed_action reaches episode.predict as a kwarg
+  OK    and is removed from the observation
+  OK    second reply carries prev_total_ms
+  OK    a non-dict prediction is wrapped under openpi's 'actions' key
+  OK    GET /healthz answers 200 on the same port
+
+=== 3. episode boundaries: prompt change rotates, reset opens, same prompt keeps ===
+  OK    same prompt twice -> one episode   1
+  OK    a changed prompt -> a second episode   2
+  OK    the first episode was closed before the second opened
+  OK    the new episode is conditioned on the new prompt
+  OK    explicit reset -> a third episode
+  OK    reset conditioning passes through minus the flag   {'prompt': 'third task', 'save_visualization': False}
+  OK    reset replies {} (wan_va parity) + timing only   ['server_timing']
+  OK    a prompt-less observation keeps the current episode
+
+=== 4. a server exception is a typed error frame + close 1011, never a hang ===
+  OK    client raises RuntimeError carrying the server traceback
+  OK    the connection closes with INTERNAL_ERROR (1011)   1011
+  OK    the server survives one bad request and keeps serving
+
+=== 5. a busy port refuses at startup instead of half-starting ===
+  OK    bind failure names the port and the retry-forever trap   server did not come up: cannot bind ws://127.0.0.1:46225: [Errno 98] error while attempting to bind 
+
+=== 6. the real openpi-client 0.1.1 connects unchanged ===
+  OK    get_server_metadata sees our metadata frame
+  OK    infer round-trips   ['action', 'server_timing']
+  OK    its error path raises RuntimeError from our text frame
+
+==============================================================================
+PASS: the serving mode speaks openpi's wire protocol and fails loudly.
+
+STDERR
+request failed; error frame sent to ('127.0.0.1', 55916)
+Traceback (most recent call last):
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/../instinctflash/serving/ws_server.py", line 231, in _handler
+    response = await asyncio.get_running_loop().run_in_executor(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self._executor, self._step, obs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/../instinctflash/serving/ws_server.py", line 284, in _step
+    result = self._episode.predict(obs, executed_action=executed_action)
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/test_ws_server.py", line 66, in predict
+    raise ValueError("stub predict exploded on purpose")
+ValueError: stub predict exploded on purpose
+
+Exception in thread Thread-13 (serve_forever):
+Traceback (most recent call last):
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/../instinctflash/serving/ws_server.py", line 175, in run
+    async with ctx as server:
+               ^^^
+  File "/home/ubuntu/cosmos-framework/.venv/lib/python3.13/site-packages/websockets/asyncio/server.py", line 829, in __aenter__
+    return await self
+           ^^^^^^^^^^
+  File "/home/ubuntu/cosmos-framework/.venv/lib/python3.13/site-packages/websockets/asyncio/server.py", line 847, in __await_impl__
+    server = await self.create_server
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13/asyncio/base_events.py", line 1640, in create_server
+    raise OSError(err.errno, msg) from None
+OSError: [Errno 98] error while attempting to bind on address ('127.0.0.1', 46225): [errno 98] address already in use
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13/threading.py", line 1044, in _bootstrap_inner
+    self.run()
+    ~~~~~~~~^^
+  File "/home/ubuntu/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13/threading.py", line 995, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/../instinctflash/serving/ws_server.py", line 162, in serve_forever
+    asyncio.run(self.run())
+    ~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/ubuntu/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/home/ubuntu/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/home/ubuntu/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/../instinctflash/serving/ws_server.py", line 186, in run
+    raise RuntimeError(
+    ...<3 lines>...
+    ) from e
+RuntimeError: cannot bind ws://127.0.0.1:46225: [Errno 98] error while attempting to bind on address ('127.0.0.1', 46225): [errno 98] address already in use. Refusing to continue — openpi clients retry a dead port forever, so a half-started server is worse than a crashed one. Free the port or pass a different --serve.port.
+ERROR:instinctflash.serving.ws_server:request failed; error frame sent to ('127.0.0.1', 51420)
+Traceback (most recent call last):
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/../instinctflash/serving/ws_server.py", line 231, in _handler
+    response = await asyncio.get_running_loop().run_in_executor(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self._executor, self._step, obs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/../instinctflash/serving/ws_server.py", line 284, in _step
+    result = self._episode.predict(obs, executed_action=executed_action)
+  File "/tmp/ifl-clean-index-final-20260914-97w2lf6y/checkout/tests/test_ws_server.py", line 66, in predict
+    raise ValueError("stub predict exploded on purpose")
+ValueError: stub predict exploded on purpose
+
+

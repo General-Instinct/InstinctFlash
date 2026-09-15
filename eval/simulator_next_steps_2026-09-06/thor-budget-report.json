@@ -1,0 +1,274 @@
+{
+  "deployment_certified": false,
+  "measurements": {
+    "runtime_default": {
+      "file_sha256": "f5647ce65b6ccbd96908750b62be4f4605fdcbc70918478c5d8f4f93ebd59f93",
+      "path": "/home/ubuntu/ifl_eval/next_steps_20260906/thor/runtime_default.latency.json"
+    },
+    "stock": {
+      "file_sha256": "d8ddfe27a7b2fdde95139ba4e8eccb5d941f355ad014049f3bb75420f743870c",
+      "path": "/home/ubuntu/ifl_eval/next_steps_20260906/thor/stock.latency.json"
+    }
+  },
+  "scenarios": [
+    {
+      "assessments": [
+        {
+          "assessment": {
+            "budget": {
+              "assumption": "Illustrative 50-action execution schedule; actual deployment control/reaction budget has not been supplied.",
+              "control_hz": 20,
+              "executed_actions": 50,
+              "max_deadline_miss_fraction": 0,
+              "scenario_only": true,
+              "scheduling": "blocking",
+              "target_device": "Thor"
+            },
+            "count": 128,
+            "deadline_misses": 128,
+            "deadline_ms": 50.0,
+            "deployment_certified": false,
+            "max_ms": 787.2396919992752,
+            "measurement_sha256": "5749a6029ab61ddcfeddc51d5b129895ae632fff193b5450836be913134d04f5",
+            "meets_observed_budget": false,
+            "miss_fraction": 1.0,
+            "p50_ms": 717.8288644936401,
+            "p95_ms": 735.9174993995111,
+            "p99_ms": 744.1007540782448,
+            "p99_sample_warning": false,
+            "schema_version": 1,
+            "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+          },
+          "mode": "stock",
+          "tier": "BASELINE"
+        },
+        {
+          "assessment": {
+            "budget": {
+              "assumption": "Illustrative 50-action execution schedule; actual deployment control/reaction budget has not been supplied.",
+              "control_hz": 20,
+              "executed_actions": 50,
+              "max_deadline_miss_fraction": 0,
+              "scenario_only": true,
+              "scheduling": "blocking",
+              "target_device": "Thor"
+            },
+            "count": 128,
+            "deadline_misses": 128,
+            "deadline_ms": 50.0,
+            "deployment_certified": false,
+            "max_ms": 768.6333539895713,
+            "measurement_sha256": "7829fa64b177dfed2826ca08561d1173119ebef987bde71b15b96c71533ebb01",
+            "meets_observed_budget": false,
+            "miss_fraction": 1.0,
+            "p50_ms": 735.5427714937832,
+            "p95_ms": 748.4576151473448,
+            "p99_ms": 760.6450285221217,
+            "p99_sample_warning": false,
+            "schema_version": 1,
+            "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+          },
+          "mode": "runtime_default",
+          "tier": "NUMERIC"
+        }
+      ],
+      "decision": "evaluate_minimum_quality_loss_only_if_no_semantics_preserving_option_meets_budget",
+      "name": "20hz-blocking"
+    },
+    {
+      "assessments": [
+        {
+          "assessment": {
+            "budget": {
+              "assumption": "Illustrative 50-action execution schedule; actual deployment control/reaction budget has not been supplied.",
+              "control_hz": 20,
+              "executed_actions": 50,
+              "max_deadline_miss_fraction": 0,
+              "scenario_only": true,
+              "scheduling": "pipelined",
+              "target_device": "Thor"
+            },
+            "count": 128,
+            "deadline_misses": 0,
+            "deadline_ms": 2500.0,
+            "deployment_certified": false,
+            "max_ms": 787.2396919992752,
+            "measurement_sha256": "5749a6029ab61ddcfeddc51d5b129895ae632fff193b5450836be913134d04f5",
+            "meets_observed_budget": true,
+            "miss_fraction": 0.0,
+            "p50_ms": 717.8288644936401,
+            "p95_ms": 735.9174993995111,
+            "p99_ms": 744.1007540782448,
+            "p99_sample_warning": false,
+            "schema_version": 1,
+            "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+          },
+          "mode": "stock",
+          "tier": "BASELINE"
+        },
+        {
+          "assessment": {
+            "budget": {
+              "assumption": "Illustrative 50-action execution schedule; actual deployment control/reaction budget has not been supplied.",
+              "control_hz": 20,
+              "executed_actions": 50,
+              "max_deadline_miss_fraction": 0,
+              "scenario_only": true,
+              "scheduling": "pipelined",
+              "target_device": "Thor"
+            },
+            "count": 128,
+            "deadline_misses": 0,
+            "deadline_ms": 2500.0,
+            "deployment_certified": false,
+            "max_ms": 768.6333539895713,
+            "measurement_sha256": "7829fa64b177dfed2826ca08561d1173119ebef987bde71b15b96c71533ebb01",
+            "meets_observed_budget": true,
+            "miss_fraction": 0.0,
+            "p50_ms": 735.5427714937832,
+            "p95_ms": 748.4576151473448,
+            "p99_ms": 760.6450285221217,
+            "p99_sample_warning": false,
+            "schema_version": 1,
+            "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+          },
+          "mode": "runtime_default",
+          "tier": "NUMERIC"
+        }
+      ],
+      "decision": "baseline_meets_observed_budget_no_lossy_optimization_needed",
+      "name": "20hz-pipelined"
+    },
+    {
+      "assessments": [
+        {
+          "assessment": {
+            "budget": {
+              "assumption": "Illustrative 50-action execution schedule; actual deployment control/reaction budget has not been supplied.",
+              "control_hz": 50,
+              "executed_actions": 50,
+              "max_deadline_miss_fraction": 0,
+              "scenario_only": true,
+              "scheduling": "blocking",
+              "target_device": "Thor"
+            },
+            "count": 128,
+            "deadline_misses": 128,
+            "deadline_ms": 20.0,
+            "deployment_certified": false,
+            "max_ms": 787.2396919992752,
+            "measurement_sha256": "5749a6029ab61ddcfeddc51d5b129895ae632fff193b5450836be913134d04f5",
+            "meets_observed_budget": false,
+            "miss_fraction": 1.0,
+            "p50_ms": 717.8288644936401,
+            "p95_ms": 735.9174993995111,
+            "p99_ms": 744.1007540782448,
+            "p99_sample_warning": false,
+            "schema_version": 1,
+            "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+          },
+          "mode": "stock",
+          "tier": "BASELINE"
+        },
+        {
+          "assessment": {
+            "budget": {
+              "assumption": "Illustrative 50-action execution schedule; actual deployment control/reaction budget has not been supplied.",
+              "control_hz": 50,
+              "executed_actions": 50,
+              "max_deadline_miss_fraction": 0,
+              "scenario_only": true,
+              "scheduling": "blocking",
+              "target_device": "Thor"
+            },
+            "count": 128,
+            "deadline_misses": 128,
+            "deadline_ms": 20.0,
+            "deployment_certified": false,
+            "max_ms": 768.6333539895713,
+            "measurement_sha256": "7829fa64b177dfed2826ca08561d1173119ebef987bde71b15b96c71533ebb01",
+            "meets_observed_budget": false,
+            "miss_fraction": 1.0,
+            "p50_ms": 735.5427714937832,
+            "p95_ms": 748.4576151473448,
+            "p99_ms": 760.6450285221217,
+            "p99_sample_warning": false,
+            "schema_version": 1,
+            "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+          },
+          "mode": "runtime_default",
+          "tier": "NUMERIC"
+        }
+      ],
+      "decision": "evaluate_minimum_quality_loss_only_if_no_semantics_preserving_option_meets_budget",
+      "name": "50hz-blocking"
+    },
+    {
+      "assessments": [
+        {
+          "assessment": {
+            "budget": {
+              "assumption": "Illustrative 50-action execution schedule; actual deployment control/reaction budget has not been supplied.",
+              "control_hz": 50,
+              "executed_actions": 50,
+              "max_deadline_miss_fraction": 0,
+              "scenario_only": true,
+              "scheduling": "pipelined",
+              "target_device": "Thor"
+            },
+            "count": 128,
+            "deadline_misses": 0,
+            "deadline_ms": 1000.0,
+            "deployment_certified": false,
+            "max_ms": 787.2396919992752,
+            "measurement_sha256": "5749a6029ab61ddcfeddc51d5b129895ae632fff193b5450836be913134d04f5",
+            "meets_observed_budget": true,
+            "miss_fraction": 0.0,
+            "p50_ms": 717.8288644936401,
+            "p95_ms": 735.9174993995111,
+            "p99_ms": 744.1007540782448,
+            "p99_sample_warning": false,
+            "schema_version": 1,
+            "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+          },
+          "mode": "stock",
+          "tier": "BASELINE"
+        },
+        {
+          "assessment": {
+            "budget": {
+              "assumption": "Illustrative 50-action execution schedule; actual deployment control/reaction budget has not been supplied.",
+              "control_hz": 50,
+              "executed_actions": 50,
+              "max_deadline_miss_fraction": 0,
+              "scenario_only": true,
+              "scheduling": "pipelined",
+              "target_device": "Thor"
+            },
+            "count": 128,
+            "deadline_misses": 0,
+            "deadline_ms": 1000.0,
+            "deployment_certified": false,
+            "max_ms": 768.6333539895713,
+            "measurement_sha256": "7829fa64b177dfed2826ca08561d1173119ebef987bde71b15b96c71533ebb01",
+            "meets_observed_budget": true,
+            "miss_fraction": 0.0,
+            "p50_ms": 735.5427714937832,
+            "p95_ms": 748.4576151473448,
+            "p99_ms": 760.6450285221217,
+            "p99_sample_warning": false,
+            "schema_version": 1,
+            "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+          },
+          "mode": "runtime_default",
+          "tier": "NUMERIC"
+        }
+      ],
+      "decision": "baseline_meets_observed_budget_no_lossy_optimization_needed",
+      "name": "50hz-pipelined"
+    }
+  ],
+  "schema_version": 1,
+  "scope": "Observed native policy calls under illustrative budgets; no sensor/actuator or sustained controller certification",
+  "synthetic": false
+}

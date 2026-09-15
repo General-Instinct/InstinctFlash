@@ -1,0 +1,53 @@
+{
+  "status": "passed",
+  "scope": "Static function comparison against frozen Thor source; not a GPU recapture",
+  "changed_existing_files": [
+    {
+      "file": "examples/dreamzero/dreamzero_iwm/adapter.py",
+      "frozen_sha256": "7c091da3f4566f029ed398eea08872ec76bbe37627b39e405f573e1e0769cb01",
+      "current_sha256": "df0403d3e50debc32572c0168d7d67ecf66babaa6c910cd2ccf0c28bb05c4897",
+      "changed_functions": [
+        "_DreamZeroLoop.close"
+      ]
+    },
+    {
+      "file": "examples/dreamzero/dreamzero_iwm/dynamic_cache.py",
+      "frozen_sha256": "965c2c3cebc833f79979c06ba557ebf3cd9955b35343ca9c582116e8d68957ff",
+      "current_sha256": "66bb31918617430e68b9ebc3768dd7b4e0ecd541c30c2313e00a2272d4343db3",
+      "changed_functions": [
+        "DreamZeroDynamicCache.close",
+        "DreamZeroDynamicCache.closed"
+      ]
+    },
+    {
+      "file": "instinctflash/cli.py",
+      "frozen_sha256": "9ec5e2b9530faff68f69e1bb05970cbfbedd7d3b2b20e8d40d0dd2fc06e8aaba",
+      "current_sha256": "d8fe385ebd9994e076240ade369b8cccbdc403f28a0bce70283ab1cf417bd9c2",
+      "changed_functions": [
+        "_serve_preflight"
+      ]
+    },
+    {
+      "file": "instinctflash/runtime/execution.py",
+      "frozen_sha256": "72e9628cd5434d9ccd90d92edcd3d66646c1d0b2b01f359ae9899a7ac8a6288d",
+      "current_sha256": "27387e1b240a54cb4e525902fe61c6d12e2db69c2a1eece6346dfbd910b35db2",
+      "changed_functions": [
+        "InProcessBackend.close"
+      ]
+    },
+    {
+      "file": "instinctflash/runtime/facade.py",
+      "frozen_sha256": "b57e51d5a90312677fe6789d78b2c24bcd0aa563ed66564abd2e81beb6d1c877",
+      "current_sha256": "e019b4d353544ed957842a2d5f2ce43cb3fec50bf7751990978e90bb464385a1",
+      "changed_functions": [
+        "Runtime.backend_stats",
+        "Runtime.execution_policy"
+      ]
+    }
+  ],
+  "new_runtime_files": {
+    "instinctflash/runtime/telemetry.py": "01e8e6e134a1b9fac17f3951f44d2cbc7c42168e4e10090556ffccbbeb8d51fa"
+  },
+  "successful_predict_and_native_sampling_functions_unchanged": true,
+  "cpu_validation": "cpu_validation.json"
+}

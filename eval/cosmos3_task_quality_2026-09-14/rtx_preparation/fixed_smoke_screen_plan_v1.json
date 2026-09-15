@@ -1,0 +1,521 @@
+{
+  "budget_evidence": {
+    "excluded_costs": [
+      "model server startup and teardown",
+      "copy/archive/ACK/reclaim",
+      "new engineering and admission preparation",
+      "unmeasured runtime slowdowns"
+    ],
+    "method": "For each cell, pooled measured native env time/step and native policy-plus-RPC time/chunk, applied to full new native caps, plus six times maximum measured cold process overhead. No assumption of early success.",
+    "not_a_hard_completion_guarantee": true,
+    "per_cell_full_cap_projection": [
+      {
+        "cell": "edge-eager_native",
+        "completion_sources": [
+          {
+            "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/paired_smoke_v2/episodes/edge-eager_native/BananaInBowlTask/renderer/completion.json",
+            "sha256": "e7af487afe73b138e1c962d7f7982910cf550e170f7d089fa8f837d3dd0db017"
+          },
+          {
+            "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/paired_smoke_v2/episodes/edge-eager_native/RubiksCubeAndBananaTask/renderer/completion.json",
+            "sha256": "76eafa7f312f982fbed3517a3782abfecd64b3f97e1aff3db75f82460578b0e4"
+          }
+        ],
+        "env_seconds_per_step": 0.16413748378728926,
+        "max_measured_process_overhead_seconds": 67.6612212486267,
+        "native_policy_rpc_seconds_per_chunk": 5.31672,
+        "projected_full_native_cap_process_seconds": 2063.806352238842
+      },
+      {
+        "cell": "edge-runtime_selected",
+        "completion_sources": [
+          {
+            "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/paired_smoke_v2/episodes/edge-runtime_selected/BananaInBowlTask/renderer/completion.json",
+            "sha256": "3f0f422ac963b557f6b121b60430c96369df3d600e6e38acdc0a8cf27780c5f7"
+          },
+          {
+            "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/paired_smoke_v2/episodes/edge-runtime_selected/RubiksCubeAndBananaTask/renderer/completion.json",
+            "sha256": "2d230093a80df9b6ca139bb24f8f9228ba4023d982f0a2bc92379e46a50c27c6"
+          }
+        ],
+        "env_seconds_per_step": 0.1652369263607257,
+        "max_measured_process_overhead_seconds": 64.11786228942871,
+        "native_policy_rpc_seconds_per_chunk": 2.744966666666666,
+        "projected_full_native_cap_process_seconds": 1639.0796592221645
+      },
+      {
+        "cell": "nano-eager_native",
+        "completion_sources": [
+          {
+            "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/paired_smoke_v2/episodes/nano-eager_native/BananaInBowlTask/renderer/completion.json",
+            "sha256": "66919cb0d72a30c3ea67655c403ef3de9d5b88c9d3a10bff0ef719720f8f0b12"
+          },
+          {
+            "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/paired_smoke_v2/episodes/nano-eager_native/RubiksCubeAndBananaTask/renderer/completion.json",
+            "sha256": "23717a9b3e5ba5ee4666ce06d298296d610218d40785993ed019db10d24f4862"
+          }
+        ],
+        "env_seconds_per_step": 0.16475919117647056,
+        "max_measured_process_overhead_seconds": 64.04984795761109,
+        "native_policy_rpc_seconds_per_chunk": 11.081444444444445,
+        "projected_full_native_cap_process_seconds": 2961.8067507358624
+      },
+      {
+        "cell": "nano-runtime_selected",
+        "completion_sources": [
+          {
+            "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/paired_smoke_v2/episodes/nano-runtime_selected/BananaInBowlTask/renderer/completion.json",
+            "sha256": "fb2fe176e2d62207df820cb61166a7a887f58c61f6ddf2b5f67e26652a6669eb"
+          },
+          {
+            "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/paired_smoke_v2/episodes/nano-runtime_selected/RubiksCubeAndBananaTask/renderer/completion.json",
+            "sha256": "731cf83725b0a412d668bcd06c09ac44123fcb01edf8e37699714b85bd65e290"
+          }
+        ],
+        "env_seconds_per_step": 0.16385263157894736,
+        "max_measured_process_overhead_seconds": 64.96642109680175,
+        "native_policy_rpc_seconds_per_chunk": 6.73,
+        "projected_full_native_cap_process_seconds": 2270.9390528966
+      }
+    ],
+    "projected_all24_full_cap_episode_process_hours": 2.4821199486370746,
+    "projected_all24_full_cap_episode_process_seconds": 8935.63181509347,
+    "remaining_4hour_allowance_before_considering_already_elapsed_time_seconds": 5464.368184906531,
+    "source_smoke_records": {
+      "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/paired_smoke_v2/records.json",
+      "sha256": "852d12737bad6fc623751891ef7442d949e6e4e728178edd8a59e55472cea0a6"
+    }
+  },
+  "created_at_utc": "2026-09-14T23:14:03.101334+00:00",
+  "deadline": {
+    "automatic_retry_or_extension": false,
+    "clock_rule": "Wall-clock cutoff independent of success or gate value",
+    "cutoff_result": "Preserve all completed results and partial native/transport evidence; mark interrupted or missing pairs incomplete, never false successes/failures; publish honest partial SCREEN.",
+    "fixed_cutoff_utc": "2026-09-15T03:10:43Z",
+    "user_request_start_utc": "2026-09-14T23:10:43Z",
+    "wall_budget_seconds": 14400
+  },
+  "execution_priority": {
+    "cell_order": [
+      "edge-eager_native",
+      "edge-runtime_selected",
+      "nano-eager_native",
+      "nano-runtime_selected"
+    ],
+    "family_order": [
+      "edge",
+      "nano"
+    ],
+    "reason": "Prospective operational priority; no outcome-based scheduling"
+  },
+  "freshness_check": {
+    "local_completed_records_examined": [
+      {
+        "arm": "baseline",
+        "family": "edge",
+        "pair_id": "formal/AnimalsInBinTask/0000",
+        "scene_seed": 1342177280,
+        "source": {
+          "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/paired_formal_v1/batches/0000/episodes/edge-eager_native/formal/AnimalsInBinTask/0000/collected_record.json",
+          "sha256": "039bf5e6cb95fe38efd65b6a255833177b8795b85fd8e836e643ee91bfc55671"
+        }
+      },
+      {
+        "arm": "baseline",
+        "family": "edge",
+        "pair_id": "formal/AnimalsInBinTask/0001",
+        "scene_seed": 1342177281,
+        "source": {
+          "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/paired_formal_v2/batches/0000/episodes/edge-eager_native/formal/AnimalsInBinTask/0001/collected_record.json",
+          "sha256": "d43d0edd75a0863fc516411708504dfb12d4b6e0aef6cb6f419e90b51e82f402"
+        }
+      }
+    ],
+    "local_live_status_examined": [
+      {
+        "cell": "edge-eager_native",
+        "completed_records": 0,
+        "pair_id": "formal/AnimalsInBinTask/0000",
+        "source": {
+          "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/paired_formal_v1/live_status.json",
+          "sha256": "78f3c13fd46947dd1d86e16b680a8710b737f2314ee72e22c277013f1a33bee3"
+        },
+        "status": "failed"
+      },
+      {
+        "cell": "edge-eager_native",
+        "completed_records": 2,
+        "pair_id": "formal/AnimalsInBinTask/0002",
+        "source": {
+          "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/paired_formal_v2/live_status.json",
+          "sha256": "dbbf5f912b108b6ba36c8c740e408e1ecc92255ce0a303979063b5e2c66eaa05"
+        },
+        "status": "running_episode"
+      }
+    ],
+    "new_native_scene_quality_evidence_reused": false,
+    "old_smoke_scene_seed_namespace": "0x10000000",
+    "old_smoke_scene_seeds_disjoint": true,
+    "sampled_at_utc": "2026-09-14T23:14:03.101862+00:00",
+    "scope": "Local archived collected records and local current controller status only; root must recheck stopped/current remote jobs before launch.",
+    "selected_pairs_found_in_local_completed_records": [],
+    "selected_pairs_match_local_active_status": false,
+    "selected_scene_seed_namespace": "0x50000000"
+  },
+  "guardrails": {
+    "launched_by_this_artifact": false,
+    "native_driver_and_source_edits_required": false,
+    "new_screen_controller_and_complete_subset_report_required": true,
+    "new_screen_plan_sha256_is_separate_provenance": true,
+    "original_full_protocol_or_records_rewritten": false,
+    "record_native_protocol_sha256_must_remain_original": true,
+    "task_quality_validated": false
+  },
+  "jobs_in_prospective_order": [
+    {
+      "arm": "baseline",
+      "cell": "edge-eager_native",
+      "execution_binding_sha256": "ed98ca87d80367395688afaf1fd9712e21853440182abe9a50d9d1d4310d005b",
+      "family": "edge",
+      "ordinal": 0,
+      "pair_id": "formal/BananaInBowlTask/0000"
+    },
+    {
+      "arm": "baseline",
+      "cell": "edge-eager_native",
+      "execution_binding_sha256": "ed98ca87d80367395688afaf1fd9712e21853440182abe9a50d9d1d4310d005b",
+      "family": "edge",
+      "ordinal": 1,
+      "pair_id": "formal/BananaInBowlTask/0001"
+    },
+    {
+      "arm": "baseline",
+      "cell": "edge-eager_native",
+      "execution_binding_sha256": "ed98ca87d80367395688afaf1fd9712e21853440182abe9a50d9d1d4310d005b",
+      "family": "edge",
+      "ordinal": 2,
+      "pair_id": "formal/BananaInBowlTask/0002"
+    },
+    {
+      "arm": "baseline",
+      "cell": "edge-eager_native",
+      "execution_binding_sha256": "ed98ca87d80367395688afaf1fd9712e21853440182abe9a50d9d1d4310d005b",
+      "family": "edge",
+      "ordinal": 3,
+      "pair_id": "formal/RubiksCubeAndBananaTask/0000"
+    },
+    {
+      "arm": "baseline",
+      "cell": "edge-eager_native",
+      "execution_binding_sha256": "ed98ca87d80367395688afaf1fd9712e21853440182abe9a50d9d1d4310d005b",
+      "family": "edge",
+      "ordinal": 4,
+      "pair_id": "formal/RubiksCubeAndBananaTask/0001"
+    },
+    {
+      "arm": "baseline",
+      "cell": "edge-eager_native",
+      "execution_binding_sha256": "ed98ca87d80367395688afaf1fd9712e21853440182abe9a50d9d1d4310d005b",
+      "family": "edge",
+      "ordinal": 5,
+      "pair_id": "formal/RubiksCubeAndBananaTask/0002"
+    },
+    {
+      "arm": "candidate",
+      "cell": "edge-runtime_selected",
+      "execution_binding_sha256": "af98b6e49af3d5e4a0bf308cd30226c0954e86474f98b10c7c931382af94d987",
+      "family": "edge",
+      "ordinal": 6,
+      "pair_id": "formal/BananaInBowlTask/0000"
+    },
+    {
+      "arm": "candidate",
+      "cell": "edge-runtime_selected",
+      "execution_binding_sha256": "af98b6e49af3d5e4a0bf308cd30226c0954e86474f98b10c7c931382af94d987",
+      "family": "edge",
+      "ordinal": 7,
+      "pair_id": "formal/BananaInBowlTask/0001"
+    },
+    {
+      "arm": "candidate",
+      "cell": "edge-runtime_selected",
+      "execution_binding_sha256": "af98b6e49af3d5e4a0bf308cd30226c0954e86474f98b10c7c931382af94d987",
+      "family": "edge",
+      "ordinal": 8,
+      "pair_id": "formal/BananaInBowlTask/0002"
+    },
+    {
+      "arm": "candidate",
+      "cell": "edge-runtime_selected",
+      "execution_binding_sha256": "af98b6e49af3d5e4a0bf308cd30226c0954e86474f98b10c7c931382af94d987",
+      "family": "edge",
+      "ordinal": 9,
+      "pair_id": "formal/RubiksCubeAndBananaTask/0000"
+    },
+    {
+      "arm": "candidate",
+      "cell": "edge-runtime_selected",
+      "execution_binding_sha256": "af98b6e49af3d5e4a0bf308cd30226c0954e86474f98b10c7c931382af94d987",
+      "family": "edge",
+      "ordinal": 10,
+      "pair_id": "formal/RubiksCubeAndBananaTask/0001"
+    },
+    {
+      "arm": "candidate",
+      "cell": "edge-runtime_selected",
+      "execution_binding_sha256": "af98b6e49af3d5e4a0bf308cd30226c0954e86474f98b10c7c931382af94d987",
+      "family": "edge",
+      "ordinal": 11,
+      "pair_id": "formal/RubiksCubeAndBananaTask/0002"
+    },
+    {
+      "arm": "baseline",
+      "cell": "nano-eager_native",
+      "execution_binding_sha256": "07e77f2898cf2e0be0644c6ac69859da3e24d52dbd1319799d1aec53d506d114",
+      "family": "nano",
+      "ordinal": 12,
+      "pair_id": "formal/BananaInBowlTask/0000"
+    },
+    {
+      "arm": "baseline",
+      "cell": "nano-eager_native",
+      "execution_binding_sha256": "07e77f2898cf2e0be0644c6ac69859da3e24d52dbd1319799d1aec53d506d114",
+      "family": "nano",
+      "ordinal": 13,
+      "pair_id": "formal/BananaInBowlTask/0001"
+    },
+    {
+      "arm": "baseline",
+      "cell": "nano-eager_native",
+      "execution_binding_sha256": "07e77f2898cf2e0be0644c6ac69859da3e24d52dbd1319799d1aec53d506d114",
+      "family": "nano",
+      "ordinal": 14,
+      "pair_id": "formal/BananaInBowlTask/0002"
+    },
+    {
+      "arm": "baseline",
+      "cell": "nano-eager_native",
+      "execution_binding_sha256": "07e77f2898cf2e0be0644c6ac69859da3e24d52dbd1319799d1aec53d506d114",
+      "family": "nano",
+      "ordinal": 15,
+      "pair_id": "formal/RubiksCubeAndBananaTask/0000"
+    },
+    {
+      "arm": "baseline",
+      "cell": "nano-eager_native",
+      "execution_binding_sha256": "07e77f2898cf2e0be0644c6ac69859da3e24d52dbd1319799d1aec53d506d114",
+      "family": "nano",
+      "ordinal": 16,
+      "pair_id": "formal/RubiksCubeAndBananaTask/0001"
+    },
+    {
+      "arm": "baseline",
+      "cell": "nano-eager_native",
+      "execution_binding_sha256": "07e77f2898cf2e0be0644c6ac69859da3e24d52dbd1319799d1aec53d506d114",
+      "family": "nano",
+      "ordinal": 17,
+      "pair_id": "formal/RubiksCubeAndBananaTask/0002"
+    },
+    {
+      "arm": "candidate",
+      "cell": "nano-runtime_selected",
+      "execution_binding_sha256": "4cce6a18537e5e9640821a0c196a308a5521b94c4fb5bc72b1c0cf11a616b53e",
+      "family": "nano",
+      "ordinal": 18,
+      "pair_id": "formal/BananaInBowlTask/0000"
+    },
+    {
+      "arm": "candidate",
+      "cell": "nano-runtime_selected",
+      "execution_binding_sha256": "4cce6a18537e5e9640821a0c196a308a5521b94c4fb5bc72b1c0cf11a616b53e",
+      "family": "nano",
+      "ordinal": 19,
+      "pair_id": "formal/BananaInBowlTask/0001"
+    },
+    {
+      "arm": "candidate",
+      "cell": "nano-runtime_selected",
+      "execution_binding_sha256": "4cce6a18537e5e9640821a0c196a308a5521b94c4fb5bc72b1c0cf11a616b53e",
+      "family": "nano",
+      "ordinal": 20,
+      "pair_id": "formal/BananaInBowlTask/0002"
+    },
+    {
+      "arm": "candidate",
+      "cell": "nano-runtime_selected",
+      "execution_binding_sha256": "4cce6a18537e5e9640821a0c196a308a5521b94c4fb5bc72b1c0cf11a616b53e",
+      "family": "nano",
+      "ordinal": 21,
+      "pair_id": "formal/RubiksCubeAndBananaTask/0000"
+    },
+    {
+      "arm": "candidate",
+      "cell": "nano-runtime_selected",
+      "execution_binding_sha256": "4cce6a18537e5e9640821a0c196a308a5521b94c4fb5bc72b1c0cf11a616b53e",
+      "family": "nano",
+      "ordinal": 22,
+      "pair_id": "formal/RubiksCubeAndBananaTask/0001"
+    },
+    {
+      "arm": "candidate",
+      "cell": "nano-runtime_selected",
+      "execution_binding_sha256": "4cce6a18537e5e9640821a0c196a308a5521b94c4fb5bc72b1c0cf11a616b53e",
+      "family": "nano",
+      "ordinal": 23,
+      "pair_id": "formal/RubiksCubeAndBananaTask/0002"
+    }
+  ],
+  "kind": "cosmos_robolab_fixed_smoke_screen_plan_v1",
+  "native_full_limit_totals": {
+    "all24_episodes": {
+      "chunks": 636,
+      "steps": 19800
+    },
+    "native_caps_shortened": false,
+    "per_cell_6_episodes": {
+      "chunks": 159,
+      "steps": 4950
+    },
+    "per_family_12_episodes": {
+      "chunks": 318,
+      "steps": 9900
+    },
+    "per_task_episode": {
+      "BananaInBowlTask": {
+        "chunks": 24,
+        "native_seconds": 50,
+        "steps": 750
+      },
+      "RubiksCubeAndBananaTask": {
+        "chunks": 29,
+        "native_seconds": 60,
+        "steps": 900
+      }
+    }
+  },
+  "native_protocol": {
+    "canonical_sha256": "efb9f47924a83eb2d621aacb8200bd613886bef68bc9522be28f989bc7ee6e88",
+    "local": "/home/ubuntu/InstinctFlash/eval/cosmos3_task_quality_2026-09-14/rtx_preparation/robolab_formal_live_bindings_v3.json",
+    "preserve_all_original1200_pairs": true,
+    "selected_pair_rows_are_exact_original_copies": true,
+    "sha256": "7e445daf605c1eba60ae46236448878b6967600701f63dbb431d91b2e91cc336"
+  },
+  "protocol_api": {
+    "local": "/home/ubuntu/InstinctFlash/benchmarks/vla/robolab_protocol.py",
+    "sha256": "a5522811a48f2710159f80ca9de38da95efada618a15bf872442eb3b32a1c141"
+  },
+  "roster_basis": {
+    "kind": "existing_predeclared_smoke_task_roster",
+    "new_tasks_added": 0,
+    "source_symbol": "benchmarks.vla.robolab_protocol.SMOKE_TASKS",
+    "task_ids": [
+      "BananaInBowlTask",
+      "RubiksCubeAndBananaTask"
+    ],
+    "task_selection_uses_current_outcomes": false,
+    "task_selection_uses_measured_latency": false
+  },
+  "schema_version": 1,
+  "screen_id": "cosmos_checkpoint_smoke_screen_v1",
+  "screen_reporting": {
+    "absolute_counts": "Display completed baseline/candidate successes and completed/expected denominators, task-level counts, and all incomplete/cancelled status.",
+    "display_label": "SMOKE SCREEN",
+    "fixed_family_gate": {
+      "decision": "lower_bound > -0.05",
+      "evaluate_only_with_exactly6_complete_paired_keys": true,
+      "interval": "tango_one_sided95",
+      "margin": -0.05,
+      "task_collapse_gate": false,
+      "threshold_relaxed": false
+    },
+    "full_formal_certificate_allowed": false,
+    "full_formal_report_api_must_not_be_called": true,
+    "interpretation": "Severely underpowered for small losses. Perfect agreement cannot pass5pp; extreme improvement can satisfy the nominal numerical gate, but cannot change SCREEN scope into a formal certificate.",
+    "nominal_interval": "Tango one-sided95 lower and upper bounds on candidate minus baseline; the pair is central90, not central95.",
+    "paired_counts": "Display concordant and discordant counts on exact matched keys; never silently reduce planned N.",
+    "partial_family": "PENDING_INCOMPLETE_COVERAGE; any available-pair interval is descriptive only and never evaluated as the fixed-N gate.",
+    "perfect_agreement_passes_minus5pp": false,
+    "publish_each_family_independently": true,
+    "six_perfectly_agreeing_pairs_lower_bound": -0.3107839822769165
+  },
+  "selection": {
+    "episode_indices": [
+      0,
+      1,
+      2
+    ],
+    "episodes": [
+      {
+        "episode_index": 0,
+        "max_episode_steps": 750,
+        "max_policy_chunks": 24,
+        "model_seed_base": 1347420160,
+        "pair_id": "formal/BananaInBowlTask/0000",
+        "scene_seed": 1342181376,
+        "task_id": "BananaInBowlTask"
+      },
+      {
+        "episode_index": 1,
+        "max_episode_steps": 750,
+        "max_policy_chunks": 24,
+        "model_seed_base": 1347421184,
+        "pair_id": "formal/BananaInBowlTask/0001",
+        "scene_seed": 1342181377,
+        "task_id": "BananaInBowlTask"
+      },
+      {
+        "episode_index": 2,
+        "max_episode_steps": 750,
+        "max_policy_chunks": 24,
+        "model_seed_base": 1347422208,
+        "pair_id": "formal/BananaInBowlTask/0002",
+        "scene_seed": 1342181378,
+        "task_id": "BananaInBowlTask"
+      },
+      {
+        "episode_index": 0,
+        "max_episode_steps": 900,
+        "max_policy_chunks": 29,
+        "model_seed_base": 1431306240,
+        "pair_id": "formal/RubiksCubeAndBananaTask/0000",
+        "scene_seed": 1342263296,
+        "task_id": "RubiksCubeAndBananaTask"
+      },
+      {
+        "episode_index": 1,
+        "max_episode_steps": 900,
+        "max_policy_chunks": 29,
+        "model_seed_base": 1431307264,
+        "pair_id": "formal/RubiksCubeAndBananaTask/0001",
+        "scene_seed": 1342263297,
+        "task_id": "RubiksCubeAndBananaTask"
+      },
+      {
+        "episode_index": 2,
+        "max_episode_steps": 900,
+        "max_policy_chunks": 29,
+        "model_seed_base": 1431308288,
+        "pair_id": "formal/RubiksCubeAndBananaTask/0002",
+        "scene_seed": 1342263298,
+        "task_id": "RubiksCubeAndBananaTask"
+      }
+    ],
+    "fixed_pairs_per_family": 6,
+    "native_episodes_per_family": 12,
+    "old_smoke_or_formal_outcomes_adopted": 0,
+    "pair_ids": [
+      "formal/BananaInBowlTask/0000",
+      "formal/BananaInBowlTask/0001",
+      "formal/BananaInBowlTask/0002",
+      "formal/RubiksCubeAndBananaTask/0000",
+      "formal/RubiksCubeAndBananaTask/0001",
+      "formal/RubiksCubeAndBananaTask/0002"
+    ],
+    "task_ids": [
+      "BananaInBowlTask",
+      "RubiksCubeAndBananaTask"
+    ],
+    "total_native_episodes": 24
+  },
+  "status": "prospective_fixed_SCREEN_not_formal_certificate"
+}

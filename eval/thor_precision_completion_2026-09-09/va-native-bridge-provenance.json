@@ -1,0 +1,47 @@
+{
+  "native_source": "/home/guanming/lingbot-va/wan_va/wan_va_server.py",
+  "native_source_sha256": "9c2a427611db487fea5cf40f184b713bf2088e533990ee00fdcd020d2668b4bf",
+  "bridge_source_sha256": "cb21a06100d78e9e25478b05b9af790ffb1660f8ac25128ad47f53b4b199b32b",
+  "environment": "/home/guanming/venv_va/bin/python",
+  "precision_settings": {
+    "matmul_tf32": false,
+    "cudnn_tf32": false,
+    "cudnn_benchmark": false
+  },
+  "native_components": "BF16 native T5 and streaming VAE on GPU; native action pre/postprocessing; fsdp_elision only",
+  "scope": "RoboTwin direct native conditioning bridge, recorded observations and open-loop history; public Runtime and closed-loop quality not certified",
+  "files": [
+    {
+      "path": "va-native-bridge-actions.npz",
+      "sha256": "c58701d54a97150861574472a8f2381d161a92f8c5a94b1a1bc1f632e0a485e1"
+    },
+    {
+      "path": "va-native-bridge-inputs-actions.npz",
+      "sha256": "3770d01155f967e2f60695a23a257f60d3bd25df6cd60b90cc397e9f7e08c483"
+    },
+    {
+      "path": "va-native-bridge-inputs.json",
+      "sha256": "343e5a5e84a3981d6abb2e42a800a739b1f710aa2417b20821bde8ee6f92ba70"
+    },
+    {
+      "path": "va-native-bridge-inputs.log",
+      "sha256": "31412eb0cbdca9dcf74c824a698fba8398e52bc9daf337c23a51bde9368d31bc"
+    },
+    {
+      "path": "va-native-bridge.json",
+      "sha256": "308a2ea4eb13bb8f1ef9c26db969035f747499391b7dc867488051d095f8dd54"
+    },
+    {
+      "path": "va-native-bridge.log",
+      "sha256": "c1f5d2d1c4979a4ca9987452a8123c0d14f998eacfca9d7b9db4b281a931837e"
+    },
+    {
+      "path": "probe_va_native_bridge.py",
+      "sha256": "b891c8536051cccfaa7c97dc9d26e8df00dc218bf1ebe3c03f94b43f720c64a8"
+    },
+    {
+      "path": "probe_va_native_bridge_inputs.py",
+      "sha256": "e780969fd3cbb724a9c1b55d58864665efd5cce7aed6fe49ec2236250ef66096"
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+InstinctFlash serve preflight for 'lerobot/pi05_libero_finetuned_v044' (declaration-only; no weights fetched)
+  device      : NVIDIA Thor  sm110  132 GB
+  features    : cublas, cuda, cuda_graphs, cudnn, fp8, nvfp4, tma, triton, wgmma
+  class       : bandwidth-bound-edge — Thor (sm110): capture benefit depends on the model and execution scope; the matched 2026-09-09 study supersedes the older pi05-only timing. Capture defaults require family/operating-point evidence
+  precision   : fp8
+  declaration : /home/guanming/.cache/instinctflash/declared/lerobot__pi05_libero_finetuned_v044/0812b08aa6b16dd6932969debb4ebb8c96bdd1c4d047d86d0c759ffb0c10ed76
+  backbone    : pi05
+  servable    : True
+  capabilities: backbone:pi05, declares:base_weights, declares:obs_features, declares:param_bytes, guidance:action=none, servable
+
+InstinctFlash plan for lerobot/pi05_libero_finetuned_v044
+  plan tier: NUMERIC
+  operating point: schedule {prefix=1 + action=10} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 11 declared forwards (no stream requests a negative branch)}
+
+  APPLY  graph_capture              [BITEXACT  ] all streams (prefix) are rebuilt within a control cycle, so shapes repeat, so one capture serves every cycle; 11 forward(s) per control step (prefix=1 + action=10) each pay full dispatch cost today; pi05 native NFE=10 on Thor: the 2026-09-09 matched study measured capture gains with byte-equal actions on its inputs; see eval/fp8_comparison_2026-09-09. The family startup exact self-check still decides admission for this checkpoint and process.
+         expected: removes per-forward dispatch cost where the region is replay-safe. Measured ON pi05 (H100, pi05_base, 50-step chunk): a denoise step is 2187 kernel launches, 17.25 ms of CPU submit against 9.48 ms of GPU work -- 99.9% submit-bound, the GPU idle ~45% of the step. The naive region (per-step DynamicCache clone+append) replays fast and WRONG and stays discarded; the static-KV region (pi05_iwm/static_capture.py) is replay-safe by construction and collected the prize: denoise step 16.25 -> 4.57 ms (3.55x), chunk 298.7 -> 181.3 ms (1.65x), bitexact on unseen inputs and prompts. Both halves are this model's -- a backbone whose forwards are already compute-bound has nothing here to win either way, so measure the submit-vs-busy split, then measure replay against eager on a SECOND input
+  APPLY  engine_offload             [NUMERIC   ] SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation; baked denoise operating point: action=10 steps; guidance action=none@1
+         expected: Measure this checkpoint with matched views, action horizon, denoise steps and timing scope. The matched Thor study separates native capture, FP16 engine and FP8 arithmetic; it does not establish robot-facing Runtime parity.
+  skip   fsdp_elision               [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   allocator_churn_elision    [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   debug_dump_elision         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   obs_decode_elision         [BITEXACT  ] model declares no observation-decode modules
+  skip   conditioning_prefill       [BITEXACT  ] ['prefix_kv'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist
+  skip   prompt_encoder_staging     [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   ring_kv_addressing         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   action_terminal_forward_elision [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   sm120_gated_residual       [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   sm120_wan_stage2           [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   conv_layout_ndhwc          [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   cfg_branch_elision         [BITEXACT  ] no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)
+  skip   pi05_tf32_numeric          [BITEXACT  ] checkpoint does not declare ['declares:pi05_tf32_numeric']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+
+  NOTE: plan is NUMERIC because of ['engine_offload'].
+        Any accuracy-neutrality claim for this plan requires a paired
+        non-inferiority run.
+        `plan.bitexact_subset()` is the largest configuration that does not.
+
+loaded 'lerobot/pi05_libero_finetuned_v044'; binding ws://127.0.0.1:48051 (clients: openpi_client.WebsocketClientPolicy, or GET /healthz)
+2026-09-14 19:52:59,933 websockets.server server listening on 127.0.0.1:48051
+2026-09-14 19:52:59,933 instinctflash.serving.ws_server serving 'lerobot/pi05_libero_finetuned_v044' on ws://127.0.0.1:48051
+2026-09-14 19:53:00,103 websockets.server connection open
+2026-09-14 19:53:00,105 instinctflash.serving.ws_server connection from ('127.0.0.1', 42736) opened
+2026-09-14 19:53:00,182 instinctflash.serving.ws_server new episode: conditioning keys ['prompt']
+/dev/shm/ifl_public_envs_20260915_v1/pi05/lib/python3.12/site-packages/instinctflash/runtime/pi05_engine.py:84: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+  value = value if torch.is_tensor(value) else torch.as_tensor(value)
+2026-09-14 19:53:00,271 flash_rt.frontends.torch.pi05_thor CUTLASS FMHA loaded from /dev/shm/ifl_public_envs_20260915_v1/pi05/lib/python3.12/site-packages/flash_rt/libfmha_fp16_strided.so
+2026-09-14 19:53:02,749 flash_rt.frontends.torch.pi05_thor Weights loaded for Pi05TorchFrontendThor
+2026-09-14 19:53:02,993 flash_rt.frontends.torch.pi05_thor Pi05TorchFrontendThor initialised (num_views=2)
+2026-09-14 19:53:03,143 flash_rt.frontends.torch.pi05_thor SigLIP CUDA graph captured (S=512)
+2026-09-14 19:53:03,182 flash_rt.frontends.torch.pi05_thor Encoder calibrated: 72 scales
+2026-09-14 19:53:03,253 flash_rt.frontends.torch.pi05_thor Decoder calibrated: 72 scales
+2026-09-14 19:53:03,404 flash_rt.frontends.torch.pi05_thor Enc+AE CUDA graph captured (Se=560)
+2026-09-14 19:53:03,404 flash_rt.frontends.torch.pi05_thor set_prompt done: '[     2   7071 235292   4788    908    573   4018 235269   3040 235292
+ 235248 235274 235321 235310 235248 235315 235321    728 235274    728
+ 235274 235248 235274 235308 235315 235248 235274 235324 235324    728
+ 235274 235248 235284 235308 235308 235289    108   4022 235292 235248]' (40 tokens, Se=560)
+2026-09-14 19:53:03,650 flash_rt.frontends.torch.pi05_thor Enc+AE CUDA graph captured (Se=560)
+2026-09-14 19:53:03,650 flash_rt.frontends.torch.pi05_thor Recalibrated with real data + graph recaptured
+2026-09-14 19:53:03,733 instinctflash.serving.ws_server new episode: conditioning keys ['prompt']
+2026-09-14 19:53:03,804 websockets.server connection closed
+2026-09-14 19:53:03,804 instinctflash.serving.ws_server connection from ('127.0.0.1', 42736) closed
+2026-09-14 19:53:03,805 websockets.server server closing
+2026-09-14 19:53:03,805 websockets.server server closed
+{
+  "instinctflash_cli_schema": 1,
+  "command": "serve",
+  "version": "0.1.0",
+  "ok": true,
+  "result": {
+    "model_id": "lerobot/pi05_libero_finetuned_v044",
+    "backbone": "pi05",
+    "servable": true,
+    "device": "NVIDIA Thor  sm110  132 GB",
+    "device_class": "bandwidth-bound-edge — Thor (sm110): capture benefit depends on the model and execution scope; the matched 2026-09-09 study supersedes the older pi05-only timing. Capture defaults require family/operating-point evidence",
+    "precision": "fp8",
+    "capabilities": [
+      "backbone:pi05",
+      "declares:base_weights",
+      "declares:obs_features",
+      "declares:param_bytes",
+      "guidance:action=none",
+      "servable"
+    ],
+    "operating_point": "schedule {prefix=1 + action=10} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 11 declared forwards (no stream requests a negative branch)}",
+    "plan": "InstinctFlash plan for lerobot/pi05_libero_finetuned_v044\n  plan tier: NUMERIC\n  operating point: schedule {prefix=1 + action=10} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 11 declared forwards (no stream requests a negative branch)}\n\n  APPLY  graph_capture              [BITEXACT  ] all streams (prefix) are rebuilt within a control cycle, so shapes repeat, so one capture serves every cycle; 11 forward(s) per control step (prefix=1 + action=10) each pay full dispatch cost today; pi05 native NFE=10 on Thor: the 2026-09-09 matched study measured capture gains with byte-equal actions on its inputs; see eval/fp8_comparison_2026-09-09. The family startup exact self-check still decides admission for this checkpoint and process.\n         expected: removes per-forward dispatch cost where the region is replay-safe. Measured ON pi05 (H100, pi05_base, 50-step chunk): a denoise step is 2187 kernel launches, 17.25 ms of CPU submit against 9.48 ms of GPU work -- 99.9% submit-bound, the GPU idle ~45% of the step. The naive region (per-step DynamicCache clone+append) replays fast and WRONG and stays discarded; the static-KV region (pi05_iwm/static_capture.py) is replay-safe by construction and collected the prize: denoise step 16.25 -> 4.57 ms (3.55x), chunk 298.7 -> 181.3 ms (1.65x), bitexact on unseen inputs and prompts. Both halves are this model's -- a backbone whose forwards are already compute-bound has nothing here to win either way, so measure the submit-vs-busy split, then measure replay against eager on a SECOND input\n  APPLY  engine_offload             [NUMERIC   ] SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation; baked denoise operating point: action=10 steps; guidance action=none@1\n         expected: Measure this checkpoint with matched views, action horizon, denoise steps and timing scope. The matched Thor study separates native capture, FP16 engine and FP8 arithmetic; it does not establish robot-facing Runtime parity.\n  skip   fsdp_elision               [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   allocator_churn_elision    [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   debug_dump_elision         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   obs_decode_elision         [BITEXACT  ] model declares no observation-decode modules\n  skip   conditioning_prefill       [BITEXACT  ] ['prefix_kv'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist\n  skip   prompt_encoder_staging     [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   ring_kv_addressing         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   action_terminal_forward_elision [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_gated_residual       [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_wan_stage2           [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   conv_layout_ndhwc          [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   cfg_branch_elision         [BITEXACT  ] no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)\n  skip   pi05_tf32_numeric          [BITEXACT  ] checkpoint does not declare ['declares:pi05_tf32_numeric']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n\n  NOTE: plan is NUMERIC because of ['engine_offload'].\n        Any accuracy-neutrality claim for this plan requires a paired\n        non-inferiority run.\n        `plan.bitexact_subset()` is the largest configuration that does not.",
+    "host": "127.0.0.1",
+    "port": 48051
+  }
+}

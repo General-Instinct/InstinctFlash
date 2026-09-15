@@ -1,0 +1,53 @@
+{
+  "architecture": "aarch64",
+  "checkpoint": {
+    "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+    "revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e"
+  },
+  "constraints": {
+    "kind": "observed_effective_versions_not_install_requirements",
+    "package_count": 125,
+    "path": "constraints.txt",
+    "sha256": "f99cb224e4dcf67a1c2ab7ede9e05cea28e7d2a0016077b4558a68d3196d881d"
+  },
+  "family": "vla4",
+  "key_packages": {
+    "NATTEN": null,
+    "diffusers": "0.36.0",
+    "huggingface-hub": "0.33.5",
+    "lerobot": "0.4.4",
+    "numpy": "2.2.6",
+    "tokenizers": "0.21.1",
+    "torch": "2.11.0",
+    "torchvision": "0.26.0",
+    "transformers": "4.51.3",
+    "triton": "3.6.0"
+  },
+  "package_source_origin": "Pinned Git source plus installed package metadata; see source.json.",
+  "python": "3.12.3",
+  "qualification": {
+    "GPU_test_in_this_capture": false,
+    "fresh_dependency_resolution": false,
+    "fresh_environment_inference": false,
+    "historical_source_hashes_checked": 98,
+    "historical_source_hashes_matched": 98
+  },
+  "remaining_steps": [
+    "Resolve target CUDA/Torch wheel artifact and record its public URL/hash.",
+    "Resolve upstream dependencies under these constraints in a new per-family environment.",
+    "Run public_deploy doctor before explicitly fetching checkpoint/tokenizer assets.",
+    "Run actual public Python/CLI/WebSocket and reproduction gates; metadata alone does not establish acceleration."
+  ],
+  "schema": "instinctflash.vendor_environment.v1",
+  "source_manifest": "../vla4/source.json",
+  "torch_artifact": {
+    "build_version": "2.11.0+cu130",
+    "cuda": "13.0",
+    "distribution_version": "2.11.0",
+    "source_commit": "70d99e998b4955e0049d13a98d77ae1b14db1f45",
+    "status": "exact_original_wheel_artifact_origin_not_recorded",
+    "wheel_sha256": null,
+    "wheel_url": null
+  },
+  "upstream_package_repository": null
+}

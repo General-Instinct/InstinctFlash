@@ -1,0 +1,18 @@
+{
+ "model": "nvidia/Cosmos3-Nano-Policy-DROID (15.75B, real weights, snapshot 6706d768)",
+ "hardware": "Jetson Thor (SM110), single GPU, measured under /tmp/thor_gpu.lock",
+ "torch_ms": 3956.0,
+ "ours_ms": 2080.2,
+ "speedup": 1.9,
+ "notes": {
+  "protocol": "canonical policy request: 1 image 540x640, action chunk [16,8], 4 denoise steps, 12 requests x localhost, 3 warmup discarded; same clients and launch flags as the Edge row and the H100 sweep",
+  "torch_arm": "NVIDIA robolab server verbatim (launch_robolab_stock.py --action-chunk-size 16; defaults guidance 3.0, steps 4, compile on): wall p50=3956.0 mean=3955.4 p90=3959.0, action (16,8) finite, 0 server errors",
+  "ours_pipeline": "our robotwin server, knobs OFF (--domain-name droid_lerobot --action-chunk-size 16 --num-steps 4 --action-dim 8 --expected-image-height 540 --expected-image-width 640; guidance 1.0): wall p50=2080.2 mean=2079.3 p90=2083.9, server_total p50=2067.2",
+  "ours_cuda_graphs": "+ --use-cuda-graphs: wall p50=2116.2 p90=2123.6, server_total p50=2103.2 -- slower than pipeline on Thor, same pattern as the Edge row. Single-prompt caveat: ours arms driven with one fixed prompt/image geometry; graph re-capture cost under varied prompts not represented",
+  "best_honest_arm": "pipeline (2080.2); graphs arm reported separately, not claimed",
+  "environment": "same cosmos venv + TRITON_PTXAS(-BLACKWELL)_PATH=/usr/local/cuda/bin/ptxas fix as the Edge row; Qwen3-VL-8B backbone (15.75B total)",
+  "h100_reference": "same protocol on H100: stock 482.3 / pipeline / cg 324.7 (1.49x). Thor stock penalty is 8.2x vs H100 (Edge was 3.7x) - the 15.75B model is much deeper into the memory-bandwidth wall at batch-1",
+  "thor_speedup_note": "Thor ours/stock = 1.90x, larger than H100's 1.49x on this model"
+ },
+ "walls": []
+}

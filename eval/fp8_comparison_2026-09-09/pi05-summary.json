@@ -1,0 +1,1294 @@
+{
+  "scope": "Staged computation benchmark; not full Runtime API parity or closed-loop task quality",
+  "startup_attempts": [
+    {
+      "label": "stock10.0",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "stock10",
+        "--repeat",
+        "0",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/stock10.0.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 215.33702611923218
+    },
+    {
+      "label": "capture10.0",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "capture10",
+        "--repeat",
+        "0",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/capture10.0.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 200.1007182598114
+    },
+    {
+      "label": "engine16.0",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "engine16",
+        "--repeat",
+        "0",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/engine16.0.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 18.514845371246338
+    },
+    {
+      "label": "engine8.0",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "engine8",
+        "--repeat",
+        "0",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/engine8.0.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 12.076490640640259
+    },
+    {
+      "label": "stock50.0",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "stock50",
+        "--repeat",
+        "0",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/stock50.0.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 213.31409525871277
+    },
+    {
+      "label": "capture50.0",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "capture50",
+        "--repeat",
+        "0",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/capture50.0.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 202.52623319625854
+    },
+    {
+      "label": "engine16.1",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "engine16",
+        "--repeat",
+        "1",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/engine16.1.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 18.647105932235718
+    },
+    {
+      "label": "engine8.1",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "engine8",
+        "--repeat",
+        "1",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/engine8.1.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 12.092472553253174
+    },
+    {
+      "label": "stock50.1",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "stock50",
+        "--repeat",
+        "1",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/stock50.1.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 212.28530764579773
+    },
+    {
+      "label": "capture50.1",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "capture50",
+        "--repeat",
+        "1",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/capture50.1.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 201.2057819366455
+    },
+    {
+      "label": "stock10.1",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "stock10",
+        "--repeat",
+        "1",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/stock10.1.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 212.48470067977905
+    },
+    {
+      "label": "capture10.1",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "capture10",
+        "--repeat",
+        "1",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/capture10.1.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 200.16542267799377
+    },
+    {
+      "label": "stock50.2",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "stock50",
+        "--repeat",
+        "2",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/stock50.2.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 213.23843145370483
+    },
+    {
+      "label": "capture50.2",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "capture50",
+        "--repeat",
+        "2",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/capture50.2.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 201.33337116241455
+    },
+    {
+      "label": "stock10.2",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "stock10",
+        "--repeat",
+        "2",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/stock10.2.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 212.19168734550476
+    },
+    {
+      "label": "capture10.2",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "capture10",
+        "--repeat",
+        "2",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/capture10.2.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 200.27818775177002
+    },
+    {
+      "label": "engine16.2",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "engine16",
+        "--repeat",
+        "2",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/engine16.2.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 18.6687273979187
+    },
+    {
+      "label": "engine8.2",
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/source/probe_pi05.py",
+        "--arm",
+        "engine8",
+        "--repeat",
+        "2",
+        "--checkpoint",
+        "/home/guanming/.cache/huggingface/hub/models--lerobot--pi05_libero_finetuned_v044/snapshots/8e174154ef5f6c60a8da12ae99c303d8963138c1",
+        "--assets",
+        "/home/guanming/ifl/t3_assets/thor_assets.json",
+        "--frames",
+        "/home/guanming/ifl/t3_assets/calib_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/fp8_comparison_20260909/results/engine8.2.json"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 11.980066061019897
+    }
+  ],
+  "arms": {
+    "capture10": {
+      "successful_runs": 3,
+      "p50_ms_median": 221.72634350135922,
+      "p50_ms_range": [
+        221.72243549721316,
+        222.38502447726205
+      ],
+      "p99_ms_median": 222.70592531887814,
+      "p99_ms_range": [
+        222.62244723853655,
+        223.5381887492258
+      ],
+      "load_calibrate_s": [
+        166.43374793697149,
+        166.44006054196507,
+        166.5221996930195
+      ],
+      "warmup_s": [
+        2.554298984934576,
+        2.5976578830741346,
+        2.557846512994729
+      ],
+      "captured": [
+        true,
+        true,
+        true
+      ],
+      "within_process_null": [
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        }
+      ],
+      "between_process_actions": [
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        }
+      ],
+      "memory": [
+        {
+          "torch_peak_allocated_bytes": 9488635904,
+          "torch_peak_reserved_bytes": 9760145408,
+          "device_free_total_bytes": [
+            40887181312,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        },
+        {
+          "torch_peak_allocated_bytes": 9488635904,
+          "torch_peak_reserved_bytes": 9760145408,
+          "device_free_total_bytes": [
+            40630898688,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        },
+        {
+          "torch_peak_allocated_bytes": 9488635904,
+          "torch_peak_reserved_bytes": 9760145408,
+          "device_free_total_bytes": [
+            41847336960,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        }
+      ]
+    },
+    "capture50": {
+      "successful_runs": 3,
+      "p50_ms_median": 229.58654002286494,
+      "p50_ms_range": [
+        229.55494502093643,
+        229.70761300530285
+      ],
+      "p99_ms_median": 230.57131810463034,
+      "p99_ms_range": [
+        230.2855869627092,
+        232.10884647793137
+      ],
+      "load_calibrate_s": [
+        167.61392821592744,
+        166.40513158100657,
+        166.585893503041
+      ],
+      "warmup_s": [
+        2.636138375964947,
+        2.5938200909877196,
+        2.5948456230107695
+      ],
+      "captured": [
+        true,
+        true,
+        true
+      ],
+      "within_process_null": [
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        }
+      ],
+      "between_process_actions": [
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        }
+      ],
+      "memory": [
+        {
+          "torch_peak_allocated_bytes": 9489487872,
+          "torch_peak_reserved_bytes": 9764339712,
+          "device_free_total_bytes": [
+            42154663936,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        },
+        {
+          "torch_peak_allocated_bytes": 9489487872,
+          "torch_peak_reserved_bytes": 9764339712,
+          "device_free_total_bytes": [
+            41307979776,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        },
+        {
+          "torch_peak_allocated_bytes": 9489487872,
+          "torch_peak_reserved_bytes": 9764339712,
+          "device_free_total_bytes": [
+            40604606464,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        }
+      ]
+    },
+    "engine16": {
+      "successful_runs": 3,
+      "p50_ms_median": 79.9700630013831,
+      "p50_ms_range": [
+        79.8419660422951,
+        80.263992480468
+      ],
+      "p99_ms_median": 80.64502965891734,
+      "p99_ms_range": [
+        80.07755241240375,
+        80.96836497657932
+      ],
+      "load_calibrate_s": [
+        5.431217445991933,
+        5.6254755690461025,
+        5.5790892689256
+      ],
+      "warmup_s": [
+        0.6406738180667162,
+        0.6388152630534023,
+        0.6419298149412498
+      ],
+      "captured": [
+        true,
+        true,
+        true
+      ],
+      "within_process_null": [
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        }
+      ],
+      "between_process_actions": [
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        }
+      ],
+      "memory": [
+        {
+          "torch_peak_allocated_bytes": 6895367680,
+          "torch_peak_reserved_bytes": 8539602944,
+          "device_free_total_bytes": [
+            42838941696,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        },
+        {
+          "torch_peak_allocated_bytes": 6895367680,
+          "torch_peak_reserved_bytes": 8539602944,
+          "device_free_total_bytes": [
+            42515718144,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        },
+        {
+          "torch_peak_allocated_bytes": 6895367680,
+          "torch_peak_reserved_bytes": 8539602944,
+          "device_free_total_bytes": [
+            42338979840,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        }
+      ]
+    },
+    "engine8": {
+      "successful_runs": 3,
+      "p50_ms_median": 44.885649462230504,
+      "p50_ms_range": [
+        44.688192021567374,
+        44.92228297749534
+      ],
+      "p99_ms_median": 45.05346194258891,
+      "p99_ms_range": [
+        44.94235845049843,
+        45.11737616849132
+      ],
+      "load_calibrate_s": [
+        4.0105848730308935,
+        3.9410118779633194,
+        3.846710325917229
+      ],
+      "warmup_s": [
+        0.3556609759107232,
+        0.35798693203832954,
+        0.3587697949260473
+      ],
+      "captured": [
+        true,
+        true,
+        true
+      ],
+      "within_process_null": [
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        }
+      ],
+      "between_process_actions": [
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        }
+      ],
+      "memory": [
+        {
+          "torch_peak_allocated_bytes": 4194584064,
+          "torch_peak_reserved_bytes": 5502926848,
+          "device_free_total_bytes": [
+            45800419328,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        },
+        {
+          "torch_peak_allocated_bytes": 4194584064,
+          "torch_peak_reserved_bytes": 5502926848,
+          "device_free_total_bytes": [
+            45454008320,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        },
+        {
+          "torch_peak_allocated_bytes": 4194584064,
+          "torch_peak_reserved_bytes": 5502926848,
+          "device_free_total_bytes": [
+            45345480704,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        }
+      ]
+    },
+    "stock10": {
+      "successful_runs": 3,
+      "p50_ms_median": 311.77732307696715,
+      "p50_ms_range": [
+        307.91940150083974,
+        314.6882160217501
+      ],
+      "p99_ms_median": 323.70388465584256,
+      "p99_ms_range": [
+        317.85409711301327,
+        324.88759226631373
+      ],
+      "load_calibrate_s": [
+        168.05787226406392,
+        166.502427663072,
+        166.68895826290827
+      ],
+      "warmup_s": [
+        2.9393210830166936,
+        2.9354344999883324,
+        2.896599298925139
+      ],
+      "captured": [
+        false,
+        false,
+        false
+      ],
+      "within_process_null": [
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        }
+      ],
+      "between_process_actions": [
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        }
+      ],
+      "memory": [
+        {
+          "torch_peak_allocated_bytes": 9453162496,
+          "torch_peak_reserved_bytes": 9709813760,
+          "device_free_total_bytes": [
+            41150529536,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        },
+        {
+          "torch_peak_allocated_bytes": 9453162496,
+          "torch_peak_reserved_bytes": 9709813760,
+          "device_free_total_bytes": [
+            40841396224,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        },
+        {
+          "torch_peak_allocated_bytes": 9453162496,
+          "torch_peak_reserved_bytes": 9709813760,
+          "device_free_total_bytes": [
+            42221281280,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        }
+      ]
+    },
+    "stock50": {
+      "successful_runs": 3,
+      "p50_ms_median": 315.6370119540952,
+      "p50_ms_range": [
+        308.91969247022644,
+        316.015783988405
+      ],
+      "p99_ms_median": 323.99977918481454,
+      "p99_ms_range": [
+        320.3312210738659,
+        324.6082687587477
+      ],
+      "load_calibrate_s": [
+        166.71774771704804,
+        166.58407723193523,
+        166.59477556101047
+      ],
+      "warmup_s": [
+        2.9009464769624174,
+        2.9002225399017334,
+        2.9296988239511847
+      ],
+      "captured": [
+        false,
+        false,
+        false
+      ],
+      "within_process_null": [
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        }
+      ],
+      "between_process_actions": [
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        },
+        {
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "p99_abs": 0.0,
+          "exact": true,
+          "value_equal": true,
+          "bitwise_equal": true
+        }
+      ],
+      "memory": [
+        {
+          "torch_peak_allocated_bytes": 9453167616,
+          "torch_peak_reserved_bytes": 9709813760,
+          "device_free_total_bytes": [
+            41089810432,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        },
+        {
+          "torch_peak_allocated_bytes": 9453167616,
+          "torch_peak_reserved_bytes": 9709813760,
+          "device_free_total_bytes": [
+            40871800832,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        },
+        {
+          "torch_peak_allocated_bytes": 9453167616,
+          "torch_peak_reserved_bytes": 9709813760,
+          "device_free_total_bytes": [
+            42538151936,
+            131856990208
+          ],
+          "memory_caveat": "PyTorch allocator only; engine external CUDA allocations excluded"
+        }
+      ]
+    }
+  },
+  "comparisons": {
+    "stock10_to_capture10": {
+      "speedup": 1.40613568127982,
+      "latency_reduction_percent": 28.883107561154286,
+      "paired_runs": [
+        {
+          "repeat": 0,
+          "speedup_p50": 1.4192639947621786,
+          "action_delta": {
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "p99_abs": 0.0,
+            "exact": true,
+            "value_equal": true,
+            "bitwise_equal": true
+          }
+        },
+        {
+          "repeat": 1,
+          "speedup_p50": 1.406160465348514,
+          "action_delta": {
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "p99_abs": 0.0,
+            "exact": true,
+            "value_equal": true,
+            "bitwise_equal": true
+          }
+        },
+        {
+          "repeat": 2,
+          "speedup_p50": 1.3846229179533769,
+          "action_delta": {
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "p99_abs": 0.0,
+            "exact": true,
+            "value_equal": true,
+            "bitwise_equal": true
+          }
+        }
+      ]
+    },
+    "stock10_to_engine16": {
+      "speedup": 3.898675471489561,
+      "latency_reduction_percent": 74.35026312621164,
+      "paired_runs": [
+        {
+          "repeat": 0,
+          "speedup_p50": 3.9350752545525385,
+          "action_delta": {
+            "max_abs": 0.03753414750099182,
+            "mean_abs": 0.0035925505362943764,
+            "p99_abs": 0.023449741899967194,
+            "exact": false,
+            "value_equal": false,
+            "bitwise_equal": false
+          }
+        },
+        {
+          "repeat": 1,
+          "speedup_p50": 3.90493043359939,
+          "action_delta": {
+            "max_abs": 0.03753414750099182,
+            "mean_abs": 0.0035925505362943764,
+            "p99_abs": 0.023449741899967194,
+            "exact": false,
+            "value_equal": false,
+            "bitwise_equal": false
+          }
+        },
+        {
+          "repeat": 2,
+          "speedup_p50": 3.836332980517646,
+          "action_delta": {
+            "max_abs": 0.03753414750099182,
+            "mean_abs": 0.0035925505362943764,
+            "p99_abs": 0.023449741899967194,
+            "exact": false,
+            "value_equal": false,
+            "bitwise_equal": false
+          }
+        }
+      ]
+    },
+    "stock10_to_engine8": {
+      "speedup": 6.946035688740906,
+      "latency_reduction_percent": 85.60329884827776,
+      "paired_runs": [
+        {
+          "repeat": 0,
+          "speedup_p50": 7.041865015928046,
+          "action_delta": {
+            "max_abs": 0.1530529260635376,
+            "mean_abs": 0.01506371993177059,
+            "p99_abs": 0.09780263423919676,
+            "exact": false,
+            "value_equal": false,
+            "bitwise_equal": false
+          }
+        },
+        {
+          "repeat": 1,
+          "speedup_p50": 6.946035688740906,
+          "action_delta": {
+            "max_abs": 0.1530529260635376,
+            "mean_abs": 0.01506371993177059,
+            "p99_abs": 0.09780263423919676,
+            "exact": false,
+            "value_equal": false,
+            "bitwise_equal": false
+          }
+        },
+        {
+          "repeat": 2,
+          "speedup_p50": 6.854491381372975,
+          "action_delta": {
+            "max_abs": 0.1530529260635376,
+            "mean_abs": 0.01506371993177059,
+            "p99_abs": 0.09780263423919676,
+            "exact": false,
+            "value_equal": false,
+            "bitwise_equal": false
+          }
+        }
+      ]
+    },
+    "capture10_to_engine8": {
+      "speedup": 4.939804729525706,
+      "latency_reduction_percent": 79.75628481784108,
+      "paired_runs": [
+        {
+          "repeat": 0,
+          "speedup_p50": 4.961631551223864,
+          "action_delta": {
+            "max_abs": 0.1530529260635376,
+            "mean_abs": 0.01506371993177059,
+            "p99_abs": 0.09780263423919676,
+            "exact": false,
+            "value_equal": false,
+            "bitwise_equal": false
+          }
+        },
+        {
+          "repeat": 1,
+          "speedup_p50": 4.939717663744262,
+          "action_delta": {
+            "max_abs": 0.1530529260635376,
+            "mean_abs": 0.01506371993177059,
+            "p99_abs": 0.09780263423919676,
+            "exact": false,
+            "value_equal": false,
+            "bitwise_equal": false
+          }
+        },
+        {
+          "repeat": 2,
+          "speedup_p50": 4.950439063586105,
+          "action_delta": {
+            "max_abs": 0.1530529260635376,
+            "mean_abs": 0.01506371993177059,
+            "p99_abs": 0.09780263423919676,
+            "exact": false,
+            "value_equal": false,
+            "bitwise_equal": false
+          }
+        }
+      ]
+    },
+    "engine16_to_engine8": {
+      "speedup": 1.7816398773214752,
+      "latency_reduction_percent": 43.87193434941498,
+      "paired_runs": [
+        {
+          "repeat": 0,
+          "speedup_p50": 1.7895121593370351,
+          "action_delta": {
+            "max_abs": 0.143310546875,
+            "mean_abs": 0.013541786299486245,
+            "p99_abs": 0.09262939453124996,
+            "exact": false,
+            "value_equal": false,
+            "bitwise_equal": false
+          }
+        },
+        {
+          "repeat": 1,
+          "speedup_p50": 1.7787860262438433,
+          "action_delta": {
+            "max_abs": 0.143310546875,
+            "mean_abs": 0.013541786299486245,
+            "p99_abs": 0.09262939453124996,
+            "exact": false,
+            "value_equal": false,
+            "bitwise_equal": false
+          }
+        },
+        {
+          "repeat": 2,
+          "speedup_p50": 1.7867300404273254,
+          "action_delta": {
+            "max_abs": 0.143310546875,
+            "mean_abs": 0.013541786299486245,
+            "p99_abs": 0.09262939453124996,
+            "exact": false,
+            "value_equal": false,
+            "bitwise_equal": false
+          }
+        }
+      ]
+    },
+    "stock50_to_capture50": {
+      "speedup": 1.3748062579045808,
+      "latency_reduction_percent": 27.262478312823802,
+      "paired_runs": [
+        {
+          "repeat": 0,
+          "speedup_p50": 1.3757305639718163,
+          "action_delta": {
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "p99_abs": 0.0,
+            "exact": true,
+            "value_equal": true,
+            "bitwise_equal": true
+          }
+        },
+        {
+          "repeat": 1,
+          "speedup_p50": 1.3455479247148399,
+          "action_delta": {
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "p99_abs": 0.0,
+            "exact": true,
+            "value_equal": true,
+            "bitwise_equal": true
+          }
+        },
+        {
+          "repeat": 2,
+          "speedup_p50": 1.3749954806040345,
+          "action_delta": {
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "p99_abs": 0.0,
+            "exact": true,
+            "value_equal": true,
+            "bitwise_equal": true
+          }
+        }
+      ]
+    }
+  },
+  "quality_status": "diagnostic only"
+}

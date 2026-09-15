@@ -1,0 +1,164 @@
+{
+  "bootstrap": {
+    "install_guide": "INSTALL.rst",
+    "notes": [
+      "Matching Qwen3-VL processor/tokenizer and LeRobot native policy are required. QWEN3VL_PATH may select Qwen/Qwen3-VL-4B-Instruct; its separate revision is not frozen here.",
+      "Thor compilation requires a ptxas supporting sm_110a; no compiler or GPU is invoked by doctor."
+    ],
+    "status": "fresh_vendor_install_not_qualified",
+    "upstream_install_guide": "https://github.com/robbyant/lingbot-vla-v2#readme"
+  },
+  "checkpoint": {
+    "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+    "revision": "0451855729ec904f970600e0aec8b84661423afe"
+  },
+  "execution_mode": "fp8",
+  "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+  "library_bindings": {},
+  "limitations": [
+    "Each model requires its own compatible installed vendor environment.",
+    "prepare resolves the pinned primary checkpoint; auxiliary tokenizers/base weights must also be prepared in that environment.",
+    "Runtime captures target Jetson Thor SM110 using the unchanged capture contract.",
+    "Changed sampling policies are separate operating points, never architecture-only speedups."
+  ],
+  "matrix": {
+    "bindings": [
+      {
+        "path": "inputs/recorded_inputs_v1.npz",
+        "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      }
+    ],
+    "cells": [
+      {
+        "action_shape": [
+          50,
+          14
+        ],
+        "arm": "eager_native",
+        "comparison_group": "vla2-checkpoint",
+        "effective_schedule": {
+          "nfe": {
+            "action": 10,
+            "prefix": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "expected_optimizer_environment": {},
+        "expected_runtime_kwargs": {},
+        "experimental": false,
+        "family": "vla2",
+        "id": "vla2-eager_native",
+        "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+        "receipt": "cells/vla2-eager_native/receipt.json",
+        "revision": "0451855729ec904f970600e0aec8b84661423afe"
+      },
+      {
+        "action_shape": [
+          50,
+          14
+        ],
+        "arm": "runtime_default",
+        "comparison_group": "vla2-checkpoint",
+        "effective_schedule": {
+          "nfe": {
+            "action": 10,
+            "prefix": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "expected_optimizer_environment": {},
+        "expected_runtime_kwargs": {
+          "device": "cuda:0"
+        },
+        "experimental": false,
+        "family": "vla2",
+        "id": "vla2-runtime_default",
+        "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+        "receipt": "cells/vla2-runtime_default/receipt.json",
+        "revision": "0451855729ec904f970600e0aec8b84661423afe"
+      },
+      {
+        "action_shape": [
+          50,
+          14
+        ],
+        "arm": "runtime_selected",
+        "comparison_group": "vla2-checkpoint",
+        "effective_schedule": {
+          "nfe": {
+            "action": 10,
+            "prefix": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "expected_optimizer_environment": {},
+        "expected_runtime_kwargs": {
+          "device": "cuda:0",
+          "precision": "fp8",
+          "step_cache": "checkpoint",
+          "tier_ceiling": "numeric"
+        },
+        "experimental": false,
+        "family": "vla2",
+        "id": "vla2-runtime_selected",
+        "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+        "receipt": "cells/vla2-runtime_selected/receipt.json",
+        "revision": "0451855729ec904f970600e0aec8b84661423afe"
+      }
+    ],
+    "expected_families": [
+      "vla2"
+    ],
+    "expected_main_cells": 3,
+    "expected_operating_point_cells": 0,
+    "expected_runtime_update_cells": 0,
+    "protocol": {
+      "history": {
+        "cycles_per_episode": 3,
+        "measured_episodes": 6,
+        "warmup_episodes": 1
+      },
+      "pi05_queue_calls": 51,
+      "stateless": {
+        "measured": 20,
+        "warmup": 5
+      }
+    },
+    "quality_certified": false,
+    "require_observed_schedule": true,
+    "schema": 1
+  },
+  "model": "vla2",
+  "native_requirements": [
+    {
+      "kind": "extension",
+      "name": "flash_rt.flash_rt_kernels",
+      "remedy": "Build/install serving/ for this interpreter, CUDA toolkit and Thor SM110; a source-only wheel is insufficient."
+    },
+    {
+      "kind": "extension",
+      "name": "flash_rt.flash_rt_fa2",
+      "remedy": "A matching Thor/Python FA2 extension is required. The current SM110 CMake route does not build it; reproducible bootstrap or separately distributed binary remains unresolved."
+    }
+  ],
+  "profiles_sha256": "82f0165c0365b2abf66b53cb8c9855d4ee8f670f41f7d17b04236a73a4ea5cf6",
+  "publication_ready": false,
+  "schema": "instinctflash.public_reproduction.v1",
+  "scope": "Recorded cameras and synthetic state; public predict wall time; no network or simulator/task-success measurement.",
+  "shape_provenance": {
+    "path": "eval/user_e2e_2026-09-14/matrix_final.json",
+    "scope": "Public action shapes only; historical outcomes and machine paths are not inputs.",
+    "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+  },
+  "task_quality_validated": false,
+  "unresolved_library_options": [],
+  "vendor": {
+    "pin_status": "qualified_vendor_commit_and_patch_bundle_missing",
+    "repository": "https://github.com/robbyant/lingbot-vla-v2",
+    "revision": null,
+    "root_env": "LINGBOT_VLA_V2_ROOT",
+    "source_markers": [
+      "deploy/lingbot_vla_v2_policy.py"
+    ]
+  }
+}

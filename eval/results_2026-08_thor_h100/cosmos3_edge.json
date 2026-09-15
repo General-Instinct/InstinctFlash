@@ -1,0 +1,17 @@
+{
+ "model": "nvidia/Cosmos3-Edge-Policy-DROID (3.86B, real weights, snapshot f9fddb42)",
+ "hardware": "Jetson Thor (SM110), single GPU, measured under /tmp/thor_gpu.lock",
+ "torch_ms": 1158.1,
+ "ours_ms": 660.2,
+ "speedup": 1.75,
+ "notes": {
+  "protocol": "canonical policy request: 1 image 540x640, action chunk [16,8], 4 denoise steps, 12 requests x localhost, 3 warmup discarded; same measure clients as the H100 sweep (byte-identical measure_predict.py, timeout raised 300->1800)",
+  "torch_arm": "NVIDIA robolab server verbatim (launch_robolab_stock.py --action-chunk-size 16; defaults guidance 3.0, steps 4, compile on, no cuda graphs; ready line action_dim=8 fps=15). wall_ms p50=1158.1 mean=1157.5 p90=1163.2, action (16,8) finite, 0 server errors",
+  "ours_pipeline": "our robotwin server, optimization knobs OFF (--domain-name droid_lerobot --action-chunk-size 16 --num-steps 4 --action-dim 8 --expected-image-height 540 --expected-image-width 640; guidance 1.0): wall p50=660.2 mean=659.7 p90=665.4, server_total p50=647.9",
+  "ours_cuda_graphs": "+ --use-cuda-graphs: wall p50=676.0 p90=680.5, server_total p50=663.2 -- SLOWER than pipeline on Thor (opposite of H100 where cg won 185.8 vs 244.5); Thor is memory-bandwidth-bound at batch-1 so capture adds overhead without kernel-launch savings. Single-prompt caveat: both ours arms (and especially the graphs arm, whose capture buckets are keyed to the measured geometry) were driven with one fixed prompt/image geometry; re-capture/recompile cost under varied prompts is not represented",
+  "best_honest_arm": "pipeline (660.2); graphs arm reported separately, not claimed",
+  "environment": "cosmos-framework @ f734253 + our patch (8 tracked + 4 untracked), py3.13 torch 2.10.0+cu130 venv; TRITON_PTXAS_PATH+TRITON_PTXAS_BLACKWELL_PATH=/usr/local/cuda/bin/ptxas (triton 3.6 bundled ptxas-blackwell does not know sm_110a; system CUDA 13.2 ptxas does); Wan2.2_VAE.pth sha256-verified in HF cache",
+  "h100_reference": "same protocol on H100: stock 310.5 / pipeline 244.5 / cg 185.8 (rm_edge_*.json 2026-08-24)"
+ },
+ "walls": []
+}

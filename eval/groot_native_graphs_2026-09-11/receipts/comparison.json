@@ -1,0 +1,71 @@
+{
+  "scope": "Recorded camera inputs and synthetic state, full action arrays; no simulator certificate",
+  "rows": [
+    {
+      "variant": "baseline_a",
+      "p50_ms": 114.39875600626692,
+      "action_shape": [
+        23,
+        40,
+        17
+      ],
+      "finite_byte_equal": true,
+      "max_abs_delta": 0.0,
+      "speedup_vs_baseline_a": 1.0,
+      "speedup_vs_baseline_b": 1.0442055854752432,
+      "norm_graphs": 0,
+      "norm_replays": 0
+    },
+    {
+      "variant": "graph_only",
+      "p50_ms": 111.83824848558288,
+      "action_shape": [
+        23,
+        40,
+        17
+      ],
+      "finite_byte_equal": true,
+      "max_abs_delta": 0.0,
+      "speedup_vs_baseline_a": 1.0228947391018388,
+      "speedup_vs_baseline_b": 1.068112399923382,
+      "norm_graphs": 1,
+      "norm_replays": 92
+    },
+    {
+      "variant": "fused_graph",
+      "p50_ms": 110.50450650509447,
+      "action_shape": [
+        23,
+        40,
+        17
+      ],
+      "finite_byte_equal": true,
+      "max_abs_delta": 0.0,
+      "speedup_vs_baseline_a": 1.0352406397199096,
+      "speedup_vs_baseline_b": 1.0810040583064937,
+      "norm_graphs": 17,
+      "norm_replays": 460
+    },
+    {
+      "variant": "baseline_b",
+      "p50_ms": 119.45581999316346,
+      "action_shape": [
+        23,
+        40,
+        17
+      ],
+      "finite_byte_equal": true,
+      "max_abs_delta": 0.0,
+      "speedup_vs_baseline_a": 0.957665821663725,
+      "speedup_vs_baseline_b": 1.0,
+      "norm_graphs": 0,
+      "norm_replays": 0
+    }
+  ],
+  "report_sha256": {
+    "baseline_a": "3d4f172f8014fb9db95029f384233943ad32df0b7379ed01d2633b554abae904",
+    "graph_only": "b6f6649a39bde46ceec4adb520bf330ad76ad69259685a6ec33dbc1b7b89d684",
+    "fused_graph": "cd938c277fa6349e1fe25579b411236bed2ccf81da07f40e581331b01fdc92ae",
+    "baseline_b": "e69290f3c212f5dd7ec5791307ca16734bfd82545a49d37479c2f137c77afdbc"
+  }
+}

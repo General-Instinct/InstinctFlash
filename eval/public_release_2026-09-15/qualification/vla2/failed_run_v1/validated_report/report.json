@@ -1,0 +1,71 @@
+{
+  "bindings": [
+    {
+      "path": "/home/guanming/ifl_public_qualification_20260915_v1/vla2_fp8_run_v1/inputs/recorded_inputs_v1.npz",
+      "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+      "status": "passed"
+    }
+  ],
+  "cells": [
+    {
+      "arm": "eager_native",
+      "errors": [
+        "receipt does not declare successful completion"
+      ],
+      "family": "vla2",
+      "id": "vla2-eager_native",
+      "status": "failed"
+    },
+    {
+      "arm": "runtime_default",
+      "family": "vla2",
+      "id": "vla2-runtime_default",
+      "pending": [
+        "missing artifact: /home/guanming/ifl_public_qualification_20260915_v1/vla2_fp8_run_v1/cells/vla2-runtime_default/receipt.json"
+      ],
+      "status": "incomplete"
+    },
+    {
+      "arm": "runtime_selected",
+      "family": "vla2",
+      "id": "vla2-runtime_selected",
+      "pending": [
+        "missing artifact: /home/guanming/ifl_public_qualification_20260915_v1/vla2_fp8_run_v1/cells/vla2-runtime_selected/receipt.json"
+      ],
+      "status": "incomplete"
+    }
+  ],
+  "comparisons": [],
+  "counts": {
+    "expected_cells": 3,
+    "failed_cells": 1,
+    "failed_comparisons": 0,
+    "finite_public_actions": 0,
+    "finite_queue_actions": 0,
+    "incomplete_cells": 2,
+    "main_cells": 3,
+    "operating_point_cells": 0,
+    "passed_cells": 0,
+    "runtime_update_cells": 0
+  },
+  "errors": [],
+  "matrix": {
+    "path": "/home/guanming/ifl_public_qualification_20260915_v1/vla2_fp8_run_v1/matrix.json",
+    "sha256": "ab0b60645c068681977702b948f7e829cb6b1b27a25be12b0683b995b2f9ead0"
+  },
+  "pending": [],
+  "recommended": false,
+  "reproduction_plan": {
+    "execution_mode": "fp8",
+    "sha256": "c108c60bb4697252c4041278e2224ee0c17ec9cf440f9e523007ac4f8e7f8639"
+  },
+  "require_observed_schedule": true,
+  "schema": "instinctflash.user_report.v1",
+  "scope": "CPU artifact/protocol validation on recorded requests; no simulator or task-quality admission",
+  "status": "failed",
+  "task_quality_validated": false,
+  "validator": {
+    "path": "/dev/shm/ifl_public_envs_20260915_v1/vla2_v2/lib/python3.12/site-packages/benchmarks/regression/user_report.py",
+    "sha256": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+  }
+}

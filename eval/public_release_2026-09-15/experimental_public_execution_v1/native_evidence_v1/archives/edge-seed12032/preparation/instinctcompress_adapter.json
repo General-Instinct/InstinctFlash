@@ -1,0 +1,43 @@
+{
+  "kind": "cosmos3_edge_action_heads_generation_lora",
+  "version": 1,
+  "lora_rank": 16,
+  "lora_last_layers": 4,
+  "lora_alpha": 16.0,
+  "lora_seed": 0,
+  "master_dtype": "float32",
+  "native_forward_dtype": "bfloat16",
+  "merge": "native_weight_plus_alpha_over_rank_B_matmul_A_then_native_cast",
+  "heads": [
+    "action2llm",
+    "llm2action"
+  ],
+  "targets": [
+    "language_model.model.layers.24.self_attn.q_proj_moe_gen",
+    "language_model.model.layers.24.self_attn.k_proj_moe_gen",
+    "language_model.model.layers.24.self_attn.v_proj_moe_gen",
+    "language_model.model.layers.24.self_attn.o_proj_moe_gen",
+    "language_model.model.layers.24.mlp_moe_gen.up_proj",
+    "language_model.model.layers.24.mlp_moe_gen.down_proj",
+    "language_model.model.layers.25.self_attn.q_proj_moe_gen",
+    "language_model.model.layers.25.self_attn.k_proj_moe_gen",
+    "language_model.model.layers.25.self_attn.v_proj_moe_gen",
+    "language_model.model.layers.25.self_attn.o_proj_moe_gen",
+    "language_model.model.layers.25.mlp_moe_gen.up_proj",
+    "language_model.model.layers.25.mlp_moe_gen.down_proj",
+    "language_model.model.layers.26.self_attn.q_proj_moe_gen",
+    "language_model.model.layers.26.self_attn.k_proj_moe_gen",
+    "language_model.model.layers.26.self_attn.v_proj_moe_gen",
+    "language_model.model.layers.26.self_attn.o_proj_moe_gen",
+    "language_model.model.layers.26.mlp_moe_gen.up_proj",
+    "language_model.model.layers.26.mlp_moe_gen.down_proj",
+    "language_model.model.layers.27.self_attn.q_proj_moe_gen",
+    "language_model.model.layers.27.self_attn.k_proj_moe_gen",
+    "language_model.model.layers.27.self_attn.v_proj_moe_gen",
+    "language_model.model.layers.27.self_attn.o_proj_moe_gen",
+    "language_model.model.layers.27.mlp_moe_gen.up_proj",
+    "language_model.model.layers.27.mlp_moe_gen.down_proj"
+  ],
+  "trainable_parameters": 10815488,
+  "lora_parameters": 2359296
+}

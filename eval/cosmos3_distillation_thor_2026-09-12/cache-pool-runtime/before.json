@@ -1,0 +1,100 @@
+{
+  "source_sha256": "ff3c7ece6e4f8cb8c6e8618bbd5b7400f6362e7709c13f4cf6bd104988b15878",
+  "probe_sha256": "4edba1aaea0b23cd3c51ae2411376043b0f333fc52371cde86fed8912a3527ed",
+  "torch": "2.10.0+cu130",
+  "cycles": [
+    {
+      "cycle": 0,
+      "stats": [
+        {
+          "captures": 1,
+          "checks": 2,
+          "replays": 2,
+          "rejected": []
+        },
+        {
+          "captures": 1,
+          "checks": 2,
+          "replays": 2,
+          "rejected": []
+        }
+      ]
+    },
+    {
+      "cycle": 1,
+      "stats": [
+        {
+          "captures": 0,
+          "checks": 0,
+          "replays": 0,
+          "rejected": [
+            {
+              "module": "0",
+              "error": "RuntimeError('it->second->use_count > 0 INTERNAL ASSERT FAILED at \"/pytorch/c10/cuda/CUDACachingAllocator.cpp\":2731, please report a bug to PyTorch. ')"
+            }
+          ]
+        },
+        {
+          "captures": 0,
+          "checks": 0,
+          "replays": 0,
+          "rejected": [
+            {
+              "module": "1",
+              "error": "RuntimeError('it->second->use_count > 0 INTERNAL ASSERT FAILED at \"/pytorch/c10/cuda/CUDACachingAllocator.cpp\":2731, please report a bug to PyTorch. ')"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cycle": 2,
+      "stats": [
+        {
+          "captures": 0,
+          "checks": 0,
+          "replays": 0,
+          "rejected": [
+            {
+              "module": "0",
+              "error": "RuntimeError('it->second->use_count > 0 INTERNAL ASSERT FAILED at \"/pytorch/c10/cuda/CUDACachingAllocator.cpp\":2731, please report a bug to PyTorch. ')"
+            }
+          ]
+        },
+        {
+          "captures": 0,
+          "checks": 0,
+          "replays": 0,
+          "rejected": [
+            {
+              "module": "1",
+              "error": "RuntimeError('it->second->use_count > 0 INTERNAL ASSERT FAILED at \"/pytorch/c10/cuda/CUDACachingAllocator.cpp\":2731, please report a bug to PyTorch. ')"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "status": "success",
+  "captures": 2,
+  "checks": 4,
+  "replays": 4,
+  "rejected": [
+    {
+      "module": "0",
+      "error": "RuntimeError('it->second->use_count > 0 INTERNAL ASSERT FAILED at \"/pytorch/c10/cuda/CUDACachingAllocator.cpp\":2731, please report a bug to PyTorch. ')"
+    },
+    {
+      "module": "1",
+      "error": "RuntimeError('it->second->use_count > 0 INTERNAL ASSERT FAILED at \"/pytorch/c10/cuda/CUDACachingAllocator.cpp\":2731, please report a bug to PyTorch. ')"
+    },
+    {
+      "module": "0",
+      "error": "RuntimeError('it->second->use_count > 0 INTERNAL ASSERT FAILED at \"/pytorch/c10/cuda/CUDACachingAllocator.cpp\":2731, please report a bug to PyTorch. ')"
+    },
+    {
+      "module": "1",
+      "error": "RuntimeError('it->second->use_count > 0 INTERNAL ASSERT FAILED at \"/pytorch/c10/cuda/CUDACachingAllocator.cpp\":2731, please report a bug to PyTorch. ')"
+    }
+  ]
+}

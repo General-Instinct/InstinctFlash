@@ -1,0 +1,33 @@
+flash_attn is not installed. Falling back to sdpa attention. Install flash-attn for better performance: pip install flash-attn
+`torch_dtype` is deprecated! Use `dtype` instead!
+/home/guanming/thorcol/Isaac-GR00T/gr00t/model/modules/dit.py:255: FutureWarning: Accessing config attribute `compute_dtype` directly via 'AlternateVLDiT' object attribute is deprecated. Please access 'compute_dtype' over 'AlternateVLDiT's config object instead, e.g. 'unet.config.compute_dtype'.
+  embedding_dim=self.inner_dim, compute_dtype=self.compute_dtype
+/home/guanming/thorcol/Isaac-GR00T/gr00t/model/modules/dit.py:286: FutureWarning: Accessing config attribute `output_dim` directly via 'AlternateVLDiT' object attribute is deprecated. Please access 'output_dim' over 'AlternateVLDiT's config object instead, e.g. 'unet.config.output_dim'.
+  self.proj_out_2 = nn.Linear(self.inner_dim, self.output_dim)
+Total number of DiT parameters:  1091722240
+Total number of SelfAttentionTransformer parameters:  201433088
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.94it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  3.03it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.79it/s]
+{'i': 0, 'cycle': 0, 'phase': 'warmup', 'ms': 1241.0240119788796, 'shape': [40, 17]}
+{'i': 1, 'cycle': 0, 'phase': 'warmup', 'ms': 120.56031500105746, 'shape': [40, 17]}
+{'i': 2, 'cycle': 0, 'phase': 'warmup', 'ms': 117.4029590038117, 'shape': [40, 17]}
+{'i': 3, 'cycle': 0, 'phase': 'measured', 'ms': 117.6620599871967, 'shape': [40, 17]}
+{'i': 4, 'cycle': 0, 'phase': 'measured', 'ms': 117.06342999241315, 'shape': [40, 17]}
+[GR00T N1.7 GPU collate] bit-exact on 6 live batches; uint8 H2D + GPU normalize enabled.
+{'i': 5, 'cycle': 0, 'phase': 'measured', 'ms': 114.97222501202486, 'shape': [40, 17]}
+{'i': 6, 'cycle': 0, 'phase': 'measured', 'ms': 108.19977999199182, 'shape': [40, 17]}
+{'i': 7, 'cycle': 0, 'phase': 'measured', 'ms': 108.43288397882134, 'shape': [40, 17]}
+{'i': 8, 'cycle': 0, 'phase': 'measured', 'ms': 113.08209301205352, 'shape': [40, 17]}
+{'i': 9, 'cycle': 0, 'phase': 'measured', 'ms': 108.11896700761281, 'shape': [40, 17]}
+{'i': 10, 'cycle': 0, 'phase': 'measured', 'ms': 107.83851201995276, 'shape': [40, 17]}
+{'i': 11, 'cycle': 0, 'phase': 'measured', 'ms': 108.18112001288682, 'shape': [40, 17]}
+{'i': 12, 'cycle': 0, 'phase': 'measured', 'ms': 107.84988300292753, 'shape': [40, 17]}
+{'i': 13, 'cycle': 0, 'phase': 'measured', 'ms': 107.5792640040163, 'shape': [40, 17]}
+{'i': 14, 'cycle': 0, 'phase': 'measured', 'ms': 108.51031899801455, 'shape': [40, 17]}
+{'i': 15, 'cycle': 0, 'phase': 'measured', 'ms': 108.11215100693516, 'shape': [40, 17]}
+{'i': 16, 'cycle': 0, 'phase': 'measured', 'ms': 108.25923999072984, 'shape': [40, 17]}
+{'i': 17, 'cycle': 0, 'phase': 'measured', 'ms': 108.0805310048163, 'shape': [40, 17]}
+{'i': 18, 'cycle': 0, 'phase': 'measured', 'ms': 108.15535599249415, 'shape': [40, 17]}
+{'i': 19, 'cycle': 0, 'phase': 'measured', 'ms': 107.87555002025329, 'shape': [40, 17]}
+{'i': 20, 'cycle': 0, 'phase': 'measured', 'ms': 107.94655900099315, 'shape': [40, 17]}
+{'i': 21, 'cycle': 0, 'phase': 'measured', 'ms': 107.85441898042336, 'shape': [40, 17]}
+{'i': 22, 'cycle': 0, 'phase': 'measured', 'ms': 107.91608001454733, 'shape': [40, 17]}

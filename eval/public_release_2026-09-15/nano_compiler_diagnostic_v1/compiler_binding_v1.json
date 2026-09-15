@@ -1,0 +1,1479 @@
+{
+  "distribution_metadata": {
+    "METADATA": "5c9071db9b057bec89cd6d7f76f61e5f28a5e8d3717ff6c85420cf8015ee0321",
+    "WHEEL": "15cf0a2e160d56463ff3cc36c27f429d341da688b58e3ad8a63a81c7c7e6144d"
+  },
+  "forbidden_original_prefixes": [
+    "/dev/shm/ifl_public_envs_20260915_v1/edge_v3"
+  ],
+  "fresh_cache_directories": {
+    "TORCHINDUCTOR_CACHE_DIR": "compiler_caches/inductor",
+    "TRITON_CACHE_DIR": "compiler_caches/triton"
+  },
+  "fresh_control_diagnostic_sha256": "6fcadbb91a141155985a9b3b571cb87460bc031fb7efab8554872e091457da3b",
+  "generated_evidence_max_bytes": 268435456,
+  "generated_evidence_max_files": 10000,
+  "interpretation": "New isolated environment with exact public PyTorch compiler artifact. Same model/schedule/native runtime sources. This is prospective diagnostic evidence, not benchmark or quality certification.",
+  "matched_compiler_environment": {
+    "CUBLAS_WORKSPACE_CONFIG": null,
+    "CUDA_MODULE_LOADING": null,
+    "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda/bin/ptxas",
+    "TRITON_PTXAS_PATH": "/usr/local/cuda/bin/ptxas"
+  },
+  "mode": "observed",
+  "original_binding_sha256": "bcbd3a70f95018403ccfe4fc0d50a60ae23597f5b28ee3c604115e3f1aa15daa",
+  "package_files": {
+    "triton/FileCheck": {
+      "bytes": 1183376,
+      "sha256": "7e9c5766ce9530dab3d7a2780000e614370ae11423310675e3584f9e28833741"
+    },
+    "triton/_C/libproton.so": {
+      "bytes": 19685416,
+      "sha256": "d9eaaada1f0ee063e0d62271aaf9099bce957a020f7a84996200154e44a49d13"
+    },
+    "triton/_C/libtriton.so": {
+      "bytes": 423385784,
+      "sha256": "183795fbe79c0db4070f74b2d0996690f09e3e08fa5307ccd1d7c4644eef1275"
+    },
+    "triton/_C/libtriton/linear_layout.pyi": {
+      "bytes": 2054,
+      "sha256": "5ba79b2daaef34108e91fd972f26a8f2bf319143c23d57baeb2579d85cf5efc9"
+    },
+    "triton/__init__.py": {
+      "bytes": 1661,
+      "sha256": "96e68192cab5dd11fa30d5dc95d56c29ceecda53477fc3af8f37bee026b7a021"
+    },
+    "triton/_filecheck.py": {
+      "bytes": 3137,
+      "sha256": "c1461a37f7659b9ed3b805a7455515e2fcc02cb3f2543db1d68f3f5527f4e7f3"
+    },
+    "triton/_internal_testing.py": {
+      "bytes": 8800,
+      "sha256": "a3f13576775d898974921d294906138f25015e3b1b45fb751328068166061e19"
+    },
+    "triton/_utils.py": {
+      "bytes": 3825,
+      "sha256": "631df86cecf90a5fbf2103b2d1d3d0f0bdc5fc68d7e571df9a76e3ae979d936e"
+    },
+    "triton/backends/__init__.py": {
+      "bytes": 2554,
+      "sha256": "c8bd4497720e736a2f8a7c01667a802d4945083a4aee77d3ac4bfe4305c47a89"
+    },
+    "triton/backends/amd/__init__.py": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "triton/backends/amd/compiler.py": {
+      "bytes": 22981,
+      "sha256": "62556f905349ceed6286f9926f72ced9c5e990807e0791873945e93ca8e287d2"
+    },
+    "triton/backends/amd/driver.c": {
+      "bytes": 18123,
+      "sha256": "e1dae7bc4a93acf1bce8fd84ad4c8141edbdf50d62ecca96fbe12d92e1644479"
+    },
+    "triton/backends/amd/driver.py": {
+      "bytes": 32542,
+      "sha256": "8f6569a35754508b27d2a70e1034d33ee19f0ef9f24a9eaa5e4ff999cddf2044"
+    },
+    "triton/backends/amd/include/hip/amd_detail/amd_channel_descriptor.h": {
+      "bytes": 11574,
+      "sha256": "bed3e191b56c5444d398db006f17bd66b030d31d2e7a1ca69b5e044d86b1287e"
+    },
+    "triton/backends/amd/include/hip/amd_detail/amd_device_functions.h": {
+      "bytes": 31924,
+      "sha256": "4c49dd5f468aa2c8e8a3bd27570326d5fb90654be73d27a3572b5fe067e3167d"
+    },
+    "triton/backends/amd/include/hip/amd_detail/amd_hip_atomic.h": {
+      "bytes": 29043,
+      "sha256": "6f3d55c6fda28ce63614e0cb43a70318a573f2b40078b6e0cef481e627685f0c"
+    },
+    "triton/backends/amd/include/hip/amd_detail/amd_hip_common.h": {
+      "bytes": 1371,
+      "sha256": "b2731a9c4084dc96c297b618295dd5c9474b4ce7accd3f7352dd82b4d94b42d1"
+    },
+    "triton/backends/amd/include/hip/amd_detail/amd_hip_gl_interop.h": {
+      "bytes": 3976,
+      "sha256": "566881ac455970f68f03423c6c947bd20600a6cfd892666b5b8ba1ed57944773"
+    },
+    "triton/backends/amd/include/hip/amd_detail/amd_hip_runtime.h": {
+      "bytes": 14276,
+      "sha256": "e51a973fd5dd9e07300cb7c5a51fbd2059531abc33f67a45d7fe7cdef79552c8"
+    },
+    "triton/backends/amd/include/hip/amd_detail/amd_hip_runtime_pt_api.h": {
+      "bytes": 10359,
+      "sha256": "be840fd08265680bcf8fc62c3c6293479e24c7cbf617b46b01a6c7ee536dd63c"
+    },
+    "triton/backends/amd/include/hip/amd_detail/amd_hip_unsafe_atomics.h": {
+      "bytes": 25567,
+      "sha256": "b5eaaa01260176b641e9c8c25a0a8fc9527318dcd11cc4754e0bd1482ddedd97"
+    },
+    "triton/backends/amd/include/hip/amd_detail/amd_hip_vector_types.h": {
+      "bytes": 56477,
+      "sha256": "611f2ea3338a9911e36527dff422dfa5829b6bcce685888bf18f0d9d8284a156"
+    },
+    "triton/backends/amd/include/hip/amd_detail/amd_math_functions.h": {
+      "bytes": 3048,
+      "sha256": "58553025db2bf68b564bb8ea4071d3124126b60cde888c7b365560a2f4e7beff"
+    },
+    "triton/backends/amd/include/hip/amd_detail/amd_surface_functions.h": {
+      "bytes": 18608,
+      "sha256": "f46860972886f789c31f40a24e6a0aedd8026c19df3ed8e4ea1dd0c98c3da3cc"
+    },
+    "triton/backends/amd/include/hip/amd_detail/amd_warp_functions.h": {
+      "bytes": 22072,
+      "sha256": "a3c82e4b2205babb03d241f2f6ce7a8f489880047cf3b37460f52d007c29d75c"
+    },
+    "triton/backends/amd/include/hip/amd_detail/amd_warp_sync_functions.h": {
+      "bytes": 30172,
+      "sha256": "119571e114342f7ea237f25604e8c08ceca821b1200149964ef7ce5e3f8c4a21"
+    },
+    "triton/backends/amd/include/hip/amd_detail/device_library_decls.h": {
+      "bytes": 7396,
+      "sha256": "fc828035bf5b378e8c894e2db13f996375634f749142a2fde63833d729e4868e"
+    },
+    "triton/backends/amd/include/hip/amd_detail/hip_assert.h": {
+      "bytes": 4360,
+      "sha256": "199906029b4ad199320d738419dbb4d32b37a5a3619e7ab2e3c3942cbb15caaa"
+    },
+    "triton/backends/amd/include/hip/amd_detail/hip_fp16_math_fwd.h": {
+      "bytes": 4923,
+      "sha256": "e6ed59fc1599959e7d8d83af5db5ac82c3d63bd91018f1f48cd9622b9471b40a"
+    },
+    "triton/backends/amd/include/hip/amd_detail/hip_ldg.h": {
+      "bytes": 3652,
+      "sha256": "2801196fd1f8cf80c3ae46a5a0c39e5b36a18837c8d95e9cebcbd64f78dbe5f5"
+    },
+    "triton/backends/amd/include/hip/amd_detail/hip_prof_str.h": {
+      "bytes": 738681,
+      "sha256": "3f7b371e6289fc2194a010de87575b19c03a873822348c7e653c6bed67951029"
+    },
+    "triton/backends/amd/include/hip/amd_detail/hip_runtime_prof.h": {
+      "bytes": 2696,
+      "sha256": "f6ee65d05b5a60210a29260b79cda355c89ed5e772eb1c8272c9a537411bd95b"
+    },
+    "triton/backends/amd/include/hip/amd_detail/host_defines.h": {
+      "bytes": 10131,
+      "sha256": "c3a1f5d1dce7b303205e8ea32414c8be18ce3901b39e180dac79b947f84cbfb5"
+    },
+    "triton/backends/amd/include/hip/amd_detail/math_fwd.h": {
+      "bytes": 17219,
+      "sha256": "1a059224f23fa9619f779d283c8864f799598877648eba5691347b75dc29101e"
+    },
+    "triton/backends/amd/include/hip/amd_detail/ockl_image.h": {
+      "bytes": 14969,
+      "sha256": "cb313c619a66a56244b3e669380184b436039b7804a58d368595477294497f67"
+    },
+    "triton/backends/amd/include/hip/amd_detail/texture_fetch_functions.h": {
+      "bytes": 18998,
+      "sha256": "c0ead499d728f9eb4fa8ee5094a9543f4f92a45c14577c3f75fc6e3ec042a655"
+    },
+    "triton/backends/amd/include/hip/amd_detail/texture_indirect_functions.h": {
+      "bytes": 23136,
+      "sha256": "256b3ee718feb9bc0eccd129e90248ee4b80b2a7f12ad864c11bce2974c7dea3"
+    },
+    "triton/backends/amd/include/hip/channel_descriptor.h": {
+      "bytes": 1774,
+      "sha256": "d6d585e084c20182969dda448a0179a70154c249982249da5bf7df8b824ef162"
+    },
+    "triton/backends/amd/include/hip/driver_types.h": {
+      "bytes": 31339,
+      "sha256": "d1f9df2221456c157e8dc0d8d154606276a74c32bed1ff1c74d849e1c713204f"
+    },
+    "triton/backends/amd/include/hip/hip_common.h": {
+      "bytes": 3430,
+      "sha256": "41e51ddfbaf16220dde027e9e0e23c3ba4f019e1b5182df848e23ff5baa06545"
+    },
+    "triton/backends/amd/include/hip/hip_deprecated.h": {
+      "bytes": 7758,
+      "sha256": "9334c9333f6e28a3c385b62b29d003d69ed798c3f3a6bf94ca4d6f3b7ed9b33d"
+    },
+    "triton/backends/amd/include/hip/hip_runtime.h": {
+      "bytes": 2869,
+      "sha256": "a7fbe286f7cdf9d1deced6fb6d663b48950315fc32caec96435bf78599c3bafa"
+    },
+    "triton/backends/amd/include/hip/hip_runtime_api.h": {
+      "bytes": 444378,
+      "sha256": "f0ed814c4f9cd8bcf8905f358acda397ffbcbb8395bb1a65973c5b547ec455c0"
+    },
+    "triton/backends/amd/include/hip/hip_texture_types.h": {
+      "bytes": 1237,
+      "sha256": "02192f8c6e1c0e37ff6452e0e52b124df0675c6eb5e0f04ad5754f6bb8ab65b9"
+    },
+    "triton/backends/amd/include/hip/hip_vector_types.h": {
+      "bytes": 1631,
+      "sha256": "c1585f3ee359e3036cab65ff7d65eb2e0582b7a4325ee86400614c3b92ba2041"
+    },
+    "triton/backends/amd/include/hip/hip_version.h": {
+      "bytes": 408,
+      "sha256": "f2f49e44ccd0509582566a32ff9cf1b104e45b3a5dfc2356208b8f52b7b6c3de"
+    },
+    "triton/backends/amd/include/hip/library_types.h": {
+      "bytes": 2433,
+      "sha256": "d9a86ad289e11419696f78917fb96879de2fa9963c27fbd2d41416a9ff327f11"
+    },
+    "triton/backends/amd/include/hip/linker_types.h": {
+      "bytes": 6691,
+      "sha256": "057aba5652e78984c2cf2a42cf4c96b9acb6b9c673ab135e93ba27965a627d7b"
+    },
+    "triton/backends/amd/include/hip/surface_types.h": {
+      "bytes": 1953,
+      "sha256": "e5eddc787fc90638713bc7341e22d2ee23011051962b50dc8c33900a2c6c9f15"
+    },
+    "triton/backends/amd/include/hip/texture_types.h": {
+      "bytes": 6499,
+      "sha256": "f25c81c6f2ad63540551128dd692b6ca7811bc0c12d981a0ad20ce1fa1e04d2c"
+    },
+    "triton/backends/amd/include/hipblas-common/hipblas-common.h": {
+      "bytes": 5450,
+      "sha256": "9d92c7d9662b7030c579fcfd6b4f29db280ff9869820ebb152239b1afc173d3b"
+    },
+    "triton/backends/amd/include/hsa/amd_hsa_kernel_code.h": {
+      "bytes": 12754,
+      "sha256": "2f48b1fff5432fb96aa460d3c5ac0bccb2e8996adfa5ecdb508722f3911ff9d0"
+    },
+    "triton/backends/amd/include/hsa/hsa.h": {
+      "bytes": 191415,
+      "sha256": "f0dc5099a15c812cb6cdf33cf67ec35f1386be222a6d0f05896cfff16916e514"
+    },
+    "triton/backends/amd/include/hsa/hsa_ext_amd.h": {
+      "bytes": 136290,
+      "sha256": "b15af4e0f20b05c60b8b219d15fd949c132c9d99bae96c48535e9b4ec69eacaa"
+    },
+    "triton/backends/amd/include/hsa/hsa_ext_image.h": {
+      "bytes": 56383,
+      "sha256": "0c52e6bf76790b4d2967886b2a501995e0f08d78a053b23620174ab974b7b71c"
+    },
+    "triton/backends/amd/include/hsa/hsa_ven_amd_loader.h": {
+      "bytes": 26146,
+      "sha256": "73a7313c0cc0a31eeee886c5cc491065f0ae465f8aaf7f56858dbfc36dd7d51e"
+    },
+    "triton/backends/amd/include/hsa/hsa_ven_amd_pc_sampling.h": {
+      "bytes": 18767,
+      "sha256": "d6342f8bdeacf78f868ce1a4b66be9aa3551b1318036e80eb15e979a031f8af9"
+    },
+    "triton/backends/amd/include/roctracer/ext/prof_protocol.h": {
+      "bytes": 3849,
+      "sha256": "e8501cbd50fe74d33bbae945b3607e693c70e71380586cba7af743e3251a79b0"
+    },
+    "triton/backends/amd/include/roctracer/roctracer.h": {
+      "bytes": 23849,
+      "sha256": "07cb07cf60cc369acfec4a8d5881b054b635290329c6685f572e14a11f1dcf36"
+    },
+    "triton/backends/amd/include/roctracer/roctracer_ext.h": {
+      "bytes": 2940,
+      "sha256": "bcb699f29780c52cb4730add11a94a9d402990ab297dad388b0d4caff65c8a8d"
+    },
+    "triton/backends/amd/include/roctracer/roctracer_hip.h": {
+      "bytes": 1432,
+      "sha256": "442cd8b8dc35bcb47bc4ae2b6f4e93b4cf53539e3a51828727cdc8307999126f"
+    },
+    "triton/backends/amd/include/roctracer/roctracer_roctx.h": {
+      "bytes": 2014,
+      "sha256": "8018c1939bdbd25dcf6c1490ed5f6216d68cfd1ce42032445b503f3d70628413"
+    },
+    "triton/backends/amd/include/roctracer/roctx.h": {
+      "bytes": 6717,
+      "sha256": "461257517461489e4b444ff5826ec4ebe6e310cadf70504b0cbb9fdd4c40221f"
+    },
+    "triton/backends/amd/lib/asanrtl.bc": {
+      "bytes": 24508,
+      "sha256": "d71bf64655375af6ddb208479668708877b018cd81e5d2adb396c444ce92f3da"
+    },
+    "triton/backends/amd/lib/ockl.bc": {
+      "bytes": 246124,
+      "sha256": "c10282ce42ae9081dbbb49728ca5189619dd73b4b6ef1b68e8be78274067f82d"
+    },
+    "triton/backends/amd/lib/ocml.bc": {
+      "bytes": 205964,
+      "sha256": "50f3535d6d2009750d07e73aa2b498c1bfa6cfdfe68d473bce7cbfbdf1736b8e"
+    },
+    "triton/backends/compiler.py": {
+      "bytes": 2834,
+      "sha256": "c5d3403b88b5bb728f8ac78c55163198e418430f126c842892c68cb4b6baaa78"
+    },
+    "triton/backends/driver.py": {
+      "bytes": 1802,
+      "sha256": "25cb0bee9547488335de2d495af738298ba6d4c20f1d37941dc17751c57a211e"
+    },
+    "triton/backends/nvidia/__init__.py": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "triton/backends/nvidia/bin/cuobjdump": {
+      "bytes": 466472,
+      "sha256": "cf71820befc535f2d09b75dbe2a47046baca703ed1e39b52a41b36fb0ea9b9e7"
+    },
+    "triton/backends/nvidia/bin/nvdisasm": {
+      "bytes": 5648384,
+      "sha256": "2f59b35c4641f75b25b95c68b3ebfcfbbb94a92a00a3aaac8090973ea579ee93"
+    },
+    "triton/backends/nvidia/bin/ptxas": {
+      "bytes": 26406992,
+      "sha256": "9750201693a8d711e0a0c1fd38276226daea1f4a4aa1829dbb14351ca29f62ef"
+    },
+    "triton/backends/nvidia/bin/ptxas-blackwell": {
+      "bytes": 28889264,
+      "sha256": "d07db8b5fd19692ad6fc9643ad3449cc27190fad1f1ad6c6b8338fdec95ea72e"
+    },
+    "triton/backends/nvidia/compiler.py": {
+      "bytes": 23589,
+      "sha256": "eea55698bab00c726b3d1d495b390b72a63aaa8d167781a65ea5212d394d76f6"
+    },
+    "triton/backends/nvidia/driver.c": {
+      "bytes": 19555,
+      "sha256": "439c1e886fa9eac7346d7523d03ba0a4c52aa4c9b518ea86d8659b5c07eb7dc9"
+    },
+    "triton/backends/nvidia/driver.py": {
+      "bytes": 25625,
+      "sha256": "4ad4b4440aa4a5ee15ac2382ae78a7aa8029986c22ec2acbd072a91810e85e94"
+    },
+    "triton/backends/nvidia/include/Openacc/cupti_openacc.h": {
+      "bytes": 3513,
+      "sha256": "67438ce5efe16ddddcc5d5f29f74821ea04141ac0b83840e467966e7b0abdbe3"
+    },
+    "triton/backends/nvidia/include/Openmp/cupti_openmp.h": {
+      "bytes": 3491,
+      "sha256": "13558d99e6ffec76944a605e82d50d7b8215d62ee95de371833225c8a9f5ceb3"
+    },
+    "triton/backends/nvidia/include/Openmp/omp-tools.h": {
+      "bytes": 37403,
+      "sha256": "026b82ff13c2ed53eedc1f96e0f997b8236e7c56b0858f0f8cd5de3da40500e8"
+    },
+    "triton/backends/nvidia/include/builtin_types.h": {
+      "bytes": 3150,
+      "sha256": "2714fd55fdaadac9f14c138bf400b33666334d60023b654e554bb529d16deff8"
+    },
+    "triton/backends/nvidia/include/channel_descriptor.h": {
+      "bytes": 21846,
+      "sha256": "a192033b591d7b13dbf6396d531d40b17005927bd158002bd78e7af76e4faa28"
+    },
+    "triton/backends/nvidia/include/common_functions.h": {
+      "bytes": 3410,
+      "sha256": "db62d365155c3d9cc41fa30975aee734c0af3202234937b438a47bb04423ea47"
+    },
+    "triton/backends/nvidia/include/cooperative_groups.h": {
+      "bytes": 60684,
+      "sha256": "cb6705c5ae9efac684140f5a5b6d99b93c22d30b9dede107abb5cddefdf42d3d"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/details/async.h": {
+      "bytes": 19122,
+      "sha256": "c6c1070993f79ee118de5da9f12536775db6e97897ba652f0cffc6ca1f0f7556"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/details/coalesced_reduce.h": {
+      "bytes": 4257,
+      "sha256": "a41420158ee2eb857ced73404e0d5410840754d60e22d42d1e34b9078ca7f297"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/details/coalesced_scan.h": {
+      "bytes": 7314,
+      "sha256": "0df66fe5de56d1726ffad655860ac87632e3b3a682c7fbb4a32d650c8a63a354"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/details/driver_abi.h": {
+      "bytes": 3964,
+      "sha256": "bfe6546f852018a264e8d4765825870f7c7fe36cbeb68808d6eac59fbd068be8"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/details/functional.h": {
+      "bytes": 8905,
+      "sha256": "d8157c8bc062773d24831b989090806f0171388651cb31e01be73fad52a14737"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/details/helpers.h": {
+      "bytes": 26476,
+      "sha256": "2bd8efc675dce7ee85ba6d4a1b811028926b559e018473920096d9478b832f47"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/details/info.h": {
+      "bytes": 12465,
+      "sha256": "14eae9dcbb6de0f71b2b67c0339517f63b2c159b63fcba954a1ccb15c2a249a6"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/details/invoke.h": {
+      "bytes": 8616,
+      "sha256": "3acab72beb59b971d508c409ef4f0f8cfa3e0703218e18c0a4ee1bd1360b1498"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/details/memory.h": {
+      "bytes": 5606,
+      "sha256": "8444b749f817201b23d8c16b0bf33908e5e53a2ad206eba13cc0099d6a08f76c"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/details/partitioning.h": {
+      "bytes": 7153,
+      "sha256": "010cfe4e17aa5f7a27a97d91988522a73614541dbbdf384b947270fe45fd0f65"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/details/reduce.h": {
+      "bytes": 23296,
+      "sha256": "323a8c0f04f44f2599938256705dd61f0f31b7032aca2cc0e02df3cbb7fc79ed"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/details/scan.h": {
+      "bytes": 17166,
+      "sha256": "f93b706f601f10463fb6c9aa2634767688e43e9a11c77f3b4a8ab182f7dd06d4"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/details/sync.h": {
+      "bytes": 10795,
+      "sha256": "11de0af50acf662e3775d4aa670bf55fc346fc24ec5d4a304909dda14bfcd8b5"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/memcpy_async.h": {
+      "bytes": 2960,
+      "sha256": "7ab3881ee39b75fc5184159fad7137c2c645e01d8652eab0cd0aec3f028fa5b8"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/reduce.h": {
+      "bytes": 2949,
+      "sha256": "0748600e4a8cfbab9ea934e06f76f7e00d111f8bc6cfc9817f97b68d3d5d275a"
+    },
+    "triton/backends/nvidia/include/cooperative_groups/scan.h": {
+      "bytes": 2940,
+      "sha256": "d8453a4f97163707ed9b607b162715df53e88e823ad72a397c75c6458906938d"
+    },
+    "triton/backends/nvidia/include/crt/common_functions.h": {
+      "bytes": 13559,
+      "sha256": "f94e387f8c941a6c033f077b43fdc2cf989fd39c4718f4a5033cf9cccca52d24"
+    },
+    "triton/backends/nvidia/include/crt/cudacc_ext.h": {
+      "bytes": 3224,
+      "sha256": "296ea7d0898e64a4b456a5660475935ed1c8f35ea187cf187848148366987555"
+    },
+    "triton/backends/nvidia/include/crt/device_double_functions.h": {
+      "bytes": 39938,
+      "sha256": "035bc1de0d2ac273447dca53d5df518860dac6a3d75e062bf95c5eda8307cb16"
+    },
+    "triton/backends/nvidia/include/crt/device_double_functions.hpp": {
+      "bytes": 8568,
+      "sha256": "61821ba9885be5099ff1ce187dc0bf8f2b60e054707173e3bf74c54f085bdb81"
+    },
+    "triton/backends/nvidia/include/crt/device_fp128_functions.h": {
+      "bytes": 51047,
+      "sha256": "de208aadd98fa753488eb946478edd0993a057d5fa32675f9a3ba0ac5e8312db"
+    },
+    "triton/backends/nvidia/include/crt/device_functions.h": {
+      "bytes": 137919,
+      "sha256": "4f820db9104894b99ddc9100f07e81e571d500d195ea3f20c325138f987f175f"
+    },
+    "triton/backends/nvidia/include/crt/device_functions.hpp": {
+      "bytes": 37991,
+      "sha256": "3951e2a818dd6b2fda5059c3289c53788d150d923c640e8921d50a780291e290"
+    },
+    "triton/backends/nvidia/include/crt/func_macro.h": {
+      "bytes": 1755,
+      "sha256": "10ea4395a33dd7b6e1f5cc0188504f17af3d0c2301c398456abc4bc45b7e8bbe"
+    },
+    "triton/backends/nvidia/include/crt/host_config.h": {
+      "bytes": 12169,
+      "sha256": "d5e922df0e71b98d3480891d61b9927d93b64a823c8226566124d120bdae16cd"
+    },
+    "triton/backends/nvidia/include/crt/host_defines.h": {
+      "bytes": 10102,
+      "sha256": "7c353fd1c41db48bc474cd33645298d0e6e83003443201cb6e589f3da94f18b9"
+    },
+    "triton/backends/nvidia/include/crt/host_runtime.h": {
+      "bytes": 10284,
+      "sha256": "94ea66931159564129f1d70c0061194484ec87ed7da3d8f2dfd91d48d2dcdcd8"
+    },
+    "triton/backends/nvidia/include/crt/math_functions.h": {
+      "bytes": 238284,
+      "sha256": "2f2189d1752d862e96122f985484c89e16bd03a485a01e1f114514f738a2ed4f"
+    },
+    "triton/backends/nvidia/include/crt/math_functions.hpp": {
+      "bytes": 100207,
+      "sha256": "bbe0866ddd11d8565674a1bee9b766192a2bf4a4ffc279884a3eb794f40a0123"
+    },
+    "triton/backends/nvidia/include/crt/mma.h": {
+      "bytes": 62695,
+      "sha256": "068a1600b0d6013bd9ba925a2fbf8615045060ea2d35efc5cb5d48e4d1a1d850"
+    },
+    "triton/backends/nvidia/include/crt/mma.hpp": {
+      "bytes": 66599,
+      "sha256": "b29a342d7ef5b540a2a712b9d7b06cb23d2773e6477fca0c5b3bc7a18601ffa2"
+    },
+    "triton/backends/nvidia/include/crt/nvfunctional": {
+      "bytes": 16900,
+      "sha256": "143334cea58ee9b97d8e924acfd53c08c6e3b7a8932a1d7cb506a5c40bd1b1a8"
+    },
+    "triton/backends/nvidia/include/crt/sm_100_rt.h": {
+      "bytes": 8987,
+      "sha256": "ddc062094d7539c8c6629afce5e742375ab89b6cfdd45686841b6e3b48ace13a"
+    },
+    "triton/backends/nvidia/include/crt/sm_100_rt.hpp": {
+      "bytes": 6855,
+      "sha256": "bdb23608d098d3c74323bcd7c29e8135c7992a5d1c7971b596f7aae30f9535aa"
+    },
+    "triton/backends/nvidia/include/crt/sm_70_rt.h": {
+      "bytes": 6837,
+      "sha256": "29ff37d31ca603ece617b2ecba71472d23728614f952224ca1c8281c141e367b"
+    },
+    "triton/backends/nvidia/include/crt/sm_70_rt.hpp": {
+      "bytes": 7837,
+      "sha256": "ddafeb53e63431207886d043158e0f090fe35e25854deed64f567284cb8224e0"
+    },
+    "triton/backends/nvidia/include/crt/sm_80_rt.h": {
+      "bytes": 7743,
+      "sha256": "31d2475824732ccfff9c30dfd60a3ad6b0ec97dc9d396de88ba49905f8d4c9cf"
+    },
+    "triton/backends/nvidia/include/crt/sm_80_rt.hpp": {
+      "bytes": 6705,
+      "sha256": "a3eac9bbe8e97a109ec8004682ffbc758441ee82530b0b8d76f482ab455445d1"
+    },
+    "triton/backends/nvidia/include/crt/sm_90_rt.h": {
+      "bytes": 11445,
+      "sha256": "6a7e3b9b45c505a277a545fd325138fa792d3f58dbdde2545e14379ed66dcdcf"
+    },
+    "triton/backends/nvidia/include/crt/sm_90_rt.hpp": {
+      "bytes": 9228,
+      "sha256": "62ea95ca0195eab82d5adc7527d70fa4423705729004823e133ea86453f7c2b1"
+    },
+    "triton/backends/nvidia/include/crt/storage_class.h": {
+      "bytes": 4791,
+      "sha256": "77370e675ea92da37c7a3a87697c388876c127a7d75b17da53eb23d908d8cf38"
+    },
+    "triton/backends/nvidia/include/cuComplex.h": {
+      "bytes": 12186,
+      "sha256": "5a9720a5a88f854fe8f6c4cf31c353119bb25c321cf31deccf8754592ced2f68"
+    },
+    "triton/backends/nvidia/include/cuda.h": {
+      "bytes": 1156988,
+      "sha256": "4568cc9e7a321e47707cd6403980f21ac2e2e55170500d0e0a3f54feb03a9acb"
+    },
+    "triton/backends/nvidia/include/cudaEGL.h": {
+      "bytes": 39955,
+      "sha256": "8abb9953dc52180709dbd3845f82bf528d68e0d18ff61820bf67e239939f0d0a"
+    },
+    "triton/backends/nvidia/include/cudaEGLTypedefs.h": {
+      "bytes": 5645,
+      "sha256": "c45fc500dd4a6abf68c8727770253b8f3b53a715fc5b29698ae6326291861de9"
+    },
+    "triton/backends/nvidia/include/cudaGL.h": {
+      "bytes": 22501,
+      "sha256": "80c4f51cf19afac8ae8e2d2002c298af85f8e4b736f472a0942fedb4d486c943"
+    },
+    "triton/backends/nvidia/include/cudaGLTypedefs.h": {
+      "bytes": 6576,
+      "sha256": "742969408f8bb97805f6b3d206c8fb3a4220f20fdf5c38d3d212d94bc4c6a4e8"
+    },
+    "triton/backends/nvidia/include/cudaProfilerTypedefs.h": {
+      "bytes": 3297,
+      "sha256": "1766962c82affc084d6f134e69955c46cc4887492eb1c9d5f143165b19010256"
+    },
+    "triton/backends/nvidia/include/cudaTypedefs.h": {
+      "bytes": 115169,
+      "sha256": "48a7c0bd33a3d7dcf1b222c62a1a315cf8a8a4aaa87b98638f9897911dbfbfa1"
+    },
+    "triton/backends/nvidia/include/cudaVDPAU.h": {
+      "bytes": 12694,
+      "sha256": "369ecd7365a36b3fbe864a5b856e9ff5a6a9afe35b70f0c0824a2dd2c25eadca"
+    },
+    "triton/backends/nvidia/include/cudaVDPAUTypedefs.h": {
+      "bytes": 4144,
+      "sha256": "c33f27c8e51dc0cf661fd24edd0656f80f5dcb1b7e22e7d25fb9e08125e908db"
+    },
+    "triton/backends/nvidia/include/cuda_awbarrier.h": {
+      "bytes": 9340,
+      "sha256": "dd91fe6655ce0e14a2c1263daea4a78bf110c22db940c1cfe939becce7710701"
+    },
+    "triton/backends/nvidia/include/cuda_awbarrier_helpers.h": {
+      "bytes": 12489,
+      "sha256": "382b240adb396c22a5fd12817bd33be3329222c56978f9f8e12fda269d6d1571"
+    },
+    "triton/backends/nvidia/include/cuda_awbarrier_primitives.h": {
+      "bytes": 4699,
+      "sha256": "9f9fff1358d8603865807f9fdeef0c423b73e7b519eefe55b2184cc9ed5e89c3"
+    },
+    "triton/backends/nvidia/include/cuda_bf16.h": {
+      "bytes": 204512,
+      "sha256": "4d5a2ad88adb17983aef0505ed6ed2a0603497c79c103bba82c928301ea12310"
+    },
+    "triton/backends/nvidia/include/cuda_bf16.hpp": {
+      "bytes": 136544,
+      "sha256": "3ae9165e837a6e04650bea7c0856e150dd06d2e0096ffce8b359823da82c7272"
+    },
+    "triton/backends/nvidia/include/cuda_device_runtime_api.h": {
+      "bytes": 46986,
+      "sha256": "e7897ae906f07ab5f4c0f2a8242db2eea09d18ff27bf5fc681d98c57c034c789"
+    },
+    "triton/backends/nvidia/include/cuda_egl_interop.h": {
+      "bytes": 37509,
+      "sha256": "6b058104462f50533b01444da7698d0fc1fbff990640b46cc11bde5d8072fb7b"
+    },
+    "triton/backends/nvidia/include/cuda_fp16.h": {
+      "bytes": 206851,
+      "sha256": "8eb1600a8e2e33d40572bffe7001a27f6046a74949d80353fe02cf88b2563dda"
+    },
+    "triton/backends/nvidia/include/cuda_fp16.hpp": {
+      "bytes": 120927,
+      "sha256": "a352130e6b8debb37c61419472f4e957721da52fbac30966eb933f1fef0b60ab"
+    },
+    "triton/backends/nvidia/include/cuda_fp4.h": {
+      "bytes": 13823,
+      "sha256": "a531107f9acb7e2694fd43178279ec4b5dcd1f91fd16d1e075e88db96fcd9076"
+    },
+    "triton/backends/nvidia/include/cuda_fp4.hpp": {
+      "bytes": 35423,
+      "sha256": "618694bbe611818763f7162ee190e1fee3d57dfc640e512bd020ff6e1945f011"
+    },
+    "triton/backends/nvidia/include/cuda_fp6.h": {
+      "bytes": 13963,
+      "sha256": "eb187413848d9a3989643dc7e7f1e865ed3c6d0d25a1413ccb771b3b5f7e01de"
+    },
+    "triton/backends/nvidia/include/cuda_fp6.hpp": {
+      "bytes": 56455,
+      "sha256": "a9af37f1bb9978b3f7db1055a9ba3bd6e1525b9467056c7daa9e43f9247fc5cd"
+    },
+    "triton/backends/nvidia/include/cuda_fp8.h": {
+      "bytes": 18072,
+      "sha256": "4124cc45bf65ec8f669ef4f5ffc29736a2cee3cc166961201bdedb0e3121d627"
+    },
+    "triton/backends/nvidia/include/cuda_fp8.hpp": {
+      "bytes": 97230,
+      "sha256": "e8000164f7cf94afa3990c8c75b4c41343d94e550b8ee2ceaec43467f72e6c1c"
+    },
+    "triton/backends/nvidia/include/cuda_gl_interop.h": {
+      "bytes": 19150,
+      "sha256": "55012cc0578e045e8937a434a5d964bdce564fb6c3d459d37ca7b0bc036e9427"
+    },
+    "triton/backends/nvidia/include/cuda_occupancy.h": {
+      "bytes": 71302,
+      "sha256": "d076afacc2165c6c48ba36aaef6897df5fbbdd9a6bc7458161d8a59f764d3f6c"
+    },
+    "triton/backends/nvidia/include/cuda_pipeline.h": {
+      "bytes": 8130,
+      "sha256": "d1e9d71b8f7037825a8e5422dda85ba767a2fee7d363f3339e273bcdf5a62873"
+    },
+    "triton/backends/nvidia/include/cuda_pipeline_helpers.h": {
+      "bytes": 13852,
+      "sha256": "6e8d4bedeeaf0ae33e2b7225f0ad73e302548dae43c9740a768fe149650c13e1"
+    },
+    "triton/backends/nvidia/include/cuda_pipeline_primitives.h": {
+      "bytes": 8675,
+      "sha256": "167249b6e57aac7afa2e02f9e970f08a57126c5afa5b51e3ea67f500968c236d"
+    },
+    "triton/backends/nvidia/include/cuda_runtime.h": {
+      "bytes": 98570,
+      "sha256": "1aaa84ed2ac4086acdf908390e4f742d28ecfb1bca94766944b9691fb2d47a13"
+    },
+    "triton/backends/nvidia/include/cuda_runtime_api.h": {
+      "bytes": 655943,
+      "sha256": "116852112153fef5797986694c112ee04be036d13dae19873f9d375e72061c8b"
+    },
+    "triton/backends/nvidia/include/cuda_stdint.h": {
+      "bytes": 4093,
+      "sha256": "5db14e93d0ad2632aa93b3e960da9b495b03c40b1533c6af038ad6a4f8b40634"
+    },
+    "triton/backends/nvidia/include/cuda_surface_types.h": {
+      "bytes": 3688,
+      "sha256": "330e4ba386fc43e7fd9a880ebc04c6c8786ef5ddadd8ae973b1baab59ad28770"
+    },
+    "triton/backends/nvidia/include/cuda_texture_types.h": {
+      "bytes": 3688,
+      "sha256": "2136d7f893673fb466f894a0355749f69aba93c155a2bf116e7aee0ec2aaeac9"
+    },
+    "triton/backends/nvidia/include/cuda_vdpau_interop.h": {
+      "bytes": 7727,
+      "sha256": "6d741a9d67362055d900a58d1a5db1033f672ef1664295b21abb03bdf792f450"
+    },
+    "triton/backends/nvidia/include/cudart_platform.h": {
+      "bytes": 2717,
+      "sha256": "60deac2a10746fdc39b465f52182fbba52553eb580897f40e38a8bbf812d5b94"
+    },
+    "triton/backends/nvidia/include/cupti.h": {
+      "bytes": 4697,
+      "sha256": "2645720064c8318cf09bad9d7d5a9ab379cc7082e180ffd6773e9f878fcd103d"
+    },
+    "triton/backends/nvidia/include/cupti_activity.h": {
+      "bytes": 229848,
+      "sha256": "809286946d8989f5b7e8bc7eba325c28196752b34ea13c5aaf9d64dbc1ab52d5"
+    },
+    "triton/backends/nvidia/include/cupti_activity_deprecated.h": {
+      "bytes": 137602,
+      "sha256": "074a78cdb965daf527d63d089931ba4086e9a7a1e2c3ccbe5f4db56667fb7e51"
+    },
+    "triton/backends/nvidia/include/cupti_callbacks.h": {
+      "bytes": 29689,
+      "sha256": "699f9213460c15f4fd47e521e4c1dba0f834ca91cc8de492009c37cdd3fb382b"
+    },
+    "triton/backends/nvidia/include/cupti_checkpoint.h": {
+      "bytes": 5264,
+      "sha256": "ad3cfc2685b1a844815f26565216491a6e31798731e0e24eb49ecb775dd3fdbd"
+    },
+    "triton/backends/nvidia/include/cupti_common.h": {
+      "bytes": 3514,
+      "sha256": "f399bbe1bc54817a77b4468f4297b379ace6a6c34cc38d4fb2335262641d4f6d"
+    },
+    "triton/backends/nvidia/include/cupti_driver_cbid.h": {
+      "bytes": 77280,
+      "sha256": "9a404d3d890b7dc1318506450e8d2260795a1c95860f6bce31db73695fa51149"
+    },
+    "triton/backends/nvidia/include/cupti_events.h": {
+      "bytes": 51923,
+      "sha256": "f35c1cbc5bef1e3f1198409b6c4a7915f823248403a02ffcd4586fab39c5ba96"
+    },
+    "triton/backends/nvidia/include/cupti_metrics.h": {
+      "bytes": 32175,
+      "sha256": "ce67d9c6ae55914269e938fba171243fda32711370d7307d54d8684256e188de"
+    },
+    "triton/backends/nvidia/include/cupti_nvtx_cbid.h": {
+      "bytes": 5912,
+      "sha256": "fdaccfb51d60e2a8afbd7eea6ef1d1520d111c2585ee210e2721cc37da997bd1"
+    },
+    "triton/backends/nvidia/include/cupti_pcsampling.h": {
+      "bytes": 32144,
+      "sha256": "c9c2474f7e8398f21a5731ec077c718d792117211f30224e9772db0ac1c58320"
+    },
+    "triton/backends/nvidia/include/cupti_pcsampling_util.h": {
+      "bytes": 12430,
+      "sha256": "971f0268d5e8c097b966f734e8b13ebbf66bcbf8ce0ecd6633a8fd4395885fd1"
+    },
+    "triton/backends/nvidia/include/cupti_pmsampling.h": {
+      "bytes": 20440,
+      "sha256": "53de6128ec0891949b18d54fd7541298c6b007ca9d26c96363fb54258e2f79d7"
+    },
+    "triton/backends/nvidia/include/cupti_profiler_host.h": {
+      "bytes": 22155,
+      "sha256": "32491f5e528146b44be0d7da3c58ae1380f8cff8299b18815964c18b1cb23139"
+    },
+    "triton/backends/nvidia/include/cupti_profiler_target.h": {
+      "bytes": 32294,
+      "sha256": "31d2eeb4879fc1d31323bc2c71ed0b3b736e0a6dc5460151dc6c4092a69d32ce"
+    },
+    "triton/backends/nvidia/include/cupti_range_profiler.h": {
+      "bytes": 18779,
+      "sha256": "b9ee5b500fb7c42c00b501b20dee4ed5de6b02645b55b72b5ca7c84dde313352"
+    },
+    "triton/backends/nvidia/include/cupti_result.h": {
+      "bytes": 13114,
+      "sha256": "c50a81b1946889c05259d935959004fd67998fcf0c2c7e82953a39f28b21c7ef"
+    },
+    "triton/backends/nvidia/include/cupti_runtime_cbid.h": {
+      "bytes": 48372,
+      "sha256": "059267cecbdfd918d194728484f8c293409d8cb23dfcbfa70a54f07b8bfd3547"
+    },
+    "triton/backends/nvidia/include/cupti_sass_metrics.h": {
+      "bytes": 19674,
+      "sha256": "dd15bdb2726e15074e86b127df00c93abbb4e6ad15ff3b2c5aba83eedbd524ac"
+    },
+    "triton/backends/nvidia/include/cupti_target.h": {
+      "bytes": 1263,
+      "sha256": "c78573d54a5bea6f62c6656998668a425743598408dce67ea1c1171b334ad041"
+    },
+    "triton/backends/nvidia/include/cupti_version.h": {
+      "bytes": 4506,
+      "sha256": "2855e68c1e28fa2646bcef256bd49ff54ae0e2ae2cae61229a7c5b3c2c9dd8df"
+    },
+    "triton/backends/nvidia/include/device_atomic_functions.h": {
+      "bytes": 9500,
+      "sha256": "391da33527d22b3685ae2ef8ce1e15b73e4cd33f540c1537aca782d6b61a550b"
+    },
+    "triton/backends/nvidia/include/device_atomic_functions.hpp": {
+      "bytes": 10486,
+      "sha256": "d1eecc3a234d5279e5a17a41febf564f960ec2ce5cc60cd0400cd1098be06850"
+    },
+    "triton/backends/nvidia/include/device_double_functions.h": {
+      "bytes": 3452,
+      "sha256": "294c487796757f1f1259f2d14f13c3ed107eccdef3b25cdbe27ec96892df2f72"
+    },
+    "triton/backends/nvidia/include/device_functions.h": {
+      "bytes": 3410,
+      "sha256": "6d64ab853604f4d425b2cef131230456eb2fb68f63d9f8140d75951f65bf70e0"
+    },
+    "triton/backends/nvidia/include/device_launch_parameters.h": {
+      "bytes": 3846,
+      "sha256": "1f5fc20bebef01a4b6eb2b385ec4c590c813c544dc8808dd8ecc238b3922b2f4"
+    },
+    "triton/backends/nvidia/include/device_types.h": {
+      "bytes": 3588,
+      "sha256": "d8b171a190493e80395741f511b29311a5c38b718324fb7338f7511c36ae7084"
+    },
+    "triton/backends/nvidia/include/driver_functions.h": {
+      "bytes": 4625,
+      "sha256": "70ddc88d1033d8c8f63e3df94b2c4922464d0c3bac9c9a9aab305d333a5029b0"
+    },
+    "triton/backends/nvidia/include/driver_types.h": {
+      "bytes": 200083,
+      "sha256": "98c35b888c20e44de4ed293af396024af9ca6267d0ddbc56bf76e4120cceb4d5"
+    },
+    "triton/backends/nvidia/include/fatbinary_section.h": {
+      "bytes": 1809,
+      "sha256": "367b947f2df9f32189c787a7ab4a419deb63bf5ed459afa73a58184e8522b6bc"
+    },
+    "triton/backends/nvidia/include/generated_cudaGL_meta.h": {
+      "bytes": 3115,
+      "sha256": "75f77642e6917448db4ad38abda40b8b531dfeaae945087c3dfc99ce727c6d66"
+    },
+    "triton/backends/nvidia/include/generated_cudaVDPAU_meta.h": {
+      "bytes": 1453,
+      "sha256": "7c079db28431694de12000290160ce2ac6bd92072e430e2d7727fc9252e6fb79"
+    },
+    "triton/backends/nvidia/include/generated_cuda_gl_interop_meta.h": {
+      "bytes": 2250,
+      "sha256": "2d73aabd009e8f4b028004f52d428a619e3ae84171378848c1ff682215ce2c5d"
+    },
+    "triton/backends/nvidia/include/generated_cuda_meta.h": {
+      "bytes": 98664,
+      "sha256": "0c37607d6f38195b6c19bafb75a3497219a66434bfc5fbc31ef1429b72353847"
+    },
+    "triton/backends/nvidia/include/generated_cuda_runtime_api_meta.h": {
+      "bytes": 72208,
+      "sha256": "0aece2683c0ed8c877de96822c62aa8bbdcf41f60d9b3a77f3062b8402be7e78"
+    },
+    "triton/backends/nvidia/include/generated_cuda_vdpau_interop_meta.h": {
+      "bytes": 1367,
+      "sha256": "f0e2ea58ddba6846294d6517b5b1c9bc0e4662156fdf26d854e4d6ef22b7ef3f"
+    },
+    "triton/backends/nvidia/include/generated_cudart_removed_meta.h": {
+      "bytes": 5172,
+      "sha256": "5f72395979a1b6c24d365818edca09e6f838b75d46e45451e97a3b31ba0879c9"
+    },
+    "triton/backends/nvidia/include/generated_nvtx_meta.h": {
+      "bytes": 7513,
+      "sha256": "6076ff443f20dece26f0f267ed9d309f1bd41daae5ec13805f9003afe04bdc72"
+    },
+    "triton/backends/nvidia/include/host_config.h": {
+      "bytes": 3380,
+      "sha256": "06c707fc66b30196dba2d75d5732f946669f6d0f908d1c7c7fe2353b4d48056f"
+    },
+    "triton/backends/nvidia/include/host_defines.h": {
+      "bytes": 3386,
+      "sha256": "6c1430405e42d4dd5cdaaa4b579ea0d5cfb07aef58b20cfe8087f62a7deecff0"
+    },
+    "triton/backends/nvidia/include/library_types.h": {
+      "bytes": 5156,
+      "sha256": "8be185730f76c2f722c6cd9b4233a3e08feadba1d863f558e03a43bc75900a36"
+    },
+    "triton/backends/nvidia/include/math_constants.h": {
+      "bytes": 7608,
+      "sha256": "715ea103241ef17edfecc06d68a8e3209ab707270e503a7a239722cc95f91cbc"
+    },
+    "triton/backends/nvidia/include/math_functions.h": {
+      "bytes": 3398,
+      "sha256": "e57702ea3f9f24ab6dbe1c1ce2164da0b1cdc3cd3c6b665820eb59eebcbbc9dd"
+    },
+    "triton/backends/nvidia/include/mma.h": {
+      "bytes": 2932,
+      "sha256": "218fd57a7c6e1277301aaf76321ad651bf97b308747a40172f2f516f18716b66"
+    },
+    "triton/backends/nvidia/include/nvPTXCompiler.h": {
+      "bytes": 14471,
+      "sha256": "945d6cb0a96b8ec3560aca7451d85b07a1b23a01420ced6ad19043cceb30963d"
+    },
+    "triton/backends/nvidia/include/nvfunctional": {
+      "bytes": 2975,
+      "sha256": "2241680a2fd0e0e84ff6712e048fb98d6c05951fcf7c6d398491fb95232c7d67"
+    },
+    "triton/backends/nvidia/include/nvperf_common.h": {
+      "bytes": 17255,
+      "sha256": "ca479327923a734cfc2aa310875de194968c6878aaa95501eb4a065ce0aeec18"
+    },
+    "triton/backends/nvidia/include/nvperf_cuda_host.h": {
+      "bytes": 7562,
+      "sha256": "802d095a851d4f200e26cf32e2ea0922189ef57ab8c85e07ce8ba62ec60d5735"
+    },
+    "triton/backends/nvidia/include/nvperf_host.h": {
+      "bytes": 49197,
+      "sha256": "c02078991f1a2075a2a93d53b31ced420581461ff28aae400459bcb1bdff8f08"
+    },
+    "triton/backends/nvidia/include/nvperf_target.h": {
+      "bytes": 23607,
+      "sha256": "8d1a90b6e34b4eb0b33c37727803644eb3c48a34824e32f2d80d6a8cabb449d3"
+    },
+    "triton/backends/nvidia/include/sm_20_atomic_functions.h": {
+      "bytes": 4478,
+      "sha256": "c78c9c20d56afff97d0784903c3f88e3c8d06cac717419a0a7c55fd863b441f8"
+    },
+    "triton/backends/nvidia/include/sm_20_atomic_functions.hpp": {
+      "bytes": 4107,
+      "sha256": "d65e4d2ccf038436ea619fc4e752e8a8495025739b91bc28e7b777afee2e11b1"
+    },
+    "triton/backends/nvidia/include/sm_20_intrinsics.h": {
+      "bytes": 57702,
+      "sha256": "6b1783afbcba9d3d55e8bceb4963526875305e088d8cf6d79f54fa521ee194d3"
+    },
+    "triton/backends/nvidia/include/sm_20_intrinsics.hpp": {
+      "bytes": 8392,
+      "sha256": "9894de8d1870d69acd88ffdac7538f6e4625844a81a8ee27548dc34435c8ce9a"
+    },
+    "triton/backends/nvidia/include/sm_30_intrinsics.h": {
+      "bytes": 16978,
+      "sha256": "6fa5bc571a7dbc3f4e08923a959b86c9961711d437122f0f4c09681cd93009c4"
+    },
+    "triton/backends/nvidia/include/sm_30_intrinsics.hpp": {
+      "bytes": 24567,
+      "sha256": "c97d1e6dddbae6d27e04386f96e3f606169d3ee597a5164f23679e40516de72b"
+    },
+    "triton/backends/nvidia/include/sm_32_atomic_functions.h": {
+      "bytes": 5703,
+      "sha256": "1c69d98101c0084d8001beb369b194511739dc8b1565e95cd81489aafb3d3a06"
+    },
+    "triton/backends/nvidia/include/sm_32_atomic_functions.hpp": {
+      "bytes": 6592,
+      "sha256": "0904d3bce118a7eb3986a0202ef0289f5d6f2d80eb0e9f1c4c775e97e5d1cc14"
+    },
+    "triton/backends/nvidia/include/sm_32_intrinsics.h": {
+      "bytes": 33539,
+      "sha256": "5dd92881db23cb5be1f2edde1aed22e714e61f10460238fafef54647eb2974e1"
+    },
+    "triton/backends/nvidia/include/sm_32_intrinsics.hpp": {
+      "bytes": 70616,
+      "sha256": "1a5f1a48b0cb722b785b7a4a412d7d1ac0c6f1161cc03eb91f0601fc27997bc3"
+    },
+    "triton/backends/nvidia/include/sm_35_atomic_functions.h": {
+      "bytes": 2909,
+      "sha256": "6b75e812c29108439fd10ff963ffeb31f982e2949cbf85645208158152559f8e"
+    },
+    "triton/backends/nvidia/include/sm_35_intrinsics.h": {
+      "bytes": 2664,
+      "sha256": "d264b9f8b0a0bd9893bcbefe306ff863023ecd61af33eb38c7246e324ba7302f"
+    },
+    "triton/backends/nvidia/include/sm_60_atomic_functions.h": {
+      "bytes": 13178,
+      "sha256": "fda9df35a26cbd0a43128ad879428891b8b3624c2b8a705c1bf6428840ad2ea2"
+    },
+    "triton/backends/nvidia/include/sm_60_atomic_functions.hpp": {
+      "bytes": 22903,
+      "sha256": "72020a75d0e7d81dd0cd897378120b00fd48472b3be10082c6c1f442a6951a5b"
+    },
+    "triton/backends/nvidia/include/sm_61_intrinsics.h": {
+      "bytes": 10902,
+      "sha256": "87f3012f55140f1417fea39d752226ceac858dcae1866ffadc6f7ba460f2ade5"
+    },
+    "triton/backends/nvidia/include/sm_61_intrinsics.hpp": {
+      "bytes": 6787,
+      "sha256": "37e9d0bdc06c3cc4f6526cb9cd1ebd73d2b5ab7eba5be26a7bb369a0b4ea4e68"
+    },
+    "triton/backends/nvidia/include/surface_functions.h": {
+      "bytes": 6782,
+      "sha256": "6f53bcd9202f120596c40f6e6535907068a6cd95287a6d906c0113df08777d97"
+    },
+    "triton/backends/nvidia/include/surface_indirect_functions.h": {
+      "bytes": 10877,
+      "sha256": "bf2f50b85555f9ecd93fec76453f512e9daa21481d9e000238299a9527d514f0"
+    },
+    "triton/backends/nvidia/include/surface_types.h": {
+      "bytes": 4530,
+      "sha256": "5e41570f59c76de48c81a8d1f94244f6e43b4c1cb32678dd9d42f8fb21a2b9f9"
+    },
+    "triton/backends/nvidia/include/texture_fetch_functions.h": {
+      "bytes": 12468,
+      "sha256": "28b0a65317f9698e7f51a957f2d48507a7b84eb8c0f21c943f12ce90c165b40a"
+    },
+    "triton/backends/nvidia/include/texture_indirect_functions.h": {
+      "bytes": 21163,
+      "sha256": "947ff2dcd8be86ae11674fcf3056c1334b61e7e3a64e7dd3b6ab699071e103cc"
+    },
+    "triton/backends/nvidia/include/texture_types.h": {
+      "bytes": 6360,
+      "sha256": "ef79ed57283cafc7f32b2e55224eb2baf0b8e460de59ea5a2c8a8893e337462f"
+    },
+    "triton/backends/nvidia/include/vector_functions.h": {
+      "bytes": 8003,
+      "sha256": "5b2a4690bf880db18e95acbb83f1b4a771ceece2c6444d03a3ffc9b621685b16"
+    },
+    "triton/backends/nvidia/include/vector_functions.hpp": {
+      "bytes": 10060,
+      "sha256": "69f5e13527772c54d9a3de843ed7ac4cb7efc5de274e62d5ce0923f7aeeb4d18"
+    },
+    "triton/backends/nvidia/include/vector_types.h": {
+      "bytes": 13396,
+      "sha256": "e82278caddca0fbcd055f9b5361ae0a8d618103108656c1a8af945c75da784d8"
+    },
+    "triton/backends/nvidia/lib/cupti/libcheckpoint.so": {
+      "bytes": 1446320,
+      "sha256": "1e716d30670abeac9befde99b050dc0a3c17798b1618fe35a9587a93a73283c1"
+    },
+    "triton/backends/nvidia/lib/cupti/libcupti.so": {
+      "bytes": 6690264,
+      "sha256": "0a95877d05c77df1c7a22da9426e1ffe1496872dbb49c7287526d34cb357e9bf"
+    },
+    "triton/backends/nvidia/lib/cupti/libcupti.so.12": {
+      "bytes": 6690264,
+      "sha256": "0a95877d05c77df1c7a22da9426e1ffe1496872dbb49c7287526d34cb357e9bf"
+    },
+    "triton/backends/nvidia/lib/cupti/libcupti.so.2025.1.1": {
+      "bytes": 6690264,
+      "sha256": "0a95877d05c77df1c7a22da9426e1ffe1496872dbb49c7287526d34cb357e9bf"
+    },
+    "triton/backends/nvidia/lib/cupti/libcupti_static.a": {
+      "bytes": 42003648,
+      "sha256": "ba47f45de8dc62e05652c8055482e174492f1ea595fe9f11674b353add7a5411"
+    },
+    "triton/backends/nvidia/lib/cupti/libnvperf_host.so": {
+      "bytes": 25078280,
+      "sha256": "9c294d00dcbf03bd825eaee8efcc3b5f86cf6f93577c483fcf7d973dc5e29748"
+    },
+    "triton/backends/nvidia/lib/cupti/libnvperf_target.so": {
+      "bytes": 4695664,
+      "sha256": "b5f3755599f352802bd187d30369776b8851453bd0fc865e8cd07970805787e9"
+    },
+    "triton/backends/nvidia/lib/cupti/libpcsamplingutil.so": {
+      "bytes": 937176,
+      "sha256": "e7a920113148fa05765189d4c1d99514e32f48f8f774d2c0a6d8756fa27f4103"
+    },
+    "triton/backends/nvidia/lib/libdevice.10.bc": {
+      "bytes": 473728,
+      "sha256": "5c2fae37c86e68c3a38605a95f512d7d12d5f3db986310be47f57304aa72a5ee"
+    },
+    "triton/compiler/__init__.py": {
+      "bytes": 284,
+      "sha256": "4b48885c74d124bf0c52a4e1ba90ed3f22554f43c0f3cd9cd9d379570a8e1b11"
+    },
+    "triton/compiler/code_generator.py": {
+      "bytes": 72793,
+      "sha256": "c8b82f70c83ad10bc0190fa67864348b895f733d67658a3becaf13746198f778"
+    },
+    "triton/compiler/compiler.py": {
+      "bytes": 20548,
+      "sha256": "2a063bb7909777d3659945244277e900d9f7cfc35de9a758578469ee4b90fce9"
+    },
+    "triton/compiler/errors.py": {
+      "bytes": 1732,
+      "sha256": "23d635e690d670bf61798e1259674b78c0ed5ba222ab6a455f329f27a758fc2d"
+    },
+    "triton/compiler/make_launcher.py": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "triton/errors.py": {
+      "bytes": 89,
+      "sha256": "f167e7b9128b1b9efc9a063a701037102aee54c7fd50b10a14d811709e888563"
+    },
+    "triton/experimental/__init__.py": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "triton/experimental/gluon/__init__.py": {
+      "bytes": 211,
+      "sha256": "95c4860a05eab5236a4310ee6613f8b3b052b6a81bf350142dbb4a63f9c48efe"
+    },
+    "triton/experimental/gluon/_compiler.py": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "triton/experimental/gluon/_runtime.py": {
+      "bytes": 3461,
+      "sha256": "015a1642ecd748a0f4da064b0336d9ea21f0e2e71c7f4ac7f8aa56547fbb71e2"
+    },
+    "triton/experimental/gluon/amd/__init__.py": {
+      "bytes": 45,
+      "sha256": "b38777c6012eb82c52000fb4c21a2c64fd5abfd4690df8898eafbbdc1f267657"
+    },
+    "triton/experimental/gluon/amd/gfx1250.py": {
+      "bytes": 2005,
+      "sha256": "be5b69eec437cb2765e36c9368af702edfe29c6b6456854b6e5c731ee3e9e6b5"
+    },
+    "triton/experimental/gluon/language/__init__.py": {
+      "bytes": 2056,
+      "sha256": "11668af1c62ebbcda0aeafc266dac8b245d26262e8a238c770664a89ea755eda"
+    },
+    "triton/experimental/gluon/language/_core.py": {
+      "bytes": 19736,
+      "sha256": "adf3765a2e9c1dce5898be50e9951001f24045848072ee8b10e0e8a53ff48de0"
+    },
+    "triton/experimental/gluon/language/_layouts.py": {
+      "bytes": 24444,
+      "sha256": "9af7f5ce533f0039f74dd5104bd6adbd16f4a06bb15eade5b708a123e97e3f8c"
+    },
+    "triton/experimental/gluon/language/_math.py": {
+      "bytes": 564,
+      "sha256": "30df45bedf056904e9c445022a1c3cdc819b930043d9685da7af3a6afe2fbf4e"
+    },
+    "triton/experimental/gluon/language/_semantic.py": {
+      "bytes": 28303,
+      "sha256": "246ac830e2b453f3a0dcd0c3249e1326c079d42ba1e3d238ee1cd9e8695e4259"
+    },
+    "triton/experimental/gluon/language/_standard.py": {
+      "bytes": 2765,
+      "sha256": "dfbf12dde86b80805fca12070f8bf3c9a11ffb738804d51130782d420e0ea2ef"
+    },
+    "triton/experimental/gluon/language/amd/__init__.py": {
+      "bytes": 220,
+      "sha256": "f343542b54680d075131bc0922a2bbf5ab1069d702239ac3d9394edfe1fd17ca"
+    },
+    "triton/experimental/gluon/language/amd/_layouts.py": {
+      "bytes": 7244,
+      "sha256": "8ba4b4ce5fbc66947a36ce9828d3ce8953cb07e156c19aff42d418d9a0e380ab"
+    },
+    "triton/experimental/gluon/language/amd/_ops.py": {
+      "bytes": 3373,
+      "sha256": "9793c89d36f2ac1229dc8906028423ec854b373f1f0fa240b2af3ddfa43eda3b"
+    },
+    "triton/experimental/gluon/language/amd/cdna3/__init__.py": {
+      "bytes": 10397,
+      "sha256": "0d5b7c34e55ae8b634f1f6a916aad8a0c35760e37dd22571fdbf7ff15544c75a"
+    },
+    "triton/experimental/gluon/language/amd/cdna4/__init__.py": {
+      "bytes": 5163,
+      "sha256": "d1eecfb687ef65cd587b9957a022fe29d15ecfe4c36e3e66b54b9eddf7c7e28b"
+    },
+    "triton/experimental/gluon/language/amd/cdna4/async_copy.py": {
+      "bytes": 7994,
+      "sha256": "e54fa0d4fc6a2406d876ffd8659de0d33f02f785a4a19df980f1aa6427ba2498"
+    },
+    "triton/experimental/gluon/language/amd/gfx1250/__init__.py": {
+      "bytes": 3622,
+      "sha256": "3d7031184ea5a2ed2d2944bacc403df71d1e18f909cc745a260e5c3030c1fa3e"
+    },
+    "triton/experimental/gluon/language/amd/gfx1250/async_copy.py": {
+      "bytes": 2589,
+      "sha256": "5e255d7dfe4a6a1362eef474609051bc0ef05217e8f6446db54fd6f6c039d81d"
+    },
+    "triton/experimental/gluon/language/amd/gfx1250/mbarrier.py": {
+      "bytes": 2631,
+      "sha256": "8b501b32036209d2433094c8e621ed091204097d2a0fc837b3973a8eba9e0998"
+    },
+    "triton/experimental/gluon/language/amd/gfx1250/tdm.py": {
+      "bytes": 7383,
+      "sha256": "311e7996773f026e24193305a983fc5bac72d2c82e4d15018e52a3f4a8e16834"
+    },
+    "triton/experimental/gluon/language/amd/rdna3/__init__.py": {
+      "bytes": 419,
+      "sha256": "27d6be3f0ed8f3aa9ec00be36a1846d545374031cac0e31595265e5b44a26885"
+    },
+    "triton/experimental/gluon/language/amd/rdna4/__init__.py": {
+      "bytes": 419,
+      "sha256": "b39ffb3d0621d26d5864df4d3ebfde0d872422bfa3acf0e86ec565dc353d8c93"
+    },
+    "triton/experimental/gluon/language/extra/__init__.py": {
+      "bytes": 69,
+      "sha256": "15a0eabca45bf0cf0ae3b0b761c7b27c5dd98996b22c2f3164ddb8f23365c5e4"
+    },
+    "triton/experimental/gluon/language/nvidia/__init__.py": {
+      "bytes": 80,
+      "sha256": "48506e0022b93f65e861cbad1c49ca8ea8114dba14e023c3989cf4853e9d1514"
+    },
+    "triton/experimental/gluon/language/nvidia/ampere/__init__.py": {
+      "bytes": 1605,
+      "sha256": "4d9b5bf15e328cdfde7bb47904f4dba7b431edf3de61c68906097a10f947d1e5"
+    },
+    "triton/experimental/gluon/language/nvidia/ampere/async_copy.py": {
+      "bytes": 2817,
+      "sha256": "61f07400dd61704296536593c9e7f88205ada7e1c19e8487246a168544cc9a2b"
+    },
+    "triton/experimental/gluon/language/nvidia/ampere/mbarrier.py": {
+      "bytes": 2455,
+      "sha256": "5339d681a8c896467393725fd13fde94947d7fc0545fecb6a89d447bfa6abfb4"
+    },
+    "triton/experimental/gluon/language/nvidia/blackwell/__init__.py": {
+      "bytes": 17858,
+      "sha256": "2a519d1c453b2ae809f3107090008452e8b850abea93da4ab4c2345aaa7c54e2"
+    },
+    "triton/experimental/gluon/language/nvidia/blackwell/float2.py": {
+      "bytes": 3926,
+      "sha256": "5a814bfb0321b014e01d7c8986f8e16c43a117535e88f75839e6ab7591a459d3"
+    },
+    "triton/experimental/gluon/language/nvidia/blackwell/tma.py": {
+      "bytes": 2065,
+      "sha256": "c2504403e75f3face1cfee530454c7f7154dd2f78fb76be55c4063f73dfb77b8"
+    },
+    "triton/experimental/gluon/language/nvidia/hopper/__init__.py": {
+      "bytes": 5369,
+      "sha256": "e86546427ebb0e2ed8039b87e0fbba88e4bae92dcfdb47e5b4538a62f9783196"
+    },
+    "triton/experimental/gluon/language/nvidia/hopper/mbarrier.py": {
+      "bytes": 1339,
+      "sha256": "345d9dbd730a5b34349ad599429096289299ce420d099db877c70a76a0d3eb44"
+    },
+    "triton/experimental/gluon/language/nvidia/hopper/tma.py": {
+      "bytes": 6463,
+      "sha256": "41120ad066ff408dc0974adae1c8724caf311450960681246314230f223f5317"
+    },
+    "triton/experimental/gluon/nvidia/__init__.py": {
+      "bytes": 80,
+      "sha256": "2125c1e1157b45c08bb14f8985c445780dbd802043564f1c4f03b68fdf62bcb7"
+    },
+    "triton/experimental/gluon/nvidia/blackwell.py": {
+      "bytes": 69,
+      "sha256": "725970954084e7f60a5aac9241993bc2dec589eaf3df8e44e55c33b7135118cb"
+    },
+    "triton/experimental/gluon/nvidia/hopper.py": {
+      "bytes": 1925,
+      "sha256": "b06b928e30a3b8a69e7e15beb4173241950d0ae9beefeed3c261b4832d21f17f"
+    },
+    "triton/instrumentation/libGPUInstrumentationTestLib.so": {
+      "bytes": 6842664,
+      "sha256": "e2239d56061182ee417461b36b83846b15e8652502ebabe06dcde841f2c83f05"
+    },
+    "triton/instrumentation/libPrintLoadStoreMemSpaces.so": {
+      "bytes": 9378648,
+      "sha256": "c229614e058feb4883970a8c4f68c2544d225c25900ec50a219f737721c62f49"
+    },
+    "triton/knobs.py": {
+      "bytes": 17262,
+      "sha256": "d84bda664f733f0547f9f4397c2dab11da1f9c58f974a840a3f1c61ea48c76fa"
+    },
+    "triton/language/__init__.py": {
+      "bytes": 6986,
+      "sha256": "58ebab210df54a4ea9600d056c49d436b2a43e02313bf39d990d6c4fd4927728"
+    },
+    "triton/language/core.py": {
+      "bytes": 123101,
+      "sha256": "9394c60071ea0bbca6c290c44a5a371b8b4a02683d529debc3be04401d93e198"
+    },
+    "triton/language/extra/__init__.py": {
+      "bytes": 655,
+      "sha256": "5d15c5bebef8d7aa51b21fd187e5faa95eba4a213254355bc69e0648013599f7"
+    },
+    "triton/language/extra/cuda/__init__.py": {
+      "bytes": 407,
+      "sha256": "30106ed84518c6ca7aca08e2c0ee188755f512cc0cb2d7da8914cc48c1ad6dcc"
+    },
+    "triton/language/extra/cuda/gdc.py": {
+      "bytes": 2193,
+      "sha256": "adb54e71d0ffc3bdac437fbc97929769fbbe4ebd03e6361c6357f2a24f7c5954"
+    },
+    "triton/language/extra/cuda/libdevice.py": {
+      "bytes": 56764,
+      "sha256": "27b2a5d1e8db008bacefe6019f63922bbd65926de90bb1b527ee597477d2f365"
+    },
+    "triton/language/extra/cuda/utils.py": {
+      "bytes": 4426,
+      "sha256": "a610dc5c215589aab7a784e1c07acef3e16d53ef00f08de793899964956f4e2a"
+    },
+    "triton/language/extra/hip/__init__.py": {
+      "bytes": 96,
+      "sha256": "18572e33e474a820799036f2b2f8c3e54d8a526386356716cccf2bf32a832376"
+    },
+    "triton/language/extra/hip/libdevice.py": {
+      "bytes": 17542,
+      "sha256": "2cdca74c4297804dcf499a7e9d4315ab87edfe2d72f536a8fdc02f28a3e7dacd"
+    },
+    "triton/language/extra/hip/utils.py": {
+      "bytes": 877,
+      "sha256": "b53abe93473eb37d88bc378692065c9a8b1bf54b6417cb1911a13d10918c6d20"
+    },
+    "triton/language/extra/libdevice.py": {
+      "bytes": 6350,
+      "sha256": "f60c2bb2d8eebe1c191f4b8b819844414dd1bce243645635a094f9f92665a58e"
+    },
+    "triton/language/math.py": {
+      "bytes": 7399,
+      "sha256": "08abee21ce6230a873ed0831f70f9570b7ce39969dbf9b2f28ae1a1992ee1cc7"
+    },
+    "triton/language/random.py": {
+      "bytes": 7116,
+      "sha256": "f44a43511b97420e82438746d1730db6aea312619032077687fb36ffe23727ba"
+    },
+    "triton/language/semantic.py": {
+      "bytes": 101212,
+      "sha256": "be3429f6d069a22ddc2ca048d80e1616df85de51a4b0e1e20e3054264a58f1f8"
+    },
+    "triton/language/standard.py": {
+      "bytes": 16041,
+      "sha256": "1a2a7b1706fe99659dd86b29d6397d603d7d0cfef4f827fe902a494728ccddc1"
+    },
+    "triton/language/target_info.py": {
+      "bytes": 1364,
+      "sha256": "5305890c3b133def44e2f3d3405e0fb1fd6ce78d0a28b2127670a195bbe11c66"
+    },
+    "triton/profiler/__init__.py": {
+      "bytes": 284,
+      "sha256": "6f45ed5e2f253e4c541210fd0c7912f51ce2d89bd68f9ed16da90b1ae8b58c0f"
+    },
+    "triton/profiler/context.py": {
+      "bytes": 506,
+      "sha256": "2464350b66cfc293efbdadde21377c47112059c9af024c40b81d6694acfd268d"
+    },
+    "triton/profiler/flags.py": {
+      "bytes": 663,
+      "sha256": "e4605cdce8be77d9966344aade101a740466bf84c336d019eb88533b9be4a1a8"
+    },
+    "triton/profiler/hooks/__init__.py": {
+      "bytes": 123,
+      "sha256": "ab06fcca92d0d2838503787d33746d5353a1251ff07761194ca276a453477aea"
+    },
+    "triton/profiler/hooks/hook.py": {
+      "bytes": 4793,
+      "sha256": "ef1e52234d7a54a8f96bcb772ec3bcb6715147c39537ea7c134684ffa5509e5a"
+    },
+    "triton/profiler/hooks/instrumentation.py": {
+      "bytes": 14849,
+      "sha256": "da8632f455c6538efc6b4cd5c5659c53d652b885730df2c0e49c88834fc724e5"
+    },
+    "triton/profiler/hooks/launch.py": {
+      "bytes": 1493,
+      "sha256": "3d32ab06cf397c64fed7db28a9c3e0d03b5e7c06048bde53f010845dd92d3905"
+    },
+    "triton/profiler/language.py": {
+      "bytes": 2116,
+      "sha256": "bb7252b3960740e4b6b8167e8c46f6c83128ea2cae2e691364a80b425c8ebe5e"
+    },
+    "triton/profiler/mode.py": {
+      "bytes": 4367,
+      "sha256": "fbb3fc8de1bb4a21143a606e01f416bf79f34ef9ac1c906f818521f852570f86"
+    },
+    "triton/profiler/profile.py": {
+      "bytes": 8823,
+      "sha256": "c185d49a6115a5412376d7435b2a78af71549e38ecc7b1b3de6d5e4713ba26c8"
+    },
+    "triton/profiler/proton.py": {
+      "bytes": 3086,
+      "sha256": "f52234eb2db6e52161f95acfc1f0e853607bf02cb81a959ed6f1a5303398df66"
+    },
+    "triton/profiler/scope.py": {
+      "bytes": 3831,
+      "sha256": "dc6ac62e89a29d2e938dd7c0249c9cd46aa0a34361fbe0346afb24183c709a5b"
+    },
+    "triton/profiler/specs.py": {
+      "bytes": 2341,
+      "sha256": "defe79e1622c1c7444305c687c348c110cf5f22d20d16fcc2592a1e8ea779ea3"
+    },
+    "triton/profiler/state.py": {
+      "bytes": 1335,
+      "sha256": "4b25ddc0662f29da4039f1695b7394d0c56496784f5c7017f72a086ef6f6eb00"
+    },
+    "triton/profiler/viewer.py": {
+      "bytes": 18191,
+      "sha256": "cef9e93d06d47cac9fc980eaafbc0a28b8050152614acc31a8713f5bfb5a2b4b"
+    },
+    "triton/runtime/__init__.py": {
+      "bytes": 621,
+      "sha256": "98a2f972a2010d4c3658ef343510a1e2cd46f0a61aaa0339f534c06d390f3e34"
+    },
+    "triton/runtime/_allocation.py": {
+      "bytes": 1846,
+      "sha256": "5e7ba33687dae54005ab90fbaf400f63ab0e7fd7437a4a0a483ee1d783688429"
+    },
+    "triton/runtime/_async_compile.py": {
+      "bytes": 1953,
+      "sha256": "2703e0cf3fa87ca9fc4da35f3214756a09c2c8393fc36ee1cc2fa7eb7aac1d1c"
+    },
+    "triton/runtime/autotuner.py": {
+      "bytes": 20692,
+      "sha256": "40f5e142806219942585a16742e9f3721d5bfef88145b571cf389f9aec6460bb"
+    },
+    "triton/runtime/build.py": {
+      "bytes": 3928,
+      "sha256": "26c6ddd4dba3534ce54790f12d2b75729f51e467c48b2f740dd62b7c75a85b39"
+    },
+    "triton/runtime/cache.py": {
+      "bytes": 11041,
+      "sha256": "0355c3e3452fa4500122244b8fff8864f22bc05c417a3d6f5dada9f2e92f8040"
+    },
+    "triton/runtime/driver.py": {
+      "bytes": 1025,
+      "sha256": "daac6c247dd21716034887df8f6c173064af8846ad5102e41c572655ba1e2be0"
+    },
+    "triton/runtime/errors.py": {
+      "bytes": 1325,
+      "sha256": "a0cd07a271270659cec7c7bc5d989da005506763e0fd8ac0d4d9885c04317fa8"
+    },
+    "triton/runtime/interpreter.py": {
+      "bytes": 65073,
+      "sha256": "3cb6ed2fda070e4b211f2ff65fddef842287bf321a61e8874ebc93f6c570c953"
+    },
+    "triton/runtime/jit.py": {
+      "bytes": 41084,
+      "sha256": "0b70358d901afd70937a344a7811e4a2bcd10edca8a7c241e47842dc9ac660c8"
+    },
+    "triton/testing.py": {
+      "bytes": 20476,
+      "sha256": "44e3fae7b4cc41b4db3b8b41a4f0a818d7fe9d036cfe4e0f4f08036a75eaafe4"
+    },
+    "triton/tools/__init__.py": {
+      "bytes": 59,
+      "sha256": "375f0c889f1bc4d6b539dab7623612005b40577e55b3847cedcd8ef10c026a63"
+    },
+    "triton/tools/build_extern.py": {
+      "bytes": 13673,
+      "sha256": "8c2afeda1bb79cb1812098421944358c0cb32edb6e8218e488f184c111632d1d"
+    },
+    "triton/tools/compile.py": {
+      "bytes": 8786,
+      "sha256": "5a927c1d9943691dce1afad3dd7485946754c889dde20f44aac2f6ad704667e6"
+    },
+    "triton/tools/disasm.py": {
+      "bytes": 5026,
+      "sha256": "4fd8e24e474aff49c8dd1ff8b9e6b4cef7e2a1875c47ecc86704dfbae720c3a8"
+    },
+    "triton/tools/extra/cuda/compile.c": {
+      "bytes": 2172,
+      "sha256": "1772bbdb9913234de80133c17516d29c61e93a8d757c66c4d5a39e94f4dc443f"
+    },
+    "triton/tools/extra/cuda/compile.h": {
+      "bytes": 332,
+      "sha256": "9fd40a2056532f8452b225ed03104ff571929f18f269ebd043d6c1a700ecbc08"
+    },
+    "triton/tools/extra/hip/compile.cpp": {
+      "bytes": 1862,
+      "sha256": "20676803ee7636b9384bced56ba589388222ec6ff8961599eb28eaf309201bb9"
+    },
+    "triton/tools/extra/hip/compile.h": {
+      "bytes": 348,
+      "sha256": "048461da5a3890a5d672ca2693cf432b1dec637fd72cc1a80b22791d8be5dc65"
+    },
+    "triton/tools/link.py": {
+      "bytes": 11871,
+      "sha256": "bbbaad7d944bae266400c10636f8fc605fa4d5cb6198b2fb0701d8a81813eb71"
+    },
+    "triton/tools/mxfp.py": {
+      "bytes": 11737,
+      "sha256": "61076906b1a439534eb672de4633027951475a44b052e6c6796b08b488cef135"
+    },
+    "triton/tools/ragged_tma.py": {
+      "bytes": 3782,
+      "sha256": "29788084c4e6c84725147a146bddb241675f1cb61dd5cf07c86d494c86671063"
+    },
+    "triton/tools/tensor_descriptor.py": {
+      "bytes": 1562,
+      "sha256": "d6e03aa5917c8fb5b404b5dcbf828e7d2761ec12d8ffb54de4a9375c61b6be53"
+    },
+    "triton/tools/triton_to_gluon_translater/translator.py": {
+      "bytes": 19912,
+      "sha256": "610782bbaa513a0a3d9bb38d765e57492aeb2746adcc64020bad37be39661e88"
+    },
+    "triton/tools/triton_to_gluon_translater/translator_helpers.py": {
+      "bytes": 26428,
+      "sha256": "1dcd65515c27c8eb6074fce204b6fdc9bc4dbd59c1f29906a441ef444410b3bc"
+    }
+  },
+  "parent_worker_sha256": "1214f969447402461256775b98f1e792450677efbbd5306ed5815d5f367be8a7",
+  "platform_machine": "aarch64",
+  "python": [
+    3,
+    13
+  ],
+  "requests": 25,
+  "required_prefix": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1",
+  "schema": "instinctflash.nano_compiler_binding.v1",
+  "torch_codecache": {
+    "git_version": "449b1768410104d3ed79d3bcfe4ba1d65c7f22c0",
+    "relative": "torch/_inductor/codecache.py",
+    "required_module_collection": "modules",
+    "sha256": "23eb23b775e065d7f45154108a6ed71d8f054f7dbb3fd844404321f96b8a16fb",
+    "version": "2.10.0+cu130"
+  },
+  "unchanged_loaded_package_libraries": {
+    "nvidia/cu13/lib/libcublas.so.13": "7761d260387b95fa13b7ec101453abca45ef972d3e6ccc8bcf54251e1ac0470b",
+    "nvidia/cu13/lib/libcublasLt.so.13": "3839e12c3b69ed8eb732e5d5f8e749403a582a9d706f779017c785152d9e62f9",
+    "nvidia/cu13/lib/libcudart.so.13": "7bdba2b5b08cbdc85203c41cc94598adedb1bcfea7cb574ca693ac73599e4e63",
+    "nvidia/cudnn/lib/libcudnn.so.9": "08c7e4a6d2445dc7fece75c3c49f09eca922f5c24999ab52e8a24611a0a84a6a",
+    "nvidia/cudnn/lib/libcudnn_engines_precompiled.so.9": "886dbe1a16868e0dc50f0146f49ac99bb2d56cfe3a01abd5f5d9ec0273adfc1f",
+    "nvidia/cudnn/lib/libcudnn_engines_runtime_compiled.so.9": "1a0024f40346314ab1947edc0d5c0a0963cb28c643a940e1d255cf4c9e9db46c",
+    "nvidia/cudnn/lib/libcudnn_graph.so.9": "b0834983671b6de4af4d48e7f5cb9bb9c0012947e9659deb11ed28a5d0ec5497",
+    "nvidia/cudnn/lib/libcudnn_heuristic.so.9": "40cfe616b4cf058771a30f7f5fde1397eccf9d6df8ba1852d700d273a726c728",
+    "torch/_C.cpython-313-aarch64-linux-gnu.so": "6fc3ee3dd4486f3a68be4487658e8e6894c923302b34fdb721731486d79e5b15",
+    "torch/lib/libarm_compute.so": "c41e24e9d1cdc71806fd81c47ca1e2c93904cce7f49fcb5b6ddc39f1a7ef4e84",
+    "torch/lib/libarm_compute_graph.so": "98b45299d32d2027c46f07bf413aa55832b88f6ffa40cb7f50345417cf990aab",
+    "torch/lib/libc10.so": "fa25a177fa2064ff25298b2f97e0e2be8f84fd31678d68f02cb3d7953ecf71f1",
+    "torch/lib/libc10_cuda.so": "96be0898e34a337a0e921078903b33ef92a59c87ffcc29e4cd4a96ea924489a8",
+    "torch/lib/libgomp.so.1": "dfee810d70d5df631d5cbf4170273938cf0ab5756caa65c7cd264746cdf886ad",
+    "torch/lib/libnvpl_blas_core.so.0": "5d74d2a7d48ace2b563405d42695053f8dd058a92db19a5e54ecdeab21a3f6d5",
+    "torch/lib/libnvpl_blas_lp64_gomp.so.0": "4ba3cde968a086163fcfc923c0fabcfb43be2cfbea7662399889b3cf086f4077",
+    "torch/lib/libnvpl_lapack_core.so.0": "10ef87919b461fe818a9bfabf149526150cf463d938ad1aa0863311ea4a10c15",
+    "torch/lib/libnvpl_lapack_lp64_gomp.so.0": "0e02dc39b705e466bb887d6967140ff4c02595f0e10b1865adb012fc232352de",
+    "torch/lib/libshm.so": "77ab6bd71df6c4d04b7c07c62cb5400f955f16a557730a39c3ffc8bded3ffc67",
+    "torch/lib/libtorch.so": "ab07676deb8234b91ece5b8674ff30b600449acef88d56f3f719abd668771723",
+    "torch/lib/libtorch_cpu.so": "30a6790f5e348ff948355d219ec13a21a7c8351cb616527b4c6551429afaa299",
+    "torch/lib/libtorch_cuda.so": "5c5bd6e9cc7cf69ee47c81814211df09b479fec7df5071c78cdae7ac1d6b6c0e",
+    "torch/lib/libtorch_cuda_linalg.so": "2207a189021134cf48080249a8114dc98e1d284ae2f859275891718d11435449",
+    "torch/lib/libtorch_global_deps.so": "03301852e6bf75fa1c57009e0822526fada43202a8f2d81976d407e8671f4f49",
+    "torch/lib/libtorch_nvshmem.so": "5e625f7ee34049d25f0e4a740e1515323700ca2f4b6721f4b4c291ad2a07b8d3",
+    "torch/lib/libtorch_python.so": "3f32fda0f4ca7f47b02f9aeb530d000cd6b3221ff572566d10a9aea257ced62e",
+    "torchvision.libs/ld-linux-aarch64.5cbc5e90.so.1": "f84d58557a89a6cfc0b4f47ac5bdd28ca23608c779a6070f20bdd72322602c0b",
+    "torchvision.libs/libcudart.faf08d9a.so.13": "7bdba2b5b08cbdc85203c41cc94598adedb1bcfea7cb574ca693ac73599e4e63",
+    "torchvision.libs/libjpeg.3cd76cc9.so.8": "9fa1cd4b9a68c0e78c7df7d0430dc892b258f2c42bebe79c0ae279da38247c0a",
+    "torchvision.libs/libnvjpeg.36e11081.so.13": "ae5a5fd164f93b3ccd12e6017270a17c08acc156adfcf991e81fcc3ac859fe14",
+    "torchvision.libs/libpng16.c29882f9.so.16": "76169963e018aa2074ed19dee98e4a8201c9addfff8e8b2514cd32a0db9bff41",
+    "torchvision.libs/libsharpyuv.9682b27e.so.0": "9aa1bdd4f746bb36d5c52216e2108096b200b05ae09d30a93c0aef9b710914e4",
+    "torchvision.libs/libwebp.5442de92.so.7": "968fba59077293cb8d7b5aedf188af2f2157de726b6de2231fd852ff2f7c99f3",
+    "torchvision.libs/libz.b755a5e0.so.1": "146388944febce7fc8410bfacf9643be81ec4bd0abdb54fa1df650766a973d15",
+    "torchvision/_C.so": "c644176b66fcaff4562220ab8b635c4f7c478b165b0878944d52b5e85d77baeb",
+    "torchvision/image.so": "74bee1767801261c8a813d8eb7b5a7c57614d1596c5ead37f392aa794caeb428"
+  },
+  "wheel": {
+    "package": "triton",
+    "sha256": "58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09",
+    "url": "https://download.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl",
+    "version": "3.6.0"
+  }
+}

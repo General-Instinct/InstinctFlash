@@ -1,0 +1,1390 @@
+{
+  "status": "success",
+  "source": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/fullpath_v20/summarize_preupdate_v1.py",
+    "bytes": 2907,
+    "sha256": "aa028d00e15daf40f53ff88840933c6ac917e1be36aba31f3838fdd0a1cef1e5"
+  },
+  "admission": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/fullpath_v20/preupdate_admission.json",
+    "bytes": 25934,
+    "sha256": "9f71e4d6b2ccf6b121dcbbf0ecb3559f6101523db81d6694a11e1724caaf3e8a"
+  },
+  "comparisons": [
+    {
+      "probe": 0,
+      "query": {
+        "query_id": "probe/0",
+        "phase": "probe",
+        "context": {
+          "source_index": 94,
+          "episode_id": "AUTOLab/success/2023-07-14/Fri_Jul_14_17:08:21_2023",
+          "frame_index": 28,
+          "context_id": "train_000",
+          "split": "train",
+          "preparation_seed": 4108943427
+        },
+        "endpoint_seed": 4232553664,
+        "time_seed": 1501318127,
+        "noise_seed": 1095359753,
+        "cotangent_seed": 3722148916
+      },
+      "gradients": {
+        "fixed": {
+          "control_norm": 0.4531783578741364,
+          "candidate_norm": 0.526664200920975,
+          "difference_norm": 0.24111524985933985,
+          "relative_difference_to_control": 0.5320537613279098,
+          "cosine": 0.8895215737401053,
+          "changed_parameters": 28,
+          "parameters": {
+            "action2llm.fc.weight": {
+              "control_norm": 0.07227880649307503,
+              "candidate_norm": 0.2522536400984784,
+              "difference_norm": 0.23018641479343765,
+              "cosine": 0.4352189535325278
+            },
+            "action2llm.bias.weight": {
+              "control_norm": 0.016487522156253886,
+              "candidate_norm": 0.0742701329173685,
+              "difference_norm": 0.0697495219563621,
+              "cosine": 0.376836365406053
+            },
+            "llm2action.fc.weight": {
+              "control_norm": 0.4436266069553037,
+              "candidate_norm": 0.45256904087852096,
+              "difference_norm": 0.01218891773378235,
+              "cosine": 0.9998291527093293
+            },
+            "llm2action.bias.weight": {
+              "control_norm": 0.054944912049027385,
+              "candidate_norm": 0.056719213738472364,
+              "difference_norm": 0.001851088623132006,
+              "cosine": 0.9999553363290565
+            },
+            "lora.language_model__model__layers__24__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.0016422102307619994,
+              "candidate_norm": 0.005927401547548644,
+              "difference_norm": 0.005549510331300715,
+              "cosine": 0.36130317003882473
+            },
+            "lora.language_model__model__layers__24__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.00038525521326276567,
+              "candidate_norm": 0.002779192024409945,
+              "difference_norm": 0.002763026445955251,
+              "cosine": 0.11114931512504958
+            },
+            "lora.language_model__model__layers__24__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.0007291388614181231,
+              "candidate_norm": 0.0029133039565036583,
+              "difference_norm": 0.0027539793201849755,
+              "cosine": 0.3376751747681991
+            },
+            "lora.language_model__model__layers__24__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.0010356166490568491,
+              "candidate_norm": 0.003894639466765886,
+              "difference_norm": 0.003740569198707503,
+              "cosine": 0.27878296610395
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.000762709788450077,
+              "candidate_norm": 0.0035151812509090735,
+              "difference_norm": 0.003385791386785739,
+              "cosine": 0.2750107050393545
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.0003988716350041821,
+              "candidate_norm": 0.0014424242780130558,
+              "difference_norm": 0.0013829132090154728,
+              "cosine": 0.2843850799374178
+            },
+            "lora.language_model__model__layers__25__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.00034552659244143095,
+              "candidate_norm": 0.002050345038163132,
+              "difference_norm": 0.0020143699899984316,
+              "cosine": 0.18746377268630715
+            },
+            "lora.language_model__model__layers__25__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.000290489186664241,
+              "candidate_norm": 0.001976500599011737,
+              "difference_norm": 0.0019459459951915701,
+              "cosine": 0.1778559954156038
+            },
+            "lora.language_model__model__layers__25__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.0008001975607867801,
+              "candidate_norm": 0.0024774807784512212,
+              "difference_norm": 0.002339496502434389,
+              "cosine": 0.3291299681804401
+            },
+            "lora.language_model__model__layers__25__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.0008168048957751687,
+              "candidate_norm": 0.001545871926965668,
+              "difference_norm": 0.001313934027413593,
+              "cosine": 0.5268445265227452
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.0010266633244029601,
+              "candidate_norm": 0.002874098585398669,
+              "difference_norm": 0.002673555802920412,
+              "cosine": 0.36712583801357435
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.0005080818202563953,
+              "candidate_norm": 0.002168419153991881,
+              "difference_norm": 0.002093049895459233,
+              "cosine": 0.2629176888924264
+            },
+            "lora.language_model__model__layers__26__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.0003077927231808981,
+              "candidate_norm": 0.0012937975915212059,
+              "difference_norm": 0.0012488965085397277,
+              "cosine": 0.26229885585272716
+            },
+            "lora.language_model__model__layers__26__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.0002551296969283084,
+              "candidate_norm": 0.0019035167782585417,
+              "difference_norm": 0.0018819672841425689,
+              "cosine": 0.1510021042646366
+            },
+            "lora.language_model__model__layers__26__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.0009276347553136844,
+              "candidate_norm": 0.0020272741807756517,
+              "difference_norm": 0.001761068459184657,
+              "cosine": 0.49691974684879503
+            },
+            "lora.language_model__model__layers__26__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.0010814610544976242,
+              "candidate_norm": 0.0016467216024101266,
+              "difference_norm": 0.0012148895694802896,
+              "cosine": 0.6753159288354911
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.0016765371013946464,
+              "candidate_norm": 0.0028666392970984017,
+              "difference_norm": 0.0022312499915775703,
+              "cosine": 0.6294097820833767
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.0006232635263897882,
+              "candidate_norm": 0.0017047153700793967,
+              "difference_norm": 0.0015732431283010588,
+              "cosine": 0.38561320873904686
+            },
+            "lora.language_model__model__layers__27__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.0010680897804856522,
+              "candidate_norm": 0.002024209970107481,
+              "difference_norm": 0.0017272628125668608,
+              "cosine": 0.5214535953346745
+            },
+            "lora.language_model__model__layers__27__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.000981483685559586,
+              "candidate_norm": 0.0019285809134388639,
+              "difference_norm": 0.0016462676908532074,
+              "cosine": 0.521043844096832
+            },
+            "lora.language_model__model__layers__27__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.002520187115575144,
+              "candidate_norm": 0.003345208018122469,
+              "difference_norm": 0.0021006628613324456,
+              "cosine": 0.7786547198804291
+            },
+            "lora.language_model__model__layers__27__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.0008753331028630765,
+              "candidate_norm": 0.001417815129397953,
+              "difference_norm": 0.001118648561077299,
+              "cosine": 0.6144072584049157
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.0012537640144523795,
+              "candidate_norm": 0.002498984718844481,
+              "difference_norm": 0.0020627222842975242,
+              "cosine": 0.5684439394404697
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.005182047356259186,
+              "candidate_norm": 0.0055106136699282025,
+              "difference_norm": 0.0010414234893094637,
+              "cosine": 0.9829002987887557
+            }
+          }
+        },
+        "dmd": {
+          "control_norm": 0.9850272543729386,
+          "candidate_norm": 1.1172985485303752,
+          "difference_norm": 0.4577033304886057,
+          "relative_difference_to_control": 0.46466057508223607,
+          "cosine": 0.9127739594279656,
+          "changed_parameters": 28,
+          "parameters": {
+            "action2llm.fc.weight": {
+              "control_norm": 0.14945811881895318,
+              "candidate_norm": 0.4512527824684541,
+              "difference_norm": 0.43450922867449576,
+              "cosine": 0.2755535573773129
+            },
+            "action2llm.bias.weight": {
+              "control_norm": 0.040106937798476454,
+              "candidate_norm": 0.133766597759717,
+              "difference_norm": 0.13353102618372187,
+              "cosine": 0.1557822889364805
+            },
+            "llm2action.fc.weight": {
+              "control_norm": 0.9615095349434434,
+              "candidate_norm": 1.0010658133401957,
+              "difference_norm": 0.04427416885360402,
+              "cosine": 0.9997945512918608
+            },
+            "llm2action.bias.weight": {
+              "control_norm": 0.1467094012233376,
+              "candidate_norm": 0.15327488527761066,
+              "difference_norm": 0.006799645235017468,
+              "cosine": 0.9999304128381901
+            },
+            "lora.language_model__model__layers__24__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.0027560463439584076,
+              "candidate_norm": 0.013813269504159526,
+              "difference_norm": 0.013131406507323563,
+              "cosine": 0.34106069790676
+            },
+            "lora.language_model__model__layers__24__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.0009022852843365458,
+              "candidate_norm": 0.006023852767877905,
+              "difference_norm": 0.006008582995909128,
+              "cosine": 0.0917946990302823
+            },
+            "lora.language_model__model__layers__24__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.0017500413849876502,
+              "candidate_norm": 0.007101377640521293,
+              "difference_norm": 0.0068851512680444095,
+              "cosine": 0.24489241479036758
+            },
+            "lora.language_model__model__layers__24__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.002404431005111625,
+              "candidate_norm": 0.009997388214267598,
+              "difference_norm": 0.00972621785800941,
+              "cosine": 0.23150286555341465
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.0016477218392665048,
+              "candidate_norm": 0.008587185820453976,
+              "difference_norm": 0.0084081130850536,
+              "cosine": 0.20348655136294214
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.0009571983606608293,
+              "candidate_norm": 0.0037913279665884986,
+              "difference_norm": 0.0036752578437854095,
+              "cosine": 0.24563932734814645
+            },
+            "lora.language_model__model__layers__25__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.0005508768325469451,
+              "candidate_norm": 0.005291140767678167,
+              "difference_norm": 0.005245512437364773,
+              "cosine": 0.13452794225929376
+            },
+            "lora.language_model__model__layers__25__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.0005074196833122441,
+              "candidate_norm": 0.004840396730050547,
+              "difference_norm": 0.004813634160899101,
+              "cosine": 0.10501175910873098
+            },
+            "lora.language_model__model__layers__25__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.0017194657896401234,
+              "candidate_norm": 0.006902765137556614,
+              "difference_norm": 0.006694404067645989,
+              "cosine": 0.2438979655908556
+            },
+            "lora.language_model__model__layers__25__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.002235636303914498,
+              "candidate_norm": 0.004316904164982622,
+              "difference_norm": 0.0036536960457904787,
+              "cosine": 0.5328052518229766
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.002103255580533486,
+              "candidate_norm": 0.007919222134739416,
+              "difference_norm": 0.007611315593429996,
+              "cosine": 0.27634354928870203
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.001344123731082377,
+              "candidate_norm": 0.006030313992902011,
+              "difference_norm": 0.005862143538042042,
+              "cosine": 0.23481797328771936
+            },
+            "lora.language_model__model__layers__26__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.0006454543721642548,
+              "candidate_norm": 0.003243767115584484,
+              "difference_norm": 0.0031720706953609467,
+              "cosine": 0.20934288937990517
+            },
+            "lora.language_model__model__layers__26__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.0005409388030372891,
+              "candidate_norm": 0.0049143663707888535,
+              "difference_norm": 0.00488174914438061,
+              "cosine": 0.11513381688596938
+            },
+            "lora.language_model__model__layers__26__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.00233922903346739,
+              "candidate_norm": 0.0052934228125961404,
+              "difference_norm": 0.004660820498950051,
+              "cosine": 0.4752288671257106
+            },
+            "lora.language_model__model__layers__26__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.00280755632332567,
+              "candidate_norm": 0.004198569310719643,
+              "difference_norm": 0.003063165834834757,
+              "cosine": 0.6840751258054079
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.0030128197091978835,
+              "candidate_norm": 0.006934243503401546,
+              "difference_norm": 0.006077230334038205,
+              "cosine": 0.4841195108554918
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.0016369227399498389,
+              "candidate_norm": 0.0043696897157961415,
+              "difference_norm": 0.0040161425801822975,
+              "cosine": 0.394549544190834
+            },
+            "lora.language_model__model__layers__27__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.001594162538295009,
+              "candidate_norm": 0.004643941112505045,
+              "difference_norm": 0.004306842561357787,
+              "cosine": 0.3754222968085889
+            },
+            "lora.language_model__model__layers__27__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.0023272439403540547,
+              "candidate_norm": 0.004924677608944775,
+              "difference_norm": 0.004182706349146342,
+              "cosine": 0.5310862916080253
+            },
+            "lora.language_model__model__layers__27__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.0063984134117462165,
+              "candidate_norm": 0.008180222216622506,
+              "difference_norm": 0.004760723160997741,
+              "cosine": 0.8138185208258415
+            },
+            "lora.language_model__model__layers__27__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.0021663057927864358,
+              "candidate_norm": 0.00358006347540396,
+              "difference_norm": 0.002800411367251386,
+              "cosine": 0.6232619551207603
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.002879938340283144,
+              "candidate_norm": 0.006215315393944521,
+              "difference_norm": 0.005340217694046322,
+              "cosine": 0.5141493840667635
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.01359509874937336,
+              "candidate_norm": 0.014610389422854241,
+              "difference_norm": 0.002841300827088752,
+              "cosine": 0.9822731049276543
+            }
+          }
+        }
+      },
+      "first_callback_sensitivity_norm": 0.0039378448729202025,
+      "intermediate_input_sensitivity_norms": [
+        0.11672049156857102
+      ],
+      "costs": {
+        "last_callback": {
+          "backward_and_reference_seconds": 0.9559143409132957,
+          "total_seconds": 1.7268459359183908,
+          "peak_allocated_bytes": 15316099584,
+          "peak_reserved_bytes": 15669919744,
+          "first_probe_compile_warmup": true
+        },
+        "complete_path": {
+          "backward_and_reference_seconds": 1.967854794114828,
+          "total_seconds": 2.7841638484969735,
+          "peak_allocated_bytes": 21517256704,
+          "peak_reserved_bytes": 22053650432,
+          "first_probe_compile_warmup": true
+        }
+      }
+    },
+    {
+      "probe": 1,
+      "query": {
+        "query_id": "probe/1",
+        "phase": "probe",
+        "context": {
+          "source_index": 4,
+          "episode_id": "AUTOLab/success/2023-07-07/Fri_Jul__7_09:44:34_2023",
+          "frame_index": 149,
+          "context_id": "train_001",
+          "split": "train",
+          "preparation_seed": 4209108858
+        },
+        "endpoint_seed": 4233559864,
+        "time_seed": 1129929224,
+        "noise_seed": 806239699,
+        "cotangent_seed": 78373449
+      },
+      "gradients": {
+        "fixed": {
+          "control_norm": 0.30237728812951764,
+          "candidate_norm": 0.3605145596079565,
+          "difference_norm": 0.18567197994891121,
+          "relative_difference_to_control": 0.6140407604600981,
+          "cosine": 0.8573812575427711,
+          "changed_parameters": 28,
+          "parameters": {
+            "action2llm.fc.weight": {
+              "control_norm": 0.05955382349215718,
+              "candidate_norm": 0.1975408555469708,
+              "difference_norm": 0.17778652075595291,
+              "cosine": 0.46585807063984064
+            },
+            "action2llm.bias.weight": {
+              "control_norm": 0.008962045942281737,
+              "candidate_norm": 0.05392761223131568,
+              "difference_norm": 0.052752440395522966,
+              "cosine": 0.21279217973771009
+            },
+            "llm2action.fc.weight": {
+              "control_norm": 0.2955018507242382,
+              "candidate_norm": 0.29575869909423574,
+              "difference_norm": 0.0029925047346248046,
+              "cosine": 0.9999491453437142
+            },
+            "llm2action.bias.weight": {
+              "control_norm": 0.021431523306051064,
+              "candidate_norm": 0.021568090784134686,
+              "difference_norm": 0.00033869384295123154,
+              "cosine": 0.9998960891979587
+            },
+            "lora.language_model__model__layers__24__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.0011817080717161157,
+              "candidate_norm": 0.006653681084372445,
+              "difference_norm": 0.006444997971528267,
+              "cosine": 0.26262623182839545
+            },
+            "lora.language_model__model__layers__24__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.000337335223044229,
+              "candidate_norm": 0.001855529180897567,
+              "difference_norm": 0.0017832350333392328,
+              "cosine": 0.30103461138455156
+            },
+            "lora.language_model__model__layers__24__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.0005324255641105677,
+              "candidate_norm": 0.0016682377177181292,
+              "difference_norm": 0.001570313595074735,
+              "cosine": 0.3381000264685237
+            },
+            "lora.language_model__model__layers__24__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.0006392950969387738,
+              "candidate_norm": 0.001936854181690823,
+              "difference_norm": 0.001817496856842434,
+              "cosine": 0.3459831699068293
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.0005160318787840485,
+              "candidate_norm": 0.002824347241801762,
+              "difference_norm": 0.0027938854367724735,
+              "cosine": 0.1500667068849135
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.0002611175305708406,
+              "candidate_norm": 0.0008505838312986966,
+              "difference_norm": 0.0007968566909452062,
+              "cosine": 0.35275320868026205
+            },
+            "lora.language_model__model__layers__25__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.0005623335112171304,
+              "candidate_norm": 0.000979683383576257,
+              "difference_norm": 0.0008015563380654912,
+              "cosine": 0.57496444991202
+            },
+            "lora.language_model__model__layers__25__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.0003361771724882461,
+              "candidate_norm": 0.001081669051807452,
+              "difference_norm": 0.0010252413926141726,
+              "cosine": 0.3188702218639739
+            },
+            "lora.language_model__model__layers__25__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.000605885470598261,
+              "candidate_norm": 0.0018174977260176717,
+              "difference_norm": 0.0017020354496525402,
+              "cosine": 0.351195832276616
+            },
+            "lora.language_model__model__layers__25__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.00034435323074699794,
+              "candidate_norm": 0.0008051748513381618,
+              "difference_norm": 0.0007214088449222028,
+              "cosine": 0.4444400791784277
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.0007175530492405208,
+              "candidate_norm": 0.0015637393021019565,
+              "difference_norm": 0.0013560587477803013,
+              "cosine": 0.49964429519863407
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.00028463298300908434,
+              "candidate_norm": 0.0005944990096885734,
+              "difference_norm": 0.0005157925449287875,
+              "cosine": 0.4976037199544296
+            },
+            "lora.language_model__model__layers__26__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.0004309991343510012,
+              "candidate_norm": 0.0007000457218170186,
+              "difference_norm": 0.0005531338702387109,
+              "cosine": 0.6129330027605612
+            },
+            "lora.language_model__model__layers__26__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.0002064977217482274,
+              "candidate_norm": 0.0006375801355574238,
+              "difference_norm": 0.0006046486080878024,
+              "cosine": 0.3172965660328704
+            },
+            "lora.language_model__model__layers__26__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.000598279612718323,
+              "candidate_norm": 0.001310971660395227,
+              "difference_norm": 0.0011526318610989863,
+              "cosine": 0.47685748000356987
+            },
+            "lora.language_model__model__layers__26__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.0003066969490547833,
+              "candidate_norm": 0.0005837348335726157,
+              "difference_norm": 0.0004974634091390737,
+              "cosine": 0.5232079897554712
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.001866112810195638,
+              "candidate_norm": 0.0021681476996999707,
+              "difference_norm": 0.0009555054815499886,
+              "cosine": 0.898447357145385
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.0003303202265775815,
+              "candidate_norm": 0.0005075836678084924,
+              "difference_norm": 0.0003810569871752378,
+              "cosine": 0.6606864980174689
+            },
+            "lora.language_model__model__layers__27__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.0016214923783466639,
+              "candidate_norm": 0.0018830628736287824,
+              "difference_norm": 0.0009337378149977606,
+              "cosine": 0.8684328084672567
+            },
+            "lora.language_model__model__layers__27__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.0008494698595052283,
+              "candidate_norm": 0.0013021706529137789,
+              "difference_norm": 0.001028073861614888,
+              "cosine": 0.6148830538985866
+            },
+            "lora.language_model__model__layers__27__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.0018798455569169368,
+              "candidate_norm": 0.0022657084391265007,
+              "difference_norm": 0.0011252667141005677,
+              "cosine": 0.8688322042749189
+            },
+            "lora.language_model__model__layers__27__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.0005812597013818101,
+              "candidate_norm": 0.0008206714522014321,
+              "difference_norm": 0.000565087606592683,
+              "cosine": 0.7253739514714134
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.0020386776531315914,
+              "candidate_norm": 0.002424804030511731,
+              "difference_norm": 0.000989629197301775,
+              "cosine": 0.9160220281778099
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.0021670124159949918,
+              "candidate_norm": 0.002260092537850491,
+              "difference_norm": 0.00045179986243913466,
+              "cosine": 0.9800456072959393
+            }
+          }
+        },
+        "dmd": {
+          "control_norm": 1.0604136937741504,
+          "candidate_norm": 2.5124274413104057,
+          "difference_norm": 2.2667123716928783,
+          "relative_difference_to_control": 2.137573651680557,
+          "cosine": 0.4314190225827148,
+          "changed_parameters": 28,
+          "parameters": {
+            "action2llm.fc.weight": {
+              "control_norm": 0.14619370509262702,
+              "candidate_norm": 2.175408938468222,
+              "difference_norm": 2.1710866196741954,
+              "cosine": 0.06313775564121345
+            },
+            "action2llm.bias.weight": {
+              "control_norm": 0.034021897280265966,
+              "candidate_norm": 0.6482442572112812,
+              "difference_norm": 0.6428318587528851,
+              "cosine": 0.18466317638905702
+            },
+            "llm2action.fc.weight": {
+              "control_norm": 1.038362123102152,
+              "candidate_norm": 1.0602382585179628,
+              "difference_norm": 0.025253345515607695,
+              "cosine": 0.9999277116301956
+            },
+            "llm2action.bias.weight": {
+              "control_norm": 0.15298841462410442,
+              "candidate_norm": 0.15681584608380444,
+              "difference_norm": 0.003905596804499809,
+              "cosine": 0.9999874024711952
+            },
+            "lora.language_model__model__layers__24__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.003124284063807719,
+              "candidate_norm": 0.0777654075104081,
+              "difference_norm": 0.07691645095357245,
+              "cosine": 0.2903330146749866
+            },
+            "lora.language_model__model__layers__24__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.0008181423762673866,
+              "candidate_norm": 0.019492917721615863,
+              "difference_norm": 0.019426521917070706,
+              "cosine": 0.10200175953204707
+            },
+            "lora.language_model__model__layers__24__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.0016838980534377786,
+              "candidate_norm": 0.018916784045501865,
+              "difference_norm": 0.018716482909608853,
+              "cosine": 0.16282915285115088
+            },
+            "lora.language_model__model__layers__24__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.002251107389980395,
+              "candidate_norm": 0.021954049923278113,
+              "difference_norm": 0.0217869352248864,
+              "cosine": 0.12522272970888132
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.001594275047559887,
+              "candidate_norm": 0.03081175956508279,
+              "difference_norm": 0.03076463839494048,
+              "cosine": 0.05540509724151791
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__24__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.0010060692268075422,
+              "candidate_norm": 0.009516942599929296,
+              "difference_norm": 0.009395869490405731,
+              "cosine": 0.17243397680781825
+            },
+            "lora.language_model__model__layers__25__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.000565292001611964,
+              "candidate_norm": 0.009635218157306181,
+              "difference_norm": 0.009634916040471444,
+              "cosine": 0.02986911126242555
+            },
+            "lora.language_model__model__layers__25__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.0004836977951531467,
+              "candidate_norm": 0.011780302606896994,
+              "difference_norm": 0.011760894537209413,
+              "cosine": 0.06062125762323182
+            },
+            "lora.language_model__model__layers__25__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.0019783030421025413,
+              "candidate_norm": 0.026047799824268494,
+              "difference_norm": 0.025999174818041218,
+              "cosine": 0.06253068272198847
+            },
+            "lora.language_model__model__layers__25__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.0013186689369051778,
+              "candidate_norm": 0.00917614537516121,
+              "difference_norm": 0.009102281463418774,
+              "cosine": 0.1276416459317668
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.0017401802111568603,
+              "candidate_norm": 0.014869693121148593,
+              "difference_norm": 0.014730824556409526,
+              "cosine": 0.13794295001296475
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__25__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.0011801166482872337,
+              "candidate_norm": 0.006000734367363087,
+              "difference_norm": 0.005899283622734978,
+              "cosine": 0.18357103468185926
+            },
+            "lora.language_model__model__layers__26__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.0008737836470774189,
+              "candidate_norm": 0.006432896433330388,
+              "difference_norm": 0.006363249590994167,
+              "cosine": 0.14719097030433845
+            },
+            "lora.language_model__model__layers__26__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.0007125539874069949,
+              "candidate_norm": 0.006819473097427316,
+              "difference_norm": 0.006771836419920286,
+              "cosine": 0.11886399520988707
+            },
+            "lora.language_model__model__layers__26__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.0026227987448081895,
+              "candidate_norm": 0.013832215006120984,
+              "difference_norm": 0.013474872024607492,
+              "cosine": 0.22929264704589314
+            },
+            "lora.language_model__model__layers__26__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.001760258503965854,
+              "candidate_norm": 0.005860842459934021,
+              "difference_norm": 0.005605705105240079,
+              "cosine": 0.2919593620980128
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.002875629154228391,
+              "candidate_norm": 0.01076149187909926,
+              "difference_norm": 0.010424035531411642,
+              "cosine": 0.24911788190158127
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__26__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.0017534002535073828,
+              "candidate_norm": 0.004617536703799672,
+              "difference_norm": 0.004291010865068088,
+              "cosine": 0.36950316102824654
+            },
+            "lora.language_model__model__layers__27__self_attn__q_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__q_proj_moe_gen.lora_B": {
+              "control_norm": 0.002674836549136697,
+              "candidate_norm": 0.013186599578404188,
+              "difference_norm": 0.012856444901166436,
+              "cosine": 0.22330721498611833
+            },
+            "lora.language_model__model__layers__27__self_attn__k_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__k_proj_moe_gen.lora_B": {
+              "control_norm": 0.0031533781766977746,
+              "candidate_norm": 0.012273574078139324,
+              "difference_norm": 0.012052564605917488,
+              "cosine": 0.19791765052747273
+            },
+            "lora.language_model__model__layers__27__self_attn__v_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__v_proj_moe_gen.lora_B": {
+              "control_norm": 0.006851620001767498,
+              "candidate_norm": 0.013870054853309808,
+              "difference_norm": 0.011982792335118352,
+              "cosine": 0.503701165510588
+            },
+            "lora.language_model__model__layers__27__self_attn__o_proj_moe_gen.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__self_attn__o_proj_moe_gen.lora_B": {
+              "control_norm": 0.0037166888222570824,
+              "candidate_norm": 0.007014728920342788,
+              "difference_norm": 0.005843223889114982,
+              "cosine": 0.5538012905246027
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__up_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__up_proj.lora_B": {
+              "control_norm": 0.0019531058954645475,
+              "candidate_norm": 0.011766661054548414,
+              "difference_norm": 0.011864943839646895,
+              "cosine": 0.03246177177988881
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__down_proj.lora_A": {
+              "control_norm": 0.0,
+              "candidate_norm": 0.0,
+              "difference_norm": 0.0,
+              "cosine": null
+            },
+            "lora.language_model__model__layers__27__mlp_moe_gen__down_proj.lora_B": {
+              "control_norm": 0.01445616974622315,
+              "candidate_norm": 0.016022766647943346,
+              "difference_norm": 0.005620819227715607,
+              "cosine": 0.9370987018782554
+            }
+          }
+        }
+      },
+      "first_callback_sensitivity_norm": 0.0025320891480182803,
+      "intermediate_input_sensitivity_norms": [
+        0.09904496108739613
+      ],
+      "costs": {
+        "last_callback": {
+          "backward_and_reference_seconds": 0.7297775549814105,
+          "total_seconds": 1.242705974727869,
+          "peak_allocated_bytes": 15354194944,
+          "peak_reserved_bytes": 15745417216,
+          "first_probe_compile_warmup": false
+        },
+        "complete_path": {
+          "backward_and_reference_seconds": 1.7136697685346007,
+          "total_seconds": 2.2331903716549277,
+          "peak_allocated_bytes": 21551649792,
+          "peak_reserved_bytes": 22131245056,
+          "first_probe_compile_warmup": false
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Only two pre-update fixed probes, not statistical quality evidence.",
+    "Probe costs include different numbers of reference/cut rollouts; compare training updates separately.",
+    "Complete-path backprop changes training estimator, not inference NFE or latency."
+  ]
+}

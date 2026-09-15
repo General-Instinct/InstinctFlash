@@ -1,0 +1,87 @@
+{
+  "GPU_calls": 0,
+  "conclusion": "No blanket permissive/commercial redistribution right for these original rendered pixels established. RoboLab code Apache2 does not relicense its NC-SA scene/fixture/material content or HOT3D restrictions. Whether a given render is adapted material is a legal determination; this review does not infer an exception.",
+  "draft_validation_note": "Initial raw Git-blob comparison encountered expected LFS pointers; final verification checks LFS content SHA against the pinned pointer, with no source/asset changes.",
+  "files": {
+    "LICENSE": {
+      "binding": "git_blob",
+      "bytes": 11461,
+      "sha256": "d7dcc1c2365f327e1112dc0a4c5b133bc06dabc4554d5d5319a763bb64d78db4",
+      "url": "https://github.com/NVlabs/RoboLab/blob/9db0aaf09d9fe5d4f37b168320788258c7012463/LICENSE"
+    },
+    "THIRD_PARTY_NOTICES.md": {
+      "binding": "git_blob",
+      "bytes": 5671,
+      "sha256": "3cc7aa33edde0c881214d27992210bf9f710fd669848361085ab8faa797ed896",
+      "url": "https://github.com/NVlabs/RoboLab/blob/9db0aaf09d9fe5d4f37b168320788258c7012463/THIRD_PARTY_NOTICES.md"
+    },
+    "assets/objects/hot3d/LICENSE": {
+      "binding": "git_blob",
+      "bytes": 22007,
+      "sha256": "850f8302492f3d321bbda7a2f17768e8ba9719390b86e4e699d5fcce40c14102",
+      "url": "https://github.com/NVlabs/RoboLab/blob/9db0aaf09d9fe5d4f37b168320788258c7012463/assets/objects/hot3d/LICENSE"
+    },
+    "assets/objects/ycb/LICENSE": {
+      "binding": "git_blob",
+      "bytes": 1613,
+      "sha256": "46ddc25f12283209928f70e03fbb7d659db7408fba3275fe9526fffd60e7d5ed",
+      "url": "https://github.com/NVlabs/RoboLab/blob/9db0aaf09d9fe5d4f37b168320788258c7012463/assets/objects/ycb/LICENSE"
+    },
+    "assets/scenes/banana_bowl.usda": {
+      "binding": "git_lfs_oid",
+      "bytes": 19211,
+      "sha256": "caf59864ffd777e53fb14e88e5620e19a967bbaa8d448bf98a8fdd41cb8832a0",
+      "url": "https://github.com/NVlabs/RoboLab/blob/9db0aaf09d9fe5d4f37b168320788258c7012463/assets/scenes/banana_bowl.usda"
+    },
+    "assets/scenes/rubiks_cube_banana_bowl.usda": {
+      "binding": "git_lfs_oid",
+      "bytes": 5373,
+      "sha256": "22b95d601defb9252a448a1b37d0548e1f2dc3bfb0c3d86a04c2ef5c4cc817a0",
+      "url": "https://github.com/NVlabs/RoboLab/blob/9db0aaf09d9fe5d4f37b168320788258c7012463/assets/scenes/rubiks_cube_banana_bowl.usda"
+    }
+  },
+  "files_changed_in_upstream": 0,
+  "installed_isaacsim_license": {
+    "bytes": 49043,
+    "observed_sections": [
+      "2.1 explicitly permits distribution of user-generated stills/screenshots",
+      "2.2 and5 preserve other content rights and user responsibility"
+    ],
+    "path": "/home/ubuntu/RoboLab-sim/.venv/lib/python3.11/site-packages/isaacsim/LICENSE.txt",
+    "scope": "The installed license directs readers to the latest online license; separate RoboLab scene/asset terms still apply.",
+    "sha256": "e8a684e1278cc1de7a4b3fce180228f3195f02c3b208a5722122d95cce29ca20"
+  },
+  "observed_scene_dependencies": {
+    "BananaInBowlTask": [
+      "assets/scenes/banana_bowl.usda (CC BY-NC-SA4.0)",
+      "assets/objects/ycb/{bowl,banana}.usd (MIT)",
+      "assets/fixtures/{table_oak,franka_table}.usd (CC BY-NC-SA4.0)",
+      "assets/materials/... (CC BY-NC-SA4.0 per bundled notice, subject to local exceptions)"
+    ],
+    "RubiksCubeAndBananaTask": [
+      "assets/scenes/rubiks_cube_banana_bowl.usda (CC BY-NC-SA4.0)",
+      "assets/objects/hot3d/rubiks_cube.usd (CC BY-SA4.0 plus explicit non-sale restriction)",
+      "assets/objects/ycb/{bowl,banana}.usd (MIT)",
+      "assets/fixtures/{table_maple,franka_table}.usd (CC BY-NC-SA4.0)"
+    ]
+  },
+  "pinned_robolab_revision": "9db0aaf09d9fe5d4f37b168320788258c7012463",
+  "primary_online_terms": [
+    {
+      "finding": "Isaac software source Apache2; Kit/assets/textures separate licenses.",
+      "url": "https://docs.isaacsim.omniverse.nvidia.com/5.0.0/common/licenses-isaac-sim.html"
+    },
+    {
+      "finding": "Outputs-only distribution does not require an enterprise license; this is an engine licensing FAQ, not a waiver of separate asset rights.",
+      "url": "https://docs.isaacsim.omniverse.nvidia.com/6.0.0/common/license-faq.html"
+    },
+    {
+      "finding": "Sections2(a)(1),3(a),3(b): covered material/adaptations have noncommercial, attribution and share-alike conditions.",
+      "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en"
+    }
+  ],
+  "recommendation": "Keep the pixel fixture out of a blanket Apache/MIT commercial core release; publish the source-only local pack/replay tool with exact provenance, or separately qualify and label a restricted-data artifact before bundling. State that replay tests latency/actions only and does not recreate closed-loop task success.",
+  "reviewed_at": "2026-09-15T03:14:33.379841+00:00",
+  "schema": "instinctflash.rendered_fixture_license_review.v1",
+  "scope": "Bounded source/terms reading for publishing original rendered camera pixels, excluding USD/modelweights/renderer distribution. This is not a legal clearance."
+}

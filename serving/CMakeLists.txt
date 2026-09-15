@@ -499,6 +499,8 @@ pybind11_add_module(flash_rt_kernels
   csrc/kernels/attention_mha_causal.cu
   csrc/kernels/rope_qwen3.cu
   csrc/kernels/decoder_fused.cu
+  csrc/kernels/moe_vla2.cu
+  csrc/kernels/wan_va_fused.cu
   csrc/kernels/dit_bf16.cu
   csrc/kernels/attention_dit_bf16.cu
   csrc/quantize/fp8_block128_dequant.cu
@@ -656,14 +658,18 @@ endif()
 #  gemm_runner.cu and quantize.cu are compiled into this .so as well —
 #  one-time build cost, no runtime overhead.
 # ──────────────────────────────────────────────────────────────────────
-execute_process(
-  COMMAND ${Python3_EXECUTABLE} -c
-          "import jax.ffi, sys; sys.stdout.write(jax.ffi.include_dir())"
-  OUTPUT_VARIABLE JAX_FFI_INCLUDE_DIR
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-  RESULT_VARIABLE JAX_FFI_DETECT_RESULT
-)
+option(FLASH_RT_BUILD_JAX_FFI "Probe and build the optional JAX FFI module" ON)
+set(JAX_FFI_DETECT_RESULT 1)
+if(FLASH_RT_BUILD_JAX_FFI)
+  execute_process(
+    COMMAND ${Python3_EXECUTABLE} -c
+            "import jax.ffi, sys; sys.stdout.write(jax.ffi.include_dir())"
+    OUTPUT_VARIABLE JAX_FFI_INCLUDE_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+    RESULT_VARIABLE JAX_FFI_DETECT_RESULT
+  )
+endif()
 if(JAX_FFI_DETECT_RESULT EQUAL 0
    AND EXISTS "${JAX_FFI_INCLUDE_DIR}/xla/ffi/api/ffi.h")
   message(STATUS "JAX FFI: ENABLED (include=${JAX_FFI_INCLUDE_DIR})")

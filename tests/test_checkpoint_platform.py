@@ -217,45 +217,70 @@ def test_the_shipped_example_package_validates():
 
 
 
-def test_no_runtime_code_branches_on_a_model_or_recipe_name():
-    """The requirement's substance: a name may appear in prose, never in a decision.
+def training_recipe_decisions(source, relative_path):
+    """Find recipe-dependent control flow, allowing architecture-specific execution.
 
-    A comment saying "pi-0 builds a prefix cache" documents a capability shape. `if recipe == "pdd"`
-    is a runtime that supports one recipe and claims to support many. Only the second is forbidden, so
-    this scans executable lines rather than the whole file.
+    Importing DreamZero's action head or GR00T's adapter is family dispatch, not
+    a training-recipe decision. The deprecated --pdd-heads CLI spelling is the
+    sole compatibility allowance: it normalizes to the same block-heads path.
+    Provenance-field reads and transitive training imports are checked separately
+    in test_runtime_boundary, including within family-specific modules.
     """
-    print("\n=== 8. no runtime/planning code BRANCHES on a model or recipe name ===")
-    import io, tokenize
-    names = ("pdd", "dmd2", "lcm", "dreamzero", "gr00t", "internvla", "rcm", "scm")
+    import ast
+    import re
+    tree = ast.parse(source)
+    parents = {child: parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)}
+    names = {"pdd", "dmd2", "lcm", "rcm", "scm"}
+    roots = []
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.If, ast.IfExp, ast.While)):
+            roots.append(node.test)
+        elif isinstance(node, ast.comprehension):
+            roots.extend(node.ifs)
+        elif isinstance(node, ast.Match):
+            roots.append(node.subject)
+            for case in node.cases:
+                roots.append(case.pattern)
+                if case.guard:
+                    roots.append(case.guard)
+
+    def legacy_alias(node):
+        if relative_path != "instinctflash/runtime/lingbot_worker.py":
+            return False
+        if isinstance(node, ast.Attribute):
+            return node.attr == "pdd_heads" and isinstance(node.value, ast.Name) and node.value.id == "args"
+        parent = parents.get(node)
+        return (isinstance(node, ast.Constant) and node.value == "pdd_heads"
+                and isinstance(parent, ast.Call) and isinstance(parent.func, ast.Name)
+                and parent.func.id == "getattr" and len(parent.args) in (2, 3)
+                and isinstance(parent.args[0], ast.Name) and parent.args[0].id == "args"
+                and parent.args[1] is node)
+
+    offenders = set()
+    for root in roots:
+        for node in ast.walk(root):
+            value = (node.id if isinstance(node, ast.Name) else node.attr if isinstance(node, ast.Attribute)
+                     else node.value if isinstance(node, ast.Constant) and isinstance(node.value, str) else "")
+            if (names & set(re.split(r"[^a-z0-9]+", value.lower()))
+                    or value.lower() in {"training_method", "training_recipe"}) and not legacy_alias(node):
+                offenders.add((node.lineno, value))
+    return sorted(offenders)
+
+
+def test_no_runtime_code_selects_a_training_recipe():
+    print("\n=== 8. architecture dispatch is allowed; training-recipe decisions are not ===")
     dirs = ("runtime", "planners", "executors", "passes", "backends", "descriptors", "adapters")
     offenders = []
     for sub in dirs:
         for f in sorted((ROOT / "instinctflash" / sub).rglob("*.py")):
             if "__pycache__" in str(f):
                 continue
-            src = f.read_text()
-            # strip comments and docstrings: what remains is code that can make a decision
-            code = []
-            try:
-                for tok in tokenize.generate_tokens(io.StringIO(src).readline):
-                    if tok.type in (tokenize.COMMENT, tokenize.STRING):
-                        continue
-                    code.append(tok.string.lower())
-            except tokenize.TokenError:
-                code = [src.lower()]
-            blob = " ".join(code)
-            for n in names:
-                if n in blob:
-                    # ALLOWED, and checked below: manifests.py keeps unvalidated design sketches in a
-                    # segregated dict. Same shape as the legacy delta.json quarantine -- the invariant
-                    # is segregation, not absence, because the sketches shaped the lifetime
-                    # abstraction and deleting them would lose that.
-                    if f.name == "manifests.py":
-                        continue
-                    offenders.append(f"{f.relative_to(ROOT)}: identifier containing {n!r}")
+            rel = f.relative_to(ROOT).as_posix()
+            offenders.extend(f"{rel}:{line}: training-recipe decision on {name!r}"
+                             for line, name in training_recipe_decisions(f.read_text(), rel))
     for o in offenders:
         print(f"       {o}")
-    check(not offenders, "no executable identifier in runtime/planning names a model or recipe",
+    check(not offenders, "runtime/planning control flow does not select a training recipe",
           f"{len(offenders)} found")
 
     # and the one allowance is a real quarantine, not a loophole
@@ -267,6 +292,22 @@ def test_no_runtime_code_branches_on_a_model_or_recipe_name():
           "unvalidated sketches are segregated and never in REGISTRY", str(sorted(unval)))
 
 
+def test_recipe_decision_check_detects_real_branches_and_scopes_the_cli_alias():
+    path = "instinctflash/runtime/dreamzero_fp8.py"
+    for source in ('if recipe == "pdd":\n    serve()\n',
+                   'selected = a if training_method == method else b\n',
+                   'if checkpoint.training_recipe:\n    serve()\n',
+                   'selected = [x for x in values if x == "dmd2"]\n'):
+        check(bool(training_recipe_decisions(source, path)), "a training-recipe branch is detected")
+    check(not training_recipe_decisions('if backbone == "dreamzero":\n    install_dreamzero_fp8(head)\n', path),
+          "family-specific execution dispatch does not imply training provenance")
+    alias = 'if getattr(args, "pdd_heads", None):\n    block_heads = args.pdd_heads\n'
+    check(not training_recipe_decisions(alias, "instinctflash/runtime/lingbot_worker.py"),
+          "the deprecated CLI alias remains a narrowly scoped compatibility spelling")
+    check(bool(training_recipe_decisions(alias, path)),
+          "the CLI compatibility exception does not apply in model execution code")
+
+
 def main() -> int:
     test_declaration_never_returns_provenance()
     test_forbidden_keys_are_refused_at_the_boundary()
@@ -275,7 +316,8 @@ def main() -> int:
     test_publishable_without_training_internals()
     test_legacy_is_a_compatibility_layer_only()
     test_the_shipped_example_package_validates()
-    test_no_runtime_code_branches_on_a_model_or_recipe_name()
+    test_no_runtime_code_selects_a_training_recipe()
+    test_recipe_decision_check_detects_real_branches_and_scopes_the_cli_alias()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")

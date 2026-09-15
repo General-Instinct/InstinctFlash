@@ -24,7 +24,32 @@ from lingbot_vla_v2_iwm.adapter import (
     _LingBotVLAV2Loop,
     _env_flag,
     _resolve_model_path,
+    _configure_thor_ptxas,
 )
+
+
+def test_thor_compiler_selection_preserves_user_overrides():
+    with tempfile.TemporaryDirectory() as tmp:
+        compiler = Path(tmp)/'bin/ptxas'
+        compiler.parent.mkdir()
+        compiler.touch()
+        env = {'CUDA_HOME':tmp,'TRITON_PTXAS_PATH':'/user/ptxas'}
+        with patch.dict(os.environ,env,clear=True), patch('subprocess.run') as run:
+            run.return_value = SimpleNamespace(returncode=0,stdout='sm_110a',stderr='')
+            result = _configure_thor_ptxas((11,0))
+            assert result['TRITON_PTXAS_PATH']=='/user/ptxas'
+            assert result['TRITON_PTXAS_BLACKWELL_PATH']==str(compiler)
+            assert run.call_args.args[0]==[str(compiler),'--help']
+        with patch.dict(os.environ,env,clear=True), patch('subprocess.run') as run:
+            assert _configure_thor_ptxas((9,0))=={}
+            run.assert_not_called()
+
+
+def test_thor_compiler_does_not_select_unsupported_assembler():
+    with patch.dict(os.environ,{},clear=True), patch('pathlib.Path.is_file',return_value=True), \
+            patch('subprocess.run') as run:
+        run.return_value=SimpleNamespace(returncode=0,stdout='sm_90',stderr='')
+        assert all(v is None for v in _configure_thor_ptxas((11,0)).values())
 
 
 def test_example_surface_stays_product_shaped():
@@ -37,6 +62,7 @@ def test_example_surface_stays_product_shaped():
     # replace them.
     root_files = {path.name for path in PLUGIN_ROOT.iterdir() if path.is_file()}
     assert root_files == {
+        "LICENSE",
         "README.md",
         "instinctwm.json",
         "moe_kernel_results.json",
@@ -80,6 +106,7 @@ def test_v2_spec_declares_the_published_control_cycle():
     assert spec.streams[0].tokens_per_frame == 286
     assert spec.phase("prefix").nfe == 1
     assert spec.phase("action").nfe == 10
+    assert spec.notes["capture_tier"] == "NUMERIC"
     assert spec.observation.batched is False
     assert [field.shape for field in spec.observation.fields] == [
         (480, 640, 3), (480, 640, 3), (480, 640, 3), (14,),
@@ -200,3 +227,21 @@ if __name__ == "__main__":
     from run_tests import run_module_tests
 
     raise SystemExit(run_module_tests(globals()))
+
+
+def test_sdpa_host_is_not_rejected_for_legacy_qwen_dependencies():
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        (root/'deploy').mkdir()
+        (root/'deploy/lingbot_vla_v2_policy.py').touch()
+        requested = []
+        def imports(modules):
+            requested.extend(modules)
+            if {'flash_attn','qwen_vl_utils'} & set(modules):
+                return False, 'optional legacy packages unavailable'
+            return True, 'core stack imports'
+        with patch.dict(os.environ,{'LINGBOT_VLA_V2_ROOT':str(root)}), \
+             patch('instinctflash.runtime.execution.imports_available',side_effect=imports):
+            ok, why = LingBotVLAV2Adapter().can_host_in_process()
+        assert ok and str(root) in why
+        assert {'torch','transformers','lerobot'} <= set(requested)

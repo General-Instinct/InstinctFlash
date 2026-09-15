@@ -1,0 +1,94 @@
+{
+  "family": "robotwin",
+  "verified_calls_per_arm": 96,
+  "saturated_cycles_zero_based": [
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47
+  ],
+  "saturated_p50_ms": {
+    "native": 8491.303028500624,
+    "fp8": 5614.696750999428
+  },
+  "saturated_speedup": 1.5123351099931004,
+  "episode_latency": {
+    "first_exposure": {
+      "arms": {
+        "native": {
+          "first_cycle_ms": 5866.240813000331,
+          "all_cycles": {
+            "p50_ms": 7418.089126999803,
+            "max_ms": 8515.533217001575
+          },
+          "saturated": {
+            "p50_ms": 8496.868844499659,
+            "max_ms": 8515.533217001575
+          }
+        },
+        "fp8": {
+          "first_cycle_ms": 8270.977639997,
+          "all_cycles": {
+            "p50_ms": 7094.496842000808,
+            "max_ms": 8270.977639997
+          },
+          "saturated": {
+            "p50_ms": 8150.241303999792,
+            "max_ms": 8219.310921002034
+          }
+        }
+      },
+      "saturated_speedup": 1.0425297273504965
+    },
+    "shape_warm_repeat": {
+      "arms": {
+        "native": {
+          "first_cycle_ms": 5308.063610998943,
+          "all_cycles": {
+            "p50_ms": 7413.682282502123,
+            "max_ms": 8510.356548002164
+          },
+          "saturated": {
+            "p50_ms": 8491.303028500624,
+            "max_ms": 8510.356548002164
+          }
+        },
+        "fp8": {
+          "first_cycle_ms": 2785.3690039992216,
+          "all_cycles": {
+            "p50_ms": 4671.66720449859,
+            "max_ms": 5782.498780998139
+          },
+          "saturated": {
+            "p50_ms": 5614.696750999428,
+            "max_ms": 5782.498780998139
+          }
+        }
+      },
+      "saturated_speedup": 1.5123351099931004
+    }
+  },
+  "setup_seconds": {
+    "native": 26.069496539001193,
+    "fp8": 23.77822356699835
+  },
+  "action_mae": 0.005782972255329828,
+  "action_max_abs": 0.2070314586162567,
+  "repeated_episode_byte_equal": true,
+  "paired_normalized_cache_occupancy_equal": true,
+  "cache_comparison_scope": "FP8 occupancy minus immediately reserved provisional action slots versus native occupancy before its deferred reservation; validates counts, not token identities.",
+  "saturation_criterion": "Conservative post-eviction regime: no-eviction token growth exceeds capacity, live occupancy equals capacity minus restored action-token slots, and FP8 slab head advances.",
+  "arm_sha256": {
+    "native": "c1d9998dfd134402f340c653c161b04d00c6dccf187c3a1775ca5780a11c207d",
+    "fp8": "1ed087958faef34d0df6c9cfeb386dfdf05f10e846477c819ad4ff5ab1db7874"
+  },
+  "scope": "One measured 48-cycle episode per arm after one warmup episode, repeated recorded history. No physical episode, task-quality, isolated FP8 arithmetic or sustained-tail certificate."
+}

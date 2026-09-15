@@ -1,0 +1,33 @@
+{
+  "label": "M3: Thor FULL engine (fp16 prefill + captured fp8 loop) vs stock V2, RoboTwin 50x10 paired",
+  "control": "m3_vla2_stock",
+  "treat": "m3_vla2_engine",
+  "n_pairs": 500,
+  "tasks": 50,
+  "control_success": 0.906,
+  "treat_success": 0.886,
+  "delta": -0.020000000000000018,
+  "discordant_for": 15,
+  "discordant_against": 25,
+  "mcnemar_exact_two_sided_p": 0.1538599441628321,
+  "ci95_mcnemar_se": [
+    -0.04479225685572011,
+    0.004792256855720076
+  ],
+  "ci95_bootstrap_iid": [
+    -0.044,
+    0.004
+  ],
+  "ci95_bootstrap_task_cluster": [
+    -0.046,
+    0.004
+  ],
+  "one_sided_p_vs_margin": 0.008853032903683347,
+  "margin_declared": -0.05,
+  "noise_floor_discordance": 0.0,
+  "verdict": "NON-INFERIOR",
+  "slack": 0.0040000000000000036,
+  "primary_interval": "bootstrap_task_cluster",
+  "primary_lower_bound": -0.046,
+  "dropped_unpaired": 0
+}

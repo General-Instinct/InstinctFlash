@@ -1,0 +1,78 @@
+{
+  "checkpoint_manifest_sha256": "e5a5daf0fc2c5e6a03c50b0ffcd83393ac6d335938c7e97f700afa32819eb169",
+  "checkpoint_sha256": "95ac69826a1bf65d118acf6a9e65f4e11520b9389360eee51ab4c54b3925e0cc",
+  "engine_source_sha256": "15663e635cd44b2a65a7290ecf9755d16e6afd24969c67c0239563398229b553",
+  "execution": {
+    "action_semantics_sha256": "8941738b1ca2f1aaed14638fef8204f936ad950bebdf4f05cd6a0de9117a8ace",
+    "applied": [
+      "fsdp_elision",
+      "allocator_churn_elision",
+      "debug_dump_elision",
+      "obs_decode_elision",
+      "conditioning_prefill",
+      "ring_kv_addressing",
+      "action_terminal_forward_elision"
+    ],
+    "dtype": "torch.bfloat16",
+    "geometry": {
+      "action_per_frame": 4,
+      "env_type": "none",
+      "frame_chunk_size": 4,
+      "height": 128,
+      "obs_cam_keys": [
+        "observation.images.agentview_rgb",
+        "observation.images.eye_in_hand_rgb"
+      ],
+      "width": 128
+    },
+    "grid_shifts": {
+      "action": 0.05,
+      "video": 5.0
+    },
+    "guidance": {
+      "action": 1.0,
+      "video": 5.0
+    },
+    "nfe": {
+      "action": 50,
+      "video": 20
+    }
+  },
+  "hardware": {
+    "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+    "cuda": "13.0",
+    "gpu": "NVIDIA Thor"
+  },
+  "model_id": "robbyant/lingbot-va-posttrain-libero-long",
+  "model_revision": "0e89d1e753019988aba484e8da2dc0810e264d9f",
+  "numeric_environment": {
+    "cudnn_benchmark": false,
+    "cudnn_tf32": false,
+    "matmul_tf32": false
+  },
+  "package_declaration_sha256": "a39f1244a46254e4987c1d114441847b604002419925e97e18f60edb8f05340a",
+  "packages_sha256": "9c75a75b4b26d753758968925e0273a8b6928dbf05e0f8336ca290bfe6a57797",
+  "pipeline_sha256": "302ddded5f99459a4e295fc323da686c16aa7883f8417ae3d8ed243c72bf396e",
+  "precision": "native",
+  "protocol": "wan-va-runtime-observed-history-v1",
+  "runtime_explanation": "InstinctFlash runtime for 'robbyant/lingbot-va-posttrain-libero-long'\n  package     : /home/guanming/ifl_eval/thor_precision_completion_20260909/runtime-libero-checkpoint\n  backbone    : wan_va\n  servable    : True\n  precision   : native\n  evidence    : no closed-loop certificate verified for this live execution; plan tiers are transformation claims\n  placement   : placement='in_process' (explicit)\n  capabilities: backbone:wan_va, declares:base_weights, declares:env_type, declares:frame_chunk_size, declares:height, declares:obs_cam_keys, declares:va_config, declares:width, guidance:action=positive_only, guidance:video=cfg, servable\n\nInstinctFlash plan for robbyant/lingbot-va-posttrain-libero-long\n  plan tier: BITEXACT\n  operating point: schedule {kv_refresh=2 + video=20 + action=50} | guidance {action=positive_only@1 [implied by mode], video=cfg@5 [inherited from the family default]} | cfg batching {batch-2 on 72 of 72 declared forwards (negative branch requested by video); batch-1 on 0}\n\n  skip   graph_capture              [BITEXACT  ] Thor capture performance is unmeasured for this family/operating point; retain the eager default pending a paired device measurement.\n  skip   engine_offload             [NUMERIC   ] precision='native': FP8 engine is not authorized; legal but tier NUMERIC exceeds ceiling BITEXACT: SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation\n  APPLY  fsdp_elision               [BITEXACT  ] world_size=1, so every FSDP all-gather is identity while still paying a flat-param copy and stream sync per unit per forward\n         expected: measured 1.75x standalone on LingBot-VA\n  APPLY  allocator_churn_elision    [BITEXACT  ] closed-loop serving has a stable working set, so releasing the pool between control steps only forces re-allocation next step\n         expected: small alone; larger once per-layer KV gathers stop churning the pool\n  APPLY  debug_dump_elision         [BITEXACT  ] per-chunk tensor dumps do a synchronous D2H on the critical path and are not consumed by the serving client\n         expected: measured ~1.10x on top of fsdp_elision\n  APPLY  obs_decode_elision         [BITEXACT  ] caller wants actions only; ['vae.decoder'] need never be resident or executed\n         expected: no latency win on this model (already skipped); frees resident memory, which is what sets episodes-per-GPU\n  APPLY  conditioning_prefill       [BITEXACT  ] ['text_kv', 'negative_text_kv'] declared pure in ['episode'] scope, but recomputed on all 72 forwards per control step (kv_refresh=2 + video=20 + action=50)\n         expected: hoists 2 artifact(s) out of the denoise loop. Measured ON LingBot-VA: 89 of 226 TFLOP per control cycle (39%), 67.6% of an action forward's layer FLOPs, 360 MiB resident. Those figures are that model's; for any other backbone the FLOP share and the residency cost follow its own layer count and artifact size. Launch-bound share means the wall-clock win is less than the FLOP win either way \u2014 measure it\n  skip   prompt_encoder_staging     [BITEXACT  ] no memory pressure on this device class (sm_110, 123 GiB): keeping the prompt encoder resident avoids per-reset PCIe moves and allocator churn\n  APPLY  ring_kv_addressing         [BITEXACT  ] streams ['video', 'action'] live across control steps in a pool that is currently addressed by boolean mask, costing a host sync and a full-pool copy per layer per forward\n         expected: measured 1.40x on LingBot-VA; measure this operating point and device (cost model: 208.8 ms)\n  APPLY  action_terminal_forward_elision [BITEXACT  ] the action phase's terminal forward writes provisional K/V that clear_pred_cache drops before any forward reads it; its output is discarded by construction\n         expected: one forward per cycle (the action pred-commit): 1 of 10 at 2V/4A, 1 of 8 at 2V/2A (cost model: 68.4 ms)\n  skip   sm120_gated_residual       [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  skip   sm120_wan_stage2           [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  skip   conv_layout_ndhwc          [NUMERIC   ] legal but tier NUMERIC exceeds ceiling BITEXACT: two Wan VAE Conv3D subgraphs can choose NCDHW or NDHWC by measurement on this device; NDHWC changes convolution accumulation order, so the swap is NUMERIC\n  skip   cfg_branch_elision         [NUMERIC   ] legal but tier NUMERIC exceeds ceiling BITEXACT: streams ['action'] discard their negative branch while ['video'] force batch duplication; forwards that can drop to batch 1 \u2014 action: 49 of 50 (commit steps exempt: their K/V feeds the other stream's negative branch)",
+  "runtime_source_sha256": "8a0858b27cf9b6294e2d178bdc4b01434579a60e4573e74a43597b95ac9d399d",
+  "schema_version": 1,
+  "seed_mode": "episode_plus_frame",
+  "startup": {
+    "action_shape": [
+      7,
+      4,
+      4
+    ],
+    "actions_sha256": "1d2101c3a39e13c422ec6b88b96963dbf8916f40dc0c25d1201287ccc826593c",
+    "calls": 6,
+    "repeat_byte_equal": true,
+    "scope": "Recorded-history startup only; not closed-loop quality or real-time qualification",
+    "seed": 9173
+  },
+  "startup_observation_sha256": "462d16557248b4923d3f4ed546d12a818461b8a94939f7737f4e360bdafbbc8b",
+  "startup_prompt": "put both the alphabet soup and the tomato sauce in the basket",
+  "synthetic": false,
+  "upstream_source_sha256": "2cb70400debda9b65849754bda51ce865b95e03bf15b050ecb919a8b7d88723d"
+}

@@ -1,0 +1,1350 @@
+{
+  "v2": {
+    "capture.0": {
+      "latency_ms": {
+        "n": 64,
+        "p50": 404.62241650675423,
+        "p95": 407.7948162739631,
+        "p99": 408.3449673396535,
+        "max": 408.8431600248441
+      },
+      "numeric_environment": {
+        "cudnn_benchmark": false,
+        "cudnn_tf32": true,
+        "matmul_tf32": true
+      },
+      "checkpoint_sha256": "3773dbcef95c0eac8dbf5261be89ac0285db8e2649368dbddbbb4059edda1aff",
+      "input_cases": 3
+    },
+    "capture.1": {
+      "latency_ms": {
+        "n": 64,
+        "p50": 401.10218900372274,
+        "p95": 406.60332623228896,
+        "p99": 407.0277191151399,
+        "max": 407.10325801046565
+      },
+      "numeric_environment": {
+        "cudnn_benchmark": false,
+        "cudnn_tf32": true,
+        "matmul_tf32": true
+      },
+      "checkpoint_sha256": "3773dbcef95c0eac8dbf5261be89ac0285db8e2649368dbddbbb4059edda1aff",
+      "input_cases": 3
+    },
+    "current.0": {
+      "latency_ms": {
+        "n": 64,
+        "p50": 713.167590496596,
+        "p95": 721.4354382682359,
+        "p99": 739.4548638182459,
+        "max": 747.1747200470418
+      },
+      "numeric_environment": {
+        "cudnn_benchmark": false,
+        "cudnn_tf32": true,
+        "matmul_tf32": true
+      },
+      "checkpoint_sha256": "3773dbcef95c0eac8dbf5261be89ac0285db8e2649368dbddbbb4059edda1aff",
+      "input_cases": 3
+    },
+    "current.1": {
+      "latency_ms": {
+        "n": 64,
+        "p50": 698.6684715084266,
+        "p95": 711.3232049276121,
+        "p99": 734.5395193906734,
+        "max": 737.522043986246
+      },
+      "numeric_environment": {
+        "cudnn_benchmark": false,
+        "cudnn_tf32": true,
+        "matmul_tf32": true
+      },
+      "checkpoint_sha256": "3773dbcef95c0eac8dbf5261be89ac0285db8e2649368dbddbbb4059edda1aff",
+      "input_cases": 3
+    },
+    "final_numeric.0": {
+      "latency_ms": {
+        "n": 64,
+        "p50": 398.9090670074802,
+        "p95": 406.0547509667231,
+        "p99": 407.3211988498224,
+        "max": 407.4155419948511
+      },
+      "numeric_environment": {
+        "cudnn_benchmark": false,
+        "cudnn_tf32": true,
+        "matmul_tf32": true
+      },
+      "checkpoint_sha256": "3773dbcef95c0eac8dbf5261be89ac0285db8e2649368dbddbbb4059edda1aff",
+      "input_cases": 3
+    },
+    "final_strict.0": {
+      "latency_ms": {
+        "n": 64,
+        "p50": 716.6423220187426,
+        "p95": 731.0051105392631,
+        "p99": 749.3642380315578,
+        "max": 762.8970569930971
+      },
+      "numeric_environment": {
+        "cudnn_benchmark": false,
+        "cudnn_tf32": true,
+        "matmul_tf32": true
+      },
+      "checkpoint_sha256": "3773dbcef95c0eac8dbf5261be89ac0285db8e2649368dbddbbb4059edda1aff",
+      "input_cases": 3
+    },
+    "stock.0": {
+      "latency_ms": {
+        "n": 64,
+        "p50": 748.2630660233553,
+        "p95": 813.0784732638858,
+        "p99": 875.7039602700387,
+        "max": 890.41453396203
+      },
+      "numeric_environment": {
+        "cudnn_benchmark": false,
+        "cudnn_tf32": true,
+        "matmul_tf32": true
+      },
+      "checkpoint_sha256": "3773dbcef95c0eac8dbf5261be89ac0285db8e2649368dbddbbb4059edda1aff",
+      "input_cases": 3
+    },
+    "stock.1": {
+      "latency_ms": {
+        "n": 64,
+        "p50": 701.4672554796562,
+        "p95": 824.0336495859082,
+        "p99": 859.7138842032291,
+        "max": 863.438515982125
+      },
+      "numeric_environment": {
+        "cudnn_benchmark": false,
+        "cudnn_tf32": true,
+        "matmul_tf32": true
+      },
+      "checkpoint_sha256": "3773dbcef95c0eac8dbf5261be89ac0285db8e2649368dbddbbb4059edda1aff",
+      "input_cases": 3
+    }
+  },
+  "v2_action_comparisons": {
+    "stock.0 vs capture.0": {
+      "n": 64,
+      "exact": 22,
+      "max_abs": 0.010242396267130971
+    },
+    "stock.1 vs capture.1": {
+      "n": 64,
+      "exact": 29,
+      "max_abs": 0.010242396267130971
+    },
+    "stock.0 vs stock.1": {
+      "n": 64,
+      "exact": 22,
+      "max_abs": 0.011467218399047852
+    },
+    "capture.0 vs capture.1": {
+      "n": 64,
+      "exact": 24,
+      "max_abs": 0.010242396267130971
+    },
+    "current.0 vs current.1": {
+      "n": 64,
+      "exact": 24,
+      "max_abs": 0.010242396267130971
+    },
+    "stock.0 vs current.0": {
+      "n": 64,
+      "exact": 20,
+      "max_abs": 0.010242396267130971
+    },
+    "stock.1 vs current.1": {
+      "n": 64,
+      "exact": 25,
+      "max_abs": 0.010242396267130971
+    },
+    "final_strict.0 vs final_numeric.0": {
+      "n": 64,
+      "exact": 20,
+      "max_abs": 0.011228879913687706
+    },
+    "stock.1 vs final_numeric.0": {
+      "n": 64,
+      "exact": 20,
+      "max_abs": 0.010242396267130971
+    }
+  },
+  "va": {
+    "va_base": {
+      "metadata": {
+        "complete": true,
+        "schedule": {
+          "video": 25,
+          "action": 50
+        },
+        "guidance": "native",
+        "terminal_elision": false,
+        "action_graphs": false,
+        "cycles": 48,
+        "runs": 2,
+        "input_sha256": "ec99dc9ff3d00d6dbfbaf2473d90becb76f723d31973a3fd023129fe3d428917",
+        "numeric_environment": {
+          "matmul_tf32": false,
+          "cudnn_tf32": true,
+          "cudnn_benchmark": false
+        },
+        "torch": "2.11.0+cu130",
+        "gpu": "NVIDIA Thor",
+        "scope": "Repeated real frames; fixed-input saturation stress, not closed-loop accuracy. CUDA event intervals include stream idle time; they are not kernel busy time."
+      },
+      "latency_ms": {
+        "early": {
+          "infer_ms": {
+            "n": 6,
+            "p50": 5582.903763017384,
+            "p95": 5775.88309373823,
+            "p99": 5794.259481137851,
+            "max": 5798.853577987757
+          },
+          "commit_ms": {
+            "n": 6,
+            "p50": 303.54708098457195,
+            "p95": 309.70976149546914,
+            "p99": 310.5679234897252,
+            "max": 310.78246398828924
+          },
+          "total_ms": {
+            "n": 6,
+            "p50": 5885.251745523419,
+            "p95": 6085.592855233699,
+            "p99": 6104.8274046275765,
+            "max": 6109.636041976046
+          }
+        },
+        "saturated": {
+          "infer_ms": {
+            "n": 9,
+            "p50": 7944.782224018127,
+            "p95": 7984.068194206338,
+            "p99": 7989.887521236669,
+            "max": 7991.342352994252
+          },
+          "commit_ms": {
+            "n": 9,
+            "p50": 555.5468689999543,
+            "p95": 557.5138821965083,
+            "p99": 557.9678492201492,
+            "max": 558.0813409760594
+          },
+          "total_ms": {
+            "n": 9,
+            "p50": 8500.329093018081,
+            "p95": 8533.83975479519,
+            "p99": 8538.669603744056,
+            "max": 8539.877065981273
+          }
+        }
+      },
+      "repeatability": {
+        "n": 48,
+        "exact": 48,
+        "max_abs": 0.0
+      },
+      "phases": [
+        {
+          "run": 1,
+          "cycle": 2,
+          "instrumented": true,
+          "infer_ms": 5458.536663034465,
+          "commit_ms": 302.06579295918345,
+          "total_ms": 5760.602455993649,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 2662.1988067626953,
+              "host_submit_ms": 1057.4045229004696
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 106.39155578613281,
+              "host_submit_ms": 40.695589035749435
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 2566.887035369873,
+              "host_submit_ms": 1641.3659239769913
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 51.008384704589844,
+              "host_submit_ms": 30.497057014144957
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 107.33721923828125,
+              "host_submit_ms": 44.941335974726826
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 51.048831939697266,
+              "host_submit_ms": 100.4898120299913
+            }
+          },
+          "ring_signature": [
+            0,
+            816
+          ],
+          "action_sha256": "c9e50c11781d44886147c4241ab9e0154a330aa6b0f51f8558a4af7157757ab2",
+          "graph_captures": 0,
+          "graph_replays": 0,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 8,
+          "instrumented": true,
+          "infer_ms": 5902.680253027938,
+          "commit_ms": 316.4992929669097,
+          "total_ms": 6219.179545994848,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 2821.457229614258,
+              "host_submit_ms": 1125.0809579505585
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 112.92047882080078,
+              "host_submit_ms": 43.1568410131149
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 2845.236618041992,
+              "host_submit_ms": 1720.4600063851103
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 56.60240173339844,
+              "host_submit_ms": 31.388304952997714
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 114.35708618164062,
+              "host_submit_ms": 50.81673199310899
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 56.64259338378906,
+              "host_submit_ms": 102.28172596544027
+            }
+          },
+          "ring_signature": [
+            0,
+            2448
+          ],
+          "action_sha256": "2452830ac189f0ec3488126c6a082afb02a23c2b69fc7a1b4f34a24ea9112df3",
+          "graph_captures": 0,
+          "graph_replays": 0,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 35,
+          "instrumented": true,
+          "infer_ms": 7989.270878024399,
+          "commit_ms": 363.5930530144833,
+          "total_ms": 8352.863931038883,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 3594.3436584472656,
+              "host_submit_ms": 1429.1916702641174
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 143.6842498779297,
+              "host_submit_ms": 54.28997200215235
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 4095.7008514404297,
+              "host_submit_ms": 1896.3841380900703
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 81.87026977539062,
+              "host_submit_ms": 35.848351020831615
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 144.01321411132812,
+              "host_submit_ms": 54.78035198757425
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 81.89600372314453,
+              "host_submit_ms": 127.5388509966433
+            }
+          },
+          "ring_signature": [
+            0,
+            9792
+          ],
+          "action_sha256": "a2401d8212ae58c4b273b55401343bf90690366f7a62a350158a03686553517b",
+          "graph_captures": 0,
+          "graph_replays": 0,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 36,
+          "instrumented": true,
+          "infer_ms": 7978.607428027317,
+          "commit_ms": 554.0815769927576,
+          "total_ms": 8532.689005020075,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 3583.124526977539,
+              "host_submit_ms": 1423.9040787797421
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 143.091064453125,
+              "host_submit_ms": 54.06066495925188
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 4094.3741302490234,
+              "host_submit_ms": 1948.4807890839875
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 82.07990264892578,
+              "host_submit_ms": 36.976868053898215
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 335.3573303222656,
+              "host_submit_ms": 134.04407701455057
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 81.57279968261719,
+              "host_submit_ms": 231.5830229781568
+            }
+          },
+          "ring_signature": [
+            272,
+            9792
+          ],
+          "action_sha256": "c401f16f48b07180d067b89549d10d60cd354f3fe5d5c86766501b5845821422",
+          "graph_captures": 0,
+          "graph_replays": 0,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 40,
+          "instrumented": true,
+          "infer_ms": 7986.881102027837,
+          "commit_ms": 553.8248450029641,
+          "total_ms": 8540.705947030801,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 3598.9623260498047,
+              "host_submit_ms": 1430.7030180934817
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 143.657958984375,
+              "host_submit_ms": 54.27059100475162
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 4088.041877746582,
+              "host_submit_ms": 1882.9644849756733
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 81.97427368164062,
+              "host_submit_ms": 43.57934603467584
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 333.8955078125,
+              "host_submit_ms": 133.4489900036715
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 82.1174087524414,
+              "host_submit_ms": 231.09778197249398
+            }
+          },
+          "ring_signature": [
+            1360,
+            9792
+          ],
+          "action_sha256": "33054ea99bdf29cd39e09bf684041d384a8dbb4170eebbc2698ef7aa0ad74b13",
+          "graph_captures": 0,
+          "graph_replays": 0,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 47,
+          "instrumented": true,
+          "infer_ms": 7951.893076999113,
+          "commit_ms": 554.214715026319,
+          "total_ms": 8506.107792025432,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 3595.003173828125,
+              "host_submit_ms": 1427.7149433037266
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 143.53538513183594,
+              "host_submit_ms": 54.20906801009551
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 4094.716354370117,
+              "host_submit_ms": 1932.3209230788052
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 81.22758483886719,
+              "host_submit_ms": 36.66507400339469
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 329.8948974609375,
+              "host_submit_ms": 131.85323600191623
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 81.3862075805664,
+              "host_submit_ms": 230.6809999863617
+            }
+          },
+          "ring_signature": [
+            3264,
+            9792
+          ],
+          "action_sha256": "9374264f38caf68ab40c2a853c42f637694f31080c6f5970eeb29d7fbf4f09a1",
+          "graph_captures": 0,
+          "graph_replays": 0,
+          "graph_failure": null
+        }
+      ]
+    },
+    "va_terminal": {
+      "metadata": {
+        "complete": true,
+        "schedule": {
+          "video": 25,
+          "action": 50
+        },
+        "guidance": "native",
+        "terminal_elision": true,
+        "action_graphs": false,
+        "cycles": 48,
+        "runs": 2,
+        "input_sha256": "ec99dc9ff3d00d6dbfbaf2473d90becb76f723d31973a3fd023129fe3d428917",
+        "numeric_environment": {
+          "matmul_tf32": false,
+          "cudnn_tf32": true,
+          "cudnn_benchmark": false
+        },
+        "torch": "2.11.0+cu130",
+        "gpu": "NVIDIA Thor",
+        "scope": "Repeated real frames; fixed-input saturation stress, not closed-loop accuracy. CUDA event intervals include stream idle time; they are not kernel busy time.",
+        "elision_controller": {
+          "requested": true,
+          "armed": false,
+          "disabled_reason": "",
+          "_pending": null,
+          "n_elided": 96,
+          "n_reserved": 96,
+          "n_materialized": 0,
+          "variant": "ring",
+          "_announced": true
+        }
+      },
+      "latency_ms": {
+        "early": {
+          "infer_ms": {
+            "n": 6,
+            "p50": 5598.6007825122215,
+            "p95": 5767.5903840281535,
+            "p99": 5778.069468826288,
+            "max": 5780.689240025822
+          },
+          "commit_ms": {
+            "n": 6,
+            "p50": 307.54466401413083,
+            "p95": 313.3507942111464,
+            "p99": 314.48022361437324,
+            "max": 314.76258096517995
+          },
+          "total_ms": {
+            "n": 6,
+            "p50": 5905.795830476563,
+            "p95": 6080.709711503005,
+            "p99": 6092.503399093403,
+            "max": 6095.451820991002
+          }
+        },
+        "saturated": {
+          "infer_ms": {
+            "n": 9,
+            "p50": 7896.005997026805,
+            "p95": 7908.804736216553,
+            "p99": 7909.450887260027,
+            "max": 7909.612425020896
+          },
+          "commit_ms": {
+            "n": 9,
+            "p50": 558.7428069557063,
+            "p95": 563.1326111964881,
+            "p99": 563.6326934397221,
+            "max": 563.7577140005305
+          },
+          "total_ms": {
+            "n": 9,
+            "p50": 8456.553568015806,
+            "p95": 8468.282194423955,
+            "p99": 8468.310456506442,
+            "max": 8468.317522027064
+          }
+        }
+      },
+      "repeatability": {
+        "n": 48,
+        "exact": 48,
+        "max_abs": 0.0
+      },
+      "phases": [
+        {
+          "run": 1,
+          "cycle": 2,
+          "instrumented": true,
+          "infer_ms": 5434.9345760419965,
+          "commit_ms": 302.76331800268963,
+          "total_ms": 5737.697894044686,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 2678.152801513672,
+              "host_submit_ms": 1061.029876000248
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 106.97634887695312,
+              "host_submit_ms": 40.7736049965024
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 2577.4618225097656,
+              "host_submit_ms": 1656.6242901026271
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 0.10662399977445602,
+              "host_submit_ms": 0.07539696525782347
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 107.44528198242188,
+              "host_submit_ms": 44.806267018429935
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 51.68928146362305,
+              "host_submit_ms": 102.05187497194856
+            }
+          },
+          "ring_signature": [
+            0,
+            816
+          ],
+          "action_sha256": "c9e50c11781d44886147c4241ab9e0154a330aa6b0f51f8558a4af7157757ab2",
+          "graph_captures": 0,
+          "graph_replays": 0,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 8,
+          "instrumented": true,
+          "infer_ms": 5859.706457995344,
+          "commit_ms": 313.9778299955651,
+          "total_ms": 6173.684287990909,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 2823.580123901367,
+              "host_submit_ms": 1118.6371469520964
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 112.8569564819336,
+              "host_submit_ms": 42.920058011077344
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 2851.5680618286133,
+              "host_submit_ms": 1723.0476518161595
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 0.10179200023412704,
+              "host_submit_ms": 0.07767498027533293
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 114.27954864501953,
+              "host_submit_ms": 46.80186597397551
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 56.544960021972656,
+              "host_submit_ms": 106.90525599056855
+            }
+          },
+          "ring_signature": [
+            0,
+            2448
+          ],
+          "action_sha256": "2452830ac189f0ec3488126c6a082afb02a23c2b69fc7a1b4f34a24ea9112df3",
+          "graph_captures": 0,
+          "graph_replays": 0,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 35,
+          "instrumented": true,
+          "infer_ms": 7897.700450033881,
+          "commit_ms": 363.41263202484697,
+          "total_ms": 8261.113082058728,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 3596.714340209961,
+              "host_submit_ms": 1428.5425219568424
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 143.6018524169922,
+              "host_submit_ms": 54.03463204856962
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 4080.3905029296875,
+              "host_submit_ms": 1854.8493731068447
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 0.12412799894809723,
+              "host_submit_ms": 0.09441596921533346
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 144.179931640625,
+              "host_submit_ms": 54.729405033867806
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 82.24018859863281,
+              "host_submit_ms": 129.16169501841068
+            }
+          },
+          "ring_signature": [
+            0,
+            9792
+          ],
+          "action_sha256": "a2401d8212ae58c4b273b55401343bf90690366f7a62a350158a03686553517b",
+          "graph_captures": 0,
+          "graph_replays": 0,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 36,
+          "instrumented": true,
+          "infer_ms": 7906.975785037503,
+          "commit_ms": 555.7976270210929,
+          "total_ms": 8462.773412058596,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 3592.397674560547,
+              "host_submit_ms": 1425.2515280386433
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 143.4830780029297,
+              "host_submit_ms": 54.04142796760425
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 4095.4486541748047,
+              "host_submit_ms": 1876.0939580970444
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 0.12134400010108948,
+              "host_submit_ms": 0.0906009809114039
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 335.0486145019531,
+              "host_submit_ms": 133.9056920260191
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 81.30201721191406,
+              "host_submit_ms": 231.28365800948814
+            }
+          },
+          "ring_signature": [
+            272,
+            9792
+          ],
+          "action_sha256": "c401f16f48b07180d067b89549d10d60cd354f3fe5d5c86766501b5845821422",
+          "graph_captures": 0,
+          "graph_replays": 0,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 40,
+          "instrumented": true,
+          "infer_ms": 7901.568897999823,
+          "commit_ms": 561.2629220122471,
+          "total_ms": 8462.83182001207,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 3595.2415313720703,
+              "host_submit_ms": 1425.8594831335358
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 143.737060546875,
+              "host_submit_ms": 54.27832301938906
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 4086.33406829834,
+              "host_submit_ms": 1853.057141881436
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 0.11884800344705582,
+              "host_submit_ms": 0.09167601820081472
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 333.27545166015625,
+              "host_submit_ms": 133.03985801758245
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 81.77222442626953,
+              "host_submit_ms": 235.42630102019757
+            }
+          },
+          "ring_signature": [
+            1360,
+            9792
+          ],
+          "action_sha256": "33054ea99bdf29cd39e09bf684041d384a8dbb4170eebbc2698ef7aa0ad74b13",
+          "graph_captures": 0,
+          "graph_replays": 0,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 47,
+          "instrumented": true,
+          "infer_ms": 7888.124507036991,
+          "commit_ms": 556.0428129974753,
+          "total_ms": 8444.167320034467,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 3585.2737731933594,
+              "host_submit_ms": 1422.4309590645134
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 143.3419189453125,
+              "host_submit_ms": 53.98229003185406
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 4084.6091384887695,
+              "host_submit_ms": 1887.3169824946672
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 0.12227199971675873,
+              "host_submit_ms": 0.0924629857763648
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 329.1495361328125,
+              "host_submit_ms": 131.5219890093431
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 81.0697250366211,
+              "host_submit_ms": 227.5067080045119
+            }
+          },
+          "ring_signature": [
+            3264,
+            9792
+          ],
+          "action_sha256": "9374264f38caf68ab40c2a853c42f637694f31080c6f5970eeb29d7fbf4f09a1",
+          "graph_captures": 0,
+          "graph_replays": 0,
+          "graph_failure": null
+        }
+      ]
+    },
+    "va_action_graph": {
+      "metadata": {
+        "complete": true,
+        "schedule": {
+          "video": 25,
+          "action": 50
+        },
+        "guidance": "native",
+        "terminal_elision": true,
+        "action_graphs": true,
+        "cycles": 48,
+        "runs": 2,
+        "input_sha256": "ec99dc9ff3d00d6dbfbaf2473d90becb76f723d31973a3fd023129fe3d428917",
+        "numeric_environment": {
+          "matmul_tf32": false,
+          "cudnn_tf32": true,
+          "cudnn_benchmark": false
+        },
+        "torch": "2.11.0+cu130",
+        "gpu": "NVIDIA Thor",
+        "scope": "Repeated real frames; fixed-input saturation stress, not closed-loop accuracy. CUDA event intervals include stream idle time; they are not kernel busy time.",
+        "elision_controller": {
+          "requested": true,
+          "armed": false,
+          "disabled_reason": "",
+          "_pending": null,
+          "n_elided": 96,
+          "n_reserved": 96,
+          "n_materialized": 0,
+          "variant": "ring",
+          "_announced": true
+        }
+      },
+      "latency_ms": {
+        "early": {
+          "infer_ms": {
+            "n": 6,
+            "p50": 5718.118019518442,
+            "p95": 5937.673362001078,
+            "p99": 5956.471586000407,
+            "max": 5961.171142000239
+          },
+          "commit_ms": {
+            "n": 6,
+            "p50": 311.0811570077203,
+            "p95": 318.26735951472074,
+            "p99": 318.6311935307458,
+            "max": 318.72215203475207
+          },
+          "total_ms": {
+            "n": 6,
+            "p50": 6029.199176526163,
+            "p95": 6255.940721515799,
+            "p99": 6275.102779531153,
+            "max": 6279.893294034991
+          }
+        },
+        "saturated": {
+          "infer_ms": {
+            "n": 9,
+            "p50": 8134.673272958025,
+            "p95": 8148.938579193782,
+            "p99": 8149.989024631213,
+            "max": 8150.251635990571
+          },
+          "commit_ms": {
+            "n": 9,
+            "p50": 559.8380629671738,
+            "p95": 563.2861033664085,
+            "p99": 563.4078310453333,
+            "max": 563.4382629650645
+          },
+          "total_ms": {
+            "n": 9,
+            "p50": 8694.244169979356,
+            "p95": 8708.186703792308,
+            "p99": 8711.35323435301,
+            "max": 8712.144866993185
+          }
+        }
+      },
+      "repeatability": {
+        "n": 48,
+        "exact": 48,
+        "max_abs": 0.0
+      },
+      "phases": [
+        {
+          "run": 1,
+          "cycle": 2,
+          "instrumented": true,
+          "infer_ms": 5515.4412150150165,
+          "commit_ms": 307.57478397572413,
+          "total_ms": 5823.015998990741,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 2639.7253494262695,
+              "host_submit_ms": 1160.0569358561188
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 105.45728302001953,
+              "host_submit_ms": 41.856087977066636
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 2684.7354736328125,
+              "host_submit_ms": 383.18520807661116
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 0.1618880033493042,
+              "host_submit_ms": 0.12613803846761584
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 107.22246551513672,
+              "host_submit_ms": 51.79338896414265
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 51.8243522644043,
+              "host_submit_ms": 96.7618270078674
+            }
+          },
+          "ring_signature": [
+            0,
+            816
+          ],
+          "action_sha256": "c9e50c11781d44886147c4241ab9e0154a330aa6b0f51f8558a4af7157757ab2",
+          "graph_captures": 51,
+          "graph_replays": 2550,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 8,
+          "instrumented": true,
+          "infer_ms": 6021.02016902063,
+          "commit_ms": 321.15479302592576,
+          "total_ms": 6342.174962046556,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 2837.889144897461,
+              "host_submit_ms": 1246.3901480659842
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 113.39769744873047,
+              "host_submit_ms": 44.91033300291747
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 2983.827865600586,
+              "host_submit_ms": 401.0314770275727
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 0.1597760021686554,
+              "host_submit_ms": 0.12423098087310791
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 113.85110473632812,
+              "host_submit_ms": 52.51430900534615
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 58.271488189697266,
+              "host_submit_ms": 101.3887639855966
+            }
+          },
+          "ring_signature": [
+            0,
+            2448
+          ],
+          "action_sha256": "2452830ac189f0ec3488126c6a082afb02a23c2b69fc7a1b4f34a24ea9112df3",
+          "graph_captures": 57,
+          "graph_replays": 2850,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 35,
+          "instrumented": true,
+          "infer_ms": 8138.833485019859,
+          "commit_ms": 365.8037260174751,
+          "total_ms": 8504.637211037334,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 3584.6260375976562,
+              "host_submit_ms": 1568.8061739783734
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 143.4114532470703,
+              "host_submit_ms": 57.04988999059424
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 4325.0621337890625,
+              "host_submit_ms": 476.3659429154359
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 0.16441600024700165,
+              "host_submit_ms": 0.1293059904128313
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 143.9930877685547,
+              "host_submit_ms": 57.60870297672227
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 82.1830062866211,
+              "host_submit_ms": 122.47975304489955
+            }
+          },
+          "ring_signature": [
+            0,
+            9792
+          ],
+          "action_sha256": "a2401d8212ae58c4b273b55401343bf90690366f7a62a350158a03686553517b",
+          "graph_captures": 84,
+          "graph_replays": 4200,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 36,
+          "instrumented": true,
+          "infer_ms": 8154.789803025778,
+          "commit_ms": 555.0153460353613,
+          "total_ms": 8709.80514906114,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 3596.5625,
+              "host_submit_ms": 1574.2618870572187
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 143.9532470703125,
+              "host_submit_ms": 57.297321036458015
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 4327.927932739258,
+              "host_submit_ms": 480.56449106661603
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 0.1661120057106018,
+              "host_submit_ms": 0.12943398905918002
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 335.2856140136719,
+              "host_submit_ms": 144.44822201039642
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 81.86032104492188,
+              "host_submit_ms": 223.82313798880205
+            }
+          },
+          "ring_signature": [
+            272,
+            9792
+          ],
+          "action_sha256": "c401f16f48b07180d067b89549d10d60cd354f3fe5d5c86766501b5845821422",
+          "graph_captures": 85,
+          "graph_replays": 4250,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 40,
+          "instrumented": true,
+          "infer_ms": 8136.253042961471,
+          "commit_ms": 556.4651089953259,
+          "total_ms": 8692.718151956797,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 3588.746612548828,
+              "host_submit_ms": 1569.2682531662285
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 143.45724487304688,
+              "host_submit_ms": 56.86336598591879
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 4318.798065185547,
+              "host_submit_ms": 476.4488919172436
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 0.16105599701404572,
+              "host_submit_ms": 0.12661999789997935
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 333.2332458496094,
+              "host_submit_ms": 143.5109039884992
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 81.90220642089844,
+              "host_submit_ms": 222.8658149833791
+            }
+          },
+          "ring_signature": [
+            1360,
+            9792
+          ],
+          "action_sha256": "33054ea99bdf29cd39e09bf684041d384a8dbb4170eebbc2698ef7aa0ad74b13",
+          "graph_captures": 89,
+          "graph_replays": 4450,
+          "graph_failure": null
+        },
+        {
+          "run": 1,
+          "cycle": 47,
+          "instrumented": true,
+          "infer_ms": 8114.3736930098385,
+          "commit_ms": 558.0719040008262,
+          "total_ms": 8672.445597010665,
+          "phases": {
+            "infer/video/update0": {
+              "calls": 25,
+              "stream_ms": 3568.274948120117,
+              "host_submit_ms": 1560.769896081183
+            },
+            "infer/video/update1": {
+              "calls": 1,
+              "stream_ms": 142.7472381591797,
+              "host_submit_ms": 56.68418400455266
+            },
+            "infer/action/update0": {
+              "calls": 50,
+              "stream_ms": 4318.3154220581055,
+              "host_submit_ms": 475.36004782887176
+            },
+            "infer/action/update1": {
+              "calls": 1,
+              "stream_ms": 0.15887999534606934,
+              "host_submit_ms": 0.12333301128819585
+            },
+            "commit/video/update2": {
+              "calls": 1,
+              "stream_ms": 329.8858947753906,
+              "host_submit_ms": 141.91544597269967
+            },
+            "commit/action/update2": {
+              "calls": 1,
+              "stream_ms": 81.72822570800781,
+              "host_submit_ms": 220.80534603446722
+            }
+          },
+          "ring_signature": [
+            3264,
+            9792
+          ],
+          "action_sha256": "9374264f38caf68ab40c2a853c42f637694f31080c6f5970eeb29d7fbf4f09a1",
+          "graph_captures": 96,
+          "graph_replays": 4800,
+          "graph_failure": null
+        }
+      ]
+    }
+  },
+  "va_action_comparison": {
+    "n": 96,
+    "exact": 96,
+    "max_abs": 0.0
+  },
+  "va_graph_action_comparison": {
+    "n": 96,
+    "exact": 96,
+    "max_abs": 0.0
+  },
+  "va_combined_action_comparison": {
+    "n": 96,
+    "exact": 96,
+    "max_abs": 0.0
+  },
+  "evidence_sha256": {
+    "capture.0.json": "dd906f3e31312250a5fb4eda574d7c1d62e2cc039df1c537823d5a4b64becd76",
+    "capture.0.json.actions.npz": "f76abc41b7e73548d26edfec3c75318312d146075bfb75d0c41c447dd592bd91",
+    "capture.1.json": "97bfe95c3f3effe6fa3fa575d3ace51fa1cc3fac7324ebb03333a471de5eddb8",
+    "capture.1.json.actions.npz": "7550e8bd0bca772fa28acf9dd6bf9b1ed888cc64f1d08ade239c0f08f50080c6",
+    "current.0.json": "95c3d38d9bc5a504f3af606a9cbe763902be23294e1e5d4933df7c68d3831294",
+    "current.0.json.actions.npz": "ad0b56729ae889552bb22b034a9c543f6e891ad7e639ee5c888387c744d3f66e",
+    "current.1.json": "884087baafd33ed19ab8f3e8b230391e161d8be6fd6731f9eef307f20c8f1973",
+    "current.1.json.actions.npz": "7f9abb8c4cfa043ef65d0d71ef1c5c0e8b968ccde5e46950ab7b3fe50ec9623a",
+    "final_numeric.0.json": "318a833a2c45a8cdccdf01afc0ceba09263d1fff5163b417d4fc1a652edd6467",
+    "final_numeric.0.json.actions.npz": "de01b6f6093a6d4ed1a05f6e474d434af2c851a9154b564d939d659c267a734d",
+    "final_strict.0.json": "08176f07b142601f9efad230afea488972915badfd9ff3199a3eb0cfa96a89c4",
+    "final_strict.0.json.actions.npz": "264ece39d350c2b7bc069f1ffca3c6d1546ba8049a006aa3c262b114383c70a6",
+    "stock.0.json": "711e380be5047f2e66e54be61c4d8589d0bb1085b6671e9f9cf78017077cb0d3",
+    "stock.0.json.actions.npz": "f20bf1c36cc40d9b2781fdddbebbfc753b81826702cc853c20d43f9d25c4f5cd",
+    "stock.1.json": "fc9f19a816605d033ff9992d3cadcd1adbe12a04143ec8eda731d57364103bc0",
+    "stock.1.json.actions.npz": "4707afa7c0d843db254c6e9a88a6737a7fab290b160555bab4a070bef86f810d",
+    "va_base/complete.json": "758b8ae94ff79952628f834387ead81ab4eb8e11cf89d6df65ba9b384f238464",
+    "va_base/cycles.jsonl": "3536a48241265f5db63bb86d5d24e0a8844da1d4ac5193cb818398fcf9dd6436",
+    "va_base/actions.npz": "792cec5f9f69a1c6c8224f797e6fccff2cc4a229fc949caae2c451f41b164ee1",
+    "va_terminal/complete.json": "555a27b185600884ccf5342021457c6bb9d3f9b5e3703a26c73bbd33b7fb7e0c",
+    "va_terminal/cycles.jsonl": "4c5d16108b400e24c7d8d528025f5eb2ff33cdd2d164a7f0630c15adbc68d54a",
+    "va_terminal/actions.npz": "792cec5f9f69a1c6c8224f797e6fccff2cc4a229fc949caae2c451f41b164ee1",
+    "va_action_graph/complete.json": "58e1c98cb38262b8daab952ce1ffe026817a49da0d61b18ef21a12c3c16171de",
+    "va_action_graph/cycles.jsonl": "cbb8a27f3bd2dff6800a000dd8339d3769b06e6f96316a1342a342ee29992d8b",
+    "va_action_graph/actions.npz": "792cec5f9f69a1c6c8224f797e6fccff2cc4a229fc949caae2c451f41b164ee1"
+  },
+  "limitations": [
+    "Fixed-input systems evidence, not task success or a closed-loop certificate.",
+    "Small samples: reported p99 is descriptive, not a long-run tail guarantee.",
+    "V2 retains native numeric settings; action deltas are not accuracy-loss percentages.",
+    "VA cycles are zero-indexed; CUDA event spans include GPU idle intervals.",
+    "VA discards the first full episode and all instrumented cycles for timing."
+  ]
+}

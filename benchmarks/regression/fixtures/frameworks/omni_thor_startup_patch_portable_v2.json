@@ -1,0 +1,21 @@
+{
+  "base_commit": "f7d9deb45ab56e6a2ccc1690279bd9e6bdefbfe3",
+  "changes": [
+    {
+      "after_sha256": "13a07c3420cb426bab69f025531cd8ed09a17b0b401259b72fa4e9eec3110a02",
+      "before_sha256": "0a8ff73237cd9018e10e0ac34e19660aaceb0480b4af89d7169ffb64fde910a2",
+      "new": "prompt == \"dummy run\" and req.sampling_params.num_inference_steps in (1, 2)",
+      "old": "prompt == \"dummy run\" and req.sampling_params.num_inference_steps == 1",
+      "path": "vllm_omni/diffusion/models/dreamzero/pipeline_dreamzero.py"
+    },
+    {
+      "after_sha256": "38d90a6c221deec50b27c160d76af2df8ebfa40cbccdc1d6b688c8de20392378",
+      "before_sha256": "273fd6df7ac7a8e9fb5d6cb89a08d265dd22f96f43336ea2570bb6abc4a8e4b6",
+      "new": "import json\n        import os\n        from pathlib import Path\n        declared = os.environ.get(\"VLLM_OMNI_CHECKPOINT_PATHS\")\n        if declared is not None:\n            roots = json.loads(declared)\n            if not isinstance(roots, list) or not roots or not all(\n                isinstance(root, str) and Path(root).is_absolute() and Path(root).is_dir()\n                for root in roots\n            ):\n                raise ValueError(\"VLLM_OMNI_CHECKPOINT_PATHS must bind existing absolute checkpoint directories\")\n        else:\n            roots = [os.environ.get(\"HF_HUB_CACHE\") or os.environ.get(\"HUGGINGFACE_HUB_CACHE\")\n                     or str(Path.home() / \".cache/huggingface/hub\")]\n        advised = set()\n        for root in roots:\n            for candidate in Path(root).rglob(\"*\"):\n                if not candidate.is_file():\n                    continue\n                path = candidate.resolve(strict=True)\n                if path in advised or path.stat().st_size < 64 * 1024 * 1024:\n                    continue\n                fd = os.open(path, os.O_RDONLY)\n                try:\n                    os.posix_fadvise(fd, 0, 0, os.POSIX_FADV_DONTNEED)\n                    advised.add(path)\n                finally:\n                    os.close(fd)\n        return int(torch.cuda.mem_get_info(self.device)[0])",
+      "old": "return int(torch.cuda.mem_get_info(self.device)[0])",
+      "path": "vllm_omni/experimental/ar_diffusion/runner.py"
+    }
+  ],
+  "historical_patch_sha256": "0fc47a24e00fcd00451f2dddb76b7627a5be3b8c3f2b6ff4e4541e1af01c565a",
+  "scope": "Startup-only portable variant: unchanged dummy warmup fix; advise clean >=64MiB files under explicitly bound physical checkpoint directories, otherwise the selected HF cache. No checkpoint writes or inference math changes."
+}

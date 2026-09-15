@@ -1,0 +1,65 @@
+{
+  "attribution": "Recorded inputs derived from RoboTwin2.0 by Tianxing Chen and the RoboTwin contributors (MIT): blocks_ranking_rgb, aloha-agilex_clean_50, episode7, dataset revision9dc9299c163db059931898a9f0852098a61155a1. InstinctFlash decodes39 JPEG camera frames to RGB and packages8 original end-effector feedback chunks into a pickle-free NPZ. Synthetic robot states/prompts are benchmark-generated; no task-success certificate.",
+  "conversion_verified": {
+    "conversion_chain_sha256": "bc8ef2d355f02706e06d3a834982a7074bdcc9ac16bb32f422fc396a3674eef8",
+    "decoded_images": 39,
+    "feedback_float32_values": 4096,
+    "jpeg_images": 39,
+    "review_sha256": "69b821ad9b7262a0084addcdfc7ebb9e6cc4c8a32e953f4972b1e9805d3c0497"
+  },
+  "fixture": {
+    "file": "recorded_inputs_v1.npz",
+    "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+  },
+  "license": {
+    "archive_contains_no_license_or_notice_member": true,
+    "current_card_url": "https://huggingface.co/datasets/TianxingChen/RoboTwin2.0/blob/981c92aa34d8f94d4cff47e0d5bc2f7d4e0af042/README.md",
+    "dataset_card_has_no_full_notice_text": true,
+    "declared_dataset_license": "MIT",
+    "distribution_condition": "Retain original MIT copyright and permission notice; add exact dataset/archive/task/episode provenance and describe the decoded selection as modified packaging.",
+    "historical_card_url": "https://huggingface.co/datasets/TianxingChen/RoboTwin2.0/blob/9dc9299c163db059931898a9f0852098a61155a1/README.md",
+    "inference": "The original dataset explicitly declares MIT at its exact historical download revision. The matched-byte image/action derivative can be distributed consistently with that declaration while retaining the separately identified official RoboTwin MIT notice and provenance. This is scoped source evidence, not a warranty of all underlying third-party rights.",
+    "project_copyright": "Copyright (c) 2025 Tianxing Chen (\u9648\u5929\u884c)",
+    "project_license_url": "https://raw.githubusercontent.com/RoboTwin-Platform/RoboTwin/c3ddfa8b97d5519efa828b075999bd0006778e5e/LICENSE",
+    "separate_robolab_screen": "This fixture predates and is not sourced from RoboLab/Isaac SCREEN; that distinct mixed-asset-license review does not apply to this RoboTwin archive."
+  },
+  "modification": "Lossless JPEG-to-RGB decoding and a pickle-free NumPy container; original input content is unchanged.",
+  "notice": {
+    "file": "LICENSE.RoboTwin.txt",
+    "sha256": "c695d421718e54e6f3a60858f0c601125c3ecc60c199332c15947360561e2a9f"
+  },
+  "schema": "instinctflash.recorded_input_attribution.v1",
+  "selection": {
+    "cameras": [
+      "head_camera",
+      "left_camera",
+      "right_camera"
+    ],
+    "dataset": "TianxingChen/RoboTwin2.0",
+    "download_revision": "9dc9299c163db059931898a9f0852098a61155a1",
+    "episode": 7,
+    "feedback": "8 chunks derived from original endpose/gripper observations;4096 float32 values",
+    "frames": [
+      0,
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      28,
+      32,
+      36,
+      40,
+      44,
+      48
+    ],
+    "setting": "aloha-agilex_clean_50",
+    "task": "blocks_ranking_rgb"
+  },
+  "source_archive": {
+    "bytes": 927813070,
+    "path": "dataset/blocks_ranking_rgb/aloha-agilex_clean_50.zip",
+    "sha256": "3752a61e42081ce64e3d3d76b5634836904bced29007b6cec8f3bfa12b4d6387"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "automatic_retry": false,
+  "child": {
+    "group_id": 255119,
+    "parent_pid": 255112,
+    "pid": 255119,
+    "session_id": 255119,
+    "start_ticks": "48605127",
+    "state": "R"
+  },
+  "command": [
+    "/usr/bin/python3",
+    "/home/guanming/ifl_eval/cosmos3_task_quality_20260914/rtx_preparation/run_thor_quality_worker_v2.py",
+    "--bundle",
+    "/home/guanming/ifl_eval/cosmos3_task_quality_20260914/thor_bundle_v1",
+    "--installation",
+    "/home/guanming/ifl_eval/user_e2e_20260914/installation.json",
+    "--installation-sha256",
+    "22912c0908dc835598ff9b10953cc95dae6e6a793c62207aa49a78e817eaed72",
+    "--mode",
+    "serve",
+    "--cells",
+    "edge-eager_native",
+    "--port",
+    "19071",
+    "--max-seconds",
+    "13432",
+    "--grace-seconds",
+    "120",
+    "--expected-identity",
+    "/home/guanming/ifl_eval/cosmos3_task_quality_20260914/identity_probe_v1/edge-eager_native/identity.json",
+    "--output",
+    "/home/guanming/ifl_eval/cosmos3_task_quality_20260914/timed_screen_v1/batches/0000/servers/edge-eager_native/supervisor"
+  ],
+  "ended": 1789429898.8029153,
+  "exit_code": 0,
+  "forced_kill": false,
+  "job_id": "batches/0000/servers/edge-eager_native",
+  "owned_processes": [
+    {
+      "group_id": 255119,
+      "parent_pid": 255112,
+      "pid": 255119,
+      "session_id": 255119,
+      "start_ticks": "48605127",
+      "state": "R"
+    },
+    {
+      "group_id": 255122,
+      "parent_pid": 255119,
+      "pid": 255122,
+      "session_id": 255122,
+      "start_ticks": "48605133",
+      "state": "S"
+    }
+  ],
+  "owned_processes_still_live": [],
+  "started": 1789428110.8775237,
+  "status": "stopped",
+  "stop_reason": "SIGTERM",
+  "task_quality_validated": false,
+  "termination_events": [
+    {
+      "pid": 255119,
+      "scope": "direct_supervisor",
+      "signal": "SIGTERM",
+      "start_ticks": "48605127",
+      "time": 1789429895.5281143
+    }
+  ],
+  "wrapper": {
+    "group_id": 255112,
+    "parent_pid": 1,
+    "pid": 255112,
+    "session_id": 255112,
+    "start_ticks": "48605122",
+    "state": "R"
+  }
+}

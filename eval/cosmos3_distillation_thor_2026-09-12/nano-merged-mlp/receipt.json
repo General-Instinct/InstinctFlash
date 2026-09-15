@@ -1,0 +1,188 @@
+{
+  "category": "SCREEN",
+  "synthetic_inputs": true,
+  "task_quality_certified": false,
+  "end_to_end_benchmark": false,
+  "source_sha256": "9b6894827285ca37576849632b66171ac500e5383ce7def7f974c2ce7edddbcb",
+  "results": [
+    {
+      "layer": 0,
+      "input_shape": [
+        3093,
+        4096
+      ],
+      "weights": {
+        "layers.0.mlp_moe_gen.gate_proj.weight": {
+          "shape": [
+            12288,
+            4096
+          ],
+          "sha256": "f187fff3fb07409f80a164a43c06dec139a2df38c9de60f52270a7ef988b6ae7",
+          "shard": "diffusion_pytorch_model-00001-of-00007.safetensors"
+        },
+        "layers.0.mlp_moe_gen.up_proj.weight": {
+          "shape": [
+            12288,
+            4096
+          ],
+          "sha256": "89b0b0cca6a7ed84db65172764fbcc6d8f9648d2f11d8fe063043dfa9d25c924",
+          "shard": "diffusion_pytorch_model-00001-of-00007.safetensors"
+        },
+        "layers.0.mlp_moe_gen.down_proj.weight": {
+          "shape": [
+            4096,
+            12288
+          ],
+          "sha256": "04a924a1b50a1ddb9c947828d972a4195923638e2f8a404efb0e4026a7506084",
+          "shard": "diffusion_pytorch_model-00001-of-00007.safetensors"
+        }
+      },
+      "variants": {
+        "separate": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            9.112124633789062,
+            8.995657348632813,
+            8.960174560546875,
+            9.081065368652343,
+            9.035295867919922
+          ],
+          "median_ms": 9.035295867919922
+        },
+        "separate_shared": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            8.51437759399414,
+            8.46024169921875,
+            8.548258972167968,
+            8.581124877929687,
+            8.563442993164063
+          ],
+          "median_ms": 8.548258972167968
+        },
+        "merged": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            10.359945678710938,
+            10.461385345458984,
+            10.348719787597656,
+            10.490004730224609,
+            10.491639709472656
+          ],
+          "median_ms": 10.461385345458984
+        },
+        "merged_shared": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            10.958948516845703,
+            11.011345672607423,
+            10.976718139648437,
+            11.088796997070313,
+            11.069558715820312
+          ],
+          "median_ms": 11.011345672607423
+        }
+      }
+    },
+    {
+      "layer": 35,
+      "input_shape": [
+        3093,
+        4096
+      ],
+      "weights": {
+        "layers.35.mlp_moe_gen.gate_proj.weight": {
+          "shape": [
+            12288,
+            4096
+          ],
+          "sha256": "80a272573cf6b250bfd83f937f9ba893fd52ab2945ef425e262393ec83b1ef4f",
+          "shard": "diffusion_pytorch_model-00006-of-00007.safetensors"
+        },
+        "layers.35.mlp_moe_gen.up_proj.weight": {
+          "shape": [
+            12288,
+            4096
+          ],
+          "sha256": "22bbc63b35c773e77453dc38417e8bbe3f86d69c709ad3e341ec8c0e6ecdd1cd",
+          "shard": "diffusion_pytorch_model-00006-of-00007.safetensors"
+        },
+        "layers.35.mlp_moe_gen.down_proj.weight": {
+          "shape": [
+            4096,
+            12288
+          ],
+          "sha256": "bba18652ef499031f1f4384977364b1ea816293738d6311a359ae32700a29b5b",
+          "shard": "diffusion_pytorch_model-00006-of-00007.safetensors"
+        }
+      },
+      "variants": {
+        "separate": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            10.303612518310548,
+            10.330388641357422,
+            10.223587036132812,
+            10.256902313232422,
+            10.231231689453125
+          ],
+          "median_ms": 10.256902313232422
+        },
+        "separate_shared": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            9.790428924560548,
+            9.7713134765625,
+            9.842565155029297,
+            9.849390411376953,
+            9.824169921875
+          ],
+          "median_ms": 9.824169921875
+        },
+        "merged": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            11.875267028808594,
+            11.88708953857422,
+            11.864492797851563,
+            11.950582122802734,
+            11.904622650146484
+          ],
+          "median_ms": 11.88708953857422
+        },
+        "merged_shared": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            12.420622253417969,
+            12.457265472412109,
+            12.518198394775391,
+            12.500077056884766,
+            12.538285064697266
+          ],
+          "median_ms": 12.500077056884766
+        }
+      }
+    }
+  ],
+  "torch": "2.10.0+cu130",
+  "cuda": "13.0",
+  "device": "NVIDIA Thor",
+  "index_sha256": "4c8226c48a4c3acdd4766ec329db5523dc2a3e3807e3e2682556a21a043a7539",
+  "ok": true
+}

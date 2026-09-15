@@ -1,0 +1,542 @@
+{
+  "family": "pi05",
+  "arm": "current",
+  "device": "NVIDIA H100 80GB HBM3",
+  "status": "NUMERIC_SCREEN",
+  "invalid": {},
+  "baseline_p50_ms": 246.444909600541,
+  "current_p50_ms": 80.94762195833027,
+  "repeated_baseline_p50_ms": 240.10479706339538,
+  "speedup_range": [
+    2.9661748085323008,
+    3.044498450212712
+  ],
+  "reference_repeat_bitexact": true,
+  "applied_passes": [
+    "graph_capture",
+    "pi05_tf32_numeric"
+  ],
+  "execution_policy": {
+    "category": "NUMERIC",
+    "precision": "native",
+    "tier_ceiling": "numeric",
+    "transform_tier": "NUMERIC",
+    "nfe": {
+      "prefix": 1,
+      "action": 10
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "pass_results": [
+    {
+      "name": "graph_capture",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {
+        "capture_unit_from": "adapter sites of kind CAPTURE_UNIT",
+        "verify": "host-effect gate refuses a region that mutates host state",
+        "decision": [
+          "graph_capture: self-check bit-exact on 6 inputs (replay == eager exactly, 3 on a refilled prefix; 0.2 s startup cost, once per process)"
+        ],
+        "self_check": {
+          "n": 6,
+          "bitexact": true,
+          "max_abs_delta": 0.0,
+          "seconds": 0.15202269703149796,
+          "cases": [
+            {
+              "input": 1,
+              "timestep": 1.0,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 2,
+              "timestep": 0.899999976,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 3,
+              "timestep": 0.800000012,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 4,
+              "timestep": 1.0,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 5,
+              "timestep": 0.899999976,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 6,
+              "timestep": 0.800000012,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            }
+          ]
+        }
+      },
+      "reason": "all streams (prefix) are rebuilt within a control cycle, so shapes repeat, so one capture serves every cycle; 11 forward(s) per control step (prefix=1 + action=10) each pay full dispatch cost today"
+    },
+    {
+      "name": "engine_offload",
+      "applies": false,
+      "tier": "NUMERIC",
+      "params": {
+        "backend": "engine",
+        "executor": "h100_torch_fp8",
+        "certification": "uncertified"
+      },
+      "reason": "precision='native': FP8 engine is not authorized; H100 explicit E4M3 projections with native processing and schedule; task quality unverified on this device"
+    },
+    {
+      "name": "pi05_tf32_numeric",
+      "applies": true,
+      "tier": "NUMERIC",
+      "params": {
+        "required_by_checkpoint": "declares:pi05_tf32_numeric",
+        "precision": "tf32",
+        "static_kv_graph": true,
+        "max_abs_action_delta": 0.0008987784385681152,
+        "hardware": "sm90",
+        "evidence": "examples/pi05_vla/tf32_v044_static_h100_results.json"
+      },
+      "reason": "checkpoint explicitly declares the SM90 TF32 operating point: FP32 GEMMs use TF32 tensor cores and the action loop uses replay-safe static-KV CUDA Graphs; measured weights are lerobot/pi05_libero_finetuned_v044; paired independent-process v044 inference on the same schema-valid LIBERO-like observation/noise was deterministic in each arm; max |delta postprocessed action vs FP32| was 8.988e-4, and a second image/state/prompt replayed at the same static three-view/200-token extent"
+    },
+    {
+      "name": "fsdp_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "allocator_churn_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "debug_dump_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "obs_decode_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "model declares no observation-decode modules"
+    },
+    {
+      "name": "conditioning_prefill",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "['prefix_kv'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist"
+    },
+    {
+      "name": "prompt_encoder_staging",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "ring_kv_addressing",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "action_terminal_forward_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "sm120_gated_residual",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "sm120_wan_stage2",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "conv_layout_ndhwc",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "cfg_branch_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)"
+    }
+  ],
+  "graph_stats": {
+    "captured": true,
+    "rejected": false,
+    "full_graph": false,
+    "prefix_graph": false,
+    "replays": 218,
+    "prefix_replays": 0,
+    "chunk_replays": 0,
+    "self_check": {
+      "n": 6,
+      "bitexact": true,
+      "max_abs_delta": 0.0,
+      "seconds": 0.15202269703149796,
+      "cases": [
+        {
+          "input": 1,
+          "timestep": 1.0,
+          "prefix": "captured-chunk",
+          "max_abs_delta": 0.0
+        },
+        {
+          "input": 2,
+          "timestep": 0.899999976,
+          "prefix": "captured-chunk",
+          "max_abs_delta": 0.0
+        },
+        {
+          "input": 3,
+          "timestep": 0.800000012,
+          "prefix": "captured-chunk",
+          "max_abs_delta": 0.0
+        },
+        {
+          "input": 4,
+          "timestep": 1.0,
+          "prefix": "refilled",
+          "max_abs_delta": 0.0
+        },
+        {
+          "input": 5,
+          "timestep": 0.899999976,
+          "prefix": "refilled",
+          "max_abs_delta": 0.0
+        },
+        {
+          "input": 6,
+          "timestep": 0.800000012,
+          "prefix": "refilled",
+          "max_abs_delta": 0.0
+        }
+      ]
+    }
+  },
+  "backend_stats": {},
+  "comparisons": {
+    "reference_repeat": {
+      "baseline": "/home/ubuntu/ifl_eval/numeric_total_20260910/h100-6/pi05-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/numeric_total_20260910/h100-6/pi05-baseline_b.json",
+      "baseline_sha256": "c82d931e7e5744f354b25c4fe57f08e40c347a9b354e32d75755f3684a5e3d98",
+      "candidate_sha256": "51037adaa1e841d9201b8b25c5c1402ae3f2ab692f5c4fbfd5defe27267677b3",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            7
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        },
+        {
+          "name": "queued_actions",
+          "shape": [
+            23,
+            49,
+            1,
+            7
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "captured": false,
+        "rejected": false,
+        "full_graph": false,
+        "prefix_graph": false,
+        "replays": 0,
+        "prefix_replays": 0,
+        "chunk_replays": 0,
+        "self_check": null
+      },
+      "baseline_p50_ms": 246.444909600541,
+      "candidate_p50_ms": 240.10479706339538,
+      "speedup": 1.0264056054468234,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "declared_protocol_changes": {},
+      "unexpected_protocol_changes": {},
+      "source_drift": []
+    },
+    "reference_candidate": {
+      "baseline": "/home/ubuntu/ifl_eval/numeric_total_20260910/h100-6/pi05-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/numeric_total_20260910/h100-6/pi05-current.json",
+      "baseline_sha256": "c82d931e7e5744f354b25c4fe57f08e40c347a9b354e32d75755f3684a5e3d98",
+      "candidate_sha256": "db25c04918731626e80f0feea7cb7f91dd2a0c3b4f38eefb0bd2cb4dcfcef939",
+      "protocol_differences": {
+        "numeric_environment": [
+          {
+            "matmul_tf32": false,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          },
+          {
+            "matmul_tf32": true,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          }
+        ]
+      },
+      "bitexact": false,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            7
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.01628395915031433
+        },
+        {
+          "name": "queued_actions",
+          "shape": [
+            23,
+            49,
+            1,
+            7
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.13467997312545776
+        }
+      ],
+      "candidate_stats": {
+        "captured": true,
+        "rejected": false,
+        "full_graph": false,
+        "prefix_graph": false,
+        "replays": 218,
+        "prefix_replays": 0,
+        "chunk_replays": 0,
+        "self_check": {
+          "n": 6,
+          "bitexact": true,
+          "max_abs_delta": 0.0,
+          "seconds": 0.15202269703149796,
+          "cases": [
+            {
+              "input": 1,
+              "timestep": 1.0,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 2,
+              "timestep": 0.899999976,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 3,
+              "timestep": 0.800000012,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 4,
+              "timestep": 1.0,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 5,
+              "timestep": 0.899999976,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 6,
+              "timestep": 0.800000012,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            }
+          ]
+        }
+      },
+      "baseline_p50_ms": 246.444909600541,
+      "candidate_p50_ms": 80.94762195833027,
+      "speedup": 3.044498450212712,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "declared_protocol_changes": {
+        "numeric_environment": [
+          {
+            "matmul_tf32": false,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          },
+          {
+            "matmul_tf32": true,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          }
+        ]
+      },
+      "unexpected_protocol_changes": {},
+      "source_drift": []
+    },
+    "repeat_candidate": {
+      "baseline": "/home/ubuntu/ifl_eval/numeric_total_20260910/h100-6/pi05-baseline_b.json",
+      "candidate": "/home/ubuntu/ifl_eval/numeric_total_20260910/h100-6/pi05-current.json",
+      "baseline_sha256": "51037adaa1e841d9201b8b25c5c1402ae3f2ab692f5c4fbfd5defe27267677b3",
+      "candidate_sha256": "db25c04918731626e80f0feea7cb7f91dd2a0c3b4f38eefb0bd2cb4dcfcef939",
+      "protocol_differences": {
+        "numeric_environment": [
+          {
+            "matmul_tf32": false,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          },
+          {
+            "matmul_tf32": true,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          }
+        ]
+      },
+      "bitexact": false,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            7
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.01628395915031433
+        },
+        {
+          "name": "queued_actions",
+          "shape": [
+            23,
+            49,
+            1,
+            7
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.13467997312545776
+        }
+      ],
+      "candidate_stats": {
+        "captured": true,
+        "rejected": false,
+        "full_graph": false,
+        "prefix_graph": false,
+        "replays": 218,
+        "prefix_replays": 0,
+        "chunk_replays": 0,
+        "self_check": {
+          "n": 6,
+          "bitexact": true,
+          "max_abs_delta": 0.0,
+          "seconds": 0.15202269703149796,
+          "cases": [
+            {
+              "input": 1,
+              "timestep": 1.0,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 2,
+              "timestep": 0.899999976,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 3,
+              "timestep": 0.800000012,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 4,
+              "timestep": 1.0,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 5,
+              "timestep": 0.899999976,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 6,
+              "timestep": 0.800000012,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            }
+          ]
+        }
+      },
+      "baseline_p50_ms": 240.10479706339538,
+      "candidate_p50_ms": 80.94762195833027,
+      "speedup": 2.9661748085323008,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "declared_protocol_changes": {
+        "numeric_environment": [
+          {
+            "matmul_tf32": false,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          },
+          {
+            "matmul_tf32": true,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          }
+        ]
+      },
+      "unexpected_protocol_changes": {},
+      "source_drift": []
+    }
+  },
+  "scope": "Original default schedule is the denominator. Action deltas are a recorded-input screen, not a task-quality certificate or a new numerical tolerance."
+}

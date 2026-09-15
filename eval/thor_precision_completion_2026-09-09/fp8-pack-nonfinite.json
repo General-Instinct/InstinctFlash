@@ -1,0 +1,61 @@
+{
+  "ok": true,
+  "torch": "2.10.0+cu130",
+  "checks": [
+    {
+      "scale": 1e-15,
+      "values": 65536,
+      "finite_byte_mismatches": 0,
+      "nan_masks_equal": true
+    },
+    {
+      "scale": 1e-08,
+      "values": 65536,
+      "finite_byte_mismatches": 0,
+      "nan_masks_equal": true
+    },
+    {
+      "scale": 0.0034,
+      "values": 65536,
+      "finite_byte_mismatches": 0,
+      "nan_masks_equal": true
+    },
+    {
+      "scale": 0.1,
+      "values": 65536,
+      "finite_byte_mismatches": 0,
+      "nan_masks_equal": true
+    },
+    {
+      "scale": 1.0,
+      "values": 65536,
+      "finite_byte_mismatches": 0,
+      "nan_masks_equal": true
+    },
+    {
+      "scale": 3.14159,
+      "values": 65536,
+      "finite_byte_mismatches": 0,
+      "nan_masks_equal": true
+    },
+    {
+      "scale": 100000000.0,
+      "values": 65536,
+      "finite_byte_mismatches": 0,
+      "nan_masks_equal": true
+    },
+    {
+      "scale": 1e+20,
+      "values": 65536,
+      "finite_byte_mismatches": 0,
+      "nan_masks_equal": true
+    }
+  ],
+  "graph_changed_input_and_scale_match": true,
+  "graph_restored_byte_equal": true,
+  "timings": {
+    "torch_pack_ms": 0.047389440536499024,
+    "fused_pack_ms": 0.027656960487365722
+  },
+  "scope": "Packing operator only; not full-model speed or quality evidence"
+}

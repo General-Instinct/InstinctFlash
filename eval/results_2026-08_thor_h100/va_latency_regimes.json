@@ -1,0 +1,1096 @@
+{
+ "generated_by": "va_regime_tools/regime_report.py",
+ "windows_0based": {
+  "steady": [
+   1,
+   47
+  ],
+  "early": [
+   4,
+   29
+  ],
+  "saturated": [
+   36,
+   47
+  ],
+  "pub_h100": [
+   1,
+   11
+  ],
+  "pub_thor": [
+   1,
+   7
+  ]
+ },
+ "windows_1based_description": {
+  "early": "cycles 5-30 (p50)",
+  "saturated": "cycles 37-48 (p50, p99)",
+  "steady": "cycles 2-48",
+  "pub_h100": "mean over cycles 2-12 = the published 12-cycle protocol's kept-run window",
+  "pub_thor": "p50 over cycles 2-8 = the published 8-cycle protocol's kept-run window"
+ },
+ "protocol": "Stage-2 M3 verbatim: probe_latency.py real message order (reset -> infer -> compute_kv_cache -> ...), keyframes 4-then-8, --cycles 48 --repeats 1, 3 runs per arm, run 0 discarded, one server per arm, nothing else on the GPU, telemetry every 10 s.",
+ "published_cells": {
+  "h100": {
+   "stock_default": 8447.5,
+   "torch_default_nop010": 2583.0,
+   "torch_2v4a_w5_nop010": 360.5,
+   "box": "local 8xH100 box (2026-08-24 sweep, bench_h100_full/table.json; protocol 12 cycles x 3 repeats, kept-run mean of cycles 1-11)",
+   "same_box": false
+  },
+  "thor": {
+   "stock_default": 18027.4,
+   "torch_default_nop010": 5611.3,
+   "torch_2v4a_w5_nop010": 892.9,
+   "box": "the same Jetson Thor (thor_column/va.json, 2026-08-25; protocol 8 cycles x 3 runs, run 0 discarded, kept-run p50 of cycles 1-7)",
+   "same_box": true
+  }
+ },
+ "devices": {
+  "h100": {
+   "stock_default": {
+    "arm": "stock vendor server",
+    "point": "default 25V/50A@w5",
+    "early_p50": 6902.625,
+    "early_p99": 7461.7,
+    "saturated_p50": 7768.675,
+    "saturated_p99": 7791.1785,
+    "sat_over_early_p50": 1.1254667608337408,
+    "steady_p50": 7252.05,
+    "steady_p99": 7787.451,
+    "published_window_value": 6468.55,
+    "published_window": "mean cyc 2\u201312",
+    "infer_p50_early": 6546.275,
+    "infer_p50_sat": 7410.2,
+    "kv_p50_early": 358.2,
+    "kv_p50_sat": 357.65,
+    "spread_pct_steady_p50": 1.1022835988519613,
+    "spread_pct_sat_p50": 1.3157724251415683,
+    "eff_hz_early": 4.635917495155828,
+    "eff_hz_sat": 4.1191065400470475,
+    "telemetry": {
+     "gpu": 0,
+     "samples": 106,
+     "loaded_samples": 106,
+     "sm_mhz_min": 1980.0,
+     "sm_mhz_p50": 1980.0,
+     "sm_mhz_max": 1980.0,
+     "temp_c_min": 28.0,
+     "temp_c_max": 44.0,
+     "power_w_max": 328.15,
+     "throttle_reasons": [
+      "0x0000000000000000"
+     ],
+     "other_gpus_max_mem_mib": 0.0
+    },
+    "kept_runs": [
+     "probe_stock_default_run1.log",
+     "probe_stock_default_run2.log"
+    ]
+   },
+   "torch_default_nop010": {
+    "arm": "shipped chain, no P010 (the published arm)",
+    "point": "default 25V/50A@w5",
+    "early_p50": 1897.875,
+    "early_p99": 1912.175,
+    "saturated_p50": 1896.225,
+    "saturated_p99": 1916.62,
+    "sat_over_early_p50": 0.9991306065994863,
+    "steady_p50": 1897.6999999999998,
+    "steady_p99": 1916.537,
+    "published_window_value": 1896.409090909091,
+    "published_window": "mean cyc 2\u201312",
+    "infer_p50_early": 1816.8,
+    "infer_p50_sat": 1798.575,
+    "kv_p50_early": 80.60000000000001,
+    "kv_p50_sat": 97.75,
+    "spread_pct_steady_p50": 0.14765596160944758,
+    "spread_pct_sat_p50": 0.12928759894459343,
+    "eff_hz_early": 16.860962919054206,
+    "eff_hz_sat": 16.875634484304342,
+    "telemetry": {
+     "gpu": 0,
+     "samples": 31,
+     "loaded_samples": 31,
+     "sm_mhz_min": 1980.0,
+     "sm_mhz_p50": 1980.0,
+     "sm_mhz_max": 1980.0,
+     "temp_c_min": 34.0,
+     "temp_c_max": 50.0,
+     "power_w_max": 451.72,
+     "throttle_reasons": [
+      "0x0000000000000000"
+     ],
+     "other_gpus_max_mem_mib": 0.0
+    },
+    "kept_runs": [
+     "probe_torch_default_nop010_run1.log",
+     "probe_torch_default_nop010_run2.log"
+    ]
+   },
+   "torch_default_p010": {
+    "arm": "shipped chain + P010 (shipped since d7e6103)",
+    "point": "default 25V/50A@w5",
+    "early_p50": 1848.05,
+    "early_p99": 1869.4625,
+    "saturated_p50": 1851.65,
+    "saturated_p99": 1871.474,
+    "sat_over_early_p50": 1.0019479992424447,
+    "steady_p50": 1847.9,
+    "steady_p99": 1871.866,
+    "published_window_value": 1845.668181818182,
+    "published_window": "mean cyc 2\u201312",
+    "infer_p50_early": 1767.025,
+    "infer_p50_sat": 1753.7250000000001,
+    "kv_p50_early": 80.45,
+    "kv_p50_sat": 98.4,
+    "spread_pct_steady_p50": 0.5099826388888815,
+    "spread_pct_sat_p50": 0.043214044564493286,
+    "eff_hz_early": 17.315548821731014,
+    "eff_hz_sat": 17.28188372532606,
+    "telemetry": {
+     "gpu": 0,
+     "samples": 30,
+     "loaded_samples": 30,
+     "sm_mhz_min": 1980.0,
+     "sm_mhz_p50": 1980.0,
+     "sm_mhz_max": 1980.0,
+     "temp_c_min": 34.0,
+     "temp_c_max": 49.0,
+     "power_w_max": 454.91,
+     "throttle_reasons": [
+      "0x0000000000000000"
+     ],
+     "other_gpus_max_mem_mib": 0.0
+    },
+    "kept_runs": [
+     "probe_torch_default_p010_run1.log",
+     "probe_torch_default_p010_run2.log"
+    ]
+   },
+   "stocknfe_2v4a_w5": {
+    "arm": "stock vendor server at the point (config override)",
+    "point": "2V/4A@w5",
+    "early_p50": 1010.55,
+    "early_p99": 1057.1,
+    "saturated_p50": 1097.8000000000002,
+    "saturated_p99": 1109.615,
+    "sat_over_early_p50": 1.0863391222601555,
+    "steady_p50": 1040.65,
+    "steady_p99": 1108.3899999999999,
+    "published_window_value": 981.0636363636363,
+    "published_window": "mean cyc 2\u201312",
+    "infer_p50_early": 661.05,
+    "infer_p50_sat": 744.475,
+    "kv_p50_early": 352.65,
+    "kv_p50_sat": 353.525,
+    "spread_pct_steady_p50": 1.208430007733952,
+    "spread_pct_sat_p50": 0.365030114984507,
+    "eff_hz_early": 31.66592449656128,
+    "eff_hz_sat": 29.149207505920927,
+    "telemetry": {
+     "gpu": 0,
+     "samples": 18,
+     "loaded_samples": 18,
+     "sm_mhz_min": 1980.0,
+     "sm_mhz_p50": 1980.0,
+     "sm_mhz_max": 1980.0,
+     "temp_c_min": 32.0,
+     "temp_c_max": 40.0,
+     "power_w_max": 273.88,
+     "throttle_reasons": [
+      "0x0000000000000000"
+     ],
+     "other_gpus_max_mem_mib": 0.0
+    },
+    "kept_runs": [
+     "probe_stocknfe_2v4a_w5_run1.log",
+     "probe_stocknfe_2v4a_w5_run2.log"
+    ]
+   },
+   "torch_2v4a_w5_nop010": {
+    "arm": "shipped chain, no P010 (the published arm)",
+    "point": "2V/4A@w5",
+    "early_p50": 265.25,
+    "early_p99": 277.45,
+    "saturated_p50": 280.875,
+    "saturated_p99": 286.07000000000005,
+    "sat_over_early_p50": 1.0589066918001886,
+    "steady_p50": 266.35,
+    "steady_p99": 287.181,
+    "published_window_value": 266.06363636363636,
+    "published_window": "mean cyc 2\u201312",
+    "infer_p50_early": 186.825,
+    "infer_p50_sat": 185.05,
+    "kv_p50_early": 78.825,
+    "kv_p50_sat": 96.325,
+    "spread_pct_steady_p50": 0.791556728232177,
+    "spread_pct_sat_p50": 0.08904719501335707,
+    "eff_hz_early": 120.64090480678605,
+    "eff_hz_sat": 113.92968402314197,
+    "telemetry": {
+     "gpu": 0,
+     "samples": 7,
+     "loaded_samples": 7,
+     "sm_mhz_min": 1980.0,
+     "sm_mhz_p50": 1980.0,
+     "sm_mhz_max": 1980.0,
+     "temp_c_min": 34.0,
+     "temp_c_max": 43.0,
+     "power_w_max": 371.92,
+     "throttle_reasons": [
+      "0x0000000000000000"
+     ],
+     "other_gpus_max_mem_mib": 0.0
+    },
+    "kept_runs": [
+     "probe_torch_2v4a_w5_nop010_run1.log",
+     "probe_torch_2v4a_w5_nop010_run2.log"
+    ]
+   },
+   "torch_2v4a_w5_p010": {
+    "arm": "shipped chain + P010 (shipped since d7e6103)",
+    "point": "2V/4A@w5",
+    "early_p50": 246.54999999999998,
+    "early_p99": 257.375,
+    "saturated_p50": 262.04999999999995,
+    "saturated_p99": 265.51800000000003,
+    "sat_over_early_p50": 1.0628675725005068,
+    "steady_p50": 247.2,
+    "steady_p99": 265.24,
+    "published_window_value": 248.3090909090909,
+    "published_window": "mean cyc 2\u201312",
+    "infer_p50_early": 167.52499999999998,
+    "infer_p50_sat": 166.05,
+    "kv_p50_early": 79.1,
+    "kv_p50_sat": 95.85,
+    "spread_pct_steady_p50": 0.16194331983805899,
+    "spread_pct_sat_p50": 0.45897877223177996,
+    "eff_hz_early": 129.79111742040155,
+    "eff_hz_sat": 122.11410036252626,
+    "telemetry": {
+     "gpu": 0,
+     "samples": 7,
+     "loaded_samples": 7,
+     "sm_mhz_min": 1980.0,
+     "sm_mhz_p50": 1980.0,
+     "sm_mhz_max": 1980.0,
+     "temp_c_min": 34.0,
+     "temp_c_max": 44.0,
+     "power_w_max": 379.07,
+     "throttle_reasons": [
+      "0x0000000000000000"
+     ],
+     "other_gpus_max_mem_mib": 0.0
+    },
+    "kept_runs": [
+     "probe_torch_2v4a_w5_p010_run1.log",
+     "probe_torch_2v4a_w5_p010_run2.log"
+    ]
+   },
+   "stocknfe_2v2a_w1": {
+    "arm": "stock vendor server at the point (config override)",
+    "point": "2V/2A@w1",
+    "early_p50": 814.0999999999999,
+    "early_p99": 827.9875,
+    "saturated_p50": 843.625,
+    "saturated_p99": 863.039,
+    "sat_over_early_p50": 1.0362670433607666,
+    "steady_p50": 819.1500000000001,
+    "steady_p99": 859.5039999999999,
+    "published_window_value": 814.7272727272727,
+    "published_window": "mean cyc 2\u201312",
+    "infer_p50_early": 460.85,
+    "infer_p50_sat": 490.075,
+    "kv_p50_early": 353.85,
+    "kv_p50_sat": 352.15000000000003,
+    "spread_pct_steady_p50": 0.3546532958297636,
+    "spread_pct_sat_p50": 0.9109311740890798,
+    "eff_hz_early": 39.30721041641076,
+    "eff_hz_sat": 37.93154541413543,
+    "telemetry": {
+     "gpu": 0,
+     "samples": 15,
+     "loaded_samples": 15,
+     "sm_mhz_min": 1980.0,
+     "sm_mhz_p50": 1980.0,
+     "sm_mhz_max": 1980.0,
+     "temp_c_min": 33.0,
+     "temp_c_max": 37.0,
+     "power_w_max": 212.68,
+     "throttle_reasons": [
+      "0x0000000000000000"
+     ],
+     "other_gpus_max_mem_mib": 0.0
+    },
+    "kept_runs": [
+     "probe_stocknfe_2v2a_w1_run1.log",
+     "probe_stocknfe_2v2a_w1_run2.log"
+    ]
+   },
+   "torch_2v2a_w1_nop010": {
+    "arm": "shipped chain, no P010",
+    "point": "2V/2A@w1",
+    "early_p50": 226.57500000000002,
+    "early_p99": 229.775,
+    "saturated_p50": 226.6,
+    "saturated_p99": 233.323,
+    "sat_over_early_p50": 1.0001103387399315,
+    "steady_p50": 226.75,
+    "steady_p99": 233.35899999999998,
+    "published_window_value": 226.8090909090909,
+    "published_window": "mean cyc 2\u201312",
+    "infer_p50_early": 146.52499999999998,
+    "infer_p50_sat": 145.6,
+    "kv_p50_early": 80.075,
+    "kv_p50_sat": 81.025,
+    "spread_pct_steady_p50": 0.6637168141592921,
+    "spread_pct_sat_p50": 0.5309734513274286,
+    "eff_hz_early": 141.23358711243517,
+    "eff_hz_sat": 141.2180052956752,
+    "telemetry": {
+     "gpu": 0,
+     "samples": 7,
+     "loaded_samples": 7,
+     "sm_mhz_min": 1980.0,
+     "sm_mhz_p50": 1980.0,
+     "sm_mhz_max": 1980.0,
+     "temp_c_min": 34.0,
+     "temp_c_max": 41.0,
+     "power_w_max": 304.51,
+     "throttle_reasons": [
+      "0x0000000000000000"
+     ],
+     "other_gpus_max_mem_mib": 0.0
+    },
+    "kept_runs": [
+     "probe_torch_2v2a_w1_nop010_run1.log",
+     "probe_torch_2v2a_w1_nop010_run2.log"
+    ]
+   },
+   "torch_2v2a_w1_p010": {
+    "arm": "shipped chain + P010 (shipped since d7e6103)",
+    "point": "2V/2A@w1",
+    "early_p50": 203.57500000000002,
+    "early_p99": 215.4,
+    "saturated_p50": 204.5,
+    "saturated_p99": 207.0075,
+    "sat_over_early_p50": 1.0045437799336854,
+    "steady_p50": 204.05,
+    "steady_p99": 214.39299999999997,
+    "published_window_value": 204.9681818181818,
+    "published_window": "mean cyc 2\u201312",
+    "infer_p50_early": 123.2,
+    "infer_p50_sat": 122.45,
+    "kv_p50_early": 80.6,
+    "kv_p50_sat": 82.025,
+    "spread_pct_steady_p50": 0.2453385672227674,
+    "spread_pct_sat_p50": 0.3919647231749198,
+    "eff_hz_early": 157.19022473289942,
+    "eff_hz_sat": 156.479217603912,
+    "telemetry": {
+     "gpu": 0,
+     "samples": 6,
+     "loaded_samples": 6,
+     "sm_mhz_min": 1980.0,
+     "sm_mhz_p50": 1980.0,
+     "sm_mhz_max": 1980.0,
+     "temp_c_min": 32.0,
+     "temp_c_max": 38.0,
+     "power_w_max": 262.19,
+     "throttle_reasons": [
+      "0x0000000000000000"
+     ],
+     "other_gpus_max_mem_mib": 0.0
+    },
+    "kept_runs": [
+     "probe_torch_2v2a_w1_p010_run1.log",
+     "probe_torch_2v2a_w1_p010_run2.log"
+    ]
+   }
+  },
+  "thor": {
+   "stock_default": {
+    "arm": "stock vendor server",
+    "point": "default 25V/50A@w5",
+    "early_p50": 23420.65,
+    "early_p99": 29478.9375,
+    "saturated_p50": 31532.824999999997,
+    "saturated_p99": 31827.2025,
+    "sat_over_early_p50": 1.346368482514362,
+    "steady_p50": 27140.15,
+    "steady_p99": 31870.539,
+    "published_window_value": 17850.95,
+    "published_window": "p50 cyc 2\u20138",
+    "infer_p50_early": 22588.925,
+    "infer_p50_sat": 30495.875,
+    "kv_p50_early": 831.7249999999999,
+    "kv_p50_sat": 1037.15,
+    "spread_pct_steady_p50": 0.040907181237247583,
+    "spread_pct_sat_p50": 0.3502479533129919,
+    "eff_hz_early": 1.3663156231786906,
+    "eff_hz_sat": 1.0148155136750356,
+    "telemetry": {
+     "samples": 373,
+     "loaded_samples": 373,
+     "gpu_gpc_mhz_min": 495.0,
+     "gpu_gpc_mhz_p50": 1575.0,
+     "gpu_gpc_mhz_max": 1575.0,
+     "loaded_samples_below_1575": 1,
+     "loaded_below_1575_values": [
+      495.0
+     ],
+     "gpu_thermal_c_min": 37.343,
+     "gpu_thermal_c_max": 64.656
+    },
+    "kept_runs": [
+     "probe_stock_default_run1.log",
+     "probe_stock_default_run2.log"
+    ]
+   },
+   "torch_default_nop010": {
+    "arm": "shipped chain, no P010 (the published arm)",
+    "point": "default 25V/50A@w5",
+    "early_p50": 6619.425,
+    "early_p99": 7577.375,
+    "saturated_p50": 8250.15,
+    "saturated_p99": 8271.2525,
+    "sat_over_early_p50": 1.2463544794298598,
+    "steady_p50": 7213.1,
+    "steady_p99": 8268.715,
+    "published_window_value": 5632.549999999999,
+    "published_window": "p50 cyc 2\u20138",
+    "infer_p50_early": 6321.424999999999,
+    "infer_p50_sat": 7752.75,
+    "kv_p50_early": 298.02500000000003,
+    "kv_p50_sat": 498.825,
+    "spread_pct_steady_p50": 0.23873967659101697,
+    "spread_pct_sat_p50": 0.14313006034508016,
+    "eff_hz_early": 4.834256751908209,
+    "eff_hz_sat": 3.8787173566541218,
+    "telemetry": {
+     "samples": 103,
+     "loaded_samples": 103,
+     "gpu_gpc_mhz_min": 333.0,
+     "gpu_gpc_mhz_p50": 1575.0,
+     "gpu_gpc_mhz_max": 1575.0,
+     "loaded_samples_below_1575": 1,
+     "loaded_below_1575_values": [
+      333.0
+     ],
+     "gpu_thermal_c_min": 53.531,
+     "gpu_thermal_c_max": 80.593
+    },
+    "kept_runs": [
+     "probe_torch_default_nop010_run1.log",
+     "probe_torch_default_nop010_run2.log"
+    ]
+   },
+   "torch_default_p010": {
+    "arm": "shipped chain + P010 (shipped since d7e6103)",
+    "point": "default 25V/50A@w5",
+    "early_p50": 6560.325,
+    "early_p99": 7486.45,
+    "saturated_p50": 8182.275000000001,
+    "saturated_p99": 8217.7045,
+    "sat_over_early_p50": 1.2472362268637607,
+    "steady_p50": 7126.35,
+    "steady_p99": 8209.287,
+    "published_window_value": 5577.25,
+    "published_window": "p50 cyc 2\u20138",
+    "infer_p50_early": 6260.225,
+    "infer_p50_sat": 7678.5,
+    "kv_p50_early": 300.575,
+    "kv_p50_sat": 500.85,
+    "spread_pct_steady_p50": 0.4035433070866116,
+    "spread_pct_sat_p50": 0.020167574207501555,
+    "eff_hz_early": 4.8778071208362395,
+    "eff_hz_sat": 3.9108927529324053,
+    "telemetry": {
+     "samples": 102,
+     "loaded_samples": 102,
+     "gpu_gpc_mhz_min": 315.0,
+     "gpu_gpc_mhz_p50": 1575.0,
+     "gpu_gpc_mhz_max": 1575.0,
+     "loaded_samples_below_1575": 1,
+     "loaded_below_1575_values": [
+      315.0
+     ],
+     "gpu_thermal_c_min": 59.625,
+     "gpu_thermal_c_max": 81.187
+    },
+    "kept_runs": [
+     "probe_torch_default_p010_run1.log",
+     "probe_torch_default_p010_run2.log"
+    ]
+   },
+   "stocknfe_2v4a_w5": {
+    "arm": "stock vendor server at the point (config override)",
+    "point": "2V/4A@w5",
+    "early_p50": 3225.6,
+    "early_p99": 3946.1625000000004,
+    "saturated_p50": 4272.15,
+    "saturated_p99": 4312.959500000001,
+    "sat_over_early_p50": 1.3244512648809523,
+    "steady_p50": 3665.6,
+    "steady_p99": 4309.967000000001,
+    "published_window_value": 2519.7,
+    "published_window": "p50 cyc 2\u20138",
+    "infer_p50_early": 2391.725,
+    "infer_p50_sat": 3224.9750000000004,
+    "kv_p50_early": 833.925,
+    "kv_p50_sat": 1042.725,
+    "spread_pct_steady_p50": 0.5525919846806133,
+    "spread_pct_sat_p50": 1.0518142030213142,
+    "eff_hz_early": 9.920634920634921,
+    "eff_hz_sat": 7.490373699425349,
+    "telemetry": {
+     "samples": 52,
+     "loaded_samples": 52,
+     "gpu_gpc_mhz_min": 315.0,
+     "gpu_gpc_mhz_p50": 1575.0,
+     "gpu_gpc_mhz_max": 1575.0,
+     "loaded_samples_below_1575": 1,
+     "loaded_below_1575_values": [
+      315.0
+     ],
+     "gpu_thermal_c_min": 59.906,
+     "gpu_thermal_c_max": 68.437
+    },
+    "kept_runs": [
+     "probe_stocknfe_2v4a_w5_run1.log",
+     "probe_stocknfe_2v4a_w5_run2.log"
+    ]
+   },
+   "torch_2v4a_w5_nop010": {
+    "arm": "shipped chain, no P010 (the published arm)",
+    "point": "2V/4A@w5",
+    "early_p50": 1013.125,
+    "early_p99": 1145.7625,
+    "saturated_p50": 1382.35,
+    "saturated_p99": 1403.417,
+    "sat_over_early_p50": 1.3644417026526834,
+    "steady_p50": 1086.0,
+    "steady_p99": 1403.312,
+    "published_window_value": 882.25,
+    "published_window": "p50 cyc 2\u20138",
+    "infer_p50_early": 719.425,
+    "infer_p50_sat": 882.4749999999999,
+    "kv_p50_early": 295.9,
+    "kv_p50_sat": 501.725,
+    "spread_pct_steady_p50": 0.757925871152585,
+    "spread_pct_sat_p50": 0.3768798695415869,
+    "eff_hz_early": 31.585441085749537,
+    "eff_hz_sat": 23.148985423373244,
+    "telemetry": {
+     "samples": 17,
+     "loaded_samples": 17,
+     "gpu_gpc_mhz_min": 1458.0,
+     "gpu_gpc_mhz_p50": 1575.0,
+     "gpu_gpc_mhz_max": 1575.0,
+     "loaded_samples_below_1575": 1,
+     "loaded_below_1575_values": [
+      1458.0
+     ],
+     "gpu_thermal_c_min": 54.906,
+     "gpu_thermal_c_max": 75.531
+    },
+    "kept_runs": [
+     "probe_torch_2v4a_w5_nop010_run1.log",
+     "probe_torch_2v4a_w5_nop010_run2.log"
+    ]
+   },
+   "torch_2v4a_w5_p010": {
+    "arm": "shipped chain + P010 (shipped since d7e6103)",
+    "point": "2V/4A@w5",
+    "early_p50": 949.875,
+    "early_p99": 1065.4625,
+    "saturated_p50": 1300.25,
+    "saturated_p99": 1319.558,
+    "sat_over_early_p50": 1.3688643242531913,
+    "steady_p50": 1012.0,
+    "steady_p99": 1318.788,
+    "published_window_value": 834.65,
+    "published_window": "p50 cyc 2\u20138",
+    "infer_p50_early": 652.575,
+    "infer_p50_sat": 793.4,
+    "kv_p50_early": 296.725,
+    "kv_p50_sat": 506.54999999999995,
+    "spread_pct_steady_p50": 0.11864741941863215,
+    "spread_pct_sat_p50": 0.9427037051346302,
+    "eff_hz_early": 33.68864324253191,
+    "eff_hz_sat": 24.610651797731204,
+    "telemetry": {
+     "samples": 16,
+     "loaded_samples": 16,
+     "gpu_gpc_mhz_min": 315.0,
+     "gpu_gpc_mhz_p50": 1575.0,
+     "gpu_gpc_mhz_max": 1575.0,
+     "loaded_samples_below_1575": 1,
+     "loaded_below_1575_values": [
+      315.0
+     ],
+     "gpu_thermal_c_min": 56.531,
+     "gpu_thermal_c_max": 75.281
+    },
+    "kept_runs": [
+     "probe_torch_2v4a_w5_p010_run1.log",
+     "probe_torch_2v4a_w5_p010_run2.log"
+    ]
+   },
+   "stocknfe_2v2a_w1": {
+    "arm": "stock vendor server at the point (config override)",
+    "point": "2V/2A@w1",
+    "early_p50": 1919.8000000000002,
+    "early_p99": 2040.2625,
+    "saturated_p50": 2159.65,
+    "saturated_p99": 2183.305,
+    "sat_over_early_p50": 1.1249348890509427,
+    "steady_p50": 1997.9,
+    "steady_p99": 2181.7299999999996,
+    "published_window_value": 1787.0500000000002,
+    "published_window": "p50 cyc 2\u20138",
+    "infer_p50_early": 1263.8,
+    "infer_p50_sat": 1456.975,
+    "kv_p50_early": 659.2,
+    "kv_p50_sat": 700.125,
+    "spread_pct_steady_p50": 0.17032361486824282,
+    "spread_pct_sat_p50": 0.776274810579641,
+    "eff_hz_early": 16.668402958641522,
+    "eff_hz_sat": 14.817215752552496,
+    "telemetry": {
+     "samples": 30,
+     "loaded_samples": 30,
+     "gpu_gpc_mhz_min": 315.0,
+     "gpu_gpc_mhz_p50": 1575.0,
+     "gpu_gpc_mhz_max": 1575.0,
+     "loaded_samples_below_1575": 2,
+     "loaded_below_1575_values": [
+      315.0,
+      1503.0
+     ],
+     "gpu_thermal_c_min": 55.781,
+     "gpu_thermal_c_max": 63.5
+    },
+    "kept_runs": [
+     "probe_stocknfe_2v2a_w1_run1.log",
+     "probe_stocknfe_2v2a_w1_run2.log"
+    ]
+   },
+   "torch_2v2a_w1_nop010": {
+    "arm": "shipped chain, no P010",
+    "point": "2V/2A@w1",
+    "early_p50": 681.2,
+    "early_p99": 725.075,
+    "saturated_p50": 782.375,
+    "saturated_p99": 790.9904999999999,
+    "sat_over_early_p50": 1.14852466236054,
+    "steady_p50": 702.6,
+    "steady_p99": 790.483,
+    "published_window_value": 625.55,
+    "published_window": "p50 cyc 2\u20138",
+    "infer_p50_early": 417.32500000000005,
+    "infer_p50_sat": 483.75,
+    "kv_p50_early": 260.92499999999995,
+    "kv_p50_sat": 298.75,
+    "spread_pct_steady_p50": 0.25651988029071604,
+    "spread_pct_sat_p50": 0.6732927220262904,
+    "eff_hz_early": 46.97592483852026,
+    "eff_hz_sat": 40.901102412525965,
+    "telemetry": {
+     "samples": 11,
+     "loaded_samples": 11,
+     "gpu_gpc_mhz_min": 315.0,
+     "gpu_gpc_mhz_p50": 1575.0,
+     "gpu_gpc_mhz_max": 1575.0,
+     "loaded_samples_below_1575": 1,
+     "loaded_below_1575_values": [
+      315.0
+     ],
+     "gpu_thermal_c_min": 57.625,
+     "gpu_thermal_c_max": 68.75
+    },
+    "kept_runs": [
+     "probe_torch_2v2a_w1_nop010_run1.log",
+     "probe_torch_2v2a_w1_nop010_run2.log"
+    ]
+   },
+   "torch_2v2a_w1_p010": {
+    "arm": "shipped chain + P010 (shipped since d7e6103)",
+    "point": "2V/2A@w1",
+    "early_p50": 624.5999999999999,
+    "early_p99": 672.3625000000001,
+    "saturated_p50": 729.075,
+    "saturated_p99": 738.849,
+    "sat_over_early_p50": 1.1672670509125842,
+    "steady_p50": 654.7,
+    "steady_p99": 737.414,
+    "published_window_value": 579.5999999999999,
+    "published_window": "p50 cyc 2\u20138",
+    "infer_p50_early": 360.55,
+    "infer_p50_sat": 422.65,
+    "kv_p50_early": 263.475,
+    "kv_p50_sat": 306.875,
+    "spread_pct_steady_p50": 1.074938574938575,
+    "spread_pct_sat_p50": 0.020576131687255274,
+    "eff_hz_early": 51.232788984950375,
+    "eff_hz_sat": 43.891232040599384,
+    "telemetry": {
+     "samples": 10,
+     "loaded_samples": 10,
+     "gpu_gpc_mhz_min": 468.0,
+     "gpu_gpc_mhz_p50": 1575.0,
+     "gpu_gpc_mhz_max": 1575.0,
+     "loaded_samples_below_1575": 1,
+     "loaded_below_1575_values": [
+      468.0
+     ],
+     "gpu_thermal_c_min": 56.343,
+     "gpu_thermal_c_max": 69.562
+    },
+    "kept_runs": [
+     "probe_torch_2v2a_w1_p010_run1.log",
+     "probe_torch_2v2a_w1_p010_run2.log"
+    ]
+   }
+  }
+ },
+ "ratios": {
+  "h100": {
+   "torch_default_nop010": {
+    "vs_stock_default": {
+     "early": 3.6370282552855167,
+     "saturated_p50": 4.096916241479782,
+     "saturated_p99": 4.065061671066774,
+     "published_window": 3.4109465257304477,
+     "published": 3.270421989934185
+    },
+    "vs_stock_same_point": {
+     "early": 3.6370282552855167,
+     "saturated_p50": 4.096916241479782,
+     "saturated_p99": 4.065061671066774
+    }
+   },
+   "torch_default_p010": {
+    "vs_stock_default": {
+     "early": 3.7350856308000324,
+     "saturated_p50": 4.195541814057732,
+     "saturated_p99": 4.1631240936288725,
+     "published_window": 3.504719896957741,
+     "published": null
+    },
+    "vs_stock_same_point": {
+     "early": 3.7350856308000324,
+     "saturated_p50": 4.195541814057732,
+     "saturated_p99": 4.1631240936288725
+    }
+   },
+   "stocknfe_2v4a_w5": {
+    "vs_stock_default": {
+     "early": 6.830562564939885,
+     "saturated_p50": 7.0765849881581335,
+     "saturated_p99": 7.021515120109227,
+     "published_window": 6.593405116895393,
+     "published": null
+    },
+    "vs_stock_same_point": {
+     "early": 1.0,
+     "saturated_p50": 1.0,
+     "saturated_p99": 1.0
+    }
+   },
+   "torch_2v4a_w5_nop010": {
+    "vs_stock_default": {
+     "early": 26.023091423185672,
+     "saturated_p50": 27.658834000890078,
+     "saturated_p99": 27.23521690495333,
+     "published_window": 24.31204086513821,
+     "published": 23.43273231622746
+    },
+    "vs_stock_same_point": {
+     "early": 3.8098020735155513,
+     "saturated_p50": 3.908500222518915,
+     "saturated_p99": 3.8788233649106854
+    }
+   },
+   "torch_2v4a_w5_p010": {
+    "vs_stock_default": {
+     "early": 27.996856621374977,
+     "saturated_p50": 29.64577370730777,
+     "saturated_p99": 29.343315707409666,
+     "published_window": 26.05039540162554,
+     "published": null
+    },
+    "vs_stock_same_point": {
+     "early": 4.098762928412087,
+     "saturated_p50": 4.189276855561917,
+     "saturated_p99": 4.179057540355079
+    }
+   },
+   "stocknfe_2v2a_w1": {
+    "vs_stock_default": {
+     "early": 8.478841665643042,
+     "saturated_p50": 9.208682767817455,
+     "saturated_p99": 9.027608833436265,
+     "published_window": 7.939528007141263,
+     "published": null
+    },
+    "vs_stock_same_point": {
+     "early": 1.0,
+     "saturated_p50": 1.0,
+     "saturated_p99": 1.0
+    }
+   },
+   "torch_2v2a_w1_nop010": {
+    "vs_stock_default": {
+     "early": 30.465077788811648,
+     "saturated_p50": 34.28364960282436,
+     "saturated_p99": 33.39224379936826,
+     "published_window": 28.519800392801315,
+     "published": null
+    },
+    "vs_stock_same_point": {
+     "early": 3.5930707271322957,
+     "saturated_p50": 3.722969991173875,
+     "saturated_p99": 3.698902379962541
+    }
+   },
+   "torch_2v2a_w1_p010": {
+    "vs_stock_default": {
+     "early": 33.907036718654055,
+     "saturated_p50": 37.98863080684597,
+     "saturated_p99": 37.63717981232564,
+     "published_window": 31.55880070077396,
+     "published": null
+    },
+    "vs_stock_same_point": {
+     "early": 3.9990175610954184,
+     "saturated_p50": 4.125305623471883,
+     "saturated_p99": 4.1691194763474755
+    }
+   }
+  },
+  "thor": {
+   "torch_default_nop010": {
+    "vs_stock_default": {
+     "early": 3.538169856143094,
+     "saturated_p50": 3.822091113494906,
+     "saturated_p99": 3.8479302258031653,
+     "published_window": 3.169248386609973,
+     "published": 3.2126958102400516
+    },
+    "vs_stock_same_point": {
+     "early": 3.538169856143094,
+     "saturated_p50": 3.822091113494906,
+     "saturated_p99": 3.8479302258031653
+    }
+   },
+   "torch_default_p010": {
+    "vs_stock_default": {
+     "early": 3.570044167019165,
+     "saturated_p50": 3.853796774124555,
+     "saturated_p99": 3.87300401225184,
+     "published_window": 3.200672374378054,
+     "published": null
+    },
+    "vs_stock_same_point": {
+     "early": 3.570044167019165,
+     "saturated_p50": 3.853796774124555,
+     "saturated_p99": 3.87300401225184
+    }
+   },
+   "stocknfe_2v4a_w5": {
+    "vs_stock_default": {
+     "early": 7.260866195436509,
+     "saturated_p50": 7.38102009526819,
+     "saturated_p99": 7.379434585462718,
+     "published_window": 7.084553716712308,
+     "published": null
+    },
+    "vs_stock_same_point": {
+     "early": 1.0,
+     "saturated_p50": 1.0,
+     "saturated_p99": 1.0
+    }
+   },
+   "torch_2v4a_w5_nop010": {
+    "vs_stock_default": {
+     "early": 23.117236273904997,
+     "saturated_p50": 22.811028321336853,
+     "saturated_p99": 22.67836466281939,
+     "published_window": 20.233437234344006,
+     "published": 20.189718893493115
+    },
+    "vs_stock_same_point": {
+     "early": 3.1838124614435532,
+     "saturated_p50": 3.0904980648894997,
+     "saturated_p99": 3.0731845916074847
+    }
+   },
+   "torch_2v4a_w5_p010": {
+    "vs_stock_default": {
+     "early": 24.65656007369391,
+     "saturated_p50": 24.251355508556045,
+     "saturated_p99": 24.119593454778038,
+     "published_window": 21.387347990175524,
+     "published": null
+    },
+    "vs_stock_same_point": {
+     "early": 3.3958152388472165,
+     "saturated_p50": 3.2856373774274177,
+     "saturated_p99": 3.268488008863575
+    }
+   },
+   "stocknfe_2v2a_w1": {
+    "vs_stock_default": {
+     "early": 12.199525992290864,
+     "saturated_p50": 14.600895978515036,
+     "saturated_p99": 14.577533830591696,
+     "published_window": 9.989060182983128,
+     "published": null
+    },
+    "vs_stock_same_point": {
+     "early": 1.0,
+     "saturated_p50": 1.0,
+     "saturated_p99": 1.0
+    }
+   },
+   "torch_2v2a_w1_nop010": {
+    "vs_stock_default": {
+     "early": 34.3814591896653,
+     "saturated_p50": 40.30397827128934,
+     "saturated_p99": 40.23714886588398,
+     "published_window": 28.536407960994328,
+     "published": null
+    },
+    "vs_stock_same_point": {
+     "early": 2.818261890780975,
+     "saturated_p50": 2.7603770570378656,
+     "saturated_p99": 2.760216462776734
+    }
+   },
+   "torch_2v2a_w1_p010": {
+    "vs_stock_default": {
+     "early": 37.49703810438682,
+     "saturated_p50": 43.25045434283167,
+     "saturated_p99": 43.07673489441009,
+     "published_window": 30.798740510697037,
+     "published": null
+    },
+    "vs_stock_same_point": {
+     "early": 3.073647134165867,
+     "saturated_p50": 2.962178102390015,
+     "saturated_p99": 2.955008398197737
+    }
+   }
+  }
+ },
+ "verdicts": {
+  "h100": {
+   "stock_default": {
+    "published": 8447.5,
+    "same_window_now": 6468.55,
+    "delta_pct_vs_published": -23.426457531814147,
+    "saturated_p50_now": 7768.675,
+    "saturated_p99_now": 7791.1785,
+    "sat_over_same_window": 1.2009917214831762,
+    "sat_over_published": 0.9196419058893164,
+    "same_box": false
+   },
+   "torch_default_nop010": {
+    "published": 2583.0,
+    "same_window_now": 1896.409090909091,
+    "delta_pct_vs_published": -26.581142434800963,
+    "saturated_p50_now": 1896.225,
+    "saturated_p99_now": 1916.62,
+    "sat_over_same_window": 0.9999029265837347,
+    "sat_over_published": 0.7341173054587689,
+    "same_box": false
+   },
+   "torch_2v4a_w5_nop010": {
+    "published": 360.5,
+    "same_window_now": 266.06363636363636,
+    "delta_pct_vs_published": -26.19593998234775,
+    "saturated_p50_now": 280.875,
+    "saturated_p99_now": 286.07000000000005,
+    "sat_over_same_window": 1.0556685003587658,
+    "sat_over_published": 0.779126213592233,
+    "same_box": false
+   }
+  },
+  "thor": {
+   "stock_default": {
+    "published": 18027.4,
+    "same_window_now": 17850.95,
+    "delta_pct_vs_published": -0.9787878451690268,
+    "saturated_p50_now": 31532.824999999997,
+    "saturated_p99_now": 31827.2025,
+    "sat_over_same_window": 1.766450805139222,
+    "sat_over_published": 1.749160999367629,
+    "same_box": true
+   },
+   "torch_default_nop010": {
+    "published": 5611.3,
+    "same_window_now": 5632.549999999999,
+    "delta_pct_vs_published": 0.37870012296614686,
+    "saturated_p50_now": 8250.15,
+    "saturated_p99_now": 8271.2525,
+    "sat_over_same_window": 1.464727343743065,
+    "sat_over_published": 1.4702742679949388,
+    "same_box": true
+   },
+   "torch_2v4a_w5_nop010": {
+    "published": 892.9,
+    "same_window_now": 882.25,
+    "delta_pct_vs_published": -1.1927427483480746,
+    "saturated_p50_now": 1382.35,
+    "saturated_p99_now": 1403.417,
+    "sat_over_same_window": 1.566846132048739,
+    "sat_over_published": 1.5481576884309554,
+    "same_box": true
+   }
+  }
+ },
+ "p010_at_saturation": {
+  "h100": {
+   "default 25V/50A@w5": {
+    "nop010_sat_p50": 1896.225,
+    "p010_sat_p50": 1851.65,
+    "delta_ms": -44.57499999999982,
+    "delta_pct": -2.3507231473058217
+   },
+   "2V/4A@w5": {
+    "nop010_sat_p50": 280.875,
+    "p010_sat_p50": 262.04999999999995,
+    "delta_ms": -18.825000000000045,
+    "delta_pct": -6.702269692923915
+   },
+   "2V/2A@w1": {
+    "nop010_sat_p50": 226.6,
+    "p010_sat_p50": 204.5,
+    "delta_ms": -22.099999999999994,
+    "delta_pct": -9.752868490732567
+   }
+  },
+  "thor": {
+   "default 25V/50A@w5": {
+    "nop010_sat_p50": 8250.15,
+    "p010_sat_p50": 8182.275000000001,
+    "delta_ms": -67.87499999999909,
+    "delta_pct": -0.8227123143215468
+   },
+   "2V/4A@w5": {
+    "nop010_sat_p50": 1382.35,
+    "p010_sat_p50": 1300.25,
+    "delta_ms": -82.09999999999991,
+    "delta_pct": -5.939161572684191
+   },
+   "2V/2A@w1": {
+    "nop010_sat_p50": 782.375,
+    "p010_sat_p50": 729.075,
+    "delta_ms": -53.299999999999955,
+    "delta_pct": -6.81258987058635
+   }
+  }
+ }
+}

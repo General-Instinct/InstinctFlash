@@ -21,12 +21,14 @@ a disappointing end-to-end number and be misread as the optimization not working
 
 from __future__ import annotations
 
+import subprocess
+
 import torch
 
 from instinctflash.autotune import Candidate, Decision, Site, autotune, register_site
 from instinctflash.backends.conv.registry import ConvPlan
 from instinctflash.backends.conv.semantics import MemoryLayout
-from instinctflash.passes.contract import Tier
+from instinctflash.passes.contract import DeviceProfile, Tier
 
 
 def convertible_convs(module) -> list[torch.nn.Conv3d]:
@@ -65,8 +67,70 @@ def revert_conv_plan(module) -> int:
 DEFAULTS_MEASURED_ON = (9, 0)      # sm_90, H100 80GB HBM3, torch 2.9 / cuDNN 9.10
 
 
-#: Cache keyed by (capability, shape) so a load does not re-time what it already knows.
+#: Cache keyed by (GPU UUID + software/ABI identity, shape) so a load does not re-time what it already knows.
 _MEASURED_CACHE: dict = {}
+
+P007_AUTOTUNE_ABI = 2
+
+
+def _cuda_target(device=None) -> tuple[int, DeviceProfile]:
+    """Bind timing to the current GPU; never measure one device under another's key."""
+    current = torch.cuda.current_device()
+    actual = DeviceProfile.probe(current)
+    if isinstance(device, DeviceProfile):
+        wanted = (device.name, tuple(device.capability), device.total_memory)
+        have = (actual.name, tuple(actual.capability), actual.total_memory)
+        if wanted != have:
+            raise RuntimeError(
+                "P007 was asked to measure/cache for device profile "
+                f"{wanted}, but the process-current CUDA device is {have}. Set the CUDA device "
+                "before autotuning; measuring one GPU under another GPU's cache key is refused."
+            )
+        return current, actual
+
+    if device is None:
+        requested = current
+    elif isinstance(device, int) or str(device).isdigit():
+        requested = int(device)
+    else:
+        target = torch.device(device)
+        if target.type != "cuda":
+            raise ValueError(f"P007 Conv3d autotune requires CUDA, got {device!r}")
+        requested = current if target.index is None else target.index
+    if requested != current:
+        raise RuntimeError(
+            f"P007 target is cuda:{requested}, current is cuda:{current}. Set the CUDA device "
+            "before autotuning; the benchmark will not run on a different GPU."
+        )
+    return current, actual
+
+
+def _driver_version_for_uuid(uuid: str) -> str:
+    try:
+        text = subprocess.check_output(
+            ["nvidia-smi", "--query-gpu=uuid,driver_version", "--format=csv,noheader"],
+            text=True, stderr=subprocess.DEVNULL, timeout=2,
+        )
+        wanted = uuid.lower().removeprefix("gpu-")
+        for line in text.splitlines():
+            gpu_uuid, driver = (part.strip() for part in line.split(",", 1))
+            if gpu_uuid.lower().removeprefix("gpu-") == wanted:
+                return driver
+    except Exception:                                                # noqa: BLE001 - provenance only
+        pass
+    return "unknown"
+
+
+def _p007_runtime_identity(index: int) -> str:
+    props = torch.cuda.get_device_properties(index)
+    uuid = str(getattr(props, "uuid", "unknown"))
+    return (f"p007abi={P007_AUTOTUNE_ABI}@gpu={uuid}"
+            f"@driver={_driver_version_for_uuid(uuid)}@torch={torch.__version__}"
+            f"@cuda={torch.version.cuda}@cudnn={torch.backends.cudnn.version()}")
+
+
+def _p007_cache_model_id(model_id: str, index: int) -> str:
+    return f"{model_id}@{_p007_runtime_identity(index)}"
 
 
 def measure_conv_layouts(*, channels: int = 160, spatial: tuple = (8, 128, 160),
@@ -93,15 +157,16 @@ def measure_conv_layouts(*, channels: int = 160, spatial: tuple = (8, 128, 160),
     except Exception:                                            # noqa: BLE001
         return None
 
-    cap = tuple(getattr(device, "capability", None) or torch.cuda.get_device_capability())
-    key = (cap, channels, spatial)
+    index, _profile = _cuda_target(device)
+    key = (_p007_runtime_identity(index), channels, spatial)
     if key in _MEASURED_CACHE:
         return _MEASURED_CACHE[key]
 
     import torch
+    target = torch.device("cuda", index)
     D, H, W = spatial
-    x = torch.randn(1, channels, D, H, W, device="cuda", dtype=torch.bfloat16)
-    conv = torch.nn.Conv3d(channels, channels, 3, padding=1, bias=False).cuda().to(torch.bfloat16)
+    x = torch.randn(1, channels, D, H, W, device=target, dtype=torch.bfloat16)
+    conv = torch.nn.Conv3d(channels, channels, 3, padding=1, bias=False).to(target).to(torch.bfloat16)
 
     def time_in(memory_format) -> float:
         c = conv.to(memory_format=memory_format)
@@ -194,7 +259,8 @@ CONV_LAYOUT_SITE = register_site(Site(
 _LAYOUT_OF = {"stock": torch.contiguous_format, "ndhwc": torch.channels_last_3d}
 
 
-def conv_layout_bench(*, channels: int = 160, spatial: tuple = (8, 128, 160)):
+def conv_layout_bench(*, channels: int = 160, spatial: tuple = (8, 128, 160),
+                      device=None):
     """A bench(candidate) -> ms for the conv-layout site: ONE convolution call at encode scale.
 
     Each arm is built once, OUTSIDE the timed region, in its candidate's memory format -- that is
@@ -202,25 +268,27 @@ def conv_layout_bench(*, channels: int = 160, spatial: tuple = (8, 128, 160)):
     so timing a per-call conversion would measure a configuration nothing serves. The runner
     supplies warmup and the median; this returns one event-timed call per invocation.
     """
+    index, _profile = _cuda_target(device)
+    target = torch.device("cuda", index)
     arms: dict = {}
 
     def bench(cand) -> float:
         fmt = _LAYOUT_OF[cand.name]
         if cand.name not in arms:
             D, H, W = spatial
-            x = torch.randn(1, channels, D, H, W, device="cuda",
+            x = torch.randn(1, channels, D, H, W, device=target,
                             dtype=torch.bfloat16).to(memory_format=fmt)
             conv = torch.nn.Conv3d(channels, channels, 3, padding=1, bias=False
-                                   ).cuda().to(torch.bfloat16).to(memory_format=fmt)
+                                   ).to(target).to(torch.bfloat16).to(memory_format=fmt)
             arms[cand.name] = (x, conv)
         x, conv = arms[cand.name]
         with torch.no_grad():
-            torch.cuda.synchronize()
+            torch.cuda.synchronize(index)
             s, e = torch.cuda.Event(True), torch.cuda.Event(True)
             s.record()
             conv(x)
             e.record()
-            torch.cuda.synchronize()
+            torch.cuda.synchronize(index)
         return s.elapsed_time(e)
 
     return bench
@@ -266,11 +334,10 @@ def autotune_conv_layout(*, model_id: str = "lingbot-va", prefer_bitexact: bool 
                                        "ceiling", f"cudnn/NDHWC refused by the conv registry: "
                                                   f"{why}"))
 
-    from instinctflash.passes.contract import DeviceProfile
-    if device is None:
-        device = DeviceProfile.probe()
+    index, profile = _cuda_target(device)
+    cache_model_id = _p007_cache_model_id(model_id, index)
     return autotune(
-        CONV_LAYOUT_SITE, conv_layout_bench(), model_id=model_id, device=device,
+        CONV_LAYOUT_SITE, conv_layout_bench(device=index), model_id=cache_model_id, device=profile,
         tier_ceiling=Tier.BITEXACT if prefer_bitexact else Tier.NUMERIC,
         n=7, warmup=3)
 
@@ -296,7 +363,9 @@ def install_conv_layout(server, *, prefer_bitexact: bool = False, model_id: str 
     docstring above exists to prevent. Pass `plan=` (a planners.Plan) and the decision is
     recorded there, so explain() shows the swap and Plan.tier() prices it.
     """
-    decision = autotune_conv_layout(model_id=model_id, prefer_bitexact=prefer_bitexact)
+    target = getattr(server, "device", None)
+    decision = autotune_conv_layout(model_id=model_id, prefer_bitexact=prefer_bitexact,
+                                    device=target)
     conv_plan = conv_plan_from_decision(decision)
     out = [decision.reason]
     if plan is not None:
@@ -311,5 +380,8 @@ def install_conv_layout(server, *, prefer_bitexact: bool = False, model_id: str 
         out.append(apply_conv_plan(vae, conv_plan, label=attr))
         applied_any = True
     if not applied_any:
-        out.append("no VAE subgraph found; conv layout not applied")
+        raise RuntimeError(
+            "conv_layout_ndhwc: server exposes neither streaming_vae nor streaming_vae_half. "
+            "The upstream server changed shape; no Conv3d layout was applied."
+        )
     return out

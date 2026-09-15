@@ -1,0 +1,3625 @@
+{
+  "family": "va",
+  "arm": "current_fewstep_fp8",
+  "device": "NVIDIA H100 80GB HBM3",
+  "status": "OPERATING_POINT_SCREEN",
+  "invalid": {},
+  "baseline_p50_ms": 7809.822231065482,
+  "current_p50_ms": 496.82572204619646,
+  "repeated_baseline_p50_ms": 7787.103774957359,
+  "speedup_range": [
+    15.6737129931314,
+    15.719440207122165
+  ],
+  "reference_repeat_bitexact": true,
+  "applied_passes": [
+    "engine_offload",
+    "fsdp_elision",
+    "allocator_churn_elision",
+    "debug_dump_elision",
+    "obs_decode_elision",
+    "conditioning_prefill",
+    "ring_kv_addressing",
+    "action_terminal_forward_elision",
+    "conv_layout_ndhwc"
+  ],
+  "execution_policy": {
+    "category": "OPERATING-POINT",
+    "precision": "fp8",
+    "tier_ceiling": "numeric",
+    "transform_tier": "NUMERIC",
+    "nfe": {
+      "video": 2,
+      "action": 4
+    },
+    "changed_schedule": {
+      "video": {
+        "checkpoint": 25,
+        "selected": 2
+      },
+      "action": {
+        "checkpoint": 50,
+        "selected": 4
+      }
+    },
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "pass_results": [
+    {
+      "name": "graph_capture",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "streams ['action', 'video'] outlive a control cycle, so their extent grows and per-cycle shapes change, so a captured graph is invalidated every cycle and recapture costs more than replay saves (measured 1.43x SLOWER on LingBot-VA)"
+    },
+    {
+      "name": "engine_offload",
+      "applies": true,
+      "tier": "NUMERIC",
+      "params": {
+        "backend": "engine",
+        "executor": "h100_torch_fp8",
+        "certification": "uncertified"
+      },
+      "reason": "engine placement selected: H100 explicit E4M3 projections with native processing and schedule; task quality unverified on this device"
+    },
+    {
+      "name": "fsdp_elision",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {
+        "world_size": 1
+      },
+      "reason": "world_size=1, so every FSDP all-gather is identity while still paying a flat-param copy and stream sync per unit per forward"
+    },
+    {
+      "name": "allocator_churn_elision",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "closed-loop serving has a stable working set, so releasing the pool between control steps only forces re-allocation next step"
+    },
+    {
+      "name": "debug_dump_elision",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "per-chunk tensor dumps do a synchronous D2H on the critical path and are not consumed by the serving client"
+    },
+    {
+      "name": "obs_decode_elision",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {
+        "modules": [
+          "vae.decoder"
+        ]
+      },
+      "reason": "caller wants actions only; ['vae.decoder'] need never be resident or executed"
+    },
+    {
+      "name": "conditioning_prefill",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {
+        "artifacts": [
+          "text_kv",
+          "negative_text_kv"
+        ],
+        "retain_across": [
+          "kv_commit"
+        ],
+        "release_on": [
+          "reset"
+        ]
+      },
+      "reason": "['text_kv', 'negative_text_kv'] declared pure in ['episode'] scope, but recomputed on all 8 forwards per control step (kv_refresh=2 + video=2 + action=4)"
+    },
+    {
+      "name": "prompt_encoder_staging",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "no memory pressure on this device class (sm_90, 79 GiB): keeping the prompt encoder resident avoids per-reset PCIe moves and allocator churn"
+    },
+    {
+      "name": "ring_kv_addressing",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {
+        "streams": [
+          "video",
+          "action"
+        ]
+      },
+      "reason": "streams ['video', 'action'] live across control steps in a pool that is currently addressed by boolean mask, costing a host sync and a full-pool copy per layer per forward"
+    },
+    {
+      "name": "action_terminal_forward_elision",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {
+        "phase": "action",
+        "streams": [
+          "action"
+        ],
+        "gates": [
+          "message_pattern",
+          "video_exec_step==-1"
+        ]
+      },
+      "reason": "the action phase's terminal forward writes provisional K/V that clear_pred_cache drops before any forward reads it; its output is discarded by construction"
+    },
+    {
+      "name": "sm120_gated_residual",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "hardware: needs sm_120, device is sm_90. This is a DEVICE decision, not a model one."
+    },
+    {
+      "name": "sm120_wan_stage2",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "hardware: needs sm_120, device is sm_90. This is a DEVICE decision, not a model one."
+    },
+    {
+      "name": "conv_layout_ndhwc",
+      "applies": true,
+      "tier": "NUMERIC",
+      "params": {
+        "autotune_site": "va_conv_layout",
+        "candidates": [
+          "stock",
+          "ndhwc"
+        ],
+        "certified_on": "sm90 H100 / 555 paired episodes",
+        "target_device_certificate": "required before default-on",
+        "decision": [
+          "autotuned: va_conv_layout chose ndhwc over stock (4.11x), equivalence NUMERIC [cache]",
+          "streaming_vae: 28 Conv3d weights -> ndhwc [NUMERIC] via cudnn_conv3d",
+          "streaming_vae_half: 28 Conv3d weights -> ndhwc [NUMERIC] via cudnn_conv3d"
+        ]
+      },
+      "reason": "two Wan VAE Conv3D subgraphs can choose NCDHW or NDHWC by measurement on this device; NDHWC changes convolution accumulation order, so the swap is NUMERIC"
+    },
+    {
+      "name": "cfg_branch_elision",
+      "applies": false,
+      "tier": "NUMERIC",
+      "params": {
+        "targets": {
+          "action": {
+            "elide_except_steps": [
+              3
+            ],
+            "n_elided": 3,
+            "n_total": 4
+          }
+        },
+        "keep_streams": [
+          "video"
+        ]
+      },
+      "reason": "dropped by caller via Plan.without(): streams ['action'] discard their negative branch while ['video'] force batch duplication; forwards that can drop to batch 1 \u2014 action: 3 of 4 (commit steps exempt: their K/V feeds the other stream's negative branch)"
+    }
+  ],
+  "graph_stats": {},
+  "backend_stats": {
+    "native_backend": {},
+    "fp8_recipe": {
+      "executor": "h100_torch_fp8",
+      "precision": "fp8",
+      "family": "wan_va",
+      "recipe": "e4m3fn_weights_dynamic_per_tensor_activations_fp32_accum_bf16_output",
+      "scope": "BF16 attention Q/K/V only; no MLP, MoE expert, norm, processor or schedule change",
+      "projections": [
+        {
+          "path": "blocks.0.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.0.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.0.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.0.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.0.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.0.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.1.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.1.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.1.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.1.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.1.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.1.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.2.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.2.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.2.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.2.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.2.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.2.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.3.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.3.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.3.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.3.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.3.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.3.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.4.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.4.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.4.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.4.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.4.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.4.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.5.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.5.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.5.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.5.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.5.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.5.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.6.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.6.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.6.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.6.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.6.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.6.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.7.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.7.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.7.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.7.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.7.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.7.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.8.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.8.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.8.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.8.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.8.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.8.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.9.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.9.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.9.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.9.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.9.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.9.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.10.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.10.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.10.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.10.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.10.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.10.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.11.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.11.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.11.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.11.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.11.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.11.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.12.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.12.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.12.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.12.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.12.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.12.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.13.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.13.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.13.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.13.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.13.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.13.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.14.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.14.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.14.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.14.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.14.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.14.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.15.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.15.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.15.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.15.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.15.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.15.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.16.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.16.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.16.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.16.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.16.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.16.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.17.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.17.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.17.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.17.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.17.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.17.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.18.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.18.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.18.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.18.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.18.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.18.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.19.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.19.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.19.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.19.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.19.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.19.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.20.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.20.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.20.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.20.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.20.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.20.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.21.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.21.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.21.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.21.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.21.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.21.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.22.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.22.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.22.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.22.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.22.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.22.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.23.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.23.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.23.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.23.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.23.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.23.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.24.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.24.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.24.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.24.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.24.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.24.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.25.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.25.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.25.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.25.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.25.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.25.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.26.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.26.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.26.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.26.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.26.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.26.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.27.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.27.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.27.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.27.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.27.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.27.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.28.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.28.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.28.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.28.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.28.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.28.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.29.attn1.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.29.attn1.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.29.attn1.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.29.attn2.to_q",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.29.attn2.to_k",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        },
+        {
+          "path": "blocks.29.attn2.to_v",
+          "parent_type": "WanAttention",
+          "in_features": 3072,
+          "out_features": 3072
+        }
+      ]
+    }
+  },
+  "comparisons": {
+    "reference_repeat": {
+      "baseline": "/home/ubuntu/ifl_eval/numeric_extension_20260910_h100_final/h100-6/va-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/numeric_extension_20260910_h100_final/h100-6/va-baseline_b.json",
+      "baseline_sha256": "59ba15333df8f5e103890b109c26fe1020c2a6f7a10d1d0cc5750c2bdf25a06d",
+      "candidate_sha256": "5771f8727efa2ec43229f2777da6c9b874623fa759906e21b3aa57573eccde3a",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            12,
+            16,
+            2,
+            16
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {},
+      "baseline_p50_ms": 7809.822231065482,
+      "candidate_p50_ms": 7787.103774957359,
+      "speedup": 1.0029174461731438,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "declared_protocol_changes": {},
+      "unexpected_protocol_changes": {},
+      "source_drift": []
+    },
+    "reference_candidate": {
+      "baseline": "/home/ubuntu/ifl_eval/numeric_extension_20260910_h100_final/h100-6/va-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/numeric_extension_20260910_h100_final/h100-6/va-current_fewstep_fp8.json",
+      "baseline_sha256": "59ba15333df8f5e103890b109c26fe1020c2a6f7a10d1d0cc5750c2bdf25a06d",
+      "candidate_sha256": "d38613ef15ebf754c9d862117caed2131b5091a75bab11220484dbd819a726cd",
+      "protocol_differences": {
+        "precision": [
+          "native",
+          "fp8"
+        ],
+        "schedule_override": [
+          null,
+          {
+            "video": 2,
+            "action": 4
+          }
+        ]
+      },
+      "bitexact": false,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            12,
+            16,
+            2,
+            16
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 1.0625004768371582
+        }
+      ],
+      "candidate_stats": {
+        "native_backend": {},
+        "fp8_recipe": {
+          "executor": "h100_torch_fp8",
+          "precision": "fp8",
+          "family": "wan_va",
+          "recipe": "e4m3fn_weights_dynamic_per_tensor_activations_fp32_accum_bf16_output",
+          "scope": "BF16 attention Q/K/V only; no MLP, MoE expert, norm, processor or schedule change",
+          "projections": [
+            {
+              "path": "blocks.0.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.0.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.0.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.0.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.0.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.0.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.1.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.1.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.1.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.1.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.1.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.1.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.2.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.2.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.2.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.2.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.2.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.2.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.3.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.3.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.3.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.3.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.3.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.3.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.4.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.4.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.4.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.4.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.4.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.4.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.5.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.5.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.5.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.5.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.5.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.5.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.6.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.6.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.6.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.6.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.6.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.6.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.7.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.7.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.7.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.7.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.7.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.7.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.8.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.8.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.8.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.8.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.8.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.8.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.9.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.9.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.9.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.9.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.9.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.9.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.10.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.10.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.10.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.10.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.10.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.10.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.11.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.11.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.11.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.11.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.11.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.11.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.12.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.12.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.12.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.12.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.12.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.12.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.13.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.13.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.13.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.13.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.13.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.13.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.14.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.14.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.14.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.14.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.14.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.14.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.15.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.15.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.15.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.15.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.15.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.15.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.16.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.16.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.16.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.16.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.16.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.16.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.17.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.17.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.17.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.17.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.17.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.17.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.18.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.18.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.18.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.18.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.18.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.18.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.19.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.19.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.19.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.19.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.19.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.19.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.20.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.20.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.20.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.20.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.20.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.20.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.21.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.21.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.21.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.21.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.21.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.21.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.22.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.22.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.22.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.22.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.22.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.22.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.23.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.23.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.23.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.23.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.23.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.23.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.24.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.24.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.24.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.24.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.24.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.24.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.25.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.25.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.25.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.25.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.25.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.25.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.26.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.26.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.26.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.26.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.26.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.26.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.27.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.27.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.27.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.27.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.27.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.27.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.28.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.28.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.28.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.28.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.28.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.28.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.29.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.29.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.29.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.29.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.29.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.29.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            }
+          ]
+        }
+      },
+      "baseline_p50_ms": 7809.822231065482,
+      "candidate_p50_ms": 496.82572204619646,
+      "speedup": 15.719440207122165,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "declared_protocol_changes": {
+        "precision": [
+          "native",
+          "fp8"
+        ],
+        "schedule_override": [
+          null,
+          {
+            "video": 2,
+            "action": 4
+          }
+        ]
+      },
+      "unexpected_protocol_changes": {},
+      "source_drift": []
+    },
+    "repeat_candidate": {
+      "baseline": "/home/ubuntu/ifl_eval/numeric_extension_20260910_h100_final/h100-6/va-baseline_b.json",
+      "candidate": "/home/ubuntu/ifl_eval/numeric_extension_20260910_h100_final/h100-6/va-current_fewstep_fp8.json",
+      "baseline_sha256": "5771f8727efa2ec43229f2777da6c9b874623fa759906e21b3aa57573eccde3a",
+      "candidate_sha256": "d38613ef15ebf754c9d862117caed2131b5091a75bab11220484dbd819a726cd",
+      "protocol_differences": {
+        "precision": [
+          "native",
+          "fp8"
+        ],
+        "schedule_override": [
+          null,
+          {
+            "video": 2,
+            "action": 4
+          }
+        ]
+      },
+      "bitexact": false,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            12,
+            16,
+            2,
+            16
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 1.0625004768371582
+        }
+      ],
+      "candidate_stats": {
+        "native_backend": {},
+        "fp8_recipe": {
+          "executor": "h100_torch_fp8",
+          "precision": "fp8",
+          "family": "wan_va",
+          "recipe": "e4m3fn_weights_dynamic_per_tensor_activations_fp32_accum_bf16_output",
+          "scope": "BF16 attention Q/K/V only; no MLP, MoE expert, norm, processor or schedule change",
+          "projections": [
+            {
+              "path": "blocks.0.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.0.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.0.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.0.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.0.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.0.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.1.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.1.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.1.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.1.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.1.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.1.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.2.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.2.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.2.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.2.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.2.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.2.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.3.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.3.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.3.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.3.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.3.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.3.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.4.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.4.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.4.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.4.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.4.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.4.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.5.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.5.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.5.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.5.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.5.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.5.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.6.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.6.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.6.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.6.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.6.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.6.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.7.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.7.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.7.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.7.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.7.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.7.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.8.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.8.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.8.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.8.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.8.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.8.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.9.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.9.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.9.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.9.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.9.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.9.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.10.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.10.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.10.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.10.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.10.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.10.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.11.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.11.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.11.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.11.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.11.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.11.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.12.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.12.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.12.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.12.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.12.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.12.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.13.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.13.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.13.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.13.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.13.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.13.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.14.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.14.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.14.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.14.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.14.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.14.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.15.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.15.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.15.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.15.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.15.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.15.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.16.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.16.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.16.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.16.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.16.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.16.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.17.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.17.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.17.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.17.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.17.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.17.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.18.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.18.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.18.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.18.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.18.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.18.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.19.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.19.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.19.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.19.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.19.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.19.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.20.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.20.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.20.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.20.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.20.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.20.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.21.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.21.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.21.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.21.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.21.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.21.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.22.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.22.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.22.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.22.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.22.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.22.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.23.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.23.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.23.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.23.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.23.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.23.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.24.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.24.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.24.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.24.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.24.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.24.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.25.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.25.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.25.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.25.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.25.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.25.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.26.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.26.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.26.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.26.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.26.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.26.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.27.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.27.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.27.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.27.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.27.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.27.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.28.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.28.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.28.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.28.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.28.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.28.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.29.attn1.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.29.attn1.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.29.attn1.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.29.attn2.to_q",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.29.attn2.to_k",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            },
+            {
+              "path": "blocks.29.attn2.to_v",
+              "parent_type": "WanAttention",
+              "in_features": 3072,
+              "out_features": 3072
+            }
+          ]
+        }
+      },
+      "baseline_p50_ms": 7787.103774957359,
+      "candidate_p50_ms": 496.82572204619646,
+      "speedup": 15.6737129931314,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "declared_protocol_changes": {
+        "precision": [
+          "native",
+          "fp8"
+        ],
+        "schedule_override": [
+          null,
+          {
+            "video": 2,
+            "action": 4
+          }
+        ]
+      },
+      "unexpected_protocol_changes": {},
+      "source_drift": []
+    }
+  },
+  "scope": "Original default schedule is the denominator. Action deltas are a recorded-input screen, not a task-quality certificate or a new numerical tolerance."
+}

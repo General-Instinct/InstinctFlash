@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "model": "nvidia/Cosmos3-Nano-Policy-DROID",
+  "model_revision": "2b9f9517efcfbf26e222945b386ae9b65c0930ac",
+  "source_revision": "0e034bc98ffa3c3dfa19f037871f3a8bbc1c4d05",
+  "device": "NVIDIA GeForce RTX 5090",
+  "capability": [
+    12,
+    0
+  ],
+  "torch": "2.10.0+cu128",
+  "cuda": "12.8",
+  "tier": "BITEXACT",
+  "protocol": "fresh process per arm; original BF16 eager kernels; persistent text-KV in both arms; p50 of 6 after 2 warmups; six action cases",
+  "reference": {
+    "arm": "complete checkpoint with unused lm_head retained on CPU",
+    "latency_ms": [
+      696.2582410196774,
+      703.4207450051326,
+      707.4048329959624,
+      699.0936880174559,
+      707.9943779972382,
+      698.1593259843066
+    ],
+    "latency_p50_ms": 701.2572165112942
+  },
+  "candidate": {
+    "arm": "construction-time zero-parameter action-only lm_head sentinel",
+    "latency_ms": [
+      686.068212002283,
+      699.5986579859164,
+      704.8038549837656,
+      699.9196670076344,
+      712.8484059940092,
+      706.8149490223732
+    ],
+    "latency_p50_ms": 702.3617609957,
+    "latency_delta_percent": 0.15750917900008155,
+    "elided_lm_head_bytes": 1244659712,
+    "memory_after_load_gib": {
+      "allocated": 28.42182445526123,
+      "reserved": 28.77734375,
+      "free": 1.01690673828125
+    },
+    "memory_after_gate_gib": {
+      "allocated": 28.456278800964355,
+      "reserved": 29.4921875,
+      "free": 0.21612548828125
+    },
+    "peak_allocated_gib": 28.985281944274902,
+    "peak_reserved_gib": 29.4921875,
+    "persistent_text_kv": {
+      "misses": 2,
+      "hits": 11
+    }
+  },
+  "bitexact_gate": {
+    "cases": 6,
+    "float32_action_values": 768,
+    "array_equal": true,
+    "max_abs": 0.0,
+    "matching_action_sha256": {
+      "base": "05c41fa28710be6a94c1a4699d193ac00b2618d95f64faf12c6fe823cdf1e7c4",
+      "new_observation_1": "d89b13d107fee4493551b17619837c50c3f426379e1f51f8f7dc20c624614f61",
+      "new_observation_2": "e80a5722c96a6ad711d59498355aff5686e6537e6b88ba090dacda4701961c83",
+      "new_observation_3": "3261aae8be6d7ab851684965c14e7dffbf4d40c045c4a8f3267459aff3e41370",
+      "new_observation_4": "f10e5a4755c38762f4042aef574251db36c005e8d3e41b2d5d67a132f469a85e",
+      "changed_prompt": "388b9bd38d6826eb36a1a3ccad5e35ba78fd1470423b5c6737da7ab55a3bfa80"
+    }
+  },
+  "status": "pass"
+}

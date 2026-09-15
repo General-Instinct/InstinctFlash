@@ -1,18 +1,5 @@
 #!/usr/bin/env python3
-"""The device-class law: measured classes only, and the capture pass obeys it.
-
-Two GPUs were measured and they flip the optimization landscape in opposite directions:
-H100 (sm90) is launch-bound -- static-KV capture collects 1.65-4.54x -- and Thor (sm110) is
-bandwidth-bound -- the same capture measured 1.04x, no battlefield. `device_class()` states
-exactly that and calls everything else 'unmeasured', because assigning an unmeasured device to
-either side would be the extrapolation the field exists to replace.
-
-The consequence pinned here: `graph_capture` declares itself launch-bound-devices-only. On the
-measured bandwidth-bound edge class the plan DECLINES it with the measured reason, before the
-shape question is even asked -- the law holds for every model on the device. No GPU, no torch.
-
-    python tests/test_device_class.py
-"""
+"""Device hints must not generalize one model's capture timings to every model."""
 from __future__ import annotations
 
 import sys
@@ -23,6 +10,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from instinctflash.descriptors.deployment import DeploymentSpec  # noqa: E402
 from instinctflash.passes.contract import DeviceProfile  # noqa: E402
 from instinctflash.passes.generic.graph_capture import GraphCaptureApplicable  # noqa: E402
+from instinctflash.planners.planner import Optimizer, Tier
+from types import SimpleNamespace
 
 
 def _dev(cap, name="StubGPU"):
@@ -34,6 +23,13 @@ class _StaticSpec:
     """The minimum a declaration needs to say 'my shapes repeat across cycles'."""
 
     model_id = "stub/static-shapes"
+    notes = {}
+
+    def phase(self, name):
+        return SimpleNamespace(nfe=10)
+
+    def operating_point(self):
+        return "action=10"
 
     def shapes_static_across_cycles(self):
         return True, "one chunk-lifetime prefix rebuilt per chunk"
@@ -49,7 +45,7 @@ def test_measured_classes_and_the_honest_unmeasured():
     cls, why = _dev((9, 0)).device_class()
     assert cls == "launch-bound" and "1.65-4.54x" in why
     cls, why = _dev((11, 0)).device_class()
-    assert cls == "bandwidth-bound-edge" and "1.04x" in why and "Thor" in why
+    assert cls == "bandwidth-bound-edge" and "family/operating-point" in why and "Thor" in why
     cls, why = _dev((0, 0), name="CPU (x86_64)").device_class()
     assert cls == "cpu"
     for cap in ((8, 9), (10, 0), (12, 0)):
@@ -58,12 +54,66 @@ def test_measured_classes_and_the_honest_unmeasured():
         assert f"sm{cap[0]}{cap[1]}" in why
 
 
-def test_capture_declines_on_the_bandwidth_bound_edge_class():
+def test_pi05_measurement_does_not_decide_other_families():
     p = GraphCaptureApplicable()
-    r = p.evaluate(_StaticSpec(), DeploymentSpec(device=_dev((11, 0))))
-    assert not r.applies, "capture must decline on the measured bandwidth-bound edge class"
-    assert "1.04x" in r.reason and "launch-bound-device" in r.reason, r.reason
-    assert "bandwidth-bound-edge" in r.reason
+    spec = _StaticSpec()
+    spec.notes = {"backbone": "pi05"}
+    r = p.evaluate(spec, DeploymentSpec(device=_dev((11, 0))))
+    assert r.applies and "2026-09-09" in r.reason and "pi05" in r.reason
+    assert r.tier == Tier.BITEXACT
+    spec.notes = {"backbone": "lingbot_vla"}
+    r = p.evaluate(spec, DeploymentSpec(device=_dev((11, 0))))
+    assert r.applies and r.tier == Tier.BITEXACT
+    spec.phase = lambda name: SimpleNamespace(nfe=4)
+    assert not p.evaluate(spec, DeploymentSpec(device=_dev((11, 0)))).applies
+    spec.notes = {"backbone": "unmeasured-family"}
+    r = p.evaluate(spec, DeploymentSpec(device=_dev((11, 0))))
+    assert not r.applies and "unmeasured" in r.reason
+    assert "1.04x" not in r.reason
+
+
+def test_v2_capture_uses_its_own_device_evidence_and_numeric_ceiling():
+    spec = _StaticSpec()
+    spec.notes = {"backbone": "lingbot_vla_v2", "capture_tier": "NUMERIC"}
+    deployment = DeploymentSpec(device=_dev((11, 0)))
+    p = GraphCaptureApplicable()
+    legal = p.evaluate(spec, deployment)
+    assert legal.applies and legal.tier == Tier.NUMERIC
+    assert "LingBot-VLA-V2" in legal.params["device_evidence"]
+    strict = Optimizer(passes=[p]).compile(spec, deployment)
+    assert not strict.applied
+    numeric = Optimizer(passes=[p], tier_ceiling=Tier.NUMERIC).compile(spec, deployment)
+    assert numeric.tier() == Tier.NUMERIC and len(numeric.applied) == 1
+    # The same numeric self-check must never masquerade as BITEXACT on H100 either.
+    h100 = Optimizer(passes=[p]).compile(spec, DeploymentSpec(device=_dev((9, 0))))
+    assert not h100.applied
+    spec.phase = lambda name: SimpleNamespace(nfe=4)
+    assert not p.evaluate(spec, deployment).applies
+
+
+def test_groot_thor_capture_is_scoped_to_measured_four_step_schedule():
+    p = GraphCaptureApplicable()
+    spec = _StaticSpec()
+    spec.notes = {"backbone": "groot_n17"}
+    deployment = DeploymentSpec(device=_dev((11, 0)))
+    assert not p.evaluate(spec, deployment).applies  # unmeasured 10-step schedule
+    spec.phase = lambda name: SimpleNamespace(nfe=4)
+    result = p.evaluate(spec, deployment)
+    assert result.applies and result.tier == Tier.BITEXACT
+    assert "existing DiT graph" in result.params["device_evidence"]
+    spec.shapes_static_across_cycles = lambda: (False, "changing shape")
+    assert not p.evaluate(spec, deployment).applies
+
+
+def test_legacy_numeric_adapter_cannot_bypass_the_ceiling():
+    spec = _StaticSpec()
+    spec.notes = {"backbone": "lingbot_vla_v2",
+                  "numeric_tier": "NUMERIC (upstream fused-MoE is nondeterministic)"}
+    for capability in ((9, 0), (11, 0)):
+        plan = Optimizer(passes=[GraphCaptureApplicable()]).compile(
+            spec, DeploymentSpec(device=_dev(capability)))
+        assert not plan.applied
+        assert plan.results[0].tier == Tier.NUMERIC
 
 
 def test_capture_still_applies_where_launch_bound_or_unmeasured():

@@ -1,0 +1,78 @@
+{
+  "adapter_directory": null,
+  "constraints": {
+    "path": "va/constraints.txt",
+    "sha256": "918ac1422e84629c289428486c603cbabdab8d098a884ff325cf6b0984ad4252"
+  },
+  "explicit_exclusions": [
+    "Training, hardware robot drivers, visualization UI, vendor TensorRT builders, CUDA source compilation are not installed by this inference-only bootstrap.",
+    "FlashAttention/native acceleration remains a separately built and qualified dependency where selected."
+  ],
+  "family": "va",
+  "packaging_patch": {
+    "after": {
+      "pyproject.toml": "b4a22a1cb1beec68fd7f3250dec876de4401985577b1adbd52ae3a67901ca429"
+    },
+    "before": {
+      "pyproject.toml": "a3109a71e732ceda3a1ebb9413443ed1824b4fd1b50a239ac13d9db86203ceae"
+    },
+    "path": "va/inference_packaging.patch",
+    "scope": "Packaging metadata only. Explicit inference dependencies replace training/UI/native-build requirements and incompatible historical Torch pins. Runtime source files are unchanged; actual inference remains an independent gate.",
+    "sha256": "9e255aaf463683181f13c0104b678323817680833d0537543629ce767cbf2f72"
+  },
+  "public_wheel_overrides": {},
+  "qualification": {
+    "GPU_verified": false,
+    "evidence": "release/vendor/qualification.json",
+    "status": "fresh_package_checks_passed",
+    "task_quality_certified": false
+  },
+  "requirements": {
+    "path": "va/inference_requirements.txt",
+    "sha256": "8d9c6b5fea6a0278b41ba3b6302272d8ef8175d0065c6eb350ddc44606630c20",
+    "unconstrained_direct_packages": [
+      "imageio"
+    ]
+  },
+  "root_env": "LINGBOT_ROOT",
+  "schema": "instinctflash.vendor_bootstrap.v1",
+  "source": {
+    "baseline_semantics": "Matches recorded Thor vendor source; not a new comparison to untouched upstream arithmetic.",
+    "checkout_instructions": [
+      "Clone the public repository into a NEW destination with GIT_LFS_SKIP_SMUDGE=1.",
+      "Check out source.revision detached; verify exact git rev-parse HEAD before applying anything.",
+      "If patch is present, verify its SHA256 and use git apply --check followed by git apply.",
+      "Verify every expected_patched_files SHA256. Existing vendor directories must remain untouched."
+    ],
+    "expected_patched_files": {
+      "wan_va/configs/va_robotwin_cfg.py": {
+        "bytes": 1998,
+        "sha256": "61c37db29d5b5d8145dbc65603463a914938c687025256c5ad98acd1d0044d1a"
+      }
+    },
+    "fresh_environment_inference_qualified": false,
+    "patch": {
+      "path": "recorded_thor.patch",
+      "sha256": "1292afe206e94a3aa1538af72abb71d50a690c58aa96430a855de4a3ba736730"
+    },
+    "patch_summary": "Read LINGBOT_CKPT in the native RoboTwin config. No checkpoint schedule change.",
+    "schema": "instinctflash.vendor_source.v1",
+    "source": {
+      "commit_url": "https://github.com/robbyant/lingbot-va/commit/7c6ffa9bfc4b83582cafc860fab4c82cc7deeeeb",
+      "public_commit_verified": true,
+      "repository": "https://github.com/robbyant/lingbot-va",
+      "revision": "7c6ffa9bfc4b83582cafc860fab4c82cc7deeeeb"
+    },
+    "source_bootstrap_qualified_CPU": true,
+    "upstream_notices": {
+      "LICENSE.txt": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    }
+  },
+  "source_manifest": "va/source.json",
+  "target": {
+    "machine": "aarch64",
+    "python_minor": "3.12",
+    "system": "Linux"
+  },
+  "wheel_metadata_repair": "nvidia-cusparselt-cu13-0.8.0-aarch64"
+}

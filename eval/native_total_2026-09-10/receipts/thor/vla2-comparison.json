@@ -1,0 +1,163 @@
+{
+  "family": "vla2",
+  "device": "NVIDIA Thor",
+  "status": "BITEXACT",
+  "baseline_p50_ms": 760.2480620116694,
+  "current_p50_ms": 752.5929929979611,
+  "repeated_baseline_p50_ms": 733.2218994997675,
+  "speedup_range": [
+    0.9742608638687577,
+    1.0101715921951575
+  ],
+  "applied_passes": [],
+  "baseline_applied_passes": [],
+  "unchanged_transform_plan": true,
+  "execution_policy": {
+    "category": "BITEXACT",
+    "precision": "native",
+    "tier_ceiling": "bitexact",
+    "transform_tier": "BITEXACT",
+    "nfe": {
+      "prefix": 1,
+      "action": 10
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "source_drift": {
+    "current": [],
+    "baseline_b": []
+  },
+  "backend_stats": {},
+  "reference_scope": "Direct upstream eager policy versus full default native Runtime; same I/O wrappers, weights, dtype and steps",
+  "comparisons": {
+    "baseline_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/thor-results/vla2-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/thor-results/vla2-current.json",
+      "baseline_sha256": "9b1fcaf4f08e09ff209dcb99fa8f1a851fdfa0f3a4e1e214b16857c64a5adbe6",
+      "candidate_sha256": "ba1a0fd09843545e39c92216f40021069731add526067736c3e4e16aed3bbec4",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            50,
+            14
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "captured": false,
+        "replays": 0,
+        "cuda_kernels": false,
+        "moe_layers": 0,
+        "rmsnorm_modules": 0,
+        "gpu_image_preprocess": false,
+        "vision_graph": false,
+        "vision_replays": 0,
+        "prefill_graph": false,
+        "prefill_replays": 0,
+        "ptxas": {
+          "TRITON_PTXAS_PATH": "/usr/local/cuda/bin/ptxas",
+          "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda/bin/ptxas"
+        }
+      },
+      "baseline_p50_ms": 760.2480620116694,
+      "candidate_p50_ms": 752.5929929979611,
+      "speedup": 1.0101715921951575,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    },
+    "baseline_repeat": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/thor-results/vla2-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/thor-results/vla2-baseline_b.json",
+      "baseline_sha256": "9b1fcaf4f08e09ff209dcb99fa8f1a851fdfa0f3a4e1e214b16857c64a5adbe6",
+      "candidate_sha256": "801f76f60294ccaba656a78bb6251129855374d5e6db2eedc6feeab658b4f3c8",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            50,
+            14
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "captured": false,
+        "replays": 0,
+        "cuda_kernels": false,
+        "moe_layers": 0,
+        "rmsnorm_modules": 0,
+        "gpu_image_preprocess": false,
+        "vision_graph": false,
+        "vision_replays": 0,
+        "prefill_graph": false,
+        "prefill_replays": 0,
+        "ptxas": {}
+      },
+      "baseline_p50_ms": 760.2480620116694,
+      "candidate_p50_ms": 733.2218994997675,
+      "speedup": 1.0368594589582503,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    },
+    "repeat_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/thor-results/vla2-baseline_b.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/thor-results/vla2-current.json",
+      "baseline_sha256": "801f76f60294ccaba656a78bb6251129855374d5e6db2eedc6feeab658b4f3c8",
+      "candidate_sha256": "ba1a0fd09843545e39c92216f40021069731add526067736c3e4e16aed3bbec4",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            50,
+            14
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "captured": false,
+        "replays": 0,
+        "cuda_kernels": false,
+        "moe_layers": 0,
+        "rmsnorm_modules": 0,
+        "gpu_image_preprocess": false,
+        "vision_graph": false,
+        "vision_replays": 0,
+        "prefill_graph": false,
+        "prefill_replays": 0,
+        "ptxas": {
+          "TRITON_PTXAS_PATH": "/usr/local/cuda/bin/ptxas",
+          "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda/bin/ptxas"
+        }
+      },
+      "baseline_p50_ms": 733.2218994997675,
+      "candidate_p50_ms": 752.5929929979611,
+      "speedup": 0.9742608638687577,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    }
+  },
+  "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+}

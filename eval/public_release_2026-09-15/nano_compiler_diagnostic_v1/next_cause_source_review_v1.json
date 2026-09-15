@@ -1,0 +1,95 @@
+{
+  "diagnostic": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/actual_independent_audit_v1.json",
+    "sha256": "2c6a5ca5af6ef263be4a2933a1a697a45b454455fac0cbbcf90e576a319b4296"
+  },
+  "evidence": {
+    "current_old_startup_chain": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_native_binary_compare_v1/comparison.json",
+      "sha256": "c5e4254bc55ba5c4adb89a3ba6c269e9e5e6dbbd076ac0733537a9acd45666fd"
+    },
+    "exact_vendor_sitecustomize": {
+      "path": "/home/ubuntu/cosmos-framework/sitecustomize.py",
+      "sha256": "b80f9d0a2f876a4a66bd02dcc097ba7a7efb1ac46321a0cecb4fbffee3dbdf74"
+    },
+    "historical_launch_status": {
+      "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/status-path-recovery.json",
+      "sha256": "6f2ab79c63024a8e973220c71ace41b8e669e38a7c2f3c95d1ffacd4165d47b4"
+    },
+    "historical_launcher": {
+      "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/run_thor_v2.py",
+      "sha256": "a2324180309abfd7942cdb4d26d2db630764ff9da1de7588cc3b33fd7119ec83"
+    },
+    "local_cpu_settings_probe": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/local_cpu_settings_probe_v1.json",
+      "sha256": "41f6cff7abd6c294759af273fb1c8666706a162e4c324d7672c6907b522989e7"
+    },
+    "local_source_python_tree_sha256": "0da8aff402fe1c68afbd38996dd77518feb06aa0b361599e0a2399fd13c0d465",
+    "local_torch_record": {
+      "path": "/home/ubuntu/cosmos-framework/.venv/lib/python3.13/site-packages/torch-2.10.0+cu130.dist-info/RECORD",
+      "sha256": "dc0d13316cca26204353c146dbfaa77fc08640e8ce2988632f56bcfcefdbdd8d"
+    },
+    "matching_python_bytes": 40940619,
+    "matching_python_source_files": 2199,
+    "prior_remote_capture_started_unix": 1789438573.6217406,
+    "prior_remote_readiness": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/vendor_provenance_sources/remote_readiness_v1.json",
+      "sha256": "d5b3b6cb166679fa4e292a12f5eb1bf9c0168887df3845194aaa2a13b552c53d"
+    },
+    "selected_source_sha256": {
+      "torch/_dynamo/config.py": "6cb87aa0545807fbf3d8908faefa1e2a9b0ce736e4a0797a897592583a26c029",
+      "torch/_inductor/codecache.py": "23eb23b775e065d7f45154108a6ed71d8f054f7dbb3fd844404321f96b8a16fb",
+      "torch/_inductor/codegen/triton.py": "51a0318c8ed3baa396aabdb4245f24e378e54000aa2882cc87e69d940d337bb9",
+      "torch/_inductor/config.py": "35742623dd7b4b523940a68f0eccd2f68286cc624fe355286ce3783d878aee9c",
+      "torch/_inductor/runtime/triton_heuristics.py": "d730d25c3f0f0e25596ce8c47da740992d783dea30152fef606093fe2c284341",
+      "torch/backends/cuda/__init__.py": "c70bd54e7d4b995ddd822cb70d7d8e140b95a2d8e61635bf2c580b8045d83c11"
+    }
+  },
+  "findings": [
+    {
+      "kind": "source_correspondence",
+      "result": "Local pinned Torch Python tree matches the prior remote historical-environment source audit in all2199files; config/Inductor/Dynamo source can be read without a download. Both observations occurred after original historical inference, so they do not reconstruct its live compiler flags."
+    },
+    {
+      "kind": "generated_current_backend",
+      "result": "Actual current generated graph calls aten._scaled_dot_product_cudnn_attention and has max_autotune=False. Four generated Python files retained; no selected cached launcher IR/cubin artifacts were captured. No hash-bound historical generated-code path is in the examined receipts."
+    },
+    {
+      "kind": "known_sitecustomize",
+      "result": "Exact2243-byte vendor sitecustomize contains only optional DataLoader file_system sharing and atexit source-path tracing; no Inductor/Dynamo precision or SDPA enable changes. Actual historical startup import not established."
+    },
+    {
+      "kind": "settings_gap",
+      "result": "Historical runner inherits unspecified TORCH/Inductor environment variables and records only selected flags. Current diagnostic records core numeric flags but not flash/memory-efficient/math/cuDNN SDPA enable flags or full effective Inductor config. No observed setting difference establishes cause."
+    }
+  ],
+  "minimal_optional_next_step": {
+    "arguments": [
+      "-I",
+      "-B",
+      "ABSOLUTE_PROBE_PATH"
+    ],
+    "captures": "Six small Torch source files, current startup hook/.pth identities, explicit compiler variables, effective Inductor/Dynamo precision options, four SDPA enable flags. No native binary hashes, model, inference or arbitrary cache scan.",
+    "environment_required": {
+      "CUDA_VISIBLE_DEVICES": ""
+    },
+    "interpreter_paths": [
+      "/home/guanming/ifl_eval/user_e2e_20260914/envs/nano/bin/python",
+      "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python"
+    ],
+    "limitations": "Current CUDA-hidden startup is not historical in-process state. CUDA-dependent startup and adapter-time changes remain outside its scope. A matching probe would narrow a gap, not establish the old numerical cause.",
+    "qualification": "Local source-compatible Torch2.10 CPU execution passed in2.1s with GPU_initialized=false; no Thor execution by this author.",
+    "source": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/probe_compiler_settings_v1.py",
+      "sha256": "0c9fe1b1025bedbf3ba13a27ffc14d592d654788f894e55a17cf4f64cf11f0f3"
+    },
+    "timeout_seconds_per_interpreter": 45
+  },
+  "negative_comparison": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/comparison_v1.json",
+    "sha256": "109d524882c5dd56ea7090558c8f571e6d2c84737eefc83d87e46bd61664c172"
+  },
+  "release_scope": "Historical byte recovery remains false and V3/V4 admission unchanged. Parent may define separate prospective current-version qualification; this review does not implement or authorize that new selection.",
+  "schema": "instinctflash.nano_remaining_compiler_source_review.v1",
+  "status": "no_concrete_remaining_cause_established"
+}

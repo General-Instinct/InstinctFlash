@@ -38,6 +38,11 @@ class Released:
     #: failure mode is a lossy pass inheriting the credibility of six bit-exact ones.
     certificate: str = ""
 
+    #: Where step_speedup was measured, when it is NOT this project's H100 protocol box. Rendered
+    #: inline in summary() rows: a 5090-measured number printed beside H100 rows with the label
+    #: only in a Disposition note reads as fleet-verified, and it is not.
+    measured_on: str = ""
+
     def is_verified(self) -> bool:
         if self.gates_owed:
             return False
@@ -160,6 +165,65 @@ RELEASED = (
                     "max|delta action| = 0 is unavailable by construction, which is why the conv "
                     "backend layer derives NUMERIC for this pair and refuses to select it without an "
                     "explicit prefer_bitexact=False."),
+    Released(
+        pid="P009", name="sm120_gated_residual", version="1.0.1", tier=Tier.BITEXACT,
+        step_speedup=1.0283,
+        gates="SM120 native FMUL+FADD+BF16-RNE kernel; PTX contains separate mul.rn.f32 and "
+              "add.rn.f32 with no fma.rn.f32. 0 differing words over 17,694,720 adversarial "
+              "elements across 12 exponent scales and both production shapes. Two 42-cycle "
+              "candidate arms (50,160 live kernel calls total) were action-bit-exact against both "
+              "baseline arms through ring saturation; same-runtime reset produced identical "
+              "actions and stable buffer pointers. ABBA mean 354.81 -> 345.05 ms = 1.0283x; "
+              "saturated mean 399.90 -> 390.81 ms = 1.0232x; every arm spread <0.18%. "
+              "v1.0.1 correctness hardening: plan-scoped thread-local constructor token prevents "
+              "enabled->excluded Runtime leakage; target device reaches DeviceProfile.probe; native "
+              "capability verifies loadable ABI v1; full-body rewrite pins upstream source hash; "
+              "rank/stride/storage-overlap and single-stream paths fail closed. Reverified 42 cycles.",
+        measured_on="RTX 5090, author-measured",
+    ),
+    Released(
+        pid="P009-A2", name="sm120_wan_stage2", version="1.0.0", tier=Tier.BITEXACT,
+        step_speedup=1.0362,
+        gates="Independent SM120 ABI v1 reproduces PyTorch 2.9's float4, threads=(32,4), "
+              "two-level Welford tree for D=3072 while preserving both eager BF16 residual "
+              "boundaries. Production launcher: 0 differing words over 66,868,480 adversarial "
+              "fields across seven input patterns, 12 exponent scales, and both production "
+              "shapes; dtype/shape/alignment/alias guards all refused invalid inputs. Integrated "
+              "42-cycle A-B-B-A under one physical-GPU0 lock: 168/168 actions bitwise equal, "
+              "349.857 -> 337.622 ms = 1.0362x; saturated 396.012 -> 384.716 ms = 1.0294x; "
+              "candidate-arm spread 0.00094%, no foreign GPU0 PID. Same-Runtime reset: 3/3 "
+              "actions bitwise equal, all 30 blocks retained both buffer shapes and every pointer, "
+              "with exact 1680 A2 and 840 A1 calls per episode. Adds about 0.187 GiB peak memory.",
+        measured_on="RTX 5090, author-measured",
+    ),
+    Released(
+        pid="P010", name="action_terminal_forward_elision", version="1.0.0", tier=Tier.BITEXACT,
+        step_speedup=1.098,
+        gates="Skips the action loop's padded terminal forward (wan_va_server.py:542-546, action_mode=True "
+              "and update_cache=1): its output is discarded at :548 and its provisional K/V is dropped by "
+              "clear_pred_cache (:574) before any forward reads it. Only the forward's SLOT ALLOCATION is "
+              "replayed -- stock: update_cache minus its K/V lines; --ring-kv: the forward's metadata "
+              "writes + _commit (count/pred/start advance) -- which is what the naive skip lacked when it "
+              "was refuted on 2026-08-09 (0 through cycle ~37, then 0.0297..0.406 past the ring wrap). "
+              "GATE: probe_action_terminal_elision.py, --deterministic-seed serving, 48 seeded cycles per "
+              "episode, ABBA ON/EL/EL/ON, wrap crossed at cycle 36 (ring start 0 -> 272) with 12 post-wrap "
+              "cycles: max|delta action| = 0.000e+00 on EVERY cycle and arm pair, same-arm repeats "
+              "0.000e+00, on both allocators (stock mask, --ring-kv) x both operating points (2V/4A@w5 "
+              "batch-2, 2V/2A@w1 batch-1), replicated in two independent runs (8/8); no materialization, "
+              "no self-disable. ALLOCATOR LEVEL (tests/test_ring_allocator.py, real stock WanAttention "
+              "allocator + real RingKVAddressing ring, payload-stamped, 80 cycles = 2.2 wraps): bookkeeping "
+              "exact at 2V/4A, 2V/1A, 1V/2A on both allocators; ring-naive diverges at cycle 36 at every "
+              "point; stock-naive diverges only at 1A (with any transient action forward the first "
+              "transient already performs the eviction). LATENCY (H100, in-process, ABBA, all same-arm "
+              "drifts <= 1.2%): shipped chain 2V/4A@w5 257.0 -> 234.0 ms/cycle (-23.0, 1.098x; infer "
+              "186.3 -> 163.4; saturated 276.2 -> 253.6), 2V/2A@w1 217.6 -> 194.8 (-22.7, 1.117x; infer "
+              "145.2 -> 121.6); stock allocator 602.5 -> 570.9 (-31.6) and 441.5 -> 411.3 (-30.2). "
+              "kv message unchanged within noise (bookkeeping +0.3 ms ring, +4-5 ms stock). Two fail-closed "
+              "gates: any forward before clear_pred_cache (vendor generate(), predict() without commit()) "
+              "materializes the skipped forward and disables the pass for that server; video_exec_step "
+              "!= -1 declines.",
+        measured_on="H100 80GB HBM3 on the 4xh100 box (in-process probe, no websocket; not the protocol box)",
+    ),
 )
 
 #: MEASUREMENT PROTOCOL, and a caveat that applies to every number below.
@@ -316,6 +380,23 @@ DISPOSITIONS = (
                 "NUMERIC on 555 paired episodes (delta -0.0036, exact McNemar p = 0.897, one-sided "
                 "non-inferiority p = 0.00031). Enabling it makes the served chain NUMERIC rather than "
                 "bit-exact end to end -- that is the certificate's purpose and summary() says so."),
+    Disposition("P009", AVAILABLE, ("--sm120-gated-residual",),
+                "Correct and profitable on RTX 5090, but conditional on an explicitly built SM120 "
+                "native library. The planner auto-applies it only when DeviceProfile reports "
+                "sm120_kernels; it is not in the architecture-neutral shipped flag list, so H100 "
+                "and machines without the extension remain unchanged."),
+    Disposition("P009-A2", AVAILABLE, ("--sm120-wan-stage2",),
+                "Correct and profitable on RTX 5090, but requires both the explicitly built "
+                "P009-A1 library and its independent stage2 ABI. The planner auto-applies it only "
+                "when both native features are present; architecture-neutral serving and machines "
+                "without either extension remain unchanged."),
+    Disposition("P010", SERVED, ("--action-terminal-elision",),
+                "Bit-exact through the ring wrap on both allocators and both operating points (two "
+                "independent 48-cycle ABBA runs, max|delta action| = 0.000e+00 everywhere), so no "
+                "closed-loop certificate is needed. Removes one DiT forward per cycle: 1 of 10 at 2V/4A, "
+                "1 of 8 at 2V/2A; -23 ms/cycle on H100 (1.098x / 1.117x on the shipped chain). Fails "
+                "closed on the two things it depends on: the closed-loop message order (materialize + "
+                "disable on violation) and video_exec_step == -1 (decline)."),
 )
 
 _BY_PID = {d.pid: d for d in DISPOSITIONS}
@@ -359,8 +440,13 @@ def summary() -> str:
         d = _BY_PID[r.pid]
         mark = {SERVED: "SERVED         ", AVAILABLE: "available      ",
                 NOT_RECOMMENDED: "NOT RECOMMENDED"}[d.status]
+        speed = f"{r.step_speedup:.2f}x step"
+        if r.measured_on:
+            # inline, not only in the Disposition note: these rows sit beside H100-measured ones,
+            # and an unlabelled foreign-hardware number reads as fleet-verified.
+            speed += f" [{r.measured_on}]"
         out.append(f"  {r.pid} {r.name:22s} v{r.version}  {r.tier.name:9s} "
-                   f"{r.step_speedup:.2f}x step   {mark} [{r.evidence_kind()}]{flag}")
+                   f"{speed}   {mark} [{r.evidence_kind()}]{flag}")
     owed = [r.pid for r in RELEASED if not r.is_verified()]
     if owed:
         out.append(f"  NOT FULLY VERIFIED: {', '.join(owed)}. Either gates are owed, or a "

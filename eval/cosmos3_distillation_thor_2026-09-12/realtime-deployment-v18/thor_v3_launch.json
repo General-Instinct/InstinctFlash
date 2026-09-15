@@ -1,0 +1,35 @@
+{
+  "status": "thor_launched_unqualified",
+  "active": {
+    "host": "guanming@100.68.159.80",
+    "pid": 160013
+  },
+  "sources": {
+    "benchmark.py": "7bcecfa94beb4ee83480ac47e1993febe688cd5e1dc778c1ccebdd1aef6199eb",
+    "run_all.py": "dbc78afab6b0519beee4e9673e7def44bf5c44c66d371bf059edb00c3fabe8dd",
+    "persistent_cache.py": "bfe1881c3e2b89185646c833c6ddf8d7815541e5dda14654fa691e3f9b444275",
+    "prompt_contract.py": "6908d6851c771b2765e536c6c82590f61f0b0e9c1539579e6f9e1b6da0138238"
+  },
+  "command_argv": [
+    "env",
+    "CUDA_VISIBLE_DEVICES=0",
+    "OMP_NUM_THREADS=4",
+    "HF_HUB_OFFLINE=1",
+    "PYTHONHASHSEED=0",
+    "TRITON_PTXAS_PATH=/usr/local/cuda/bin/ptxas",
+    "TRITON_PTXAS_BLACKWELL_PATH=/usr/local/cuda/bin/ptxas",
+    "PATH=/home/guanming/thorcol/cosmos-framework/.venv/bin:/home/guanming/.local/bin:/usr/local/cuda/bin:/usr/bin:/bin",
+    "PYTHONPATH=/home/guanming/ifl_eval/cosmos_distill_20260912/flash:/home/guanming/ifl_eval/cosmos_distill_20260912/compress:/home/guanming/ifl_eval/cosmos_distill_20260912/flash/examples/cosmos3_policy:/home/guanming/ifl_eval/cosmos_distill_20260912/realtime-deployment-v2",
+    "/home/guanming/thorcol/cosmos-framework/.venv/bin/python",
+    "/home/guanming/ifl_eval/cosmos_distill_20260912/realtime-deployment-v18-v3/run_all.py",
+    "/home/guanming/ifl_eval/cosmos_distill_20260912/student-v18-cfg1-seed12031-v1",
+    "/home/guanming/ifl_eval/cosmos_distill_20260912/student-v18-cfg1-seed12032-v1",
+    "/home/guanming/ifl_eval/cosmos_distill_20260912/realtime-deployment-v18-v3/results",
+    "--fixture",
+    "/home/guanming/ifl_eval/cosmos_distill_20260912/flash/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+  ],
+  "remote_live_status": "/home/guanming/ifl_eval/cosmos_distill_20260912/realtime-deployment-v18-v3/results/live_status.json",
+  "reason": "V2 combined had zero captures/checks/replays and memory bypasses in all72 slots; apply previously qualified scoped checkpoint page-cache advice equally in all arms outside timing; graph guard unchanged",
+  "previous_failure": "failed-thor-v2/live_status.json",
+  "task_quality_certified": false
+}

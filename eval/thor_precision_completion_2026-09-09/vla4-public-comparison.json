@@ -1,0 +1,143 @@
+{
+  "scope": "Public Runtime; recorded images and synthetic states; one process per arm, four warmup and 32 measured calls; not closed-loop task evaluation",
+  "arms": {
+    "vla4-native-api-latency": {
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e",
+      "precision": "native",
+      "setup_seconds": 44.05573568691034,
+      "warmup": {
+        "count": 4,
+        "p50_ms": 707.1987545350567,
+        "p99_ms": 1251.1760345264336,
+        "max_ms": 1267.849484924227
+      },
+      "measured": {
+        "count": 32,
+        "p50_ms": 704.4033324345946,
+        "p99_ms": 713.5886072309222,
+        "max_ms": 714.1813129419461
+      },
+      "recipe": {
+        "parameters": [
+          "torch.bfloat16"
+        ]
+      },
+      "graph_stats": {
+        "captured": false,
+        "replays": 0
+      },
+      "native_source_root": "/home/guanming/ifl_eval/fp8_comparison_20260909/native-vla4",
+      "matmul_tf32": true,
+      "cudnn_benchmark": false,
+      "actions_sha256": "376ccb909b787275ac8082b9aca321915dc0269afe330b402acc1eae22fb9afa",
+      "probe_sha256": "6d5b1b2cc05d2f611453998c324047e7b38738ddc159d6349cdc9cd42c11f36e",
+      "loop_source_sha256": "3e1ddb95c2e5356a4f1a97141138eb500a30e4c2dd4b72bc68d8935a48ac38b7",
+      "scope": "Public Runtime 25x14 replies, current vision/state/prompt processors; recorded images and synthetic state; no closed-loop quality certificate"
+    },
+    "vla4-native-capture-api-latency": {
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e",
+      "precision": "native",
+      "setup_seconds": 43.90386392199434,
+      "warmup": {
+        "count": 4,
+        "p50_ms": 644.5662619662471,
+        "p99_ms": 1236.592212843243,
+        "max_ms": 1246.9788569724187
+      },
+      "measured": {
+        "count": 32,
+        "p50_ms": 355.00005597714335,
+        "p99_ms": 362.6433903980069,
+        "max_ms": 363.37426502723247
+      },
+      "recipe": {
+        "parameters": [
+          "torch.bfloat16"
+        ]
+      },
+      "graph_stats": {
+        "captured": true,
+        "replays": 348
+      },
+      "native_source_root": "/home/guanming/ifl_eval/fp8_comparison_20260909/native-vla4",
+      "matmul_tf32": true,
+      "cudnn_benchmark": false,
+      "actions_sha256": "35bf0300e3a2e8093e92b6fb349c7ff284aaa326babc38021beaf792618feb78",
+      "probe_sha256": "6d5b1b2cc05d2f611453998c324047e7b38738ddc159d6349cdc9cd42c11f36e",
+      "loop_source_sha256": "3e1ddb95c2e5356a4f1a97141138eb500a30e4c2dd4b72bc68d8935a48ac38b7",
+      "scope": "Public Runtime 25x14 replies, current vision/state/prompt processors; recorded images and synthetic state; no closed-loop quality certificate"
+    },
+    "vla4-fp8-api-latency-graph-receipt": {
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e",
+      "precision": "fp8",
+      "setup_seconds": 18.504361426923424,
+      "warmup": {
+        "count": 4,
+        "p50_ms": 225.5372214713134,
+        "p99_ms": 1392.8415981191208,
+        "max_ms": 1428.875662968494
+      },
+      "measured": {
+        "count": 32,
+        "p50_ms": 217.96722750877962,
+        "p99_ms": 221.76889662863687,
+        "max_ms": 222.18320204410702
+      },
+      "recipe": {
+        "vision": [
+          "torch.bfloat16"
+        ],
+        "language_qkv": "torch.float8_e4m3fn",
+        "expert_qkv": "torch.float8_e4m3fn"
+      },
+      "graph_stats": {
+        "captured": true,
+        "replays": 36,
+        "vision_graph": false,
+        "language_action_graph": true
+      },
+      "native_source_root": "/home/guanming/ifl_eval/fp8_comparison_20260909/native-vla4",
+      "matmul_tf32": false,
+      "cudnn_benchmark": false,
+      "actions_sha256": "af1d01ac580efa584a5d09046a32544fba8834374b5c2028e07a393cc8cf66ca",
+      "probe_sha256": "6d5b1b2cc05d2f611453998c324047e7b38738ddc159d6349cdc9cd42c11f36e",
+      "loop_source_sha256": "527ab6f5d401b77a1739a64bc9c11e726ca082634e524217adbaee177e219b7b",
+      "scope": "Public Runtime 25x14 replies, current vision/state/prompt processors; recorded images and synthetic state; no closed-loop quality certificate"
+    }
+  },
+  "comparisons": [
+    {
+      "reference": "vla4-native-api-latency",
+      "candidate": "vla4-native-capture-api-latency",
+      "p50_ratio": 1.98423442637414,
+      "actions_equal": true,
+      "action_max_abs": 0.0,
+      "action_mae": 0.0,
+      "action_rmse": 0.0,
+      "action_scope": "All 36 decoded 25x14 replies, including warmup; mixed physical dimensions; same per-call RNG seeds"
+    },
+    {
+      "reference": "vla4-native-api-latency",
+      "candidate": "vla4-fp8-api-latency-graph-receipt",
+      "p50_ratio": 3.2316937756444215,
+      "actions_equal": false,
+      "action_max_abs": 0.30120959132909775,
+      "action_mae": 0.021074087504918376,
+      "action_rmse": 0.03765581313791792,
+      "action_scope": "All 36 decoded 25x14 replies, including warmup; mixed physical dimensions; same per-call RNG seeds"
+    },
+    {
+      "reference": "vla4-native-capture-api-latency",
+      "candidate": "vla4-fp8-api-latency-graph-receipt",
+      "p50_ratio": 1.6286854681529779,
+      "actions_equal": false,
+      "action_max_abs": 0.30120959132909775,
+      "action_mae": 0.021074087504918376,
+      "action_rmse": 0.03765581313791792,
+      "action_scope": "All 36 decoded 25x14 replies, including warmup; mixed physical dimensions; same per-call RNG seeds"
+    }
+  ]
+}

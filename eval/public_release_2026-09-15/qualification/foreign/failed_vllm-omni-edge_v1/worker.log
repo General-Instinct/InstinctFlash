@@ -1,0 +1,304 @@
+INFO 09-14 21:23:40 [patch.py:252] NVFP4 W4A4 weight_scale NaN-clamp: installed.
+INFO 09-14 21:23:40 [patch.py:503] inductor factorable-divisibility patch: installed.
+INFO 09-14 21:23:40 [patch.py:568] [cumem-cuda] CuMemAllocator._python_free_callback patched: asleep guard extended to all platforms.
+INFO 09-14 21:23:42 [omni_base.py:207] [Omni] Initializing with model /home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Edge-Policy-DROID/snapshots/f9fddb427fd7cff0bef7c73791be36f0ab52d81e
+INFO 09-14 21:23:42 [async_omni_engine.py:170] [AsyncOmniEngine] Initializing with model /home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Edge-Policy-DROID/snapshots/f9fddb427fd7cff0bef7c73791be36f0ab52d81e
+INFO 09-14 21:23:42 [async_omni_engine.py:260] [AsyncOmniEngine] Launching Orchestrator thread with 1 stages
+INFO 09-14 21:23:42 [stage_init_utils.py:760] [stage_init] Set VLLM_WORKER_MULTIPROC_METHOD=spawn
+INFO 09-14 21:23:42 [initialization.py:356] Loaded OmniTransferConfig with 0 connector configurations
+INFO 09-14 21:23:44 [multiproc_executor.py:350] Starting server...
+INFO 09-14 21:23:51 [patch.py:252] NVFP4 W4A4 weight_scale NaN-clamp: installed.
+INFO 09-14 21:23:52 [patch.py:503] inductor factorable-divisibility patch: installed.
+INFO 09-14 21:23:52 [patch.py:568] [cumem-cuda] CuMemAllocator._python_free_callback patched: asleep guard extended to all platforms.
+(DiffusionWorker pid=279027) INFO 09-14 21:23:54 [diffusion_worker.py:1058] Worker 0 created result MessageQueue
+(DiffusionWorker pid=279027) INFO 09-14 21:23:54 [scheduler.py:277] Chunked prefill is enabled with max_num_batched_tokens=2048.
+(DiffusionWorker pid=279027) INFO 09-14 21:23:54 [kernel.py:369] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'])
+(DiffusionWorker pid=279027) INFO 09-14 21:23:55 [diffusion_worker.py:327] Final IR op priority after setting vLLM-Omni overrides: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'])
+(DiffusionWorker pid=279027) INFO 09-14 21:23:55 [diffusion_worker.py:339] Worker 0: Initialized device and distributed environment.
+(DiffusionWorker pid=279027) INFO 09-14 21:23:55 [parallel_state.py:599] Building SP subgroups from explicit sp_group_ranks (sp_size=1, ulysses=1, ring=1, use_ulysses_low=True).
+(DiffusionWorker pid=279027) INFO 09-14 21:23:55 [parallel_state.py:641] SP group details for rank 0: sp_group=[0], ulysses_group=[0], ring_group=[0]
+(DiffusionWorker pid=279027) The config attributes {'clip_output': False} were passed to DistributedAutoencoderKLWan, but are not expected and will be ignored. Please verify your config.json configuration file.
+(DiffusionWorker pid=279027) INFO 09-14 21:23:57 [platform.py:101] Detected Blackwell-class GPU sm_110 (untested variant); routing to CUDNN_ATTN.
+(DiffusionWorker pid=279027) INFO 09-14 21:23:57 [platform.py:338] Defaulting to diffusion attention backend CUDNN_ATTN (Blackwell sm_110, cuDNN 92000, head_dim 128)
+(DiffusionWorker pid=279027) INFO 09-14 21:23:57 [selector.py:93] Resolved diffusion attention backend 'CUDNN_ATTN' for role='self' via platform default
+(DiffusionWorker pid=279027) Multi-thread loading shards:   0% Completed | 0/2 [00:00<?, ?it/s]
+(DiffusionWorker pid=279027) Multi-thread loading shards:  50% Completed | 1/2 [00:00<00:00,  1.62it/s]
+(DiffusionWorker pid=279027) Multi-thread loading shards: 100% Completed | 2/2 [00:03<00:00,  1.77s/it]
+(DiffusionWorker pid=279027) Multi-thread loading shards: 100% Completed | 2/2 [00:03<00:00,  1.59s/it]
+(DiffusionWorker pid=279027) 
+(DiffusionWorker pid=279027) INFO 09-14 21:24:01 [pipeline_cosmos3.py:1256] Cosmos3 weight remap: kept 548/549 tensors
+(DiffusionWorker pid=279027) INFO 09-14 21:24:01 [diffusers_loader.py:1058] Loading weights took 3.47 seconds
+(DiffusionWorker pid=279027) INFO 09-14 21:24:02 [diffusion_model_runner.py:340] Model loading took 7.1111 GiB and 6.898454 seconds
+(DiffusionWorker pid=279027) INFO 09-14 21:24:02 [diffusion_model_runner.py:346] Model runner: Model loaded successfully.
+(DiffusionWorker pid=279027) INFO 09-14 21:24:02 [compile.py:103] Regional compilation applied to 28 module(s) for repeated blocks ['Cosmos3GenDecoderLayer'].
+(DiffusionWorker pid=279027) INFO 09-14 21:24:02 [diffusion_model_runner.py:255] Model runner: transformer configured for lazy regional torch.compile with dynamic=True; compilation errors may surface on the first request.
+(DiffusionWorker pid=279027) INFO 09-14 21:24:02 [diffusion_model_runner.py:437] Model runner: Initialization complete.
+(DiffusionWorker pid=279027) INFO 09-14 21:24:02 [diffusion_worker.py:420] Worker 0: Process-scoped GPU memory after model loading: 7.24 GiB.
+(DiffusionWorker pid=279027) INFO 09-14 21:24:02 [manager.py:112] Initializing DiffusionLoRAManager: device=cuda:0, dtype=torch.bfloat16, max_cached_adapters=1, static_lora_path=None
+(DiffusionWorker pid=279027) INFO 09-14 21:24:02 [diffusion_worker.py:297] Worker 0: Initialization complete.
+(DiffusionWorker pid=279027) INFO 09-14 21:24:02 [diffusion_worker.py:1523] Worker 0: Scheduler loop started.
+(DiffusionWorker pid=279027) INFO 09-14 21:24:02 [diffusion_worker.py:1367] Worker 0 ready to receive requests via shared memory
+INFO 09-14 21:24:02 [multiproc_executor.py:893] Async result pump started for 1 worker queue(s)
+INFO 09-14 21:24:02 [diffusion_engine.py:400] [RequestBatch] engine init max_num_seqs=1 max_wait_ms=0.0
+INFO 09-14 21:24:02 [diffusion_engine.py:1149] dummy run to warm up the model
+(DiffusionWorker pid=279027)   0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:04<00:04,  4.02s/it]100%|██████████| 2/2 [00:04<00:00,  2.02s/it]
+(DiffusionWorker pid=279027) INFO 09-14 21:24:07 [pipeline_cosmos3.py:4008] Decoding video...
+(DiffusionWorker pid=279027) INFO 09-14 21:24:07 [pipeline_cosmos3.py:4012] Video decoded in 0.17s
+(DiffusionWorker pid=279027) INFO 09-14 21:24:07 [pipeline_cosmos3.py:4014] Total pipeline time: 4.52s
+INFO 09-14 21:24:07 [inline_stage_diffusion_client.py:79] [InlineStageDiffusionClient] stage-0 [rep-0] initialized inline (max_num_seqs=1)
+INFO 09-14 21:24:07 [stage_runtime.py:885] [StageRuntime] Stage 0 replica 0 initialized (diffusion)
+INFO 09-14 21:24:07 [orchestrator.py:603] [Orchestrator] Starting event loop
+INFO 09-14 21:24:07 [async_omni_engine.py:292] [AsyncOmniEngine] Orchestrator ready with 1 stages
+INFO 09-14 21:24:07 [omni_base.py:226] [Omni] AsyncOmniEngine initialized in 25.33 seconds
+INFO 09-14 21:24:07 [omni_base.py:245] [Omni] Initialized with 1 stages for model /home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Edge-Policy-DROID/snapshots/f9fddb427fd7cff0bef7c73791be36f0ab52d81e
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741] Error executing method 'execute_model'. This might cause issues in distributed execution.
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741] Traceback (most recent call last):
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/utils.py", line 298, in lazy_import
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     module = import_module(module_name)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     return _bootstrap._gcd_import(name[level:], package, level)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/data/generator/action/utils/transforms.py", line 39, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     from cosmos_framework.data.generator.augmentors.text_tokenizer import TextTokenizerTransform
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/data/generator/augmentors/text_tokenizer.py", line 14, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     from cosmos_framework.utils.lazy_config import instantiate as lazy_instantiate
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/utils/lazy_config/__init__.py", line 25, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     from cosmos_framework.utils.lazy_config.lazy import LazyConfig
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/utils/lazy_config/lazy.py", line 31, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     from cosmos_framework.utils.lazy_config.file_io import PathManager
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/utils/lazy_config/file_io.py", line 4, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     from iopath.common.file_io import HTTPURLHandler, OneDrivePathHandler, PathHandler
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741] ModuleNotFoundError: No module named 'iopath'
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741] 
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741] The above exception was the direct cause of the following exception:
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741] 
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741] Traceback (most recent call last):
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_worker.py", line 1737, in execute_method
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     return func(*args, **kwargs)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]            ^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_worker.py", line 671, in execute_model
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     output = self.model_runner.execute_model(req, **kwargs)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_model_runner.py", line 868, in execute_model
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     runner_output = self._execute_request_list(
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_model_runner.py", line 786, in _execute_request_list
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     raw_outputs = self.pipeline.forward(batch)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/pipeline_cosmos3.py", line 3606, in forward
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     robolab_inputs = self._build_robolab_policy_inputs(sp, prompt_data, getattr(req, "request_id", None))
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/pipeline_cosmos3.py", line 1528, in _build_robolab_policy_inputs
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     sample = self._get_robolab_transform(format_prompt_as_json=format_prompt_as_json)(sample, resolution)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/pipeline_cosmos3.py", line 1405, in _get_robolab_transform
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     transforms[format_prompt_as_json] = lazy_action_transform_pipeline(
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/utils.py", line 322, in lazy_action_transform_pipeline
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     ActionTransformPipeline = _load_robolab_framework_symbol("ActionTransformPipeline")
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/utils.py", line 308, in _load_robolab_framework_symbol
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     return lazy_import(
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]            ^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/utils.py", line 301, in lazy_import
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741]     raise ImportError(
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1741] ImportError: Cosmos3 RoboLab policy serving requires a compatible cosmos_framework source on PYTHONPATH. Could not import required symbol 'ActionTransformPipeline' from 'cosmos_framework.data.generator.action.utils.transforms'.
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318] Error executing RPC: Cosmos3 RoboLab policy serving requires a compatible cosmos_framework source on PYTHONPATH. Could not import required symbol 'ActionTransformPipeline' from 'cosmos_framework.data.generator.action.utils.transforms'.
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318] Traceback (most recent call last):
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/utils.py", line 298, in lazy_import
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     module = import_module(module_name)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     return _bootstrap._gcd_import(name[level:], package, level)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/data/generator/action/utils/transforms.py", line 39, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     from cosmos_framework.data.generator.augmentors.text_tokenizer import TextTokenizerTransform
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/data/generator/augmentors/text_tokenizer.py", line 14, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     from cosmos_framework.utils.lazy_config import instantiate as lazy_instantiate
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/utils/lazy_config/__init__.py", line 25, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     from cosmos_framework.utils.lazy_config.lazy import LazyConfig
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/utils/lazy_config/lazy.py", line 31, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     from cosmos_framework.utils.lazy_config.file_io import PathManager
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/utils/lazy_config/file_io.py", line 4, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     from iopath.common.file_io import HTTPURLHandler, OneDrivePathHandler, PathHandler
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318] ModuleNotFoundError: No module named 'iopath'
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318] 
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318] The above exception was the direct cause of the following exception:
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318] 
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318] Traceback (most recent call last):
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_worker.py", line 1316, in _execute_rpc
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     result = self.worker.execute_method(method, *args, **kwargs)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_worker.py", line 1742, in execute_method
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     raise e
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_worker.py", line 1737, in execute_method
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     return func(*args, **kwargs)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]            ^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_worker.py", line 671, in execute_model
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     output = self.model_runner.execute_model(req, **kwargs)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_model_runner.py", line 868, in execute_model
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     runner_output = self._execute_request_list(
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_model_runner.py", line 786, in _execute_request_list
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     raw_outputs = self.pipeline.forward(batch)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/pipeline_cosmos3.py", line 3606, in forward
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     robolab_inputs = self._build_robolab_policy_inputs(sp, prompt_data, getattr(req, "request_id", None))
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/pipeline_cosmos3.py", line 1528, in _build_robolab_policy_inputs
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     sample = self._get_robolab_transform(format_prompt_as_json=format_prompt_as_json)(sample, resolution)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/pipeline_cosmos3.py", line 1405, in _get_robolab_transform
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     transforms[format_prompt_as_json] = lazy_action_transform_pipeline(
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/utils.py", line 322, in lazy_action_transform_pipeline
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     ActionTransformPipeline = _load_robolab_framework_symbol("ActionTransformPipeline")
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/utils.py", line 308, in _load_robolab_framework_symbol
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     return lazy_import(
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]            ^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/utils.py", line 301, in lazy_import
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318]     raise ImportError(
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1318] ImportError: Cosmos3 RoboLab policy serving requires a compatible cosmos_framework source on PYTHONPATH. Could not import required symbol 'ActionTransformPipeline' from 'cosmos_framework.data.generator.action.utils.transforms'.
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404] Error processing RPC: Cosmos3 RoboLab policy serving requires a compatible cosmos_framework source on PYTHONPATH. Could not import required symbol 'ActionTransformPipeline' from 'cosmos_framework.data.generator.action.utils.transforms'.
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404] Traceback (most recent call last):
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/utils.py", line 298, in lazy_import
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     module = import_module(module_name)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     return _bootstrap._gcd_import(name[level:], package, level)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/data/generator/action/utils/transforms.py", line 39, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     from cosmos_framework.data.generator.augmentors.text_tokenizer import TextTokenizerTransform
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/data/generator/augmentors/text_tokenizer.py", line 14, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     from cosmos_framework.utils.lazy_config import instantiate as lazy_instantiate
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/utils/lazy_config/__init__.py", line 25, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     from cosmos_framework.utils.lazy_config.lazy import LazyConfig
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/utils/lazy_config/lazy.py", line 31, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     from cosmos_framework.utils.lazy_config.file_io import PathManager
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/cosmos_framework/utils/lazy_config/file_io.py", line 4, in <module>
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     from iopath.common.file_io import HTTPURLHandler, OneDrivePathHandler, PathHandler
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404] ModuleNotFoundError: No module named 'iopath'
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404] 
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404] The above exception was the direct cause of the following exception:
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404] 
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404] Traceback (most recent call last):
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_worker.py", line 1400, in _worker_busy_loop
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     result, should_reply = self._execute_rpc(msg)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]                            ^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_worker.py", line 1316, in _execute_rpc
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     result = self.worker.execute_method(method, *args, **kwargs)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_worker.py", line 1742, in execute_method
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     raise e
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_worker.py", line 1737, in execute_method
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     return func(*args, **kwargs)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]            ^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_worker.py", line 671, in execute_model
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     output = self.model_runner.execute_model(req, **kwargs)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_model_runner.py", line 868, in execute_model
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     runner_output = self._execute_request_list(
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/worker/diffusion_model_runner.py", line 786, in _execute_request_list
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     raw_outputs = self.pipeline.forward(batch)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/pipeline_cosmos3.py", line 3606, in forward
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     robolab_inputs = self._build_robolab_policy_inputs(sp, prompt_data, getattr(req, "request_id", None))
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/pipeline_cosmos3.py", line 1528, in _build_robolab_policy_inputs
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     sample = self._get_robolab_transform(format_prompt_as_json=format_prompt_as_json)(sample, resolution)
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/pipeline_cosmos3.py", line 1405, in _get_robolab_transform
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     transforms[format_prompt_as_json] = lazy_action_transform_pipeline(
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/utils.py", line 322, in lazy_action_transform_pipeline
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     ActionTransformPipeline = _load_robolab_framework_symbol("ActionTransformPipeline")
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/utils.py", line 308, in _load_robolab_framework_symbol
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     return lazy_import(
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]            ^^^^^^^^^^^^
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/models/cosmos3/utils.py", line 301, in lazy_import
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404]     raise ImportError(
+(DiffusionWorker pid=279027) ERROR 09-14 21:24:07 [diffusion_worker.py:1404] ImportError: Cosmos3 RoboLab policy serving requires a compatible cosmos_framework source on PYTHONPATH. Could not import required symbol 'ActionTransformPipeline' from 'cosmos_framework.data.generator.action.utils.transforms'.
+ERROR 09-14 21:24:07 [inline_stage_diffusion_client.py:179] Diffusion request 0_6f646c1e-d121-42f5-94c3-959015158633 failed: Cosmos3 RoboLab policy serving requires a compatible cosmos_framework source on PYTHONPATH. Could not import required symbol 'ActionTransformPipeline' from 'cosmos_framework.data.generator.action.utils.transforms'.
+ERROR 09-14 21:24:07 [inline_stage_diffusion_client.py:179] Traceback (most recent call last):
+ERROR 09-14 21:24:07 [inline_stage_diffusion_client.py:179]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/inline_stage_diffusion_client.py", line 160, in _dispatch_request
+ERROR 09-14 21:24:07 [inline_stage_diffusion_client.py:179]     async for results in self._engine.step_streaming(request):
+ERROR 09-14 21:24:07 [inline_stage_diffusion_client.py:179]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/diffusion_engine.py", line 465, in step_streaming
+ERROR 09-14 21:24:07 [inline_stage_diffusion_client.py:179]     formatted_outputs = self.postprocess_output(request, output)
+ERROR 09-14 21:24:07 [inline_stage_diffusion_client.py:179]                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ERROR 09-14 21:24:07 [inline_stage_diffusion_client.py:179]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/diffusion/diffusion_engine.py", line 535, in postprocess_output
+ERROR 09-14 21:24:07 [inline_stage_diffusion_client.py:179]     raise RuntimeError(output.error)
+ERROR 09-14 21:24:07 [inline_stage_diffusion_client.py:179] RuntimeError: Cosmos3 RoboLab policy serving requires a compatible cosmos_framework source on PYTHONPATH. Could not import required symbol 'ActionTransformPipeline' from 'cosmos_framework.data.generator.action.utils.transforms'.
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+ERROR 09-14 21:24:07 [omni.py:92] [Omni] Failed to run generation: Cosmos3 RoboLab policy serving requires a compatible cosmos_framework source on PYTHONPATH. Could not import required symbol 'ActionTransformPipeline' from 'cosmos_framework.data.generator.action.utils.transforms'.
+ERROR 09-14 21:24:07 [omni.py:92] Traceback (most recent call last):
+ERROR 09-14 21:24:07 [omni.py:92]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/entrypoints/omni.py", line 90, in generate
+ERROR 09-14 21:24:07 [omni.py:92]     return list(self._run_generation(prompts, sampling_params_list, use_tqdm))
+ERROR 09-14 21:24:07 [omni.py:92]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ERROR 09-14 21:24:07 [omni.py:92]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/entrypoints/omni.py", line 173, in _run_generation
+ERROR 09-14 21:24:07 [omni.py:92]     should_continue, req_id, stage_id, req_state = self._handle_output_message(msg)
+ERROR 09-14 21:24:07 [omni.py:92]                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ERROR 09-14 21:24:07 [omni.py:92]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/entrypoints/omni_base.py", line 500, in _handle_output_message
+ERROR 09-14 21:24:07 [omni.py:92]     self._raise_nonfatal_error_message(msg)
+ERROR 09-14 21:24:07 [omni.py:92]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/entrypoints/omni_base.py", line 538, in _raise_nonfatal_error_message
+ERROR 09-14 21:24:07 [omni.py:92]     raise_client_error_or(
+ERROR 09-14 21:24:07 [omni.py:92]   File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/errors.py", line 81, in raise_client_error_or
+ERROR 09-14 21:24:07 [omni.py:92]     raise fallback(message)
+ERROR 09-14 21:24:07 [omni.py:92] RuntimeError: Cosmos3 RoboLab policy serving requires a compatible cosmos_framework source on PYTHONPATH. Could not import required symbol 'ActionTransformPipeline' from 'cosmos_framework.data.generator.action.utils.transforms'.
+INFO 09-14 21:24:07 [orchestrator.py:916] [Orchestrator] Aborted request(s) ['0_6f646c1e-d121-42f5-94c3-959015158633']
+INFO 09-14 21:24:07 [omni_base.py:762] [Omni] Shutting down
+INFO 09-14 21:24:07 [async_omni_engine.py:1723] [AsyncOmniEngine] Shutting down Orchestrator
+INFO 09-14 21:24:07 [orchestrator.py:704] [Orchestrator] Received shutdown signal
+INFO 09-14 21:24:07 [orchestrator.py:3055] [Orchestrator] Shutting down all 1 client(s)
+(DiffusionWorker pid=279027) INFO 09-14 21:24:07 [diffusion_worker.py:1456] Worker 0: Received shutdown message
+(DiffusionWorker pid=279027) INFO 09-14 21:24:07 [diffusion_worker.py:1478] event loop terminated.
+(DiffusionWorker pid=279027) INFO 09-14 21:24:08 [diffusion_worker.py:1546] Worker 0: Shutdown complete.
+INFO 09-14 21:24:11 [stage_pool.py:1338] [StagePool] Stage 0 replica 0 shut down
+INFO 09-14 21:24:11 [omni_base.py:762] [Omni] Shutting down
+Traceback (most recent call last):
+  File "/home/guanming/ifl_public_qualification_20260915_v1/foreign_source_v4/benchmarks/regression/framework_compare.py", line 733, in <module>
+    main()
+  File "/home/guanming/ifl_public_qualification_20260915_v1/foreign_source_v4/benchmarks/regression/framework_compare.py", line 728, in main
+    return capture(args.prepared, args.output, allow_startup_patch=args.allow_startup_patch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/ifl_public_qualification_20260915_v1/foreign_source_v4/benchmarks/regression/framework_compare.py", line 529, in capture
+    action, milliseconds = infer(cell, policy, pre, post, req, inputs)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/ifl_public_qualification_20260915_v1/foreign_source_v4/benchmarks/regression/framework_compare.py", line 442, in infer
+    output = policy.generate(req["prompt"], sampling_params_list=[sp])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/entrypoints/omni.py", line 90, in generate
+    return list(self._run_generation(prompts, sampling_params_list, use_tqdm))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/entrypoints/omni.py", line 173, in _run_generation
+    should_continue, req_id, stage_id, req_state = self._handle_output_message(msg)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/entrypoints/omni_base.py", line 500, in _handle_output_message
+    self._raise_nonfatal_error_message(msg)
+  File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/entrypoints/omni_base.py", line 538, in _raise_nonfatal_error_message
+    raise_client_error_or(
+  File "/dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/vllm_omni/errors.py", line 81, in raise_client_error_or
+    raise fallback(message)
+RuntimeError: Cosmos3 RoboLab policy serving requires a compatible cosmos_framework source on PYTHONPATH. Could not import required symbol 'ActionTransformPipeline' from 'cosmos_framework.data.generator.action.utils.transforms'.

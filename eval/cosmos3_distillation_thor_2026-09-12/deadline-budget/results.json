@@ -1,0 +1,320 @@
+{
+  "status": "analysis_complete",
+  "realtime_certified": false,
+  "task_quality_certified": false,
+  "assumptions": [
+    "Deadlines, control rates and extra budgets are illustrative, not controller settings.",
+    "Execution-window arithmetic assumes pipelined scheduling: N/control_hz >= observed model latency + extra budget. A blocking controller instead has one control period, not N periods; actual overlap, action age and startup remain unverified.",
+    "Conditioning FPS is not evidence of actuator/control frequency; output horizon is not executed chunk length.",
+    "Measured maximum is a finite-sample observation, not a worst-case bound; zero observed exceedances does not certify a deadline.",
+    "Receipts cover timed Runtime prediction under their frozen protocols, not a certified sensor-to-actuator path; do not double-count preprocessing already timed.",
+    "Small frozen-fixture samples exclude warmup from this table and cannot establish sustained latency tails under deployment load.",
+    "Both trained families retain their historical UniPC4 quality limitations; timing feasibility alone cannot admit them."
+  ],
+  "results": [
+    {
+      "family": "Edge V17 SDE2 CFG1 cuDNN",
+      "seed": 12031,
+      "source": "realtime-deployment-v17/thor-receipts/seed12031/cudnn.json",
+      "sha256": "42d378cfb1aa7c5d5a3fdd06ee41f1edc4b33584582aa4cfb6f0f6ffd3b02c77",
+      "measured_requests": 10,
+      "p50_ms": 442.22803247976117,
+      "p95_ms": 442.740457734908,
+      "max_observed_ms": 442.7738139638677,
+      "illustrative_deadlines": [
+        {
+          "deadline_ms": 250,
+          "observed_exceedances": 10,
+          "margin_at_observed_max_ms": -192.77381396386772
+        },
+        {
+          "deadline_ms": 500,
+          "observed_exceedances": 0,
+          "margin_at_observed_max_ms": 57.226186036132276
+        },
+        {
+          "deadline_ms": 750,
+          "observed_exceedances": 0,
+          "margin_at_observed_max_ms": 307.2261860361323
+        },
+        {
+          "deadline_ms": 1000,
+          "observed_exceedances": 0,
+          "margin_at_observed_max_ms": 557.2261860361323
+        }
+      ],
+      "illustrative_execution_windows": [
+        {
+          "assumed_control_hz": 10,
+          "assumed_extra_budget_ms": 0,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 100.0,
+          "minimum_executed_steps_at_observed_max": 5
+        },
+        {
+          "assumed_control_hz": 10,
+          "assumed_extra_budget_ms": 50,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 100.0,
+          "minimum_executed_steps_at_observed_max": 5
+        },
+        {
+          "assumed_control_hz": 15,
+          "assumed_extra_budget_ms": 0,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 66.66666666666667,
+          "minimum_executed_steps_at_observed_max": 7
+        },
+        {
+          "assumed_control_hz": 15,
+          "assumed_extra_budget_ms": 50,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 66.66666666666667,
+          "minimum_executed_steps_at_observed_max": 8
+        },
+        {
+          "assumed_control_hz": 20,
+          "assumed_extra_budget_ms": 0,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 50.0,
+          "minimum_executed_steps_at_observed_max": 9
+        },
+        {
+          "assumed_control_hz": 20,
+          "assumed_extra_budget_ms": 50,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 50.0,
+          "minimum_executed_steps_at_observed_max": 10
+        }
+      ]
+    },
+    {
+      "family": "Edge V17 SDE2 CFG1 cuDNN",
+      "seed": 12032,
+      "source": "realtime-deployment-v17/thor-receipts/seed12032/cudnn.json",
+      "sha256": "24bf6b00ee705bdb4f38253b672e985a9472a794a82915fc88a2c5db9d7ae5bb",
+      "measured_requests": 10,
+      "p50_ms": 444.2729995062109,
+      "p95_ms": 444.66298292099964,
+      "max_observed_ms": 444.7574370424263,
+      "illustrative_deadlines": [
+        {
+          "deadline_ms": 250,
+          "observed_exceedances": 10,
+          "margin_at_observed_max_ms": -194.75743704242632
+        },
+        {
+          "deadline_ms": 500,
+          "observed_exceedances": 0,
+          "margin_at_observed_max_ms": 55.24256295757368
+        },
+        {
+          "deadline_ms": 750,
+          "observed_exceedances": 0,
+          "margin_at_observed_max_ms": 305.2425629575737
+        },
+        {
+          "deadline_ms": 1000,
+          "observed_exceedances": 0,
+          "margin_at_observed_max_ms": 555.2425629575737
+        }
+      ],
+      "illustrative_execution_windows": [
+        {
+          "assumed_control_hz": 10,
+          "assumed_extra_budget_ms": 0,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 100.0,
+          "minimum_executed_steps_at_observed_max": 5
+        },
+        {
+          "assumed_control_hz": 10,
+          "assumed_extra_budget_ms": 50,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 100.0,
+          "minimum_executed_steps_at_observed_max": 5
+        },
+        {
+          "assumed_control_hz": 15,
+          "assumed_extra_budget_ms": 0,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 66.66666666666667,
+          "minimum_executed_steps_at_observed_max": 7
+        },
+        {
+          "assumed_control_hz": 15,
+          "assumed_extra_budget_ms": 50,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 66.66666666666667,
+          "minimum_executed_steps_at_observed_max": 8
+        },
+        {
+          "assumed_control_hz": 20,
+          "assumed_extra_budget_ms": 0,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 50.0,
+          "minimum_executed_steps_at_observed_max": 9
+        },
+        {
+          "assumed_control_hz": 20,
+          "assumed_extra_budget_ms": 50,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 50.0,
+          "minimum_executed_steps_at_observed_max": 10
+        }
+      ]
+    },
+    {
+      "family": "Nano V18 SDE1 CFG1 combined",
+      "seed": 12031,
+      "source": "realtime-deployment-v18/thor-results-v3/seed12031/combined.json",
+      "sha256": "608ff22bfe4b75f3c74b3a477b5c31a9a376891f12fd9d61fc4cec3ea5fb765d",
+      "measured_requests": 24,
+      "p50_ms": 715.6572834937833,
+      "p95_ms": 717.4928611813812,
+      "max_observed_ms": 718.3713639969938,
+      "illustrative_deadlines": [
+        {
+          "deadline_ms": 250,
+          "observed_exceedances": 24,
+          "margin_at_observed_max_ms": -468.37136399699375
+        },
+        {
+          "deadline_ms": 500,
+          "observed_exceedances": 24,
+          "margin_at_observed_max_ms": -218.37136399699375
+        },
+        {
+          "deadline_ms": 750,
+          "observed_exceedances": 0,
+          "margin_at_observed_max_ms": 31.62863600300625
+        },
+        {
+          "deadline_ms": 1000,
+          "observed_exceedances": 0,
+          "margin_at_observed_max_ms": 281.62863600300625
+        }
+      ],
+      "illustrative_execution_windows": [
+        {
+          "assumed_control_hz": 10,
+          "assumed_extra_budget_ms": 0,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 100.0,
+          "minimum_executed_steps_at_observed_max": 8
+        },
+        {
+          "assumed_control_hz": 10,
+          "assumed_extra_budget_ms": 50,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 100.0,
+          "minimum_executed_steps_at_observed_max": 8
+        },
+        {
+          "assumed_control_hz": 15,
+          "assumed_extra_budget_ms": 0,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 66.66666666666667,
+          "minimum_executed_steps_at_observed_max": 11
+        },
+        {
+          "assumed_control_hz": 15,
+          "assumed_extra_budget_ms": 50,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 66.66666666666667,
+          "minimum_executed_steps_at_observed_max": 12
+        },
+        {
+          "assumed_control_hz": 20,
+          "assumed_extra_budget_ms": 0,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 50.0,
+          "minimum_executed_steps_at_observed_max": 15
+        },
+        {
+          "assumed_control_hz": 20,
+          "assumed_extra_budget_ms": 50,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 50.0,
+          "minimum_executed_steps_at_observed_max": 16
+        }
+      ]
+    },
+    {
+      "family": "Nano V18 SDE1 CFG1 combined",
+      "seed": 12032,
+      "source": "realtime-deployment-v18/thor-results-v3/seed12032/combined.json",
+      "sha256": "bec0d307156069e51156dd36c630478e3f3185ff5597e1188086fcc01fbaca73",
+      "measured_requests": 24,
+      "p50_ms": 717.0066944963764,
+      "p95_ms": 718.2148677791702,
+      "max_observed_ms": 721.3050110149197,
+      "illustrative_deadlines": [
+        {
+          "deadline_ms": 250,
+          "observed_exceedances": 24,
+          "margin_at_observed_max_ms": -471.3050110149197
+        },
+        {
+          "deadline_ms": 500,
+          "observed_exceedances": 24,
+          "margin_at_observed_max_ms": -221.30501101491973
+        },
+        {
+          "deadline_ms": 750,
+          "observed_exceedances": 0,
+          "margin_at_observed_max_ms": 28.694988985080272
+        },
+        {
+          "deadline_ms": 1000,
+          "observed_exceedances": 0,
+          "margin_at_observed_max_ms": 278.6949889850803
+        }
+      ],
+      "illustrative_execution_windows": [
+        {
+          "assumed_control_hz": 10,
+          "assumed_extra_budget_ms": 0,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 100.0,
+          "minimum_executed_steps_at_observed_max": 8
+        },
+        {
+          "assumed_control_hz": 10,
+          "assumed_extra_budget_ms": 50,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 100.0,
+          "minimum_executed_steps_at_observed_max": 8
+        },
+        {
+          "assumed_control_hz": 15,
+          "assumed_extra_budget_ms": 0,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 66.66666666666667,
+          "minimum_executed_steps_at_observed_max": 11
+        },
+        {
+          "assumed_control_hz": 15,
+          "assumed_extra_budget_ms": 50,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 66.66666666666667,
+          "minimum_executed_steps_at_observed_max": 12
+        },
+        {
+          "assumed_control_hz": 20,
+          "assumed_extra_budget_ms": 0,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 50.0,
+          "minimum_executed_steps_at_observed_max": 15
+        },
+        {
+          "assumed_control_hz": 20,
+          "assumed_extra_budget_ms": 50,
+          "required_scheduling": "pipelined",
+          "blocking_controller_deadline_ms": 50.0,
+          "minimum_executed_steps_at_observed_max": 16
+        }
+      ]
+    }
+  ]
+}

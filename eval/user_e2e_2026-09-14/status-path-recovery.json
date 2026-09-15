@@ -1,0 +1,486 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "pid": 232622,
+  "jobs": [
+    {
+      "cell": "edge-eager_native",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/edge/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "edge-eager_native",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789352477.9640856,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "1"
+      },
+      "pid": 232635,
+      "exit_code": 0,
+      "ended": 1789352579.1433544,
+      "error": null
+    },
+    {
+      "cell": "edge-runtime_default",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/edge/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "edge-runtime_default",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789352579.5090647,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0"
+      },
+      "pid": 232740,
+      "exit_code": 0,
+      "ended": 1789352661.2655358,
+      "error": null
+    },
+    {
+      "cell": "edge-runtime_selected",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/edge/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "edge-runtime_selected",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789352661.6333802,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0",
+        "IFL_COSMOS3_GEN_REGIONS": "1",
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1",
+        "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+        "IFL_BF16_LINEAR_RELU2": "1",
+        "IFL_BF16_KERNEL_LIBRARY": "/home/guanming/ifl_eval/user_e2e_20260914/native/libinstinctflash_bf16.so"
+      },
+      "pid": 232872,
+      "exit_code": 0,
+      "ended": 1789352710.0035744,
+      "error": null
+    },
+    {
+      "cell": "nano-eager_native",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/nano/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "nano-eager_native",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789352710.3708858,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "1"
+      },
+      "pid": 233041,
+      "exit_code": 0,
+      "ended": 1789353000.811779,
+      "error": null
+    },
+    {
+      "cell": "nano-runtime_default",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/nano/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "nano-runtime_default",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789353001.1858933,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0"
+      },
+      "pid": 233377,
+      "exit_code": 0,
+      "ended": 1789353246.8563366,
+      "error": null
+    },
+    {
+      "cell": "nano-runtime_selected",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/nano/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "nano-runtime_selected",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789353247.2794087,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0",
+        "IFL_COSMOS3_GEN_REGIONS": "1",
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1",
+        "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+        "IFL_BF16_LINEAR_RELU2": "0"
+      },
+      "pid": 233760,
+      "exit_code": 0,
+      "ended": 1789353402.2206194,
+      "error": null
+    },
+    {
+      "cell": "va-eager_native",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/va/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "va-eager_native",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789353402.6069736,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "1"
+      },
+      "pid": 233985,
+      "exit_code": 0,
+      "ended": 1789353742.8689473,
+      "error": null
+    },
+    {
+      "cell": "va-runtime_default",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/va/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "va-runtime_default",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789353743.256086,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0"
+      },
+      "pid": 234414,
+      "exit_code": 0,
+      "ended": 1789353883.0425537,
+      "error": null
+    },
+    {
+      "cell": "va-runtime_selected",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/va/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "va-runtime_selected",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789353883.4303076,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0"
+      },
+      "pid": 234548,
+      "exit_code": 0,
+      "ended": 1789353975.9644606,
+      "error": null
+    },
+    {
+      "cell": "dreamzero-eager_native",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/dreamzero/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "dreamzero-eager_native",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789353976.3257234,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "1"
+      },
+      "pid": 234683,
+      "exit_code": 0,
+      "ended": 1789355044.4412487,
+      "error": null
+    },
+    {
+      "cell": "dreamzero-runtime_default",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/dreamzero/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "dreamzero-runtime_default",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789355045.191374,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0"
+      },
+      "pid": 235209,
+      "exit_code": 0,
+      "ended": 1789355673.5152621,
+      "error": null
+    },
+    {
+      "cell": "dreamzero-runtime_selected",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/dreamzero/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "dreamzero-runtime_selected",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789355674.2005656,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0"
+      },
+      "pid": 235470,
+      "exit_code": 0,
+      "ended": 1789356239.2509837,
+      "error": null
+    },
+    {
+      "cell": "va-2v4a-native",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/va/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "va-2v4a-native",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789356239.9020808,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0"
+      },
+      "pid": 235853,
+      "exit_code": 0,
+      "ended": 1789356283.5273912,
+      "error": null
+    },
+    {
+      "cell": "va-2v4a-fp8",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/va/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "va-2v4a-fp8",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789356283.9339402,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0"
+      },
+      "pid": 235988,
+      "exit_code": 0,
+      "ended": 1789356319.1923068,
+      "error": null
+    },
+    {
+      "cell": "dreamzero-dynamic-native",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/dreamzero/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "dreamzero-dynamic-native",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789356319.5592172,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0"
+      },
+      "pid": 236092,
+      "exit_code": 0,
+      "ended": 1789356863.057614,
+      "error": null
+    },
+    {
+      "cell": "dreamzero-dynamic-fp8",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/dreamzero/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_v2.json",
+        "--cell",
+        "dreamzero-dynamic-fp8",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789356863.815556,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0"
+      },
+      "pid": 236583,
+      "exit_code": 0,
+      "ended": 1789357258.7816477,
+      "error": null
+    }
+  ],
+  "started": 1789352477.6020546,
+  "matrix_sha256": "f07a5a038579165943852fe2750e043f2a4838673a07ea7d5a98f12a7978fdee",
+  "installation_sha256": "22912c0908dc835598ff9b10953cc95dae6e6a793c62207aa49a78e817eaed72",
+  "ended": 1789357259.4167762
+}

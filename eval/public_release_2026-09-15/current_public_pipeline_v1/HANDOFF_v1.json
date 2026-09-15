@@ -1,0 +1,114 @@
+{
+  "CPU_validation": {
+    "Ruff": "passed",
+    "combined_source_stage_and_current_tests": 244,
+    "focused_tests": 23,
+    "groups_overlap": true
+  },
+  "GPU_or_remote_actions": false,
+  "actual_assembly_run": false,
+  "actual_selection_created": false,
+  "candidate_source_stage_manifest": {
+    "path": "/home/ubuntu/ifl-public-full-stage-20260915-v9/manifest.json",
+    "sha256": "eb43c7244fcf19187c18f624a91c62f29cc055aca39bf18d81e4a3da4836da16"
+  },
+  "created_utc": "2026-09-15T05:45:50.418167+00:00",
+  "future_hash_placeholders": "These three placeholders refer to artifacts that do not yet exist or are not yet admitted. Resolve them only after the actual copy/bind succeeds; all source, contract, queue and stage identities are already fixed.",
+  "independent_source_review": {
+    "independent_test_rerun": false,
+    "result": "No concrete false-success blocker found in bounded nested selection/current-vs-historical/source/normal process gate review.",
+    "reviewed_assembler_sha256": "8fcd5e2f2bcd2ff5c2d86bf0271b22054aa69eb08ba5afcf64a3c6b553393d7e",
+    "reviewer": "/root/thor_quality_worker"
+  },
+  "notes": [
+    "Historical array comparison recomputes exact own-arm bytes. Valid inequality is disclosed separately; invalid/missing historical input cannot complete qualification.",
+    "Selection fixes both new Cosmos roots and explicit serving directories. Old complete Cosmos runs cannot satisfy new-root readiness.",
+    "DreamZeroV5 outer process exits, commands, actual PTXAS variables and binary hashes must match its frozen CPU probe and queue.",
+    "Only the prospective installer/docs source delta is accepted over V8; the selected later stage is recorded exactly for V9\u2192V10 finalization.",
+    "Read-only Edge preview found all3 new own-arm archives exact; this did not create an actual selection or full current report."
+  ],
+  "old_arrays_thresholds_inventories_changed": false,
+  "outputs_written_to_selected_evidence": false,
+  "previous_strict_V3_V4_acceptance_changed": false,
+  "prospective_commands": {
+    "assemble_once_selection_exists": [
+      "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+      "-I",
+      "-B",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/assemble_current_v1.py",
+      "assemble",
+      "--contract",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/contract_v1.json",
+      "--contract-sha256",
+      "1086a7e236219f6b8a073bee9e695d870981877cd52dda8646d75dace0146f0d",
+      "--selection",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v1.json",
+      "--selection-sha256",
+      "SHA256_PRINTED_BY_BIND",
+      "--output",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v1"
+    ],
+    "bind_after_required_receipts_are_copied": [
+      "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+      "-I",
+      "-B",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/assemble_current_v1.py",
+      "bind",
+      "--contract",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/contract_v1.json",
+      "--contract-sha256",
+      "1086a7e236219f6b8a073bee9e695d870981877cd52dda8646d75dace0146f0d",
+      "--stage",
+      "/home/ubuntu/ifl-public-full-stage-20260915-v9",
+      "--stage-manifest-sha256",
+      "eb43c7244fcf19187c18f624a91c62f29cc055aca39bf18d81e4a3da4836da16",
+      "--dreamzero-queue-completion",
+      "ACTUAL_COPIED_DREAMZERO_V5_COMPLETION_JSON",
+      "--dreamzero-queue-completion-sha256",
+      "SHA256_OF_THAT_COPIED_COMPLETION",
+      "--output",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v1.json"
+    ]
+  },
+  "schema": "instinctflash.current_public_pipeline_handoff.v1",
+  "sources": {
+    "assemble_current_v1.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/assemble_current_v1.py",
+      "sha256": "8fcd5e2f2bcd2ff5c2d86bf0271b22054aa69eb08ba5afcf64a3c6b553393d7e"
+    },
+    "contract_v1.json": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/contract_v1.json",
+      "sha256": "1086a7e236219f6b8a073bee9e695d870981877cd52dda8646d75dace0146f0d"
+    },
+    "source_addendum_v1.json": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/source_addendum_v1.json",
+      "sha256": "ce5cceaf3d3645bca54daceec7448a778a31a55417d7157cc8c69332d74005d1"
+    },
+    "test_assemble_current_v1.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/test_assemble_current_v1.py",
+      "sha256": "ef81bcb8b0e5cc084e3b4ee652534eba9c3ccaacbcac331bf5e474a102703e5e"
+    }
+  },
+  "status": "prospective_CPU_qualified_no_actual_selection_admitted",
+  "summary_interface": {
+    "always_false": [
+      "complete_historical_reproduction",
+      "task_quality_certified",
+      "prior_cosmos_SCREEN_transferred",
+      "diagnostic_latency_used"
+    ],
+    "required_counts": {
+      "foreign_passed": 6,
+      "historical_families_assessed": 8,
+      "main_passed": 8
+    },
+    "schema": "instinctflash.current_public_pipeline_qualification.v1",
+    "separate_historical_fields": [
+      "historical_equivalence",
+      "main[family].historical_equivalence.arrays",
+      "preserved_prior_nano_diagnostic"
+    ],
+    "source_stage_manifest": "Exact actual V9 manifest reference in the frozen selection",
+    "success_status": "current_pipeline_qualified"
+  }
+}

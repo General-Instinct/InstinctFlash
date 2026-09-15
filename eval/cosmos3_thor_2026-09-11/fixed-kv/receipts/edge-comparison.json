@@ -1,0 +1,41 @@
+{
+  "family": "edge",
+  "rows": [
+    {
+      "variant": "baseline_a",
+      "p50_ms": 2467.5048634962877,
+      "p95_ms": 2469.9687566579087,
+      "byte_equal_to_baseline_a": true,
+      "max_abs_delta": 0.0,
+      "mean_abs_delta": 0.0
+    },
+    {
+      "variant": "cached",
+      "p50_ms": 2466.212816492771,
+      "p95_ms": 2467.7476334458333,
+      "byte_equal_to_baseline_a": true,
+      "max_abs_delta": 0.0,
+      "mean_abs_delta": 0.0
+    },
+    {
+      "variant": "baseline_b",
+      "p50_ms": 2472.5521390064387,
+      "p95_ms": 2475.6844139512395,
+      "byte_equal_to_baseline_a": true,
+      "max_abs_delta": 0.0,
+      "mean_abs_delta": 0.0
+    }
+  ],
+  "speedup_vs_a": 1.0005238992332197,
+  "speedup_vs_b": 1.002570468562678,
+  "qualification": "Fixed interleaved KV storage vs guarded conditioning Runtime; no task-quality certificate",
+  "reference_drift": 0.0020454976947843484,
+  "action_bytes_passed": true,
+  "performance_passed": false,
+  "thresholds": {
+    "minimum_speedup": 1.02,
+    "maximum_reference_drift": 0.05,
+    "maximum_p95_regression": 0.1
+  },
+  "passed": false
+}

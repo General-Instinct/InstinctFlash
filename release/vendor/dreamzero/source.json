@@ -1,0 +1,24 @@
+{
+  "baseline_semantics": "Matches recorded Thor vendor source; not a new comparison to untouched upstream arithmetic.",
+  "checkout_instructions": [
+    "Clone the public repository into a NEW destination with GIT_LFS_SKIP_SMUDGE=1.",
+    "Check out source.revision detached; verify exact git rev-parse HEAD before applying anything.",
+    "If patch is present, verify its SHA256 and use git apply --check followed by git apply.",
+    "Verify every expected_patched_files SHA256. Existing vendor directories must remain untouched."
+  ],
+  "expected_patched_files": {},
+  "fresh_environment_inference_qualified": false,
+  "patch": null,
+  "patch_summary": "Clean recorded DreamZero source checkout.",
+  "schema": "instinctflash.vendor_source.v1",
+  "source": {
+    "commit_url": "https://github.com/dreamzero0/dreamzero/commit/ab790c198fbce33503358efbbd4187ce9a89adf3",
+    "public_commit_verified": true,
+    "repository": "https://github.com/dreamzero0/dreamzero",
+    "revision": "ab790c198fbce33503358efbbd4187ce9a89adf3"
+  },
+  "source_bootstrap_qualified_CPU": true,
+  "upstream_notices": {
+    "LICENSE": "8f2f9955895e664d84a98ff47debe8d4aaa76665afec7d8d3f1efa36c395d849"
+  }
+}

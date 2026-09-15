@@ -178,7 +178,9 @@ def test_cfg_elision_declines_when_branches_are_not_batched():
 
 def test_without_demotes_but_keeps_the_record():
     plan = Optimizer(tier_ceiling=Tier.NUMERIC).compile(LINGBOT)
-    trimmed = plan.without("cfg_branch_elision")
+    lossy = [r.name for r in plan.applied if r.tier is not Tier.BITEXACT]
+    assert "cfg_branch_elision" in lossy
+    trimmed = plan.without(*lossy)
     assert trimmed.tier() is Tier.BITEXACT
     assert "cfg_branch_elision" not in [r.name for r in trimmed.applied]
     dropped = next(r for r in trimmed.results if r.name == "cfg_branch_elision")

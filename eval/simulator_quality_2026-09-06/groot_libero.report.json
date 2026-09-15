@@ -1,0 +1,107 @@
+{
+  "analysis_pipeline_sha256": "0211e5440d5959ae23d27a0d80c988ef9c9b225f0eb416e66deb5e4b817c9602",
+  "comparisons": [
+    {
+      "closed_loop": [
+        {
+          "model_id": "nvidia/GR00T-N1.7-LIBERO",
+          "reason": "1 pairs < min_pairs=100",
+          "suite_id": "groot_libero_10",
+          "verdict": "INCOMPLETE"
+        }
+      ],
+      "closed_loop_actions": [
+        {
+          "control_successes": 1,
+          "details": [
+            {
+              "control_steps": 243,
+              "control_success": true,
+              "pair_id": "1db4997100ff6a7262b17275",
+              "resolved_seed": 0,
+              "task": "libero_10/0",
+              "treatment_steps": 243,
+              "treatment_success": true,
+              "verdict": "PASS"
+            }
+          ],
+          "different_pairs": 0,
+          "encoding": "full applied trace flattened in C order and encoded as big-endian float64",
+          "expected_pairs": 1,
+          "matching_pairs": 1,
+          "missing_pair_ids": [],
+          "model_id": "nvidia/GR00T-N1.7-LIBERO",
+          "pairs": 1,
+          "protocol": "groot-libero-paused-v1",
+          "quality_gate": false,
+          "scope": "Executed controller action streams on these paired frozen scenes only; not hidden-state or universal bitexact",
+          "suite_id": "groot_libero_10",
+          "treatment_successes": 1,
+          "verdict": "PASS"
+        }
+      ],
+      "control": "stock",
+      "models": [
+        {
+          "action": {
+            "pairs": 0,
+            "verdict": "NOT_APPLICABLE"
+          },
+          "model_id": "nvidia/GR00T-N1.7-LIBERO",
+          "performance": {
+            "samples": 0,
+            "verdict": "NOT_APPLICABLE"
+          },
+          "suites": [
+            {
+              "action": {
+                "pairs": 0,
+                "verdict": "NOT_APPLICABLE"
+              },
+              "performance": {
+                "samples": 0,
+                "verdict": "NOT_APPLICABLE"
+              },
+              "suite_id": "groot_libero_10"
+            }
+          ]
+        }
+      ],
+      "paired_jobs": 1,
+      "treatment": "runtime_default"
+    }
+  ],
+  "complete": true,
+  "environment_consistency": [
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "d5e246a51578594bd972e3c79fb9471781dd3b4194c16ff552bcbcc7f60e91f2"
+      ],
+      "model_id": "nvidia/GR00T-N1.7-LIBERO",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "04513158c942ae7e844799824a3abdbd1733ec9327f02a6cec231ec506de64a2"
+      ],
+      "model_id": "nvidia/GR00T-N1.7-LIBERO",
+      "verdict": "PASS"
+    }
+  ],
+  "environment_sha256": "a4b42b493a34b5f09e0ceb23a7520532366ac7d38b3bac4b4352f14e24bf1caa",
+  "execution_pipeline_sha256": "0211e5440d5959ae23d27a0d80c988ef9c9b225f0eb416e66deb5e4b817c9602",
+  "expected_results": 2,
+  "gates_passed": false,
+  "issues": [],
+  "plan_id": "4282f32f13e2f0a48a866e9824053d4331c1abd104e4a8260635a53ae3a04e08",
+  "registry_sha256": "14e778453e36bed7eb1c036cddaaa7cb1d629c2312e0f5a8ab3563524a28b358",
+  "repeatability": [],
+  "report_sha256": "7839fcda9c4e9e0688535020431b32d5fdaee89fdd417e717c30feda3306e963",
+  "reportable": false,
+  "results": 2,
+  "schema_version": 1,
+  "screening": true,
+  "synthetic": false
+}

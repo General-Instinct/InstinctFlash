@@ -1,0 +1,56 @@
+{
+  "base": "/home/guanming/ifl_public_qualification_20260915_v1",
+  "output": "dreamzero_paired_serving_queue_v6",
+  "jobs": [
+    {
+      "id": "dreamzero-dynamic-fp8-paired",
+      "python": "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/bin/python",
+      "activation": [
+        "bootstrap_dreamzero_v2/run.env",
+        "auxiliary_assets_v4/dreamzero/run.env",
+        "dreamzero_ptxas_v1/compiler/run.env"
+      ],
+      "environment": {
+        "NO_ALBUMENTATIONS_UPDATE": "1",
+        "TORCHINDUCTOR_CACHE_DIR": "/dev/shm/ifl_public_dreamzero_compile_v6/inductor",
+        "TRITON_CACHE_DIR": "/dev/shm/ifl_public_dreamzero_compile_v6/triton",
+        "TORCHINDUCTOR_COMPILE_THREADS": "1"
+      },
+      "module": "benchmarks.regression.reproduce",
+      "arguments": [
+        "run",
+        "--prepared",
+        "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_prepared_v1",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v6"
+      ],
+      "receipt": "dreamzero_dynamic-fp8_run_v6/run.json",
+      "timeout": 7200
+    },
+    {
+      "id": "dreamzero-dynamic-fp8-serving",
+      "python": "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/bin/python",
+      "activation": [
+        "bootstrap_dreamzero_v2/run.env",
+        "auxiliary_assets_v4/dreamzero/run.env",
+        "dreamzero_ptxas_v1/compiler/run.env"
+      ],
+      "environment": {
+        "NO_ALBUMENTATIONS_UPDATE": "1",
+        "TORCHINDUCTOR_CACHE_DIR": "/dev/shm/ifl_public_dreamzero_compile_v6/inductor",
+        "TRITON_CACHE_DIR": "/dev/shm/ifl_public_dreamzero_compile_v6/triton",
+        "TORCHINDUCTOR_COMPILE_THREADS": "1"
+      },
+      "module": "benchmarks.regression.serve_smoke",
+      "arguments": [
+        "--prepared",
+        "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_prepared_v1",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_serving_v1"
+      ],
+      "receipt": "dreamzero_dynamic-fp8_serving_v1/receipt.json",
+      "timeout": 5400
+    }
+  ],
+  "parent_queue_sha256": "dbbaaf7f391c30dd78b5c9de10738780bc3347b5f0d8352e998d3d187a13e279"
+}

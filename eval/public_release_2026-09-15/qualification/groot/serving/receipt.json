@@ -1,0 +1,169 @@
+{
+  "action_archive_sha256": "1e57b4d4c76d3f1093da4ea6b69f94a0c09867e12744d74217d0eedc21ab1f58",
+  "calls": [
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        40,
+        17
+      ],
+      "cycle": 0,
+      "episode": 0,
+      "request_sha256": "91378909b084394d118db494ae9da4a449cf7fee6e711c11730d8af97d5dbf14",
+      "roundtrip_ms": 772.9721459909342,
+      "server_timing": {
+        "infer_ms": 771.9698720029555,
+        "prev_total_ms": 16264.339101035148
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        40,
+        17
+      ],
+      "cycle": 1,
+      "episode": 0,
+      "request_sha256": "1543d42315293141d7e3d04475c221f5b073d98716fe7d3f1a89bd1e69cca9fa",
+      "roundtrip_ms": 135.5297540430911,
+      "server_timing": {
+        "infer_ms": 133.67645599646494,
+        "prev_total_ms": 773.4121349640191
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        40,
+        17
+      ],
+      "cycle": 2,
+      "episode": 0,
+      "request_sha256": "5b789a286828507d435f6ae283956e0adb3988a7582d35f0f52102e280e37cc8",
+      "roundtrip_ms": 131.69103203108534,
+      "server_timing": {
+        "infer_ms": 130.5210929713212,
+        "prev_total_ms": 136.1299650161527
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        40,
+        17
+      ],
+      "cycle": 0,
+      "episode": 1,
+      "request_sha256": "49ec45c5f02749f9ada0710bf32fd4edef416adb7a061ff372303f1dc8b5d235",
+      "roundtrip_ms": 140.8748480025679,
+      "server_timing": {
+        "infer_ms": 140.12550900224596,
+        "prev_total_ms": 1.1552080395631492
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        40,
+        17
+      ],
+      "cycle": 1,
+      "episode": 1,
+      "request_sha256": "ae698632639187909a7f40101881dd17900bb142db0681dadf74e835eb64cc0d",
+      "roundtrip_ms": 130.9533420135267,
+      "server_timing": {
+        "infer_ms": 130.1507520256564,
+        "prev_total_ms": 141.17553300457075
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        40,
+        17
+      ],
+      "cycle": 2,
+      "episode": 1,
+      "request_sha256": "deadf75f86deda26b1e849e3b707cb5e4b9102a53f8333a74938dffec891bae7",
+      "roundtrip_ms": 130.4005440324545,
+      "server_timing": {
+        "infer_ms": 129.61988896131516,
+        "prev_total_ms": 131.45255198469386
+      }
+    }
+  ],
+  "cell_id": "groot-runtime_selected",
+  "checkpoint": {
+    "model_id": "nvidia/GR00T-N1.7-3B",
+    "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495"
+  },
+  "checkpoint_path": "/home/guanming/.cache/instinctflash/declared/nvidia__GR00T-N1.7-3B/0dd1e1d11804fa65931c0c6a548ed02eebff4f32e41ac9794832b93a996e6876",
+  "command": [
+    "/dev/shm/ifl_public_envs_20260915_v1/groot_v2/bin/python",
+    "-I",
+    "-m",
+    "instinctflash.cli",
+    "serve",
+    "--config_path=/home/guanming/ifl_public_qualification_20260915_v1/groot_native_serving_v1/serve.json"
+  ],
+  "config_sha256": "0b56d28b429859a7b4d86fa915133b35bb4b2cdf700a9e5591ee2789b8667c7f",
+  "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+  "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/groot_v2/bin/python",
+  "latency_benchmark": false,
+  "metadata": {
+    "backbone": "groot_n17",
+    "checkpoint_nfe": {
+      "action": 4,
+      "backbone": 1
+    },
+    "execution_policy": {
+      "category": "BITEXACT",
+      "changed_schedule": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+      "nfe": {
+        "action": 4,
+        "backbone": 1
+      },
+      "precision": "native",
+      "schedule_options": {},
+      "step_cache": null,
+      "tier_ceiling": "bitexact",
+      "transform_tier": "BITEXACT"
+    },
+    "extra": {
+      "backbone_fastpath": true,
+      "base_weights": "nvidia/GR00T-N1.7-3B",
+      "embodiment_tag": "OXE_DROID_RELATIVE_EEF_RELATIVE_JOINT",
+      "fast_decode": true,
+      "param_bytes": 6910499416
+    },
+    "guidance": {
+      "action": "none"
+    },
+    "instinctflash_version": "0.1.0",
+    "model_id": "nvidia/GR00T-N1.7-3B",
+    "nfe": {
+      "action": 4,
+      "backbone": 1
+    },
+    "observation": "flat keys: video.exterior_image_1_left (2, 180, 320, 3) uint8; video.wrist_image_left (2, 180, 320, 3) uint8; state.eef_9d (1, 9) float32; state.gripper_position (1, 1) float32; state.joint_position (1, 7) float32; plus prompt",
+    "observation_source": "the adapter's static declaration",
+    "precision": "native",
+    "protocol": {
+      "prompt_rotation": true,
+      "reset_extension": true,
+      "wire": "openpi-websocket-msgpack-numpy"
+    }
+  },
+  "plan_sha256": "995398cd7096526653135be9c513ceae412548da95c249663fa6067777bcd59d",
+  "request_timeout_s": 600,
+  "rng_scope": "native serving constructor seed",
+  "schema": "instinctflash.serving_smoke.v1",
+  "scope": "Installed CLI and loopback WebSocket; two episodes, three calls each",
+  "seed": 9173,
+  "server_exit_code": 0,
+  "server_pid": 267327,
+  "startup_timeout_s": 1200,
+  "status": "passed",
+  "task_quality_validated": false
+}

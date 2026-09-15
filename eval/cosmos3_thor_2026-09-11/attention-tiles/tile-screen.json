@@ -1,0 +1,93 @@
+{
+  "rows": [
+    {
+      "shape": [
+        17,
+        31,
+        8,
+        2
+      ],
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "individual_ms": 0.02273599902788798,
+      "persistent_ms": 0.021835732460021972,
+      "individual_repeat_ms": 0.023108265797297158,
+      "speedup": 1.0582775658936565
+    },
+    {
+      "shape": [
+        129,
+        257,
+        8,
+        2
+      ],
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "individual_ms": 0.02609493335088094,
+      "persistent_ms": 0.030269867181777953,
+      "individual_repeat_ms": 0.025729066133499144,
+      "speedup": 0.8499893963521482
+    },
+    {
+      "shape": [
+        3094,
+        3245,
+        16,
+        8
+      ],
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "individual_ms": 1.805895487467448,
+      "persistent_ms": 2.1043114980061848,
+      "individual_repeat_ms": 1.805612818400065,
+      "speedup": 0.8580539621205635
+    },
+    {
+      "shape": [
+        3094,
+        3112,
+        16,
+        8
+      ],
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "individual_ms": 1.7402698516845703,
+      "persistent_ms": 2.024242146809896,
+      "individual_repeat_ms": 1.740610122680664,
+      "speedup": 0.8598823640856299
+    },
+    {
+      "shape": [
+        3094,
+        3182,
+        32,
+        8
+      ],
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "individual_ms": 3.367029317220052,
+      "persistent_ms": 3.868394724527995,
+      "individual_repeat_ms": 3.3674644470214843,
+      "speedup": 0.8705069381026953
+    },
+    {
+      "shape": [
+        3094,
+        3103,
+        32,
+        8
+      ],
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "individual_ms": 3.3632171630859373,
+      "persistent_ms": 3.867603302001953,
+      "individual_repeat_ms": 3.363153076171875,
+      "speedup": 0.869570329105634
+    }
+  ],
+  "libraries": {
+    "/home/guanming/ifl_eval/cosmos_attention_reuse_20260911/bf16_fmha.so": "fbc4b669be9e8e5dca7eab46fbd9df1006f6cd57b346c28d1ec6eacedae94c43",
+    "/home/guanming/ifl_eval/cosmos_attention_tiles_20260911/bf16_fmha.so": "8c770613a6d96167d3b63bf34a57286dd4372e26d5cdb16f86416ef893fdfada"
+  },
+  "qualification": "Synthetic GQA shapes; comparison to experimental BF16 kernel, not upstream BITEXACT or task quality"
+}

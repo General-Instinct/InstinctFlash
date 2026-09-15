@@ -25,6 +25,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import torch
 
+if __name__ != "__main__":
+    import pytest
+    pytestmark = pytest.mark.skipif(not torch.cuda.is_available(), reason="Requires a CUDA GPU")
+
 from instinctflash.backends.triton_residual import (
     _gated_residual_kernel, gated_residual, gated_residual_eager,
 )

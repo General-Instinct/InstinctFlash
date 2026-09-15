@@ -1,0 +1,50 @@
+{
+  "execution": {
+    "action_chunk_size": 32,
+    "action_dim": 8,
+    "action_padding": "zero",
+    "backbone": "cosmos3_policy_action_realtime_v16",
+    "checkpoint_role": "dmd_student",
+    "conditioning_fps": 15.0,
+    "domain_name": "droid_lerobot",
+    "format_prompt_as_json": false,
+    "guidance": {
+      "action": {
+        "mode": "cfg",
+        "scale": 1
+      }
+    },
+    "image_height": 540,
+    "image_width": 640,
+    "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+    "nfe": {
+      "action": 1,
+      "prefix": 1
+    },
+    "sampling": {
+      "kind": "rectified_flow_fixed_step",
+      "num_train_timesteps": 1000.0,
+      "sample_type": "sde",
+      "sigmas": [
+        1.0,
+        0.0
+      ]
+    },
+    "servable": false,
+    "shift": 1.0,
+    "training_seed": 12032
+  },
+  "instinctflash_schema": 1,
+  "provenance": {
+    "arm_id": "nano_sde1_cfg1_seed12032",
+    "completion_sha256": "4d42a7c6e949b42bcd144ffd432b13ead22d39ff18c7ff4491950df10207fdfe",
+    "export_gate_sha256": "c7f1f38a33e3eeff2ad57890a37a45782f68a7ae4d9ba54d9a496537ea66e376",
+    "original_export": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12032/export_roundtrip",
+    "scope": "Copied Nano final-online64 V18 export; Thor and quality unqualified",
+    "state_key": "student",
+    "student_state_sha256": "431e2b85108ec0d22df99e1e495b1ee147ff585b873023cd219ce03cd0cf6f5b",
+    "student_updates": 64,
+    "training_audit_sha256": "5ecc2f2a4e5c8102aecf706db5831fd3836625950c21f2c01f560ce1e7a7a960",
+    "training_seed": 12032
+  }
+}

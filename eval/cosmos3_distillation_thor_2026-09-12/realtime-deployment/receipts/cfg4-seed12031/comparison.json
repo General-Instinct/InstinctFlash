@@ -1,0 +1,37 @@
+{
+  "validation_complete": true,
+  "category": "SCREEN",
+  "task_quality_certified": false,
+  "schedule": {
+    "kind": "rectified_flow_fixed_step",
+    "sigmas": [
+      1.0,
+      0.0
+    ],
+    "sample_type": "sde",
+    "num_train_timesteps": 1000.0
+  },
+  "guidance": 4.0,
+  "p50_ms": {
+    "native": 705.0539844931336,
+    "cudnn": 436.01035300525837
+  },
+  "p95_ms": {
+    "native": 706.4523030945566,
+    "cudnn": 436.36735609325115
+  },
+  "speedup": 1.617057896982163,
+  "max_abs_action_delta": 0.109375,
+  "mean_abs_action_delta": 0.013203464448451996,
+  "per_dimension_max_abs": [
+    0.0625,
+    0.0625,
+    0.0625,
+    0.109375,
+    0.0625,
+    0.0625,
+    0.109375,
+    0.109375
+  ],
+  "scope": "Single matched attention pair on a declared V16 checkpoint (training status not inferred), not student-vs-teacher quality or closed-loop realtime evidence"
+}

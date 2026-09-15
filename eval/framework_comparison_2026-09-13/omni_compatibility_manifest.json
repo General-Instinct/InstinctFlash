@@ -1,0 +1,20 @@
+{
+  "base_commit": "f7d9deb45ab56e6a2ccc1690279bd9e6bdefbfe3",
+  "scope": "startup only: accept the upstream two-step dummy warmup and reclaim clean checkpoint pages before memory admission",
+  "changes": [
+    {
+      "path": "vllm_omni/diffusion/models/dreamzero/pipeline_dreamzero.py",
+      "before_sha256": "0a8ff73237cd9018e10e0ac34e19660aaceb0480b4af89d7169ffb64fde910a2",
+      "after_sha256": "13a07c3420cb426bab69f025531cd8ed09a17b0b401259b72fa4e9eec3110a02",
+      "old": "prompt == \"dummy run\" and req.sampling_params.num_inference_steps == 1",
+      "new": "prompt == \"dummy run\" and req.sampling_params.num_inference_steps in (1, 2)"
+    },
+    {
+      "path": "vllm_omni/experimental/ar_diffusion/runner.py",
+      "before_sha256": "273fd6df7ac7a8e9fb5d6cb89a08d265dd22f96f43336ea2570bb6abc4a8e4b6",
+      "after_sha256": "13eaf440e26343c191d0adfdea71e0e01e28a363409b0c4d355725082c011cd8",
+      "old": "return int(torch.cuda.mem_get_info(self.device)[0])",
+      "new": "import os\n        from pathlib import Path\n        for path in (Path.home() / \".cache/huggingface/hub\").glob(\"models--*/blobs/*\"):\n            if path.is_file() and path.stat().st_size >= 64 * 1024 * 1024:\n                fd = os.open(path, os.O_RDONLY)\n                try:\n                    os.posix_fadvise(fd, 0, 0, os.POSIX_FADV_DONTNEED)\n                finally:\n                    os.close(fd)\n        return int(torch.cuda.mem_get_info(self.device)[0])"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "_blocks_class_name": "Cosmos3OmniBlocks",
+  "_class_name": "Cosmos3OmniModularPipeline",
+  "_diffusers_version": "0.40.0.dev0",
+  "is_distilled": false,
+  "scheduler": [
+    "diffusers",
+    "UniPCMultistepScheduler",
+    {
+      "pretrained_model_name_or_path": "nvidia/Cosmos3-Edge-Policy-DROID",
+      "subfolder": "scheduler",
+      "type_hint": [
+        "diffusers",
+        "UniPCMultistepScheduler"
+      ],
+      "variant": null
+    }
+  ],
+  "text_tokenizer": [
+    "transformers",
+    "PreTrainedTokenizerFast",
+    {
+      "pretrained_model_name_or_path": "nvidia/Cosmos3-Edge-Policy-DROID",
+      "subfolder": "text_tokenizer",
+      "type_hint": [
+        "transformers",
+        "PreTrainedTokenizerFast"
+      ],
+      "variant": null
+    }
+  ],
+  "transformer": [
+    "diffusers",
+    "Cosmos3OmniTransformer",
+    {
+      "pretrained_model_name_or_path": "nvidia/Cosmos3-Edge-Policy-DROID",
+      "subfolder": "transformer",
+      "type_hint": [
+        "diffusers",
+        "Cosmos3OmniTransformer"
+      ],
+      "variant": null
+    }
+  ],
+  "vae": [
+    "diffusers",
+    "AutoencoderKLWan",
+    {
+      "pretrained_model_name_or_path": "nvidia/Cosmos3-Edge-Policy-DROID",
+      "subfolder": "vae",
+      "type_hint": [
+        "diffusers",
+        "AutoencoderKLWan"
+      ],
+      "variant": null
+    }
+  ]
+}

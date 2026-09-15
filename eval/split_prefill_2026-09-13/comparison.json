@@ -1,0 +1,58 @@
+{
+  "status": "complete_numerical_latency_screen",
+  "quality_certified": false,
+  "default_enabled": false,
+  "latency_p50_ms": {
+    "reference-a": 1208.1592279719189,
+    "split-prefill": 1154.9896719807293,
+    "reference-b": 1210.7087550102733
+  },
+  "latency_reduction_percent_vs_a": 4.400873225993795,
+  "latency_reduction_percent_vs_b": 4.602187173336425,
+  "reference_ab_byte_equal": true,
+  "reference_ab_max_abs": 0.0,
+  "candidate_byte_equal_to_a": false,
+  "candidate_action_mae": 0.01500441142511022,
+  "candidate_action_max_abs": 0.17564213275909424,
+  "candidate_joint_mae": 0.014486871291637726,
+  "candidate_gripper_mae": 0.018627192359417677,
+  "coverage": {
+    "reference-a": {
+      "measured_requests": 10,
+      "compiled_layers_per_request": 168,
+      "compiled_prefill_layers_per_request": 0
+    },
+    "split-prefill": {
+      "measured_requests": 10,
+      "compiled_layers_per_request": 224,
+      "compiled_prefill_layers_per_request": 56
+    },
+    "reference-b": {
+      "measured_requests": 10,
+      "compiled_layers_per_request": 168,
+      "compiled_prefill_layers_per_request": 0
+    }
+  },
+  "prefill_extraction_checks": 84,
+  "total_compiled_prefill_layers": 812,
+  "schedule": {
+    "action_chunk_size": 32,
+    "action_steps": 4,
+    "guidance": 3.0,
+    "conditioning_fps": 15.0
+  },
+  "receipts": [
+    {
+      "path": "edge-reference-a.json",
+      "sha256": "13c70f7b5d82a50fc196c64cbc0796bb715da0a17ab8c57536ac9819dde50bd4"
+    },
+    {
+      "path": "edge-split-prefill.json",
+      "sha256": "6bfe51894085c350b9a332b897e0593bf3c54e80fffe8f21ddf6430f80a490b2"
+    },
+    {
+      "path": "edge-reference-b.json",
+      "sha256": "c130fbbec4ec9ae4348e2e55a687789af0bf82b7956faaa66419773511ff2ca6"
+    }
+  ]
+}

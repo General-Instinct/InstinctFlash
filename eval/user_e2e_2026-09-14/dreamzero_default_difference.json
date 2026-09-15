@@ -1,0 +1,579 @@
+{
+  "all_request_action_difference": {
+    "byte_equal": false,
+    "includes_warmup": true,
+    "max_abs": 0.10812661051750183,
+    "requests": 21,
+    "rmse": 0.027128452079613157
+  },
+  "bindings": {
+    "dreamzero-eager_native": {
+      "actions": "cells/dreamzero-eager_native/receipt.npz",
+      "actions_sha256": "257775d26e45a703f484d252892b73fddaee4a7d4c491a614c363da239c36b77",
+      "dtype": "float32",
+      "receipt": "cells/dreamzero-eager_native/receipt.json",
+      "receipt_sha256": "55861ea342d9307a1391f87b890ca38a02f542a66d44607c10396b4d6855990b",
+      "shape": [
+        21,
+        24,
+        8
+      ]
+    },
+    "dreamzero-runtime_default": {
+      "actions": "cells/dreamzero-runtime_default/receipt.npz",
+      "actions_sha256": "346a41b48fda8538fc7abd098a7caa858f9ba66bc9d26eb2420d9b4a5127503b",
+      "dtype": "float32",
+      "receipt": "cells/dreamzero-runtime_default/receipt.json",
+      "receipt_sha256": "abcd365e0918eac58484256222ab4885cd3136c907781d777a9bbe1e1cd0ab8d",
+      "shape": [
+        21,
+        24,
+        8
+      ]
+    }
+  },
+  "compiler_cause_isolated": false,
+  "compiler_policy": {
+    "ENABLE_TENSORRT": "false",
+    "TORCHDYNAMO_DISABLE": {
+      "dreamzero-eager_native": "1",
+      "dreamzero-runtime_default": "0"
+    },
+    "environment_evidence": "Values assigned by the bound study runner; these receipts do not independently snapshot TORCHDYNAMO_DISABLE or compiled-callable state.",
+    "hypothesis": "Inherited helper compilation versus the intentionally eager reference can explain deterministic arithmetic differences. No one-variable GPU experiment was run, so compilation is not a proven isolated cause.",
+    "native_behavior": "When ENABLE_TENSORRT is false, WANPolicyHead.post_initialize wraps TextEncoder.forward, ImageEncoder.model.visual.forward and VAE.model.encode in torch.compile(mode=reduce-overhead, fullgraph=True, dynamic=False). The DiT blocks remain uncompiled by this hook.",
+    "runtime_behavior": "The native Runtime build retains this upstream post_initialize behavior; its plan does not install the generic graph_capture pass."
+  },
+  "conclusion": "Default native DreamZero actions differ from the intentionally eager reference. The BITEXACT ceiling labels checkpoint-relative selected transforms, not action equality against a separate eager implementation.",
+  "counts": {
+    "continuation_per_arm": 12,
+    "measured_per_arm": 18,
+    "requests_per_arm": 21
+  },
+  "interpretation_limits": [
+    "No task-success, quality tolerance or deployment recommendation follows from this action screen.",
+    "Matched inputs/schedules do not make inherited compiled native execution byte-identical to eager PyTorch.",
+    "The observed near-1x latency is a comparison of these declared execution settings, not a demonstrated architecture-only speedup.",
+    "Compiler, allocator or cache mechanisms behind cold warmup timing were not independently isolated."
+  ],
+  "latency": {
+    "dreamzero-eager_native": {
+      "continuation_p50_ms": 23599.0017594886,
+      "continuation_samples": 12,
+      "warmup_ms": [
+        53736.719675012864,
+        67014.92022897583,
+        130769.04264598852
+      ]
+    },
+    "dreamzero-runtime_default": {
+      "continuation_p50_ms": 23560.286417487077,
+      "continuation_samples": 12,
+      "warmup_ms": [
+        42589.88781500375,
+        25478.44995203195,
+        23683.338342991192
+      ]
+    }
+  },
+  "loading": {
+    "both_direct_bf16_dit": true,
+    "default_verified_dit_header_tensors": 1317,
+    "eager_loaded_value_gate": {
+      "dit_tensors": 1317,
+      "receipt": "native_loaded_values.json",
+      "sha256": "9519096b4dc06a4c0f3aaa5470992df2e715500f454b2b3464d8af5a65c60108",
+      "status": "passed",
+      "tensors": 2146
+    },
+    "limitation": "The default receipt has the same source-bound loader and DiT header coverage, but no independent full loaded-value gate for that run.",
+    "same_original_checkpoint": "/home/guanming/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID/71b93bdb15abee6f3411f0abb065314ffbf23bad91b531833087aec0192d1a75",
+    "same_original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+    "verification_timing": "Eager full-weight comparison runs during construction, before setup_seconds ends and before all warm/timed predictions."
+  },
+  "matching_fields": [
+    "model_id",
+    "revision",
+    "precision",
+    "torch",
+    "device",
+    "input_archive_sha256",
+    "cases",
+    "input_contract",
+    "numeric_environment",
+    "observed_nfe_before",
+    "observed_nfe_after",
+    "observed_schedule_before",
+    "observed_schedule_after",
+    "effective_schedule"
+  ],
+  "measured_action_difference": {
+    "byte_equal": false,
+    "max_abs": 0.10812661051750183,
+    "rmse": 0.02700453262727955
+  },
+  "numeric_environment": {
+    "cudnn_benchmark": false,
+    "cudnn_tf32": false,
+    "matmul_tf32": false
+  },
+  "observed_schedule": {
+    "dit_step_mask": [
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true
+    ],
+    "dynamic_cache_schedule": false,
+    "evidence": "Loaded native DreamZero action head; not a task-quality certificate",
+    "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+    "guidance": {
+      "video_action": [
+        "cfg",
+        5.0
+      ]
+    },
+    "steps": {
+      "kv_commit": 1,
+      "video_action": 16
+    }
+  },
+  "per_call": [
+    {
+      "byte_equal": false,
+      "cycle": 0,
+      "episode": 0,
+      "i": 0,
+      "input_sha256": "05f2fa701682159ecb21941151197d0d3eeda0ec1a14415776568371124a1787",
+      "max_abs": 0.08203125,
+      "phase": "warmup",
+      "rmse": 0.025167581019474396,
+      "seed": 1300
+    },
+    {
+      "byte_equal": false,
+      "cycle": 1,
+      "episode": 0,
+      "i": 1,
+      "input_sha256": "c1f59932a194b0d4b95d73ac02d7f9d9c70807fdefc524f4f2e2beb11edd2010",
+      "max_abs": 0.06509500741958618,
+      "phase": "warmup",
+      "rmse": 0.022726009263703956,
+      "seed": 1301
+    },
+    {
+      "byte_equal": false,
+      "cycle": 2,
+      "episode": 0,
+      "i": 2,
+      "input_sha256": "9503ae0e8153e7217e3dc864672bed6fd161d4c7eff3167c1347c433635cbb4e",
+      "max_abs": 0.083984375,
+      "phase": "warmup",
+      "rmse": 0.03433258571688048,
+      "seed": 1302
+    },
+    {
+      "byte_equal": false,
+      "cycle": 0,
+      "episode": 1,
+      "i": 3,
+      "input_sha256": "d546685679458f56da8d054d09bcd9f43dabcc20382b5e59d5151ff41c2b230f",
+      "max_abs": 0.041015625,
+      "phase": "measured",
+      "rmse": 0.007522695946793658,
+      "seed": 1303
+    },
+    {
+      "byte_equal": false,
+      "cycle": 1,
+      "episode": 1,
+      "i": 4,
+      "input_sha256": "71a54acc9ba8599c4e3db4dac1ceab7fe0e89a97159bdb80c2d4f9269bd077b4",
+      "max_abs": 0.10812661051750183,
+      "phase": "measured",
+      "rmse": 0.04223258951174543,
+      "seed": 1304
+    },
+    {
+      "byte_equal": false,
+      "cycle": 2,
+      "episode": 1,
+      "i": 5,
+      "input_sha256": "adb0efe0ac5071ff5865e6a4ffbff8dc519b024fcfde8c886e53d3b0ef6b5ffe",
+      "max_abs": 0.04367011785507202,
+      "phase": "measured",
+      "rmse": 0.01437640601466956,
+      "seed": 1305
+    },
+    {
+      "byte_equal": false,
+      "cycle": 0,
+      "episode": 2,
+      "i": 6,
+      "input_sha256": "05f2fa701682159ecb21941151197d0d3eeda0ec1a14415776568371124a1787",
+      "max_abs": 0.08203125,
+      "phase": "measured",
+      "rmse": 0.025167581019474396,
+      "seed": 1306
+    },
+    {
+      "byte_equal": false,
+      "cycle": 1,
+      "episode": 2,
+      "i": 7,
+      "input_sha256": "c1f59932a194b0d4b95d73ac02d7f9d9c70807fdefc524f4f2e2beb11edd2010",
+      "max_abs": 0.06509500741958618,
+      "phase": "measured",
+      "rmse": 0.022726009263703956,
+      "seed": 1307
+    },
+    {
+      "byte_equal": false,
+      "cycle": 2,
+      "episode": 2,
+      "i": 8,
+      "input_sha256": "9503ae0e8153e7217e3dc864672bed6fd161d4c7eff3167c1347c433635cbb4e",
+      "max_abs": 0.083984375,
+      "phase": "measured",
+      "rmse": 0.03433258571688048,
+      "seed": 1308
+    },
+    {
+      "byte_equal": false,
+      "cycle": 0,
+      "episode": 3,
+      "i": 9,
+      "input_sha256": "d546685679458f56da8d054d09bcd9f43dabcc20382b5e59d5151ff41c2b230f",
+      "max_abs": 0.041015625,
+      "phase": "measured",
+      "rmse": 0.007522695946793658,
+      "seed": 1309
+    },
+    {
+      "byte_equal": false,
+      "cycle": 1,
+      "episode": 3,
+      "i": 10,
+      "input_sha256": "71a54acc9ba8599c4e3db4dac1ceab7fe0e89a97159bdb80c2d4f9269bd077b4",
+      "max_abs": 0.10812661051750183,
+      "phase": "measured",
+      "rmse": 0.04223258951174543,
+      "seed": 1310
+    },
+    {
+      "byte_equal": false,
+      "cycle": 2,
+      "episode": 3,
+      "i": 11,
+      "input_sha256": "adb0efe0ac5071ff5865e6a4ffbff8dc519b024fcfde8c886e53d3b0ef6b5ffe",
+      "max_abs": 0.04367011785507202,
+      "phase": "measured",
+      "rmse": 0.01437640601466956,
+      "seed": 1311
+    },
+    {
+      "byte_equal": false,
+      "cycle": 0,
+      "episode": 4,
+      "i": 12,
+      "input_sha256": "05f2fa701682159ecb21941151197d0d3eeda0ec1a14415776568371124a1787",
+      "max_abs": 0.08203125,
+      "phase": "measured",
+      "rmse": 0.025167581019474396,
+      "seed": 1312
+    },
+    {
+      "byte_equal": false,
+      "cycle": 1,
+      "episode": 4,
+      "i": 13,
+      "input_sha256": "c1f59932a194b0d4b95d73ac02d7f9d9c70807fdefc524f4f2e2beb11edd2010",
+      "max_abs": 0.06509500741958618,
+      "phase": "measured",
+      "rmse": 0.022726009263703956,
+      "seed": 1313
+    },
+    {
+      "byte_equal": false,
+      "cycle": 2,
+      "episode": 4,
+      "i": 14,
+      "input_sha256": "9503ae0e8153e7217e3dc864672bed6fd161d4c7eff3167c1347c433635cbb4e",
+      "max_abs": 0.083984375,
+      "phase": "measured",
+      "rmse": 0.03433258571688048,
+      "seed": 1314
+    },
+    {
+      "byte_equal": false,
+      "cycle": 0,
+      "episode": 5,
+      "i": 15,
+      "input_sha256": "d546685679458f56da8d054d09bcd9f43dabcc20382b5e59d5151ff41c2b230f",
+      "max_abs": 0.041015625,
+      "phase": "measured",
+      "rmse": 0.007522695946793658,
+      "seed": 1315
+    },
+    {
+      "byte_equal": false,
+      "cycle": 1,
+      "episode": 5,
+      "i": 16,
+      "input_sha256": "71a54acc9ba8599c4e3db4dac1ceab7fe0e89a97159bdb80c2d4f9269bd077b4",
+      "max_abs": 0.10812661051750183,
+      "phase": "measured",
+      "rmse": 0.04223258951174543,
+      "seed": 1316
+    },
+    {
+      "byte_equal": false,
+      "cycle": 2,
+      "episode": 5,
+      "i": 17,
+      "input_sha256": "adb0efe0ac5071ff5865e6a4ffbff8dc519b024fcfde8c886e53d3b0ef6b5ffe",
+      "max_abs": 0.04367011785507202,
+      "phase": "measured",
+      "rmse": 0.01437640601466956,
+      "seed": 1317
+    },
+    {
+      "byte_equal": false,
+      "cycle": 0,
+      "episode": 6,
+      "i": 18,
+      "input_sha256": "05f2fa701682159ecb21941151197d0d3eeda0ec1a14415776568371124a1787",
+      "max_abs": 0.08203125,
+      "phase": "measured",
+      "rmse": 0.025167581019474396,
+      "seed": 1318
+    },
+    {
+      "byte_equal": false,
+      "cycle": 1,
+      "episode": 6,
+      "i": 19,
+      "input_sha256": "c1f59932a194b0d4b95d73ac02d7f9d9c70807fdefc524f4f2e2beb11edd2010",
+      "max_abs": 0.06509500741958618,
+      "phase": "measured",
+      "rmse": 0.022726009263703956,
+      "seed": 1319
+    },
+    {
+      "byte_equal": false,
+      "cycle": 2,
+      "episode": 6,
+      "i": 20,
+      "input_sha256": "9503ae0e8153e7217e3dc864672bed6fd161d4c7eff3167c1347c433635cbb4e",
+      "max_abs": 0.083984375,
+      "phase": "measured",
+      "rmse": 0.03433258571688048,
+      "seed": 1320
+    }
+  ],
+  "quality_certified": false,
+  "repeat_same_prompt_and_cycle_byte_equal_within_arm": {
+    "dreamzero-eager_native": true,
+    "dreamzero-runtime_default": true
+  },
+  "rng_and_reset": {
+    "driver_cases_exact": true,
+    "native_denoising_noise": "The source sets self.seed=1140 and constructs explicit seeded generators for video and action noise. Changing the driver episode seed does not vary these two noise tensors.",
+    "per_request_seed_fields_exact": true,
+    "runtime_seed_argument": null,
+    "wrapper": "Both paths use _DreamZeroLoop and DreamZeroWan225BPolicy. Reset clears native frame state; repeated same-prompt/cycle actions are byte-identical within each arm."
+  },
+  "schema": 1,
+  "scope": "Read-only local receipt/NPZ/source diagnosis. No additional model or GPU execution.",
+  "source_references": [
+    {
+      "lines": [
+        [
+          181,
+          181
+        ],
+        [
+          815,
+          817
+        ],
+        [
+          1104,
+          1105
+        ],
+        [
+          1351,
+          1379
+        ]
+      ],
+      "logical_path": "upstream/groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py",
+      "receipt_source_paths": {
+        "dreamzero-eager_native": [
+          "/home/guanming/thorcol/dreamzero/groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py"
+        ],
+        "dreamzero-runtime_default": [
+          "/home/guanming/thorcol/dreamzero/groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py"
+        ]
+      },
+      "reviewed_local_path": "/home/ubuntu/dreamzero-repo/groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py",
+      "sha256": "7193cd73423472aa252bee73bd80e0d673c89d773ec852e90f50154729b50845",
+      "symbol": "WANPolicyHead.post_initialize; seed; generate_noise; lazy_joint_video_action"
+    },
+    {
+      "lines": [
+        [
+          322,
+          343
+        ]
+      ],
+      "logical_path": "upstream/groot/vla/model/n1_5/sim_policy.py",
+      "receipt_source_paths": {
+        "dreamzero-eager_native": [
+          "/home/guanming/thorcol/dreamzero/groot/vla/model/n1_5/sim_policy.py"
+        ],
+        "dreamzero-runtime_default": [
+          "/home/guanming/thorcol/dreamzero/groot/vla/model/n1_5/sim_policy.py"
+        ]
+      },
+      "reviewed_local_path": "/home/ubuntu/dreamzero-repo/groot/vla/model/n1_5/sim_policy.py",
+      "sha256": "c7b692b84a03a70adc7e0d21fb7632a9866285645e8d43c916100e6f5fb7497a",
+      "symbol": "GrootSimPolicy.__init__"
+    },
+    {
+      "lines": [
+        [
+          159,
+          232
+        ],
+        [
+          274,
+          317
+        ],
+        [
+          348,
+          417
+        ]
+      ],
+      "logical_path": "examples/dreamzero/dreamzero_iwm/adapter.py",
+      "receipt_source_paths": {
+        "dreamzero-eager_native": [
+          "/home/guanming/ifl_eval/user_e2e_20260914/envs/dreamzero/lib/python3.12/site-packages/dreamzero_iwm/adapter.py"
+        ],
+        "dreamzero-runtime_default": [
+          "/home/guanming/ifl_eval/user_e2e_20260914/envs/dreamzero/lib/python3.12/site-packages/dreamzero_iwm/adapter.py"
+        ]
+      },
+      "reviewed_local_path": "/tmp/ifl-user-e2e-candidate-20260914-a/source/examples/dreamzero/dreamzero_iwm/adapter.py",
+      "sha256": "b394b30ae7645e196f641784e64326b8f6111a4335c91c001b32d1983392149c",
+      "symbol": "build_in_process; _DreamZeroLoop; _build_owned_native_loop"
+    },
+    {
+      "lines": [
+        [
+          184,
+          225
+        ]
+      ],
+      "logical_path": "instinctflash/runtime/execution.py",
+      "receipt_source_paths": {
+        "dreamzero-eager_native": [
+          "/home/guanming/ifl_eval/user_e2e_20260914/envs/dreamzero/lib/python3.12/site-packages/instinctflash/runtime/execution.py"
+        ],
+        "dreamzero-runtime_default": [
+          "/home/guanming/ifl_eval/user_e2e_20260914/envs/dreamzero/lib/python3.12/site-packages/instinctflash/runtime/execution.py"
+        ]
+      },
+      "reviewed_local_path": "/tmp/ifl-user-e2e-candidate-20260914-a/source/instinctflash/runtime/execution.py",
+      "sha256": "27387e1b240a54cb4e525902fe61c6d12e2db69c2a1eece6346dfbd910b35db2",
+      "symbol": "InProcessBackend.reset/predict"
+    },
+    {
+      "lines": [
+        [
+          119,
+          164
+        ],
+        [
+          177,
+          188
+        ]
+      ],
+      "logical_path": "benchmarks/regression/native_reference.py",
+      "receipt_source_paths": {
+        "dreamzero-eager_native": [
+          "/home/guanming/ifl_eval/user_e2e_20260914/envs/dreamzero/lib/python3.12/site-packages/benchmarks/regression/native_reference.py"
+        ],
+        "dreamzero-runtime_default": []
+      },
+      "reviewed_local_path": "benchmarks/regression/native_reference.py",
+      "sha256": "f41da87548879b0998ec470bf4424eb6ce0c357df4764e0f64f7c236cad2aa8d",
+      "symbol": "build DreamZero; Reference.reset/predict"
+    },
+    {
+      "lines": [
+        [
+          18,
+          61
+        ]
+      ],
+      "logical_path": "examples/dreamzero/dreamzero_iwm/schedule.py",
+      "receipt_source_paths": {
+        "dreamzero-eager_native": [],
+        "dreamzero-runtime_default": [
+          "/home/guanming/ifl_eval/user_e2e_20260914/envs/dreamzero/lib/python3.12/site-packages/dreamzero_iwm/schedule.py"
+        ]
+      },
+      "reviewed_local_path": "examples/dreamzero/dreamzero_iwm/schedule.py",
+      "sha256": "ce64ccaa54046892e36e5d5000cf1d9fe5603d4eb981f2cb8c2a39804e403933",
+      "symbol": "_ScheduleEnvironment; _construct; build_head"
+    },
+    {
+      "lines": [
+        [
+          234,
+          255
+        ],
+        [
+          260,
+          301
+        ]
+      ],
+      "logical_path": "benchmarks/regression/user_e2e.py",
+      "receipt_source_paths": {
+        "dreamzero-eager_native": [],
+        "dreamzero-runtime_default": []
+      },
+      "reviewed_local_path": "benchmarks/regression/user_e2e.py",
+      "sha256": "1c427d5e1fb63835492e3b613c01d4a1fada65fd6c6b790138a19a92b2deb59d",
+      "symbol": "global flags; setup; per-request input/seed/timing/reset"
+    },
+    {
+      "lines": [
+        [
+          72,
+          92
+        ]
+      ],
+      "logical_path": "eval/user_e2e_2026-09-14/run_thor_v2.py",
+      "receipt_source_paths": {
+        "dreamzero-eager_native": [],
+        "dreamzero-runtime_default": []
+      },
+      "reviewed_local_path": "eval/user_e2e_2026-09-14/run_thor_v2.py",
+      "sha256": "a2324180309abfd7942cdb4d26d2db630764ff9da1de7588cc3b33fd7119ec83",
+      "symbol": "child process environment"
+    }
+  ],
+  "status": "observed_difference_with_source_based_hypothesis"
+}

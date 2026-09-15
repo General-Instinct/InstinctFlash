@@ -1,0 +1,94 @@
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -1,61 +1,41 @@
+ [build-system]
+-requires = ["setuptools>=61.0"]
++requires = ["setuptools>=77", "wheel"]
+ build-backend = "setuptools.build_meta"
+ 
+ [project]
+ name = "LingBot_VA"
+ version = "0.0.0"
+-description = "LingBot-VA: A Pragmatic VA Foundation Model"
+-authors = [
+-    { name = "Robbyant Team", email = "fengchang.ll@antgroup.com" }
+-]
+-license = { file = "LICENSE.txt" }
+-readme = "README.md"
+-requires-python = ">=3.10,<4.0"
++description = "Pinned upstream inference package with explicit Thor dependency metadata"
++requires-python = ">=3.12,<3.13"
+ dependencies = [
+-    "torch>=2.9.0",
+-    "torchvision>=0.24.0",
+-    "diffusers>=0.36.0",
+-    "transformers>=4.55.4",
+-    "tokenizers>=0.21.4",
+-    "tqdm",
+-    "imageio",
+-    "easydict",
+-    "flash_attn",
+-    "numpy>=1.26.4,<2"
++  "accelerate==1.14.0",
++  "diffusers==0.36.0",
++  "easydict==1.13",
++  "einops==0.8.2",
++  "ftfy==6.3.1",
++  "huggingface-hub==0.34.4",
++  "imageio",
++  "msgpack==1.2.1",
++  "numpy==2.2.6",
++  "opencv-python-headless==4.13.0.92",
++  "packaging==25.0",
++  "pillow==12.3.0",
++  "pip==24.0",
++  "pyyaml==6.0.3",
++  "safetensors==0.8.0",
++  "scipy==1.18.1",
++  "sentencepiece==0.2.2",
++  "setuptools==81.0.0",
++  "tokenizers==0.21.4",
++  "torch==2.11.0",
++  "torchvision==0.26.0",
++  "transformers==4.55.2",
++  "websockets==17.0.1"
+ ]
+ 
+-[project.optional-dependencies]
+-dev = [
+-    "pytest",
+-    "black",
+-    "flake8",
+-    "isort",
+-    "mypy",
+-    "huggingface-hub[cli]"
+-]
+-
+-[project.urls]
+-homepage = "https://github.com/Robbyant"
+-documentation = "https://github.com/Robbyant"
+-repository = "https://github.com/Robbyant"
+-huggingface = "https://github.com/Robbyant"
+-modelscope = "https://github.com/Robbyant"
+-discord = "https://github.com/Robbyant"
+-
+-[tool.setuptools]
+-packages = ["lingbot_va"]
++[tool.setuptools.packages.find]
++where = ["."]
++include = ["wan_va*"]
+ 
+ [tool.setuptools.package-data]
+-"lingbot_va" = ["**/*.py"]
+-
+-[tool.black]
+-line-length = 88
+-
+-[tool.isort]
+-profile = "black"
+-
+-[tool.mypy]
+-strict = true
+-
+-
++"*" = ["**/*.json", "**/*.yaml", "**/*.yml", "**/*.toml", "**/*.txt", "**/*.npy", "**/*.npz"]

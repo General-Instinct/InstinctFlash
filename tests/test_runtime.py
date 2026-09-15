@@ -42,12 +42,18 @@ def test_install_plan_applies_the_bitexact_substrate_passes():
     plan = Optimizer(tier_ceiling=Tier.BITEXACT).compile(model.spec())
     server = _FakeServerModule()
 
-    applied = install_plan(server, server.VA_Server, plan.without("conditioning_prefill"))
+    # The three passes that patch the upstream model classes import `modules.model`, which this fake
+    # module does not provide; they are exercised against the real tree elsewhere
+    # (test_action_terminal_elision.py installs P010 on the real classes).
+    applied = install_plan(
+        server, server.VA_Server,
+        plan.without("conditioning_prefill", "ring_kv_addressing", "action_terminal_forward_elision"),
+    )
 
     assert "fsdp_elision" in applied
     assert "debug_dump_elision" in applied
     assert "allocator_churn_elision" in applied
-    # obs_decode_elision has no runtime action on this backend; it must still be REPORTED.
+    # obs_decode_elision installs a constructor wrapper; this fake is deliberately not built.
     assert any(a.startswith("obs_decode_elision") for a in applied)
     assert server.save_async(None, "x") is None, "debug dump should be neutered"
 
@@ -86,6 +92,87 @@ def test_installers_refuse_a_server_that_changed_shape():
         assert "save_async" in str(exc)
         return
     raise AssertionError("an installer must raise rather than no-op on an unknown server")
+
+
+def test_obs_decode_elision_is_plan_scoped_and_one_shot():
+    """The stripping must reach exactly the next server built by the arming thread's plan.
+
+    A permanent __init__ rebind meant one actions-only plan stripped the decoders of EVERY
+    later VA_Server in the process -- including a want_pixels Runtime whose plan declined the
+    pass, which then raised at the exact boundary it paid to keep.
+    """
+    if not HAVE_TORCH:
+        return
+    import torch
+
+    from instinctflash.runtime.lingbot_install import install_obs_decode_elision
+
+    class _VAE:
+        def __init__(self):
+            self.decoder = torch.nn.Linear(2, 2)
+
+    class _Wrapper:
+        def __init__(self):
+            self.vae = _VAE()
+
+    class _Server:
+        def __init__(self):
+            self.streaming_vae = _Wrapper()
+            self.streaming_vae_half = _Wrapper()
+
+    module = _FakeServerModule()
+    stripped = lambda s: type(s.streaming_vae.vae.decoder).__name__ == "_ElidedObservationDecoder"
+
+    install_obs_decode_elision(module, _Server)
+    assert stripped(_Server()), "the armed plan's server must be stripped"
+    assert not stripped(_Server()), "a later, unarmed server must keep its decoders"
+    install_obs_decode_elision(module, _Server)
+    assert stripped(_Server()), "re-arming must strip exactly the next server again"
+    assert not stripped(_Server())
+
+
+def test_prompt_encoder_staging_is_a_plan_line_with_enforced_pairing():
+    """The low-memory-SM120 T5 staging must be declared, not a silent device sniff."""
+    if not HAVE_TORCH:
+        return
+    from instinctflash.descriptors.deployment import DeploymentSpec
+    from instinctflash.passes.contract import DeviceProfile
+    from instinctflash.runtime.lingbot_install import _PROMPT_ENCODER_STAGING, install_plan
+
+    spec = load("lingbot-va-posttrain-robotwin").spec()
+
+    def compiled(capability, memory):
+        device = DeviceProfile(name="synthetic", capability=capability,
+                               total_memory=memory, features=frozenset({"cuda"}))
+        return Optimizer(tier_ceiling=Tier.BITEXACT).compile(
+            spec, DeploymentSpec(device=device))
+
+    by_name = {r.name: r for r in compiled((12, 0), 32 << 30).results}
+    assert by_name["prompt_encoder_staging"].applies, "low-memory SM120 must declare staging"
+    assert "empty_cache" in by_name["prompt_encoder_staging"].params["action"]
+    by_name = {r.name: r for r in compiled((9, 0), 80 << 30).results}
+    assert not by_name["prompt_encoder_staging"].applies, "sm90 must keep the encoder resident"
+    deviceless = {r.name: r for r in
+                  Optimizer(tier_ceiling=Tier.BITEXACT).compile(spec, DeploymentSpec()).results}
+    assert not deviceless["prompt_encoder_staging"].applies, "unprobed target must decline"
+
+    # the mechanism lives in conditioning_prefill's reset wrapper; the pairing is enforced
+    plan = compiled((12, 0), 32 << 30).without("conditioning_prefill")
+    try:
+        install_plan(_FakeServerModule(), type("VA", (), {}), plan)
+    except RuntimeError as exc:
+        assert "requires conditioning_prefill" in str(exc)
+    else:
+        raise AssertionError("install_plan must refuse staging without conditioning_prefill")
+
+    # a plan that dropped staging disarms the one-shot token for the next server
+    _PROMPT_ENCODER_STAGING.pending = True
+    plan = Optimizer(tier_ceiling=Tier.BITEXACT).compile(spec, DeploymentSpec())
+    try:
+        install_plan(_FakeServerModule(), type("VA", (), {}), plan.without("ring_kv_addressing"))
+    except Exception:
+        pass  # later installers may need the upstream tree; the disarm precedes them
+    assert getattr(_PROMPT_ENCODER_STAGING, "pending", None) is False
 
 
 def test_resolve_lingbot_root_reports_what_is_missing():

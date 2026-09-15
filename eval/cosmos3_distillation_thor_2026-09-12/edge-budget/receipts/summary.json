@@ -1,0 +1,96 @@
+{
+  "validation_complete": true,
+  "trained_student": false,
+  "task_quality_certified": false,
+  "rows": [
+    {
+      "name": "s1-cfg1-native",
+      "p50_ms": 413.34915050538257,
+      "p95_ms": 413.632232688542,
+      "max_ms": 413.6954909772612,
+      "branches_per_request": 1,
+      "conditional_15hz_budgets": [
+        {
+          "executed_actions": 8,
+          "budget_ms": 533.3333333333334,
+          "measured_misses": 0
+        },
+        {
+          "executed_actions": 16,
+          "budget_ms": 1066.6666666666667,
+          "measured_misses": 0
+        },
+        {
+          "executed_actions": 32,
+          "budget_ms": 2133.3333333333335,
+          "measured_misses": 0
+        }
+      ]
+    },
+    {
+      "name": "s1-cfg1-cudnn",
+      "p50_ms": 275.6183195015183,
+      "p95_ms": 276.30137129162904,
+      "max_ms": 276.38738698442467,
+      "branches_per_request": 1,
+      "conditional_15hz_budgets": [
+        {
+          "executed_actions": 8,
+          "budget_ms": 533.3333333333334,
+          "measured_misses": 0
+        },
+        {
+          "executed_actions": 16,
+          "budget_ms": 1066.6666666666667,
+          "measured_misses": 0
+        },
+        {
+          "executed_actions": 32,
+          "budget_ms": 2133.3333333333335,
+          "measured_misses": 0
+        }
+      ]
+    },
+    {
+      "name": "s1-cfg4-cudnn",
+      "p50_ms": 441.72895849624183,
+      "p95_ms": 446.9249290516018,
+      "max_ms": 448.8761519896798,
+      "branches_per_request": 2,
+      "conditional_15hz_budgets": [
+        {
+          "executed_actions": 8,
+          "budget_ms": 533.3333333333334,
+          "measured_misses": 0
+        },
+        {
+          "executed_actions": 16,
+          "budget_ms": 1066.6666666666667,
+          "measured_misses": 0
+        },
+        {
+          "executed_actions": 32,
+          "budget_ms": 2133.3333333333335,
+          "measured_misses": 0
+        }
+      ]
+    }
+  ],
+  "cfg1_attention_pair": {
+    "category": "SCREEN",
+    "speedup": 1.4997158071820607,
+    "max_abs_action_delta": 0.015625,
+    "mean_abs_action_delta": 0.0024893581867218018,
+    "per_dimension_max_abs": [
+      0.015625,
+      0.015625,
+      0.015625,
+      0.015625,
+      0.015625,
+      0.015625,
+      0.015625,
+      0.015625
+    ]
+  },
+  "scope": "Original Edge weights, changed UniPC schedule/guidance. Not a trained SDE student, quality certificate, or closed-loop realtime claim."
+}

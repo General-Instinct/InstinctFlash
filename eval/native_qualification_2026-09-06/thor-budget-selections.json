@@ -1,0 +1,403 @@
+{
+  "reaction-500ms.selection": {
+    "budget": {
+      "control_hz": 20,
+      "executed_actions": 50,
+      "max_deadline_miss_fraction": 0,
+      "max_observation_to_action_ms": 500,
+      "scheduling": "pipelined",
+      "target_device": "Thor"
+    },
+    "candidates": [
+      {
+        "assessment": {
+          "budget": {
+            "control_hz": 20,
+            "executed_actions": 50,
+            "max_deadline_miss_fraction": 0,
+            "max_observation_to_action_ms": 500,
+            "scheduling": "pipelined",
+            "target_device": "Thor"
+          },
+          "count": 128,
+          "deadline_misses": 128,
+          "deadline_ms": 500,
+          "deployment_certified": false,
+          "max_ms": 767.5061210175045,
+          "measurement_sha256": "9af6519b3a2951832661fc60ad293053473256554158a2b5655d946be3f29789",
+          "meets_observed_budget": false,
+          "miss_fraction": 1.0,
+          "p50_ms": 717.2870890062768,
+          "p95_ms": 742.3628179356456,
+          "p99_ms": 764.5059128891444,
+          "p99_sample_warning": false,
+          "schema_version": 1,
+          "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+        },
+        "eligible": false,
+        "precision": "native",
+        "profile_id": "3b97e465f669ac8885773fbc2fd10ecc431d225db4de6b0cc5ad8e93edcc55f6",
+        "quality_status": "unmeasured",
+        "reasons": [
+          "observed deadline budget missed"
+        ]
+      },
+      {
+        "assessment": {
+          "budget": {
+            "control_hz": 20,
+            "executed_actions": 50,
+            "max_deadline_miss_fraction": 0,
+            "max_observation_to_action_ms": 500,
+            "scheduling": "pipelined",
+            "target_device": "Thor"
+          },
+          "count": 128,
+          "deadline_misses": 0,
+          "deadline_ms": 500,
+          "deployment_certified": false,
+          "max_ms": 410.75480298604816,
+          "measurement_sha256": "68494157a7a63d8b6acc55668110cf110717c09017874dfb139fce69a5e90c6f",
+          "meets_observed_budget": true,
+          "miss_fraction": 0.0,
+          "p50_ms": 406.6003894840833,
+          "p95_ms": 408.6564877536148,
+          "p99_ms": 409.67405830801,
+          "p99_sample_warning": false,
+          "schema_version": 1,
+          "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+        },
+        "eligible": false,
+        "precision": "native",
+        "profile_id": "1078decc005563f00888e2d6e6d61944f8f74944490ac3fb972343c2062482fa",
+        "quality_status": "unmeasured",
+        "reasons": [
+          "no matching paired closed-loop certificate; screening/repeats do not authorize selection"
+        ]
+      },
+      {
+        "assessment": {
+          "budget": {
+            "control_hz": 20,
+            "executed_actions": 50,
+            "max_deadline_miss_fraction": 0,
+            "max_observation_to_action_ms": 500,
+            "scheduling": "pipelined",
+            "target_device": "Thor"
+          },
+          "count": 128,
+          "deadline_misses": 128,
+          "deadline_ms": 500,
+          "deployment_certified": false,
+          "max_ms": 805.8281759731472,
+          "measurement_sha256": "981bf6ea5cb75db351d3cda8bb04750ba5115f3013156921640af8632a60cbe0",
+          "meets_observed_budget": false,
+          "miss_fraction": 1.0,
+          "p50_ms": 717.6077865005936,
+          "p95_ms": 753.8079091988038,
+          "p99_ms": 778.8589845516253,
+          "p99_sample_warning": false,
+          "schema_version": 1,
+          "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+        },
+        "eligible": false,
+        "precision": "native",
+        "profile_id": "ad2aee418e2e660ce329de4cab3cca4f2e4a827b8d5f64094fff2d47f8546e82",
+        "quality_status": "unmeasured",
+        "reasons": [
+          "observed deadline budget missed",
+          "no matching paired closed-loop certificate; screening/repeats do not authorize selection"
+        ]
+      }
+    ],
+    "deployment_certified": false,
+    "policy": {
+      "allow_step_change": false,
+      "allowed_precisions": [
+        "native"
+      ],
+      "baseline_profile_id": "3b97e465f669ac8885773fbc2fd10ecc431d225db4de6b0cc5ad8e93edcc55f6",
+      "max_quality_loss": 0.05,
+      "quality_registry_sha256": "2e6ae61ffff993f60b191fe40ae059b78e28d656b76bc83eb4f5aaf75ca97e57",
+      "required_suites": [
+        "robotwin50_easy"
+      ],
+      "required_tasks": {
+        "robotwin50_easy": [
+          "adjust_bottle",
+          "beat_block_hammer"
+        ]
+      },
+      "tier_ceiling": "numeric"
+    },
+    "reason": "no_configuration_has_both_matching_evidence_and_budget_compliance",
+    "schema_version": 1,
+    "scope": "Offline evidence-based selection, not automatic model loading or an end-to-end realtime guarantee. Prefers native precision and lower transformation tier; does not infer minimum true task loss from small samples.",
+    "selected_profile_id": null,
+    "selection_sha256": "196a35579daf3d9ddeef9e6c9645116859a508330d4a78a47ce5c1f709f0ca9d"
+  },
+  "blocking-50hz.selection": {
+    "budget": {
+      "control_hz": 50,
+      "executed_actions": 50,
+      "max_deadline_miss_fraction": 0,
+      "scheduling": "blocking",
+      "target_device": "Thor"
+    },
+    "candidates": [
+      {
+        "assessment": {
+          "budget": {
+            "control_hz": 50,
+            "executed_actions": 50,
+            "max_deadline_miss_fraction": 0,
+            "scheduling": "blocking",
+            "target_device": "Thor"
+          },
+          "count": 128,
+          "deadline_misses": 128,
+          "deadline_ms": 20.0,
+          "deployment_certified": false,
+          "max_ms": 767.5061210175045,
+          "measurement_sha256": "9af6519b3a2951832661fc60ad293053473256554158a2b5655d946be3f29789",
+          "meets_observed_budget": false,
+          "miss_fraction": 1.0,
+          "p50_ms": 717.2870890062768,
+          "p95_ms": 742.3628179356456,
+          "p99_ms": 764.5059128891444,
+          "p99_sample_warning": false,
+          "schema_version": 1,
+          "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+        },
+        "eligible": false,
+        "precision": "native",
+        "profile_id": "3b97e465f669ac8885773fbc2fd10ecc431d225db4de6b0cc5ad8e93edcc55f6",
+        "quality_status": "unmeasured",
+        "reasons": [
+          "observed deadline budget missed"
+        ]
+      },
+      {
+        "assessment": {
+          "budget": {
+            "control_hz": 50,
+            "executed_actions": 50,
+            "max_deadline_miss_fraction": 0,
+            "scheduling": "blocking",
+            "target_device": "Thor"
+          },
+          "count": 128,
+          "deadline_misses": 128,
+          "deadline_ms": 20.0,
+          "deployment_certified": false,
+          "max_ms": 410.75480298604816,
+          "measurement_sha256": "68494157a7a63d8b6acc55668110cf110717c09017874dfb139fce69a5e90c6f",
+          "meets_observed_budget": false,
+          "miss_fraction": 1.0,
+          "p50_ms": 406.6003894840833,
+          "p95_ms": 408.6564877536148,
+          "p99_ms": 409.67405830801,
+          "p99_sample_warning": false,
+          "schema_version": 1,
+          "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+        },
+        "eligible": false,
+        "precision": "native",
+        "profile_id": "1078decc005563f00888e2d6e6d61944f8f74944490ac3fb972343c2062482fa",
+        "quality_status": "unmeasured",
+        "reasons": [
+          "observed deadline budget missed",
+          "no matching paired closed-loop certificate; screening/repeats do not authorize selection"
+        ]
+      },
+      {
+        "assessment": {
+          "budget": {
+            "control_hz": 50,
+            "executed_actions": 50,
+            "max_deadline_miss_fraction": 0,
+            "scheduling": "blocking",
+            "target_device": "Thor"
+          },
+          "count": 128,
+          "deadline_misses": 128,
+          "deadline_ms": 20.0,
+          "deployment_certified": false,
+          "max_ms": 805.8281759731472,
+          "measurement_sha256": "981bf6ea5cb75db351d3cda8bb04750ba5115f3013156921640af8632a60cbe0",
+          "meets_observed_budget": false,
+          "miss_fraction": 1.0,
+          "p50_ms": 717.6077865005936,
+          "p95_ms": 753.8079091988038,
+          "p99_ms": 778.8589845516253,
+          "p99_sample_warning": false,
+          "schema_version": 1,
+          "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+        },
+        "eligible": false,
+        "precision": "native",
+        "profile_id": "ad2aee418e2e660ce329de4cab3cca4f2e4a827b8d5f64094fff2d47f8546e82",
+        "quality_status": "unmeasured",
+        "reasons": [
+          "observed deadline budget missed",
+          "no matching paired closed-loop certificate; screening/repeats do not authorize selection"
+        ]
+      }
+    ],
+    "deployment_certified": false,
+    "policy": {
+      "allow_step_change": false,
+      "allowed_precisions": [
+        "native"
+      ],
+      "baseline_profile_id": "3b97e465f669ac8885773fbc2fd10ecc431d225db4de6b0cc5ad8e93edcc55f6",
+      "max_quality_loss": 0.05,
+      "quality_registry_sha256": "2e6ae61ffff993f60b191fe40ae059b78e28d656b76bc83eb4f5aaf75ca97e57",
+      "required_suites": [
+        "robotwin50_easy"
+      ],
+      "required_tasks": {
+        "robotwin50_easy": [
+          "adjust_bottle",
+          "beat_block_hammer"
+        ]
+      },
+      "tier_ceiling": "numeric"
+    },
+    "reason": "no_configuration_has_both_matching_evidence_and_budget_compliance",
+    "schema_version": 1,
+    "scope": "Offline evidence-based selection, not automatic model loading or an end-to-end realtime guarantee. Prefers native precision and lower transformation tier; does not infer minimum true task loss from small samples.",
+    "selected_profile_id": null,
+    "selection_sha256": "325d7a5def488722c1cd790b568f31ae4103ccb5776e015e5d0e12dbacfab0ed"
+  },
+  "pipelined-20hz.selection": {
+    "budget": {
+      "control_hz": 20,
+      "executed_actions": 50,
+      "max_deadline_miss_fraction": 0,
+      "scheduling": "pipelined",
+      "target_device": "Thor"
+    },
+    "candidates": [
+      {
+        "assessment": {
+          "budget": {
+            "control_hz": 20,
+            "executed_actions": 50,
+            "max_deadline_miss_fraction": 0,
+            "scheduling": "pipelined",
+            "target_device": "Thor"
+          },
+          "count": 128,
+          "deadline_misses": 0,
+          "deadline_ms": 2500.0,
+          "deployment_certified": false,
+          "max_ms": 767.5061210175045,
+          "measurement_sha256": "9af6519b3a2951832661fc60ad293053473256554158a2b5655d946be3f29789",
+          "meets_observed_budget": true,
+          "miss_fraction": 0.0,
+          "p50_ms": 717.2870890062768,
+          "p95_ms": 742.3628179356456,
+          "p99_ms": 764.5059128891444,
+          "p99_sample_warning": false,
+          "schema_version": 1,
+          "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+        },
+        "eligible": true,
+        "precision": "native",
+        "profile_id": "3b97e465f669ac8885773fbc2fd10ecc431d225db4de6b0cc5ad8e93edcc55f6",
+        "quality_status": "unmeasured",
+        "reasons": []
+      },
+      {
+        "assessment": {
+          "budget": {
+            "control_hz": 20,
+            "executed_actions": 50,
+            "max_deadline_miss_fraction": 0,
+            "scheduling": "pipelined",
+            "target_device": "Thor"
+          },
+          "count": 128,
+          "deadline_misses": 0,
+          "deadline_ms": 2500.0,
+          "deployment_certified": false,
+          "max_ms": 410.75480298604816,
+          "measurement_sha256": "68494157a7a63d8b6acc55668110cf110717c09017874dfb139fce69a5e90c6f",
+          "meets_observed_budget": true,
+          "miss_fraction": 0.0,
+          "p50_ms": 406.6003894840833,
+          "p95_ms": 408.6564877536148,
+          "p99_ms": 409.67405830801,
+          "p99_sample_warning": false,
+          "schema_version": 1,
+          "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+        },
+        "eligible": false,
+        "precision": "native",
+        "profile_id": "1078decc005563f00888e2d6e6d61944f8f74944490ac3fb972343c2062482fa",
+        "quality_status": "unmeasured",
+        "reasons": [
+          "no matching paired closed-loop certificate; screening/repeats do not authorize selection"
+        ]
+      },
+      {
+        "assessment": {
+          "budget": {
+            "control_hz": 20,
+            "executed_actions": 50,
+            "max_deadline_miss_fraction": 0,
+            "scheduling": "pipelined",
+            "target_device": "Thor"
+          },
+          "count": 128,
+          "deadline_misses": 0,
+          "deadline_ms": 2500.0,
+          "deployment_certified": false,
+          "max_ms": 805.8281759731472,
+          "measurement_sha256": "981bf6ea5cb75db351d3cda8bb04750ba5115f3013156921640af8632a60cbe0",
+          "meets_observed_budget": true,
+          "miss_fraction": 0.0,
+          "p50_ms": 717.6077865005936,
+          "p95_ms": 753.8079091988038,
+          "p99_ms": 778.8589845516253,
+          "p99_sample_warning": false,
+          "schema_version": 1,
+          "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+        },
+        "eligible": false,
+        "precision": "native",
+        "profile_id": "ad2aee418e2e660ce329de4cab3cca4f2e4a827b8d5f64094fff2d47f8546e82",
+        "quality_status": "unmeasured",
+        "reasons": [
+          "no matching paired closed-loop certificate; screening/repeats do not authorize selection"
+        ]
+      }
+    ],
+    "deployment_certified": false,
+    "policy": {
+      "allow_step_change": false,
+      "allowed_precisions": [
+        "native"
+      ],
+      "baseline_profile_id": "3b97e465f669ac8885773fbc2fd10ecc431d225db4de6b0cc5ad8e93edcc55f6",
+      "max_quality_loss": 0.05,
+      "quality_registry_sha256": "2e6ae61ffff993f60b191fe40ae059b78e28d656b76bc83eb4f5aaf75ca97e57",
+      "required_suites": [
+        "robotwin50_easy"
+      ],
+      "required_tasks": {
+        "robotwin50_easy": [
+          "adjust_bottle",
+          "beat_block_hammer"
+        ]
+      },
+      "tier_ceiling": "numeric"
+    },
+    "reason": "native_baseline_meets_observed_budget",
+    "schema_version": 1,
+    "scope": "Offline evidence-based selection, not automatic model loading or an end-to-end realtime guarantee. Prefers native precision and lower transformation tier; does not infer minimum true task loss from small samples.",
+    "selected_profile_id": "3b97e465f669ac8885773fbc2fd10ecc431d225db4de6b0cc5ad8e93edcc55f6",
+    "selection_sha256": "a32595fb43642d259827e6705e72fe52e7d427613ae37b5451b894f9b2e295ba"
+  }
+}

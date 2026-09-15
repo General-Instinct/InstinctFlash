@@ -1,0 +1,440 @@
+{
+  "family": "va",
+  "precision": "native",
+  "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+  "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+  "device": "NVIDIA H100 80GB HBM3",
+  "torch": "2.9.0+cu126",
+  "scope": "Matched public Runtime generation latency, synchronized wall time; recorded cameras and synthetic state, no network or simulator. No task-quality certificate.",
+  "calls": [
+    {
+      "i": 0,
+      "cycle": 0,
+      "phase": "warmup",
+      "ms": 2264.17564926669,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 1,
+      "cycle": 1,
+      "phase": "warmup",
+      "ms": 1257.596060167998,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 2,
+      "cycle": 2,
+      "phase": "warmup",
+      "ms": 1271.7084200121462,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 3,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 223.3739453367889,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 4,
+      "cycle": 1,
+      "phase": "measured",
+      "ms": 291.6731326840818,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 5,
+      "cycle": 2,
+      "phase": "measured",
+      "ms": 293.63382095471025,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 6,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 223.39423513039947,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 7,
+      "cycle": 1,
+      "phase": "measured",
+      "ms": 286.55186016112566,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 8,
+      "cycle": 2,
+      "phase": "measured",
+      "ms": 293.3334819972515,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 9,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 222.0420208759606,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 10,
+      "cycle": 1,
+      "phase": "measured",
+      "ms": 289.244398009032,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 11,
+      "cycle": 2,
+      "phase": "measured",
+      "ms": 290.6824750825763,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    }
+  ],
+  "variant": "current_fewstep",
+  "options": {
+    "IFL_BENCH_TIER": "numeric"
+  },
+  "competing_gpu_processes": [],
+  "runtime_reference": "robbyant/lingbot-va-posttrain-robotwin",
+  "excluded_passes": [
+    "cfg_branch_elision"
+  ],
+  "arm": "current_fewstep",
+  "reference_scope": "Direct upstream default schedule versus explicitly selected numeric/few-step Runtime; identical recorded input and request seeds",
+  "applied_passes_before_load": [
+    "fsdp_elision",
+    "allocator_churn_elision",
+    "debug_dump_elision",
+    "obs_decode_elision",
+    "conditioning_prefill",
+    "ring_kv_addressing",
+    "action_terminal_forward_elision",
+    "conv_layout_ndhwc"
+  ],
+  "setup_seconds": 9.498367243912071,
+  "backend_stats": {},
+  "graph_stats": {},
+  "physical_gpu": "6",
+  "schedule_override": {
+    "video": 2,
+    "action": 4
+  },
+  "default_schedule": {
+    "video": 25,
+    "action": 50
+  },
+  "selected_profile": "current_fewstep",
+  "pass_results": [
+    {
+      "name": "graph_capture",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "streams ['action', 'video'] outlive a control cycle, so their extent grows and per-cycle shapes change, so a captured graph is invalidated every cycle and recapture costs more than replay saves (measured 1.43x SLOWER on LingBot-VA)"
+    },
+    {
+      "name": "engine_offload",
+      "applies": false,
+      "tier": "NUMERIC",
+      "params": {
+        "backend": "engine",
+        "executor": "h100_torch_fp8",
+        "certification": "uncertified"
+      },
+      "reason": "precision='native': FP8 engine is not authorized; H100 explicit E4M3 projections with native processing and schedule; task quality unverified on this device"
+    },
+    {
+      "name": "fsdp_elision",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {
+        "world_size": 1
+      },
+      "reason": "world_size=1, so every FSDP all-gather is identity while still paying a flat-param copy and stream sync per unit per forward"
+    },
+    {
+      "name": "allocator_churn_elision",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "closed-loop serving has a stable working set, so releasing the pool between control steps only forces re-allocation next step"
+    },
+    {
+      "name": "debug_dump_elision",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "per-chunk tensor dumps do a synchronous D2H on the critical path and are not consumed by the serving client"
+    },
+    {
+      "name": "obs_decode_elision",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {
+        "modules": [
+          "vae.decoder"
+        ]
+      },
+      "reason": "caller wants actions only; ['vae.decoder'] need never be resident or executed"
+    },
+    {
+      "name": "conditioning_prefill",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {
+        "artifacts": [
+          "text_kv",
+          "negative_text_kv"
+        ],
+        "retain_across": [
+          "kv_commit"
+        ],
+        "release_on": [
+          "reset"
+        ]
+      },
+      "reason": "['text_kv', 'negative_text_kv'] declared pure in ['episode'] scope, but recomputed on all 8 forwards per control step (kv_refresh=2 + video=2 + action=4)"
+    },
+    {
+      "name": "prompt_encoder_staging",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "no memory pressure on this device class (sm_90, 79 GiB): keeping the prompt encoder resident avoids per-reset PCIe moves and allocator churn"
+    },
+    {
+      "name": "ring_kv_addressing",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {
+        "streams": [
+          "video",
+          "action"
+        ]
+      },
+      "reason": "streams ['video', 'action'] live across control steps in a pool that is currently addressed by boolean mask, costing a host sync and a full-pool copy per layer per forward"
+    },
+    {
+      "name": "action_terminal_forward_elision",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {
+        "phase": "action",
+        "streams": [
+          "action"
+        ],
+        "gates": [
+          "message_pattern",
+          "video_exec_step==-1"
+        ]
+      },
+      "reason": "the action phase's terminal forward writes provisional K/V that clear_pred_cache drops before any forward reads it; its output is discarded by construction"
+    },
+    {
+      "name": "sm120_gated_residual",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "hardware: needs sm_120, device is sm_90. This is a DEVICE decision, not a model one."
+    },
+    {
+      "name": "sm120_wan_stage2",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "hardware: needs sm_120, device is sm_90. This is a DEVICE decision, not a model one."
+    },
+    {
+      "name": "conv_layout_ndhwc",
+      "applies": true,
+      "tier": "NUMERIC",
+      "params": {
+        "autotune_site": "va_conv_layout",
+        "candidates": [
+          "stock",
+          "ndhwc"
+        ],
+        "certified_on": "sm90 H100 / 555 paired episodes",
+        "target_device_certificate": "required before default-on",
+        "decision": [
+          "autotuned: va_conv_layout chose ndhwc over stock (4.11x), equivalence NUMERIC [cache]",
+          "streaming_vae: 28 Conv3d weights -> ndhwc [NUMERIC] via cudnn_conv3d",
+          "streaming_vae_half: 28 Conv3d weights -> ndhwc [NUMERIC] via cudnn_conv3d"
+        ]
+      },
+      "reason": "two Wan VAE Conv3D subgraphs can choose NCDHW or NDHWC by measurement on this device; NDHWC changes convolution accumulation order, so the swap is NUMERIC"
+    },
+    {
+      "name": "cfg_branch_elision",
+      "applies": false,
+      "tier": "NUMERIC",
+      "params": {
+        "targets": {
+          "action": {
+            "elide_except_steps": [
+              3
+            ],
+            "n_elided": 3,
+            "n_total": 4
+          }
+        },
+        "keep_streams": [
+          "video"
+        ]
+      },
+      "reason": "dropped by caller via Plan.without(): streams ['action'] discard their negative branch while ['video'] force batch duplication; forwards that can drop to batch 1 \u2014 action: 3 of 4 (commit steps exempt: their K/V feeds the other stream's negative branch)"
+    }
+  ],
+  "guidance": "{'video': 'cfg', 'action': 'positive_only'}",
+  "history_feedback": "fixed recorded actions",
+  "plan": "InstinctFlash plan for robbyant/lingbot-va-posttrain-robotwin\n  plan tier: NUMERIC\n  operating point: schedule {kv_refresh=2 + video=2 + action=4} | guidance {action=positive_only@1 [implied by mode], video=cfg@5 [inherited from the family default]} | cfg batching {batch-2 on 8 of 8 declared forwards (negative branch requested by video); batch-1 on 0}\n\n  skip   graph_capture              [BITEXACT  ] streams ['action', 'video'] outlive a control cycle, so their extent grows and per-cycle shapes change, so a captured graph is invalidated every cycle and recapture costs more than replay saves (measured 1.43x SLOWER on LingBot-VA)\n  skip   engine_offload             [NUMERIC   ] precision='native': FP8 engine is not authorized; H100 explicit E4M3 projections with native processing and schedule; task quality unverified on this device\n  APPLY  fsdp_elision               [BITEXACT  ] world_size=1, so every FSDP all-gather is identity while still paying a flat-param copy and stream sync per unit per forward\n         expected: measured 1.75x standalone on LingBot-VA\n  APPLY  allocator_churn_elision    [BITEXACT  ] closed-loop serving has a stable working set, so releasing the pool between control steps only forces re-allocation next step\n         expected: small alone; larger once per-layer KV gathers stop churning the pool\n  APPLY  debug_dump_elision         [BITEXACT  ] per-chunk tensor dumps do a synchronous D2H on the critical path and are not consumed by the serving client\n         expected: measured ~1.10x on top of fsdp_elision\n  APPLY  obs_decode_elision         [BITEXACT  ] caller wants actions only; ['vae.decoder'] need never be resident or executed\n         expected: no latency win on this model (already skipped); frees resident memory, which is what sets episodes-per-GPU\n  APPLY  conditioning_prefill       [BITEXACT  ] ['text_kv', 'negative_text_kv'] declared pure in ['episode'] scope, but recomputed on all 8 forwards per control step (kv_refresh=2 + video=2 + action=4)\n         expected: hoists 2 artifact(s) out of the denoise loop. Measured ON LingBot-VA: 89 of 226 TFLOP per control cycle (39%), 67.6% of an action forward's layer FLOPs, 360 MiB resident. Those figures are that model's; for any other backbone the FLOP share and the residency cost follow its own layer count and artifact size. Launch-bound share means the wall-clock win is less than the FLOP win either way \u2014 measure it\n  skip   prompt_encoder_staging     [BITEXACT  ] no memory pressure on this device class (sm_90, 79 GiB): keeping the prompt encoder resident avoids per-reset PCIe moves and allocator churn\n  APPLY  ring_kv_addressing         [BITEXACT  ] streams ['video', 'action'] live across control steps in a pool that is currently addressed by boolean mask, costing a host sync and a full-pool copy per layer per forward\n         expected: measured 1.40x on LingBot-VA; measure this operating point and device (cost model: 23.2 ms)\n  APPLY  action_terminal_forward_elision [BITEXACT  ] the action phase's terminal forward writes provisional K/V that clear_pred_cache drops before any forward reads it; its output is discarded by construction\n         expected: one forward per cycle (the action pred-commit): 1 of 10 at 2V/4A, 1 of 8 at 2V/2A (cost model: 22.9 ms)\n  skip   sm120_gated_residual       [BITEXACT  ] hardware: needs sm_120, device is sm_90. This is a DEVICE decision, not a model one.\n  skip   sm120_wan_stage2           [BITEXACT  ] hardware: needs sm_120, device is sm_90. This is a DEVICE decision, not a model one.\n  APPLY  conv_layout_ndhwc          [NUMERIC   ] two Wan VAE Conv3D subgraphs can choose NCDHW or NDHWC by measurement on this device; NDHWC changes convolution accumulation order, so the swap is NUMERIC\n         expected: Measured ON H100: 1.405x complete cycle. RTX 5090 operator screen before integration: NCDHW 2.780 ms vs NDHWC 1.206 ms (2.30x); end-to-end must be measured and SM120 quality evidence is not inherited from H100.\n         decision: autotuned: va_conv_layout chose ndhwc over stock (4.11x), equivalence NUMERIC [cache]\n         decision: streaming_vae: 28 Conv3d weights -> ndhwc [NUMERIC] via cudnn_conv3d\n         decision: streaming_vae_half: 28 Conv3d weights -> ndhwc [NUMERIC] via cudnn_conv3d\n  skip   cfg_branch_elision         [NUMERIC   ] dropped by caller via Plan.without(): streams ['action'] discard their negative branch while ['video'] force batch duplication; forwards that can drop to batch 1 \u2014 action: 3 of 4 (commit steps exempt: their K/V feeds the other stream's negative branch)\n\n  NOTE: plan is NUMERIC because of ['conv_layout_ndhwc'].\n        Any accuracy-neutrality claim for this plan requires a paired\n        non-inferiority run.\n        `plan.bitexact_subset()` is the largest configuration that does not.",
+  "execution_policy": {
+    "category": "OPERATING-POINT",
+    "precision": "native",
+    "tier_ceiling": "numeric",
+    "transform_tier": "NUMERIC",
+    "nfe": {
+      "video": 2,
+      "action": 4
+    },
+    "changed_schedule": {
+      "video": {
+        "checkpoint": 25,
+        "selected": 2
+      },
+      "action": {
+        "checkpoint": 50,
+        "selected": 4
+      }
+    },
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "applied_passes": [
+    "fsdp_elision",
+    "allocator_churn_elision",
+    "debug_dump_elision",
+    "obs_decode_elision",
+    "conditioning_prefill",
+    "ring_kv_addressing",
+    "action_terminal_forward_elision",
+    "conv_layout_ndhwc"
+  ],
+  "interpreter": "/home/ubuntu/.venv-lingbot/bin/python",
+  "benchmark_sha256": "67f8b83d819819f95d8d7ef827d06a333c051b5d06fb5cfb26db759c0f2d47ce",
+  "input_archive_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+  "ok": true,
+  "p50_ms": 289.244398009032,
+  "min_ms": 222.0420208759606,
+  "max_ms": 293.63382095471025,
+  "measured_count": 9,
+  "peak_allocated_bytes": 30321697280,
+  "numeric_environment": {
+    "matmul_tf32": false,
+    "cudnn_tf32": false,
+    "cudnn_benchmark": false
+  },
+  "actions_sha256": "73a73297c34b10e21819197232432884953ae7a3f3be0a8eab97702d212e338c",
+  "sources": {
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/adapters/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/adapters/base.py": "faddf49c84fe9d087365b3cf566bb68bbe4b2bf08eb7a426006c936b27ef047d",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/descriptors/deployment.py": "75b9e6ca18b3ad6492f2b9ae22bf11390938a4322361c1188cf4841c44216b42",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/runtime/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/runtime/state/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/runtime/state/types.py": "9d1e43574a1929b73c892cccff56453d2bc71bd02df85a83850208da2e69fc0b",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/descriptors/model.py": "93c26dcc782b69705e0e84babaf195740f6990e9413e27722e4eb4170400ffc5",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/descriptors/__init__.py": "6c32d9902026f776decf7bd32e13498b67b78e589051d1b5f7454b0129e16c75",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/adapters/lingbot_va.py": "969220bbf18a56b301bcd3b801eecc4ffa863e518501b82cb4872d857693e846",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/runtime/loader.py": "a2bce76e99f4443089d21bbc12b3bed53afc1fb2df5e796b225c5b94e4688aea",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/planners/planner.py": "bc31c3c764fa6c98acbd7b5aa0f46b1030d341b823c0bc01ffb59ebb700d4a80",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/planners/__init__.py": "f4e300ea720721cc0ffbc3ddbf5172d67b3d9f9ba00b64900b3ed071cdf879e8",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/contract.py": "eb1a3dcdaafefd2a49bca96d17784526fef9f3299fd26dcf800d394046e4f7f1",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/lingbot/action_terminal_elision.py": "92a28ff193f10bf19541f0e0a253b31b5b7ae7f4a8b743212debf675d0daf632",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/lingbot/cfg_elision.py": "41f7b8370bc1b8928b17048dabf54520537ef431ef4d98013ead4efeab9f96d8",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/lingbot/conditioning_prefill.py": "3cbc5e5f2ace0b2d061383698cfd85a0a5190f2a4e8e02fa2c3e6e0b9fc56468",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/lingbot/conv_layout_ndhwc.py": "10926b28cd68d773d773ec5b884672db9d8cdfac64d9758ae934860c37c204ae",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/lingbot/ring_kv.py": "264c0addbbfcff2ba0e8f445af6fe2d7e85f799124749a2a2c6ff3992412e2af",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/lingbot/sm120_gated_residual.py": "ba5addcbabf82d76194aa98c20b738dd3dfba4d267f4e62a747fb6dc91fa5d12",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/lingbot/sm120_wan_stage2.py": "3a151b5f00b5144874436cf7570b9a635fbba73e30d724722d5dc7a6e2128b1a",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/lingbot/substrate.py": "7f6162ba2d175db9ad56425a3aa8cb68b90f1778c343ba37f381ea02618d3abf",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/lingbot/__init__.py": "cc153c3e272cd18b7510dec81e625168124e7db3f06909bf6cdb49cfd9e8fd52",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/descriptors/checkpoint.py": "a2949d1fa9ae40fe27c9d4e981616327406604118af72f547f78f00426e387ba",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/descriptors/package.py": "0766dc55a35d7d2fab55de5aa931699bbcaece7fda78de3d91ee39424087c8d7",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/runtime/execution.py": "c6aa42720d799f4a2f2b8c50bd10dc113c89e07493e341db0050ca090f008471",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/runtime/facade.py": "24f9521b02ea55c830af7e01102bb887a20153eeb0e7b394d5669eb14e52fa7b",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/__init__.py": "50071567526aab898205d92b382b3ca392aabaf33584379bf436fb48bb488b8f",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/runtime/precision.py": "3296d47dd912c7aa66295b4a835c44dcd13b323b98b0005823b29d43057b47cf",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/descriptors/known.py": "05f6d5587a3c8ef543e2560ac0c91d1def49caec3d89851b50c9a190edab6834",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/descriptors/guidance.py": "3455608a231758fb2a146409f04c6d2253b7f3859cccf22f6dea9dcd93b32d9d",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/backends/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/backends/sm120_residual.py": "1509fc2143e21a9513ee11c4389d68b1a31db221d4ddbd9e148cdb81e225e717",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/backends/sm120_wan_stage2.py": "0ede242abc15ae802b762f187c5932f0e81bb0617687ebc3f8185882f7745f4d",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/registry.py": "cff56c57748cb40212a2072d8dcfd1b0bd395a8446492f8a71682a31e8afe2a8",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/generic/engine_offload.py": "d686eef806c88bc559212ad23a5af42ee4a11e6eb3099629d8dfcf14279dcdd1",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/generic/graph_capture.py": "898ef8861ebad68068b90d0b7ce0d6dc6e4d662662b07d96dde375dbaa1b1e50",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/passes/generic/__init__.py": "f04a5033aab0d0ace4d3bdd460011049cef662f8aecf7856b0d35c9e45c24113",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/runtime/engine_backend.py": "25f81836f1c649ff3dc007dc54bbd1918a8eb8121ac7d574e0dfe147a90bc1b1",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/runtime/sm120_install.py": "f3486d11b3ca1f1297222c08787619441fe5e3408f28bc2337db8bc01ac288be",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/runtime/sm120_stage2_install.py": "7d527ed57b46b6ebe601273ca49d4cda2b31fe1d60dd5af0a8d37f530cda724a",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/runtime/lingbot_install.py": "b72a8cd3889e6681250c65f7ef671448e8719ee61e78deb3ecb4f76c59db1435",
+    "/home/ubuntu/lingbot-va/wan_va/wan_va_server.py": "9c2a427611db487fea5cf40f184b713bf2088e533990ee00fdcd020d2668b4bf",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/backends/conv/semantics.py": "a7894fc64f015c80d76c33b66ff90540ef398a95f25d0db2078c0d85221bba51",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/backends/conv/capabilities.py": "90ff841d7784d93f8b144c007db025db4bb99b50d638e2b6dcbd8675cbca92d2",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/backends/conv/reference.py": "659ecfdd90e7a5d1de601b79f1f885527893b26f62ea47bce8567da6ea5dd594",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/backends/conv/registry.py": "a1073e5db5640c37a7c3a5455d52681b61621d083a2a945c3f28bc2b162e8a50",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/backends/conv/__init__.py": "65e0bb5759513212d7b8d5625979f957d4b32cf8f94f3271254b6220ad20481e",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/autotune.py": "687f307415f6e9fdd398cff468d61efcc8c1ba2fe2cbe30c7a7c4dfcf72d067e",
+    "/home/ubuntu/ifl_eval/numeric_total_20260910/source/instinctflash/backends/conv/apply.py": "0e74a8645db1494847bf653bd09f3328a0ca2981096f92f7524581dd9a896e4f"
+  }
+}

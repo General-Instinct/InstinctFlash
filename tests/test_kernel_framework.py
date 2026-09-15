@@ -60,7 +60,7 @@ def main() -> int:
     dtype = torch.bfloat16 if use_cuda else torch.float32
     device = DeviceProfile.probe() if use_cuda else DeviceProfile(
         name="cpu", capability=(0, 0), total_memory=0,
-        features=frozenset({"triton"}))
+        features=frozenset())
     rc = 0
 
     print("=== 1. tier DERIVED from structure, not declared ===")
@@ -80,8 +80,11 @@ def main() -> int:
     for k in REGISTRY._by_region["post_attention_gated_residual"]:
         r = check_legality(pinned, k, device)
         print(f"  {k.name:34s} legal={str(r.legal):5s} {r.violations if r.violations else ''}")
-        if k.compute_dtype == "bf16" and r.legal:
-            print("  FAIL: a bf16 kernel was allowed into an fp32-pinned region")
+        if k.compute_dtype == "bf16" and not any("must stay fp32" in v for v in r.violations):
+            print("  FAIL: the bf16 kernel's fp32-pinned violation was not reported")
+            rc = 1
+        if not use_cuda and "triton" in k.hardware.requires and r.legal:
+            print("  FAIL: a Triton kernel was allowed on a CPU-only device")
             rc = 1
 
     print("\n=== 3 + 4. selection by MEASUREMENT on real shapes, eager is the floor ===")
@@ -102,6 +105,10 @@ def main() -> int:
     print(f"  eager: {eager_ms:.4f} ms")
 
     for k in REGISTRY._by_region["post_attention_gated_residual"]:
+        compatible, why_hardware = k.hardware.satisfied_by(device)
+        if not compatible:
+            print(f"  SKIP {k.name}: {why_hardware}")
+            continue
         out = k.impl(hidden, attn, gate)
         d = (out.float() - ref.float()).abs().max().item()
         ms = bench(k.impl, hidden, attn, gate, cuda=use_cuda)
@@ -127,14 +134,19 @@ def main() -> int:
     print(f"    {why_n}")
 
     print("\n=== 5. a legal-but-slower kernel must be rejected ===")
-    sel_slow, why_slow = REGISTRY.select(
-        POST_ATTENTION, device,
-        measure=lambda k: bench(k.impl, hidden, attn, gate, cuda=use_cuda),
-        eager_ms=1e-9, tier_ceiling=Tier.NUMERIC)   # pretend eager is infinitely fast
-    ok = sel_slow is None
-    print(f"  {'OK  ' if ok else 'FAIL'} {why_slow[:100]}")
-    if not ok:
-        rc = 1
+    if REGISTRY.candidates(POST_ATTENTION, device, Tier.NUMERIC):
+        sel_slow, why_slow = REGISTRY.select(
+            POST_ATTENTION, device,
+            measure=lambda k: bench(k.impl, hidden, attn, gate, cuda=use_cuda),
+            eager_ms=1e-9, tier_ceiling=Tier.NUMERIC)   # pretend eager is infinitely fast
+        ok = sel_slow is None
+        print(f"  {'OK  ' if ok else 'FAIL'} {why_slow[:100]}")
+        if not ok:
+            rc = 1
+    else:
+        assert sel is None and sel_n is None, "without a compatible kernel both ceilings must keep eager"
+        print("  OK eager fallback at both ceilings")
+        print("  SKIP slower-kernel comparison: no compatible kernel on this device")
 
     d = lingbot_fusion_descriptor()
     print(f"\ndescriptor: {d.model_id}, {len(d.regions)} regions, "

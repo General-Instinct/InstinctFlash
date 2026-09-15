@@ -1,0 +1,59 @@
+{
+  "pid": 186368,
+  "status": "incomplete",
+  "jobs": [
+    {
+      "name": "lerobot-pi05-nfe1-compiled-v1",
+      "status": "complete",
+      "started": 1789322808.7286534,
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/pi05-nfe1-driver/benchmark_runtime.py",
+        "pi05",
+        "native",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/lerobot-pi05-nfe1-compiled-v1.json",
+        "--arm",
+        "baseline_a",
+        "--warmup",
+        "10",
+        "--iterations",
+        "30",
+        "--input-archive",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "exit_code": 0,
+      "p50_ms": 156.08267651987262,
+      "error": null,
+      "ended": 1789323028.2658958
+    },
+    {
+      "name": "flash-pi05-nfe1-native-v1",
+      "status": "complete",
+      "started": 1789323028.2664473,
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/pi05-nfe1-driver/benchmark_runtime.py",
+        "pi05",
+        "native",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/flash-pi05-nfe1-native-v1.json",
+        "--arm",
+        "current",
+        "--warmup",
+        "10",
+        "--iterations",
+        "30",
+        "--input-archive",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "exit_code": 0,
+      "p50_ms": 262.35600298969075,
+      "error": null,
+      "ended": 1789323208.2449574
+    },
+    {
+      "name": "lerobot-va",
+      "status": "waiting_for_checkpoint_transfer",
+      "path": "/home/guanming/ifl_eval/framework_comparison_20260913/lerobot-va-checkpoint/model.safetensors"
+    }
+  ]
+}

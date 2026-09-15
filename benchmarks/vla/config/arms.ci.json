@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "control_arm": "upstream",
+  "arms": [
+    {
+      "id": "upstream",
+      "role": "control",
+      "driver": {
+        "command": ["python3", "-m", "benchmarks.vla.reference_driver"],
+        "revision": "reference-driver-v1",
+        "environment": {"IFL_BENCH_EXECUTION": "synthetic_upstream"},
+        "timeout_seconds": 60
+      },
+      "operating_point": {"name": "synthetic_upstream", "tier": "BITEXACT"}
+    },
+    {
+      "id": "accelerated",
+      "role": "treatment",
+      "driver": {
+        "command": ["python3", "-m", "benchmarks.vla.reference_driver"],
+        "revision": "reference-driver-v1",
+        "environment": {"IFL_BENCH_EXECUTION": "synthetic_candidate"},
+        "timeout_seconds": 60
+      },
+      "operating_point": {"name": "synthetic_candidate", "tier": "BITEXACT"},
+      "gates": {
+        "performance": {"min_speedup": 1.0},
+        "action": {"mode": "bitexact"},
+        "success": {"margin": -0.05, "interval": "tango_one_sided95", "min_pairs": 1}
+      }
+    }
+  ]
+}

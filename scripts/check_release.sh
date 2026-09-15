@@ -59,5 +59,5 @@ print('  public API:', ', '.join(instinctflash.__all__[:5]), '...')
 done
 
 echo
-echo "RELEASABLE: both artifacts build, install cold, and expose a working console script."
-echo "Publication needs a credential; nothing else is in the way."
+echo "CPU package checks passed: both artifacts build, install cold, and expose a working console script."
+echo "GPU, model, serving and performance qualification remain separate; this check does not authorize publication."

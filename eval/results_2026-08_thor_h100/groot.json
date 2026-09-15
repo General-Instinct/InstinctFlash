@@ -1,0 +1,16 @@
+{
+ "model": "nvidia/GR00T-N1.7-3B (real weights, oxe_droid_relative_eef_relative_joint)",
+ "hardware": "Jetson Thor (SM110), single GPU, measured under /tmp/thor_gpu.lock",
+ "official_eager_ms": 121.9,
+ "flashrt_native_ms": 40.6,
+ "ours_ms": 42.4,
+ "notes": {
+  "official_eager": "Isaac-GR00T Gr00tPolicy.get_action, synth_obs from checkpoint modality config (2 cams 256x256 uint8 + eef_9d/gripper/joint state + language), full per-observation pipeline (vision + LLM + DiT + decode every call), sdpa attention (flash-attn not in env), p50 of 15 calls after 3 warmup = 121.9 ms (mean 128.6). H100 reference: 117 -> 70 ms (1.67x)",
+  "flashrt_native": "the fork's own GrootN17TorchFrontendThor driven directly (tests/test_groot_n17_latency.py pattern): set_prompt(aux) once, then infer(state, fixed noise); CUDA-event p50 of 30 runs = 40.6 ms (mean 40.6), action (1,40,132) finite",
+  "ours_engine": "InstinctFlash Runtime placement=engine via groot_n17_view + adapter register; same aux bundle and state geometry as the native arm; wall-clock p50 of 20 predicts = 42.4 ms (mean 44.3), action (1,40,132) finite; rt.explain: fused fp8 W+A pipeline, chain tier NUMERIC (uncertified - cosine-level only); Runtime wrapper costs ~1.8 ms vs driving the frontend directly",
+  "comparability_caveat": "native and engine arms exclude per-request vision BY FRONTEND DESIGN: the vision/LLM prefix is computed once at set_prompt (prompt-scope backbone cache, Phase 3c.b2 aux contract) and per-call infer = state-encode + 4-step DiT + decode. The eager arm reprocesses the full observation every call. 121.9 vs 40.6/42.4 is therefore NOT a like-for-like e2e comparison; the honest engine-vs-fork comparison is 42.4 vs 40.6",
+  "aux_bundle": "captured fixture-free from the HF policy with forward hooks (S=273 tokens, S_vit=1024, grid_thw 4 entries); MISSING_KEYS=['input_ids'] - the Qwen3VL path passes inputs_embeds without input_ids, and set_prompt does not consume input_ids, so both downstream arms ran and produced finite actions",
+  "gated_backbone": "gr00t loads the full Qwen3VLForConditionalGeneration from gated nvidia/Cosmos-Reason2-2B at policy init; pre-seeded into the HF cache with the box token (access verified) after the first eager attempt failed for lack of HF_TOKEN in the chain env"
+ },
+ "walls": []
+}

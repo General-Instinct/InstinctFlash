@@ -1,0 +1,41 @@
+{
+  "scope": "Matched short public API diagnostic, one process per arm, 2 warmups and 12 measured calls; no closed-loop quality or sustained tail certificate. Native eager; FP8 Q/K/V projections. All actions locally checked finite (15,32,8).",
+  "models": {
+    "edge": {
+      "arms": {
+        "native": {
+          "receipt": "cosmos-latency-edge-native.json",
+          "actions_path": "/home/ubuntu/ifl_eval/thor_precision_completion_20260909/cosmos-latency-edge-native-actions.npz",
+          "actions_sha256": "3dd8efea9a589fc59befd03f236247d25d436a0803d8eea9a02e9c03dc5a9607",
+          "p50_ms": 3440.268106001895
+        },
+        "fp8": {
+          "receipt": "cosmos-latency-edge-fp8.json",
+          "actions_path": "/home/ubuntu/ifl_eval/thor_precision_completion_20260909/cosmos-latency-edge-fp8-actions.npz",
+          "actions_sha256": "2f83336ef25e8385e2671b1c6084d77ff430e484dad6fbf0d1cd2c31b7537447",
+          "p50_ms": 4057.024764479138
+        }
+      },
+      "native_over_fp8": 0.8479780888011351,
+      "fp8_latency_increase_percent": 17.92757539452372
+    },
+    "nano": {
+      "arms": {
+        "native": {
+          "receipt": "cosmos-latency-nano-native.json",
+          "actions_path": "/home/ubuntu/ifl_eval/thor_precision_completion_20260909/cosmos-latency-nano-native-actions.npz",
+          "actions_sha256": "0404c7ef0dc26ec93df7b0f93740496b12e4b310c3b93429cc11ecb7aacaf138",
+          "p50_ms": 10194.785521540325
+        },
+        "fp8": {
+          "receipt": "cosmos-latency-nano-fp8.json",
+          "actions_path": "/home/ubuntu/ifl_eval/thor_precision_completion_20260909/cosmos-latency-nano-fp8-actions.npz",
+          "actions_sha256": "80e03202764102e19719b3463673b540d75e63d6fb6e4955db395f75997c0c46",
+          "p50_ms": 11700.222273531836
+        }
+      },
+      "native_over_fp8": 0.8713326365263078,
+      "fp8_latency_increase_percent": 14.766732942156647
+    }
+  }
+}

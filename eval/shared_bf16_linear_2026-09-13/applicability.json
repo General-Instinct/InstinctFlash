@@ -1,0 +1,197 @@
+{
+  "scope": "target MLPs; no speed claim for unchanged models",
+  "models": [
+    {
+      "model": "Cosmos Edge",
+      "source": "/home/ubuntu/cosmos-framework/cosmos_framework/model/generator/reasoner/cosmos3_edge/modeling_cosmos3_edge.py",
+      "sha256": "e8f34c2ecb60eecf167482fc13500e51cf9e57680b44e89491a1fac62bae1173",
+      "activation": "relu2",
+      "status": "integrated",
+      "evidence": [
+        {
+          "line": 163,
+          "text": "self.act_fn = ACT2FN[config.hidden_act]"
+        }
+      ]
+    },
+    {
+      "model": "Cosmos Nano",
+      "source": "/home/ubuntu/cosmos-framework/cosmos_framework/model/generator/reasoner/qwen3_vl/qwen3_vl.py",
+      "sha256": "f746c3e1b50a0e921bcac0f86b2355b0a7c457662e03c1da1fe0ecb3395efd13",
+      "activation": "gated SiLU",
+      "status": "original",
+      "evidence": [
+        {
+          "line": 68,
+          "text": "self.act_fn = ACT2FN[config.hidden_act]"
+        },
+        {
+          "line": 125,
+          "text": "self.act_fn = nn.GELU()"
+        },
+        {
+          "line": 513,
+          "text": "self.gate_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)"
+        },
+        {
+          "line": 516,
+          "text": "self.act_fn = ACT2FN[config.hidden_act]"
+        },
+        {
+          "line": 519,
+          "text": "down_proj = self.down_proj(self.act_fn(self.gate_proj(x)) * self.up_proj(x))"
+        }
+      ]
+    },
+    {
+      "model": "pi05",
+      "source": "/home/ubuntu/openpi/src/openpi/models_pytorch/gemma_pytorch.py",
+      "sha256": "225092e06509da0ae37bb9dca55c00d2804255bb1496f7c8700304b4c52a95eb",
+      "activation": "gated GELU-tanh",
+      "status": "original",
+      "evidence": [
+        {
+          "line": 32,
+          "text": "vlm_config_hf.text_config.hidden_activation = \"gelu_pytorch_tanh\""
+        },
+        {
+          "line": 39,
+          "text": "vlm_config_hf.vision_config.projector_hidden_act = \"gelu_fast\""
+        },
+        {
+          "line": 50,
+          "text": "hidden_activation=\"gelu_pytorch_tanh\","
+        }
+      ]
+    },
+    {
+      "model": "LingBot-VLA-4B",
+      "source": "/home/ubuntu/lingbot-vla-repo/lingbotvla/models/vla/pi0/modeling_lingbot_vla.py",
+      "sha256": "ec12eda6ab87641066d5c86340e5f24f9cf516dcd5c509960c65161a7ee736af",
+      "activation": "gated SiLU",
+      "status": "original",
+      "evidence": [
+        {
+          "line": 70,
+          "text": "self.gate_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)"
+        },
+        {
+          "line": 73,
+          "text": "self.act_fn = ACT2FN[config.hidden_act]"
+        },
+        {
+          "line": 76,
+          "text": "down_proj = self.down_proj(self.act_fn(self.gate_proj(x)) * self.up_proj(x))"
+        },
+        {
+          "line": 940,
+          "text": "hidden_act=\"silu\","
+        },
+        {
+          "line": 960,
+          "text": "\"hidden_act\": \"silu\","
+        },
+        {
+          "line": 1001,
+          "text": "hidden_act=\"silu\","
+        },
+        {
+          "line": 1508,
+          "text": "nn.GELU(),"
+        }
+      ]
+    },
+    {
+      "model": "LingBot-VLA-V2",
+      "source": "/home/ubuntu/lingbot-vla-v2-repo/lingbotvla/models/vla/lingbot_vla/modeling_lingbot_vla_v2.py",
+      "sha256": "9b3c9a2ad6823f9d58da51b732477785a1e4db0d29db80e030e094c7b605e40c",
+      "activation": "gated SiLU / MoE",
+      "status": "original",
+      "evidence": [
+        {
+          "line": 91,
+          "text": "hidden_act=\"silu\","
+        },
+        {
+          "line": 163,
+          "text": "nn.GELU(),"
+        },
+        {
+          "line": 1209,
+          "text": "\"model.qwenvl_with_expert.qwen_expert.model.layers.*.mlp.experts.gate_proj\": Shard(0),"
+        }
+      ]
+    },
+    {
+      "model": "GR00T N1.7",
+      "source": "/home/ubuntu/Isaac-GR00T/gr00t/model/modules/dit.py",
+      "sha256": "d4da27be51d9ebe1c923dedd3ae80fe2754c97f96500e82c26fe19fec0062c13",
+      "activation": "GELU-approximate",
+      "status": "original",
+      "evidence": [
+        {
+          "line": 108,
+          "text": "activation_fn: str = \"geglu\","
+        },
+        {
+          "line": 128,
+          "text": "self.activation_fn = activation_fn"
+        },
+        {
+          "line": 170,
+          "text": "activation_fn=activation_fn,"
+        },
+        {
+          "line": 234,
+          "text": "activation_fn: str = \"gelu-approximate\","
+        },
+        {
+          "line": 269,
+          "text": "activation_fn=self.config.activation_fn,"
+        },
+        {
+          "line": 429,
+          "text": "activation_fn: str = \"gelu-approximate\","
+        },
+        {
+          "line": 451,
+          "text": "activation_fn=self.config.activation_fn,"
+        }
+      ]
+    },
+    {
+      "model": "LingBot-VA",
+      "source": "/home/ubuntu/lingbot-va/wan_va/modules/model.py",
+      "sha256": "f65fdca5f28b327bfc89ca082a7b55eee3fb4ab1ffc469c642a075920e6f4487",
+      "activation": "GELU-tanh",
+      "status": "original",
+      "evidence": [
+        {
+          "line": 224,
+          "text": "act_fn=\"gelu_tanh\")"
+        },
+        {
+          "line": 509,
+          "text": "activation_fn=\"gelu-approximate\")"
+        }
+      ]
+    },
+    {
+      "model": "DreamZero",
+      "source": "/home/ubuntu/dreamzero-repo/groot/vla/model/dreamzero/modules/wan_video_dit_action_casual_chunk.py",
+      "sha256": "efc5120f73cbce2e00b67d78e8bf71a561e943a909791f039b435abc27ccd605",
+      "activation": "GELU-tanh",
+      "status": "original",
+      "evidence": [
+        {
+          "line": 1145,
+          "text": "nn.Linear(dim, ffn_dim), nn.GELU(approximate='tanh'),"
+        },
+        {
+          "line": 1389,
+          "text": "nn.Linear(text_dim, dim), nn.GELU(approximate='tanh'),"
+        }
+      ]
+    }
+  ]
+}

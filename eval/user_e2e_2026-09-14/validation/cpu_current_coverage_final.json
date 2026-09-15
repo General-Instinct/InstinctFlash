@@ -1,0 +1,2112 @@
+{
+  "schema": "instinctflash.current_cpu_coverage.v1",
+  "verification": "Historical full CPU suite plus focused rechecks of changed tests and their affected runtime/reporting paths; every current test file has a matching source hash. This is an aggregate, not a claim that every test was rerun in one invocation.",
+  "verified_utc": "2026-09-14T02:42:20.697708+00:00",
+  "interpreter": "/home/ubuntu/cosmos-framework/.venv/bin/python",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "OMP_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "counts": {
+    "PASS": 172,
+    "SKIP": 19,
+    "FAIL": 0
+  },
+  "test_files": 191,
+  "results": [
+    {
+      "verdict": "SKIP",
+      "file": "test_action_terminal_elision.py",
+      "detail": "7 passed; needs easydict",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "5a3d02c8db62d24d1132ece6859a1c0559b37254e5b7d96bcede0bd72c2b4ac9"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_adapter.py",
+      "detail": "12 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "bcd2efb9afc78ef2d43134b7f6277433cff1b9cfeebcec0f8f3575eeae5d448f"
+    },
+    {
+      "file": "test_assemble_user_provenance.py",
+      "verdict": "PASS",
+      "detail": "14 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 0.35,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-5j_mkouu/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_assemble_user_provenance.py"
+      ],
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_provenance_final_recheck.json",
+      "test_sha256": "142b070d7b7e6617fe7d6987c0c74675b59daa953dcd25db8e87a27643e8a393"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_attention_backend.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.088,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "dbd715817c4e17263a8b968d0080e1bdaa0f6dff007fef681465b7ae0170d958"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_attribution.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 2.395,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "b6ced604565e7e976eb785e3071dffe297a586ef37f482f61e411ce59c8c3cbb"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_autotune.py",
+      "detail": "10 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "9c892f14b9a8c510276008afa673bc708466de3509f391ae65a319420ec3572b"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_bf16_linear.py",
+      "detail": "14 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "f2c5d15fe091d21419dfdfe57a0c71fe66860eaedcf353f0f127481fd514347b"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_campaign_doctor.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "9ceeb5595d8d6e18411a165ef8bd56fee7efde6c9e224e6838bea25946c7777e"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_capture_default_families.py",
+      "detail": "19 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "232f88dd4cdfd8ad950a4d97a9e1537bede271df948edcc83356b498c6ecf414"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_capture_reference_integrity.py",
+      "detail": "6 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "082b59404a259b1e22590d17d8b5623137d93f471f53b247f81adaeffa36fdb8"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_certify.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.08,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "5f5ef64784b054d2defd299904b4dc6f0f40b1974a18bee981775519788fcea9"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_checkpoint_platform.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.414,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "899c12c0964ea262383b09fa28c51f21b66897c83ce8a7ef7ca3015b91c3a5e8"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_checkpoint_revision_views.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "adcdec94789e404d4aab7e6bdeedc69c7af5536a7dd342b9a5af9efcd3175b13"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_checkpoint_variants.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "38d547d45f0d693cfa4fb8218b5857bc3ad1b29a2ca36cca3fa3d6f25f4e774b"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_clean_wheel_snapshot.py",
+      "detail": "8 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "57acf713487513eed8136dc9a6c88c1e82126c9379f70ef681a0b8569a684e02"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cli.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.729,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "0389cd02e90fe1dd84a74400aa76d4f5f2109a6c47afc037d10bd34056e4fc66"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cli_config.py",
+      "detail": "8 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "16bf50004f1ee5242b16869f8f8e53f17a1aaac28aeeea6a9a0126320e85e91c"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cli_preflight.py",
+      "detail": "4 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "e48d33d501e4a9bf32ef46f15cbdf39faa2d329919f0f9ea6888710068fab85f"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_closed_loop_action_report.py",
+      "detail": "6 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "41753561dae645b836a6a4a7b5ce768979ac87be510e27be81ec8192eb6bd6e2"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_compiled_region.py",
+      "detail": "7 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "dbdeda0859ab0253002a3dc104608d0498cd728255ba2257c21644d297267284"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_controller_trace_validation.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "730800aeaf302938268640ed5149c2d0608042b0fec650aec971f14e70f6aa48"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_conv_autotune_site.py",
+      "detail": "7 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "3f5db3e02819c3e0eb6f647f46e7285fd5762a791c89215a18e899e300141d19"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_conv_backend.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.08,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "7eccac38975e382c075aa357463281340a945da48f306de14da6259245555cfe"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_core_stability.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.262,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "efd576dde6039f7181e62b5342e2c09c93ea16ebb951a8a2974beccb0b714f38"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos3_conditioning_cache.py",
+      "detail": "11 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "47b63dab8549a798f6e44c2223fd75832c5781037a8b6d188fcffb8e12d8ef73"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_cosmos3_engine.py",
+      "detail": "needs CUDA",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.566,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "69e05f13ec1aa77974e5a53bbcec4718fd5920a89d18a985f48cc6f53e8b5e59"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos3_nano_action_only.py",
+      "detail": "5 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "5e24a28e904e5c38271016cace6bd9608090b4d375198d7d9153d81644fc012a"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos3_persistent_text_kv.py",
+      "detail": "8 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "28c07409bd546108b347c89c19f9a7d5b818813cdaec7d55bda70a9ef2b43f8b"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos3_policy_adapter.py",
+      "detail": "10 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "09d27c3cd456580eb624055acff585a6ec1a82dece216e15d211f77c2c5bd6c3"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos3_thor_graphs.py",
+      "detail": "9 tests passed, 1 skipped",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "de35705c145b9e6b3d410170fc149dbd4cc65eae17bee890c972209c019358e9"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos3_thor_pointwise.py",
+      "detail": "3 tests passed, 2 skipped",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "7fb68fce9d77ca44bc3ba9a18028d8f2f301fccc3238ea62b99fc763eba9fad7"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos_backend_dispatch.py",
+      "detail": "4 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "c912ad4fe0f3c898b3aa3a1740f546d8f3dcd7d2ea03c7c376d17fc5b880dfe5"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos_dense_mlp_fp8.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "da16e85b5cf29a84bd620034937b32f4ce0d04333ff9c59c3a4b19dac8e57c65"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos_droid_loop.py",
+      "detail": "4 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "b25ef7efb0da3dbea25e03b6f0c6090c52af1e1ea07aed864868daf58003796e"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos_fp8_install.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "78581f22b0ab48107cd587164844938351822213f98bf9dcbb1284d1de6e4770"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos_generation_region.py",
+      "detail": "13 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "4be50bfe640816a1794122544bde070d552c1a9181575a1ee7394ad79f90b7be"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos_numeric_attention.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "2e8c5c3c50e81c42e59087ea9916803dde26e299e6b239ff031227c50ffad63c"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos_numeric_regression.py",
+      "detail": "8 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "34dd23e845e7d7c6a4dad88db70f4f8af856f2af8f8006784f11070c159ab096"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos_real_weights_probe.py",
+      "detail": "5 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "a8fddca458fe5cbda6d34284882d07dc013348daa11c1f69fad67669ce965010"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_cosmos_timestep_cache.py",
+      "detail": "6 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "ac11943913e91ef4f6cb573987bb0dc66dd5d28377c1d7302e09c0b984a3e9cc"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_deps.py",
+      "detail": "needs CUDA",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.571,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "fb28cde1996104ff41dba769a21de9bf17a1fd956347839ceb013f091d5a733e"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_device_class.py",
+      "detail": "7 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "7f3547253a6c8108954e16f40cde2705b5fa1b03f1908e74d109747300e50e0d"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_distill_control_gate.py",
+      "detail": "8 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "be98e104d8156f849c2baa4ba4aecbc25564bf41722a24857e148eebbd9f82bd"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_distill_evidence.py",
+      "detail": "4 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "7cdb1a89dce0525a8945a6729cca146cb1f3deb0124859ce801af15775474331"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_distill_provenance.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.136,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "13c6c18108c57f2f04a94d8e2f76156b0035ed7da931b0252190d179b942a389"
+    },
+    {
+      "file": "test_dreamzero_adapter.py",
+      "verdict": "PASS",
+      "detail": "8 tests passed",
+      "exit_code": 0,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_current_targeted.json",
+      "test_sha256": "33ed9bc8476f4445c2e99e151c82061010c394fc5e171f372cce56271f1726fc"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_dreamzero_backend_dispatch.py",
+      "detail": "9 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "e291828df5336759cb5e55020651484f059761a3834d17512801d8b00df0e365"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_dreamzero_checkpoint_geometry.py",
+      "detail": "7 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "bb7a4ed9f83bebf249f3b4595e17d751b76e1249d559f40b658520c11b24b48c"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_dreamzero_checkpoint_loading.py",
+      "detail": "9 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "c656c01fbccdb5b3e3d45b12cdba18decf3e9d1dc696f56129d41b82dbaaf147"
+    },
+    {
+      "file": "test_dreamzero_fp8_builder.py",
+      "verdict": "PASS",
+      "detail": "29 tests passed",
+      "exit_code": 0,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_current_targeted.json",
+      "test_sha256": "2f8ad2d339c6695459239245e06a7e40f095cf0b12dfe5f027d200eae384720d"
+    },
+    {
+      "file": "test_dreamzero_fp8_install.py",
+      "verdict": "PASS",
+      "detail": "4 tests passed",
+      "exit_code": 0,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_current_targeted.json",
+      "test_sha256": "772c7a2c35f6029eaafa16c1bc3bc93d7d98855449a80faba21170ea10955925"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_dreamzero_owned_loading.py",
+      "detail": "5 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "fe55a013a590eafcd74823c5f43036923a3d5a9fe07a75908a1974f3aee5e9a1"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_dreamzero_step_cache.py",
+      "detail": "13 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "d4d2a8d0daa798debbdc52495add609e147e0fffb23316583959863a3d42e572"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_dynamic_fp8_pack.py",
+      "detail": "1 tests skipped",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "8249f893fdc04fd4591b0699245c3278d7a06ec18bff666c67c1c9d71927608b"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_end_to_end_example.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.398,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "fe39b4d239eb4c6b4798913fbf381215c49fefd7981d4402cdc0a1795a2fced7"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_engine_available_kernels.py",
+      "detail": "5 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "1bfdca5ab0a9f79889164581c1b70232449baeeaec23f794e5879bf394e889dc"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_engine_exclusion.py",
+      "detail": "5 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "a6dbe782354dbde32a5832b507f9ffcee17b89c12162116e6b536f3e7a7d9368"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_engine_geometry_gate.py",
+      "detail": "15 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "37f720537f1e91d46d30d39d36dd84ce724fd8a006ed9c78c037626dd70415d5"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_engine_graph.py",
+      "detail": "needs CUDA",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 5.823,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "7dd1a3744db74b385fbd75b86db681a33ae36ae54c06622a57c2065634c4fbc8"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_engine_lang_embeds_stability.py",
+      "detail": "1 tests skipped",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "41c05e4ed47358e2d8fa2eca6ca5a022ae6641c07f50bfa10af51f3c80f495fc"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_engine_operating_point_gate.py",
+      "detail": "16 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "0c0d7299ed6f6d82a4c380b2ab04b646bc65fb4452bcb656421dc969cbf46442"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_eval_integration.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "a669bbf8f6fff7bdea3c8999067778da88f643ca5ac0322b868e564035ba353b"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_evidence_bundle.py",
+      "detail": "4 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "ef33aaac63387c12a192353c86baafdcbe6d59bfe8faa038625d9cc9134d9266"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_exact_tensor_contract.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "2994d51b112112352ad6945f60abd2feeeaf19630812260828b204fad142c41c"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_execution_selection.py",
+      "detail": "17 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "3cc26e8f3e41ab184531f41bf0b77243bf177ddd0d35345a385e9735c33d5a7f"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_external_plugin.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.124,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "a02f69e6b8f98910dd7b4ece4fd9e4fbfbba19eb5a8de5b60ba99e7f7c2bf156"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_fixed_input_replay.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "481aa671954142928830c05a2af5b85f08275aa388f976472ebf39c033d11ca6"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_fp8_projection_evidence.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "0276ed0c1c28499a20c1c465a236dd69f64c4e4bff2e5a493784a4c05646b705"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_generic_pass.py",
+      "detail": "needs CUDA",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.567,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "a3137aca1dc1e51080784a5f3bb4a8705f8cd5ef83684c4eedc50670485f9a9c"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_groot_action_generator.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "818fb4ab3dd567f0c3615b96b2ef22e07f7649a2e17f5141299a37a7b8a4c7c2"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_groot_backbone_refresh.py",
+      "detail": "5 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "2422bdb1bfdc2b764a3d733495afa1ac11b9818dcfa5c82257e8a38fef13bb35"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_groot_checkpoint_embodiments.py",
+      "detail": "9 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "3599e4a47810dec52061acdc7d08dc2af6bb5d58437d4eb9d28b54b04d22bb49"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_groot_engine_native_options.py",
+      "detail": "4 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "97c115d80b6247148bc32124727d5697d9e8f1d88beb07b59a98f3355ded3a7d"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_groot_fast_decode_selection.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "9a63be570d8c2c46f8d6dc9b681b73fea22625a5c5d7139fe9ef95624ceaa2b4"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_groot_fp8_install.py",
+      "detail": "1 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "c89db43eb8bed2970c12b66998e0c1909d9fc7de2dbf593cffee3a5f0ee9cecf"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_groot_full_capture_reference.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "10627d190f633287ee83c413ccc2a632e3a65a0298fd65d81dc1aad2247f4853"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_groot_gpu_collate.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "b19836de90551ae186de6c2a2775ae00bed2812b9381bf4aac96210b490fb26d"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_groot_libero_driver.py",
+      "detail": "5 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "f975f627a2fbecd92ea6b173c873bd1288a5aab085534c69ece4a891d08b0d96"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_groot_n17_adapter.py",
+      "detail": "14 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "373ac87dc22fe3b8ef4f1a9ee80ed2994a60c0195570ec68e7848168af7926c0"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_groot_policy_server_precision.py",
+      "detail": "11 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "ea0d34b57f32ff55df06fa98e4e993362576433e719c8eafebf8a6dfc31e31a4"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_guidance_schema.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.607,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "5f0c254a7a8d98803e1c5db5bbf413a15c2e685a6dbeb9b6c88f857acf006287"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_h100_fp8.py",
+      "detail": "3 tests passed, 1 skipped",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "9de7e50f34ee57655d84bc666abccc35bb9e597641a61aa1cfecc5b688a25f55"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_hardware_probe.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.573,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "c77922072b51733ed3abb3fe687dfaa23855e59e7a338bdc9d751f4ed05ec069"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_hoist_pass.py",
+      "detail": "needs CUDA",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.605,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "a0fa711555cfb158ce6bc07397630aa1c665ed696e2e4584d2ff184db04bd6d4"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_install_preflight.py",
+      "detail": "15 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "07512937aa3e02b6071a00f757a039549a0b1b94eeb042ad0c39ae3845957fe3"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_joint_policy_server_precision.py",
+      "detail": "33 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "4c583e60b10005cf133170b91846a48d96853f533d48971a26e1e95db2559eef"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_joint_robotwin_driver.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "6b3f4932f38b534c58f97cb2976febe99177a61243b12ef4ce5282a3f930b605"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_kernel_framework.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 3.603,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "7e01e963133d70748a2ffcf3c8923908f9fde98a41ff8d23729c13b16775352f"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_l3_noop.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.075,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "09bbdb131e755f6554cd5310ee28cccc319fd583a37f04803d1a640a06adee49"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_layer5_flow.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.082,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "4610fd7228d4e7592046828fc9719c3674ef2506f0e1e101f6b9f9b8040f177b"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_lingbot_vla4b_adapter.py",
+      "detail": "9 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "d09b7df27b39d3e9d99a99b2e1c2472bead90f40f66ec523b62d7e053c7da8c5"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_lingbot_vla4b_full_path.py",
+      "detail": "8 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "e70117ead1da87bf04378ecaf656e20ae26a9a8b25e207b1c1c34cc1102891c3"
+    },
+    {
+      "file": "test_lingbot_vla_v2_adapter.py",
+      "verdict": "PASS",
+      "detail": "11 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 1.704,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-px272h3o/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_lingbot_vla_v2_adapter.py"
+      ],
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_final_changed_tests.json",
+      "test_sha256": "54a7e0a25ba9ebd95321621b009829dc7f6c1ce09dfeda38506f1c9963a185ec"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_moe_schedule_site.py",
+      "detail": "1 tests skipped",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "ad9c441073617d59cc242151fcc9f8c16c4838454ded2c6745e41a79978933f1"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_native_coverage_comparison.py",
+      "detail": "7 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "f59f36ac95f09e182a5c7e86414f0677c7c7587c5841824a342898bc05fa36fe"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_native_total_comparison.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "0ef2448a533e7f9d8fede8d888273699b711d35a95eeac8f610f12da79e960be"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_numeric_total_comparison.py",
+      "detail": "4 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "c9c37651597ac1eeca52cc68dde9eb4f34d49aafdb37d04ea3cc5ee36d04c4c8"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_operating_point.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.118,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "de908e8543bf10ac2e8e995905f00b04fb2e88d2f0e80450e42d9edd131c1a2a"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_optimizer.py",
+      "detail": "17 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "a13a159f980c3e395202add431c264b43284d2628cb82720c49b4ab402dbb5cd"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_p3_cosmos3.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.413,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "e8cfb28e39c11772a9c659c2dc9b70d83ca36b4a8cab07afc70fd1fcfc2a95a5"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_p8_scratch_arena.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 2.966,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "9a0e0aa8e264fb6fe97d0dd23077e8379c46451e6ea41e74f215b3214bcefadc"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_paired_runner.py",
+      "detail": "4 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "32544a9b7e6c9b55d0a6029f753d0cfbd28b85e301b03ca4a33b7f171691c9cb"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_pdd_lingbot_parity.py",
+      "detail": "Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests",
+      "mode": "script",
+      "exit_code": 1,
+      "elapsed_seconds": 0.13,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "7f9616d375fbda0743da170858a709bc6c3ec3f7f89903ddc94f77c3c58ad66e"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_pdd_parity.py",
+      "detail": "Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests",
+      "mode": "script",
+      "exit_code": 1,
+      "elapsed_seconds": 0.129,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "8f5a561de6d197a60c0d1a9a15f5fa5c41e2fe582839f6ab799db6e037b265f4"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_pdd_recipe.py",
+      "detail": "Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests",
+      "mode": "script",
+      "exit_code": 1,
+      "elapsed_seconds": 0.129,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "eb3c76dca6aed8c5539c7c6ba268f5cd4bb9729b989e004a14934dfadf838e36"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_pi05_adapter.py",
+      "detail": "8 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "cdec59b230c5bcad7b9c1addbb0312bb6b1d58dcddaada89fb7698807af5b4c8"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_pi05_capture_default.py",
+      "detail": "10 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "36623194498df4014b977cc95f04b43a363b6c24d291ed2a93156ff6a974a633"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_pi05_compile_neutralize.py",
+      "detail": "8 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "ca4222cf5b973d61e4c5d2d75bf1559e70b87ea5d422858faca2c5c96db3a1ad"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_pi05_engine_loop.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "347662dc35f9cf5dba27831522c9af13577f8f6ef2f36e742f9a8ff3ee24e93d"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_pi05_legacy_cache.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "f93ff63fbf31e6fa3b62d0747f64c9aa46dfa8c332287415ed4b7a62237e4bc3"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_pi05_libero_driver.py",
+      "detail": "7 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "f6747a68af3f6fb19fd231270eb1d7f4a4590b51c70b343088306e41c84c7e84"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_pi05_runtime_libero_campaign.py",
+      "detail": "9 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "7e017070b86ee71c090fc66733015962e3b4e15d49ee8c00f357df641e221e7f"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_pi05_runtime_libero_compare.py",
+      "detail": "6 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "37ed35e855abe9fd155cded8305fcdfb83bc3566b5c2efa57168f3c051a38a13"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_pi05_scenes.py",
+      "detail": "4 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "c30bdc9467821ddfc0dee84705e612c17990fc62920607cb694a1a7464c397eb"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_pi05_static_capture.py",
+      "detail": "15 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "8f73fbc562feb5e006d9320c3ac8783d7b1d29f5aae24b795e8c6c31579cfeea"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_pi05_tf32_closed_loop.py",
+      "detail": "12 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "f0c8b06208f379a77df76e3245337f9cb8c6a80d8a91a3801fcfb08869e7d9d3"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_pi05_tf32_operating_point.py",
+      "detail": "18 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "2576fb74d0be915547d4c36b5f343fd55018b19f4b31a8ff97d702ca1ead6742"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_pi05_weights.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "d07533cb06c4291f7bec0f012626c44ec4184332ebf0086fabc4e9579a6aa44b"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_plan_header_model_id.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "3e2f4237e5473f897da16026360aac2826ce7a93b1049a485a78dcd4a570d37a"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_policy_trace.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "80aae27dc7a524de560c84d80fd28e962c009ab7256c4f2f824f11a9c153fe38"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_promote_operand.py",
+      "detail": "needs CUDA",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.565,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "cd9d7e07f054d050e15cb363556aa27e8bbe85aabd3e6e06fc94f610806d12fd"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_qualification.py",
+      "detail": "7 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "95ce5b855df10c825d4e4dc9944b1386d7c2c38def00d62ce64a134064be3e7b"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_realtime_budget.py",
+      "detail": "6 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "6943863082003bbb485638a81b74b5fb4dd5b22fda828741521d52289f02c4ba"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_recipe.py",
+      "detail": "Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests",
+      "mode": "script",
+      "exit_code": 1,
+      "elapsed_seconds": 0.129,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "9bddb36b8148174170f46da3f2fd3b58f880f293556f516ae426f52d0e93a25f"
+    },
+    {
+      "file": "test_repo_surface.py",
+      "verdict": "PASS",
+      "detail": "",
+      "exit_code": 0,
+      "mode": "script",
+      "elapsed_seconds": 0.039,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "/home/ubuntu/InstinctFlash/tests/test_repo_surface.py"
+      ],
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_final_changed_tests.json",
+      "test_sha256": "6b3ae0520a24573ee8df13702cf74b156777d3b3c0a943b6234f2a1b01bdc4df"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_ring_allocator.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 11.965,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "17fe2d9b2fbf344e56480ad261f8d058b82bbfe6cda93f9912456362020fa3c0"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_robotwin_driver.py",
+      "detail": "11 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "df09c868b581bb5696544e42375398684f9b38e6bc1af89eb246625ce5277122"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_robotwin_reset_bounds.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "516a037f325957f8be1e5e8a39f492edf4fb572579676fb7cfee50f9664b7478"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_robotwin_transport.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "98e4e06641478f20fa1e866473665ae5f99419f66cef7d1a81dc11ef539870c7"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_rope_kernel.py",
+      "detail": "no CUDA",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.647,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "e4141dc1912a2618c4aef3bc2bd80a3c79368ccaf8be0df4f526783a0fe1f451"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_runtime.py",
+      "detail": "6 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "ed79d427e5d861b6b0a35ed737688452f318c744c2a5586e39d2545dc6131efe"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_runtime_boundary.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 2.1,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "9847fa926e7c62df7d361b2b4920893d405674b517c69fa1341fa202438488a8"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_runtime_bundle.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "dc5832321d48bb3fa427b9eb42e253139435a82279af2fc0a21f35b533bb958b"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_runtime_facade.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 3.259,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "a132de74b8e04c62d152ab8c882fd14417f83483c5a7f2a40ed9b9c54e6ce092"
+    },
+    {
+      "file": "test_runtime_precision.py",
+      "verdict": "PASS",
+      "detail": "15 tests passed",
+      "exit_code": 0,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_current_targeted.json",
+      "test_sha256": "227cf6773098247be9e34308f85882904caa64dc95c7893bac20d14b84e25e39"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_runtime_regression.py",
+      "detail": "13 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "44012556dc4eba29bed74d7861dbdb9e2bcff84dcb1722482f36baca680a2b5f"
+    },
+    {
+      "file": "test_runtime_telemetry.py",
+      "verdict": "PASS",
+      "detail": "10 tests passed",
+      "exit_code": 0,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_current_targeted.json",
+      "test_sha256": "b971efd2cd0d98813713ae462c592e4266a509170f97104ca807fa26f76a0348"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_scaffold_evidence_readers.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.674,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "3bc7de8746fbd757af827d5dfe74a7ddba3db1ee3f037c4502121efc4a80db39"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_scene_prepare.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "4ce9e4ac1088942b707c24b8af61d9ac8aabe2fcfed4d0f8d612557669d68aa4"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_schedule_sweep.py",
+      "detail": "6 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "80b50f696082118b8b2833a117f8dbdf024d0d8ea5d4dd4d1e22702c496f6816"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_screening_summary.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "7f339626587fcf4c36bfd893cacc347f777373d37d1e31517b378a7c8fd0e393"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_serve_autoscaffold.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.654,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "cdf795139424dc573f6602e9cd3765eb37c34d1960df0f1f1a35f83f5612793e"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_serve_parity.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.362,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "23a031d6c7977307f13be62545de2ebd9d6b57b72c178ad1282360276f3d6d16"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_serve_seed.py",
+      "detail": "6 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "3419417b44c6219a19db7f34a734349de0a5e9f45d17dd8faffad237abede0d3"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_serve_viz.py",
+      "detail": "needs rerun",
+      "mode": "script",
+      "exit_code": 1,
+      "elapsed_seconds": 0.091,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "8a6e052a664a05d9525fc70ae8fed6f5b783881d44148a21e08f1ec694349a4e"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_shared_bf16_pointwise.py",
+      "detail": "7 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "a8f450be9a2a4b0fed0881a072315c734eb5563a02bb84e308779baf29d8990b"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_shipped_config.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.079,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "6513e338507d0cdeb1bdc42e54170280d4bb8526d6a41d1e6c83a3331daaf358"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_simulator_campaign.py",
+      "detail": "5 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "7ce04e105cfc878a457041dc9fdf32e428bbcfbb8c7bb22d2bb365a0cd863470"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_simulator_doctor.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "fe420154ffb547dfb36662951e436c8d4cd7dc225c8296e74afb33750d793145"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_sm120_native_pass.py",
+      "detail": "6 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "ca7e447b91b5f2e75a8984e4dff21b938214e80e6d711ff4ed55bde110dbf9bc"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_sm120_wan_stage2.py",
+      "detail": "7 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "236cd41a5e277990fbf74fd792fff4a64753e01666e94a3b3ee60114a0cd9aa7"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_stable_pools.py",
+      "detail": "needs CUDA",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 5.715,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "0124b14b7b088282369717cd764a73623177282a525c29041d3fe0026d700054"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_stable_pools_pass.py",
+      "detail": "needs CUDA",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.576,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "96f2cd694ee3da4101c5ce33e7279f5ea9700a7e57110a91c631877f6c8d7798"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_static_tensor_graph.py",
+      "detail": "2 tests passed, 2 skipped",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "7b601c0ab9dc3d43ce46275def7af6a612dc259d8d246dd67b81cdb9b389d5f7"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_step_cache.py",
+      "detail": "44 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "cfec49bf5723cf8bec609091f770e46f9208957081234395aa6b35132c4289ad"
+    },
+    {
+      "file": "test_step_cache_policy.py",
+      "verdict": "PASS",
+      "detail": "19 tests passed",
+      "exit_code": 0,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_current_targeted.json",
+      "test_sha256": "2ba0d2c13cdb1840da1a8208227053260b92e1f69fa0f77a2c6dc04fe2046f7a"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_tensor_cache.py",
+      "detail": "4 tests passed, 1 skipped",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "cdda2b14be4eb95b024074f37131ec9d247ced074043bec969389cc4f68435bd"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_test_runner.py",
+      "detail": "44 tests passed",
+      "mode": "pytest",
+      "exit_code": 0,
+      "elapsed_seconds": 4.335,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "2371076abc3580f200eaa28214d3f316c37af90a1ade7ca97c4ce319a2ec662c"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_trainer.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 2.325,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "8a406dc0a4ba0e6feabbe5197bcd921be2d9fb342a22072b9e1ed5f4b6179726"
+    },
+    {
+      "verdict": "SKIP",
+      "file": "test_triton_residual.py",
+      "detail": "needs CUDA",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 1.637,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "cbe55bc6b1571376bfaeb48173dd9d0f34eee4b6955fed86eded285deda0e6d2"
+    },
+    {
+      "file": "test_user_provenance.py",
+      "verdict": "PASS",
+      "detail": "46 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 0.718,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-55rwa27p/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_user_provenance.py"
+      ],
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_provenance_final_recheck.json",
+      "test_sha256": "c36ddb3a2c9babad9f8b1025e06518acc65d92be8d4c6b637399b49be1b04f1a"
+    },
+    {
+      "file": "test_user_report.py",
+      "verdict": "PASS",
+      "detail": "86 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 0.924,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-p7qz8tn9/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_user_report.py"
+      ],
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_final_changed_tests.json",
+      "test_sha256": "4a37a4ad335abf8dc0065a67eca49ca2cf050fe564f48b42ffd872b5b9175e06"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_v2_complete_fallback.py",
+      "detail": "4 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "ca62451124dfa7272bcfdc98ac0bc2bf8e3ade458463522ab8f3f0e51605ffda"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_v2_vision_capture_metadata.py",
+      "detail": "4 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "4914068a9b332de5f759b408b30281cd1639ef671f2898ed872d6d7293a47d91"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_va_checkpoint_history.py",
+      "detail": "9 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "06fa28dd2e2a407439dca1704dc6275b30003e81a0b0ecc0219bd993e86b1d6c"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_va_geometry.py",
+      "detail": "9 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "dd2655dfc99dab4bda6b13736c431433356ec3c9d3386bac212cc50ca3c5cd17"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_va_saturated_stress_compare.py",
+      "detail": "7 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "91a14f7a4ebdd740193cfe41485c33d3d020e6be1211feb79bc18211a4aa1090"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_validate_certificate.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.132,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "e9e4469002d4f4d98abc2bd981625368e4cf1021f856d4eff5ae5417b24c131d"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_validate_layout_hint.py",
+      "detail": "9 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "cb03f6f216679e3998c2a831f97c5c5d47e913af314ed0240428bca2a28c10e6"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_validate_scaffold.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.179,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "8fbf177fa725de92d922d01b52366ead474e820b269ed12f5bd8c7f9b5f65c34"
+    },
+    {
+      "file": "test_vla2_checkpoint_moe.py",
+      "verdict": "PASS",
+      "detail": "2 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 0.295,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-hvdili4d/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_vla2_checkpoint_moe.py"
+      ],
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_final_changed_tests.json",
+      "test_sha256": "8fe0fd0854180794ea07b90d9413a9cdef492ac9fe34f9957f697b79863b8e76"
+    },
+    {
+      "file": "test_vla2_prompt_reuse.py",
+      "verdict": "PASS",
+      "detail": "13 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 1.982,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-sypejmux/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_vla2_prompt_reuse.py"
+      ],
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_final_changed_tests.json",
+      "test_sha256": "a968387e5692f81cf6a581f1017e2d7bc42d5cbd1de60709f05d43a06da080e6"
+    },
+    {
+      "file": "test_vla2_scale_accumulator.py",
+      "verdict": "PASS",
+      "detail": "3 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 1.714,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-5wn6s3er/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_vla2_scale_accumulator.py"
+      ],
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_final_changed_tests.json",
+      "test_sha256": "042b6626f149ee9eb70a4656663f2ab34c3f7e00ff84e46080d6f0c7f87de0d3"
+    },
+    {
+      "file": "test_vla4_engine.py",
+      "verdict": "PASS",
+      "detail": "2 tests passed",
+      "exit_code": 0,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_current_targeted.json",
+      "test_sha256": "d942ddb34089a4f0651c94935f69771c1a598e3d23a7c2ffac5756cf37c14dc2"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_vla4_preprocess_ownership.py",
+      "detail": "1 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "9038cbce08328766af1cd932f7e0a40d9d1c4496f9d50a72a00a1ea84afba36f"
+    },
+    {
+      "file": "test_vla4_prompt_reuse.py",
+      "verdict": "PASS",
+      "detail": "8 tests passed",
+      "exit_code": 0,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_current_targeted.json",
+      "test_sha256": "d4f274bfd7900e8622de21bbcbfe3bd49284fe8a866d9fb7b7632770e3cb8204"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_vla_adapter_contracts.py",
+      "detail": "8 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "d313f9c43e7f5fb746877f21bd60ce25c37c87056e60707e412ad9559c1d6360"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_vla_benchmark_pipeline.py",
+      "detail": "17 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "ecb751f4b1fffcf5b0bebc2cdb0c39b5cbddde6fd088a2e68b0b25ff9f43d058"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_vla_instinctflash_driver.py",
+      "detail": "9 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "de655dcc0da4674c458742396127e6bc7b23f8b40b80c3c3110e927cf3368354"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_vla_replay_driver.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "c5c2ba86cd2ea4f10c9459adef16fc52c8095dd149d080c9819d5e6fce6aa528"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_wan_va_backend_dispatch.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "5b0ba435c523f41f589bd33c9edeecc2fb2e6200d5a3235f85429eec6951c249"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_wan_va_checkpoint_geometry.py",
+      "detail": "5 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "254fa722352918602a8fd37ee4b2ae1162ef60a46dd2dc4e28ed92d91681bbc0"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_wan_va_engine_operating_point.py",
+      "detail": "6 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "4baa7ddd9673dd631396eb76653174a49fb9f88803cf0f7078157d24ec40b9fe"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_wan_va_engine_server.py",
+      "detail": "7 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "4d9e2484f48d2cf29475c5331650fe5761a5818aa1d278834a077b97fce0fe8c"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_wan_va_libero_driver.py",
+      "detail": "3 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "d0b5aa0d487acbf8327423642c5dd672613556f255ef9998e8eff4fa024fbf54"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_wan_va_runtime_robotwin_bridge.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "e6b46ec87b249afacde7415a142e02639e739237cb1b2a2ee1300ef11b2aa8ec"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_wan_va_runtime_robotwin_scene.py",
+      "detail": "15 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "cd1810c4fcf48ec06dfc6459330fe61e522e351075163cb84cbda4d60b493146"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_wan_va_runtime_rollout.py",
+      "detail": "9 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "fa4bedbe970576da9722071f01c48e2db3bc1df84678bbc72d84165ad153149a"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_wan_va_runtime_server.py",
+      "detail": "8 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "461cbd0450c59966c5e5f410eef8edd3c6105ab2f93f6ab4472cc63dcbfaf9c6"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_worker_output.py",
+      "detail": "2 tests passed",
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "baba9579ec113431393584221175a34831a4352562853acb11e0ada34f5954a1"
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_ws_server.py",
+      "detail": "",
+      "mode": "script",
+      "exit_code": 0,
+      "elapsed_seconds": 0.211,
+      "coverage_report": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "test_sha256": "9243e00b8721d0aef887928eb31d0306e91c65fa91e226283aced601501985eb"
+    }
+  ],
+  "test_inputs_sha256": {
+    "tests/test_action_terminal_elision.py": "5a3d02c8db62d24d1132ece6859a1c0559b37254e5b7d96bcede0bd72c2b4ac9",
+    "tests/test_adapter.py": "bcd2efb9afc78ef2d43134b7f6277433cff1b9cfeebcec0f8f3575eeae5d448f",
+    "tests/test_assemble_user_provenance.py": "142b070d7b7e6617fe7d6987c0c74675b59daa953dcd25db8e87a27643e8a393",
+    "tests/test_attention_backend.py": "dbd715817c4e17263a8b968d0080e1bdaa0f6dff007fef681465b7ae0170d958",
+    "tests/test_attribution.py": "b6ced604565e7e976eb785e3071dffe297a586ef37f482f61e411ce59c8c3cbb",
+    "tests/test_autotune.py": "9c892f14b9a8c510276008afa673bc708466de3509f391ae65a319420ec3572b",
+    "tests/test_bf16_linear.py": "f2c5d15fe091d21419dfdfe57a0c71fe66860eaedcf353f0f127481fd514347b",
+    "tests/test_campaign_doctor.py": "9ceeb5595d8d6e18411a165ef8bd56fee7efde6c9e224e6838bea25946c7777e",
+    "tests/test_capture_default_families.py": "232f88dd4cdfd8ad950a4d97a9e1537bede271df948edcc83356b498c6ecf414",
+    "tests/test_capture_reference_integrity.py": "082b59404a259b1e22590d17d8b5623137d93f471f53b247f81adaeffa36fdb8",
+    "tests/test_certify.py": "5f5ef64784b054d2defd299904b4dc6f0f40b1974a18bee981775519788fcea9",
+    "tests/test_checkpoint_platform.py": "899c12c0964ea262383b09fa28c51f21b66897c83ce8a7ef7ca3015b91c3a5e8",
+    "tests/test_checkpoint_revision_views.py": "adcdec94789e404d4aab7e6bdeedc69c7af5536a7dd342b9a5af9efcd3175b13",
+    "tests/test_checkpoint_variants.py": "38d547d45f0d693cfa4fb8218b5857bc3ad1b29a2ca36cca3fa3d6f25f4e774b",
+    "tests/test_clean_wheel_snapshot.py": "57acf713487513eed8136dc9a6c88c1e82126c9379f70ef681a0b8569a684e02",
+    "tests/test_cli.py": "0389cd02e90fe1dd84a74400aa76d4f5f2109a6c47afc037d10bd34056e4fc66",
+    "tests/test_cli_config.py": "16bf50004f1ee5242b16869f8f8e53f17a1aaac28aeeea6a9a0126320e85e91c",
+    "tests/test_cli_preflight.py": "e48d33d501e4a9bf32ef46f15cbdf39faa2d329919f0f9ea6888710068fab85f",
+    "tests/test_closed_loop_action_report.py": "41753561dae645b836a6a4a7b5ce768979ac87be510e27be81ec8192eb6bd6e2",
+    "tests/test_compiled_region.py": "dbdeda0859ab0253002a3dc104608d0498cd728255ba2257c21644d297267284",
+    "tests/test_controller_trace_validation.py": "730800aeaf302938268640ed5149c2d0608042b0fec650aec971f14e70f6aa48",
+    "tests/test_conv_autotune_site.py": "3f5db3e02819c3e0eb6f647f46e7285fd5762a791c89215a18e899e300141d19",
+    "tests/test_conv_backend.py": "7eccac38975e382c075aa357463281340a945da48f306de14da6259245555cfe",
+    "tests/test_core_stability.py": "efd576dde6039f7181e62b5342e2c09c93ea16ebb951a8a2974beccb0b714f38",
+    "tests/test_cosmos3_conditioning_cache.py": "47b63dab8549a798f6e44c2223fd75832c5781037a8b6d188fcffb8e12d8ef73",
+    "tests/test_cosmos3_engine.py": "69e05f13ec1aa77974e5a53bbcec4718fd5920a89d18a985f48cc6f53e8b5e59",
+    "tests/test_cosmos3_nano_action_only.py": "5e24a28e904e5c38271016cace6bd9608090b4d375198d7d9153d81644fc012a",
+    "tests/test_cosmos3_persistent_text_kv.py": "28c07409bd546108b347c89c19f9a7d5b818813cdaec7d55bda70a9ef2b43f8b",
+    "tests/test_cosmos3_policy_adapter.py": "09d27c3cd456580eb624055acff585a6ec1a82dece216e15d211f77c2c5bd6c3",
+    "tests/test_cosmos3_thor_graphs.py": "de35705c145b9e6b3d410170fc149dbd4cc65eae17bee890c972209c019358e9",
+    "tests/test_cosmos3_thor_pointwise.py": "7fb68fce9d77ca44bc3ba9a18028d8f2f301fccc3238ea62b99fc763eba9fad7",
+    "tests/test_cosmos_backend_dispatch.py": "c912ad4fe0f3c898b3aa3a1740f546d8f3dcd7d2ea03c7c376d17fc5b880dfe5",
+    "tests/test_cosmos_dense_mlp_fp8.py": "da16e85b5cf29a84bd620034937b32f4ce0d04333ff9c59c3a4b19dac8e57c65",
+    "tests/test_cosmos_droid_loop.py": "b25ef7efb0da3dbea25e03b6f0c6090c52af1e1ea07aed864868daf58003796e",
+    "tests/test_cosmos_fp8_install.py": "78581f22b0ab48107cd587164844938351822213f98bf9dcbb1284d1de6e4770",
+    "tests/test_cosmos_generation_region.py": "4be50bfe640816a1794122544bde070d552c1a9181575a1ee7394ad79f90b7be",
+    "tests/test_cosmos_numeric_attention.py": "2e8c5c3c50e81c42e59087ea9916803dde26e299e6b239ff031227c50ffad63c",
+    "tests/test_cosmos_numeric_regression.py": "34dd23e845e7d7c6a4dad88db70f4f8af856f2af8f8006784f11070c159ab096",
+    "tests/test_cosmos_real_weights_probe.py": "a8fddca458fe5cbda6d34284882d07dc013348daa11c1f69fad67669ce965010",
+    "tests/test_cosmos_timestep_cache.py": "ac11943913e91ef4f6cb573987bb0dc66dd5d28377c1d7302e09c0b984a3e9cc",
+    "tests/test_deps.py": "fb28cde1996104ff41dba769a21de9bf17a1fd956347839ceb013f091d5a733e",
+    "tests/test_device_class.py": "7f3547253a6c8108954e16f40cde2705b5fa1b03f1908e74d109747300e50e0d",
+    "tests/test_distill_control_gate.py": "be98e104d8156f849c2baa4ba4aecbc25564bf41722a24857e148eebbd9f82bd",
+    "tests/test_distill_evidence.py": "7cdb1a89dce0525a8945a6729cca146cb1f3deb0124859ce801af15775474331",
+    "tests/test_distill_provenance.py": "13c6c18108c57f2f04a94d8e2f76156b0035ed7da931b0252190d179b942a389",
+    "tests/test_dreamzero_adapter.py": "33ed9bc8476f4445c2e99e151c82061010c394fc5e171f372cce56271f1726fc",
+    "tests/test_dreamzero_backend_dispatch.py": "e291828df5336759cb5e55020651484f059761a3834d17512801d8b00df0e365",
+    "tests/test_dreamzero_checkpoint_geometry.py": "bb7a4ed9f83bebf249f3b4595e17d751b76e1249d559f40b658520c11b24b48c",
+    "tests/test_dreamzero_checkpoint_loading.py": "c656c01fbccdb5b3e3d45b12cdba18decf3e9d1dc696f56129d41b82dbaaf147",
+    "tests/test_dreamzero_fp8_builder.py": "2f8ad2d339c6695459239245e06a7e40f095cf0b12dfe5f027d200eae384720d",
+    "tests/test_dreamzero_fp8_install.py": "772c7a2c35f6029eaafa16c1bc3bc93d7d98855449a80faba21170ea10955925",
+    "tests/test_dreamzero_owned_loading.py": "fe55a013a590eafcd74823c5f43036923a3d5a9fe07a75908a1974f3aee5e9a1",
+    "tests/test_dreamzero_step_cache.py": "d4d2a8d0daa798debbdc52495add609e147e0fffb23316583959863a3d42e572",
+    "tests/test_dynamic_fp8_pack.py": "8249f893fdc04fd4591b0699245c3278d7a06ec18bff666c67c1c9d71927608b",
+    "tests/test_end_to_end_example.py": "fe39b4d239eb4c6b4798913fbf381215c49fefd7981d4402cdc0a1795a2fced7",
+    "tests/test_engine_available_kernels.py": "1bfdca5ab0a9f79889164581c1b70232449baeeaec23f794e5879bf394e889dc",
+    "tests/test_engine_exclusion.py": "a6dbe782354dbde32a5832b507f9ffcee17b89c12162116e6b536f3e7a7d9368",
+    "tests/test_engine_geometry_gate.py": "37f720537f1e91d46d30d39d36dd84ce724fd8a006ed9c78c037626dd70415d5",
+    "tests/test_engine_graph.py": "7dd1a3744db74b385fbd75b86db681a33ae36ae54c06622a57c2065634c4fbc8",
+    "tests/test_engine_lang_embeds_stability.py": "41c05e4ed47358e2d8fa2eca6ca5a022ae6641c07f50bfa10af51f3c80f495fc",
+    "tests/test_engine_operating_point_gate.py": "0c0d7299ed6f6d82a4c380b2ab04b646bc65fb4452bcb656421dc969cbf46442",
+    "tests/test_eval_integration.py": "a669bbf8f6fff7bdea3c8999067778da88f643ca5ac0322b868e564035ba353b",
+    "tests/test_evidence_bundle.py": "ef33aaac63387c12a192353c86baafdcbe6d59bfe8faa038625d9cc9134d9266",
+    "tests/test_exact_tensor_contract.py": "2994d51b112112352ad6945f60abd2feeeaf19630812260828b204fad142c41c",
+    "tests/test_execution_selection.py": "3cc26e8f3e41ab184531f41bf0b77243bf177ddd0d35345a385e9735c33d5a7f",
+    "tests/test_external_plugin.py": "a02f69e6b8f98910dd7b4ece4fd9e4fbfbba19eb5a8de5b60ba99e7f7c2bf156",
+    "tests/test_fixed_input_replay.py": "481aa671954142928830c05a2af5b85f08275aa388f976472ebf39c033d11ca6",
+    "tests/test_fp8_projection_evidence.py": "0276ed0c1c28499a20c1c465a236dd69f64c4e4bff2e5a493784a4c05646b705",
+    "tests/test_generic_pass.py": "a3137aca1dc1e51080784a5f3bb4a8705f8cd5ef83684c4eedc50670485f9a9c",
+    "tests/test_groot_action_generator.py": "818fb4ab3dd567f0c3615b96b2ef22e07f7649a2e17f5141299a37a7b8a4c7c2",
+    "tests/test_groot_backbone_refresh.py": "2422bdb1bfdc2b764a3d733495afa1ac11b9818dcfa5c82257e8a38fef13bb35",
+    "tests/test_groot_checkpoint_embodiments.py": "3599e4a47810dec52061acdc7d08dc2af6bb5d58437d4eb9d28b54b04d22bb49",
+    "tests/test_groot_engine_native_options.py": "97c115d80b6247148bc32124727d5697d9e8f1d88beb07b59a98f3355ded3a7d",
+    "tests/test_groot_fast_decode_selection.py": "9a63be570d8c2c46f8d6dc9b681b73fea22625a5c5d7139fe9ef95624ceaa2b4",
+    "tests/test_groot_fp8_install.py": "c89db43eb8bed2970c12b66998e0c1909d9fc7de2dbf593cffee3a5f0ee9cecf",
+    "tests/test_groot_full_capture_reference.py": "10627d190f633287ee83c413ccc2a632e3a65a0298fd65d81dc1aad2247f4853",
+    "tests/test_groot_gpu_collate.py": "b19836de90551ae186de6c2a2775ae00bed2812b9381bf4aac96210b490fb26d",
+    "tests/test_groot_libero_driver.py": "f975f627a2fbecd92ea6b173c873bd1288a5aab085534c69ece4a891d08b0d96",
+    "tests/test_groot_n17_adapter.py": "373ac87dc22fe3b8ef4f1a9ee80ed2994a60c0195570ec68e7848168af7926c0",
+    "tests/test_groot_policy_server_precision.py": "ea0d34b57f32ff55df06fa98e4e993362576433e719c8eafebf8a6dfc31e31a4",
+    "tests/test_guidance_schema.py": "5f0c254a7a8d98803e1c5db5bbf413a15c2e685a6dbeb9b6c88f857acf006287",
+    "tests/test_h100_fp8.py": "9de7e50f34ee57655d84bc666abccc35bb9e597641a61aa1cfecc5b688a25f55",
+    "tests/test_hardware_probe.py": "c77922072b51733ed3abb3fe687dfaa23855e59e7a338bdc9d751f4ed05ec069",
+    "tests/test_hoist_pass.py": "a0fa711555cfb158ce6bc07397630aa1c665ed696e2e4584d2ff184db04bd6d4",
+    "tests/test_install_preflight.py": "07512937aa3e02b6071a00f757a039549a0b1b94eeb042ad0c39ae3845957fe3",
+    "tests/test_joint_policy_server_precision.py": "4c583e60b10005cf133170b91846a48d96853f533d48971a26e1e95db2559eef",
+    "tests/test_joint_robotwin_driver.py": "6b3f4932f38b534c58f97cb2976febe99177a61243b12ef4ce5282a3f930b605",
+    "tests/test_kernel_framework.py": "7e01e963133d70748a2ffcf3c8923908f9fde98a41ff8d23729c13b16775352f",
+    "tests/test_l3_noop.py": "09bbdb131e755f6554cd5310ee28cccc319fd583a37f04803d1a640a06adee49",
+    "tests/test_layer5_flow.py": "4610fd7228d4e7592046828fc9719c3674ef2506f0e1e101f6b9f9b8040f177b",
+    "tests/test_lingbot_vla4b_adapter.py": "d09b7df27b39d3e9d99a99b2e1c2472bead90f40f66ec523b62d7e053c7da8c5",
+    "tests/test_lingbot_vla4b_full_path.py": "e70117ead1da87bf04378ecaf656e20ae26a9a8b25e207b1c1c34cc1102891c3",
+    "tests/test_lingbot_vla_v2_adapter.py": "54a7e0a25ba9ebd95321621b009829dc7f6c1ce09dfeda38506f1c9963a185ec",
+    "tests/test_moe_schedule_site.py": "ad9c441073617d59cc242151fcc9f8c16c4838454ded2c6745e41a79978933f1",
+    "tests/test_native_coverage_comparison.py": "f59f36ac95f09e182a5c7e86414f0677c7c7587c5841824a342898bc05fa36fe",
+    "tests/test_native_total_comparison.py": "0ef2448a533e7f9d8fede8d888273699b711d35a95eeac8f610f12da79e960be",
+    "tests/test_numeric_total_comparison.py": "c9c37651597ac1eeca52cc68dde9eb4f34d49aafdb37d04ea3cc5ee36d04c4c8",
+    "tests/test_operating_point.py": "de908e8543bf10ac2e8e995905f00b04fb2e88d2f0e80450e42d9edd131c1a2a",
+    "tests/test_optimizer.py": "a13a159f980c3e395202add431c264b43284d2628cb82720c49b4ab402dbb5cd",
+    "tests/test_p3_cosmos3.py": "e8cfb28e39c11772a9c659c2dc9b70d83ca36b4a8cab07afc70fd1fcfc2a95a5",
+    "tests/test_p8_scratch_arena.py": "9a0e0aa8e264fb6fe97d0dd23077e8379c46451e6ea41e74f215b3214bcefadc",
+    "tests/test_paired_runner.py": "32544a9b7e6c9b55d0a6029f753d0cfbd28b85e301b03ca4a33b7f171691c9cb",
+    "tests/test_pdd_lingbot_parity.py": "7f9616d375fbda0743da170858a709bc6c3ec3f7f89903ddc94f77c3c58ad66e",
+    "tests/test_pdd_parity.py": "8f5a561de6d197a60c0d1a9a15f5fa5c41e2fe582839f6ab799db6e037b265f4",
+    "tests/test_pdd_recipe.py": "eb3c76dca6aed8c5539c7c6ba268f5cd4bb9729b989e004a14934dfadf838e36",
+    "tests/test_pi05_adapter.py": "cdec59b230c5bcad7b9c1addbb0312bb6b1d58dcddaada89fb7698807af5b4c8",
+    "tests/test_pi05_capture_default.py": "36623194498df4014b977cc95f04b43a363b6c24d291ed2a93156ff6a974a633",
+    "tests/test_pi05_compile_neutralize.py": "ca4222cf5b973d61e4c5d2d75bf1559e70b87ea5d422858faca2c5c96db3a1ad",
+    "tests/test_pi05_engine_loop.py": "347662dc35f9cf5dba27831522c9af13577f8f6ef2f36e742f9a8ff3ee24e93d",
+    "tests/test_pi05_legacy_cache.py": "f93ff63fbf31e6fa3b62d0747f64c9aa46dfa8c332287415ed4b7a62237e4bc3",
+    "tests/test_pi05_libero_driver.py": "f6747a68af3f6fb19fd231270eb1d7f4a4590b51c70b343088306e41c84c7e84",
+    "tests/test_pi05_runtime_libero_campaign.py": "7e017070b86ee71c090fc66733015962e3b4e15d49ee8c00f357df641e221e7f",
+    "tests/test_pi05_runtime_libero_compare.py": "37ed35e855abe9fd155cded8305fcdfb83bc3566b5c2efa57168f3c051a38a13",
+    "tests/test_pi05_scenes.py": "c30bdc9467821ddfc0dee84705e612c17990fc62920607cb694a1a7464c397eb",
+    "tests/test_pi05_static_capture.py": "8f73fbc562feb5e006d9320c3ac8783d7b1d29f5aae24b795e8c6c31579cfeea",
+    "tests/test_pi05_tf32_closed_loop.py": "f0c8b06208f379a77df76e3245337f9cb8c6a80d8a91a3801fcfb08869e7d9d3",
+    "tests/test_pi05_tf32_operating_point.py": "2576fb74d0be915547d4c36b5f343fd55018b19f4b31a8ff97d702ca1ead6742",
+    "tests/test_pi05_weights.py": "d07533cb06c4291f7bec0f012626c44ec4184332ebf0086fabc4e9579a6aa44b",
+    "tests/test_plan_header_model_id.py": "3e2f4237e5473f897da16026360aac2826ce7a93b1049a485a78dcd4a570d37a",
+    "tests/test_policy_trace.py": "80aae27dc7a524de560c84d80fd28e962c009ab7256c4f2f824f11a9c153fe38",
+    "tests/test_promote_operand.py": "cd9d7e07f054d050e15cb363556aa27e8bbe85aabd3e6e06fc94f610806d12fd",
+    "tests/test_qualification.py": "95ce5b855df10c825d4e4dc9944b1386d7c2c38def00d62ce64a134064be3e7b",
+    "tests/test_realtime_budget.py": "6943863082003bbb485638a81b74b5fb4dd5b22fda828741521d52289f02c4ba",
+    "tests/test_recipe.py": "9bddb36b8148174170f46da3f2fd3b58f880f293556f516ae426f52d0e93a25f",
+    "tests/test_repo_surface.py": "6b3ae0520a24573ee8df13702cf74b156777d3b3c0a943b6234f2a1b01bdc4df",
+    "tests/test_ring_allocator.py": "17fe2d9b2fbf344e56480ad261f8d058b82bbfe6cda93f9912456362020fa3c0",
+    "tests/test_robotwin_driver.py": "df09c868b581bb5696544e42375398684f9b38e6bc1af89eb246625ce5277122",
+    "tests/test_robotwin_reset_bounds.py": "516a037f325957f8be1e5e8a39f492edf4fb572579676fb7cfee50f9664b7478",
+    "tests/test_robotwin_transport.py": "98e4e06641478f20fa1e866473665ae5f99419f66cef7d1a81dc11ef539870c7",
+    "tests/test_rope_kernel.py": "e4141dc1912a2618c4aef3bc2bd80a3c79368ccaf8be0df4f526783a0fe1f451",
+    "tests/test_runtime.py": "ed79d427e5d861b6b0a35ed737688452f318c744c2a5586e39d2545dc6131efe",
+    "tests/test_runtime_boundary.py": "9847fa926e7c62df7d361b2b4920893d405674b517c69fa1341fa202438488a8",
+    "tests/test_runtime_bundle.py": "dc5832321d48bb3fa427b9eb42e253139435a82279af2fc0a21f35b533bb958b",
+    "tests/test_runtime_facade.py": "a132de74b8e04c62d152ab8c882fd14417f83483c5a7f2a40ed9b9c54e6ce092",
+    "tests/test_runtime_precision.py": "227cf6773098247be9e34308f85882904caa64dc95c7893bac20d14b84e25e39",
+    "tests/test_runtime_regression.py": "44012556dc4eba29bed74d7861dbdb9e2bcff84dcb1722482f36baca680a2b5f",
+    "tests/test_runtime_telemetry.py": "b971efd2cd0d98813713ae462c592e4266a509170f97104ca807fa26f76a0348",
+    "tests/test_scaffold_evidence_readers.py": "3bc7de8746fbd757af827d5dfe74a7ddba3db1ee3f037c4502121efc4a80db39",
+    "tests/test_scene_prepare.py": "4ce9e4ac1088942b707c24b8af61d9ac8aabe2fcfed4d0f8d612557669d68aa4",
+    "tests/test_schedule_sweep.py": "80b50f696082118b8b2833a117f8dbdf024d0d8ea5d4dd4d1e22702c496f6816",
+    "tests/test_screening_summary.py": "7f339626587fcf4c36bfd893cacc347f777373d37d1e31517b378a7c8fd0e393",
+    "tests/test_serve_autoscaffold.py": "cdf795139424dc573f6602e9cd3765eb37c34d1960df0f1f1a35f83f5612793e",
+    "tests/test_serve_parity.py": "23a031d6c7977307f13be62545de2ebd9d6b57b72c178ad1282360276f3d6d16",
+    "tests/test_serve_seed.py": "3419417b44c6219a19db7f34a734349de0a5e9f45d17dd8faffad237abede0d3",
+    "tests/test_serve_viz.py": "8a6e052a664a05d9525fc70ae8fed6f5b783881d44148a21e08f1ec694349a4e",
+    "tests/test_shared_bf16_pointwise.py": "a8f450be9a2a4b0fed0881a072315c734eb5563a02bb84e308779baf29d8990b",
+    "tests/test_shipped_config.py": "6513e338507d0cdeb1bdc42e54170280d4bb8526d6a41d1e6c83a3331daaf358",
+    "tests/test_simulator_campaign.py": "7ce04e105cfc878a457041dc9fdf32e428bbcfbb8c7bb22d2bb365a0cd863470",
+    "tests/test_simulator_doctor.py": "fe420154ffb547dfb36662951e436c8d4cd7dc225c8296e74afb33750d793145",
+    "tests/test_sm120_native_pass.py": "ca7e447b91b5f2e75a8984e4dff21b938214e80e6d711ff4ed55bde110dbf9bc",
+    "tests/test_sm120_wan_stage2.py": "236cd41a5e277990fbf74fd792fff4a64753e01666e94a3b3ee60114a0cd9aa7",
+    "tests/test_stable_pools.py": "0124b14b7b088282369717cd764a73623177282a525c29041d3fe0026d700054",
+    "tests/test_stable_pools_pass.py": "96f2cd694ee3da4101c5ce33e7279f5ea9700a7e57110a91c631877f6c8d7798",
+    "tests/test_static_tensor_graph.py": "7b601c0ab9dc3d43ce46275def7af6a612dc259d8d246dd67b81cdb9b389d5f7",
+    "tests/test_step_cache.py": "cfec49bf5723cf8bec609091f770e46f9208957081234395aa6b35132c4289ad",
+    "tests/test_step_cache_policy.py": "2ba0d2c13cdb1840da1a8208227053260b92e1f69fa0f77a2c6dc04fe2046f7a",
+    "tests/test_tensor_cache.py": "cdda2b14be4eb95b024074f37131ec9d247ced074043bec969389cc4f68435bd",
+    "tests/test_test_runner.py": "2371076abc3580f200eaa28214d3f316c37af90a1ade7ca97c4ce319a2ec662c",
+    "tests/test_trainer.py": "8a406dc0a4ba0e6feabbe5197bcd921be2d9fb342a22072b9e1ed5f4b6179726",
+    "tests/test_triton_residual.py": "cbe55bc6b1571376bfaeb48173dd9d0f34eee4b6955fed86eded285deda0e6d2",
+    "tests/test_user_provenance.py": "c36ddb3a2c9babad9f8b1025e06518acc65d92be8d4c6b637399b49be1b04f1a",
+    "tests/test_user_report.py": "4a37a4ad335abf8dc0065a67eca49ca2cf050fe564f48b42ffd872b5b9175e06",
+    "tests/test_v2_complete_fallback.py": "ca62451124dfa7272bcfdc98ac0bc2bf8e3ade458463522ab8f3f0e51605ffda",
+    "tests/test_v2_vision_capture_metadata.py": "4914068a9b332de5f759b408b30281cd1639ef671f2898ed872d6d7293a47d91",
+    "tests/test_va_checkpoint_history.py": "06fa28dd2e2a407439dca1704dc6275b30003e81a0b0ecc0219bd993e86b1d6c",
+    "tests/test_va_geometry.py": "dd2655dfc99dab4bda6b13736c431433356ec3c9d3386bac212cc50ca3c5cd17",
+    "tests/test_va_saturated_stress_compare.py": "91a14f7a4ebdd740193cfe41485c33d3d020e6be1211feb79bc18211a4aa1090",
+    "tests/test_validate_certificate.py": "e9e4469002d4f4d98abc2bd981625368e4cf1021f856d4eff5ae5417b24c131d",
+    "tests/test_validate_layout_hint.py": "cb03f6f216679e3998c2a831f97c5c5d47e913af314ed0240428bca2a28c10e6",
+    "tests/test_validate_scaffold.py": "8fbf177fa725de92d922d01b52366ead474e820b269ed12f5bd8c7f9b5f65c34",
+    "tests/test_vla2_checkpoint_moe.py": "8fe0fd0854180794ea07b90d9413a9cdef492ac9fe34f9957f697b79863b8e76",
+    "tests/test_vla2_prompt_reuse.py": "a968387e5692f81cf6a581f1017e2d7bc42d5cbd1de60709f05d43a06da080e6",
+    "tests/test_vla2_scale_accumulator.py": "042b6626f149ee9eb70a4656663f2ab34c3f7e00ff84e46080d6f0c7f87de0d3",
+    "tests/test_vla4_engine.py": "d942ddb34089a4f0651c94935f69771c1a598e3d23a7c2ffac5756cf37c14dc2",
+    "tests/test_vla4_preprocess_ownership.py": "9038cbce08328766af1cd932f7e0a40d9d1c4496f9d50a72a00a1ea84afba36f",
+    "tests/test_vla4_prompt_reuse.py": "d4f274bfd7900e8622de21bbcbfe3bd49284fe8a866d9fb7b7632770e3cb8204",
+    "tests/test_vla_adapter_contracts.py": "d313f9c43e7f5fb746877f21bd60ce25c37c87056e60707e412ad9559c1d6360",
+    "tests/test_vla_benchmark_pipeline.py": "ecb751f4b1fffcf5b0bebc2cdb0c39b5cbddde6fd088a2e68b0b25ff9f43d058",
+    "tests/test_vla_instinctflash_driver.py": "de655dcc0da4674c458742396127e6bc7b23f8b40b80c3c3110e927cf3368354",
+    "tests/test_vla_replay_driver.py": "c5c2ba86cd2ea4f10c9459adef16fc52c8095dd149d080c9819d5e6fce6aa528",
+    "tests/test_wan_va_backend_dispatch.py": "5b0ba435c523f41f589bd33c9edeecc2fb2e6200d5a3235f85429eec6951c249",
+    "tests/test_wan_va_checkpoint_geometry.py": "254fa722352918602a8fd37ee4b2ae1162ef60a46dd2dc4e28ed92d91681bbc0",
+    "tests/test_wan_va_engine_operating_point.py": "4baa7ddd9673dd631396eb76653174a49fb9f88803cf0f7078157d24ec40b9fe",
+    "tests/test_wan_va_engine_server.py": "4d9e2484f48d2cf29475c5331650fe5761a5818aa1d278834a077b97fce0fe8c",
+    "tests/test_wan_va_libero_driver.py": "d0b5aa0d487acbf8327423642c5dd672613556f255ef9998e8eff4fa024fbf54",
+    "tests/test_wan_va_runtime_robotwin_bridge.py": "e6b46ec87b249afacde7415a142e02639e739237cb1b2a2ee1300ef11b2aa8ec",
+    "tests/test_wan_va_runtime_robotwin_scene.py": "cd1810c4fcf48ec06dfc6459330fe61e522e351075163cb84cbda4d60b493146",
+    "tests/test_wan_va_runtime_rollout.py": "fa4bedbe970576da9722071f01c48e2db3bc1df84678bbc72d84165ad153149a",
+    "tests/test_wan_va_runtime_server.py": "461cbd0450c59966c5e5f410eef8edd3c6105ab2f93f6ab4472cc63dcbfaf9c6",
+    "tests/test_worker_output.py": "baba9579ec113431393584221175a34831a4352562853acb11e0ada34f5954a1",
+    "tests/test_ws_server.py": "9243e00b8721d0aef887928eb31d0306e91c65fa91e226283aced601501985eb"
+  },
+  "observed_inputs_sha256": {
+    "tests/test_action_terminal_elision.py": "5a3d02c8db62d24d1132ece6859a1c0559b37254e5b7d96bcede0bd72c2b4ac9",
+    "tests/test_adapter.py": "bcd2efb9afc78ef2d43134b7f6277433cff1b9cfeebcec0f8f3575eeae5d448f",
+    "tests/test_attention_backend.py": "dbd715817c4e17263a8b968d0080e1bdaa0f6dff007fef681465b7ae0170d958",
+    "tests/test_attribution.py": "b6ced604565e7e976eb785e3071dffe297a586ef37f482f61e411ce59c8c3cbb",
+    "tests/test_autotune.py": "9c892f14b9a8c510276008afa673bc708466de3509f391ae65a319420ec3572b",
+    "tests/test_bf16_linear.py": "f2c5d15fe091d21419dfdfe57a0c71fe66860eaedcf353f0f127481fd514347b",
+    "tests/test_campaign_doctor.py": "9ceeb5595d8d6e18411a165ef8bd56fee7efde6c9e224e6838bea25946c7777e",
+    "tests/test_capture_default_families.py": "232f88dd4cdfd8ad950a4d97a9e1537bede271df948edcc83356b498c6ecf414",
+    "tests/test_capture_reference_integrity.py": "082b59404a259b1e22590d17d8b5623137d93f471f53b247f81adaeffa36fdb8",
+    "tests/test_certify.py": "5f5ef64784b054d2defd299904b4dc6f0f40b1974a18bee981775519788fcea9",
+    "tests/test_checkpoint_platform.py": "899c12c0964ea262383b09fa28c51f21b66897c83ce8a7ef7ca3015b91c3a5e8",
+    "tests/test_checkpoint_revision_views.py": "adcdec94789e404d4aab7e6bdeedc69c7af5536a7dd342b9a5af9efcd3175b13",
+    "tests/test_checkpoint_variants.py": "38d547d45f0d693cfa4fb8218b5857bc3ad1b29a2ca36cca3fa3d6f25f4e774b",
+    "tests/test_clean_wheel_snapshot.py": "57acf713487513eed8136dc9a6c88c1e82126c9379f70ef681a0b8569a684e02",
+    "tests/test_cli.py": "0389cd02e90fe1dd84a74400aa76d4f5f2109a6c47afc037d10bd34056e4fc66",
+    "tests/test_cli_config.py": "16bf50004f1ee5242b16869f8f8e53f17a1aaac28aeeea6a9a0126320e85e91c",
+    "tests/test_cli_preflight.py": "e48d33d501e4a9bf32ef46f15cbdf39faa2d329919f0f9ea6888710068fab85f",
+    "tests/test_closed_loop_action_report.py": "41753561dae645b836a6a4a7b5ce768979ac87be510e27be81ec8192eb6bd6e2",
+    "tests/test_compiled_region.py": "dbdeda0859ab0253002a3dc104608d0498cd728255ba2257c21644d297267284",
+    "tests/test_controller_trace_validation.py": "730800aeaf302938268640ed5149c2d0608042b0fec650aec971f14e70f6aa48",
+    "tests/test_conv_autotune_site.py": "3f5db3e02819c3e0eb6f647f46e7285fd5762a791c89215a18e899e300141d19",
+    "tests/test_conv_backend.py": "7eccac38975e382c075aa357463281340a945da48f306de14da6259245555cfe",
+    "tests/test_core_stability.py": "efd576dde6039f7181e62b5342e2c09c93ea16ebb951a8a2974beccb0b714f38",
+    "tests/test_cosmos3_conditioning_cache.py": "47b63dab8549a798f6e44c2223fd75832c5781037a8b6d188fcffb8e12d8ef73",
+    "tests/test_cosmos3_engine.py": "69e05f13ec1aa77974e5a53bbcec4718fd5920a89d18a985f48cc6f53e8b5e59",
+    "tests/test_cosmos3_nano_action_only.py": "5e24a28e904e5c38271016cace6bd9608090b4d375198d7d9153d81644fc012a",
+    "tests/test_cosmos3_persistent_text_kv.py": "28c07409bd546108b347c89c19f9a7d5b818813cdaec7d55bda70a9ef2b43f8b",
+    "tests/test_cosmos3_policy_adapter.py": "09d27c3cd456580eb624055acff585a6ec1a82dece216e15d211f77c2c5bd6c3",
+    "tests/test_cosmos3_thor_graphs.py": "de35705c145b9e6b3d410170fc149dbd4cc65eae17bee890c972209c019358e9",
+    "tests/test_cosmos3_thor_pointwise.py": "7fb68fce9d77ca44bc3ba9a18028d8f2f301fccc3238ea62b99fc763eba9fad7",
+    "tests/test_cosmos_backend_dispatch.py": "c912ad4fe0f3c898b3aa3a1740f546d8f3dcd7d2ea03c7c376d17fc5b880dfe5",
+    "tests/test_cosmos_dense_mlp_fp8.py": "da16e85b5cf29a84bd620034937b32f4ce0d04333ff9c59c3a4b19dac8e57c65",
+    "tests/test_cosmos_droid_loop.py": "b25ef7efb0da3dbea25e03b6f0c6090c52af1e1ea07aed864868daf58003796e",
+    "tests/test_cosmos_fp8_install.py": "78581f22b0ab48107cd587164844938351822213f98bf9dcbb1284d1de6e4770",
+    "tests/test_cosmos_generation_region.py": "4be50bfe640816a1794122544bde070d552c1a9181575a1ee7394ad79f90b7be",
+    "tests/test_cosmos_numeric_attention.py": "2e8c5c3c50e81c42e59087ea9916803dde26e299e6b239ff031227c50ffad63c",
+    "tests/test_cosmos_numeric_regression.py": "34dd23e845e7d7c6a4dad88db70f4f8af856f2af8f8006784f11070c159ab096",
+    "tests/test_cosmos_real_weights_probe.py": "a8fddca458fe5cbda6d34284882d07dc013348daa11c1f69fad67669ce965010",
+    "tests/test_cosmos_timestep_cache.py": "ac11943913e91ef4f6cb573987bb0dc66dd5d28377c1d7302e09c0b984a3e9cc",
+    "tests/test_deps.py": "fb28cde1996104ff41dba769a21de9bf17a1fd956347839ceb013f091d5a733e",
+    "tests/test_device_class.py": "7f3547253a6c8108954e16f40cde2705b5fa1b03f1908e74d109747300e50e0d",
+    "tests/test_distill_control_gate.py": "be98e104d8156f849c2baa4ba4aecbc25564bf41722a24857e148eebbd9f82bd",
+    "tests/test_distill_evidence.py": "7cdb1a89dce0525a8945a6729cca146cb1f3deb0124859ce801af15775474331",
+    "tests/test_distill_provenance.py": "13c6c18108c57f2f04a94d8e2f76156b0035ed7da931b0252190d179b942a389",
+    "tests/test_dreamzero_adapter.py": "33ed9bc8476f4445c2e99e151c82061010c394fc5e171f372cce56271f1726fc",
+    "tests/test_dreamzero_backend_dispatch.py": "e291828df5336759cb5e55020651484f059761a3834d17512801d8b00df0e365",
+    "tests/test_dreamzero_checkpoint_geometry.py": "bb7a4ed9f83bebf249f3b4595e17d751b76e1249d559f40b658520c11b24b48c",
+    "tests/test_dreamzero_checkpoint_loading.py": "c656c01fbccdb5b3e3d45b12cdba18decf3e9d1dc696f56129d41b82dbaaf147",
+    "tests/test_dreamzero_fp8_builder.py": "2f8ad2d339c6695459239245e06a7e40f095cf0b12dfe5f027d200eae384720d",
+    "tests/test_dreamzero_fp8_install.py": "772c7a2c35f6029eaafa16c1bc3bc93d7d98855449a80faba21170ea10955925",
+    "tests/test_dreamzero_owned_loading.py": "fe55a013a590eafcd74823c5f43036923a3d5a9fe07a75908a1974f3aee5e9a1",
+    "tests/test_dreamzero_step_cache.py": "d4d2a8d0daa798debbdc52495add609e147e0fffb23316583959863a3d42e572",
+    "tests/test_dynamic_fp8_pack.py": "8249f893fdc04fd4591b0699245c3278d7a06ec18bff666c67c1c9d71927608b",
+    "tests/test_end_to_end_example.py": "fe39b4d239eb4c6b4798913fbf381215c49fefd7981d4402cdc0a1795a2fced7",
+    "tests/test_engine_available_kernels.py": "1bfdca5ab0a9f79889164581c1b70232449baeeaec23f794e5879bf394e889dc",
+    "tests/test_engine_exclusion.py": "a6dbe782354dbde32a5832b507f9ffcee17b89c12162116e6b536f3e7a7d9368",
+    "tests/test_engine_geometry_gate.py": "37f720537f1e91d46d30d39d36dd84ce724fd8a006ed9c78c037626dd70415d5",
+    "tests/test_engine_graph.py": "7dd1a3744db74b385fbd75b86db681a33ae36ae54c06622a57c2065634c4fbc8",
+    "tests/test_engine_lang_embeds_stability.py": "41c05e4ed47358e2d8fa2eca6ca5a022ae6641c07f50bfa10af51f3c80f495fc",
+    "tests/test_engine_operating_point_gate.py": "0c0d7299ed6f6d82a4c380b2ab04b646bc65fb4452bcb656421dc969cbf46442",
+    "tests/test_eval_integration.py": "a669bbf8f6fff7bdea3c8999067778da88f643ca5ac0322b868e564035ba353b",
+    "tests/test_evidence_bundle.py": "ef33aaac63387c12a192353c86baafdcbe6d59bfe8faa038625d9cc9134d9266",
+    "tests/test_exact_tensor_contract.py": "2994d51b112112352ad6945f60abd2feeeaf19630812260828b204fad142c41c",
+    "tests/test_execution_selection.py": "3cc26e8f3e41ab184531f41bf0b77243bf177ddd0d35345a385e9735c33d5a7f",
+    "tests/test_external_plugin.py": "a02f69e6b8f98910dd7b4ece4fd9e4fbfbba19eb5a8de5b60ba99e7f7c2bf156",
+    "tests/test_fixed_input_replay.py": "481aa671954142928830c05a2af5b85f08275aa388f976472ebf39c033d11ca6",
+    "tests/test_fp8_projection_evidence.py": "0276ed0c1c28499a20c1c465a236dd69f64c4e4bff2e5a493784a4c05646b705",
+    "tests/test_generic_pass.py": "a3137aca1dc1e51080784a5f3bb4a8705f8cd5ef83684c4eedc50670485f9a9c",
+    "tests/test_groot_action_generator.py": "818fb4ab3dd567f0c3615b96b2ef22e07f7649a2e17f5141299a37a7b8a4c7c2",
+    "tests/test_groot_backbone_refresh.py": "2422bdb1bfdc2b764a3d733495afa1ac11b9818dcfa5c82257e8a38fef13bb35",
+    "tests/test_groot_checkpoint_embodiments.py": "3599e4a47810dec52061acdc7d08dc2af6bb5d58437d4eb9d28b54b04d22bb49",
+    "tests/test_groot_engine_native_options.py": "97c115d80b6247148bc32124727d5697d9e8f1d88beb07b59a98f3355ded3a7d",
+    "tests/test_groot_fast_decode_selection.py": "9a63be570d8c2c46f8d6dc9b681b73fea22625a5c5d7139fe9ef95624ceaa2b4",
+    "tests/test_groot_fp8_install.py": "c89db43eb8bed2970c12b66998e0c1909d9fc7de2dbf593cffee3a5f0ee9cecf",
+    "tests/test_groot_full_capture_reference.py": "10627d190f633287ee83c413ccc2a632e3a65a0298fd65d81dc1aad2247f4853",
+    "tests/test_groot_gpu_collate.py": "b19836de90551ae186de6c2a2775ae00bed2812b9381bf4aac96210b490fb26d",
+    "tests/test_groot_libero_driver.py": "f975f627a2fbecd92ea6b173c873bd1288a5aab085534c69ece4a891d08b0d96",
+    "tests/test_groot_n17_adapter.py": "373ac87dc22fe3b8ef4f1a9ee80ed2994a60c0195570ec68e7848168af7926c0",
+    "tests/test_groot_policy_server_precision.py": "ea0d34b57f32ff55df06fa98e4e993362576433e719c8eafebf8a6dfc31e31a4",
+    "tests/test_guidance_schema.py": "5f0c254a7a8d98803e1c5db5bbf413a15c2e685a6dbeb9b6c88f857acf006287",
+    "tests/test_h100_fp8.py": "9de7e50f34ee57655d84bc666abccc35bb9e597641a61aa1cfecc5b688a25f55",
+    "tests/test_hardware_probe.py": "c77922072b51733ed3abb3fe687dfaa23855e59e7a338bdc9d751f4ed05ec069",
+    "tests/test_hoist_pass.py": "a0fa711555cfb158ce6bc07397630aa1c665ed696e2e4584d2ff184db04bd6d4",
+    "tests/test_install_preflight.py": "07512937aa3e02b6071a00f757a039549a0b1b94eeb042ad0c39ae3845957fe3",
+    "tests/test_joint_policy_server_precision.py": "4c583e60b10005cf133170b91846a48d96853f533d48971a26e1e95db2559eef",
+    "tests/test_joint_robotwin_driver.py": "6b3f4932f38b534c58f97cb2976febe99177a61243b12ef4ce5282a3f930b605",
+    "tests/test_kernel_framework.py": "7e01e963133d70748a2ffcf3c8923908f9fde98a41ff8d23729c13b16775352f",
+    "tests/test_l3_noop.py": "09bbdb131e755f6554cd5310ee28cccc319fd583a37f04803d1a640a06adee49",
+    "tests/test_layer5_flow.py": "4610fd7228d4e7592046828fc9719c3674ef2506f0e1e101f6b9f9b8040f177b",
+    "tests/test_lingbot_vla4b_adapter.py": "d09b7df27b39d3e9d99a99b2e1c2472bead90f40f66ec523b62d7e053c7da8c5",
+    "tests/test_lingbot_vla4b_full_path.py": "e70117ead1da87bf04378ecaf656e20ae26a9a8b25e207b1c1c34cc1102891c3",
+    "tests/test_lingbot_vla_v2_adapter.py": "54a7e0a25ba9ebd95321621b009829dc7f6c1ce09dfeda38506f1c9963a185ec",
+    "tests/test_moe_schedule_site.py": "ad9c441073617d59cc242151fcc9f8c16c4838454ded2c6745e41a79978933f1",
+    "tests/test_native_coverage_comparison.py": "f59f36ac95f09e182a5c7e86414f0677c7c7587c5841824a342898bc05fa36fe",
+    "tests/test_native_total_comparison.py": "0ef2448a533e7f9d8fede8d888273699b711d35a95eeac8f610f12da79e960be",
+    "tests/test_numeric_total_comparison.py": "c9c37651597ac1eeca52cc68dde9eb4f34d49aafdb37d04ea3cc5ee36d04c4c8",
+    "tests/test_operating_point.py": "de908e8543bf10ac2e8e995905f00b04fb2e88d2f0e80450e42d9edd131c1a2a",
+    "tests/test_optimizer.py": "a13a159f980c3e395202add431c264b43284d2628cb82720c49b4ab402dbb5cd",
+    "tests/test_p3_cosmos3.py": "e8cfb28e39c11772a9c659c2dc9b70d83ca36b4a8cab07afc70fd1fcfc2a95a5",
+    "tests/test_p8_scratch_arena.py": "9a0e0aa8e264fb6fe97d0dd23077e8379c46451e6ea41e74f215b3214bcefadc",
+    "tests/test_paired_runner.py": "32544a9b7e6c9b55d0a6029f753d0cfbd28b85e301b03ca4a33b7f171691c9cb",
+    "tests/test_pdd_lingbot_parity.py": "7f9616d375fbda0743da170858a709bc6c3ec3f7f89903ddc94f77c3c58ad66e",
+    "tests/test_pdd_parity.py": "8f5a561de6d197a60c0d1a9a15f5fa5c41e2fe582839f6ab799db6e037b265f4",
+    "tests/test_pdd_recipe.py": "eb3c76dca6aed8c5539c7c6ba268f5cd4bb9729b989e004a14934dfadf838e36",
+    "tests/test_pi05_adapter.py": "cdec59b230c5bcad7b9c1addbb0312bb6b1d58dcddaada89fb7698807af5b4c8",
+    "tests/test_pi05_capture_default.py": "36623194498df4014b977cc95f04b43a363b6c24d291ed2a93156ff6a974a633",
+    "tests/test_pi05_compile_neutralize.py": "ca4222cf5b973d61e4c5d2d75bf1559e70b87ea5d422858faca2c5c96db3a1ad",
+    "tests/test_pi05_engine_loop.py": "347662dc35f9cf5dba27831522c9af13577f8f6ef2f36e742f9a8ff3ee24e93d",
+    "tests/test_pi05_legacy_cache.py": "f93ff63fbf31e6fa3b62d0747f64c9aa46dfa8c332287415ed4b7a62237e4bc3",
+    "tests/test_pi05_libero_driver.py": "f6747a68af3f6fb19fd231270eb1d7f4a4590b51c70b343088306e41c84c7e84",
+    "tests/test_pi05_runtime_libero_campaign.py": "7e017070b86ee71c090fc66733015962e3b4e15d49ee8c00f357df641e221e7f",
+    "tests/test_pi05_runtime_libero_compare.py": "37ed35e855abe9fd155cded8305fcdfb83bc3566b5c2efa57168f3c051a38a13",
+    "tests/test_pi05_scenes.py": "c30bdc9467821ddfc0dee84705e612c17990fc62920607cb694a1a7464c397eb",
+    "tests/test_pi05_static_capture.py": "8f73fbc562feb5e006d9320c3ac8783d7b1d29f5aae24b795e8c6c31579cfeea",
+    "tests/test_pi05_tf32_closed_loop.py": "f0c8b06208f379a77df76e3245337f9cb8c6a80d8a91a3801fcfb08869e7d9d3",
+    "tests/test_pi05_tf32_operating_point.py": "2576fb74d0be915547d4c36b5f343fd55018b19f4b31a8ff97d702ca1ead6742",
+    "tests/test_pi05_weights.py": "d07533cb06c4291f7bec0f012626c44ec4184332ebf0086fabc4e9579a6aa44b",
+    "tests/test_plan_header_model_id.py": "3e2f4237e5473f897da16026360aac2826ce7a93b1049a485a78dcd4a570d37a",
+    "tests/test_policy_trace.py": "80aae27dc7a524de560c84d80fd28e962c009ab7256c4f2f824f11a9c153fe38",
+    "tests/test_promote_operand.py": "cd9d7e07f054d050e15cb363556aa27e8bbe85aabd3e6e06fc94f610806d12fd",
+    "tests/test_qualification.py": "95ce5b855df10c825d4e4dc9944b1386d7c2c38def00d62ce64a134064be3e7b",
+    "tests/test_realtime_budget.py": "6943863082003bbb485638a81b74b5fb4dd5b22fda828741521d52289f02c4ba",
+    "tests/test_recipe.py": "9bddb36b8148174170f46da3f2fd3b58f880f293556f516ae426f52d0e93a25f",
+    "tests/test_repo_surface.py": "6b3ae0520a24573ee8df13702cf74b156777d3b3c0a943b6234f2a1b01bdc4df",
+    "tests/test_ring_allocator.py": "17fe2d9b2fbf344e56480ad261f8d058b82bbfe6cda93f9912456362020fa3c0",
+    "tests/test_robotwin_driver.py": "df09c868b581bb5696544e42375398684f9b38e6bc1af89eb246625ce5277122",
+    "tests/test_robotwin_reset_bounds.py": "516a037f325957f8be1e5e8a39f492edf4fb572579676fb7cfee50f9664b7478",
+    "tests/test_robotwin_transport.py": "98e4e06641478f20fa1e866473665ae5f99419f66cef7d1a81dc11ef539870c7",
+    "tests/test_rope_kernel.py": "e4141dc1912a2618c4aef3bc2bd80a3c79368ccaf8be0df4f526783a0fe1f451",
+    "tests/test_runtime.py": "ed79d427e5d861b6b0a35ed737688452f318c744c2a5586e39d2545dc6131efe",
+    "tests/test_runtime_boundary.py": "9847fa926e7c62df7d361b2b4920893d405674b517c69fa1341fa202438488a8",
+    "tests/test_runtime_bundle.py": "dc5832321d48bb3fa427b9eb42e253139435a82279af2fc0a21f35b533bb958b",
+    "tests/test_runtime_facade.py": "a132de74b8e04c62d152ab8c882fd14417f83483c5a7f2a40ed9b9c54e6ce092",
+    "tests/test_runtime_precision.py": "227cf6773098247be9e34308f85882904caa64dc95c7893bac20d14b84e25e39",
+    "tests/test_runtime_regression.py": "44012556dc4eba29bed74d7861dbdb9e2bcff84dcb1722482f36baca680a2b5f",
+    "tests/test_runtime_telemetry.py": "b971efd2cd0d98813713ae462c592e4266a509170f97104ca807fa26f76a0348",
+    "tests/test_scaffold_evidence_readers.py": "3bc7de8746fbd757af827d5dfe74a7ddba3db1ee3f037c4502121efc4a80db39",
+    "tests/test_scene_prepare.py": "4ce9e4ac1088942b707c24b8af61d9ac8aabe2fcfed4d0f8d612557669d68aa4",
+    "tests/test_schedule_sweep.py": "80b50f696082118b8b2833a117f8dbdf024d0d8ea5d4dd4d1e22702c496f6816",
+    "tests/test_screening_summary.py": "7f339626587fcf4c36bfd893cacc347f777373d37d1e31517b378a7c8fd0e393",
+    "tests/test_serve_autoscaffold.py": "cdf795139424dc573f6602e9cd3765eb37c34d1960df0f1f1a35f83f5612793e",
+    "tests/test_serve_parity.py": "23a031d6c7977307f13be62545de2ebd9d6b57b72c178ad1282360276f3d6d16",
+    "tests/test_serve_seed.py": "3419417b44c6219a19db7f34a734349de0a5e9f45d17dd8faffad237abede0d3",
+    "tests/test_serve_viz.py": "8a6e052a664a05d9525fc70ae8fed6f5b783881d44148a21e08f1ec694349a4e",
+    "tests/test_shared_bf16_pointwise.py": "a8f450be9a2a4b0fed0881a072315c734eb5563a02bb84e308779baf29d8990b",
+    "tests/test_shipped_config.py": "6513e338507d0cdeb1bdc42e54170280d4bb8526d6a41d1e6c83a3331daaf358",
+    "tests/test_simulator_campaign.py": "7ce04e105cfc878a457041dc9fdf32e428bbcfbb8c7bb22d2bb365a0cd863470",
+    "tests/test_simulator_doctor.py": "fe420154ffb547dfb36662951e436c8d4cd7dc225c8296e74afb33750d793145",
+    "tests/test_sm120_native_pass.py": "ca7e447b91b5f2e75a8984e4dff21b938214e80e6d711ff4ed55bde110dbf9bc",
+    "tests/test_sm120_wan_stage2.py": "236cd41a5e277990fbf74fd792fff4a64753e01666e94a3b3ee60114a0cd9aa7",
+    "tests/test_stable_pools.py": "0124b14b7b088282369717cd764a73623177282a525c29041d3fe0026d700054",
+    "tests/test_stable_pools_pass.py": "96f2cd694ee3da4101c5ce33e7279f5ea9700a7e57110a91c631877f6c8d7798",
+    "tests/test_static_tensor_graph.py": "7b601c0ab9dc3d43ce46275def7af6a612dc259d8d246dd67b81cdb9b389d5f7",
+    "tests/test_step_cache.py": "cfec49bf5723cf8bec609091f770e46f9208957081234395aa6b35132c4289ad",
+    "tests/test_step_cache_policy.py": "2ba0d2c13cdb1840da1a8208227053260b92e1f69fa0f77a2c6dc04fe2046f7a",
+    "tests/test_tensor_cache.py": "cdda2b14be4eb95b024074f37131ec9d247ced074043bec969389cc4f68435bd",
+    "tests/test_test_runner.py": "2371076abc3580f200eaa28214d3f316c37af90a1ade7ca97c4ce319a2ec662c",
+    "tests/test_trainer.py": "8a406dc0a4ba0e6feabbe5197bcd921be2d9fb342a22072b9e1ed5f4b6179726",
+    "tests/test_triton_residual.py": "cbe55bc6b1571376bfaeb48173dd9d0f34eee4b6955fed86eded285deda0e6d2",
+    "tests/test_user_report.py": "4a37a4ad335abf8dc0065a67eca49ca2cf050fe564f48b42ffd872b5b9175e06",
+    "tests/test_v2_complete_fallback.py": "ca62451124dfa7272bcfdc98ac0bc2bf8e3ade458463522ab8f3f0e51605ffda",
+    "tests/test_v2_vision_capture_metadata.py": "4914068a9b332de5f759b408b30281cd1639ef671f2898ed872d6d7293a47d91",
+    "tests/test_va_checkpoint_history.py": "06fa28dd2e2a407439dca1704dc6275b30003e81a0b0ecc0219bd993e86b1d6c",
+    "tests/test_va_geometry.py": "dd2655dfc99dab4bda6b13736c431433356ec3c9d3386bac212cc50ca3c5cd17",
+    "tests/test_va_saturated_stress_compare.py": "91a14f7a4ebdd740193cfe41485c33d3d020e6be1211feb79bc18211a4aa1090",
+    "tests/test_validate_certificate.py": "e9e4469002d4f4d98abc2bd981625368e4cf1021f856d4eff5ae5417b24c131d",
+    "tests/test_validate_layout_hint.py": "cb03f6f216679e3998c2a831f97c5c5d47e913af314ed0240428bca2a28c10e6",
+    "tests/test_validate_scaffold.py": "8fbf177fa725de92d922d01b52366ead474e820b269ed12f5bd8c7f9b5f65c34",
+    "tests/test_vla2_checkpoint_moe.py": "8fe0fd0854180794ea07b90d9413a9cdef492ac9fe34f9957f697b79863b8e76",
+    "tests/test_vla2_scale_accumulator.py": "042b6626f149ee9eb70a4656663f2ab34c3f7e00ff84e46080d6f0c7f87de0d3",
+    "tests/test_vla4_engine.py": "d942ddb34089a4f0651c94935f69771c1a598e3d23a7c2ffac5756cf37c14dc2",
+    "tests/test_vla4_preprocess_ownership.py": "9038cbce08328766af1cd932f7e0a40d9d1c4496f9d50a72a00a1ea84afba36f",
+    "tests/test_vla_adapter_contracts.py": "d313f9c43e7f5fb746877f21bd60ce25c37c87056e60707e412ad9559c1d6360",
+    "tests/test_vla_benchmark_pipeline.py": "ecb751f4b1fffcf5b0bebc2cdb0c39b5cbddde6fd088a2e68b0b25ff9f43d058",
+    "tests/test_vla_instinctflash_driver.py": "de655dcc0da4674c458742396127e6bc7b23f8b40b80c3c3110e927cf3368354",
+    "tests/test_vla_replay_driver.py": "c5c2ba86cd2ea4f10c9459adef16fc52c8095dd149d080c9819d5e6fce6aa528",
+    "tests/test_wan_va_backend_dispatch.py": "5b0ba435c523f41f589bd33c9edeecc2fb2e6200d5a3235f85429eec6951c249",
+    "tests/test_wan_va_checkpoint_geometry.py": "254fa722352918602a8fd37ee4b2ae1162ef60a46dd2dc4e28ed92d91681bbc0",
+    "tests/test_wan_va_engine_operating_point.py": "4baa7ddd9673dd631396eb76653174a49fb9f88803cf0f7078157d24ec40b9fe",
+    "tests/test_wan_va_engine_server.py": "4d9e2484f48d2cf29475c5331650fe5761a5818aa1d278834a077b97fce0fe8c",
+    "tests/test_wan_va_libero_driver.py": "d0b5aa0d487acbf8327423642c5dd672613556f255ef9998e8eff4fa024fbf54",
+    "tests/test_wan_va_runtime_robotwin_bridge.py": "e6b46ec87b249afacde7415a142e02639e739237cb1b2a2ee1300ef11b2aa8ec",
+    "tests/test_wan_va_runtime_robotwin_scene.py": "cd1810c4fcf48ec06dfc6459330fe61e522e351075163cb84cbda4d60b493146",
+    "tests/test_wan_va_runtime_rollout.py": "fa4bedbe970576da9722071f01c48e2db3bc1df84678bbc72d84165ad153149a",
+    "tests/test_wan_va_runtime_server.py": "461cbd0450c59966c5e5f410eef8edd3c6105ab2f93f6ab4472cc63dcbfaf9c6",
+    "tests/test_worker_output.py": "baba9579ec113431393584221175a34831a4352562853acb11e0ada34f5954a1",
+    "tests/test_ws_server.py": "9243e00b8721d0aef887928eb31d0306e91c65fa91e226283aced601501985eb",
+    "tests/run_tests.py": "b1d4b0dce4aac951e0f6ebc929b06f541ee23011cb8bb5ba6f2b7ac180e4507e",
+    "tests/__init__.py": "e5dfa1f4ef7fe8dc45766eacb4999111c10f5a17acbf2a7dcd684949b3517d98",
+    "pyproject.toml": "51eeb11f36e46fa16a04d28fac0cc43e58cfaab1d4470c0dd26bcbff0497d2ab",
+    "benchmarks/vla/config/registry.json": "8cf867e4d3ed78792ab8bfb8c46d5c083c511ae3d9091260476f821ca5ab5945",
+    "instinctflash/runtime/dreamzero_fp8.py": "b3f2584a7c251ed4954e2fae12c38b5ddbc632dff80c43fb1902d25e35326b2c",
+    "instinctflash/runtime/precision.py": "6d7714c41045e83c5fd82d3f0d523429e7c8098c746112eef516d57e8dcacbfe",
+    "examples/dreamzero/dreamzero_iwm/adapter.py": "45454ffeafa920a1be7e9890136ae7389da9d9c4df4270e8bb5d30b4e78b66c3",
+    "tests/test_vla4_prompt_reuse.py": "d4f274bfd7900e8622de21bbcbfe3bd49284fe8a866d9fb7b7632770e3cb8204",
+    "benchmarks/regression/user_report.py": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac",
+    "benchmarks/regression/user_e2e.py": "1c427d5e1fb63835492e3b613c01d4a1fada65fd6c6b790138a19a92b2deb59d",
+    "serving/flash_rt/frontends/torch/vla4b_thor.py": "80b3754702892878075e646c9712c62da14c5a9055c124cf29fa6c279e2ee574",
+    "instinctflash/runtime/vla4_engine.py": "9fa3d9c3c54f742c40d39a7784d1373dec3d04830e5321a0820842ab0472faab",
+    "instinctflash/runtime/engine_backend.py": "99c5346ebe437f4d3d26bc8dcd10755e8a2180fe1b4573b45e905ca9597f7a4e",
+    "instinctflash/runtime/facade.py": "be2d16d6d4a6df7283223b50d88cf5defebec21d54d4711687d6788584b44f41",
+    "tests/test_user_provenance.py": "c36ddb3a2c9babad9f8b1025e06518acc65d92be8d4c6b637399b49be1b04f1a",
+    "tests/test_vla2_prompt_reuse.py": "a968387e5692f81cf6a581f1017e2d7bc42d5cbd1de60709f05d43a06da080e6",
+    "benchmarks/regression/user_provenance.py": "bf8aa2cf07861605134fb3d6897798972d1db8a30fc8f9d5276fe3a62303eea0",
+    "serving/flash_rt/frontends/torch/vla2_thor.py": "e6a4dfd9e96449237028c838b471eec0ac536367065c540ea6e3079c035ec1db",
+    "instinctflash/runtime/vla2_engine.py": "c6d12a7f09a302e26188526843c4eab16b679685bb2fe86839ae38131dd7f057",
+    "README.md": "97f47b4450e531fa7540f90eb0ea8065e06c7ebdfc7e0302a07c87b008713954",
+    "tests/test_assemble_user_provenance.py": "142b070d7b7e6617fe7d6987c0c74675b59daa953dcd25db8e87a27643e8a393",
+    "eval/user_e2e_2026-09-14/assemble_provenance.py": "fc3073fc958a7f8f7d94c2a669f07370a7017679ffed58427e91967629a365a4"
+  },
+  "missing_tests": [],
+  "removed_tests": [],
+  "stale_test_results": [],
+  "stale_observed_inputs": [],
+  "unresolved_changes_during_rechecks": [],
+  "resolved_changes_during_rechecks": [
+    {
+      "path": "tests/test_user_provenance.py",
+      "report": "eval/user_e2e_2026-09-14/validation/cpu_final_changed_tests.json",
+      "resolved_by": "eval/user_e2e_2026-09-14/validation/cpu_provenance_final_recheck.json"
+    },
+    {
+      "path": "benchmarks/regression/user_provenance.py",
+      "report": "eval/user_e2e_2026-09-14/validation/cpu_final_changed_tests.json",
+      "resolved_by": "eval/user_e2e_2026-09-14/validation/cpu_provenance_final_recheck.json"
+    }
+  ],
+  "reports": [
+    {
+      "path": "eval/user_e2e_2026-09-14/validation/cpu_full_suite_verified.json",
+      "sha256": "dd3bf9883512de0248538d6f345f5c4d61dc356e14a2ad221dc524325b221c4f",
+      "reported_exit_code": 0,
+      "reported_counts": {
+        "PASS": 168,
+        "SKIP": 19,
+        "FAIL": 0
+      }
+    },
+    {
+      "path": "eval/user_e2e_2026-09-14/validation/cpu_current_targeted.json",
+      "sha256": "7f6b6ada6eda9d4ce563180c41e90c9c0aa42ac7c89cabb9bba44177cb6fca21",
+      "reported_exit_code": null,
+      "reported_counts": {
+        "PASS": 9,
+        "SKIP": 0,
+        "FAIL": 0
+      }
+    },
+    {
+      "path": "eval/user_e2e_2026-09-14/validation/cpu_final_changed_tests.json",
+      "sha256": "1eb91188780417b13d9a620c92d3065bba9d6585f382d3cafd79e0dc1dce5dd0",
+      "reported_exit_code": 1,
+      "reported_counts": {
+        "PASS": 7,
+        "SKIP": 0,
+        "FAIL": 0
+      }
+    },
+    {
+      "path": "eval/user_e2e_2026-09-14/validation/cpu_provenance_final_recheck.json",
+      "sha256": "900dc690fbd4a8ece91c59d0a80268e62d62c4c9a1cc63dc93f5bc184b4d6a2a",
+      "reported_exit_code": 0,
+      "reported_counts": {
+        "PASS": 2,
+        "SKIP": 0,
+        "FAIL": 0
+      }
+    }
+  ],
+  "source_classification": {
+    "path": "eval/user_e2e_2026-09-14/validation/cpu_current_source_classification.json",
+    "sha256": "0c2e961f064c1a1e82a1a09ffe9232969f98ba71678f3376f074c87aa2dfe13b"
+  },
+  "coverage_basis_counts": {
+    "cpu_full_suite_verified.json": 175,
+    "cpu_provenance_final_recheck.json": 2,
+    "cpu_current_targeted.json": 8,
+    "cpu_final_changed_tests.json": 6
+  },
+  "changed_and_affected_files_rechecked": [
+    "test_assemble_user_provenance.py",
+    "test_dreamzero_adapter.py",
+    "test_dreamzero_fp8_builder.py",
+    "test_dreamzero_fp8_install.py",
+    "test_lingbot_vla_v2_adapter.py",
+    "test_repo_surface.py",
+    "test_runtime_precision.py",
+    "test_runtime_telemetry.py",
+    "test_step_cache_policy.py",
+    "test_user_provenance.py",
+    "test_user_report.py",
+    "test_vla2_checkpoint_moe.py",
+    "test_vla2_prompt_reuse.py",
+    "test_vla2_scale_accumulator.py",
+    "test_vla4_engine.py",
+    "test_vla4_prompt_reuse.py"
+  ],
+  "production_guard_sources_sha256": {
+    "instinctflash/runtime/dreamzero_fp8.py": "b3f2584a7c251ed4954e2fae12c38b5ddbc632dff80c43fb1902d25e35326b2c",
+    "instinctflash/runtime/precision.py": "6d7714c41045e83c5fd82d3f0d523429e7c8098c746112eef516d57e8dcacbfe",
+    "examples/dreamzero/dreamzero_iwm/adapter.py": "45454ffeafa920a1be7e9890136ae7389da9d9c4df4270e8bb5d30b4e78b66c3"
+  },
+  "production_guard_phase": "Post-A CPU-only admission guard validation; see source classification for A/B/C wheel boundaries.",
+  "gpu_validation_performed": false,
+  "task_quality_validated": false,
+  "exit_code": 0
+}

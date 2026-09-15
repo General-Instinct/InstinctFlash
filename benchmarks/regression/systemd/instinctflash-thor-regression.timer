@@ -1,0 +1,10 @@
+[Unit]
+Description=Nightly InstinctFlash Thor regression
+
+[Timer]
+OnCalendar=*-*-* 03:00:00 UTC
+RandomizedDelaySec=15m
+Persistent=false
+
+[Install]
+WantedBy=timers.target

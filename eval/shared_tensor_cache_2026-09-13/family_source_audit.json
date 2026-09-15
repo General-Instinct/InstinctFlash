@@ -1,0 +1,115 @@
+[
+  {
+    "family": "DreamZero",
+    "source": "/home/ubuntu/dreamzero-repo/groot/vla/model/dreamzero/modules/wan_video_dit_action_casual_chunk.py",
+    "sha256": "efc5120f73cbce2e00b67d78e8bf71a561e943a909791f039b435abc27ccd605",
+    "matches": [
+      {
+        "line": 1392,
+        "text": "self.time_embedding = nn.Sequential("
+      },
+      {
+        "line": 1394,
+        "text": "self.time_projection = nn.Sequential("
+      },
+      {
+        "line": 1783,
+        "text": "e = self.time_embedding("
+      },
+      {
+        "line": 1786,
+        "text": "e0 = self.time_projection(e)"
+      },
+      {
+        "line": 2083,
+        "text": "e = self.time_embedding("
+      },
+      {
+        "line": 2086,
+        "text": "e0 = self.time_projection(e)"
+      },
+      {
+        "line": 2110,
+        "text": "e_clean = self.time_embedding("
+      },
+      {
+        "line": 2113,
+        "text": "e0_clean = self.time_projection(e_clean)"
+      },
+      {
+        "line": 2198,
+        "text": "def _create_freqs("
+      },
+      {
+        "line": 2240,
+        "text": "for m in self.time_embedding.modules():"
+      }
+    ]
+  },
+  {
+    "family": "GR00T",
+    "source": "/home/ubuntu/Isaac-GR00T/gr00t/model/modules/dit.py",
+    "sha256": "d4da27be51d9ebe1c923dedd3ae80fe2754c97f96500e82c26fe19fec0062c13",
+    "matches": [
+      {
+        "line": 254,
+        "text": "self.timestep_encoder = TimestepEncoder("
+      },
+      {
+        "line": 301,
+        "text": "temb = self.timestep_encoder(timestep)"
+      },
+      {
+        "line": 362,
+        "text": "temb = self.timestep_encoder(timestep)"
+      }
+    ]
+  },
+  {
+    "family": "pi05",
+    "source": "examples/pi05_vla/pi05_iwm/static_capture.py",
+    "sha256": "6fb23166ba4970000b29cd7de07c0da57afb51d44f205f0f0f456d8e1a1c3475",
+    "matches": [
+      {
+        "line": 331,
+        "text": "def _record_step(self, timestep) -> None:"
+      },
+      {
+        "line": 340,
+        "text": "def _load_step(self, timestep) -> None:"
+      },
+      {
+        "line": 345,
+        "text": "self._record_step(timestep)"
+      },
+      {
+        "line": 363,
+        "text": "self._record_step(timestep)"
+      },
+      {
+        "line": 433,
+        "text": "# graph (`_load_step`); the region does only the step-VARYING work"
+      },
+      {
+        "line": 741,
+        "text": "self._load_step(timestep)"
+      },
+      {
+        "line": 751,
+        "text": "self._record_step(timestep)"
+      },
+      {
+        "line": 761,
+        "text": "self._load_step(timestep)"
+      },
+      {
+        "line": 846,
+        "text": "self._load_step(t)"
+      },
+      {
+        "line": 863,
+        "text": "self._load_step(timestep)"
+      }
+    ]
+  }
+]

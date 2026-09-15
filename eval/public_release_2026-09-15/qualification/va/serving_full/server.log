@@ -1,0 +1,98 @@
+InstinctFlash serve preflight for 'robbyant/lingbot-va-posttrain-robotwin' (declaration-only; no weights fetched)
+  device      : NVIDIA Thor  sm110  132 GB
+  features    : cublas, cuda, cuda_graphs, cudnn, fp8, nvfp4, tma, triton, wgmma
+  class       : bandwidth-bound-edge — Thor (sm110): capture benefit depends on the model and execution scope; the matched 2026-09-09 study supersedes the older pi05-only timing. Capture defaults require family/operating-point evidence
+  precision   : fp8
+  declaration : /home/guanming/.cache/instinctflash/declared/robbyant__lingbot-va-posttrain-robotwin/25c73c83cd83866da8ef6cc9b0bd869b5430f626e6c2814bcb654f2a3dea8b72
+  backbone    : wan_va
+  servable    : True
+  capabilities: backbone:wan_va, declares:base_weights, declares:env_type, declares:frame_chunk_size, declares:height, declares:obs_cam_keys, declares:param_bytes, declares:va_config, declares:width, guidance:action=positive_only, guidance:video=cfg, servable
+
+InstinctFlash plan for robbyant/lingbot-va-posttrain-robotwin
+  plan tier: NUMERIC
+  operating point: schedule {kv_refresh=2 + video=25 + action=50} | guidance {action=positive_only@1 [implied by mode], video=cfg@5 [inherited from the family default]} | cfg batching {batch-2 on 77 of 77 declared forwards (negative branch requested by video); batch-1 on 0}
+
+  skip   graph_capture              [BITEXACT  ] Thor capture performance is unmeasured for this family/operating point; retain the eager default pending a paired device measurement.
+  APPLY  engine_offload             [NUMERIC   ] SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation
+         expected: Measure this checkpoint with matched views, action horizon, denoise steps and timing scope. The matched Thor study separates native capture, FP16 engine and FP8 arithmetic; it does not establish robot-facing Runtime parity.
+  APPLY  fsdp_elision               [BITEXACT  ] world_size=1, so every FSDP all-gather is identity while still paying a flat-param copy and stream sync per unit per forward
+         expected: measured 1.75x standalone on LingBot-VA
+  APPLY  allocator_churn_elision    [BITEXACT  ] closed-loop serving has a stable working set, so releasing the pool between control steps only forces re-allocation next step
+         expected: small alone; larger once per-layer KV gathers stop churning the pool
+  APPLY  debug_dump_elision         [BITEXACT  ] per-chunk tensor dumps do a synchronous D2H on the critical path and are not consumed by the serving client
+         expected: measured ~1.10x on top of fsdp_elision
+  APPLY  obs_decode_elision         [BITEXACT  ] caller wants actions only; ['vae.decoder'] need never be resident or executed
+         expected: no latency win on this model (already skipped); frees resident memory, which is what sets episodes-per-GPU
+  APPLY  conditioning_prefill       [BITEXACT  ] ['text_kv', 'negative_text_kv'] declared pure in ['episode'] scope, but recomputed on all 77 forwards per control step (kv_refresh=2 + video=25 + action=50)
+         expected: hoists 2 artifact(s) out of the denoise loop. Measured ON LingBot-VA: 89 of 226 TFLOP per control cycle (39%), 67.6% of an action forward's layer FLOPs, 360 MiB resident. Those figures are that model's; for any other backbone the FLOP share and the residency cost follow its own layer count and artifact size. Launch-bound share means the wall-clock win is less than the FLOP win either way — measure it
+  skip   prompt_encoder_staging     [BITEXACT  ] no memory pressure on this device class (sm_110, 123 GiB): keeping the prompt encoder resident avoids per-reset PCIe moves and allocator churn
+  APPLY  ring_kv_addressing         [BITEXACT  ] streams ['video', 'action'] live across control steps in a pool that is currently addressed by boolean mask, costing a host sync and a full-pool copy per layer per forward
+         expected: measured 1.40x on LingBot-VA; measure this operating point and device (cost model: 223.3 ms)
+  APPLY  action_terminal_forward_elision [BITEXACT  ] the action phase's terminal forward writes provisional K/V that clear_pred_cache drops before any forward reads it; its output is discarded by construction
+         expected: one forward per cycle (the action pred-commit): 1 of 10 at 2V/4A, 1 of 8 at 2V/2A (cost model: 68.4 ms)
+  skip   sm120_gated_residual       [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.
+  skip   sm120_wan_stage2           [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.
+  APPLY  conv_layout_ndhwc          [NUMERIC   ] two Wan VAE Conv3D subgraphs can choose NCDHW or NDHWC by measurement on this device; NDHWC changes convolution accumulation order, so the swap is NUMERIC
+         expected: Measured ON H100: 1.405x complete cycle. RTX 5090 operator screen before integration: NCDHW 2.780 ms vs NDHWC 1.206 ms (2.30x); end-to-end must be measured and SM120 quality evidence is not inherited from H100.
+  skip   cfg_branch_elision         [NUMERIC   ] dropped by caller via Plan.without(): streams ['action'] discard their negative branch while ['video'] force batch duplication; forwards that can drop to batch 1 — action: 49 of 50 (commit steps exempt: their K/V feeds the other stream's negative branch)
+
+  NOTE: plan is NUMERIC because of ['engine_offload', 'conv_layout_ndhwc'].
+        Any accuracy-neutrality claim for this plan requires a paired
+        non-inferiority run.
+        `plan.bitexact_subset()` is the largest configuration that does not.
+
+The config attributes {'clip_output': False} were passed to AutoencoderKLWan, but are not expected and will be ignored. Please verify your config.json configuration file.
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:00<00:00, 14.14it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 17.89it/s]
+The config attributes {'clip_output': False} were passed to AutoencoderKLWan, but are not expected and will be ignored. Please verify your config.json configuration file.
+2026-09-14 20:12:53,106 flash_rt.frontends.torch.wan_va_thor Weights loaded + repacked in 7.9s (fp8)
+2026-09-14 20:12:56,603 flash_rt.frontends.torch.wan_va_thor WanVaTorchFrontendThor built for action=50 steps, video=25 steps; guidance action=positive_only@1, video=cfg@5; cfg_batch=2 (fp8, B=2, 79 fwd/cycle, gate=kernel)
+loaded 'robbyant/lingbot-va-posttrain-robotwin'; binding ws://127.0.0.1:50027 (clients: openpi_client.WebsocketClientPolicy, or GET /healthz)
+2026-09-14 20:12:56,608 websockets.server server listening on 127.0.0.1:50027
+2026-09-14 20:12:56,608 instinctflash.serving.ws_server serving 'robbyant/lingbot-va-posttrain-robotwin' on ws://127.0.0.1:50027
+2026-09-14 20:12:56,685 websockets.server connection open
+2026-09-14 20:12:56,685 instinctflash.serving.ws_server connection from ('127.0.0.1', 41796) opened
+2026-09-14 20:12:56,833 root Reset.
+2026-09-14 20:12:57,649 flash_rt.frontends.torch.wan_va_thor set_prompt: cross-KV slab built (30 layers, B=2, amax 7.8)
+2026-09-14 20:12:57,649 instinctflash.serving.ws_server new episode: conditioning keys ['prompt']
+/home/guanming/ifl_public_qualification_20260915_v1/vendors_v1/va/wan_va/wan_va_server.py:225: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+  action_model_input = torch.from_numpy(action)
+2026-09-14 20:13:13,564 root Reset.
+2026-09-14 20:13:13,957 flash_rt.frontends.torch.wan_va_thor set_prompt: cross-KV slab built (30 layers, B=2, amax 7.8)
+2026-09-14 20:13:13,957 instinctflash.serving.ws_server new episode: conditioning keys ['prompt']
+2026-09-14 20:13:23,122 websockets.server connection closed
+2026-09-14 20:13:23,123 instinctflash.serving.ws_server connection from ('127.0.0.1', 41796) closed
+2026-09-14 20:13:23,123 websockets.server server closing
+2026-09-14 20:13:23,123 websockets.server server closed
+InstinctFlash: flash-attn not installed; using the import-only stub (this serving path runs attn_mode='torch' and never calls it).
+{
+  "instinctflash_cli_schema": 1,
+  "command": "serve",
+  "version": "0.1.0",
+  "ok": true,
+  "result": {
+    "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+    "backbone": "wan_va",
+    "servable": true,
+    "device": "NVIDIA Thor  sm110  132 GB",
+    "device_class": "bandwidth-bound-edge — Thor (sm110): capture benefit depends on the model and execution scope; the matched 2026-09-09 study supersedes the older pi05-only timing. Capture defaults require family/operating-point evidence",
+    "precision": "fp8",
+    "capabilities": [
+      "backbone:wan_va",
+      "declares:base_weights",
+      "declares:env_type",
+      "declares:frame_chunk_size",
+      "declares:height",
+      "declares:obs_cam_keys",
+      "declares:param_bytes",
+      "declares:va_config",
+      "declares:width",
+      "guidance:action=positive_only",
+      "guidance:video=cfg",
+      "servable"
+    ],
+    "operating_point": "schedule {kv_refresh=2 + video=25 + action=50} | guidance {action=positive_only@1 [implied by mode], video=cfg@5 [inherited from the family default]} | cfg batching {batch-2 on 77 of 77 declared forwards (negative branch requested by video); batch-1 on 0}",
+    "plan": "InstinctFlash plan for robbyant/lingbot-va-posttrain-robotwin\n  plan tier: NUMERIC\n  operating point: schedule {kv_refresh=2 + video=25 + action=50} | guidance {action=positive_only@1 [implied by mode], video=cfg@5 [inherited from the family default]} | cfg batching {batch-2 on 77 of 77 declared forwards (negative branch requested by video); batch-1 on 0}\n\n  skip   graph_capture              [BITEXACT  ] Thor capture performance is unmeasured for this family/operating point; retain the eager default pending a paired device measurement.\n  APPLY  engine_offload             [NUMERIC   ] SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation\n         expected: Measure this checkpoint with matched views, action horizon, denoise steps and timing scope. The matched Thor study separates native capture, FP16 engine and FP8 arithmetic; it does not establish robot-facing Runtime parity.\n  APPLY  fsdp_elision               [BITEXACT  ] world_size=1, so every FSDP all-gather is identity while still paying a flat-param copy and stream sync per unit per forward\n         expected: measured 1.75x standalone on LingBot-VA\n  APPLY  allocator_churn_elision    [BITEXACT  ] closed-loop serving has a stable working set, so releasing the pool between control steps only forces re-allocation next step\n         expected: small alone; larger once per-layer KV gathers stop churning the pool\n  APPLY  debug_dump_elision         [BITEXACT  ] per-chunk tensor dumps do a synchronous D2H on the critical path and are not consumed by the serving client\n         expected: measured ~1.10x on top of fsdp_elision\n  APPLY  obs_decode_elision         [BITEXACT  ] caller wants actions only; ['vae.decoder'] need never be resident or executed\n         expected: no latency win on this model (already skipped); frees resident memory, which is what sets episodes-per-GPU\n  APPLY  conditioning_prefill       [BITEXACT  ] ['text_kv', 'negative_text_kv'] declared pure in ['episode'] scope, but recomputed on all 77 forwards per control step (kv_refresh=2 + video=25 + action=50)\n         expected: hoists 2 artifact(s) out of the denoise loop. Measured ON LingBot-VA: 89 of 226 TFLOP per control cycle (39%), 67.6% of an action forward's layer FLOPs, 360 MiB resident. Those figures are that model's; for any other backbone the FLOP share and the residency cost follow its own layer count and artifact size. Launch-bound share means the wall-clock win is less than the FLOP win either way — measure it\n  skip   prompt_encoder_staging     [BITEXACT  ] no memory pressure on this device class (sm_110, 123 GiB): keeping the prompt encoder resident avoids per-reset PCIe moves and allocator churn\n  APPLY  ring_kv_addressing         [BITEXACT  ] streams ['video', 'action'] live across control steps in a pool that is currently addressed by boolean mask, costing a host sync and a full-pool copy per layer per forward\n         expected: measured 1.40x on LingBot-VA; measure this operating point and device (cost model: 223.3 ms)\n  APPLY  action_terminal_forward_elision [BITEXACT  ] the action phase's terminal forward writes provisional K/V that clear_pred_cache drops before any forward reads it; its output is discarded by construction\n         expected: one forward per cycle (the action pred-commit): 1 of 10 at 2V/4A, 1 of 8 at 2V/2A (cost model: 68.4 ms)\n  skip   sm120_gated_residual       [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  skip   sm120_wan_stage2           [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  APPLY  conv_layout_ndhwc          [NUMERIC   ] two Wan VAE Conv3D subgraphs can choose NCDHW or NDHWC by measurement on this device; NDHWC changes convolution accumulation order, so the swap is NUMERIC\n         expected: Measured ON H100: 1.405x complete cycle. RTX 5090 operator screen before integration: NCDHW 2.780 ms vs NDHWC 1.206 ms (2.30x); end-to-end must be measured and SM120 quality evidence is not inherited from H100.\n  skip   cfg_branch_elision         [NUMERIC   ] dropped by caller via Plan.without(): streams ['action'] discard their negative branch while ['video'] force batch duplication; forwards that can drop to batch 1 — action: 49 of 50 (commit steps exempt: their K/V feeds the other stream's negative branch)\n\n  NOTE: plan is NUMERIC because of ['engine_offload', 'conv_layout_ndhwc'].\n        Any accuracy-neutrality claim for this plan requires a paired\n        non-inferiority run.\n        `plan.bitexact_subset()` is the largest configuration that does not.",
+    "host": "127.0.0.1",
+    "port": 50027
+  }
+}

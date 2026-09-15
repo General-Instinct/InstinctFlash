@@ -7,11 +7,12 @@ model, and this one is not allowed to know any.
 
 from __future__ import annotations
 
+from instinctflash.passes.generic.engine_offload import EngineOffloadApplicable
 from instinctflash.passes.generic.graph_capture import GraphCaptureApplicable
 
 
 def default_passes() -> list:
-    return [GraphCaptureApplicable()]
+    return [GraphCaptureApplicable(), EngineOffloadApplicable()]
 
 
-__all__ = ["GraphCaptureApplicable", "default_passes"]
+__all__ = ["EngineOffloadApplicable", "GraphCaptureApplicable", "default_passes"]

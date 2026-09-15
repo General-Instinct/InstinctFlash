@@ -1,0 +1,143 @@
+{
+  "family_requirements": {
+    "dreamzero": {
+      "status": "Retain complete checkpoint-native text encoder/vae/tokenizer assets; UMT5 cache inventory is available but this read-only audit does not prove exact per-family resolution."
+    },
+    "edge": {
+      "status": "Released checkpoint includes processor/tokenizer files. Config references external pretrained/tokenizers/video/wan2pt2/Wan2.2_VAE.pth; actual preparation must resolve and bind it."
+    },
+    "groot": {
+      "status": "Inspect checkpoint-native processor references during explicit preparation; no separate Qwen cache was found by this bounded inventory."
+    },
+    "nano": {
+      "status": "Released checkpoint includes processor/tokenizer files and references Qwen3-VL-8B; do not substitute cached Qwen4B. Preserve action-only residency; resolve any actually loaded external Wan asset."
+    },
+    "pi05": {
+      "access": "User must obtain access to the original gated repository; no tokenizer substitution.",
+      "external_tokenizer": "google/paligemma-3b-pt-224"
+    },
+    "va": {
+      "status": "Retain complete checkpoint-native text encoder/vae/tokenizer assets; UMT5 cache inventory is available but this read-only audit does not prove exact per-family resolution."
+    },
+    "vla2": {
+      "external_tokenizer_processor": "Qwen/Qwen3-VL-4B-Instruct",
+      "local_override": "QWEN3VL_PATH"
+    },
+    "vla4": {
+      "external_tokenizer_processor": "Qwen/Qwen2.5-VL-3B-Instruct",
+      "local_override": "QWEN25_PATH"
+    }
+  },
+  "repositories": {
+    "Qwen/Qwen2.5-VL-3B-Instruct": {
+      "snapshots": [
+        {
+          "files": {
+            "merges.txt": {
+              "bytes": 1671839,
+              "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"
+            },
+            "preprocessor_config.json": {
+              "bytes": 350,
+              "sha256": "f2058c716eef96ccaed1cc1e2d0c08306b62586d535b28d9d08e691b2fab7ca0"
+            },
+            "tokenizer.json": {
+              "bytes": 7031645,
+              "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+            },
+            "tokenizer_config.json": {
+              "bytes": 5702,
+              "sha256": "4abd3520120e266da84c0864fee064d1fb10806f02225911a47253dd38dc5f56"
+            },
+            "vocab.json": {
+              "bytes": 2776833,
+              "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+            }
+          },
+          "revision": "66285546d2b821cf421d4f5eb2576359d3770cd3"
+        }
+      ]
+    },
+    "Qwen/Qwen3-VL-4B-Instruct": {
+      "snapshots": [
+        {
+          "files": {
+            "merges.txt": {
+              "bytes": 1671839,
+              "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"
+            },
+            "preprocessor_config.json": {
+              "bytes": 390,
+              "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516"
+            },
+            "tokenizer.json": {
+              "bytes": 7032403,
+              "sha256": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7"
+            },
+            "tokenizer_config.json": {
+              "bytes": 10868,
+              "sha256": "c2da771801886ad9ae98181793ffd3dfb7f1af30f6f7c6a4e15d7dbba52e2399"
+            },
+            "vocab.json": {
+              "bytes": 2776833,
+              "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+            }
+          },
+          "revision": "ebb281ec70b05090aa6165b016eac8ec08e71b17"
+        }
+      ]
+    },
+    "google/paligemma-3b-pt-224": {
+      "snapshots": [
+        {
+          "files": {
+            "added_tokens.json": {
+              "bytes": 24,
+              "sha256": "7d0bad90030d638a4bf89a82e91206e25f1fbe0012f14bca21666a64b643bc49"
+            },
+            "special_tokens_map.json": {
+              "bytes": 607,
+              "sha256": "5ef37093ae4236587b6e8266acb815b46e2db8ce656c66552bfa574d32880405"
+            },
+            "tokenizer.json": {
+              "bytes": 17549604,
+              "sha256": "ef6773c135b77b834de1d13c75a4c98ab7a3684ffd602d1831e1f1bf5467c563"
+            },
+            "tokenizer_config.json": {
+              "bytes": 39968,
+              "sha256": "3259402b1d1802e02417d7bff75a889ec61d359d15be6050a957b307c48edbbe"
+            }
+          },
+          "revision": "35e4f46485b4d07967e7e9935bc3786aad50687c"
+        }
+      ]
+    },
+    "google/umt5-xxl": {
+      "snapshots": [
+        {
+          "files": {
+            "special_tokens_map.json": {
+              "bytes": 6623,
+              "sha256": "14ef492a69e59396e918521a5f8394af1acf9f8dddd47273693b2b42570dfd12"
+            },
+            "spiece.model": {
+              "bytes": 4548313,
+              "sha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458"
+            },
+            "tokenizer.json": {
+              "bytes": 16853013,
+              "sha256": "af904105ce1071b1202bba0059a841f4a7b85b48b6ec179c4948e3483476e0dd"
+            },
+            "tokenizer_config.json": {
+              "bytes": 6841,
+              "sha256": "616015e2b6c26f9a98ae3171634518d440a46260ebc1115c2596792d33827bdc"
+            }
+          },
+          "revision": "66cb9e7e85526fe440a945569e42c72fb6cbc0ad"
+        }
+      ]
+    }
+  },
+  "schema": "instinctflash.cached_auxiliary_assets.v1",
+  "scope": "Existing tokenizer/processor cache files only; no weights downloaded and no task-quality claim."
+}

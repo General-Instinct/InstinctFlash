@@ -1,0 +1,220 @@
+{
+  "comparisons": [
+    {
+      "closed_loop": [],
+      "control": "stock",
+      "models": [
+        {
+          "action": {
+            "digest_matches": 0,
+            "incomplete_pairs": [],
+            "max_abs": 0.04865849018096924,
+            "max_abs_limit": 0.05083918571472168,
+            "min_cosine_limit": 0.0,
+            "minimum_cosine": 0.9995015849919873,
+            "mode": "numeric",
+            "pairs": 9,
+            "verdict": "PASS"
+          },
+          "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "performance": {
+            "control_p50_ms": 661.1409275792539,
+            "min_speedup": 1.2,
+            "samples": 30,
+            "speedup": 5.185685727756305,
+            "treatment_p50_ms": 127.49344296753407,
+            "verdict": "PASS"
+          },
+          "suites": [
+            {
+              "action": {
+                "digest_matches": 0,
+                "incomplete_pairs": [],
+                "max_abs": 0.04865849018096924,
+                "max_abs_limit": 0.05083918571472168,
+                "min_cosine_limit": 0.0,
+                "minimum_cosine": 0.9995015849919873,
+                "mode": "numeric",
+                "pairs": 8,
+                "verdict": "PASS"
+              },
+              "performance": {
+                "samples": 0,
+                "verdict": "NOT_APPLICABLE"
+              },
+              "suite_id": "model_contract"
+            },
+            {
+              "action": {
+                "digest_matches": 0,
+                "incomplete_pairs": [],
+                "max_abs": 0.0,
+                "max_abs_limit": 0.05083918571472168,
+                "min_cosine_limit": 0.0,
+                "minimum_cosine": 1.0,
+                "mode": "numeric",
+                "pairs": 1,
+                "verdict": "PASS"
+              },
+              "performance": {
+                "control_p50_ms": 661.1409275792539,
+                "min_speedup": 1.2,
+                "samples": 30,
+                "speedup": 5.185685727756305,
+                "treatment_p50_ms": 127.49344296753407,
+                "verdict": "PASS"
+              },
+              "suite_id": "single_gpu_latency"
+            }
+          ]
+        }
+      ],
+      "paired_jobs": 9,
+      "treatment": "runtime_default"
+    }
+  ],
+  "complete": true,
+  "environment_consistency": [
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "44aeb7454ef76bfd0524b5bd211ce3ee88291591e6802c82094070d99bc3f235"
+      ],
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "44aeb7454ef76bfd0524b5bd211ce3ee88291591e6802c82094070d99bc3f235"
+      ],
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "verdict": "PASS"
+    }
+  ],
+  "environment_sha256": "d912873b4112b82dca0423fbd551f888a0c622db3294370f41a44d5eb42eadff",
+  "expected_results": 18,
+  "gates_passed": true,
+  "issues": [],
+  "plan_id": "1bc3cbf5e4497182c71c094bdd1fd402f8e210ad35ff6f0e5a47e262e66b9151",
+  "registry_sha256": "b1174c86e86015f57df75f79ffcc6dc4c86b47c5d9fc28d300fc60fd493ee8aa",
+  "repeatability": [
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "44aeb7454ef76bfd0524b5bd211ce3ee88291591e6802c82094070d99bc3f235"
+      ],
+      "limit": 0.05083918571472168,
+      "max_abs": 0.009590864181518555,
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "repeats": 2,
+      "seed": 30100,
+      "suite_id": "model_contract",
+      "task": "changed_prompt",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "44aeb7454ef76bfd0524b5bd211ce3ee88291591e6802c82094070d99bc3f235"
+      ],
+      "limit": 0.05083918571472168,
+      "max_abs": 0.017097175121307373,
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "repeats": 2,
+      "seed": 30100,
+      "suite_id": "model_contract",
+      "task": "changed_prompt",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "44aeb7454ef76bfd0524b5bd211ce3ee88291591e6802c82094070d99bc3f235"
+      ],
+      "limit": 0.05083918571472168,
+      "max_abs": 0.04865849018096924,
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "repeats": 2,
+      "seed": 40100,
+      "suite_id": "model_contract",
+      "task": "reset_replay",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "44aeb7454ef76bfd0524b5bd211ce3ee88291591e6802c82094070d99bc3f235"
+      ],
+      "limit": 0.05083918571472168,
+      "max_abs": 0.04186248779296875,
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "repeats": 2,
+      "seed": 40100,
+      "suite_id": "model_contract",
+      "task": "reset_replay",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "44aeb7454ef76bfd0524b5bd211ce3ee88291591e6802c82094070d99bc3f235"
+      ],
+      "limit": 0.05083918571472168,
+      "max_abs": 0.020335674285888672,
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "repeats": 2,
+      "seed": 10100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_a",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "44aeb7454ef76bfd0524b5bd211ce3ee88291591e6802c82094070d99bc3f235"
+      ],
+      "limit": 0.05083918571472168,
+      "max_abs": 0.015251755714416504,
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "repeats": 2,
+      "seed": 10100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_a",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "44aeb7454ef76bfd0524b5bd211ce3ee88291591e6802c82094070d99bc3f235"
+      ],
+      "limit": 0.05083918571472168,
+      "max_abs": 0.04171419143676758,
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "repeats": 2,
+      "seed": 20100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_b",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "44aeb7454ef76bfd0524b5bd211ce3ee88291591e6802c82094070d99bc3f235"
+      ],
+      "limit": 0.05083918571472168,
+      "max_abs": 0.03726853057742119,
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "repeats": 2,
+      "seed": 20100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_b",
+      "verdict": "PASS"
+    }
+  ],
+  "report_sha256": "a1ceb505a95e6cf2f6520f2491971daf1b15588c3235db63d496b1f005fb6d57",
+  "reportable": true,
+  "results": 18,
+  "schema_version": 1,
+  "synthetic": false
+}

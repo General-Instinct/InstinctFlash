@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/benchmarks/regression/user_e2e.py", line 261, in capture
+    api = build(family, checkpoint, output_dir=output.parent)
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/benchmarks/regression/native_reference.py", line 77, in build
+    from cosmos_framework.scripts.action_policy_server_robolab import RobolabPolicyService, RobolabServerArgs
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/scripts/action_policy_server_robolab.py", line 50, in <module>
+    from cosmos_framework.inference.args import OmniSetupArgs, OmniSetupOverrides
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/inference/args.py", line 16, in <module>
+    from cosmos_framework.inference.common.args import (
+    ...<16 lines>...
+    )
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/inference/common/args.py", line 40, in <module>
+    from cosmos_framework.utils.config import Config
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/utils/config.py", line 29, in <module>
+    from cosmos_framework.utils.misc import Color
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/utils/misc.py", line 31, in <module>
+    from cosmos_framework.utils.easy_io import easy_io
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/utils/easy_io/easy_io.py", line 11, in <module>
+    from cosmos_framework.utils.easy_io.backends import backends, prefix_to_backends
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/utils/easy_io/backends/__init__.py", line 20, in <module>
+    from cosmos_framework.utils.easy_io.backends.boto3_backend import Boto3Backend
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/utils/easy_io/backends/boto3_backend.py", line 16, in <module>
+    from cosmos_framework.utils.easy_io.backends.boto3_client import Boto3Client
+  File "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/lib/python3.13/site-packages/cosmos_framework/utils/easy_io/backends/boto3_client.py", line 14, in <module>
+    import boto3
+ModuleNotFoundError: No module named 'boto3'

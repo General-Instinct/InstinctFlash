@@ -1,0 +1,348 @@
+{
+  "kind": "synthetic contract screen, not Cosmos action qualification",
+  "torch": "2.10.0+cu130",
+  "gpu": "NVIDIA Thor",
+  "rows": [
+    {
+      "name": "rms_nemotron",
+      "shape": [
+        32,
+        128
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0
+    },
+    {
+      "name": "rms_qwen",
+      "shape": [
+        32,
+        128
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 0.03125,
+      "mismatched_values": 1023,
+      "cuda_us": 3.0086401104927063,
+      "torch_us": 51.89504146575928
+    },
+    {
+      "name": "named_silu_vs_actual_silu",
+      "shape": [
+        32,
+        128
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 0.59375,
+      "mismatched_values": 4065
+    },
+    {
+      "name": "qwen36_swiglu",
+      "shape": [
+        32,
+        128
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0,
+      "cuda_us": 3.35999995470047,
+      "torch_us": 10.209920406341553
+    },
+    {
+      "name": "residual_add",
+      "shape": [
+        32,
+        128
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0,
+      "cuda_us": 7.792959809303284,
+      "torch_us": 8.593279719352722
+    },
+    {
+      "name": "gate_bf16_intermediate",
+      "shape": [
+        32,
+        128
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 0.03125,
+      "mismatched_values": 939
+    },
+    {
+      "name": "gate_fp32_intermediate",
+      "shape": [
+        32,
+        128
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0,
+      "cuda_us": 8.074560165405273,
+      "torch_us": 32.62176036834717
+    },
+    {
+      "name": "rms_nemotron",
+      "shape": [
+        1024,
+        128
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0
+    },
+    {
+      "name": "rms_qwen",
+      "shape": [
+        1024,
+        128
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 0.03125,
+      "mismatched_values": 33620,
+      "cuda_us": 18.605120182037354,
+      "torch_us": 50.81535816192627
+    },
+    {
+      "name": "named_silu_vs_actual_silu",
+      "shape": [
+        1024,
+        128
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 0.78564453125,
+      "mismatched_values": 130056
+    },
+    {
+      "name": "qwen36_swiglu",
+      "shape": [
+        1024,
+        128
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0,
+      "cuda_us": 4.564799964427948,
+      "torch_us": 10.121279954910278
+    },
+    {
+      "name": "residual_add",
+      "shape": [
+        1024,
+        128
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0,
+      "cuda_us": 7.702400088310242,
+      "torch_us": 8.356800079345703
+    },
+    {
+      "name": "gate_bf16_intermediate",
+      "shape": [
+        1024,
+        128
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 0.0625,
+      "mismatched_values": 30132
+    },
+    {
+      "name": "gate_fp32_intermediate",
+      "shape": [
+        1024,
+        128
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0,
+      "cuda_us": 7.637439966201782,
+      "torch_us": 31.63072109222412
+    },
+    {
+      "name": "rms_nemotron",
+      "shape": [
+        1024,
+        2048
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 0.00390625,
+      "mismatched_values": 5
+    },
+    {
+      "name": "rms_qwen",
+      "shape": [
+        1024,
+        2048
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 0.0625,
+      "mismatched_values": 538954,
+      "cuda_us": 28.18943977355957,
+      "torch_us": 248.70975494384766
+    },
+    {
+      "name": "named_silu_vs_actual_silu",
+      "shape": [
+        1024,
+        2048
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 1.0,
+      "mismatched_values": 2080972
+    },
+    {
+      "name": "qwen36_swiglu",
+      "shape": [
+        1024,
+        2048
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0,
+      "cuda_us": 38.56224060058594,
+      "torch_us": 25.507519245147705
+    },
+    {
+      "name": "residual_add",
+      "shape": [
+        1024,
+        2048
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0,
+      "cuda_us": 26.15135908126831,
+      "torch_us": 16.292799711227417
+    },
+    {
+      "name": "gate_bf16_intermediate",
+      "shape": [
+        1024,
+        2048
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 0.0625,
+      "mismatched_values": 479629
+    },
+    {
+      "name": "gate_fp32_intermediate",
+      "shape": [
+        1024,
+        2048
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0,
+      "cuda_us": 26.221120357513428,
+      "torch_us": 332.7360153198242
+    },
+    {
+      "name": "rms_nemotron",
+      "shape": [
+        1024,
+        4096
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 0.00390625,
+      "mismatched_values": 6
+    },
+    {
+      "name": "rms_qwen",
+      "shape": [
+        1024,
+        4096
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 0.0625,
+      "mismatched_values": 1091129,
+      "cuda_us": 38.29312086105347,
+      "torch_us": 589.1638565063477
+    },
+    {
+      "name": "named_silu_vs_actual_silu",
+      "shape": [
+        1024,
+        4096
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 0.9375,
+      "mismatched_values": 4162464
+    },
+    {
+      "name": "qwen36_swiglu",
+      "shape": [
+        1024,
+        4096
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0,
+      "cuda_us": 76.13823890686035,
+      "torch_us": 67.51552104949951
+    },
+    {
+      "name": "residual_add",
+      "shape": [
+        1024,
+        4096
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0,
+      "cuda_us": 48.86176109313965,
+      "torch_us": 30.560319423675537
+    },
+    {
+      "name": "gate_bf16_intermediate",
+      "shape": [
+        1024,
+        4096
+      ],
+      "finite": true,
+      "byte_equal": false,
+      "max_abs": 0.0625,
+      "mismatched_values": 961341
+    },
+    {
+      "name": "gate_fp32_intermediate",
+      "shape": [
+        1024,
+        4096
+      ],
+      "finite": true,
+      "byte_equal": true,
+      "max_abs": 0.0,
+      "mismatched_values": 0,
+      "cuda_us": 51.30271911621094,
+      "torch_us": 703.5286712646484
+    }
+  ],
+  "library_sha256": "7bbb63df31d1f1c56ad846b36daf85f452af158c0067ee5639c23e3499fc5d68"
+}

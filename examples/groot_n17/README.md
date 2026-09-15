@@ -17,6 +17,35 @@ all six gate cases). CPU thread pinning is host-specific (~2 ms here on
 a 208-CPU host; large only on very-high-CPU-count hosts) and is therefore
 opt-in host configuration, never a package default.
 
+Thor has separate qualification: native DiT capture passes exact startup and
+retained-action checks, but increases latency about 7.2% in its paired test and
+remains disabled. The earlier VLSA-only DROID FP8 builder shared native fast
+decoding and backbone metadata caching. Caching repeated FP32 weight casts further
+reduced that recipe to about 127 ms versus 110 ms native, using about 447 MiB of additional
+weight storage. Observations and KV remain live; retained FP8 actions match the
+prior implementation byte for byte. These timings and the H100
+gate above do not certify current FP8 task quality. See the
+[current Thor report](../../eval/thor_precision_completion_2026-09-09/COMPARISON.md).
+
+The current Thor recipe additionally quantizes Qwen3 text attention and MLP
+projections. Native vision and BF16 DiT remain; the earlier VLSA-only quality
+results do not certify this expanded recipe. See the [execution scope](../../eval/thor_fp8_complete_2026-09-10/PROTOCOL.md).
+
+Use `precision="fp8"` in the same Runtime call, or add `--fp8` when serving, to
+select FP8 explicitly. Omit it to keep native precision. Current Thor interface
+checks cover DROID (40×17 actions), G1 (40×53) and four R1 variants (40×62); these are
+input/reset checks, not task-success certificates. Receipts and reproduction are in the
+[embodiment report](../../eval/thor_precision_completion_2026-09-09/GROOT_EMBODIMENTS.md).
+
+For another embodiment, set `execution.embodiment_tag` in the checkpoint's
+`instinctflash.json`. FP8 reads its weight slot from that checkpoint's
+`embodiment_id.json`; both modes use its native modality configuration and
+normalization statistics. Pass named `video` and `state` dictionaries using those
+modality keys. A tag appearing in the mapping does not imply complete statistics:
+the published XDof variants currently have empty wrist statistics and have not
+passed this Runtime's inference checks. The DROID-only fast decoder is optional
+and does not require DROID configuration in a custom embodiment checkpoint.
+
 ```bash
 uv pip install -e examples/groot_n17
 export GR00T_ROOT=/path/to/Isaac-GR00T                     # upstream checkout
@@ -46,7 +75,8 @@ action = result["action"]       # (40, 17)
 split = result["actions"]       # eef_9d / gripper_position / joint_position
 ```
 
-The DiT CUDA Graph is the **default** on capture-capable devices — the old
+The DiT CUDA Graph is the **default** on qualified capture-capable devices
+(Thor retains eager DiT because its measured capture path was slower) — the old
 `IFL_GROOT_STATIC_CAPTURE=1` opt-in (a release policy that predates the startup self-check) is
 superseded and is now a no-op with a notice (an explicit `=0` is honored as an opt-out). What
 makes the default safe is the runtime **self-check**: immediately after each signature's
@@ -59,6 +89,12 @@ and serving continues. Kill-switch (recorded on the plan, printed):
 ```bash
 export IFL_GROOT_NO_CAPTURE=1     # serve eager; IFL_GROOT_SELFCHECK_FAULT=1 drills the FAIL arm
 ```
+
+GPU collation defaults on for native H100 and Thor, and the explicitly selected FP8 engine, with six live fieldwise byte checks.
+`IFL_GROOT_GPU_COLLATE=0` restores upstream collation. This is independent of full
+backbone capture, which failed qualification and is refused by the public Runtime.
+The full-capture module remains an offline experiment. Native pairs measured 66 → 61 ms on H100 and 135 → 127 ms on Thor.
+[Protocol and receipts](../../eval/native_optimization_2026-09-10/README.md).
 
 `fast_decode` and `backbone_fastpath` default to true in this package and can be
 disabled with their environment variables set to `0`. `IFL_GROOT_CPU_THREADS` is

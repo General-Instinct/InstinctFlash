@@ -1,0 +1,265 @@
+{
+  "adapter_sha256": "36de6d75016eb067a6f876c07e434c31b28099b4c451fa547fa38758c8f54456",
+  "checkpoint_sha256": "3773dbcef95c0eac8dbf5261be89ac0285db8e2649368dbddbbb4059edda1aff",
+  "execution": {
+    "action_shape": [
+      50,
+      14
+    ],
+    "backend": "in_process",
+    "capture_required": true,
+    "declared": {
+      "backbone": "lingbot_vla_v2",
+      "base_weights": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "checkpoint_subdir": "checkpoints/global_step_50000/hf_ckpt",
+      "guidance": {
+        "action": "none"
+      },
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "nfe": {
+        "action": 10,
+        "prefix": 1
+      },
+      "param_bytes": 25503630044,
+      "robot": "robotwin",
+      "servable": true,
+      "tokenizer_repo": "Qwen/Qwen3-VL-4B-Instruct"
+    },
+    "graph_stats": {
+      "captured": true,
+      "cuda_kernels": false,
+      "gpu_image_preprocess": true,
+      "moe_layers": 0,
+      "prefill_graph": true,
+      "prefill_replays": 5,
+      "ptxas": {
+        "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda/bin/ptxas",
+        "TRITON_PTXAS_PATH": "/usr/local/cuda/bin/ptxas"
+      },
+      "replays": 68,
+      "rmsnorm_modules": 0,
+      "vision_graph": true,
+      "vision_replays": 5
+    },
+    "mode": "runtime_default",
+    "precision": "native",
+    "runtime_explanation": "InstinctFlash runtime for 'robbyant/lingbot-vla-v2-6b-robotwin'\n  package     : /home/guanming/.cache/instinctflash/declared/robbyant__lingbot-vla-v2-6b-robotwin\n  backbone    : lingbot_vla_v2\n  servable    : True\n  precision   : native\n  evidence    : no closed-loop certificate verified for this live execution; plan tiers are transformation claims\n  placement   : placement='in_process' (explicit)\n  capabilities: backbone:lingbot_vla_v2, declares:base_weights, declares:checkpoint_subdir, declares:param_bytes, declares:robot, declares:tokenizer_repo, guidance:action=none, servable\n\nInstinctFlash plan for robbyant/lingbot-vla-v2-6b-robotwin\n  plan tier: NUMERIC\n  operating point: schedule {prefix=1 + action=10} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 11 declared forwards (no stream requests a negative branch)}\n\n  APPLY  graph_capture              [NUMERIC   ] all streams (prefix) are rebuilt within a control cycle, so shapes repeat, so one capture serves every cycle; 11 forward(s) per control step (prefix=1 + action=10) each pay full dispatch cost today; LingBot-VLA-V2 native NFE=10 on Thor: capture measured separately; see eval/edge_defaults_2026-09-06. Performance evidence is scoped to the recorded checkpoint, inputs and stack, not a quality certificate.; this adapter uses a numerical-envelope self-check, not an exact gate\n         expected: removes per-forward dispatch cost where the region is replay-safe. Measured ON pi05 (H100, pi05_base, 50-step chunk): a denoise step is 2187 kernel launches, 17.25 ms of CPU submit against 9.48 ms of GPU work -- 99.9% submit-bound, the GPU idle ~45% of the step. The naive region (per-step DynamicCache clone+append) replays fast and WRONG and stays discarded; the static-KV region (pi05_iwm/static_capture.py) is replay-safe by construction and collected the prize: denoise step 16.25 -> 4.57 ms (3.55x), chunk 298.7 -> 181.3 ms (1.65x), bitexact on unseen inputs and prompts. Both halves are this model's -- a backbone whose forwards are already compute-bound has nothing here to win either way, so measure the submit-vs-busy split, then measure replay against eager on a SECOND input\n         decision: graph_capture: self-check within the legacy cross-domain guard on 6 inputs (max |\u0394| 0.000e+00 \u2264 5.084e-02 \u2014 legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality; staged 3 captured-chunk + 3 refilled; 1.7 s startup cost, once per process)\n  skip   engine_offload             [NUMERIC   ] precision='native': FP8 engine is not authorized; SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation; baked denoise operating point: action=10 steps; guidance action=none@1\n  skip   fsdp_elision               [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   allocator_churn_elision    [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   debug_dump_elision         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   obs_decode_elision         [BITEXACT  ] model declares no observation-decode modules\n  skip   conditioning_prefill       [BITEXACT  ] ['prefix_kv'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist\n  skip   prompt_encoder_staging     [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   ring_kv_addressing         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   action_terminal_forward_elision [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_gated_residual       [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_wan_stage2           [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   conv_layout_ndhwc          [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   cfg_branch_elision         [BITEXACT  ] no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)\n\n  NOTE: plan is NUMERIC because of ['graph_capture'].\n        Any accuracy-neutrality claim for this plan requires a paired\n        non-inferiority run.\n        `plan.bitexact_subset()` is the largest configuration that does not.",
+    "startup_observation_sha256": "f681d40e2ff4d0695807597fa6c8c80911fde97835a16540b903d834527d8de9",
+    "startup_prompt": "Pick the green bottle with indented base upright from the table",
+    "tier_ceiling": "numeric",
+    "transforms": [
+      {
+        "name": "graph_capture",
+        "params": {
+          "capture_unit_from": "adapter sites of kind CAPTURE_UNIT",
+          "decision": [
+            "graph_capture: self-check within the legacy cross-domain guard on 6 inputs (max |\u0394| 0.000e+00 \u2264 5.084e-02 \u2014 legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality; staged 3 captured-chunk + 3 refilled; 1.7 s startup cost, once per process)"
+          ],
+          "device_evidence": "LingBot-VLA-V2 native NFE=10 on Thor: capture measured separately; see eval/edge_defaults_2026-09-06. Performance evidence is scoped to the recorded checkpoint, inputs and stack, not a quality certificate.",
+          "self_check": {
+            "bitexact": true,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "repeats": 3,
+            "seconds": 1.7476369600008184,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          },
+          "verify": "host-effect gate refuses a region that mutates host state"
+        },
+        "tier": "NUMERIC"
+      }
+    ]
+  },
+  "gpu": "NVIDIA Thor",
+  "hardware": {
+    "capability": [
+      11,
+      0
+    ],
+    "cuda": "13.0",
+    "cudnn": 91900,
+    "gpu_name": "NVIDIA Thor"
+  },
+  "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+  "model_revision": "0451855729ec904f970600e0aec8b84661423afe",
+  "numeric_environment": {
+    "cudnn_benchmark": false,
+    "cudnn_tf32": true,
+    "deterministic_algorithms": false,
+    "matmul_tf32": true
+  },
+  "packages": {
+    "numpy": "2.2.6",
+    "torch": "2.11.0",
+    "transformers": "4.57.3"
+  },
+  "pipeline_sha256": "d55d21f5ed5956204797242fedcdf0ccc72ed0f7d3996779ece011d14adf6876",
+  "protocol": "lingbot_vla_v2-joint-robotwin-paused-v1",
+  "runtime_source_sha256": "c1927c00cc843e0a1533e0fd31fa53e58bb9dbc7d81dc1a2bed3ccba8dbc860d",
+  "schema_version": 1,
+  "seed_mode": "episode",
+  "startup": {
+    "attempt_id": "47a4df5b7b1340b6b7f3fb23fb07514e",
+    "calls": 8,
+    "fault_injection": {},
+    "protocol": "seeded-eight-call-admission-v1",
+    "scope": "Observed startup only; no task-quality or reliability-rate certificate.",
+    "seed": 0,
+    "status": "ready"
+  },
+  "startup_check": "eight seeded startup shape-probe calls; not quality evidence",
+  "synthetic": false,
+  "upstream_sha256": "ef7c891e498c720c1fb6b92a73bf1e21257989e29d57ecaf54481792bf616f97"
+}

@@ -1,0 +1,39 @@
+{
+  "scope": "A/B/A on one loaded policy and calibrated FP8 weights; only BF16 vision graph replay changes. Short diagnostic, not a simulator certificate.",
+  "before": {
+    "p50_ms": 211.91192400146974
+  },
+  "graph": {
+    "p50_ms": 160.02477399160853
+  },
+  "after": {
+    "p50_ms": 212.77150949754287
+  },
+  "before_after_equal": true,
+  "before_graph_equal": true,
+  "max_abs_action_delta": 0.0,
+  "ok": true,
+  "independent_verification": {
+    "ok": true,
+    "action_shape": [
+      11,
+      25,
+      14
+    ],
+    "byte_equal_all_three": true,
+    "receipts": {
+      "before": {
+        "receipt_sha256": "e2d769bf91260932b25e3d1baa37c0859cf6c68fc31e82261bbf120349c3378e",
+        "actions_sha256": "3c7b55fbfe51f340703286a0dfe6577799fe0c945c9b3c1518e15579557eff27"
+      },
+      "graph": {
+        "receipt_sha256": "06b7a32459448b19c1e709c9bfe0285492138c3a5364b5af9239bfac74ace13c",
+        "actions_sha256": "3c7b55fbfe51f340703286a0dfe6577799fe0c945c9b3c1518e15579557eff27"
+      },
+      "after": {
+        "receipt_sha256": "6d408fca55dd18b877b851f6ed65cbb52d19b0e05c401686030200a02a1cb78d",
+        "actions_sha256": "3c7b55fbfe51f340703286a0dfe6577799fe0c945c9b3c1518e15579557eff27"
+      }
+    }
+  }
+}

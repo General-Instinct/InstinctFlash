@@ -1,0 +1,151 @@
+{
+  "already_deployed_readonly_capture": [
+    "protected_process_inspector_v1.py",
+    "protected_services_snapshot_v1.json",
+    "protected_services_prior_v1/precheck.json",
+    "protected_services_prior_v1/authorized_reclaim_plan.json",
+    "protected_services_prior_v1/completion.json"
+  ],
+  "archive_final_config_fill": {
+    "actual_process_identity_receipt": {
+      "path": "eval/public_release_2026-09-15/dreamzero_memory_preparation_v1/launch_v6_process_identity_v1.json",
+      "sha256": "c87279bcd687c3a48a16a9acfc0660282491948d18ceab84b6701031a03fcc60"
+    },
+    "completed_queue_completion.sha256": "Actual final passed V6 queue completion SHA",
+    "completed_queue_process": {
+      "pid": 288290,
+      "start_ticks": 51026208
+    },
+    "failed_queue_completion.sha256": "Actual original failed V5 completion SHA, never overwrite its bytes",
+    "template_only": false
+  },
+  "created_unix": 1789455381.584554,
+  "files": {
+    "archive_config_template_v2.json": {
+      "bytes": 3131,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/archive_config_template_v2.json",
+      "sha256": "60e3034e79b09f18149bffb965b7931066cd44a4f6bf6c455d03f55ca4d396bd"
+    },
+    "archive_inactive_v5_cache_v2.py": {
+      "bytes": 15831,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/archive_inactive_v5_cache_v2.py",
+      "sha256": "652a84f7842d7eb9d2d89776eb8fece142952067408066e98aea6690febca914"
+    },
+    "config_template_v2.json": {
+      "bytes": 125608,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/config_template_v2.json",
+      "sha256": "292b7df6ff19595623259ff49cee7c298dc6d18b4a5690223f3f40d9d7f5325f"
+    },
+    "protected_process_CPU_QUALIFICATION_v2.json": {
+      "bytes": 3892,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/protected_process_CPU_QUALIFICATION_v2.json",
+      "sha256": "7cccfce621a4191b8b1cd8099c9025dd70a689cfc6f8288977f1cdd50f27fc9f"
+    },
+    "protected_process_inspector_v2.py": {
+      "bytes": 10853,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/protected_process_inspector_v2.py",
+      "sha256": "3dbd83aba8a3cc3a15a299d351cc7ccbec0965c5a943bcd48fa2fb18daf4e2bb"
+    },
+    "protected_services_snapshot_v1.json": {
+      "bytes": 7139,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/protected_services_snapshot_v1.json",
+      "sha256": "39d58cb80df248a27df9a2a57265b30f0acf5d20afac963aca9986c4cf82f3fa"
+    },
+    "run_queue_v2.py": {
+      "bytes": 30856,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/run_queue_v2.py",
+      "sha256": "a08c6839757337eb325cc2de594393ec572332b8cfdefbc5fb1dc31cc653d384"
+    }
+  },
+  "independent_review": {
+    "reviewer": "/root/formal_remaining_scene_risk",
+    "scope": "Verified readable FD references survive partial EACCES and are checked before exact known-identity exception; no tests or native/process actions by reviewer.",
+    "status": "source_only_no_concrete_blocker_after_partial_fd_fix"
+  },
+  "launch_requirements": [
+    "Root manually launches only after V6 final paired+WS passed, exact owned supervisor no longer live and GPU idle.",
+    "Launch detached with an explicit short startup delay, return/disconnect SSH before inspection. Do not SSH-poll during archive/reclaim windows; a newly protected SSH parent is intentionally fatal, not automatically retried.",
+    "Archive first and require completed archive, copy/fsync/rehash receipts and actual NVMe free >=1GiB. Both cache+wheel nominally free576470373B, actual freed blocks recorded.",
+    "Retain private tmpfs archive until root has copied it to durable H100 storage; tmpfs is volatile.",
+    "Before Edge preparation require at least9171985492+12884901888=22056887380B free tmpfs, plus any overlay transfer allocations; keep original checkpoints and environments.",
+    "Use the newly bound V2 source/config; do not relabel V1 prior evidence. No automatic second attempt or follow-on."
+  ],
+  "limit": "Actual archive/reclamation and SDE1 executions have not been performed by this helper author. Root read-only process snapshot is actual; CPU policy replay is schema/source checking only.",
+  "process_visibility": {
+    "PID_reuse_boot_parent_command_or_cgroup_drift": "fatal; retained scratch",
+    "each_readable_fd_map_cwd_root_cache_environment_still_checked": true,
+    "global_handle_absence_claimed": false,
+    "other_UID_handles_excluded": true,
+    "six_known_identity_exceptions": true,
+    "sudo_or_privilege_escalation": false,
+    "unknown_model_python_transient_protected_process": "fatal; retained scratch"
+  },
+  "queue_final_config_fill": {
+    "predecessor_completion.sha256": "Same actual final passed V6 completion SHA; all three actual activation hashes are already bound",
+    "template_only": false
+  },
+  "remaining_original_SDE1_transfer": [
+    {
+      "path": "eval/public_release_2026-09-15/prepare_experimental_thor_base_view_v1.py",
+      "sha256": "4a0a7724ba4be2276ecc22bd0dd0fbfe7bc76f8f89bfd58daf8e452929828d19"
+    },
+    {
+      "path": "experimental_thor_preparation_plan_v1.json",
+      "sha256": "ff713fa0a8fcc0ff0bc913e9f5e15233e3d2cc1e24905c45c2945117463a327c"
+    },
+    "Both complete exact public Edge overlay files from the original HANDOFF"
+  ],
+  "root_only_execution_commands": [
+    "flock -n /tmp/thor_gpu.lock python3 -I -B /home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/archive_inactive_v5_cache_v2.py --config /home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/archive_config_v2.json --config-sha256 EXACT_FINAL_ARCHIVE_CONFIG_SHA --execute",
+    "flock -n /tmp/thor_gpu.lock /dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python -I -B /home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/run_queue_v2.py --config /home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/config_v2.json --config-sha256 EXACT_FINAL_QUEUE_CONFIG_SHA --execute"
+  ],
+  "schema": "instinctflash.owned_scratch_cleanup_v2.handoff",
+  "scope": "Additive exact-identity cleanup guard only. All existing V1 files and native/sampling/math/source validation remain unchanged.",
+  "static_checks_notes": [
+    "Archive CLI without --execute is structural planning only; it does not claim host-policy, predecessor or GPU admission. Actual --execute performs those input/host gates before any copy or unlink.",
+    "Queue --check-only validates actual bound host-policy/config/source/environment with no GPU query, native import or weight hashing."
+  ],
+  "static_commands": [
+    "python3 -I -B /home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/archive_inactive_v5_cache_v2.py --config /home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/archive_config_v2.json",
+    "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python -I -B /home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/run_queue_v2.py --config /home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/config_v2.json --config-sha256 EXACT_FINAL_QUEUE_CONFIG_SHA --check-only"
+  ],
+  "status": "CPU_qualified_remote_execution_pending",
+  "transfer_to_control": [
+    {
+      "destination": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/run_queue_v2.py",
+      "source": {
+        "bytes": 30856,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/run_queue_v2.py",
+        "sha256": "a08c6839757337eb325cc2de594393ec572332b8cfdefbc5fb1dc31cc653d384"
+      }
+    },
+    {
+      "destination": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/archive_inactive_v5_cache_v2.py",
+      "source": {
+        "bytes": 15831,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/archive_inactive_v5_cache_v2.py",
+        "sha256": "652a84f7842d7eb9d2d89776eb8fece142952067408066e98aea6690febca914"
+      }
+    },
+    {
+      "destination": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/protected_process_inspector_v2.py",
+      "source": {
+        "bytes": 10853,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/protected_process_inspector_v2.py",
+        "sha256": "3dbd83aba8a3cc3a15a299d351cc7ccbec0965c5a943bcd48fa2fb18daf4e2bb"
+      }
+    }
+  ],
+  "unchanged_producer_contract": {
+    "SCREEN_only": true,
+    "eventual_local_copy": "experimental_public_execution_v1/native_evidence_v1",
+    "native_commands": 7,
+    "quality_promotion": false,
+    "recipes": [
+      "edge-seed12031",
+      "edge-seed12032",
+      "nano-original"
+    ],
+    "source_and_quality_gates": "AST unchanged"
+  }
+}

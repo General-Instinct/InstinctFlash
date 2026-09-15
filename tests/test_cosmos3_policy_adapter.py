@@ -36,6 +36,7 @@ def test_example_surface_stays_product_shaped():
     # can never silently delete or replace them.
     root_files = {path.name for path in PLUGIN_ROOT.iterdir() if path.is_file()}
     assert root_files == {
+        "LICENSE",
         "README.md",
         "launch_robolab_stock.py",
         "measure_openpi_ws.py",
@@ -54,9 +55,20 @@ def test_spec_declares_a_stateless_four_step_policy():
     assert spec.phase("action").nfe == 4
     assert spec.phase("action").truncatable is True
     # guidance 1.0 at the published operating point: no negative branch
-    assert spec.guidance["action"].mode is GuidanceMode.NONE
+    assert spec.guidance["action"].mode is GuidanceMode.CFG
     assert spec.shapes_static_across_cycles()[0] is True
     assert spec.observation.conditioning == ("prompt",)
+
+
+def test_droid_does_not_advertise_unimplemented_capture():
+    from instinctflash.passes.generic.graph_capture import GraphCaptureApplicable
+
+    for capability in ((9, 0), (11, 0), (12, 0)):
+        result = GraphCaptureApplicable().evaluate(
+            Cosmos3PolicyAdapter().spec(),
+            SimpleNamespace(device=SimpleNamespace(capability=capability)))
+        assert not result.applies
+        assert "does not install" in result.reason
 
 
 def test_both_known_releases_share_the_adapter_and_the_measured_serving_config():
@@ -69,7 +81,7 @@ def test_both_known_releases_share_the_adapter_and_the_measured_serving_config()
         # the canonical policy request of the published rows, declared not guessed
         assert ex["domain_name"] == "droid_lerobot"
         assert ex["action_dim"] == 8
-        assert ex["action_chunk_size"] == 16
+        assert ex["action_chunk_size"] == 32
         assert (ex["image_height"], ex["image_width"]) == (540, 640)
         for key in REQUIRED_SERVING_KEYS:
             assert key in ex, f"declaration missing {key}"
@@ -122,26 +134,30 @@ def test_runtime_loop_builds_the_canonical_request_and_returns_numpy():
     class FakeService:
         def __init__(self):
             self.req = None
-            self.episodes = 0
+            import threading
+            self._lock = threading.Lock()
+            self.cfg = SimpleNamespace(seed=0)
+            self._rng = np.random.default_rng(0)
 
         def notify_next_episode(self, payload=None):
             self.episodes += 1
             return {"status": "ok"}
 
-        def predict(self, req):
+        def infer(self, req):
             self.req = req
-            return {"action": [[0.0] * 8] * 16, "timing": {"total_ms": 1.0}}
+            return {"action": np.zeros((32, 8), dtype=np.float32), "timing": {"total_ms": 1.0}}
 
     service = FakeService()
     loop = _Cosmos3PolicyLoop(service)
     loop.reset(prompt="pick up the banana and place it in the bowl")
-    assert service.episodes == 1
+    assert service._rng is not None
     image = np.zeros((540, 640, 3), np.uint8)
     out = loop.predict({"image": image, "state": np.zeros(8, np.float32)})
-    assert out["action"].shape == (16, 8)
-    assert isinstance(service.req["image"], str)          # PNG base64, the measured channel
+    assert out["action"].shape == (32, 8)
+    assert service.req["observation/image"] is image
     assert service.req["prompt"].startswith("pick up")
-    assert service.req["state"] == [0.0] * 8
+    np.testing.assert_array_equal(service.req["observation/joint_position"], np.zeros(7))
+    np.testing.assert_array_equal(service.req["observation/gripper_position"], np.zeros(1))
     # a per-call prompt overrides; a missing prompt is refused
     loop.predict({"image": image, "state": [0.0] * 8, "prompt": "open the drawer"})
     assert service.req["prompt"] == "open the drawer"
@@ -243,7 +259,7 @@ def test_gpu_smoke_one_predict_finite_actions():
         with runtime.episode(prompt="pick up the banana and place it in the bowl") as ep:
             out = ep.predict(obs)
         action = np.asarray(out["action"])
-        assert action.shape == (16, 8), action.shape
+        assert action.shape == (32, 8), action.shape
         assert np.isfinite(action).all(), "non-finite action from smoke"
         print(f"smoke OK: {repo} -> action {action.shape}, finite")
     finally:

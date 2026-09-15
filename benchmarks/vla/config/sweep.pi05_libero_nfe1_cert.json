@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "name": "pi05 v044 LIBERO nfe1 certification (untrained operating point vs deployed nfe10)",
+  "baseline": {"id": "nfe10", "nfe": {"action": 10}, "forwards_per_cycle": 11},
+  "points": [
+    {"id": "nfe1", "nfe": {"action": 1}, "forwards_per_cycle": 2}
+  ],
+  "repeat_baseline": true,
+  "driver": {
+    "adapter_id": "pi05-libero-schedule-v1",
+    "command": ["${IFL_BENCH_FAMILY_PYTHON}", "-m", "benchmarks.vla.pi05_libero_driver"],
+    "environment": {
+      "MUJOCO_GL": "egl",
+      "OMP_NUM_THREADS": "2",
+      "MKL_NUM_THREADS": "2",
+      "TQDM_DISABLE": "1"
+    },
+    "timeout_seconds": 3600,
+    "revision": "${IFL_BENCH_DRIVER_REVISION}"
+  },
+  "screening": {"margin": -0.05, "interval": "tango_one_sided95", "min_pairs": 100},
+  "control_steps_per_cycle": 10
+}

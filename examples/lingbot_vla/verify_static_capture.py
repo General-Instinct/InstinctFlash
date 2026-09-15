@@ -24,10 +24,13 @@ sys.path.insert(0, os.environ.get("LINGBOT_VLA_ROOT", "/home/ubuntu/lingbot-vla-
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))   # repo root: the package imports instinctflash
 
-SNAP = glob.glob(
+SNAP = os.environ.get("LINGBOT_VLA_CHECKPOINT") or glob.glob(
     "/home/ubuntu/.cache/huggingface/hub/models--robbyant--lingbot-vla-4b-posttrain-robotwin/snapshots/*/"
 )[0]
-NORM = "/home/ubuntu/lingbot-vla-repo/assets/norm_stats/robotwin_50.json"
+NORM = os.environ.get(
+    "LINGBOT_VLA_NORM",
+    "/home/ubuntu/lingbot-vla-repo/assets/norm_stats/robotwin_50.json",
+)
 CAMS = ["observation.images.cam_high", "observation.images.cam_left_wrist",
         "observation.images.cam_right_wrist"]
 PROMPT_A = "Use the left arm to pick up the block and place it in the tray"
@@ -57,7 +60,13 @@ def run_case(server, case):
 
 def main():
     from deploy.lingbot_vla_policy import LingbotVLAServer
-    from lingbot_vla_iwm.static_capture import install_static_capture
+
+    full_graph = os.environ.get("IFL_VLA4B_VERIFY_FULL", "0") == "1"
+    if full_graph:
+        from lingbot_vla_iwm.full_capture import install_full_capture
+        from lingbot_vla_iwm.image_preprocess import install_gpu_image_preprocess
+    else:
+        from lingbot_vla_iwm.static_capture import install_static_capture
 
     server = LingbotVLAServer(SNAP, use_length=25, robot_norm_path=NORM, num_denoising_step=10)
     server.infer(dict(reset=True, robo_name="robotwin"))
@@ -74,7 +83,12 @@ def main():
     refs = [run_case(server, c) for c in CASES]
 
     # -- install, warm one chunk eagerly on static buffers, capture on the next ----------------
-    d = install_static_capture(server.vla.model)
+    if full_graph:
+        d = install_full_capture(server.vla.model)
+        preprocess = install_gpu_image_preprocess(server, device="cuda")
+    else:
+        d = install_static_capture(server.vla.model)
+        preprocess = None
     warm = run_case(server, CASES[0])            # chunk 1: eager static path
     d_static_eager = float(np.abs(warm - refs[0]).max())
 
@@ -106,9 +120,24 @@ def main():
         "ours_ms_p50_inprocess": round(statistics.median(ours_lat), 1),
         "speedup_inprocess": round(statistics.median(stock_lat) / statistics.median(ours_lat), 2),
         "replays": d.replays,
+        "full_graph": full_graph,
+        "prefix_replays": int(getattr(d, "prefix_replays", 0)),
+        "chunk_replays": int(getattr(d, "chunk_replays", 0)),
+        "gpu_preprocess_passed": bool(preprocess and preprocess.passed),
+        "gpu_preprocess_max_abs_delta": float(
+            preprocess.max_abs_delta if preprocess else 0.0
+        ),
     }
     print(json.dumps({k: v for k, v in res.items() if k != "gates"}, indent=1))
-    out = Path(__file__).resolve().parent / "static_capture_results.json"
+    default_output = (
+        Path(__file__).resolve().parent
+        / (
+            "evidence/reproduce_5090_full_path_run.json"
+            if full_graph else "static_capture_results.json"
+        )
+    )
+    out = Path(os.environ.get("IFL_VLA4B_RESULT", str(default_output)))
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(res, indent=1))
     print(f"-> {out}")
 

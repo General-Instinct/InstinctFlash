@@ -16,6 +16,11 @@ from __future__ import annotations
 import os
 import sys
 
+if __name__ != "__main__":
+    import pytest
+    pytest.importorskip("diffusers", reason="LingBot pool integration requires its vendor environment")
+    pytest.importorskip("transformers", reason="LingBot pool integration requires its vendor environment")
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 LINGBOT_ROOT = os.environ.get("LINGBOT_ROOT", "/home/ubuntu/lingbot-va")
 sys.path.insert(0, os.path.join(LINGBOT_ROOT, "wan_va"))

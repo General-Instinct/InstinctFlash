@@ -1,0 +1,5339 @@
+{
+  "schema_version": 1,
+  "scope": "Startup and fixed-input diagnostics only; no closed-loop certificate.",
+  "phase1": {
+    "h100": {
+      "normal_attempts": 8,
+      "normal_accepted": 2,
+      "diagnostic_processes": 4,
+      "velocity_max_abs_delta": [
+        {
+          "stage": "captured-chunk",
+          "comparisons": 12,
+          "aa": 0.0859375,
+          "ab": 0.0859375,
+          "bb": 0.0859375,
+          "a_static": 0.015625
+        },
+        {
+          "stage": "refilled",
+          "comparisons": 12,
+          "aa": 0.0,
+          "ab": 0.0,
+          "bb": 0.0,
+          "a_static": 0.0
+        }
+      ],
+      "fixed_recorded_noise_action_comparisons": {
+        "AA": [
+          {
+            "a": "h100.stock.0.json",
+            "b": "h100.stock.1.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242223739624023
+          },
+          {
+            "a": "h100.stock.0.json",
+            "b": "h100.stock.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.0.json",
+            "b": "h100.stock.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.1.json",
+            "b": "h100.stock.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.1.json",
+            "b": "h100.stock.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "h100.stock.2.json",
+            "b": "h100.stock.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          }
+        ],
+        "AB": [
+          {
+            "a": "h100.stock.0.json",
+            "b": "h100.normal.1.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.0.json",
+            "b": "h100.normal.6.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.1.json",
+            "b": "h100.normal.1.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "h100.stock.1.json",
+            "b": "h100.normal.6.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.2.json",
+            "b": "h100.normal.1.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.2.json",
+            "b": "h100.normal.6.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.3.json",
+            "b": "h100.normal.1.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010167847387492657
+          },
+          {
+            "a": "h100.stock.3.json",
+            "b": "h100.normal.6.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011460661888122559
+          }
+        ],
+        "BB": [
+          {
+            "a": "h100.normal.1.json",
+            "b": "h100.normal.6.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          }
+        ],
+        "A_fallback": [
+          {
+            "a": "h100.stock.0.json",
+            "b": "h100.normal.0.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467218399047852
+          },
+          {
+            "a": "h100.stock.0.json",
+            "b": "h100.normal.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.0.json",
+            "b": "h100.normal.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.0.json",
+            "b": "h100.normal.4.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.0.json",
+            "b": "h100.normal.5.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467218399047852
+          },
+          {
+            "a": "h100.stock.0.json",
+            "b": "h100.normal.7.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.1.json",
+            "b": "h100.normal.0.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "h100.stock.1.json",
+            "b": "h100.normal.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242223739624023
+          },
+          {
+            "a": "h100.stock.1.json",
+            "b": "h100.normal.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.1.json",
+            "b": "h100.normal.4.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.1.json",
+            "b": "h100.normal.5.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "h100.stock.1.json",
+            "b": "h100.normal.7.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.2.json",
+            "b": "h100.normal.0.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467218399047852
+          },
+          {
+            "a": "h100.stock.2.json",
+            "b": "h100.normal.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.2.json",
+            "b": "h100.normal.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.2.json",
+            "b": "h100.normal.4.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.2.json",
+            "b": "h100.normal.5.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.2.json",
+            "b": "h100.normal.7.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "h100.stock.3.json",
+            "b": "h100.normal.0.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "h100.stock.3.json",
+            "b": "h100.normal.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467218399047852
+          },
+          {
+            "a": "h100.stock.3.json",
+            "b": "h100.normal.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "h100.stock.3.json",
+            "b": "h100.normal.4.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "h100.stock.3.json",
+            "b": "h100.normal.5.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "h100.stock.3.json",
+            "b": "h100.normal.7.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          }
+        ]
+      }
+    },
+    "thor": {
+      "normal_attempts": 4,
+      "normal_accepted": 4,
+      "diagnostic_processes": 2,
+      "velocity_max_abs_delta": [
+        {
+          "stage": "captured-chunk",
+          "comparisons": 6,
+          "aa": 0.0,
+          "ab": 0.001953125,
+          "bb": 0.05419921875,
+          "a_static": 0.08203125
+        },
+        {
+          "stage": "refilled",
+          "comparisons": 6,
+          "aa": 0.015625,
+          "ab": 0.015625,
+          "bb": 0.001953125,
+          "a_static": 0.015625
+        }
+      ],
+      "fixed_recorded_noise_action_comparisons": {
+        "AA": [
+          {
+            "a": "thor.stock.0.json",
+            "b": "thor.stock.1.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "thor.stock.0.json",
+            "b": "thor.stock.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "thor.stock.0.json",
+            "b": "thor.stock.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "thor.stock.1.json",
+            "b": "thor.stock.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "thor.stock.1.json",
+            "b": "thor.stock.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242396267130971
+          },
+          {
+            "a": "thor.stock.2.json",
+            "b": "thor.stock.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          }
+        ],
+        "AB": [
+          {
+            "a": "thor.stock.0.json",
+            "b": "thor.normal.0.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "thor.stock.0.json",
+            "b": "thor.normal.1.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "thor.stock.0.json",
+            "b": "thor.normal.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "thor.stock.0.json",
+            "b": "thor.normal.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "thor.stock.1.json",
+            "b": "thor.normal.0.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "thor.stock.1.json",
+            "b": "thor.normal.1.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "thor.stock.1.json",
+            "b": "thor.normal.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242396267130971
+          },
+          {
+            "a": "thor.stock.1.json",
+            "b": "thor.normal.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "thor.stock.2.json",
+            "b": "thor.normal.0.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "thor.stock.2.json",
+            "b": "thor.normal.1.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "thor.stock.2.json",
+            "b": "thor.normal.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "thor.stock.2.json",
+            "b": "thor.normal.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "thor.stock.3.json",
+            "b": "thor.normal.0.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467218399047852
+          },
+          {
+            "a": "thor.stock.3.json",
+            "b": "thor.normal.1.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467218399047852
+          },
+          {
+            "a": "thor.stock.3.json",
+            "b": "thor.normal.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467218399047852
+          },
+          {
+            "a": "thor.stock.3.json",
+            "b": "thor.normal.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          }
+        ],
+        "BB": [
+          {
+            "a": "thor.normal.0.json",
+            "b": "thor.normal.1.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "thor.normal.0.json",
+            "b": "thor.normal.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "thor.normal.0.json",
+            "b": "thor.normal.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010167847387492657
+          },
+          {
+            "a": "thor.normal.1.json",
+            "b": "thor.normal.2.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          },
+          {
+            "a": "thor.normal.1.json",
+            "b": "thor.normal.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.010242462158203125
+          },
+          {
+            "a": "thor.normal.2.json",
+            "b": "thor.normal.3.json",
+            "actions": 36,
+            "valid": true,
+            "bitexact": false,
+            "max_abs_delta": 0.011467278003692627
+          }
+        ],
+        "A_fallback": []
+      }
+    }
+  },
+  "final_startups": {
+    "NVIDIA H100 80GB HBM3|lerobot/pi05_base|-|runtime_default|bitexact|fault": [
+      {
+        "receipt": "corrected-env.h100.pi05_base.default.fault.0.receipt.json",
+        "attempt_id": "e504768d8c514770853890062bec843c",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "cases": [
+              {
+                "input": 1,
+                "max_abs_delta": 5.247839450836182,
+                "prefix": "captured-chunk",
+                "timestep": 1.0
+              },
+              {
+                "input": 2,
+                "max_abs_delta": 4.708138465881348,
+                "prefix": "captured-chunk",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 3,
+                "max_abs_delta": 5.485996961593628,
+                "prefix": "captured-chunk",
+                "timestep": 0.800000012
+              },
+              {
+                "input": 4,
+                "max_abs_delta": 4.176984190940857,
+                "prefix": "refilled",
+                "timestep": 1.0
+              },
+              {
+                "input": 5,
+                "max_abs_delta": 4.7639384269714355,
+                "prefix": "refilled",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 6,
+                "max_abs_delta": 5.441160202026367,
+                "prefix": "refilled",
+                "timestep": 0.800000012
+              }
+            ],
+            "max_abs_delta": 5.485996961593628,
+            "n": 6,
+            "seconds": 0.15909618604928255
+          }
+        ]
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|lerobot/pi05_base|-|runtime_default|bitexact|ordinary": [
+      {
+        "receipt": "corrected-env.h100.pi05_base.default.normal.0.receipt.json",
+        "attempt_id": "324fe9e4fcde4d418a7d1cfc8a07fb41",
+        "status": "ready",
+        "graph_stats": {
+          "captured": true,
+          "replays": 68
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 1.0
+              },
+              {
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 0.800000012
+              },
+              {
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 1.0
+              },
+              {
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 0.800000012
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "seconds": 0.1630459758453071
+          }
+        ]
+      },
+      {
+        "receipt": "corrected-env.h100.pi05_base.default.normal.1.receipt.json",
+        "attempt_id": "6d6c27f97c654388956f1a172a0f7779",
+        "status": "ready",
+        "graph_stats": {
+          "captured": true,
+          "replays": 68
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 1.0
+              },
+              {
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 0.800000012
+              },
+              {
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 1.0
+              },
+              {
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 0.800000012
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "seconds": 0.24550802307203412
+          }
+        ]
+      },
+      {
+        "receipt": "corrected-env.h100.pi05_base.default.normal.2.receipt.json",
+        "attempt_id": "ae9c34e9a5214a7dbe1907651b2e037e",
+        "status": "ready",
+        "graph_stats": {
+          "captured": true,
+          "replays": 68
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 1.0
+              },
+              {
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 0.800000012
+              },
+              {
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 1.0
+              },
+              {
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 0.800000012
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "seconds": 0.16626722225919366
+          }
+        ]
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|lerobot/pi05_base|-|stock|None|ordinary": [
+      {
+        "receipt": "corrected-env.h100.pi05_base.default.stock.0.receipt.json",
+        "attempt_id": "d7b018ec0e6048039b702948cbe94b05",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|lerobot/pi05_libero_finetuned_v044|-|runtime_default|bitexact|fault": [
+      {
+        "receipt": "corrected-env.h100.pi05_libero.default.fault.0.receipt.json",
+        "attempt_id": "acd4198fc73842b185ecd28833a2a7d6",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "cases": [
+              {
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 1.0
+              },
+              {
+                "input": 2,
+                "max_abs_delta": 1.0091756582260132,
+                "prefix": "captured-chunk",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 3,
+                "max_abs_delta": 1.3902784585952759,
+                "prefix": "captured-chunk",
+                "timestep": 0.800000012
+              },
+              {
+                "input": 4,
+                "max_abs_delta": 5.514423131942749,
+                "prefix": "refilled",
+                "timestep": 1.0
+              },
+              {
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 6,
+                "max_abs_delta": 1.2646660804748535,
+                "prefix": "refilled",
+                "timestep": 0.800000012
+              }
+            ],
+            "max_abs_delta": 5.514423131942749,
+            "n": 6,
+            "seconds": 0.15490597998723388
+          }
+        ]
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|lerobot/pi05_libero_finetuned_v044|-|runtime_default|bitexact|ordinary": [
+      {
+        "receipt": "corrected-env.h100.pi05_libero.default.normal.0.receipt.json",
+        "attempt_id": "c2e0629faeeb40239090b06542dd402f",
+        "status": "ready",
+        "graph_stats": {
+          "captured": true,
+          "replays": 68
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 1.0
+              },
+              {
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 0.800000012
+              },
+              {
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 1.0
+              },
+              {
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 0.800000012
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "seconds": 0.16653495002537966
+          }
+        ]
+      },
+      {
+        "receipt": "corrected-env.h100.pi05_libero.default.normal.1.receipt.json",
+        "attempt_id": "f9ba716e75854a708c3ac8f15859851b",
+        "status": "ready",
+        "graph_stats": {
+          "captured": true,
+          "replays": 68
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 1.0
+              },
+              {
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 0.800000012
+              },
+              {
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 1.0
+              },
+              {
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 0.800000012
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "seconds": 0.1534329098649323
+          }
+        ]
+      },
+      {
+        "receipt": "corrected-env.h100.pi05_libero.default.normal.2.receipt.json",
+        "attempt_id": "6970e16b320b418dab1caa183e87e972",
+        "status": "ready",
+        "graph_stats": {
+          "captured": true,
+          "replays": 68
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 1.0
+              },
+              {
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "prefix": "captured-chunk",
+                "timestep": 0.800000012
+              },
+              {
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 1.0
+              },
+              {
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 0.899999976
+              },
+              {
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "prefix": "refilled",
+                "timestep": 0.800000012
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "seconds": 0.16537228366360068
+          }
+        ]
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|lerobot/pi05_libero_finetuned_v044|-|stock|None|ordinary": [
+      {
+        "receipt": "corrected-env.h100.pi05_libero.default.stock.0.receipt.json",
+        "attempt_id": "08baa3ce31ae42af8b0d5cb7a02dd694",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|nvidia/GR00T-N1.7-LIBERO|libero_10|runtime_default|bitexact|fault": [
+      {
+        "receipt": "final.h100.groot.libero_10.fault.0.receipt.json",
+        "attempt_id": "2ed0eff433374e44a697f3633728e926",
+        "status": "rejected",
+        "graph_stats": {
+          "action_nfe": 4,
+          "backbone_cache_hits": 21,
+          "backbone_cache_misses": 3,
+          "backbone_fastpath": true,
+          "backend": "upstream_bf16_cuda_graph",
+          "captured": false,
+          "cpu_threads": 4,
+          "fast_decode": false,
+          "graph_captures": 1,
+          "graph_replays": 0,
+          "precision": "bfloat16"
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 2,
+                "max_abs_delta": 1.3984375,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 4,
+                "max_abs_delta": 1.4609375,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 6,
+                "max_abs_delta": 1.4482421875,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 1.4609375,
+            "n": 6,
+            "passed": false,
+            "seconds": 0.11150369886308908,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|nvidia/GR00T-N1.7-LIBERO|libero_10|runtime_default|bitexact|ordinary": [
+      {
+        "receipt": "final.h100.groot.libero_10.normal.0.receipt.json",
+        "attempt_id": "439ac1366f5542b3b71559ec2e08fbe4",
+        "status": "ready",
+        "graph_stats": {
+          "action_nfe": 4,
+          "backbone_cache_hits": 21,
+          "backbone_cache_misses": 3,
+          "backbone_fastpath": true,
+          "backend": "upstream_bf16_cuda_graph",
+          "captured": true,
+          "cpu_threads": 4,
+          "fast_decode": false,
+          "graph_captures": 1,
+          "graph_replays": 32,
+          "precision": "bfloat16"
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.11245513474568725,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.groot.libero_10.normal.1.receipt.json",
+        "attempt_id": "83f6d6550adc4d979ffa4bd0e8b9e738",
+        "status": "ready",
+        "graph_stats": {
+          "action_nfe": 4,
+          "backbone_cache_hits": 21,
+          "backbone_cache_misses": 3,
+          "backbone_fastpath": true,
+          "backend": "upstream_bf16_cuda_graph",
+          "captured": true,
+          "cpu_threads": 4,
+          "fast_decode": false,
+          "graph_captures": 1,
+          "graph_replays": 32,
+          "precision": "bfloat16"
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.1189392521046102,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.groot.libero_10.normal.2.receipt.json",
+        "attempt_id": "a3d049cd8efa4b5284349a86f650b5d7",
+        "status": "ready",
+        "graph_stats": {
+          "action_nfe": 4,
+          "backbone_cache_hits": 21,
+          "backbone_cache_misses": 3,
+          "backbone_fastpath": true,
+          "backend": "upstream_bf16_cuda_graph",
+          "captured": true,
+          "cpu_threads": 4,
+          "fast_decode": false,
+          "graph_captures": 1,
+          "graph_replays": 32,
+          "precision": "bfloat16"
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.11094029201194644,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|nvidia/GR00T-N1.7-LIBERO|libero_10|stock|None|ordinary": [
+      {
+        "receipt": "final.h100.groot.libero_10.stock.0.receipt.json",
+        "attempt_id": "9e2e5f9dbf044b35b70cba151862ae84",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|nvidia/GR00T-N1.7-LIBERO|libero_goal|runtime_default|bitexact|ordinary": [
+      {
+        "receipt": "final.h100.groot.libero_goal.normal.0.receipt.json",
+        "attempt_id": "eaf714a08c2f40268a41cdcd4f79eefd",
+        "status": "ready",
+        "graph_stats": {
+          "action_nfe": 4,
+          "backbone_cache_hits": 21,
+          "backbone_cache_misses": 3,
+          "backbone_fastpath": true,
+          "backend": "upstream_bf16_cuda_graph",
+          "captured": true,
+          "cpu_threads": 4,
+          "fast_decode": false,
+          "graph_captures": 1,
+          "graph_replays": 32,
+          "precision": "bfloat16"
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.11852935282513499,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.groot.libero_goal.normal.1.receipt.json",
+        "attempt_id": "ead5170f04b244f7889d32987cf1b8c5",
+        "status": "ready",
+        "graph_stats": {
+          "action_nfe": 4,
+          "backbone_cache_hits": 21,
+          "backbone_cache_misses": 3,
+          "backbone_fastpath": true,
+          "backend": "upstream_bf16_cuda_graph",
+          "captured": true,
+          "cpu_threads": 4,
+          "fast_decode": false,
+          "graph_captures": 1,
+          "graph_replays": 32,
+          "precision": "bfloat16"
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.11907476279884577,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.groot.libero_goal.normal.2.receipt.json",
+        "attempt_id": "002ceb89cd344e88aae496be308cd4f7",
+        "status": "ready",
+        "graph_stats": {
+          "action_nfe": 4,
+          "backbone_cache_hits": 21,
+          "backbone_cache_misses": 3,
+          "backbone_fastpath": true,
+          "backend": "upstream_bf16_cuda_graph",
+          "captured": true,
+          "cpu_threads": 4,
+          "fast_decode": false,
+          "graph_captures": 1,
+          "graph_replays": 32,
+          "precision": "bfloat16"
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.11345720291137695,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|nvidia/GR00T-N1.7-LIBERO|libero_goal|stock|None|ordinary": [
+      {
+        "receipt": "final.h100.groot.libero_goal.stock.0.receipt.json",
+        "attempt_id": "10ac3176571741b3a1e31a854875d384",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|nvidia/GR00T-N1.7-LIBERO|libero_object|runtime_default|bitexact|ordinary": [
+      {
+        "receipt": "final.h100.groot.libero_object.normal.0.receipt.json",
+        "attempt_id": "3b67cac7854342e7acfa6c1ef6b0a0c9",
+        "status": "ready",
+        "graph_stats": {
+          "action_nfe": 4,
+          "backbone_cache_hits": 21,
+          "backbone_cache_misses": 3,
+          "backbone_fastpath": true,
+          "backend": "upstream_bf16_cuda_graph",
+          "captured": true,
+          "cpu_threads": 4,
+          "fast_decode": false,
+          "graph_captures": 1,
+          "graph_replays": 32,
+          "precision": "bfloat16"
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.12833486078307033,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.groot.libero_object.normal.1.receipt.json",
+        "attempt_id": "234d5ce509544f9cb4aafb590fe0a3e7",
+        "status": "ready",
+        "graph_stats": {
+          "action_nfe": 4,
+          "backbone_cache_hits": 21,
+          "backbone_cache_misses": 3,
+          "backbone_fastpath": true,
+          "backend": "upstream_bf16_cuda_graph",
+          "captured": true,
+          "cpu_threads": 4,
+          "fast_decode": false,
+          "graph_captures": 1,
+          "graph_replays": 32,
+          "precision": "bfloat16"
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.11765312170609832,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.groot.libero_object.normal.2.receipt.json",
+        "attempt_id": "edb3840ccf0e4c10a99b17a0fe775514",
+        "status": "ready",
+        "graph_stats": {
+          "action_nfe": 4,
+          "backbone_cache_hits": 21,
+          "backbone_cache_misses": 3,
+          "backbone_fastpath": true,
+          "backend": "upstream_bf16_cuda_graph",
+          "captured": true,
+          "cpu_threads": 4,
+          "fast_decode": false,
+          "graph_captures": 1,
+          "graph_replays": 32,
+          "precision": "bfloat16"
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.11213204637169838,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|nvidia/GR00T-N1.7-LIBERO|libero_object|stock|None|ordinary": [
+      {
+        "receipt": "final.h100.groot.libero_object.stock.0.receipt.json",
+        "attempt_id": "eb5575400ecf4dedad35f4d8b7ea9852",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|nvidia/GR00T-N1.7-LIBERO|libero_spatial|runtime_default|bitexact|ordinary": [
+      {
+        "receipt": "final.h100.groot.libero_spatial.normal.0.receipt.json",
+        "attempt_id": "4831e0f615c041b0a4680e6f4ece46f2",
+        "status": "ready",
+        "graph_stats": {
+          "action_nfe": 4,
+          "backbone_cache_hits": 21,
+          "backbone_cache_misses": 3,
+          "backbone_fastpath": true,
+          "backend": "upstream_bf16_cuda_graph",
+          "captured": true,
+          "cpu_threads": 4,
+          "fast_decode": false,
+          "graph_captures": 1,
+          "graph_replays": 32,
+          "precision": "bfloat16"
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.11170767387375236,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.groot.libero_spatial.normal.1.receipt.json",
+        "attempt_id": "9e5e606cb270433b9e7e9a5cc4c3470a",
+        "status": "ready",
+        "graph_stats": {
+          "action_nfe": 4,
+          "backbone_cache_hits": 21,
+          "backbone_cache_misses": 3,
+          "backbone_fastpath": true,
+          "backend": "upstream_bf16_cuda_graph",
+          "captured": true,
+          "cpu_threads": 4,
+          "fast_decode": false,
+          "graph_captures": 1,
+          "graph_replays": 32,
+          "precision": "bfloat16"
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.11173634929582477,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.groot.libero_spatial.normal.2.receipt.json",
+        "attempt_id": "cba0256d56d34630a19b3809292cda0f",
+        "status": "ready",
+        "graph_stats": {
+          "action_nfe": 4,
+          "backbone_cache_hits": 21,
+          "backbone_cache_misses": 3,
+          "backbone_fastpath": true,
+          "backend": "upstream_bf16_cuda_graph",
+          "captured": true,
+          "cpu_threads": 4,
+          "fast_decode": false,
+          "graph_captures": 1,
+          "graph_replays": 32,
+          "precision": "bfloat16"
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "fresh-inputs (all float tensors redrawn)",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.11667954595759511,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|nvidia/GR00T-N1.7-LIBERO|libero_spatial|stock|None|ordinary": [
+      {
+        "receipt": "final.h100.groot.libero_spatial.stock.0.receipt.json",
+        "attempt_id": "1d01d705cfd143f2b22631aecad0d480",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|robbyant/lingbot-vla-v2-6b-robotwin|-|runtime_default|numeric|fault": [
+      {
+        "receipt": "final.h100.v2.default.fault.0.receipt.json",
+        "attempt_id": "4e25a31574ac44fda27da1610efda433",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": false,
+                "input": 1,
+                "max_abs_delta": null,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": false
+              },
+              {
+                "bitexact": false,
+                "input": 2,
+                "max_abs_delta": null,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": false
+              },
+              {
+                "bitexact": false,
+                "input": 3,
+                "max_abs_delta": null,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": false
+              },
+              {
+                "bitexact": false,
+                "input": 4,
+                "max_abs_delta": null,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  }
+                ],
+                "stage": "refilled",
+                "valid": false
+              },
+              {
+                "bitexact": false,
+                "input": 5,
+                "max_abs_delta": null,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  }
+                ],
+                "stage": "refilled",
+                "valid": false
+              },
+              {
+                "bitexact": false,
+                "input": 6,
+                "max_abs_delta": null,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  }
+                ],
+                "stage": "refilled",
+                "valid": false
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": null,
+            "n": 6,
+            "passed": false,
+            "repeats": 3,
+            "seconds": 1.563018870074302,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|robbyant/lingbot-vla-v2-6b-robotwin|-|runtime_default|numeric|ordinary": [
+      {
+        "receipt": "final.h100.v2.default.normal.0.receipt.json",
+        "attempt_id": "b4cd09bc61e84e3c9d836cbaef66f9ab",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 2,
+                "max_abs_delta": 0.015625,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 3,
+                "max_abs_delta": 0.0859375,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.0859375,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.0859375,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.0859375,
+            "n": 6,
+            "passed": false,
+            "repeats": 3,
+            "seconds": 1.5464147944003344,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.v2.default.normal.1.receipt.json",
+        "attempt_id": "8ec007eb319143babb9d513f32da4428",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 2,
+                "max_abs_delta": 0.015625,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 3,
+                "max_abs_delta": 0.0859375,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.0859375,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.0859375,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.0859375,
+            "n": 6,
+            "passed": false,
+            "repeats": 3,
+            "seconds": 1.6848910227417946,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.v2.default.normal.2.receipt.json",
+        "attempt_id": "c67ecdbfa0624ecf8dd4a4bd0df71fd6",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 2,
+                "max_abs_delta": 0.015625,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 3,
+                "max_abs_delta": 0.0859375,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.0859375,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.0859375,
+            "n": 6,
+            "passed": false,
+            "repeats": 3,
+            "seconds": 1.5727320527657866,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.v2.default.normal.3.receipt.json",
+        "attempt_id": "1df3f3b3174f4a47ac5553fa9ae91c6e",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 3,
+                "max_abs_delta": 0.0859375,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.0859375,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.0859375,
+            "n": 6,
+            "passed": false,
+            "repeats": 3,
+            "seconds": 1.6382738356478512,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.v2.default.normal.4.receipt.json",
+        "attempt_id": "3b803eff89c94e24979b77379a31e40d",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 2,
+                "max_abs_delta": 0.015625,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 3,
+                "max_abs_delta": 0.0859375,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.0859375,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.0859375,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.0859375,
+            "n": 6,
+            "passed": false,
+            "repeats": 3,
+            "seconds": 1.5732164368964732,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.v2.default.normal.5.receipt.json",
+        "attempt_id": "24afd3aadb6e41989407e5806270b835",
+        "status": "ready",
+        "graph_stats": {
+          "captured": true,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": true,
+          "moe_layers": 0,
+          "prefill_graph": true,
+          "prefill_replays": 5,
+          "replays": 68,
+          "rmsnorm_modules": 0,
+          "vision_graph": true,
+          "vision_replays": 5
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 2,
+                "max_abs_delta": 0.015625,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.015625,
+            "n": 6,
+            "passed": true,
+            "repeats": 3,
+            "seconds": 1.7035501822829247,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.v2.default.normal.6.receipt.json",
+        "attempt_id": "12e466c883e9447089701f9acdbd2a7f",
+        "status": "ready",
+        "graph_stats": {
+          "captured": true,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": true,
+          "moe_layers": 0,
+          "prefill_graph": true,
+          "prefill_replays": 5,
+          "replays": 68,
+          "rmsnorm_modules": 0,
+          "vision_graph": true,
+          "vision_replays": 5
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 2,
+                "max_abs_delta": 0.015625,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.015625,
+            "n": 6,
+            "passed": true,
+            "repeats": 3,
+            "seconds": 1.5568439946509898,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.v2.default.normal.7.receipt.json",
+        "attempt_id": "eed50c27d27b4a4397ae89cdbe0e12d3",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 2,
+                "max_abs_delta": 0.015625,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 3,
+                "max_abs_delta": 0.0859375,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.0859375,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.0859375,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.0859375,
+            "n": 6,
+            "passed": false,
+            "repeats": 3,
+            "seconds": 1.6074918238446116,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|robbyant/lingbot-vla-v2-6b-robotwin|-|stock|None|ordinary": [
+      {
+        "receipt": "final.h100.v2.default.stock.0.receipt.json",
+        "attempt_id": "1a4bce586da64dc2919f0f2bee9e228c",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      },
+      {
+        "receipt": "final.h100.v2.default.stock.1.receipt.json",
+        "attempt_id": "1cba6aade9694c56875e1da42f3ff065",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|robbyant/lingbot-vla-4b-posttrain-robotwin|-|runtime_default|None|fault": [
+      {
+        "receipt": "final.h100.vla4.default.fault.0.receipt.json",
+        "attempt_id": "d6d817c55fcd4c76a05cf9e8b63d493e",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 2,
+                "max_abs_delta": 4.328125,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 4,
+                "max_abs_delta": 5.4765625,
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 6,
+                "max_abs_delta": 4.458984375,
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 5.4765625,
+            "n": 6,
+            "passed": false,
+            "seconds": 0.42347473185509443,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|robbyant/lingbot-vla-4b-posttrain-robotwin|-|runtime_default|None|ordinary": [
+      {
+        "receipt": "final.h100.vla4.default.normal.0.receipt.json",
+        "attempt_id": "a9561ea23798406593d9883459b54225",
+        "status": "ready",
+        "graph_stats": {
+          "captured": true,
+          "replays": 68
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.42896639881655574,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.vla4.default.normal.1.receipt.json",
+        "attempt_id": "2a86e56975c6443282c95ea9e15d330c",
+        "status": "ready",
+        "graph_stats": {
+          "captured": true,
+          "replays": 68
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.41783368308097124,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.vla4.default.normal.2.receipt.json",
+        "attempt_id": "b6a2acec9fa04f9ca0a0934ab53ffd57",
+        "status": "ready",
+        "graph_stats": {
+          "captured": true,
+          "replays": 68
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.3932164814323187,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      },
+      {
+        "receipt": "final.h100.vla4.default.normal.3.receipt.json",
+        "attempt_id": "ad8de89228c94c7bbdb41a336e9c9140",
+        "status": "ready",
+        "graph_stats": {
+          "captured": true,
+          "replays": 68
+        },
+        "self_checks": [
+          {
+            "bitexact": true,
+            "cases": [
+              {
+                "bitexact": true,
+                "input": 1,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 6,
+                "max_abs_delta": 0.0,
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "max_abs_delta": 0.0,
+            "n": 6,
+            "passed": true,
+            "seconds": 0.4013149356469512,
+            "tolerance": 0.0,
+            "tolerance_provenance": ""
+          }
+        ]
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|robbyant/lingbot-vla-4b-posttrain-robotwin|-|stock|None|ordinary": [
+      {
+        "receipt": "final.h100.vla4.default.stock.0.receipt.json",
+        "attempt_id": "5160c5286d7e499e99a35da098b43821",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      },
+      {
+        "receipt": "final.h100.vla4.default.stock.1.receipt.json",
+        "attempt_id": "7689aad27442459c9214d0a0b8dd9aff",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|robbyant/lingbot-vla-v2-6b-robotwin|-|runtime_default|bitexact|ordinary": [
+      {
+        "receipt": "strict.h100.v2.default.strict.0.receipt.json",
+        "attempt_id": "c0fa57e5f1db4b6a9f14e14a38e1d574",
+        "status": "ready",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": []
+      },
+      {
+        "receipt": "strict.h100.v2.default.strict.1.receipt.json",
+        "attempt_id": "519aff2dfdcc478eba52e8ed0a63df33",
+        "status": "ready",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": []
+      },
+      {
+        "receipt": "strict.h100.v2.default.strict.2.receipt.json",
+        "attempt_id": "b930d0e5369247e7bbd866fcf7061c1d",
+        "status": "ready",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": []
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|robbyant/lingbot-va-posttrain-libero-long|-|runtime_default|bitexact|ordinary": [
+      {
+        "receipt": "va-final.h100.libero.normal.0.receipt.json",
+        "attempt_id": "ee8a77208ef24fc1b45f66abc14969a3",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      },
+      {
+        "receipt": "va-final.h100.libero.normal.1.receipt.json",
+        "attempt_id": "ef1585ec17bc4660982c8f3fa4514408",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      },
+      {
+        "receipt": "va-final.h100.libero.normal.2.receipt.json",
+        "attempt_id": "fe4b0ba921ea41b1b9130fbaea214838",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|robbyant/lingbot-va-posttrain-libero-long|-|stock|None|ordinary": [
+      {
+        "receipt": "va-final.h100.libero.stock.0.receipt.json",
+        "attempt_id": "a286c0dd44c44e9290c4d45895054021",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|robbyant/lingbot-va-posttrain-robotwin|-|runtime_default|bitexact|ordinary": [
+      {
+        "receipt": "va-final.h100.robotwin.normal.0.receipt.json",
+        "attempt_id": "c5aa179e381a44a28587cfe75d1a1b97",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      },
+      {
+        "receipt": "va-final.h100.robotwin.normal.1.receipt.json",
+        "attempt_id": "67239d59677a47d493fba9be6140d0ac",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      },
+      {
+        "receipt": "va-final.h100.robotwin.normal.2.receipt.json",
+        "attempt_id": "5d0b6c90e2e245ba87f81d4b8a7197bf",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      }
+    ],
+    "NVIDIA H100 80GB HBM3|robbyant/lingbot-va-posttrain-robotwin|-|stock|None|ordinary": [
+      {
+        "receipt": "va-final.h100.robotwin.stock.0.receipt.json",
+        "attempt_id": "155bb0c2f25147e1a12a77ddd441e93e",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      }
+    ],
+    "NVIDIA Thor|robbyant/lingbot-vla-v2-6b-robotwin|-|runtime_default|numeric|ordinary": [
+      {
+        "receipt": "final.thor.server.runtime_default.receipt.json",
+        "attempt_id": "f17e0bff331f4ff3b0805d780893ff49",
+        "status": "ready",
+        "graph_stats": {
+          "captured": true,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": true,
+          "moe_layers": 0,
+          "prefill_graph": true,
+          "prefill_replays": 5,
+          "replays": 68,
+          "rmsnorm_modules": 0,
+          "vision_graph": true,
+          "vision_replays": 5
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": false,
+                "input": 1,
+                "max_abs_delta": 0.021484375,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.021484375,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 3,
+                "max_abs_delta": 0.001953125,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.001953125,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 6,
+                "max_abs_delta": 0.015625,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.001953125,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.021484375,
+            "n": 6,
+            "passed": true,
+            "repeats": 3,
+            "seconds": 2.4827039419906214,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      },
+      {
+        "receipt": "final.thor.v2.normal.0.receipt.json",
+        "attempt_id": "cd0b47980c9543c5868eaab22d442422",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": false,
+                "input": 1,
+                "max_abs_delta": 0.08203125,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.05419921875,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.08203125,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 3,
+                "max_abs_delta": 0.001953125,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.001953125,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.001953125,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 5,
+                "max_abs_delta": 0.1064453125,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.1064453125,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 6,
+                "max_abs_delta": 0.015625,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.001953125,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.001953125,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.1064453125,
+            "n": 6,
+            "passed": false,
+            "repeats": 3,
+            "seconds": 1.6591609889874235,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      },
+      {
+        "receipt": "final.thor.v2.normal.1.receipt.json",
+        "attempt_id": "974d28e8713d442fb3be2f5c1c74e12d",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": false,
+                "input": 1,
+                "max_abs_delta": 0.08203125,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.08203125,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.05419921875,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.08203125,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 5,
+                "max_abs_delta": 0.1064453125,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.1064453125,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 6,
+                "max_abs_delta": 0.015625,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.001953125,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.1064453125,
+            "n": 6,
+            "passed": false,
+            "repeats": 3,
+            "seconds": 1.6826598890474997,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      },
+      {
+        "receipt": "final.thor.v2.normal.2.receipt.json",
+        "attempt_id": "3c9c63935bdd47b8b16f6c55fb021831",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": false,
+                "input": 1,
+                "max_abs_delta": 0.0859375,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.0859375,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 3,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 6,
+                "max_abs_delta": 0.015625,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.0859375,
+            "n": 6,
+            "passed": false,
+            "repeats": 3,
+            "seconds": 1.6411714809946716,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      },
+      {
+        "receipt": "final.thor.v2.normal.3.receipt.json",
+        "attempt_id": "a654db37999f4128a81c4a29a6877d06",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": false,
+                "input": 1,
+                "max_abs_delta": 0.0546875,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.0546875,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 2,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 3,
+                "max_abs_delta": 0.001953125,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.001953125,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 4,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": true,
+                "input": 5,
+                "max_abs_delta": 0.0,
+                "repeat_checks": [
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              },
+              {
+                "bitexact": false,
+                "input": 6,
+                "max_abs_delta": 0.015625,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": 0.015625,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  },
+                  {
+                    "bitexact": true,
+                    "max_abs_delta": 0.0,
+                    "valid": true
+                  }
+                ],
+                "stage": "refilled",
+                "valid": true
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": 0.0546875,
+            "n": 6,
+            "passed": false,
+            "repeats": 3,
+            "seconds": 1.6436044899746776,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      }
+    ],
+    "NVIDIA Thor|robbyant/lingbot-vla-v2-6b-robotwin|-|stock|None|ordinary": [
+      {
+        "receipt": "final.thor.server.stock.receipt.json",
+        "attempt_id": "90f916ec3525414c8b023e028c215289",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      },
+      {
+        "receipt": "final.thor.v2.stock.0.receipt.json",
+        "attempt_id": "3e88ca13a386435abdb80d4d50dc9b00",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      },
+      {
+        "receipt": "final.thor.v2.stock.1.receipt.json",
+        "attempt_id": "d03e476724234f42a0c312210e2c679a",
+        "status": "ready",
+        "graph_stats": {},
+        "self_checks": []
+      }
+    ],
+    "NVIDIA Thor|robbyant/lingbot-vla-v2-6b-robotwin|-|runtime_default|numeric|fault": [
+      {
+        "receipt": "final.thor.v2.fault.0.receipt.json",
+        "attempt_id": "eba3a417db6e4ce58d3c335ef8da9619",
+        "status": "rejected",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": [
+          {
+            "bitexact": false,
+            "calibration_status": "legacy_cross_domain_guard",
+            "cases": [
+              {
+                "bitexact": false,
+                "input": 1,
+                "max_abs_delta": null,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": false
+              },
+              {
+                "bitexact": false,
+                "input": 2,
+                "max_abs_delta": null,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": false
+              },
+              {
+                "bitexact": false,
+                "input": 3,
+                "max_abs_delta": null,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  }
+                ],
+                "stage": "captured-chunk",
+                "valid": false
+              },
+              {
+                "bitexact": false,
+                "input": 4,
+                "max_abs_delta": null,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  }
+                ],
+                "stage": "refilled",
+                "valid": false
+              },
+              {
+                "bitexact": false,
+                "input": 5,
+                "max_abs_delta": null,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  }
+                ],
+                "stage": "refilled",
+                "valid": false
+              },
+              {
+                "bitexact": false,
+                "input": 6,
+                "max_abs_delta": null,
+                "repeat_checks": [
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  },
+                  {
+                    "bitexact": false,
+                    "max_abs_delta": null,
+                    "valid": false
+                  }
+                ],
+                "stage": "refilled",
+                "valid": false
+              }
+            ],
+            "comparison_domain": "denoise_velocity",
+            "comparisons": 18,
+            "max_abs_delta": null,
+            "n": 6,
+            "passed": false,
+            "repeats": 3,
+            "seconds": 1.4658904779935256,
+            "tolerance": 0.05083918571472168,
+            "tolerance_domain": "controller_action",
+            "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality"
+          }
+        ]
+      }
+    ],
+    "NVIDIA Thor|robbyant/lingbot-vla-v2-6b-robotwin|-|runtime_default|bitexact|ordinary": [
+      {
+        "receipt": "strict.thor.server.runtime_default.receipt.json",
+        "attempt_id": "adf812955eca4560a1db1a099fdff971",
+        "status": "ready",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": []
+      },
+      {
+        "receipt": "strict.thor.v2.strict.0.receipt.json",
+        "attempt_id": "090db271b0ae45808c301a62474e44ce",
+        "status": "ready",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": []
+      },
+      {
+        "receipt": "strict.thor.v2.strict.1.receipt.json",
+        "attempt_id": "499749258c0243ae90df9d1faaaecd2d",
+        "status": "ready",
+        "graph_stats": {
+          "captured": false,
+          "cuda_kernels": false,
+          "gpu_image_preprocess": false,
+          "moe_layers": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "replays": 0,
+          "rmsnorm_modules": 0,
+          "vision_graph": false,
+          "vision_replays": 0
+        },
+        "self_checks": []
+      }
+    ]
+  },
+  "setup_failures": [
+    "final.h100.pi05_base.default.fault.0.launch.json",
+    "final.h100.pi05_base.default.normal.0.launch.json",
+    "final.h100.pi05_base.default.normal.1.launch.json",
+    "final.h100.pi05_base.default.normal.2.launch.json",
+    "final.h100.pi05_base.default.stock.0.launch.json",
+    "final.h100.pi05_libero.default.fault.0.launch.json",
+    "final.h100.pi05_libero.default.normal.0.launch.json",
+    "final.h100.pi05_libero.default.normal.1.launch.json",
+    "final.h100.pi05_libero.default.normal.2.launch.json",
+    "final.h100.pi05_libero.default.stock.0.launch.json"
+  ],
+  "va_preliminary_failures": [
+    "va.h100.libero.normal.0.launch.json",
+    "va.h100.libero.normal.1.launch.json",
+    "va.h100.libero.normal.2.launch.json",
+    "va.h100.robotwin.normal.0.launch.json",
+    "va.h100.robotwin.normal.1.launch.json",
+    "va.h100.robotwin.normal.2.launch.json",
+    "va.h100.robotwin.stock.0.launch.json"
+  ]
+}

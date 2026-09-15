@@ -1,0 +1,94 @@
+{
+ "protocol": "in-process p50 of 12 calls after stock warmup; 6 stock-vs-candidate cases with two prompt values; exact equality",
+ "device": "NVIDIA GeForce RTX 5090",
+ "upstream_revision": "4eb34b7693a0565c67433f8fac9c59a2e67eb60b",
+ "checkpoint": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+ "checkpoint_revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e",
+ "stock_ms_p50": 220.5,
+ "instinctflash_ms_p50": 97.3,
+ "speedup": 2.27,
+ "latency_reduction_percent": 55.87,
+ "gate_max_abs_delta": 0,
+ "gate_cases": 6,
+ "tier": "BITEXACT",
+ "repeat_runtime_default_ms_p50": 98.74,
+ "runtime_self_check": {
+  "inputs": 6,
+  "captured_chunk_inputs": 3,
+  "refilled_inputs": 3,
+  "max_abs_delta": 0,
+  "startup_seconds": 1.8
+ },
+ "gpu_preprocess_self_check": {
+  "inputs": 6,
+  "max_abs_delta": 0
+ },
+ "runtime_backend_stats": {
+  "captured": true,
+  "full_graph": true,
+  "prefix_replays": 27,
+  "chunk_replays": 27,
+  "gpu_preprocess": true,
+  "gpu_preprocess_passed": true
+ },
+ "baseline_profile_ms": {
+  "end_to_end_p50": 113.39,
+  "cpu_resize_p50": 2.81,
+  "cpu_transform_p50": 3.52,
+  "vision_embed_p50": 15.23,
+  "prefix_prefill_p50": 23.78,
+  "ten_velocity_replays_p50": 63.59
+ },
+ "ablations": {
+  "archived_per_step_graph": {
+   "stock_ms_p50": 225.2,
+   "candidate_ms_p50": 113,
+   "speedup": 1.99,
+   "gate_max_abs_delta": 0
+  },
+  "fresh_per_step_graph": {
+   "stock_ms_p50": 224.2,
+   "candidate_ms_p50": 113.3,
+   "speedup": 1.98,
+   "gate_max_abs_delta": 0
+  },
+  "full_ten_step_graph_only": {
+   "stock_ms_p50": 221.3,
+   "candidate_ms_p50": 111.1,
+   "speedup": 1.99,
+   "gate_max_abs_delta": 0
+  },
+  "prefix_and_full_graphs": {
+   "stock_ms_p50": 224.5,
+   "candidate_ms_p50": 102.4,
+   "speedup": 2.19,
+   "gate_max_abs_delta": 0
+  },
+  "prefix_full_gpu_preprocess": {
+   "stock_ms_p50": 226.2,
+   "candidate_ms_p50": 101.1,
+   "speedup": 2.24,
+   "gate_max_abs_delta": 0
+  },
+  "prefix_full_gpu_preprocess_ada_tables": {
+   "stock_ms_p50": 219.6,
+   "candidate_ms_p50": 97.4,
+   "speedup": 2.25,
+   "gate_max_abs_delta": 0
+  }
+ },
+ "committed_harness_run": {
+  "stock_ms_p50": 220.5,
+  "candidate_ms_p50": 97.3,
+  "speedup": 2.27,
+  "gate_max_abs_delta": 0.0,
+  "gpu_preprocess_max_abs_delta": 0.0,
+  "prefix_replays": 24,
+  "chunk_replays": 24
+ },
+ "repeat_final_ms_p50": [
+  97.3,
+  97.4,
+  98.74
+ ]
+}

@@ -1,0 +1,195 @@
+{
+  "family": "groot",
+  "device": "NVIDIA H100 80GB HBM3",
+  "status": "BITEXACT",
+  "baseline_p50_ms": 122.3466475494206,
+  "current_p50_ms": 61.902294401079416,
+  "repeated_baseline_p50_ms": 119.07254857942462,
+  "speedup_range": [
+    1.9235563032272402,
+    1.9764477025150005
+  ],
+  "applied_passes": [
+    "graph_capture"
+  ],
+  "baseline_applied_passes": [],
+  "unchanged_transform_plan": false,
+  "execution_policy": {
+    "category": "BITEXACT",
+    "precision": "native",
+    "tier_ceiling": "bitexact",
+    "transform_tier": "BITEXACT",
+    "nfe": {
+      "backbone": 1,
+      "action": 4
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "source_drift": {
+    "current": [],
+    "baseline_b": []
+  },
+  "backend_stats": {
+    "backend": "upstream_bf16_cuda_graph",
+    "precision": "bfloat16",
+    "captured": true,
+    "graph_captures": 1,
+    "graph_replays": 92,
+    "action_nfe": 4,
+    "cpu_threads": null,
+    "fast_decode": true,
+    "backbone_fastpath": true,
+    "gpu_collate": true,
+    "gpu_collate_self_check_passed": true,
+    "gpu_collate_self_check_inputs": 6,
+    "gpu_collate_max_abs_delta": 0.0,
+    "full_backbone_graph": false,
+    "full_flow_graph": false,
+    "backbone_cache_hits": 65,
+    "backbone_cache_misses": 4
+  },
+  "reference_scope": "Direct upstream eager policy versus full default native Runtime; same I/O wrappers, weights, dtype and steps",
+  "comparisons": {
+    "baseline_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910/h100-7/groot-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910/h100-7/groot-current.json",
+      "baseline_sha256": "30c0f02f986debb82dba65ab0cec98e51b7a12b88a1ea59332c68d014c6e1029",
+      "candidate_sha256": "38e63ec36899964b86c69df3eb41110dbca6146fe534ce671f4c09312bab96e3",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            40,
+            17
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "backend": "upstream_bf16_cuda_graph",
+        "precision": "bfloat16",
+        "captured": true,
+        "graph_captures": 1,
+        "graph_replays": 92,
+        "action_nfe": 4,
+        "cpu_threads": null,
+        "fast_decode": true,
+        "backbone_fastpath": true,
+        "gpu_collate": true,
+        "gpu_collate_self_check_passed": true,
+        "gpu_collate_self_check_inputs": 6,
+        "gpu_collate_max_abs_delta": 0.0,
+        "full_backbone_graph": false,
+        "full_flow_graph": false,
+        "backbone_cache_hits": 65,
+        "backbone_cache_misses": 4
+      },
+      "baseline_p50_ms": 122.3466475494206,
+      "candidate_p50_ms": 61.902294401079416,
+      "speedup": 1.9764477025150005,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    },
+    "baseline_repeat": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910/h100-7/groot-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910/h100-7/groot-baseline_b.json",
+      "baseline_sha256": "30c0f02f986debb82dba65ab0cec98e51b7a12b88a1ea59332c68d014c6e1029",
+      "candidate_sha256": "d68857982af1159e39eebe14f48bcc4c9776813e74050da08ec01ad1bc3abdd5",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            40,
+            17
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "backend": "upstream_bf16_eager",
+        "precision": "bfloat16",
+        "captured": false,
+        "graph_captures": 0,
+        "graph_replays": 0,
+        "action_nfe": 4,
+        "cpu_threads": null,
+        "fast_decode": false,
+        "backbone_fastpath": false,
+        "gpu_collate": false,
+        "gpu_collate_self_check_passed": false,
+        "gpu_collate_self_check_inputs": 0,
+        "gpu_collate_max_abs_delta": 0.0,
+        "full_backbone_graph": false,
+        "full_flow_graph": false,
+        "backbone_cache_hits": 0,
+        "backbone_cache_misses": 0
+      },
+      "baseline_p50_ms": 122.3466475494206,
+      "candidate_p50_ms": 119.07254857942462,
+      "speedup": 1.0274966733227522,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    },
+    "repeat_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910/h100-7/groot-baseline_b.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910/h100-7/groot-current.json",
+      "baseline_sha256": "d68857982af1159e39eebe14f48bcc4c9776813e74050da08ec01ad1bc3abdd5",
+      "candidate_sha256": "38e63ec36899964b86c69df3eb41110dbca6146fe534ce671f4c09312bab96e3",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            40,
+            17
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "backend": "upstream_bf16_cuda_graph",
+        "precision": "bfloat16",
+        "captured": true,
+        "graph_captures": 1,
+        "graph_replays": 92,
+        "action_nfe": 4,
+        "cpu_threads": null,
+        "fast_decode": true,
+        "backbone_fastpath": true,
+        "gpu_collate": true,
+        "gpu_collate_self_check_passed": true,
+        "gpu_collate_self_check_inputs": 6,
+        "gpu_collate_max_abs_delta": 0.0,
+        "full_backbone_graph": false,
+        "full_flow_graph": false,
+        "backbone_cache_hits": 65,
+        "backbone_cache_misses": 4
+      },
+      "baseline_p50_ms": 119.07254857942462,
+      "candidate_p50_ms": 61.902294401079416,
+      "speedup": 1.9235563032272402,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    }
+  },
+  "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+}

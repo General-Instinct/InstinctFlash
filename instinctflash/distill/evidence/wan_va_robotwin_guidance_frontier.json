@@ -1,0 +1,1483 @@
+{
+ "kind": "fewstep_evidence_frontier",
+ "schema_version": 1,
+ "family": "wan_va",
+ "model": "robbyant/lingbot-va-posttrain-robotwin (stock weights; every row UNTRAINED unless under trained_arms)",
+ "harness": "RoboTwin 2.0, 50 tasks, demo_clean, LingBot-VA client protocol; scenes iwm_seeds/fewstep250 (first-5 pinned scenes per task of the baseline50 accepted-seed cache); pairing by scene seed; analyses by the unmodified eval/lingbot_va_robotwin/certify_operating_point.py",
+ "screening": true,
+ "margin_declared_confers_nothing": -0.05,
+ "interval_method": "most_conservative_of_three (mcnemar_se / bootstrap_iid / bootstrap_task_cluster)",
+ "campaigns": {
+  "untrained frontier (w=5)": "iwm_distill/fewstep/{frontier_prereg.md,untrained_frontier.md,frontier.json}, 2026-08-30 23:46Z .. 08-31 09:26Z",
+  "guidance x NFE sweep": "iwm_distill/fewstep/guidance/{guidance_prereg.md,gw_autotable.md,gw_frontier.json}, 2026-08-31 23:00Z .. 09-01 09:28Z",
+  "H1 screen + guidance-off follow-up": "iwm_distill/fewstep/{h1_prereg.md,h1_report.md}, training 2026-08-31 19:22Z .. 09-01 02:15Z, arms through 2026-09-02 13:05Z"
+ },
+ "sweep": {
+  "baseline": {
+   "id": "2V/4A@w5",
+   "nfe": {
+    "video": 2,
+    "action": 4
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 5.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "forwards_per_cycle": 10,
+   "batch2_forwards_per_cycle": 10
+  },
+  "screening": {
+   "margin": -0.05,
+   "interval": "most_conservative_of_three",
+   "min_pairs": 1
+  },
+  "control_steps_per_cycle": 32
+ },
+ "baseline": {
+  "id": "2V/4A@w5",
+  "arm": "fewstep_v2a4_base",
+  "success": 0.9137931034482759,
+  "n": 232,
+  "guidance": {
+   "video": {
+    "mode": "cfg",
+    "scale": 5.0
+   },
+   "action": {
+    "mode": "positive_only",
+    "scale": 1.0
+   }
+  },
+  "forwards_per_cycle": 10,
+  "forwards_batch1": 0,
+  "forwards_batch2": 10,
+  "cycle_p50_ms": 336.8,
+  "effective_hz": 95.0,
+  "certified": "UNTRAINED 2V/4A@w5 is the certified operating point (n=1153 paired, NON-INFERIOR robust; thor_column/va_2v4a_certificate_final.txt)"
+ },
+ "noise_floor": {
+  "arm": "fewstep_v2a4_rep",
+  "n_pairs": 229,
+  "delta": -0.008733624454148492,
+  "discordance": 0.11353711790393013,
+  "interval": [
+   -0.056768558951965066,
+   0.0425531914893617
+  ],
+  "interval_method": "most_conservative_of_three (bootstrap_task_cluster)"
+ },
+ "latency_only": [
+  {
+   "point": "2V/4A@w1",
+   "nfe": {
+    "video": 2,
+    "action": 4
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 1.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "forwards_per_cycle": 10,
+   "forwards_batch1": 10,
+   "forwards_batch2": 0,
+   "cycle_p50_ms": 334.8,
+   "effective_hz": 95.6,
+   "note": "batch-collapse documentation point of the guidance latency block (use_cfg=False); no closed-loop arm"
+  }
+ ],
+ "latency_protocol": {
+  "frontier": {
+   "warm": 40,
+   "n": 14,
+   "order": "B P1..P5 B P5..P1",
+   "gpu": "4",
+   "segments": "infer (denoise) + compute_kv_cache commit, both cuda-synchronized",
+   "hz": "32 control steps / p50 full cycle"
+  },
+  "guidance": {
+   "nfe": "2V/4A fixed",
+   "warm": 40,
+   "n": 14,
+   "order": "w 5 3 9 1 5 1 9 3",
+   "gpu": "6",
+   "segments": "infer (denoise) + compute_kv_cache commit, both cuda-synchronized",
+   "hz": "32 control steps / p50 full cycle",
+   "note": "w>1 arms share use_cfg=True batch-2 forwards; w=1 is the batch-collapse documentation point (use_cfg=False), not a grid arm"
+  }
+ },
+ "rows": [
+  {
+   "point": "3V/4A@w5",
+   "nfe": {
+    "video": 3,
+    "action": 4
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 5.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_v3a4",
+   "arm_success": 0.9256198347107438,
+   "arm_n": 242,
+   "forwards_per_cycle": 11,
+   "forwards_batch1": 0,
+   "forwards_batch2": 11,
+   "cycle_p50_ms": 365.7,
+   "effective_hz": 87.5,
+   "latency_source": "iwm_results/fewstep_latency/latency.json (frontier campaign, GPU 4)",
+   "campaign": "untrained frontier 2026-08-30/31 (frontier_prereg.md)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 229,
+   "baseline_success": 0.9213973799126638,
+   "point_success": 0.9388646288209607,
+   "delta": 0.017467248908296873,
+   "interval_method": "most_conservative_of_three (bootstrap_iid)",
+   "interval": [
+    -0.017467248908296942,
+    0.05240174672489083
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.016768558951965135,
+     0.05170305676855888
+    ],
+    "bootstrap_iid": [
+     -0.017467248908296942,
+     0.05240174672489083
+    ],
+    "bootstrap_task_cluster": [
+     -0.017167381974248927,
+     0.05309734513274336
+    ]
+   },
+   "deciding_lower_bound": -0.017467248908296942,
+   "discordant": [
+    6,
+    10
+   ],
+   "discordance": 0.06986899563318777,
+   "mcnemar_exact_two_sided_p": 0.454498291015625,
+   "certify_verdict_recorded_not_quoted": "NON-INFERIOR",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_results/fewstep_v3a4/screen_vs_v2a4.json"
+  },
+  {
+   "point": "2V/4A@w9",
+   "nfe": {
+    "video": 2,
+    "action": 4
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 9.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_w9_v2a4",
+   "arm_success": 0.8611111111111112,
+   "arm_n": 144,
+   "forwards_per_cycle": 10,
+   "forwards_batch1": 0,
+   "forwards_batch2": 10,
+   "cycle_p50_ms": 335.9,
+   "effective_hz": 95.3,
+   "latency_source": "iwm_results/fewstep_w_latency (guidance campaign, GPU 6, 2V/4A)",
+   "campaign": "guidance x NFE sweep 2026-08-31 stage 1 (n<=150)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 137,
+   "baseline_success": 0.9197080291970803,
+   "point_success": 0.8613138686131386,
+   "delta": -0.058394160583941646,
+   "interval_method": "most_conservative_of_three (bootstrap_iid)",
+   "interval": [
+    -0.12408759124087591,
+    0.0
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.12237508373576045,
+     0.005586762567877157
+    ],
+    "bootstrap_iid": [
+     -0.12408759124087591,
+     0.0
+    ],
+    "bootstrap_task_cluster": [
+     -0.11888111888111888,
+     0.0
+    ]
+   },
+   "deciding_lower_bound": -0.12408759124087591,
+   "discordant": [
+    14,
+    6
+   ],
+   "discordance": 0.145985401459854,
+   "mcnemar_exact_two_sided_p": 0.11531829833984375,
+   "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_distill/fewstep/guidance/gw_frontier.json stage1[fewstep_w9_v2a4].vs_base"
+  },
+  {
+   "point": "2V/4A@w7",
+   "nfe": {
+    "video": 2,
+    "action": 4
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 7.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_w7_v2a4",
+   "arm_success": 0.9142857142857143,
+   "arm_n": 140,
+   "forwards_per_cycle": 10,
+   "forwards_batch1": 0,
+   "forwards_batch2": 10,
+   "cycle_p50_ms": null,
+   "effective_hz": null,
+   "latency_source": null,
+   "campaign": "guidance x NFE sweep 2026-08-31 stage 1 (n<=150)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 133,
+   "baseline_success": 0.924812030075188,
+   "point_success": 0.9172932330827067,
+   "delta": -0.007518796992481258,
+   "interval_method": "most_conservative_of_three (mcnemar_se)",
+   "interval": [
+    -0.04650881631343312,
+    0.031471222328470605
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.04650881631343312,
+     0.031471222328470605
+    ],
+    "bootstrap_iid": [
+     -0.045112781954887216,
+     0.03007518796992481
+    ],
+    "bootstrap_task_cluster": [
+     -0.045454545454545456,
+     0.03076923076923077
+    ]
+   },
+   "deciding_lower_bound": -0.04650881631343312,
+   "discordant": [
+    4,
+    3
+   ],
+   "discordance": 0.05263157894736842,
+   "mcnemar_exact_two_sided_p": 1.0,
+   "certify_verdict_recorded_not_quoted": "NON-INFERIOR",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_distill/fewstep/guidance/gw_frontier.json stage1[fewstep_w7_v2a4].vs_base"
+  },
+  {
+   "point": "2V/4A@w3",
+   "nfe": {
+    "video": 2,
+    "action": 4
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 3.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_w3_v2a4_n250",
+   "arm_success": 0.9125,
+   "arm_n": 240,
+   "forwards_per_cycle": 10,
+   "forwards_batch1": 0,
+   "forwards_batch2": 10,
+   "cycle_p50_ms": 338.6,
+   "effective_hz": 94.5,
+   "latency_source": "iwm_results/fewstep_w_latency (guidance campaign, GPU 6, 2V/4A)",
+   "campaign": "guidance x NFE sweep 2026-08-31 stage 2 (guidance_prereg.md)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 226,
+   "baseline_success": 0.911504424778761,
+   "point_success": 0.9247787610619469,
+   "delta": 0.013274336283185861,
+   "interval_method": "most_conservative_of_three (bootstrap_iid)",
+   "interval": [
+    -0.02654867256637168,
+    0.048672566371681415
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.024528504112122637,
+     0.05107717667849436
+    ],
+    "bootstrap_iid": [
+     -0.02654867256637168,
+     0.048672566371681415
+    ],
+    "bootstrap_task_cluster": [
+     -0.022026431718061675,
+     0.0502283105022831
+    ]
+   },
+   "deciding_lower_bound": -0.02654867256637168,
+   "discordant": [
+    8,
+    11
+   ],
+   "discordance": 0.084070796460177,
+   "mcnemar_exact_two_sided_p": 0.6476058959960938,
+   "certify_verdict_recorded_not_quoted": "NON-INFERIOR",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_distill/fewstep/guidance/gw_frontier.json final[fewstep_w3_v2a4_n250].vs_base"
+  },
+  {
+   "point": "2V/2A@w9",
+   "nfe": {
+    "video": 2,
+    "action": 2
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 9.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_w9_v2a2",
+   "arm_success": 0.8263888888888888,
+   "arm_n": 144,
+   "forwards_per_cycle": 8,
+   "forwards_batch1": 0,
+   "forwards_batch2": 8,
+   "cycle_p50_ms": null,
+   "effective_hz": null,
+   "latency_source": null,
+   "campaign": "guidance x NFE sweep 2026-08-31 stage 1 (n<=150)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 137,
+   "baseline_success": 0.9197080291970803,
+   "point_success": 0.8248175182481752,
+   "delta": -0.0948905109489051,
+   "interval_method": "most_conservative_of_three (bootstrap_iid)",
+   "interval": [
+    -0.16058394160583941,
+    -0.029197080291970802
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.1604514478986383,
+     -0.029329573999171923
+    ],
+    "bootstrap_iid": [
+     -0.16058394160583941,
+     -0.029197080291970802
+    ],
+    "bootstrap_task_cluster": [
+     -0.15942028985507245,
+     -0.035211267605633804
+    ]
+   },
+   "deciding_lower_bound": -0.16058394160583941,
+   "discordant": [
+    17,
+    4
+   ],
+   "discordance": 0.15328467153284672,
+   "mcnemar_exact_two_sided_p": 0.007197380065917969,
+   "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_distill/fewstep/guidance/gw_frontier.json stage1[fewstep_w9_v2a2].vs_base"
+  },
+  {
+   "point": "2V/2A@w7",
+   "nfe": {
+    "video": 2,
+    "action": 2
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 7.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_w7_v2a2",
+   "arm_success": 0.841726618705036,
+   "arm_n": 139,
+   "forwards_per_cycle": 8,
+   "forwards_batch1": 0,
+   "forwards_batch2": 8,
+   "cycle_p50_ms": null,
+   "effective_hz": null,
+   "latency_source": null,
+   "campaign": "guidance x NFE sweep 2026-08-31 stage 1 (n<=150)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 136,
+   "baseline_success": 0.9264705882352942,
+   "point_success": 0.8455882352941176,
+   "delta": -0.08088235294117652,
+   "interval_method": "most_conservative_of_three (bootstrap_iid)",
+   "interval": [
+    -0.14705882352941177,
+    -0.022058823529411766
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.14370177889220387,
+     -0.01806292699014915
+    ],
+    "bootstrap_iid": [
+     -0.14705882352941177,
+     -0.022058823529411766
+    ],
+    "bootstrap_task_cluster": [
+     -0.14084507042253522,
+     -0.015873015873015872
+    ]
+   },
+   "deciding_lower_bound": -0.14705882352941177,
+   "discordant": [
+    15,
+    4
+   ],
+   "discordance": 0.13970588235294118,
+   "mcnemar_exact_two_sided_p": 0.0192108154296875,
+   "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_distill/fewstep/guidance/gw_frontier.json stage1[fewstep_w7_v2a2].vs_base"
+  },
+  {
+   "point": "2V/2A@w5",
+   "nfe": {
+    "video": 2,
+    "action": 2
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 5.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_v2a2",
+   "arm_success": 0.8833333333333333,
+   "arm_n": 240,
+   "forwards_per_cycle": 8,
+   "forwards_batch1": 0,
+   "forwards_batch2": 8,
+   "cycle_p50_ms": 276.2,
+   "effective_hz": 115.8,
+   "latency_source": "iwm_results/fewstep_latency/latency.json (frontier campaign, GPU 4)",
+   "campaign": "untrained frontier 2026-08-30/31 (frontier_prereg.md)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 229,
+   "baseline_success": 0.9126637554585153,
+   "point_success": 0.8820960698689956,
+   "delta": -0.030567685589519722,
+   "interval_method": "most_conservative_of_three (mcnemar_se)",
+   "interval": [
+    -0.0716149772301002,
+    0.010479606051060755
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.0716149772301002,
+     0.010479606051060755
+    ],
+    "bootstrap_iid": [
+     -0.06986899563318777,
+     0.008733624454148471
+    ],
+    "bootstrap_task_cluster": [
+     -0.06866952789699571,
+     0.008771929824561403
+    ]
+   },
+   "deciding_lower_bound": -0.0716149772301002,
+   "discordant": [
+    15,
+    8
+   ],
+   "discordance": 0.10043668122270742,
+   "mcnemar_exact_two_sided_p": 0.21003961563110352,
+   "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_results/fewstep_v2a2/screen_vs_v2a4.json"
+  },
+  {
+   "point": "2V/2A@w3",
+   "nfe": {
+    "video": 2,
+    "action": 2
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 3.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_w3_v2a2_n250",
+   "arm_success": 0.8833333333333333,
+   "arm_n": 240,
+   "forwards_per_cycle": 8,
+   "forwards_batch1": 0,
+   "forwards_batch2": 8,
+   "cycle_p50_ms": null,
+   "effective_hz": null,
+   "latency_source": null,
+   "campaign": "guidance x NFE sweep 2026-08-31 stage 2 (guidance_prereg.md)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 229,
+   "baseline_success": 0.9126637554585153,
+   "point_success": 0.8864628820960698,
+   "delta": -0.026200873362445476,
+   "interval_method": "most_conservative_of_three (bootstrap_iid)",
+   "interval": [
+    -0.06986899563318777,
+    0.017467248908296942
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.06813100345724922,
+     0.01572925673235827
+    ],
+    "bootstrap_iid": [
+     -0.06986899563318777,
+     0.017467248908296942
+    ],
+    "bootstrap_task_cluster": [
+     -0.060085836909871244,
+     0.004608294930875576
+    ]
+   },
+   "deciding_lower_bound": -0.06986899563318777,
+   "discordant": [
+    15,
+    9
+   ],
+   "discordance": 0.10480349344978165,
+   "mcnemar_exact_two_sided_p": 0.30745625495910645,
+   "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_distill/fewstep/guidance/gw_frontier.json final[fewstep_w3_v2a2_n250].vs_base"
+  },
+  {
+   "point": "2V/2A@w1",
+   "nfe": {
+    "video": 2,
+    "action": 2
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 1.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_h1_w1_v2a2",
+   "arm_success": 0.9208333333333333,
+   "arm_n": 240,
+   "forwards_per_cycle": 8,
+   "forwards_batch1": 8,
+   "forwards_batch2": 0,
+   "cycle_p50_ms": null,
+   "effective_hz": null,
+   "latency_source": null,
+   "campaign": "H1 guidance-off follow-up 2026-09-01/02 (h1_report.md section 4b)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 227,
+   "baseline_success": 0.9118942731277533,
+   "point_success": 0.920704845814978,
+   "delta": 0.008810572687224738,
+   "interval_method": "most_conservative_of_three (mcnemar_se)",
+   "interval": [
+    -0.03687817242014617,
+    0.054499317794595645
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.03687817242014617,
+     0.054499317794595645
+    ],
+    "bootstrap_iid": [
+     -0.03524229074889868,
+     0.05726872246696035
+    ],
+    "bootstrap_task_cluster": [
+     -0.034782608695652174,
+     0.057777777777777775
+    ]
+   },
+   "deciding_lower_bound": -0.03687817242014617,
+   "discordant": [
+    13,
+    15
+   ],
+   "discordance": 0.12334801762114538,
+   "mcnemar_exact_two_sided_p": 0.8505540192127228,
+   "certify_verdict_recorded_not_quoted": "NON-INFERIOR",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_results/fewstep_h1_w1_v2a2/screen_vs_base.json"
+  },
+  {
+   "point": "1V/4A@w9",
+   "nfe": {
+    "video": 1,
+    "action": 4
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 9.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_w9_v1a4",
+   "arm_success": 0.27586206896551724,
+   "arm_n": 145,
+   "forwards_per_cycle": 9,
+   "forwards_batch1": 0,
+   "forwards_batch2": 9,
+   "cycle_p50_ms": null,
+   "effective_hz": null,
+   "latency_source": null,
+   "campaign": "guidance x NFE sweep 2026-08-31 stage 1 (n<=150)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 137,
+   "baseline_success": 0.9197080291970803,
+   "point_success": 0.2846715328467153,
+   "delta": -0.635036496350365,
+   "interval_method": "most_conservative_of_three (mcnemar_se)",
+   "interval": [
+    -0.7715124696917675,
+    -0.49856052300896253
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.7715124696917675,
+     -0.49856052300896253
+    ],
+    "bootstrap_iid": [
+     -0.7226277372262774,
+     -0.5474452554744526
+    ],
+    "bootstrap_task_cluster": [
+     -0.7279411764705882,
+     -0.5357142857142857
+    ]
+   },
+   "deciding_lower_bound": -0.7715124696917675,
+   "discordant": [
+    89,
+    2
+   ],
+   "discordance": 0.6642335766423357,
+   "mcnemar_exact_two_sided_p": 3.3822316648042255e-24,
+   "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_distill/fewstep/guidance/gw_frontier.json stage1[fewstep_w9_v1a4].vs_base"
+  },
+  {
+   "point": "1V/4A@w7",
+   "nfe": {
+    "video": 1,
+    "action": 4
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 7.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_w7_v1a4",
+   "arm_success": 0.5109489051094891,
+   "arm_n": 137,
+   "forwards_per_cycle": 9,
+   "forwards_batch1": 0,
+   "forwards_batch2": 9,
+   "cycle_p50_ms": null,
+   "effective_hz": null,
+   "latency_source": null,
+   "campaign": "guidance x NFE sweep 2026-08-31 stage 1 (n<=150)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 134,
+   "baseline_success": 0.9253731343283582,
+   "point_success": 0.5149253731343284,
+   "delta": -0.4104477611940298,
+   "interval_method": "most_conservative_of_three (mcnemar_se)",
+   "interval": [
+    -0.5246872340655002,
+    -0.29620828832255935
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.5246872340655002,
+     -0.29620828832255935
+    ],
+    "bootstrap_iid": [
+     -0.5,
+     -0.3208955223880597
+    ],
+    "bootstrap_task_cluster": [
+     -0.5208333333333334,
+     -0.3
+    ]
+   },
+   "deciding_lower_bound": -0.5246872340655002,
+   "discordant": [
+    58,
+    3
+   ],
+   "discordance": 0.4552238805970149,
+   "mcnemar_exact_two_sided_p": 3.2857397358476703e-14,
+   "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_distill/fewstep/guidance/gw_frontier.json stage1[fewstep_w7_v1a4].vs_base"
+  },
+  {
+   "point": "1V/4A@w5",
+   "nfe": {
+    "video": 1,
+    "action": 4
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 5.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_v1a4",
+   "arm_success": 0.7521367521367521,
+   "arm_n": 234,
+   "forwards_per_cycle": 9,
+   "forwards_batch1": 0,
+   "forwards_batch2": 9,
+   "cycle_p50_ms": 306.5,
+   "effective_hz": 104.4,
+   "latency_source": "iwm_results/fewstep_latency/latency.json (frontier campaign, GPU 4)",
+   "campaign": "untrained frontier 2026-08-30/31 (frontier_prereg.md)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 226,
+   "baseline_success": 0.915929203539823,
+   "point_success": 0.7477876106194691,
+   "delta": -0.1681415929203539,
+   "interval_method": "most_conservative_of_three (bootstrap_task_cluster)",
+   "interval": [
+    -0.24434389140271492,
+    -0.09606986899563319
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.23187168003347375,
+     -0.10441150580723406
+    ],
+    "bootstrap_iid": [
+     -0.23008849557522124,
+     -0.11061946902654868
+    ],
+    "bootstrap_task_cluster": [
+     -0.24434389140271492,
+     -0.09606986899563319
+    ]
+   },
+   "deciding_lower_bound": -0.24434389140271492,
+   "discordant": [
+    46,
+    8
+   ],
+   "discordance": 0.23893805309734514,
+   "mcnemar_exact_two_sided_p": 1.3843354973452904e-07,
+   "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_results/fewstep_v1a4/screen_vs_v2a4.json"
+  },
+  {
+   "point": "1V/4A@w3",
+   "nfe": {
+    "video": 1,
+    "action": 4
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 3.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_w3_v1a4_n250",
+   "arm_success": 0.8823529411764706,
+   "arm_n": 238,
+   "forwards_per_cycle": 9,
+   "forwards_batch1": 0,
+   "forwards_batch2": 9,
+   "cycle_p50_ms": null,
+   "effective_hz": null,
+   "latency_source": null,
+   "campaign": "guidance x NFE sweep 2026-08-31 stage 2 (guidance_prereg.md)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 228,
+   "baseline_success": 0.9122807017543859,
+   "point_success": 0.8903508771929824,
+   "delta": -0.021929824561403466,
+   "interval_method": "most_conservative_of_three (mcnemar_se)",
+   "interval": [
+    -0.06659850328291662,
+    0.022738854160109692
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.06659850328291662,
+     0.022738854160109692
+    ],
+    "bootstrap_iid": [
+     -0.06578947368421052,
+     0.021929824561403508
+    ],
+    "bootstrap_task_cluster": [
+     -0.06363636363636363,
+     0.01762114537444934
+    ]
+   },
+   "deciding_lower_bound": -0.06659850328291662,
+   "discordant": [
+    16,
+    11
+   ],
+   "discordance": 0.11842105263157894,
+   "mcnemar_exact_two_sided_p": 0.44206833839416504,
+   "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_distill/fewstep/guidance/gw_frontier.json final[fewstep_w3_v1a4_n250].vs_base"
+  },
+  {
+   "point": "1V/4A@w1",
+   "nfe": {
+    "video": 1,
+    "action": 4
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 1.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_h1_b2",
+   "arm_success": 0.8833333333333333,
+   "arm_n": 240,
+   "forwards_per_cycle": 9,
+   "forwards_batch1": 9,
+   "forwards_batch2": 0,
+   "cycle_p50_ms": null,
+   "effective_hz": null,
+   "latency_source": null,
+   "campaign": "H1 guidance-off follow-up 2026-09-01/02 (h1_report.md section 4b)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 229,
+   "baseline_success": 0.9213973799126638,
+   "point_success": 0.8864628820960698,
+   "delta": -0.03493449781659397,
+   "interval_method": "most_conservative_of_three (bootstrap_task_cluster)",
+   "interval": [
+    -0.09051724137931035,
+    0.017543859649122806
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.07686462791139771,
+     0.006995632278209776
+    ],
+    "bootstrap_iid": [
+     -0.07860262008733625,
+     0.004366812227074236
+    ],
+    "bootstrap_task_cluster": [
+     -0.09051724137931035,
+     0.017543859649122806
+    ]
+   },
+   "deciding_lower_bound": -0.09051724137931035,
+   "discordant": [
+    16,
+    8
+   ],
+   "discordance": 0.10480349344978165,
+   "mcnemar_exact_two_sided_p": 0.15158963203430176,
+   "certify_verdict_recorded_not_quoted": "NON-INFERIOR",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_results/fewstep_v2a4_base/screen_vs_b2.json"
+  },
+  {
+   "point": "1V/2A@w5",
+   "nfe": {
+    "video": 1,
+    "action": 2
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 5.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_v1a2",
+   "arm_success": 0.6978723404255319,
+   "arm_n": 235,
+   "forwards_per_cycle": 7,
+   "forwards_batch1": 0,
+   "forwards_batch2": 7,
+   "cycle_p50_ms": 247.1,
+   "effective_hz": 129.5,
+   "latency_source": "iwm_results/fewstep_latency/latency.json (frontier campaign, GPU 4)",
+   "campaign": "untrained frontier 2026-08-30/31 (frontier_prereg.md)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 225,
+   "baseline_success": 0.9244444444444444,
+   "point_success": 0.6977777777777778,
+   "delta": -0.22666666666666657,
+   "interval_method": "most_conservative_of_three (bootstrap_task_cluster)",
+   "interval": [
+    -0.31221719457013575,
+    -0.14746543778801843
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.2958089675958212,
+     -0.15752436573751194
+    ],
+    "bootstrap_iid": [
+     -0.28888888888888886,
+     -0.16444444444444445
+    ],
+    "bootstrap_task_cluster": [
+     -0.31221719457013575,
+     -0.14746543778801843
+    ]
+   },
+   "deciding_lower_bound": -0.31221719457013575,
+   "discordant": [
+    57,
+    6
+   ],
+   "discordance": 0.28,
+   "mcnemar_exact_two_sided_p": 1.6395687108330947e-11,
+   "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_results/fewstep_v1a2/screen_vs_v2a4.json"
+  },
+  {
+   "point": "1V/2A@w1",
+   "nfe": {
+    "video": 1,
+    "action": 2
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 1.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_h1_w1_v1a2",
+   "arm_success": 0.8875,
+   "arm_n": 240,
+   "forwards_per_cycle": 7,
+   "forwards_batch1": 7,
+   "forwards_batch2": 0,
+   "cycle_p50_ms": null,
+   "effective_hz": null,
+   "latency_source": null,
+   "campaign": "H1 guidance-off follow-up 2026-09-01/02 (h1_report.md section 4b)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 227,
+   "baseline_success": 0.9162995594713657,
+   "point_success": 0.8898678414096917,
+   "delta": -0.026431718061673992,
+   "interval_method": "most_conservative_of_three (mcnemar_se)",
+   "interval": [
+    -0.0721204631690449,
+    0.019257027045696914
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.0721204631690449,
+     0.019257027045696914
+    ],
+    "bootstrap_iid": [
+     -0.07048458149779736,
+     0.01762114537444934
+    ],
+    "bootstrap_task_cluster": [
+     -0.06787330316742081,
+     0.01809954751131222
+    ]
+   },
+   "deciding_lower_bound": -0.0721204631690449,
+   "discordant": [
+    17,
+    11
+   ],
+   "discordance": 0.12334801762114538,
+   "mcnemar_exact_two_sided_p": 0.34492845088243484,
+   "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_results/fewstep_h1_w1_v1a2/screen_vs_base.json"
+  },
+  {
+   "point": "1V/1A@w5",
+   "nfe": {
+    "video": 1,
+    "action": 1
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 5.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_v1a1",
+   "arm_success": 0.5574468085106383,
+   "arm_n": 235,
+   "forwards_per_cycle": 6,
+   "forwards_batch1": 0,
+   "forwards_batch2": 6,
+   "cycle_p50_ms": 216.1,
+   "effective_hz": 148.1,
+   "latency_source": "iwm_results/fewstep_latency/latency.json (frontier campaign, GPU 4)",
+   "campaign": "untrained frontier 2026-08-30/31 (frontier_prereg.md)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 224,
+   "baseline_success": 0.9196428571428571,
+   "point_success": 0.5625,
+   "delta": -0.3571428571428571,
+   "interval_method": "most_conservative_of_three (bootstrap_task_cluster)",
+   "interval": [
+    -0.4484304932735426,
+    -0.26956521739130435
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.4392251329397671,
+     -0.2750605813459471
+    ],
+    "bootstrap_iid": [
+     -0.42410714285714285,
+     -0.29017857142857145
+    ],
+    "bootstrap_task_cluster": [
+     -0.4484304932735426,
+     -0.26956521739130435
+    ]
+   },
+   "deciding_lower_bound": -0.4484304932735426,
+   "discordant": [
+    84,
+    4
+   ],
+   "discordance": 0.39285714285714285,
+   "mcnemar_exact_two_sided_p": 1.5803951224724757e-20,
+   "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_results/fewstep_v1a1/screen_vs_v2a4.json"
+  },
+  {
+   "point": "1V/1A@w1",
+   "nfe": {
+    "video": 1,
+    "action": 1
+   },
+   "guidance": {
+    "video": {
+     "mode": "cfg",
+     "scale": 1.0
+    },
+    "action": {
+     "mode": "positive_only",
+     "scale": 1.0
+    }
+   },
+   "arm": "fewstep_h1_w1_v1a1",
+   "arm_success": 0.6776859504132231,
+   "arm_n": 242,
+   "forwards_per_cycle": 6,
+   "forwards_batch1": 6,
+   "forwards_batch2": 0,
+   "cycle_p50_ms": null,
+   "effective_hz": null,
+   "latency_source": null,
+   "campaign": "H1 guidance-off follow-up 2026-09-01/02 (h1_report.md section 4b)",
+   "status": "SCREENED",
+   "screening": true,
+   "n_pairs": 227,
+   "baseline_success": 0.9118942731277533,
+   "point_success": 0.6916299559471366,
+   "delta": -0.22026431718061668,
+   "interval_method": "most_conservative_of_three (bootstrap_task_cluster)",
+   "interval": [
+    -0.29411764705882354,
+    -0.15021459227467812
+   ],
+   "intervals_95": {
+    "mcnemar_se": [
+     -0.2882513455201019,
+     -0.15227728884113145
+    ],
+    "bootstrap_iid": [
+     -0.28193832599118945,
+     -0.15859030837004406
+    ],
+    "bootstrap_task_cluster": [
+     -0.29411764705882354,
+     -0.15021459227467812
+    ]
+   },
+   "deciding_lower_bound": -0.29411764705882354,
+   "discordant": [
+    56,
+    6
+   ],
+   "discordance": 0.27312775330396477,
+   "mcnemar_exact_two_sided_p": 2.972584851879123e-11,
+   "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+   "control_arm": "fewstep_v2a4_base",
+   "source": "iwm_results/fewstep_h1_w1_v1a1/screen_vs_base.json"
+  }
+ ],
+ "trained_arms": [
+  {
+   "arm": "fewstep_h1s_a4",
+   "label": "H1 TRAINED student 1V(folded, CFG w=5 target)/4A, batch-1, 9 forwards",
+   "arm_success": 0.8870292887029289,
+   "arm_n": 239,
+   "comparisons": {
+    "C-A (student vs 2V/4A@w5 baseline)": {
+     "status": "SCREENED",
+     "screening": true,
+     "n_pairs": 228,
+     "baseline_success": 0.9166666666666666,
+     "point_success": 0.8991228070175439,
+     "delta": -0.01754385964912275,
+     "interval_method": "most_conservative_of_three (mcnemar_se)",
+     "interval": [
+      -0.054015683099797304,
+      0.018927963801551803
+     ],
+     "intervals_95": {
+      "mcnemar_se": [
+       -0.054015683099797304,
+       0.018927963801551803
+      ],
+      "bootstrap_iid": [
+       -0.05263157894736842,
+       0.017543859649122806
+      ],
+      "bootstrap_task_cluster": [
+       -0.05240174672489083,
+       0.017316017316017316
+      ]
+     },
+     "deciding_lower_bound": -0.054015683099797304,
+     "discordant": [
+      11,
+      7
+     ],
+     "discordance": 0.07894736842105263,
+     "mcnemar_exact_two_sided_p": 0.480682373046875,
+     "certify_verdict_recorded_not_quoted": "NOT ESTABLISHED",
+     "control_arm": "fewstep_v2a4_base",
+     "source": "iwm_results/fewstep_h1s_a4/screen_vs_base.json"
+    },
+    "C-B1 (student vs untrained 1V/4A@w5, the pre-registered control)": {
+     "status": "SCREENED",
+     "screening": true,
+     "n_pairs": 231,
+     "baseline_success": 0.7489177489177489,
+     "point_success": 0.8917748917748918,
+     "delta": 0.1428571428571429,
+     "interval_method": "most_conservative_of_three (bootstrap_task_cluster)",
+     "interval": [
+      0.07142857142857142,
+      0.21645021645021645
+     ],
+     "intervals_95": {
+      "mcnemar_se": [
+       0.0822632046755672,
+       0.20345108103871862
+      ],
+      "bootstrap_iid": [
+       0.08658008658008658,
+       0.19913419913419914
+      ],
+      "bootstrap_task_cluster": [
+       0.07142857142857142,
+       0.21645021645021645
+      ]
+     },
+     "deciding_lower_bound": 0.07142857142857142,
+     "discordant": [
+      9,
+      42
+     ],
+     "discordance": 0.22077922077922077,
+     "mcnemar_exact_two_sided_p": 3.3888279489246997e-06,
+     "certify_verdict_recorded_not_quoted": "NON-INFERIOR",
+     "control_arm": "fewstep_v2a4_base",
+     "source": "iwm_results/fewstep_h1s_a4/screen_vs_v1a4.json"
+    },
+    "C-B2 (student vs untrained 1V/4A@w1, execution-matched)": {
+     "status": "SCREENED",
+     "screening": true,
+     "n_pairs": 234,
+     "baseline_success": 0.8846153846153846,
+     "point_success": 0.8974358974358975,
+     "delta": 0.012820512820512886,
+     "interval_method": "most_conservative_of_three (bootstrap_task_cluster)",
+     "interval": [
+      -0.0391304347826087,
+      0.06666666666666667
+     ],
+     "intervals_95": {
+      "mcnemar_se": [
+       -0.030702815164551207,
+       0.05634384080557698
+      ],
+      "bootstrap_iid": [
+       -0.029914529914529916,
+       0.05555555555555555
+      ],
+      "bootstrap_task_cluster": [
+       -0.0391304347826087,
+       0.06666666666666667
+      ]
+     },
+     "deciding_lower_bound": -0.0391304347826087,
+     "discordant": [
+      12,
+      15
+     ],
+     "discordance": 0.11538461538461539,
+     "mcnemar_exact_two_sided_p": 0.7011080384254456,
+     "certify_verdict_recorded_not_quoted": "NON-INFERIOR",
+     "control_arm": "fewstep_v2a4_base",
+     "source": "iwm_results/fewstep_h1s_a4/screen_vs_b2.json"
+    },
+    "C-B3 (student vs untrained 1V/4A@w3, best untrained knob)": {
+     "status": "SCREENED",
+     "screening": true,
+     "n_pairs": 231,
+     "baseline_success": 0.8917748917748918,
+     "point_success": 0.8917748917748918,
+     "delta": 0.0,
+     "interval_method": "most_conservative_of_three (bootstrap_task_cluster)",
+     "interval": [
+      -0.047619047619047616,
+      0.043859649122807015
+     ],
+     "intervals_95": {
+      "mcnemar_se": [
+       -0.04489759800594457,
+       0.04489759800594457
+      ],
+      "bootstrap_iid": [
+       -0.04329004329004329,
+       0.04329004329004329
+      ],
+      "bootstrap_task_cluster": [
+       -0.047619047619047616,
+       0.043859649122807015
+      ]
+     },
+     "deciding_lower_bound": -0.047619047619047616,
+     "discordant": [
+      14,
+      14
+     ],
+     "discordance": 0.12121212121212122,
+     "mcnemar_exact_two_sided_p": 1.0,
+     "certify_verdict_recorded_not_quoted": "NON-INFERIOR",
+     "control_arm": "fewstep_v2a4_base",
+     "source": "iwm_results/fewstep_h1s_a4/screen_vs_w3.json"
+    }
+   }
+  },
+  {
+   "arm": "fewstep_h1s_a2",
+   "label": "H1 TRAINED student 1V(folded)/2A, batch-1, 7 forwards",
+   "arm_success": 0.9,
+   "arm_n": 240,
+   "comparisons": {
+    "C2 vs untrained 1V/2A@w5 (pre-registered control)": {
+     "status": "SCREENED",
+     "screening": true,
+     "n_pairs": 231,
+     "baseline_success": 0.696969696969697,
+     "point_success": 0.9090909090909091,
+     "delta": 0.21212121212121204,
+     "interval_method": "most_conservative_of_three (bootstrap_task_cluster)",
+     "interval": [
+      0.13304721030042918,
+      0.29955947136563876
+     ],
+     "intervals_95": {
+      "mcnemar_se": [
+       0.1447748151122952,
+       0.2794676091301289
+      ],
+      "bootstrap_iid": [
+       0.15151515151515152,
+       0.2727272727272727
+      ],
+      "bootstrap_task_cluster": [
+       0.13304721030042918,
+       0.29955947136563876
+      ]
+     },
+     "deciding_lower_bound": 0.13304721030042918,
+     "discordant": [
+      7,
+      56
+     ],
+     "discordance": 0.2727272727272727,
+     "mcnemar_exact_two_sided_p": 1.363671398024735e-10,
+     "certify_verdict_recorded_not_quoted": "NON-INFERIOR",
+     "control_arm": "fewstep_v2a4_base",
+     "source": "iwm_results/fewstep_h1s_a2/screen_vs_v1a2.json"
+    },
+    "C2 vs untrained 1V/2A@w1 (execution-matched control)": {
+     "status": "SCREENED",
+     "screening": true,
+     "n_pairs": 235,
+     "baseline_success": 0.8893617021276595,
+     "point_success": 0.9063829787234042,
+     "delta": 0.017021276595744705,
+     "interval_method": "most_conservative_of_three (bootstrap_task_cluster)",
+     "interval": [
+      -0.03347280334728033,
+      0.06694560669456066
+     ],
+     "intervals_95": {
+      "mcnemar_se": [
+       -0.02866111543447341,
+       0.06270366862596283
+      ],
+      "bootstrap_iid": [
+       -0.029787234042553193,
+       0.06382978723404255
+      ],
+      "bootstrap_task_cluster": [
+       -0.03347280334728033,
+       0.06694560669456066
+      ]
+     },
+     "deciding_lower_bound": -0.03347280334728033,
+     "discordant": [
+      13,
+      17
+     ],
+     "discordance": 0.1276595744680851,
+     "mcnemar_exact_two_sided_p": 0.584664711728692,
+     "certify_verdict_recorded_not_quoted": "NON-INFERIOR",
+     "control_arm": "fewstep_v2a4_base",
+     "source": "iwm_results/fewstep_h1s_a2/screen_vs_w1.json"
+    }
+   }
+  }
+ ],
+ "reading": [
+  "The 1V cliff at the shipped w=5 (1V/4A -16.8 pp) is a GUIDANCE artifact, not a step-count artifact: untrained 1V/4A@w1 (video positive-only, batch-1) and @w3 both sit within ~3.5 pp of the baseline; w>=7 at 1V is catastrophic.",
+  "With the video negative branch off the frontier is flat in video steps (2->1 +3.0 pp n.s. at 2A) and in action steps down to 2 (4->2 +0.9 pp n.s.), then cliffs at 1 action step (-20 pp).",
+  "The trained H1 student bought +1.3 pp (p=0.70) at 1V/4A and +1.7 pp (p=0.59) at 1V/2A over its execution-matched untrained control, and exactly +0.0 over the best untrained knob: the verdict is do not train; certify UNTRAINED 2V/2A@w1 first (+0.9 pp [-0.035, +0.058] vs the baseline arm), 1V/2A@w1 second."
+ ]
+}

@@ -159,8 +159,10 @@ def test_scaffold_inherits_guidance_with_its_classification_printed():
               "the classification is stated: a serving choice, inheritable, not a training fact")
         check("video=cfg@5 (scale inherited)" in f.note and "action=positive_only@1" in f.note,
               "the resolved per-stream tuple is printed", f.note)
-        check("batch-2 on 8 of 8 declared forwards" in f.note,
-              "with the CFG batching it implies at the inherited 2V/4A schedule", f.note)
+        check(next(x.value for x in plan.fields if x.key == "nfe") == {"video": 25, "action": 50},
+              "the inherited schedule preserves the native 25V/50A operating point")
+        check("batch-2 on 77 of 77 declared forwards" in f.note,
+              "native 25V/50A plus two KV refreshes retain the declared CFG batching", f.note)
         check("declares its own {mode, scale}" in f.note,
               "and says what a re-tuned or CFG-folded checkpoint must do instead")
         check("guidance" in plan.explain() and "SERVING choice" in plan.explain(),

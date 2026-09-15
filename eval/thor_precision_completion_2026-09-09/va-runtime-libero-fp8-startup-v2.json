@@ -1,0 +1,115 @@
+{
+  "checkpoint_manifest_sha256": "e5a5daf0fc2c5e6a03c50b0ffcd83393ac6d335938c7e97f700afa32819eb169",
+  "checkpoint_sha256": "95ac69826a1bf65d118acf6a9e65f4e11520b9389360eee51ab4c54b3925e0cc",
+  "engine_source_sha256": "15663e635cd44b2a65a7290ecf9755d16e6afd24969c67c0239563398229b553",
+  "execution": {
+    "action_semantics_sha256": "8941738b1ca2f1aaed14638fef8204f936ad950bebdf4f05cd6a0de9117a8ace",
+    "applied": [
+      "engine_offload"
+    ],
+    "dtype": "torch.bfloat16",
+    "geometry": {
+      "action_per_frame": 4,
+      "env_type": "none",
+      "frame_chunk_size": 4,
+      "height": 128,
+      "obs_cam_keys": [
+        "observation.images.agentview_rgb",
+        "observation.images.eye_in_hand_rgb"
+      ],
+      "width": 128
+    },
+    "grid_shifts": {
+      "action": 0.05,
+      "video": 5.0
+    },
+    "guidance": {
+      "action": 1.0,
+      "video": 5.0
+    },
+    "nfe": {
+      "action": 50,
+      "video": 20
+    }
+  },
+  "fp8": {
+    "declaration": {
+      "action_terminal_elision": true,
+      "backbone": "wan_va",
+      "cfg_batch": 2,
+      "evidence": "the build sizes its AdaLN step tables from the declared grids (video t=[1000.0, 989.5833129882812, 978.2608642578125, 965.9090576171875, 952.3810424804688, 937.5, 921.0526123046875, 902.7777709960938, 882.3529052734375, 859.375, 833.3333129882812, 803.5714111328125, 769.2307739257812, 729.1666259765625, 681.8181762695312, 625.0, 555.5556030273438, 468.75, 357.1428527832031, 208.3333282470703, 0.0], action t=[999.999755859375, 710.1448974609375, 545.4542236328125, 439.25238037109375, 365.07940673828125, 310.3447265625, 268.2926330566406, 234.9727325439453, 207.9208526611328, 185.52035522460938, 166.6666717529297, 150.5791473388672, 136.69064331054688, 124.57913208007812, 113.92406463623047, 104.47760009765625, 96.04521179199219, 88.47187042236328, 81.63265228271484, 75.42578887939453, 69.76744842529297, 64.58797454833984, 59.829063415527344, 55.44147872924805, 51.383392333984375, 47.61905288696289, 44.117645263671875, 40.85257339477539, 37.80068588256836, 34.9417610168457, 32.25806427001953, 29.733957290649414, 27.355623245239258, 25.11078453063965, 22.988508224487305, 20.979019165039062, 19.073570251464844, 17.26427459716797, 15.54404067993164, 13.906447410583496, 12.34567928314209, 10.856452941894531, 9.43396282196045, 8.07381820678711, 6.772008895874023, 5.524861812591553, 4.329004287719727, 3.1813361644744873, 2.0790021419525146, 1.019368052482605, 0.0]), allocates a 2-stream KV slab, and runs 74 DiT forwards per cycle; WanVaTorchFrontendThor.assert_point refuses any other request",
+      "forwards_per_cycle": 74,
+      "forwards_per_cycle_served": 73,
+      "forwards_per_cycle_served_p010": 73,
+      "fp16_families": [],
+      "frontend": "serving/flash_rt/frontends/torch/wan_va_thor.py",
+      "gate_kernel": "kernel",
+      "geometry": {
+        "action_per_frame": 4,
+        "frame_chunk": 4,
+        "latent_h": 8,
+        "latent_w": 16
+      },
+      "guidance": {
+        "action": [
+          "positive_only",
+          1.0
+        ],
+        "video": [
+          "cfg",
+          5.0
+        ]
+      },
+      "pool_slots": 2160,
+      "precision": "fp8",
+      "shifts": {
+        "action": 0.05,
+        "video": 5.0
+      },
+      "slab_rows": 15360,
+      "steps": {
+        "action": 50,
+        "video": 20
+      }
+    },
+    "graphs": 216,
+    "packed_e4m3_tensors": 180
+  },
+  "hardware": {
+    "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+    "cuda": "13.0",
+    "gpu": "NVIDIA Thor"
+  },
+  "model_id": "robbyant/lingbot-va-posttrain-libero-long",
+  "model_revision": "0e89d1e753019988aba484e8da2dc0810e264d9f",
+  "numeric_environment": {
+    "cudnn_benchmark": false,
+    "cudnn_tf32": false,
+    "matmul_tf32": false
+  },
+  "package_declaration_sha256": "a39f1244a46254e4987c1d114441847b604002419925e97e18f60edb8f05340a",
+  "packages_sha256": "9c75a75b4b26d753758968925e0273a8b6928dbf05e0f8336ca290bfe6a57797",
+  "pipeline_sha256": "88eeaeff60a3a4356173e86dcf1e7ebb2198ccd25ec898d067de99eaa9bce9c6",
+  "precision": "fp8",
+  "protocol": "wan-va-runtime-observed-history-v1",
+  "runtime_explanation": "InstinctFlash runtime for 'robbyant/lingbot-va-posttrain-libero-long'\n  package     : /home/guanming/ifl_eval/thor_precision_completion_20260909/runtime-libero-checkpoint\n  backbone    : wan_va\n  servable    : True\n  precision   : fp8\n  evidence    : no closed-loop certificate verified for this live execution; plan tiers are transformation claims\n  placement   : engine: SM110 + engine kernels present -> fused-fp8 pipeline; chain tier NUMERIC (live execution uncertified)\n  capabilities: backbone:wan_va, declares:base_weights, declares:env_type, declares:frame_chunk_size, declares:height, declares:obs_cam_keys, declares:va_config, declares:width, guidance:action=positive_only, guidance:video=cfg, servable\n\nInstinctFlash plan for robbyant/lingbot-va-posttrain-libero-long\n  plan tier: NUMERIC\n  operating point: schedule {kv_refresh=2 + video=20 + action=50} | guidance {action=positive_only@1 [implied by mode], video=cfg@5 [inherited from the family default]} | cfg batching {batch-2 on 72 of 72 declared forwards (negative branch requested by video); batch-1 on 0}\n\n  skip   graph_capture              [BITEXACT  ] Thor capture performance is unmeasured for this family/operating point; retain the eager default pending a paired device measurement.\n  APPLY  engine_offload             [NUMERIC   ] engine placement selected: SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation\n         expected: Measure this checkpoint with matched views, action horizon, denoise steps and timing scope. The matched Thor study separates native capture, FP16 engine and FP8 arithmetic; it does not establish robot-facing Runtime parity.\n  skip   fsdp_elision               [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: world_size=1, so every FSDP all-gather is identity while still paying a flat-param copy and stream sync per unit per forward\n  skip   allocator_churn_elision    [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: closed-loop serving has a stable working set, so releasing the pool between control steps only forces re-allocation next step\n  skip   debug_dump_elision         [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: per-chunk tensor dumps do a synchronous D2H on the critical path and are not consumed by the serving client\n  skip   obs_decode_elision         [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: caller wants actions only; ['vae.decoder'] need never be resident or executed\n  skip   conditioning_prefill       [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: ['text_kv', 'negative_text_kv'] declared pure in ['episode'] scope, but recomputed on all 72 forwards per control step (kv_refresh=2 + video=20 + action=50)\n  skip   prompt_encoder_staging     [BITEXACT  ] no memory pressure on this device class (sm_110, 123 GiB): keeping the prompt encoder resident avoids per-reset PCIe moves and allocator churn\n  skip   ring_kv_addressing         [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: streams ['video', 'action'] live across control steps in a pool that is currently addressed by boolean mask, costing a host sync and a full-pool copy per layer per forward\n  skip   action_terminal_forward_elision [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: the action phase's terminal forward writes provisional K/V that clear_pred_cache drops before any forward reads it; its output is discarded by construction\n  skip   sm120_gated_residual       [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  skip   sm120_wan_stage2           [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  skip   conv_layout_ndhwc          [NUMERIC   ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: two Wan VAE Conv3D subgraphs can choose NCDHW or NDHWC by measurement on this device; NDHWC changes convolution accumulation order, so the swap is NUMERIC\n  skip   cfg_branch_elision         [NUMERIC   ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: streams ['action'] discard their negative branch while ['video'] force batch duplication; forwards that can drop to batch 1 \u2014 action: 49 of 50 (commit steps exempt: their K/V feeds the other stream's negative branch)\n\n  NOTE: plan is NUMERIC because of ['engine_offload'].\n        Any accuracy-neutrality claim for this plan requires a paired\n        non-inferiority run.\n        `plan.bitexact_subset()` is the largest configuration that does not.",
+  "runtime_source_sha256": "8a0858b27cf9b6294e2d178bdc4b01434579a60e4573e74a43597b95ac9d399d",
+  "schema_version": 1,
+  "seed_mode": "episode_plus_frame",
+  "startup": {
+    "action_shape": [
+      7,
+      4,
+      4
+    ],
+    "actions_sha256": "f5de3ed1a257b84ab696f9db441c20013416a1af258080abe0fb49957a39dd22",
+    "calls": 6,
+    "repeat_byte_equal": true,
+    "scope": "Recorded-history startup only; not closed-loop quality or real-time qualification",
+    "seed": 9173
+  },
+  "startup_observation_sha256": "462d16557248b4923d3f4ed546d12a818461b8a94939f7737f4e360bdafbbc8b",
+  "startup_prompt": "put both the alphabet soup and the tomato sauce in the basket",
+  "synthetic": false,
+  "upstream_source_sha256": "2cb70400debda9b65849754bda51ce865b95e03bf15b050ecb919a8b7d88723d"
+}

@@ -1,0 +1,441 @@
+{
+  "family": "vla2",
+  "arm": "current",
+  "device": "NVIDIA H100 80GB HBM3",
+  "status": "NUMERIC_SCREEN",
+  "invalid": {},
+  "baseline_p50_ms": 832.4942581821233,
+  "current_p50_ms": 131.637450074777,
+  "repeated_baseline_p50_ms": 835.8362459111959,
+  "speedup_range": [
+    6.324144517454742,
+    6.349532336249273
+  ],
+  "reference_repeat_bitexact": false,
+  "applied_passes": [
+    "graph_capture"
+  ],
+  "execution_policy": {
+    "category": "NUMERIC",
+    "precision": "native",
+    "tier_ceiling": "numeric",
+    "transform_tier": "NUMERIC",
+    "nfe": {
+      "prefix": 1,
+      "action": 10
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "pass_results": [
+    {
+      "name": "graph_capture",
+      "applies": true,
+      "tier": "NUMERIC",
+      "params": {
+        "capture_unit_from": "adapter sites of kind CAPTURE_UNIT",
+        "verify": "host-effect gate refuses a region that mutates host state",
+        "decision": [
+          "graph_capture: self-check within the legacy cross-domain guard on 6 inputs (max |\u0394| 0.000e+00 \u2264 5.084e-02 \u2014 legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality; staged 3 captured-chunk + 3 refilled; 1.6 s startup cost, once per process)"
+        ],
+        "self_check": {
+          "n": 6,
+          "passed": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0,
+          "tolerance": 0.05083918571472168,
+          "tolerance_provenance": "legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality",
+          "seconds": 1.5627229581587017,
+          "cases": [
+            {
+              "input": 1,
+              "stage": "captured-chunk",
+              "valid": true,
+              "bitexact": true,
+              "max_abs_delta": 0.0,
+              "repeat_checks": [
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                },
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                },
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                }
+              ]
+            },
+            {
+              "input": 2,
+              "stage": "captured-chunk",
+              "valid": true,
+              "bitexact": true,
+              "max_abs_delta": 0.0,
+              "repeat_checks": [
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                },
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                },
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                }
+              ]
+            },
+            {
+              "input": 3,
+              "stage": "captured-chunk",
+              "valid": true,
+              "bitexact": true,
+              "max_abs_delta": 0.0,
+              "repeat_checks": [
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                },
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                },
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                }
+              ]
+            },
+            {
+              "input": 4,
+              "stage": "refilled",
+              "valid": true,
+              "bitexact": true,
+              "max_abs_delta": 0.0,
+              "repeat_checks": [
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                },
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                },
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                }
+              ]
+            },
+            {
+              "input": 5,
+              "stage": "refilled",
+              "valid": true,
+              "bitexact": true,
+              "max_abs_delta": 0.0,
+              "repeat_checks": [
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                },
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                },
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                }
+              ]
+            },
+            {
+              "input": 6,
+              "stage": "refilled",
+              "valid": true,
+              "bitexact": true,
+              "max_abs_delta": 0.0,
+              "repeat_checks": [
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                },
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                },
+                {
+                  "valid": true,
+                  "bitexact": true,
+                  "max_abs_delta": 0.0
+                }
+              ]
+            }
+          ],
+          "repeats": 3,
+          "comparisons": 18,
+          "comparison_domain": "denoise_velocity",
+          "tolerance_domain": "controller_action",
+          "calibration_status": "legacy_cross_domain_guard"
+        }
+      },
+      "reason": "all streams (prefix) are rebuilt within a control cycle, so shapes repeat, so one capture serves every cycle; 11 forward(s) per control step (prefix=1 + action=10) each pay full dispatch cost today; this adapter uses a numerical-envelope self-check, not an exact gate"
+    },
+    {
+      "name": "engine_offload",
+      "applies": false,
+      "tier": "NUMERIC",
+      "params": {
+        "backend": "engine",
+        "executor": "h100_torch_fp8",
+        "certification": "uncertified"
+      },
+      "reason": "precision='native': FP8 engine is not authorized; H100 explicit E4M3 projections with native processing and schedule; task quality unverified on this device"
+    },
+    {
+      "name": "fsdp_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "allocator_churn_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "debug_dump_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "obs_decode_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "model declares no observation-decode modules"
+    },
+    {
+      "name": "conditioning_prefill",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "['prefix_kv'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist"
+    },
+    {
+      "name": "prompt_encoder_staging",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "ring_kv_addressing",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "action_terminal_forward_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "sm120_gated_residual",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "sm120_wan_stage2",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "conv_layout_ndhwc",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "cfg_branch_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)"
+    }
+  ],
+  "graph_stats": {
+    "captured": true,
+    "replays": 218,
+    "cuda_kernels": false,
+    "moe_layers": 0,
+    "rmsnorm_modules": 0,
+    "gpu_image_preprocess": true,
+    "vision_graph": true,
+    "vision_replays": 20,
+    "prefill_graph": true,
+    "prefill_replays": 20,
+    "ptxas": {}
+  },
+  "backend_stats": {},
+  "comparisons": {
+    "reference_repeat": {
+      "baseline": "/home/ubuntu/ifl_eval/numeric_total_20260910/h100-6/vla2-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/numeric_total_20260910/h100-6/vla2-baseline_b.json",
+      "baseline_sha256": "c810bef19ef102beff1ace534f8c7c2d7e45e80ded98e920fa5dc3dc106ba546",
+      "candidate_sha256": "562f0373ccbc6e79965038aa1b95d49b654ba2cfe9fc240708a4318332e8137a",
+      "protocol_differences": {},
+      "bitexact": false,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            50,
+            14
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.035149261355400085
+        }
+      ],
+      "candidate_stats": {
+        "captured": false,
+        "replays": 0,
+        "cuda_kernels": false,
+        "moe_layers": 0,
+        "rmsnorm_modules": 0,
+        "gpu_image_preprocess": false,
+        "vision_graph": false,
+        "vision_replays": 0,
+        "prefill_graph": false,
+        "prefill_replays": 0,
+        "ptxas": {}
+      },
+      "baseline_p50_ms": 832.4942581821233,
+      "candidate_p50_ms": 835.8362459111959,
+      "speedup": 0.9960016238283262,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "declared_protocol_changes": {},
+      "unexpected_protocol_changes": {},
+      "source_drift": []
+    },
+    "reference_candidate": {
+      "baseline": "/home/ubuntu/ifl_eval/numeric_total_20260910/h100-6/vla2-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/numeric_total_20260910/h100-6/vla2-current.json",
+      "baseline_sha256": "c810bef19ef102beff1ace534f8c7c2d7e45e80ded98e920fa5dc3dc106ba546",
+      "candidate_sha256": "6211318fec82361815676646f90c6417f064e2b34f801868ffa2819e97b9b79c",
+      "protocol_differences": {},
+      "bitexact": false,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            50,
+            14
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.02674141526222229
+        }
+      ],
+      "candidate_stats": {
+        "captured": true,
+        "replays": 218,
+        "cuda_kernels": false,
+        "moe_layers": 0,
+        "rmsnorm_modules": 0,
+        "gpu_image_preprocess": true,
+        "vision_graph": true,
+        "vision_replays": 20,
+        "prefill_graph": true,
+        "prefill_replays": 20,
+        "ptxas": {}
+      },
+      "baseline_p50_ms": 832.4942581821233,
+      "candidate_p50_ms": 131.637450074777,
+      "speedup": 6.324144517454742,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "declared_protocol_changes": {},
+      "unexpected_protocol_changes": {},
+      "source_drift": []
+    },
+    "repeat_candidate": {
+      "baseline": "/home/ubuntu/ifl_eval/numeric_total_20260910/h100-6/vla2-baseline_b.json",
+      "candidate": "/home/ubuntu/ifl_eval/numeric_total_20260910/h100-6/vla2-current.json",
+      "baseline_sha256": "562f0373ccbc6e79965038aa1b95d49b654ba2cfe9fc240708a4318332e8137a",
+      "candidate_sha256": "6211318fec82361815676646f90c6417f064e2b34f801868ffa2819e97b9b79c",
+      "protocol_differences": {},
+      "bitexact": false,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            50,
+            14
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.037101998925209045
+        }
+      ],
+      "candidate_stats": {
+        "captured": true,
+        "replays": 218,
+        "cuda_kernels": false,
+        "moe_layers": 0,
+        "rmsnorm_modules": 0,
+        "gpu_image_preprocess": true,
+        "vision_graph": true,
+        "vision_replays": 20,
+        "prefill_graph": true,
+        "prefill_replays": 20,
+        "ptxas": {}
+      },
+      "baseline_p50_ms": 835.8362459111959,
+      "candidate_p50_ms": 131.637450074777,
+      "speedup": 6.349532336249273,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "declared_protocol_changes": {},
+      "unexpected_protocol_changes": {},
+      "source_drift": []
+    }
+  },
+  "scope": "Original default schedule is the denominator. Action deltas are a recorded-input screen, not a task-quality certificate or a new numerical tolerance."
+}

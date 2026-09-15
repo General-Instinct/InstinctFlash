@@ -72,6 +72,7 @@ def decoder_forward(ctx, fvk, bufs, weights, dims, stream=0, *, attn=None,
     layers = dims['layers']
     enc_seq = dims['enc_seq']
     total_keys = dims['total_keys']
+    valid_keys = dims.get('valid_keys', total_keys)
     D3 = 3 * D
     Q_dim = NH * HD
     K_dim = HD
@@ -137,13 +138,13 @@ def decoder_forward(ctx, fvk, bufs, weights, dims, stream=0, *, attn=None,
 
             # ── C3: Cross-attention ──
             if attn is not None:
-                attn.run("decoder", l, q_seq=S, kv_seq=total_keys, stream=stream)
+                attn.run("decoder", l, q_seq=S, kv_seq=valid_keys, stream=stream)
             else:
                 K_ptr = Kc + l * total_keys * HD * 2
                 V_ptr = Vc + l * total_keys * HD * 2
-                fvk.attention_qkv_fp16(ctx, attn_out, K_ptr, V_ptr,
+                (fvk.attention_qkv_fp16_padded if valid_keys % 2 else fvk.attention_qkv_fp16)(ctx, attn_out, K_ptr, V_ptr,
                                         logits, attn_out,
-                                        S, total_keys, NH, HD, attn_scale, stream)
+                                        S, valid_keys, NH, HD, attn_scale, stream)
 
             # ── C4: O proj ──
             act_scale_o = act_scales + (l * 4 + 1) * 4
@@ -209,6 +210,7 @@ def _decoder_forward_fp16(ctx, fvk, bufs, weights, dims, stream=0, *, attn=None)
     NH = dims['NH']; HD = dims['HD']
     steps = dims['steps']; layers = dims['layers']
     enc_seq = dims['enc_seq']; total_keys = dims['total_keys']
+    valid_keys = dims.get('valid_keys', total_keys)
     D3 = 3 * D
     Q_dim = NH * HD
     K_dim = HD
@@ -250,13 +252,13 @@ def _decoder_forward_fp16(ctx, fvk, bufs, weights, dims, stream=0, *, attn=None)
 
             # C3: Attention
             if attn is not None:
-                attn.run("decoder", l, q_seq=S, kv_seq=total_keys, stream=stream)
+                attn.run("decoder", l, q_seq=S, kv_seq=valid_keys, stream=stream)
             else:
                 K_ptr = Kc + l * total_keys * HD * 2
                 V_ptr = Vc + l * total_keys * HD * 2
-                fvk.attention_qkv_fp16(ctx, attn_out, K_ptr, V_ptr,
+                (fvk.attention_qkv_fp16_padded if valid_keys % 2 else fvk.attention_qkv_fp16)(ctx, attn_out, K_ptr, V_ptr,
                                         logits, attn_out,
-                                        S, total_keys, NH, HD, attn_scale, stream)
+                                        S, valid_keys, NH, HD, attn_scale, stream)
 
             # C4: O proj
             ow_ptr = ow + l * NH * HD * D * 2  # FP16
@@ -304,6 +306,7 @@ def decoder_forward_calibrate(ctx, fvk_mod, bufs, weights, dims,
     NH = dims['NH']; HD = dims['HD']
     steps = dims['steps']; layers = dims['layers']
     enc_seq = dims['enc_seq']; total_keys = dims['total_keys']
+    valid_keys = dims.get('valid_keys', total_keys)
     Q_dim = NH * HD
     attn_scale = 1.0 / math.sqrt(float(HD))
     D3 = 3 * D
@@ -362,9 +365,9 @@ def decoder_forward_calibrate(ctx, fvk_mod, bufs, weights, dims,
             # C3: Attention
             K_ptr = Kc + l * total_keys * HD * 2
             V_ptr = Vc + l * total_keys * HD * 2
-            fvk_mod.attention_qkv_fp16(ctx, attn_out, K_ptr, V_ptr,
+            (fvk_mod.attention_qkv_fp16_padded if valid_keys % 2 else fvk_mod.attention_qkv_fp16)(ctx, attn_out, K_ptr, V_ptr,
                                         logits, attn_out,
-                                        S, total_keys, NH, HD, attn_scale, stream)
+                                        S, valid_keys, NH, HD, attn_scale, stream)
 
             # C4: O proj — measure attn amax → FP8 → GEMM
             _measure_scale_gpu(fvk_mod, attn_out, S * NH * HD, d_scale, fp8_scratch, stream)

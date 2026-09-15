@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "model": "nvidia/Cosmos3-Edge-Policy-DROID",
+  "model_revision": "68b17b3c959ccd0999de9a972c5f7c8b57112f86",
+  "source_revision": "0e034bc98ffa3c3dfa19f037871f3a8bbc1c4d05",
+  "device": "NVIDIA GeForce RTX 5090",
+  "capability": [
+    12,
+    0
+  ],
+  "torch": "2.10.0+cu128",
+  "cuda": "12.8",
+  "tier": "BITEXACT",
+  "protocol": "fresh-process A-B-B-A; each arm p50 of 12 requests after 3 warmups; official RoboLab service; eager kernels; 4 UniPC steps; guidance=1.0; action chunk 16x8",
+  "arm_p50_ms": {
+    "baseline_a": 215.2750874956837,
+    "candidate_b1": 206.23748550133314,
+    "candidate_b2": 206.59133400477003,
+    "baseline_a2": 216.9285165000474
+  },
+  "arm_mean_ms": {
+    "baseline_a": 215.14615758375535,
+    "candidate_b1": 206.5622722499635,
+    "candidate_b2": 206.83750766693265,
+    "baseline_a2": 217.04852433200963
+  },
+  "arm_spread_percent": {
+    "baseline": 0.7651157875953514,
+    "candidate": 0.17142626033726407
+  },
+  "abba": {
+    "baseline_mean_p50_ms": 216.10180199786555,
+    "candidate_mean_p50_ms": 206.4144097530516,
+    "delta_ms": 9.687392244813964,
+    "speedup": 1.0469317634190543,
+    "latency_reduction_percent": 4.4827910527602395
+  },
+  "action_equality": {
+    "baseline_a": {
+      "all_equal": true,
+      "max_abs": 0.0,
+      "equal_cases": 6,
+      "cases": 6
+    },
+    "candidate_b1": {
+      "all_equal": true,
+      "max_abs": 0.0,
+      "equal_cases": 6,
+      "cases": 6
+    },
+    "candidate_b2": {
+      "all_equal": true,
+      "max_abs": 0.0,
+      "equal_cases": 6,
+      "cases": 6
+    },
+    "baseline_a2": {
+      "all_equal": true,
+      "max_abs": 0.0,
+      "equal_cases": 6,
+      "cases": 6
+    }
+  },
+  "memory_gib": {
+    "baseline_peak_allocated": 8.145324230194092,
+    "candidate_peak_allocated": 8.156753063201904,
+    "candidate_minus_baseline_allocated": 0.0114288330078125
+  },
+  "cache": {
+    "key": "tuple of transformed captions",
+    "max_prompts": 4,
+    "transactional_publish": true,
+    "bypass": "guidance != 1, negative/upsampled prompts, velocity postprocess, re-entrant calls"
+  },
+  "route_screen": [
+    {
+      "candidate": "upstream Inductor cudagraph",
+      "status": "rejected",
+      "reason": "cudaErrorStreamCaptureUnsupported at DomainAwareLinear F.grouped_mm"
+    },
+    {
+      "candidate": "bmm replacement + cudagraph",
+      "p50_ms": 231.6116,
+      "worst_vs_eager": 0.032293,
+      "status": "rejected_numeric"
+    },
+    {
+      "candidate": "static single-domain matmul + cudagraph",
+      "p50_ms": 184.1944,
+      "worst_vs_eager": 0.028404,
+      "status": "rejected_numeric"
+    },
+    {
+      "candidate": "split-action static Inductor cudagraph",
+      "p50_ms": 180.5849,
+      "worst_vs_eager": 0.034352,
+      "status": "rejected_numeric"
+    },
+    {
+      "candidate": "split-action dynamic Inductor cudagraph",
+      "p50_ms": 182.8265,
+      "worst_vs_eager": 0.026682,
+      "status": "rejected_numeric"
+    },
+    {
+      "candidate": "per-block AOT original-op cudagraphs",
+      "p50_ms": 234.5402,
+      "worst_vs_eager": 0.0,
+      "status": "rejected_performance"
+    },
+    {
+      "candidate": "first-step eager, gen-only whole-stack AOT cudagraph",
+      "p50_ms": 230.1466,
+      "worst_vs_eager": 0.0,
+      "status": "rejected_performance"
+    },
+    {
+      "candidate": "persistent text-KV + dynamic Inductor",
+      "p50_ms": 174.5061,
+      "worst_vs_eager": 0.03561,
+      "status": "screen_only"
+    }
+  ],
+  "artifacts": {
+    "baseline_a": "8817b0c0b41dadf41ffea488e2b23c26e2d26ad663f7585407c194a97294f73e",
+    "candidate_b1": "72e2edd3eaec757c9cba948dda24207d6f257b7a907d580e13a0f32778bf1c2a",
+    "candidate_b2": "86a1d380072aaa07e3be369afdbb9019149e8091c78f8a6a5bdaf22eb7164a14",
+    "baseline_a2": "ff9229832f4e83197da907987cb7a18a6bb42f57733fd9097e0a9ddba792f17c",
+    "implementation_sha256": "3335f6e56abd3d2038dadd33adfff10aa80e417b85694439b5233f5679c42105",
+    "harness_sha256": "6f5dd733c8cd38ca653cc7f37bec59bcaf2d1ebde5e8eca87d71c8c425b778d3",
+    "adapter_sha256": "5669fc76385d6e35cfde03d83d95974b64aa6f1d4b359ab7a367b3eb0e46efae"
+  },
+  "status": "pass"
+}

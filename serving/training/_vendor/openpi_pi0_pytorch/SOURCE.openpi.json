@@ -1,0 +1,64 @@
+{
+  "evidence_scope": "Recovered immutable source-content baseline: three modeling files exactly match after only the existing VENDOR.md import rewrites. This does not assert the unrecorded historical checkout HEAD.",
+  "files": [
+    {
+      "documented_import_replacements": [
+        [
+          "import openpi.models.gemma as _gemma",
+          "from . import gemma_config as _gemma"
+        ],
+        [
+          "from openpi.models_pytorch.gemma_pytorch import PaliGemmaWithExpertModel",
+          "from .gemma_pytorch import PaliGemmaWithExpertModel"
+        ],
+        [
+          "import openpi.models_pytorch.preprocessing_pytorch as _preprocessing",
+          "from . import preprocessing_pytorch as _preprocessing"
+        ]
+      ],
+      "exact_after_documented_import_replacements": true,
+      "file": "pi0_pytorch.py",
+      "upstream_sha256": "0c7b9f1de02ed886da49035e3fa1b38efea46eb6209489cb4f594f777f97b70c",
+      "upstream_url": "https://raw.githubusercontent.com/Physical-Intelligence/openpi/8999e55c55ad43b976fa71949ec070ee0128a8bc/src/openpi/models_pytorch/pi0_pytorch.py",
+      "vendor_sha256": "bd53789e09c5bb58d55522efd8c511885ade8e1d6f89f2cdfa0105f96ebe44a6"
+    },
+    {
+      "documented_import_replacements": [],
+      "exact_after_documented_import_replacements": true,
+      "file": "gemma_pytorch.py",
+      "upstream_sha256": "08fd8d750519f0fb44fc5173311e50a30f4c8f32c02e51244b4f8e47b32cd52f",
+      "upstream_url": "https://raw.githubusercontent.com/Physical-Intelligence/openpi/8999e55c55ad43b976fa71949ec070ee0128a8bc/src/openpi/models_pytorch/gemma_pytorch.py",
+      "vendor_sha256": "08fd8d750519f0fb44fc5173311e50a30f4c8f32c02e51244b4f8e47b32cd52f"
+    },
+    {
+      "documented_import_replacements": [
+        [
+          "from openpi.shared import image_tools",
+          "from . import image_tools"
+        ]
+      ],
+      "exact_after_documented_import_replacements": true,
+      "file": "preprocessing_pytorch.py",
+      "upstream_sha256": "6a44e91be2d7a724c6140d2cc98ed0a631b8d38bbb29f63b380a0a19f903bbf6",
+      "upstream_url": "https://raw.githubusercontent.com/Physical-Intelligence/openpi/8999e55c55ad43b976fa71949ec070ee0128a8bc/src/openpi/models_pytorch/preprocessing_pytorch.py",
+      "vendor_sha256": "39b3be29b48e37e134aa0e137b9018e333c1c6142e094259e4553625d2a0832f"
+    }
+  ],
+  "historical_capture_head_recorded": false,
+  "license": {
+    "bytes": 11356,
+    "path": "LICENSE.openpi",
+    "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1",
+    "upstream_url": "https://raw.githubusercontent.com/Physical-Intelligence/openpi/8999e55c55ad43b976fa71949ec070ee0128a8bc/LICENSE"
+  },
+  "other_local_files": "image_tools is the documented PyTorch subset; gemma_config/pi0_config are documented local shims. Existing VENDOR.md retains those modifications.",
+  "publication_authorized": false,
+  "root_notice": {
+    "checked_tree_url": "https://api.github.com/repos/Physical-Intelligence/openpi/git/trees/8999e55c55ad43b976fa71949ec070ee0128a8bc",
+    "present": false,
+    "response_sha256": "a74d35d4dd1d7480443553102db29d78b5a7a4cbcddd6f00b817e28cb00db873"
+  },
+  "schema": "instinctflash.openpi_vendor_attribution.v1",
+  "source_content_reference_commit": "8999e55c55ad43b976fa71949ec070ee0128a8bc",
+  "upstream_repository": "https://github.com/Physical-Intelligence/openpi"
+}

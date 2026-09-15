@@ -1,0 +1,2692 @@
+{
+  "automatic_retry": false,
+  "category": "SCREEN",
+  "completed_unix": 1789456679.8094454,
+  "operations": [
+    {
+      "applied_environment": {
+        "HF_HOME": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/edge/hf",
+        "HF_HUB_CACHE": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/edge/hf/hub",
+        "TORCHINDUCTOR_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/base-view/inductor",
+        "TRITON_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/base-view/triton",
+        "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "TRITON_PTXAS_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "UV_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/cache",
+        "UV_OFFLINE": "1",
+        "UV_PYTHON": "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+        "UV_TOOL_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/installed_tools",
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "capacity": {
+        "GPU_compute_processes": [],
+        "created_unix": 1789456286.5014904,
+        "disk_free_bytes": 1386442752,
+        "required_tmpfs_bytes": 12884901888,
+        "tmpfs_free_bytes": 50572480512
+      },
+      "id": "base-view",
+      "process": {
+        "command": [
+          "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+          "-I",
+          "-B",
+          "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/prepare_experimental_thor_base_view_v1.py",
+          "--output",
+          "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/edge_base"
+        ],
+        "completed_unix": 1789456302.4145947,
+        "pid": 292363,
+        "process_group": 292363,
+        "returncode": 0,
+        "started_unix": 1789456286.5735009,
+        "timeout_seconds": 1800
+      },
+      "ptxas": {
+        "bytes": 41538656,
+        "path": "/usr/local/cuda-13.2/bin/ptxas",
+        "sha256": "623241c41030050ea9a43130ec03322166ea2822f9c091ec5bd2bed135b2864e"
+      }
+    },
+    {
+      "applied_environment": {
+        "HF_HOME": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/edge/hf",
+        "HF_HUB_CACHE": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/edge/hf/hub",
+        "TORCHINDUCTOR_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/edge-seed12031-prepare/inductor",
+        "TRITON_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/edge-seed12031-prepare/triton",
+        "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "TRITON_PTXAS_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "UV_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/cache",
+        "UV_OFFLINE": "1",
+        "UV_PYTHON": "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+        "UV_TOOL_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/installed_tools",
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "capacity": {
+        "GPU_compute_processes": [],
+        "created_unix": 1789456302.4996045,
+        "disk_free_bytes": 1351299072,
+        "required_tmpfs_bytes": 22056887380,
+        "tmpfs_free_bytes": 50572480512
+      },
+      "id": "edge-seed12031-prepare",
+      "preparation": {
+        "category": "SCREEN",
+        "files": [
+          {
+            "bytes": 1678,
+            "path": ".gitattributes",
+            "sha256": "6de6afd77ac2ec5f01d2f6a0633de6b0d7a9d4e594445cd984e5d701a4e58dde"
+          },
+          {
+            "bytes": 4720,
+            "path": "BIAS.md",
+            "sha256": "1d65943c20dac47c4250b5a4a71266c001f6c85a17dad556ad00dbfc2a8115a9"
+          },
+          {
+            "bytes": 3189,
+            "path": "EXPLAINABILITY.md",
+            "sha256": "7d9e73df359fc9c0fcffdc18045018f55f124e5a6b6f71268a93d63c56e1a997"
+          },
+          {
+            "bytes": 1215,
+            "path": "PRIVACY.md",
+            "sha256": "0298f236e550d4064cd8d83babad8dfc791295bba602210ca6c8106a993ca699"
+          },
+          {
+            "bytes": 27610,
+            "path": "README.md",
+            "sha256": "583c4a82074ea9a8a6de7c26815637cc5a3b715820a6c5f3366a501f3093ec1e"
+          },
+          {
+            "bytes": 3677,
+            "path": "SAFETY.md",
+            "sha256": "b59cf989cb66eb3b1c5e0692d04c42b9a39751801259b225733ab9493e08f03b"
+          },
+          {
+            "bytes": 12158,
+            "path": "chat_template.jinja",
+            "sha256": "7120ee6666468d4e9b2dc11e133ac5c2fa765fa5907706bf0f906270aa5510c8"
+          },
+          {
+            "bytes": 217,
+            "path": "checkpoint.json",
+            "sha256": "7fd8ed6af251b9c1acd4b5f2a7973e49c8902ad5bf9f75eb0cb9296156598972"
+          },
+          {
+            "bytes": 7653,
+            "path": "config.json",
+            "sha256": "9d973036a6d753ced1f9022074ef186d57ea79605bae4a92ac8ad7aece3e7f7b"
+          },
+          {
+            "bytes": 55483,
+            "path": "convert_cosmos3_to_diffusers.py",
+            "sha256": "e58be532287ee0820a11693df0890f798d52f2fe440f41378077bd42857843f8"
+          },
+          {
+            "bytes": 159,
+            "path": "generation_config.json",
+            "sha256": "7277bfaa08b64ba8783482aa7225814e66260912e02c567b82273418e4f97490"
+          },
+          {
+            "bytes": 205014,
+            "path": "images/benchmark-robolab.png",
+            "sha256": "b461f2ec2b9a802bef542906d3c99c0f3c74d221ced62c912dddfc5b5f41b082"
+          },
+          {
+            "bytes": 289,
+            "path": "instinctcompress_action_padding.json",
+            "sha256": "688dfe5f2ede4da929690ef4525e6f05eb58d3c32120ec51d5c35c025bc2ea5a"
+          },
+          {
+            "bytes": 1920,
+            "path": "instinctcompress_adapter.json",
+            "sha256": "d8c57321674abb1e4b9d960459121f28c178d4b31f7af64553933bb12e4b00b8"
+          },
+          {
+            "bytes": 1093,
+            "path": "instinctflash.json",
+            "sha256": "15a59acb3d97eb6eac184eec36967ccae400967a8767a69b9d7d1d20e9f34119"
+          },
+          {
+            "bytes": 104914,
+            "path": "model.safetensors.index.json",
+            "sha256": "b81262b29147bb0cdeca3f87263e2229deb94414682c074ac04a47dedd7131f7"
+          },
+          {
+            "bytes": 555,
+            "path": "model_index.json",
+            "sha256": "6e0a5c43411271246ee0446dc644ac38eaf72958ca4dc2fb59c2fb3e3893420e"
+          },
+          {
+            "bytes": 1335,
+            "path": "modular_model_index.json",
+            "sha256": "3d64547490570b80dc3b950e39472d6b074d9e83c9ebecfbf2642de07cf87a93"
+          },
+          {
+            "bytes": 334,
+            "path": "preprocessor_config.json",
+            "sha256": "7fc1e423001190416180fa0a22eb1ed0cb5fb90b525a6205fbe6d2316aa46a60"
+          },
+          {
+            "bytes": 781,
+            "path": "processor_config.json",
+            "sha256": "7a670dbb2f5f5e3de6570ed6c01e7f01b9b7fb0e00515d4ebef53b8f8c049fd1"
+          },
+          {
+            "bytes": 888,
+            "path": "scheduler/scheduler_config.json",
+            "sha256": "6b04159c2b2116e9055d52d776e3e15f5923e8251aa3a8d43215d7040cc30505"
+          },
+          {
+            "bytes": 563,
+            "path": "special_tokens_map.json",
+            "sha256": "e9435fefd6d838fd9fcbbc44b97a8e3ff322be7f6dfb7e4fd2468586574bb52b"
+          },
+          {
+            "bytes": 12158,
+            "path": "text_tokenizer/chat_template.jinja",
+            "sha256": "7120ee6666468d4e9b2dc11e133ac5c2fa765fa5907706bf0f906270aa5510c8"
+          },
+          {
+            "bytes": 563,
+            "path": "text_tokenizer/special_tokens_map.json",
+            "sha256": "e9435fefd6d838fd9fcbbc44b97a8e3ff322be7f6dfb7e4fd2468586574bb52b"
+          },
+          {
+            "bytes": 17077500,
+            "path": "text_tokenizer/tokenizer.json",
+            "sha256": "4dc692a99dca6d92a44e9529ffb53541eb79bb260eec7281bc51268c05d7311c"
+          },
+          {
+            "bytes": 177253,
+            "path": "text_tokenizer/tokenizer_config.json",
+            "sha256": "c090fba86f7a4e4bf0c7b065f52083eef0945534e7f0c48702f8786c0137d0a3"
+          },
+          {
+            "bytes": 17077500,
+            "path": "tokenizer.json",
+            "sha256": "4dc692a99dca6d92a44e9529ffb53541eb79bb260eec7281bc51268c05d7311c"
+          },
+          {
+            "bytes": 177253,
+            "path": "tokenizer_config.json",
+            "sha256": "85577f01be64ea03ee9aacc0536088e47b96971e4aff21e0aa604900b1410386"
+          },
+          {
+            "bytes": 993,
+            "path": "transformer/config.json",
+            "sha256": "8cdde02b8cf98c485c7f6f7282a938ebb7e14390327dbf5c4346de337c21327d"
+          },
+          {
+            "bytes": 11032,
+            "path": "transformer/cosmos_framework_model.safetensors",
+            "sha256": "1815af3a075108820c1f3c26d50b999299a8d831526cf561a20249bf1bb6fcd1"
+          },
+          {
+            "bytes": 5000041944,
+            "path": "transformer/diffusion_pytorch_model-00001-of-00002.safetensors",
+            "sha256": "99b0ff1f9dbdcb497fac16cbc0ebe33dee19653b4c182fa0d474433dcc845206"
+          },
+          {
+            "bytes": 1748779008,
+            "path": "transformer/diffusion_pytorch_model-00002-of-00002.safetensors",
+            "sha256": "5dd3c89bd7d9c2772112626cc39dd14a16ebf316e42503fd29583841d0ec8eb4"
+          },
+          {
+            "bytes": 53623,
+            "path": "transformer/diffusion_pytorch_model.safetensors.index.json",
+            "sha256": "504ed8bf62349b2d0b6a8923a76157b670585da026d00d4d82a667ab02d3afda"
+          },
+          {
+            "bytes": 1755,
+            "path": "vae/config.json",
+            "sha256": "2af4752d63e8b308b8bfd29798ec6663886583ab228d7c643f559612c54df1ca"
+          },
+          {
+            "bytes": 1409400600,
+            "path": "vae/diffusion_pytorch_model.safetensors",
+            "sha256": "230496cb59ff85bc9c040487737c4062480cb61c71e697b197b4c30142f2a0da"
+          },
+          {
+            "bytes": 367,
+            "path": "video_preprocessor_config.json",
+            "sha256": "4c7a48dd35a60057358a4269ae1e1402a70170bef916df1d850f15d617e225f7"
+          },
+          {
+            "bytes": 978739880,
+            "path": "vision_encoder/model.safetensors",
+            "sha256": "2180ad739ecc96b5c1e9386892d3c5c08bfa42b9cdab9aabc53b028671db89b3"
+          }
+        ],
+        "link_unmodified": false,
+        "linked_weight_files": [],
+        "recipe": "edge-seed12031",
+        "recipe_sha256": "799cf259548afb7a3fcc3eefa4949e90e413c9cee5f2d232578da64186fac8ef",
+        "schema": 1,
+        "task_quality_certified": false
+      },
+      "process": {
+        "command": [
+          "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+          "-I",
+          "-B",
+          "-m",
+          "cosmos3_sde1",
+          "prepare",
+          "edge-seed12031",
+          "--base",
+          "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/edge_base",
+          "--output",
+          "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12031",
+          "--overlay",
+          "/dev/shm/ifl_public_sde1_assets_v1/cosmos3-edge-sde1-cfg1-seed12031.safetensors"
+        ],
+        "completed_unix": 1789456333.8298197,
+        "pid": 292366,
+        "process_group": 292366,
+        "returncode": 0,
+        "started_unix": 1789456302.571239,
+        "timeout_seconds": 1800
+      },
+      "ptxas": {
+        "bytes": 41538656,
+        "path": "/usr/local/cuda-13.2/bin/ptxas",
+        "sha256": "623241c41030050ea9a43130ec03322166ea2822f9c091ec5bd2bed135b2864e"
+      }
+    },
+    {
+      "applied_environment": {
+        "HF_HOME": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/edge/hf",
+        "HF_HUB_CACHE": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/edge/hf/hub",
+        "TORCHINDUCTOR_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/edge-seed12031-run/inductor",
+        "TRITON_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/edge-seed12031-run/triton",
+        "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "TRITON_PTXAS_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "UV_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/cache",
+        "UV_OFFLINE": "1",
+        "UV_PYTHON": "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+        "UV_TOOL_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/installed_tools",
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "capacity": {
+        "GPU_compute_processes": [],
+        "created_unix": 1789456333.9143517,
+        "disk_free_bytes": 1351266304,
+        "required_tmpfs_bytes": 12884901888,
+        "tmpfs_free_bytes": 41400385536
+      },
+      "id": "edge-seed12031-run",
+      "process": {
+        "command": [
+          "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+          "-I",
+          "-B",
+          "-m",
+          "cosmos3_sde1",
+          "run",
+          "edge-seed12031",
+          "--checkpoint",
+          "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12031",
+          "--output",
+          "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12031"
+        ],
+        "completed_unix": 1789456373.763565,
+        "pid": 292369,
+        "process_group": 292369,
+        "returncode": 0,
+        "started_unix": 1789456333.9864502,
+        "timeout_seconds": 3900
+      },
+      "ptxas": {
+        "bytes": 41538656,
+        "path": "/usr/local/cuda-13.2/bin/ptxas",
+        "sha256": "623241c41030050ea9a43130ec03322166ea2822f9c091ec5bd2bed135b2864e"
+      },
+      "reclamation": {
+        "archive": {
+          "bytes": 21679,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/archives/edge-seed12031/archive.json",
+          "sha256": "0f231eda6811d84fa582b5f441dad1081ffb4d7e396024ee00fe24d5df618e78"
+        },
+        "files_unlinked": 39,
+        "handle_check": {
+          "checked_pids": [
+            2039,
+            2093,
+            2259,
+            2260,
+            2261,
+            2262,
+            2277,
+            3047,
+            88574,
+            88582,
+            90733,
+            90741,
+            90749,
+            90757,
+            96704,
+            96713,
+            97283,
+            97310,
+            97311,
+            97312,
+            292346,
+            292357,
+            292358
+          ],
+          "global_handle_absence_claimed": false,
+          "inspector_sha256": "3dbd83aba8a3cc3a15a299d351cc7ccbec0965c5a943bcd48fa2fb18daf4e2bb",
+          "other_uid_pids_excluded": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            23,
+            24,
+            25,
+            26,
+            28,
+            29,
+            30,
+            31,
+            33,
+            34,
+            35,
+            36,
+            38,
+            39,
+            40,
+            41,
+            43,
+            44,
+            45,
+            46,
+            48,
+            49,
+            50,
+            51,
+            53,
+            54,
+            55,
+            56,
+            58,
+            59,
+            60,
+            61,
+            63,
+            64,
+            65,
+            66,
+            68,
+            69,
+            70,
+            71,
+            73,
+            74,
+            75,
+            76,
+            78,
+            79,
+            80,
+            81,
+            83,
+            99,
+            100,
+            101,
+            103,
+            104,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            115,
+            116,
+            117,
+            119,
+            120,
+            122,
+            124,
+            125,
+            126,
+            127,
+            128,
+            131,
+            132,
+            133,
+            134,
+            135,
+            136,
+            137,
+            149,
+            153,
+            154,
+            155,
+            156,
+            157,
+            158,
+            159,
+            160,
+            161,
+            162,
+            163,
+            164,
+            166,
+            167,
+            185,
+            187,
+            189,
+            190,
+            191,
+            192,
+            193,
+            199,
+            200,
+            201,
+            207,
+            209,
+            211,
+            223,
+            224,
+            225,
+            226,
+            234,
+            235,
+            236,
+            261,
+            262,
+            268,
+            270,
+            277,
+            304,
+            305,
+            306,
+            308,
+            336,
+            338,
+            340,
+            344,
+            355,
+            368,
+            417,
+            424,
+            428,
+            429,
+            434,
+            438,
+            439,
+            446,
+            447,
+            448,
+            453,
+            454,
+            455,
+            456,
+            457,
+            462,
+            477,
+            492,
+            493,
+            494,
+            495,
+            499,
+            500,
+            512,
+            524,
+            540,
+            542,
+            552,
+            785,
+            786,
+            795,
+            802,
+            853,
+            854,
+            855,
+            859,
+            1011,
+            1018,
+            1019,
+            1020,
+            1021,
+            1023,
+            1024,
+            1025,
+            1046,
+            1057,
+            1059,
+            1060,
+            1061,
+            1062,
+            1092,
+            1122,
+            1507,
+            1594,
+            1614,
+            1630,
+            1665,
+            1684,
+            1705,
+            1722,
+            1779,
+            1780,
+            1798,
+            1804,
+            1809,
+            1908,
+            1925,
+            1926,
+            1927,
+            1938,
+            1939,
+            1941,
+            1942,
+            1943,
+            1944,
+            1945,
+            1946,
+            1947,
+            1948,
+            1949,
+            1950,
+            1952,
+            1955,
+            1957,
+            1959,
+            1961,
+            1962,
+            1963,
+            1964,
+            1994,
+            1995,
+            2041,
+            2042,
+            2061,
+            2063,
+            2068,
+            2081,
+            2082,
+            2302,
+            2522,
+            2527,
+            2536,
+            2538,
+            2545,
+            2557,
+            2558,
+            2559,
+            2560,
+            2561,
+            2587,
+            2591,
+            2629,
+            2636,
+            2637,
+            2638,
+            2641,
+            2647,
+            2659,
+            2713,
+            2715,
+            2720,
+            2721,
+            2730,
+            2759,
+            2771,
+            2773,
+            2793,
+            2795,
+            2799,
+            2803,
+            2813,
+            2818,
+            2822,
+            2828,
+            2831,
+            2835,
+            2844,
+            2847,
+            2853,
+            2859,
+            2862,
+            2867,
+            2888,
+            2949,
+            2953,
+            2960,
+            2990,
+            3007,
+            3045,
+            3046,
+            6310,
+            6311,
+            6312,
+            6313,
+            6314,
+            6315,
+            12989,
+            116739,
+            186751,
+            243946,
+            256073,
+            265995,
+            268205,
+            275344,
+            276746,
+            277546,
+            277896,
+            277942,
+            280006,
+            280269,
+            281564,
+            283078,
+            283098,
+            283458,
+            283790,
+            283854,
+            284194,
+            284360,
+            284369,
+            284483,
+            284835,
+            285737,
+            285773,
+            285808,
+            286580,
+            287440,
+            287600,
+            287930,
+            287931,
+            287932,
+            287934,
+            287936,
+            287937,
+            287938,
+            287939,
+            287940,
+            288370,
+            288388,
+            288414,
+            288771,
+            289248,
+            289366,
+            289819,
+            289829,
+            289839,
+            289847,
+            289904,
+            290004,
+            290042,
+            290071,
+            290092,
+            290093,
+            290165,
+            290177,
+            290219,
+            290345,
+            290451,
+            290504,
+            290529,
+            290615,
+            290618,
+            290643,
+            290646,
+            290677,
+            290680,
+            290681,
+            290817,
+            290818,
+            290906,
+            290945,
+            291268,
+            291282,
+            291319,
+            291365,
+            291738,
+            291739,
+            291764,
+            291970,
+            291994,
+            291995,
+            291996,
+            291998,
+            292083,
+            292084,
+            292085,
+            292086,
+            292087,
+            292088,
+            292089,
+            292090,
+            292091,
+            292092,
+            292093,
+            292094,
+            292176,
+            292266,
+            292281,
+            292288,
+            292289,
+            292309,
+            292310,
+            292311,
+            292312,
+            292313,
+            292314,
+            292315,
+            292316,
+            292317,
+            292318,
+            292319,
+            292320,
+            292327,
+            292329,
+            292330
+          ],
+          "protected_infrastructure_exclusions": [
+            {
+              "excluded_unreadable_fields": [
+                "cwd",
+                "root",
+                "fd",
+                "maps",
+                "environ"
+              ],
+              "identity": {
+                "argv0": "/usr/lib/systemd/systemd",
+                "cgroup_sha256": "831bb8dbdd305bb66d122f9e8660109c721a76cf66533f935ca9fe7b50bf93fd",
+                "cmdline_sha256": "3127082f907652bfa48e38fddcaf16c3e73b2da5a2d64602eafe88869c222925",
+                "comm": "systemd",
+                "gids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "parent": {
+                  "comm": "systemd",
+                  "gids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "pid": 1,
+                  "ppid": 0,
+                  "start_ticks": 3,
+                  "uids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "pid": 2039,
+                "ppid": 1,
+                "start_ticks": 1363,
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ]
+              },
+              "scope": "bound protected infrastructure only; readable fields still checked"
+            },
+            {
+              "excluded_unreadable_fields": [
+                "cwd",
+                "root",
+                "fd",
+                "maps",
+                "environ"
+              ],
+              "identity": {
+                "argv0": "(sd-pam)",
+                "cgroup_sha256": "831bb8dbdd305bb66d122f9e8660109c721a76cf66533f935ca9fe7b50bf93fd",
+                "cmdline_sha256": "971490059d839d27af3ded30a476216b92689d837b0236a700723fb13640e370",
+                "comm": "(sd-pam)",
+                "gids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "parent": {
+                  "comm": "systemd",
+                  "gids": [
+                    1000,
+                    1000,
+                    1000,
+                    1000
+                  ],
+                  "pid": 2039,
+                  "ppid": 1,
+                  "start_ticks": 1363,
+                  "uids": [
+                    1000,
+                    1000,
+                    1000,
+                    1000
+                  ]
+                },
+                "pid": 2093,
+                "ppid": 2039,
+                "start_ticks": 1381,
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ]
+              },
+              "scope": "bound protected infrastructure only; readable fields still checked"
+            },
+            {
+              "excluded_unreadable_fields": [
+                "cwd",
+                "root",
+                "fd",
+                "maps",
+                "environ"
+              ],
+              "identity": {
+                "argv0": "/usr/sbin/tailscaled",
+                "cgroup_sha256": "1693180acabdfa2e83ace5efb73aea46e713cc08a02064ae59690d0969a5c5f8",
+                "cmdline_sha256": "7428fcadbc7ef80ff34afc7bb9e15a6dbbad22c7b8d2830898a0efef33d8bd56",
+                "comm": "tailscaled",
+                "gids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "parent": {
+                  "comm": "tailscaled",
+                  "gids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "pid": 1994,
+                  "ppid": 1,
+                  "start_ticks": 1352,
+                  "uids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "pid": 88574,
+                "ppid": 1994,
+                "start_ticks": 15648183,
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ]
+              },
+              "scope": "bound protected infrastructure only; readable fields still checked"
+            },
+            {
+              "excluded_unreadable_fields": [
+                "cwd",
+                "root",
+                "fd",
+                "maps",
+                "environ"
+              ],
+              "identity": {
+                "argv0": "/usr/sbin/tailscaled",
+                "cgroup_sha256": "3a28732420a5c1fdd82612c9eca3a827af729253e980b72a3afa5b1fe8a84e45",
+                "cmdline_sha256": "7428fcadbc7ef80ff34afc7bb9e15a6dbbad22c7b8d2830898a0efef33d8bd56",
+                "comm": "tailscaled",
+                "gids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "parent": {
+                  "comm": "tailscaled",
+                  "gids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "pid": 1994,
+                  "ppid": 1,
+                  "start_ticks": 1352,
+                  "uids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "pid": 90733,
+                "ppid": 1994,
+                "start_ticks": 16429688,
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ]
+              },
+              "scope": "bound protected infrastructure only; readable fields still checked"
+            },
+            {
+              "excluded_unreadable_fields": [
+                "cwd",
+                "root",
+                "fd",
+                "maps",
+                "environ"
+              ],
+              "identity": {
+                "argv0": "/usr/sbin/tailscaled",
+                "cgroup_sha256": "4eb35114f762020c5e2e1d10a76ff4e0f98ab714cadcfe539f42ac207f545bb1",
+                "cmdline_sha256": "7428fcadbc7ef80ff34afc7bb9e15a6dbbad22c7b8d2830898a0efef33d8bd56",
+                "comm": "tailscaled",
+                "gids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "parent": {
+                  "comm": "tailscaled",
+                  "gids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "pid": 1994,
+                  "ppid": 1,
+                  "start_ticks": 1352,
+                  "uids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "pid": 90749,
+                "ppid": 1994,
+                "start_ticks": 16430840,
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ]
+              },
+              "scope": "bound protected infrastructure only; readable fields still checked"
+            },
+            {
+              "excluded_unreadable_fields": [
+                "cwd",
+                "root",
+                "fd",
+                "maps",
+                "environ"
+              ],
+              "identity": {
+                "argv0": "/usr/sbin/tailscaled",
+                "cgroup_sha256": "f095baa6ded65943df92d0d4d0c68aeefb4ec677396c1a749e97c5a651cbd5fd",
+                "cmdline_sha256": "7428fcadbc7ef80ff34afc7bb9e15a6dbbad22c7b8d2830898a0efef33d8bd56",
+                "comm": "tailscaled",
+                "gids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "parent": {
+                  "comm": "tailscaled",
+                  "gids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "pid": 1994,
+                  "ppid": 1,
+                  "start_ticks": 1352,
+                  "uids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "pid": 96704,
+                "ppid": 1994,
+                "start_ticks": 20575855,
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ]
+              },
+              "scope": "bound protected infrastructure only; readable fields still checked"
+            }
+          ],
+          "protected_service_manifest": {
+            "bytes": 7139,
+            "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/protected_services_snapshot_v1.json",
+            "sha256": "39d58cb80df248a27df9a2a57265b30f0acf5d20afac963aca9986c4cf82f3fa"
+          },
+          "scope": "same_effective_uid_with_exact_protected_infrastructure_exceptions",
+          "unknown_protected_processes_ignored": false
+        },
+        "path": "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12031",
+        "recipe": "edge-seed12031",
+        "scope": "Only this queue-created independent Edge copy; originals/overlays/base view/Nano/run evidence remain.",
+        "status": "owned_preparation_reclaimed"
+      },
+      "screen": {
+        "action_dtype": "float32",
+        "action_shape": [
+          16,
+          32,
+          8
+        ],
+        "actions": {
+          "bytes": 7028,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12031/receipt.npz",
+          "sha256": "453cb4e68be0c4486817ca56c873bd823879c4504b58bc593a82f716e29e55c4"
+        },
+        "category": "SCREEN",
+        "completion": {
+          "bytes": 165,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12031/completion.json",
+          "sha256": "c8ab08ea7d4677ad811570dfc5e0f34f804cdcdee6d010b3f7010ec7183fdfb1"
+        },
+        "p50_ms": 270.0733595120255,
+        "receipt": {
+          "bytes": 82063,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12031/receipt.json",
+          "sha256": "a377245482a22598e13e1cbccc57c45b137add530e3694d12c3cd678821f3c55"
+        },
+        "recipe": "edge-seed12031",
+        "requests": 16,
+        "status": "passed",
+        "task_quality_certified": false
+      }
+    },
+    {
+      "applied_environment": {
+        "HF_HOME": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/edge/hf",
+        "HF_HUB_CACHE": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/edge/hf/hub",
+        "TORCHINDUCTOR_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/edge-seed12032-prepare/inductor",
+        "TRITON_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/edge-seed12032-prepare/triton",
+        "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "TRITON_PTXAS_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "UV_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/cache",
+        "UV_OFFLINE": "1",
+        "UV_PYTHON": "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+        "UV_TOOL_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/installed_tools",
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "capacity": {
+        "GPU_compute_processes": [],
+        "created_unix": 1789456375.0868175,
+        "disk_free_bytes": 1314111488,
+        "required_tmpfs_bytes": 22056887380,
+        "tmpfs_free_bytes": 50572480512
+      },
+      "id": "edge-seed12032-prepare",
+      "preparation": {
+        "category": "SCREEN",
+        "files": [
+          {
+            "bytes": 1678,
+            "path": ".gitattributes",
+            "sha256": "6de6afd77ac2ec5f01d2f6a0633de6b0d7a9d4e594445cd984e5d701a4e58dde"
+          },
+          {
+            "bytes": 4720,
+            "path": "BIAS.md",
+            "sha256": "1d65943c20dac47c4250b5a4a71266c001f6c85a17dad556ad00dbfc2a8115a9"
+          },
+          {
+            "bytes": 3189,
+            "path": "EXPLAINABILITY.md",
+            "sha256": "7d9e73df359fc9c0fcffdc18045018f55f124e5a6b6f71268a93d63c56e1a997"
+          },
+          {
+            "bytes": 1215,
+            "path": "PRIVACY.md",
+            "sha256": "0298f236e550d4064cd8d83babad8dfc791295bba602210ca6c8106a993ca699"
+          },
+          {
+            "bytes": 27610,
+            "path": "README.md",
+            "sha256": "583c4a82074ea9a8a6de7c26815637cc5a3b715820a6c5f3366a501f3093ec1e"
+          },
+          {
+            "bytes": 3677,
+            "path": "SAFETY.md",
+            "sha256": "b59cf989cb66eb3b1c5e0692d04c42b9a39751801259b225733ab9493e08f03b"
+          },
+          {
+            "bytes": 12158,
+            "path": "chat_template.jinja",
+            "sha256": "7120ee6666468d4e9b2dc11e133ac5c2fa765fa5907706bf0f906270aa5510c8"
+          },
+          {
+            "bytes": 217,
+            "path": "checkpoint.json",
+            "sha256": "7fd8ed6af251b9c1acd4b5f2a7973e49c8902ad5bf9f75eb0cb9296156598972"
+          },
+          {
+            "bytes": 7653,
+            "path": "config.json",
+            "sha256": "9d973036a6d753ced1f9022074ef186d57ea79605bae4a92ac8ad7aece3e7f7b"
+          },
+          {
+            "bytes": 55483,
+            "path": "convert_cosmos3_to_diffusers.py",
+            "sha256": "e58be532287ee0820a11693df0890f798d52f2fe440f41378077bd42857843f8"
+          },
+          {
+            "bytes": 159,
+            "path": "generation_config.json",
+            "sha256": "7277bfaa08b64ba8783482aa7225814e66260912e02c567b82273418e4f97490"
+          },
+          {
+            "bytes": 205014,
+            "path": "images/benchmark-robolab.png",
+            "sha256": "b461f2ec2b9a802bef542906d3c99c0f3c74d221ced62c912dddfc5b5f41b082"
+          },
+          {
+            "bytes": 289,
+            "path": "instinctcompress_action_padding.json",
+            "sha256": "688dfe5f2ede4da929690ef4525e6f05eb58d3c32120ec51d5c35c025bc2ea5a"
+          },
+          {
+            "bytes": 1920,
+            "path": "instinctcompress_adapter.json",
+            "sha256": "d8c57321674abb1e4b9d960459121f28c178d4b31f7af64553933bb12e4b00b8"
+          },
+          {
+            "bytes": 1093,
+            "path": "instinctflash.json",
+            "sha256": "e3f07c9e12414344c1b5943de1b0af6b068246f54e9501b9c30d74ec73e6c903"
+          },
+          {
+            "bytes": 104914,
+            "path": "model.safetensors.index.json",
+            "sha256": "b81262b29147bb0cdeca3f87263e2229deb94414682c074ac04a47dedd7131f7"
+          },
+          {
+            "bytes": 555,
+            "path": "model_index.json",
+            "sha256": "6e0a5c43411271246ee0446dc644ac38eaf72958ca4dc2fb59c2fb3e3893420e"
+          },
+          {
+            "bytes": 1335,
+            "path": "modular_model_index.json",
+            "sha256": "3d64547490570b80dc3b950e39472d6b074d9e83c9ebecfbf2642de07cf87a93"
+          },
+          {
+            "bytes": 334,
+            "path": "preprocessor_config.json",
+            "sha256": "7fc1e423001190416180fa0a22eb1ed0cb5fb90b525a6205fbe6d2316aa46a60"
+          },
+          {
+            "bytes": 781,
+            "path": "processor_config.json",
+            "sha256": "7a670dbb2f5f5e3de6570ed6c01e7f01b9b7fb0e00515d4ebef53b8f8c049fd1"
+          },
+          {
+            "bytes": 888,
+            "path": "scheduler/scheduler_config.json",
+            "sha256": "6b04159c2b2116e9055d52d776e3e15f5923e8251aa3a8d43215d7040cc30505"
+          },
+          {
+            "bytes": 563,
+            "path": "special_tokens_map.json",
+            "sha256": "e9435fefd6d838fd9fcbbc44b97a8e3ff322be7f6dfb7e4fd2468586574bb52b"
+          },
+          {
+            "bytes": 12158,
+            "path": "text_tokenizer/chat_template.jinja",
+            "sha256": "7120ee6666468d4e9b2dc11e133ac5c2fa765fa5907706bf0f906270aa5510c8"
+          },
+          {
+            "bytes": 563,
+            "path": "text_tokenizer/special_tokens_map.json",
+            "sha256": "e9435fefd6d838fd9fcbbc44b97a8e3ff322be7f6dfb7e4fd2468586574bb52b"
+          },
+          {
+            "bytes": 17077500,
+            "path": "text_tokenizer/tokenizer.json",
+            "sha256": "4dc692a99dca6d92a44e9529ffb53541eb79bb260eec7281bc51268c05d7311c"
+          },
+          {
+            "bytes": 177253,
+            "path": "text_tokenizer/tokenizer_config.json",
+            "sha256": "c090fba86f7a4e4bf0c7b065f52083eef0945534e7f0c48702f8786c0137d0a3"
+          },
+          {
+            "bytes": 17077500,
+            "path": "tokenizer.json",
+            "sha256": "4dc692a99dca6d92a44e9529ffb53541eb79bb260eec7281bc51268c05d7311c"
+          },
+          {
+            "bytes": 177253,
+            "path": "tokenizer_config.json",
+            "sha256": "85577f01be64ea03ee9aacc0536088e47b96971e4aff21e0aa604900b1410386"
+          },
+          {
+            "bytes": 993,
+            "path": "transformer/config.json",
+            "sha256": "8cdde02b8cf98c485c7f6f7282a938ebb7e14390327dbf5c4346de337c21327d"
+          },
+          {
+            "bytes": 11032,
+            "path": "transformer/cosmos_framework_model.safetensors",
+            "sha256": "1815af3a075108820c1f3c26d50b999299a8d831526cf561a20249bf1bb6fcd1"
+          },
+          {
+            "bytes": 5000041944,
+            "path": "transformer/diffusion_pytorch_model-00001-of-00002.safetensors",
+            "sha256": "99b0ff1f9dbdcb497fac16cbc0ebe33dee19653b4c182fa0d474433dcc845206"
+          },
+          {
+            "bytes": 1748779008,
+            "path": "transformer/diffusion_pytorch_model-00002-of-00002.safetensors",
+            "sha256": "f8bc6ac3eea2f28eea1e79ec4febe2d0a700ffd4523bdeca0b8cfe0ff522bb2b"
+          },
+          {
+            "bytes": 53623,
+            "path": "transformer/diffusion_pytorch_model.safetensors.index.json",
+            "sha256": "504ed8bf62349b2d0b6a8923a76157b670585da026d00d4d82a667ab02d3afda"
+          },
+          {
+            "bytes": 1755,
+            "path": "vae/config.json",
+            "sha256": "2af4752d63e8b308b8bfd29798ec6663886583ab228d7c643f559612c54df1ca"
+          },
+          {
+            "bytes": 1409400600,
+            "path": "vae/diffusion_pytorch_model.safetensors",
+            "sha256": "230496cb59ff85bc9c040487737c4062480cb61c71e697b197b4c30142f2a0da"
+          },
+          {
+            "bytes": 367,
+            "path": "video_preprocessor_config.json",
+            "sha256": "4c7a48dd35a60057358a4269ae1e1402a70170bef916df1d850f15d617e225f7"
+          },
+          {
+            "bytes": 978739880,
+            "path": "vision_encoder/model.safetensors",
+            "sha256": "2180ad739ecc96b5c1e9386892d3c5c08bfa42b9cdab9aabc53b028671db89b3"
+          }
+        ],
+        "link_unmodified": false,
+        "linked_weight_files": [],
+        "recipe": "edge-seed12032",
+        "recipe_sha256": "865078aa87ca7abc72798053f76e88b93e547bd1eab40a43388c1b3e22877c80",
+        "schema": 1,
+        "task_quality_certified": false
+      },
+      "process": {
+        "command": [
+          "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+          "-I",
+          "-B",
+          "-m",
+          "cosmos3_sde1",
+          "prepare",
+          "edge-seed12032",
+          "--base",
+          "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/edge_base",
+          "--output",
+          "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12032",
+          "--overlay",
+          "/dev/shm/ifl_public_sde1_assets_v1/cosmos3-edge-sde1-cfg1-seed12032.safetensors"
+        ],
+        "completed_unix": 1789456406.0664792,
+        "pid": 292540,
+        "process_group": 292540,
+        "returncode": 0,
+        "started_unix": 1789456375.1588578,
+        "timeout_seconds": 1800
+      },
+      "ptxas": {
+        "bytes": 41538656,
+        "path": "/usr/local/cuda-13.2/bin/ptxas",
+        "sha256": "623241c41030050ea9a43130ec03322166ea2822f9c091ec5bd2bed135b2864e"
+      }
+    },
+    {
+      "applied_environment": {
+        "HF_HOME": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/edge/hf",
+        "HF_HUB_CACHE": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/edge/hf/hub",
+        "TORCHINDUCTOR_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/edge-seed12032-run/inductor",
+        "TRITON_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/edge-seed12032-run/triton",
+        "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "TRITON_PTXAS_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "UV_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/cache",
+        "UV_OFFLINE": "1",
+        "UV_PYTHON": "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+        "UV_TOOL_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/installed_tools",
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "capacity": {
+        "GPU_compute_processes": [],
+        "created_unix": 1789456406.155286,
+        "disk_free_bytes": 1314074624,
+        "required_tmpfs_bytes": 12884901888,
+        "tmpfs_free_bytes": 41400385536
+      },
+      "id": "edge-seed12032-run",
+      "process": {
+        "command": [
+          "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+          "-I",
+          "-B",
+          "-m",
+          "cosmos3_sde1",
+          "run",
+          "edge-seed12032",
+          "--checkpoint",
+          "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12032",
+          "--output",
+          "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12032"
+        ],
+        "completed_unix": 1789456444.9013815,
+        "pid": 292544,
+        "process_group": 292544,
+        "returncode": 0,
+        "started_unix": 1789456406.2273605,
+        "timeout_seconds": 3900
+      },
+      "ptxas": {
+        "bytes": 41538656,
+        "path": "/usr/local/cuda-13.2/bin/ptxas",
+        "sha256": "623241c41030050ea9a43130ec03322166ea2822f9c091ec5bd2bed135b2864e"
+      },
+      "reclamation": {
+        "archive": {
+          "bytes": 21679,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/archives/edge-seed12032/archive.json",
+          "sha256": "17d365c1fcf50c222014259a6434f86af41b92d50f7ed19a66bd403a044d0d54"
+        },
+        "files_unlinked": 39,
+        "handle_check": {
+          "checked_pids": [
+            2039,
+            2093,
+            2259,
+            2260,
+            2261,
+            2262,
+            2277,
+            3047,
+            88574,
+            88582,
+            90733,
+            90741,
+            90749,
+            90757,
+            96704,
+            96713,
+            97283,
+            97310,
+            97311,
+            97312,
+            292346,
+            292357,
+            292358
+          ],
+          "global_handle_absence_claimed": false,
+          "inspector_sha256": "3dbd83aba8a3cc3a15a299d351cc7ccbec0965c5a943bcd48fa2fb18daf4e2bb",
+          "other_uid_pids_excluded": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            23,
+            24,
+            25,
+            26,
+            28,
+            29,
+            30,
+            31,
+            33,
+            34,
+            35,
+            36,
+            38,
+            39,
+            40,
+            41,
+            43,
+            44,
+            45,
+            46,
+            48,
+            49,
+            50,
+            51,
+            53,
+            54,
+            55,
+            56,
+            58,
+            59,
+            60,
+            61,
+            63,
+            64,
+            65,
+            66,
+            68,
+            69,
+            70,
+            71,
+            73,
+            74,
+            75,
+            76,
+            78,
+            79,
+            80,
+            81,
+            83,
+            99,
+            100,
+            101,
+            103,
+            104,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            115,
+            116,
+            117,
+            119,
+            120,
+            122,
+            124,
+            125,
+            126,
+            127,
+            128,
+            131,
+            132,
+            133,
+            134,
+            135,
+            136,
+            137,
+            149,
+            153,
+            154,
+            155,
+            156,
+            157,
+            158,
+            159,
+            160,
+            161,
+            162,
+            163,
+            164,
+            166,
+            167,
+            185,
+            187,
+            189,
+            190,
+            191,
+            192,
+            193,
+            199,
+            200,
+            201,
+            207,
+            209,
+            211,
+            223,
+            224,
+            225,
+            226,
+            234,
+            235,
+            236,
+            261,
+            262,
+            268,
+            270,
+            277,
+            304,
+            305,
+            306,
+            308,
+            336,
+            338,
+            340,
+            344,
+            355,
+            368,
+            417,
+            424,
+            428,
+            429,
+            434,
+            438,
+            439,
+            446,
+            447,
+            448,
+            453,
+            454,
+            455,
+            456,
+            457,
+            462,
+            477,
+            492,
+            493,
+            494,
+            495,
+            499,
+            500,
+            512,
+            524,
+            540,
+            542,
+            552,
+            785,
+            786,
+            795,
+            802,
+            853,
+            854,
+            855,
+            859,
+            1011,
+            1018,
+            1019,
+            1020,
+            1021,
+            1023,
+            1024,
+            1025,
+            1046,
+            1057,
+            1059,
+            1060,
+            1061,
+            1062,
+            1092,
+            1122,
+            1507,
+            1594,
+            1614,
+            1630,
+            1665,
+            1684,
+            1705,
+            1722,
+            1779,
+            1780,
+            1798,
+            1804,
+            1809,
+            1908,
+            1925,
+            1926,
+            1927,
+            1938,
+            1939,
+            1941,
+            1942,
+            1943,
+            1944,
+            1945,
+            1946,
+            1947,
+            1948,
+            1949,
+            1950,
+            1952,
+            1955,
+            1957,
+            1959,
+            1961,
+            1962,
+            1963,
+            1964,
+            1994,
+            1995,
+            2041,
+            2042,
+            2061,
+            2063,
+            2068,
+            2081,
+            2082,
+            2302,
+            2522,
+            2527,
+            2536,
+            2538,
+            2545,
+            2557,
+            2558,
+            2559,
+            2560,
+            2561,
+            2587,
+            2591,
+            2629,
+            2636,
+            2637,
+            2638,
+            2641,
+            2647,
+            2659,
+            2713,
+            2715,
+            2720,
+            2721,
+            2730,
+            2759,
+            2771,
+            2773,
+            2793,
+            2795,
+            2799,
+            2803,
+            2813,
+            2818,
+            2822,
+            2828,
+            2831,
+            2835,
+            2844,
+            2847,
+            2853,
+            2859,
+            2862,
+            2867,
+            2888,
+            2949,
+            2953,
+            2960,
+            2990,
+            3007,
+            3045,
+            3046,
+            6310,
+            6311,
+            6312,
+            6313,
+            6314,
+            6315,
+            12989,
+            116739,
+            186751,
+            243946,
+            256073,
+            265995,
+            268205,
+            275344,
+            276746,
+            277546,
+            277896,
+            277942,
+            280006,
+            280269,
+            281564,
+            283078,
+            283458,
+            283790,
+            284194,
+            284360,
+            284369,
+            284483,
+            284835,
+            285737,
+            285773,
+            285808,
+            286580,
+            287440,
+            287930,
+            287931,
+            287932,
+            287934,
+            287936,
+            287937,
+            287938,
+            287939,
+            287940,
+            288370,
+            288388,
+            288414,
+            289248,
+            289366,
+            289819,
+            289829,
+            289839,
+            289847,
+            289904,
+            290042,
+            290071,
+            290092,
+            290093,
+            290165,
+            290219,
+            290345,
+            290451,
+            290504,
+            290529,
+            290615,
+            290618,
+            290643,
+            290677,
+            290681,
+            290817,
+            290818,
+            290906,
+            290945,
+            291268,
+            291282,
+            291319,
+            291365,
+            291738,
+            291764,
+            291970,
+            291994,
+            291996,
+            292083,
+            292084,
+            292086,
+            292088,
+            292089,
+            292090,
+            292091,
+            292092,
+            292176,
+            292266,
+            292281,
+            292288,
+            292289,
+            292309,
+            292310,
+            292311,
+            292312,
+            292313,
+            292314,
+            292315,
+            292316,
+            292317,
+            292318,
+            292319,
+            292320,
+            292327,
+            292329,
+            292330,
+            292541,
+            292589,
+            292614,
+            292615
+          ],
+          "protected_infrastructure_exclusions": [
+            {
+              "excluded_unreadable_fields": [
+                "cwd",
+                "root",
+                "fd",
+                "maps",
+                "environ"
+              ],
+              "identity": {
+                "argv0": "/usr/lib/systemd/systemd",
+                "cgroup_sha256": "831bb8dbdd305bb66d122f9e8660109c721a76cf66533f935ca9fe7b50bf93fd",
+                "cmdline_sha256": "3127082f907652bfa48e38fddcaf16c3e73b2da5a2d64602eafe88869c222925",
+                "comm": "systemd",
+                "gids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "parent": {
+                  "comm": "systemd",
+                  "gids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "pid": 1,
+                  "ppid": 0,
+                  "start_ticks": 3,
+                  "uids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "pid": 2039,
+                "ppid": 1,
+                "start_ticks": 1363,
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ]
+              },
+              "scope": "bound protected infrastructure only; readable fields still checked"
+            },
+            {
+              "excluded_unreadable_fields": [
+                "cwd",
+                "root",
+                "fd",
+                "maps",
+                "environ"
+              ],
+              "identity": {
+                "argv0": "(sd-pam)",
+                "cgroup_sha256": "831bb8dbdd305bb66d122f9e8660109c721a76cf66533f935ca9fe7b50bf93fd",
+                "cmdline_sha256": "971490059d839d27af3ded30a476216b92689d837b0236a700723fb13640e370",
+                "comm": "(sd-pam)",
+                "gids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "parent": {
+                  "comm": "systemd",
+                  "gids": [
+                    1000,
+                    1000,
+                    1000,
+                    1000
+                  ],
+                  "pid": 2039,
+                  "ppid": 1,
+                  "start_ticks": 1363,
+                  "uids": [
+                    1000,
+                    1000,
+                    1000,
+                    1000
+                  ]
+                },
+                "pid": 2093,
+                "ppid": 2039,
+                "start_ticks": 1381,
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ]
+              },
+              "scope": "bound protected infrastructure only; readable fields still checked"
+            },
+            {
+              "excluded_unreadable_fields": [
+                "cwd",
+                "root",
+                "fd",
+                "maps",
+                "environ"
+              ],
+              "identity": {
+                "argv0": "/usr/sbin/tailscaled",
+                "cgroup_sha256": "1693180acabdfa2e83ace5efb73aea46e713cc08a02064ae59690d0969a5c5f8",
+                "cmdline_sha256": "7428fcadbc7ef80ff34afc7bb9e15a6dbbad22c7b8d2830898a0efef33d8bd56",
+                "comm": "tailscaled",
+                "gids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "parent": {
+                  "comm": "tailscaled",
+                  "gids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "pid": 1994,
+                  "ppid": 1,
+                  "start_ticks": 1352,
+                  "uids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "pid": 88574,
+                "ppid": 1994,
+                "start_ticks": 15648183,
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ]
+              },
+              "scope": "bound protected infrastructure only; readable fields still checked"
+            },
+            {
+              "excluded_unreadable_fields": [
+                "cwd",
+                "root",
+                "fd",
+                "maps",
+                "environ"
+              ],
+              "identity": {
+                "argv0": "/usr/sbin/tailscaled",
+                "cgroup_sha256": "3a28732420a5c1fdd82612c9eca3a827af729253e980b72a3afa5b1fe8a84e45",
+                "cmdline_sha256": "7428fcadbc7ef80ff34afc7bb9e15a6dbbad22c7b8d2830898a0efef33d8bd56",
+                "comm": "tailscaled",
+                "gids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "parent": {
+                  "comm": "tailscaled",
+                  "gids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "pid": 1994,
+                  "ppid": 1,
+                  "start_ticks": 1352,
+                  "uids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "pid": 90733,
+                "ppid": 1994,
+                "start_ticks": 16429688,
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ]
+              },
+              "scope": "bound protected infrastructure only; readable fields still checked"
+            },
+            {
+              "excluded_unreadable_fields": [
+                "cwd",
+                "root",
+                "fd",
+                "maps",
+                "environ"
+              ],
+              "identity": {
+                "argv0": "/usr/sbin/tailscaled",
+                "cgroup_sha256": "4eb35114f762020c5e2e1d10a76ff4e0f98ab714cadcfe539f42ac207f545bb1",
+                "cmdline_sha256": "7428fcadbc7ef80ff34afc7bb9e15a6dbbad22c7b8d2830898a0efef33d8bd56",
+                "comm": "tailscaled",
+                "gids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "parent": {
+                  "comm": "tailscaled",
+                  "gids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "pid": 1994,
+                  "ppid": 1,
+                  "start_ticks": 1352,
+                  "uids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "pid": 90749,
+                "ppid": 1994,
+                "start_ticks": 16430840,
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ]
+              },
+              "scope": "bound protected infrastructure only; readable fields still checked"
+            },
+            {
+              "excluded_unreadable_fields": [
+                "cwd",
+                "root",
+                "fd",
+                "maps",
+                "environ"
+              ],
+              "identity": {
+                "argv0": "/usr/sbin/tailscaled",
+                "cgroup_sha256": "f095baa6ded65943df92d0d4d0c68aeefb4ec677396c1a749e97c5a651cbd5fd",
+                "cmdline_sha256": "7428fcadbc7ef80ff34afc7bb9e15a6dbbad22c7b8d2830898a0efef33d8bd56",
+                "comm": "tailscaled",
+                "gids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ],
+                "parent": {
+                  "comm": "tailscaled",
+                  "gids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "pid": 1994,
+                  "ppid": 1,
+                  "start_ticks": 1352,
+                  "uids": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ]
+                },
+                "pid": 96704,
+                "ppid": 1994,
+                "start_ticks": 20575855,
+                "uids": [
+                  1000,
+                  1000,
+                  1000,
+                  1000
+                ]
+              },
+              "scope": "bound protected infrastructure only; readable fields still checked"
+            }
+          ],
+          "protected_service_manifest": {
+            "bytes": 7139,
+            "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/protected_services_snapshot_v1.json",
+            "sha256": "39d58cb80df248a27df9a2a57265b30f0acf5d20afac963aca9986c4cf82f3fa"
+          },
+          "scope": "same_effective_uid_with_exact_protected_infrastructure_exceptions",
+          "unknown_protected_processes_ignored": false
+        },
+        "path": "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12032",
+        "recipe": "edge-seed12032",
+        "scope": "Only this queue-created independent Edge copy; originals/overlays/base view/Nano/run evidence remain.",
+        "status": "owned_preparation_reclaimed"
+      },
+      "screen": {
+        "action_dtype": "float32",
+        "action_shape": [
+          16,
+          32,
+          8
+        ],
+        "actions": {
+          "bytes": 6985,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12032/receipt.npz",
+          "sha256": "f4db1ae67ec01cb32c4ea2b14d6074d13bfa75c324046c7bb408b479203628ae"
+        },
+        "category": "SCREEN",
+        "completion": {
+          "bytes": 165,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12032/completion.json",
+          "sha256": "a4b4f27dfd58b09043e4c3cb4c7f7b5a2d578affaec6f49f92134b0eedee0c61"
+        },
+        "p50_ms": 270.6643150304444,
+        "receipt": {
+          "bytes": 82059,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12032/receipt.json",
+          "sha256": "1735abfa1c77c1cd3a07d3f44414a656a3bd63adcadaabb700099d3ddf1fbb52"
+        },
+        "recipe": "edge-seed12032",
+        "requests": 16,
+        "status": "passed",
+        "task_quality_certified": false
+      }
+    },
+    {
+      "applied_environment": {
+        "HF_HOME": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/nano/hf",
+        "HF_HUB_CACHE": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/nano/hf/hub",
+        "TORCHINDUCTOR_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/nano-original-prepare/inductor",
+        "TRITON_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/nano-original-prepare/triton",
+        "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "TRITON_PTXAS_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "UV_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/cache",
+        "UV_OFFLINE": "1",
+        "UV_PYTHON": "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+        "UV_TOOL_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/installed_tools",
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "capacity": {
+        "GPU_compute_processes": [],
+        "created_unix": 1789456446.189596,
+        "disk_free_bytes": 1276940288,
+        "required_tmpfs_bytes": 12884901888,
+        "tmpfs_free_bytes": 50572480512
+      },
+      "id": "nano-original-prepare",
+      "preparation": {
+        "category": "SCREEN",
+        "files": [
+          {
+            "bytes": 1694,
+            "path": ".gitattributes",
+            "sha256": "50715c6a1d9d358494d1de35bef837cacd3705bfa92757fd8063a66d74274f61"
+          },
+          {
+            "bytes": 4720,
+            "path": "BIAS.md",
+            "sha256": "1d65943c20dac47c4250b5a4a71266c001f6c85a17dad556ad00dbfc2a8115a9"
+          },
+          {
+            "bytes": 3189,
+            "path": "EXPLAINABILITY.md",
+            "sha256": "7d9e73df359fc9c0fcffdc18045018f55f124e5a6b6f71268a93d63c56e1a997"
+          },
+          {
+            "bytes": 1215,
+            "path": "PRIVACY.md",
+            "sha256": "0298f236e550d4064cd8d83babad8dfc791295bba602210ca6c8106a993ca699"
+          },
+          {
+            "bytes": 23848,
+            "path": "README.md",
+            "sha256": "8d04503249f71afaff25c7cc588c1cb2cfea82623cada8ce0d90696e589f1fbf"
+          },
+          {
+            "bytes": 3677,
+            "path": "SAFETY.md",
+            "sha256": "b59cf989cb66eb3b1c5e0692d04c42b9a39751801259b225733ab9493e08f03b"
+          },
+          {
+            "bytes": 864271,
+            "path": "assets/Pick_up_the_banana_and_place_it_in_the_bowl_0_env0_viewport.mp4",
+            "sha256": "e4586cbcbdf7fea30facc1b04a48924f1505234000b04a0877287c812913ebeb"
+          },
+          {
+            "bytes": 5499,
+            "path": "chat_template.json",
+            "sha256": "5c72a170d2a4a1a3bc5adad2e689ae28138a9700e5b8c96c0266331e86c0acce"
+          },
+          {
+            "bytes": 2,
+            "path": "checkpoint.json",
+            "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+          },
+          {
+            "bytes": 7860,
+            "path": "config.json",
+            "sha256": "b44458128bd2a63564ee8cd52e9ca2907a1628e6cbafbe2bd82ee6cc79f7805f"
+          },
+          {
+            "bytes": 269,
+            "path": "generation_config.json",
+            "sha256": "8469742d1fce0de951c8909b26a2c0c0d8490837ce476efb114da9e0cefc4d44"
+          },
+          {
+            "bytes": 85391,
+            "path": "images/benchmark-action-2.png",
+            "sha256": "252cb377443c7e29feb8e9037792755db43dfd1846557d8aedd8e2e633690ecd"
+          },
+          {
+            "bytes": 282424,
+            "path": "images/benchmark-roboarena.png",
+            "sha256": "099861aa042783769dab30e6a28e52cfd40224e739eddc68f9ceef124d6b2012"
+          },
+          {
+            "bytes": 289,
+            "path": "instinctcompress_action_padding.json",
+            "sha256": "688dfe5f2ede4da929690ef4525e6f05eb58d3c32120ec51d5c35c025bc2ea5a"
+          },
+          {
+            "bytes": 1077,
+            "path": "instinctflash.json",
+            "sha256": "a2b5a8014f90b4c58dc4ebc45086daf3e852ba021e738ffa6b4b739264731549"
+          },
+          {
+            "bytes": 1671839,
+            "path": "merges.txt",
+            "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"
+          },
+          {
+            "bytes": 112501,
+            "path": "model.safetensors.index.json",
+            "sha256": "5bc20acf5afe942d8736a647c50e7a8125d3b093d39c67ca8de00102d9dfc91e"
+          },
+          {
+            "bytes": 425,
+            "path": "model_index.json",
+            "sha256": "1b46b7b9acb3658f7aca1a5c3e2515b77348e07a7030c73f79900e49b1cb6dde"
+          },
+          {
+            "bytes": 1396,
+            "path": "modular_model_index.json",
+            "sha256": "9349e588f329e031aaef8fde2c0ac54366810808230efa98aedbd8a5a1a4b423"
+          },
+          {
+            "bytes": 390,
+            "path": "preprocessor_config.json",
+            "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516"
+          },
+          {
+            "bytes": 884,
+            "path": "scheduler/scheduler_config.json",
+            "sha256": "3e25a6a5b472e77ba45cb17a4956e70ff922b996e4f9bf421f56e7b19d1359ec"
+          },
+          {
+            "bytes": 707,
+            "path": "text_tokenizer/added_tokens.json",
+            "sha256": "c0284b582e14987fbd3d5a2cb2bd139084371ed9acbae488829a1c900833c680"
+          },
+          {
+            "bytes": 5292,
+            "path": "text_tokenizer/chat_template.jinja",
+            "sha256": "3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4"
+          },
+          {
+            "bytes": 1671853,
+            "path": "text_tokenizer/merges.txt",
+            "sha256": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5"
+          },
+          {
+            "bytes": 613,
+            "path": "text_tokenizer/special_tokens_map.json",
+            "sha256": "76862e765266b85aa9459767e33cbaf13970f327a0e88d1c65846c2ddd3a1ecd"
+          },
+          {
+            "bytes": 11422654,
+            "path": "text_tokenizer/tokenizer.json",
+            "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+          },
+          {
+            "bytes": 5404,
+            "path": "text_tokenizer/tokenizer_config.json",
+            "sha256": "355f2b4e5bad7b01f11ef6cb68ebc176f61b95c3276092ea225b1bea0e01e95c"
+          },
+          {
+            "bytes": 2776833,
+            "path": "text_tokenizer/vocab.json",
+            "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+          },
+          {
+            "bytes": 7032403,
+            "path": "tokenizer.json",
+            "sha256": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7"
+          },
+          {
+            "bytes": 10868,
+            "path": "tokenizer_config.json",
+            "sha256": "c2da771801886ad9ae98181793ffd3dfb7f1af30f6f7c6a4e15d7dbba52e2399"
+          },
+          {
+            "bytes": 1386,
+            "path": "transformer/config.json",
+            "sha256": "f9c3b8060cf69ad09477a8252da30f6adb6f424e2530eb52ece3936a5252f5cf"
+          },
+          {
+            "bytes": 4902249008,
+            "path": "transformer/diffusion_pytorch_model-00001-of-00007.safetensors",
+            "sha256": "f260af4e9c877c22ba9a44246767ff4a0bc9cd8f62fd6d683bedfcac75378ddd"
+          },
+          {
+            "bytes": 4999863656,
+            "path": "transformer/diffusion_pytorch_model-00002-of-00007.safetensors",
+            "sha256": "bce7ee18cc05ad291f57095d2705cb5ed26d6eca4469a44a0c40f8d507d724e9"
+          },
+          {
+            "bytes": 4932719448,
+            "path": "transformer/diffusion_pytorch_model-00003-of-00007.safetensors",
+            "sha256": "885c1fc451c28ca34809df3b975b63f58adbaad29da53d6c4ad33613135526c2"
+          },
+          {
+            "bytes": 4983084656,
+            "path": "transformer/diffusion_pytorch_model-00004-of-00007.safetensors",
+            "sha256": "3a2639189fb96cdf40fba25be3ecee60a42a27431daccdd40f049bbd37ff7244"
+          },
+          {
+            "bytes": 4949498576,
+            "path": "transformer/diffusion_pytorch_model-00005-of-00007.safetensors",
+            "sha256": "067fca5fbee766cd6828c96478a7ab93ac4bd9595662cae71787420ba4f27f14"
+          },
+          {
+            "bytes": 4261644464,
+            "path": "transformer/diffusion_pytorch_model-00006-of-00007.safetensors",
+            "sha256": "c3e56f83740a353e44f8342c997fe3cffdcb5cc801d7e54c9bd17c7c016f8a7c"
+          },
+          {
+            "bytes": 1317303952,
+            "path": "transformer/diffusion_pytorch_model-00007-of-00007.safetensors",
+            "sha256": "5e23d7dbafab591bce1543b55f3ade34231085261d8a1754dfc26822bc691566"
+          },
+          {
+            "bytes": 78446,
+            "path": "transformer/diffusion_pytorch_model.safetensors.index.json",
+            "sha256": "4c8226c48a4c3acdd4766ec329db5523dc2a3e3807e3e2682556a21a043a7539"
+          },
+          {
+            "bytes": 1750,
+            "path": "vae/config.json",
+            "sha256": "1d3312edfb30b8486720ea29f3532f89c5b5fc05cc571d7664c6f5162effc23e"
+          },
+          {
+            "bytes": 1409400600,
+            "path": "vae/diffusion_pytorch_model.safetensors",
+            "sha256": "230496cb59ff85bc9c040487737c4062480cb61c71e697b197b4c30142f2a0da"
+          },
+          {
+            "bytes": 385,
+            "path": "video_preprocessor_config.json",
+            "sha256": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13"
+          },
+          {
+            "bytes": 509,
+            "path": "vision_encoder/config.json",
+            "sha256": "6b8457bba07f3ec61199a47e88f2ec3d9af57247b86e69cd7464b70307f069f4"
+          },
+          {
+            "bytes": 1152811416,
+            "path": "vision_encoder/model.safetensors",
+            "sha256": "b76056ebf9067cdb36e77554b2c1855aa1b662a9265c8ed26468b490e40b4adb"
+          },
+          {
+            "bytes": 2776833,
+            "path": "vocab.json",
+            "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+          }
+        ],
+        "link_unmodified": true,
+        "linked_weight_files": [
+          "transformer/diffusion_pytorch_model-00001-of-00007.safetensors",
+          "transformer/diffusion_pytorch_model-00002-of-00007.safetensors",
+          "transformer/diffusion_pytorch_model-00003-of-00007.safetensors",
+          "transformer/diffusion_pytorch_model-00004-of-00007.safetensors",
+          "transformer/diffusion_pytorch_model-00005-of-00007.safetensors",
+          "transformer/diffusion_pytorch_model-00006-of-00007.safetensors",
+          "transformer/diffusion_pytorch_model-00007-of-00007.safetensors",
+          "vae/diffusion_pytorch_model.safetensors",
+          "vision_encoder/model.safetensors"
+        ],
+        "recipe": "nano-original",
+        "recipe_sha256": "dcfedfe160cb805bdd25239f814e0930e0b3394bcef24cd3144bc2a801215782",
+        "schema": 1,
+        "task_quality_certified": false
+      },
+      "process": {
+        "command": [
+          "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+          "-I",
+          "-B",
+          "-m",
+          "cosmos3_sde1",
+          "prepare",
+          "nano-original",
+          "--base",
+          "/home/guanming/ifl_eval/cosmos_distill_20260912/nano-original-native-v1",
+          "--output",
+          "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/prepared/nano-original",
+          "--link-unmodified"
+        ],
+        "completed_unix": 1789456547.3984637,
+        "pid": 292705,
+        "process_group": 292705,
+        "returncode": 0,
+        "started_unix": 1789456446.2615623,
+        "timeout_seconds": 1800
+      },
+      "ptxas": {
+        "bytes": 41538656,
+        "path": "/usr/local/cuda-13.2/bin/ptxas",
+        "sha256": "623241c41030050ea9a43130ec03322166ea2822f9c091ec5bd2bed135b2864e"
+      }
+    },
+    {
+      "applied_environment": {
+        "HF_HOME": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/nano/hf",
+        "HF_HUB_CACHE": "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/nano/hf/hub",
+        "TORCHINDUCTOR_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/nano-original-run/inductor",
+        "TRITON_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/compiler_caches/nano-original-run/triton",
+        "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "TRITON_PTXAS_PATH": "/usr/local/cuda-13.2/bin/ptxas",
+        "UV_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/cache",
+        "UV_OFFLINE": "1",
+        "UV_PYTHON": "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+        "UV_TOOL_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/installed_tools",
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "capacity": {
+        "GPU_compute_processes": [],
+        "created_unix": 1789456547.4873836,
+        "disk_free_bytes": 1247895552,
+        "required_tmpfs_bytes": 12884901888,
+        "tmpfs_free_bytes": 50572480512
+      },
+      "id": "nano-original-run",
+      "process": {
+        "command": [
+          "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+          "-I",
+          "-B",
+          "-m",
+          "cosmos3_sde1",
+          "run",
+          "nano-original",
+          "--checkpoint",
+          "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/prepared/nano-original",
+          "--output",
+          "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/nano-original"
+        ],
+        "completed_unix": 1789456679.5499525,
+        "pid": 292712,
+        "process_group": 292712,
+        "returncode": 0,
+        "started_unix": 1789456547.5593,
+        "timeout_seconds": 3900
+      },
+      "ptxas": {
+        "bytes": 41538656,
+        "path": "/usr/local/cuda-13.2/bin/ptxas",
+        "sha256": "623241c41030050ea9a43130ec03322166ea2822f9c091ec5bd2bed135b2864e"
+      },
+      "screen": {
+        "action_dtype": "float32",
+        "action_shape": [
+          36,
+          32,
+          8
+        ],
+        "actions": {
+          "bytes": 14646,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/nano-original/receipt.npz",
+          "sha256": "c44c6a975b415db4de2c40a26d91a5fc49c6f035be7c34b968bd20b601b83367"
+        },
+        "category": "SCREEN",
+        "completion": {
+          "bytes": 165,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/nano-original/completion.json",
+          "sha256": "9f859791fd7d7377249bab73d8136115513bd9f038ae1ee768f68f34aa49d247"
+        },
+        "p50_ms": 710.9607049787883,
+        "receipt": {
+          "bytes": 111577,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/nano-original/receipt.json",
+          "sha256": "075fcae4ab85332effa49cd9d87e35a31da1d16bbcec9c184cf56ec4b18ff9cd"
+        },
+        "recipe": "nano-original",
+        "requests": 36,
+        "status": "passed",
+        "task_quality_certified": false
+      }
+    }
+  ],
+  "screens": [
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        16,
+        32,
+        8
+      ],
+      "actions": {
+        "bytes": 7028,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12031/receipt.npz",
+        "sha256": "453cb4e68be0c4486817ca56c873bd823879c4504b58bc593a82f716e29e55c4"
+      },
+      "category": "SCREEN",
+      "completion": {
+        "bytes": 165,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12031/completion.json",
+        "sha256": "c8ab08ea7d4677ad811570dfc5e0f34f804cdcdee6d010b3f7010ec7183fdfb1"
+      },
+      "p50_ms": 270.0733595120255,
+      "receipt": {
+        "bytes": 82063,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12031/receipt.json",
+        "sha256": "a377245482a22598e13e1cbccc57c45b137add530e3694d12c3cd678821f3c55"
+      },
+      "recipe": "edge-seed12031",
+      "requests": 16,
+      "status": "passed",
+      "task_quality_certified": false
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        16,
+        32,
+        8
+      ],
+      "actions": {
+        "bytes": 6985,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12032/receipt.npz",
+        "sha256": "f4db1ae67ec01cb32c4ea2b14d6074d13bfa75c324046c7bb408b479203628ae"
+      },
+      "category": "SCREEN",
+      "completion": {
+        "bytes": 165,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12032/completion.json",
+        "sha256": "a4b4f27dfd58b09043e4c3cb4c7f7b5a2d578affaec6f49f92134b0eedee0c61"
+      },
+      "p50_ms": 270.6643150304444,
+      "receipt": {
+        "bytes": 82059,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12032/receipt.json",
+        "sha256": "1735abfa1c77c1cd3a07d3f44414a656a3bd63adcadaabb700099d3ddf1fbb52"
+      },
+      "recipe": "edge-seed12032",
+      "requests": 16,
+      "status": "passed",
+      "task_quality_certified": false
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        36,
+        32,
+        8
+      ],
+      "actions": {
+        "bytes": 14646,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/nano-original/receipt.npz",
+        "sha256": "c44c6a975b415db4de2c40a26d91a5fc49c6f035be7c34b968bd20b601b83367"
+      },
+      "category": "SCREEN",
+      "completion": {
+        "bytes": 165,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/nano-original/completion.json",
+        "sha256": "9f859791fd7d7377249bab73d8136115513bd9f038ae1ee768f68f34aa49d247"
+      },
+      "p50_ms": 710.9607049787883,
+      "receipt": {
+        "bytes": 111577,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/nano-original/receipt.json",
+        "sha256": "075fcae4ab85332effa49cd9d87e35a31da1d16bbcec9c184cf56ec4b18ff9cd"
+      },
+      "recipe": "nano-original",
+      "requests": 36,
+      "status": "passed",
+      "task_quality_certified": false
+    }
+  ],
+  "started_unix": 1789456286.4856727,
+  "status": "passed_three_public_recipe_screens",
+  "task_quality_certified": false
+}

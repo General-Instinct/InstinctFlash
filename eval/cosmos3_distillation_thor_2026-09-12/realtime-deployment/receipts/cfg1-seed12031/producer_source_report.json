@@ -1,0 +1,329 @@
+{
+  "schema_version": 16,
+  "status": "success",
+  "stage": "source-export",
+  "plan": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/export_plans/edge_sde1_cfg1_seed12031_v2.json",
+    "bytes": 10561,
+    "sha256": "7f5a0eefab93ec6b7307a0b6b41327305cc2debfacd7ac2de16d4592081364ba"
+  },
+  "protocol": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training_protocol.json",
+    "bytes": 1180815,
+    "sha256": "8121fc79add569684ce8c191300db459a234c3582e4c8cffa29ad2aac3f9e018"
+  },
+  "arm_id": "edge_sde1_cfg1_seed12031",
+  "training_seed": 12031,
+  "student_updates": 64,
+  "steps": 1,
+  "guidance": 1,
+  "snapshot": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg1_seed12031/checkpoints/update_0064/training.pt",
+    "bytes": 302984621,
+    "sha256": "330845cefa3208bdd1bfd8523bb3c4c208fca223992a78951d4c9aeef41ad1f3"
+  },
+  "training_report": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg1_seed12031/report.json",
+    "bytes": 42293,
+    "sha256": "8b37b1369e6aded5c69f1f9cb3c634a52f558913014e621a3aae88b7ac9124bc"
+  },
+  "manifest": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg1_seed12031/checkpoints/update_0064/manifest.json",
+    "bytes": 2592,
+    "sha256": "eacffc1f8778584052b504930d5d0145267789ce4d21a21882bf01a6c5f9a327"
+  },
+  "pid": 1599039,
+  "process_nonce": "5793d1ef5378402fb4a96561b6358657",
+  "created_at": "2026-09-12T07:10:16.532172+00:00",
+  "runtime": {
+    "python": "3.13.14 (main, Jul 18 2026, 17:02:37) [Clang 22.1.3 ]",
+    "numpy": "2.2.6",
+    "torch": "2.10.0+cu130",
+    "cuda": "13.0",
+    "device": "NVIDIA H100 80GB HBM3",
+    "capability": [
+      9,
+      0
+    ],
+    "tf32_matmul": false,
+    "tf32_cudnn": false
+  },
+  "live_state_matches_snapshot": true,
+  "native_serving_bitexact": true,
+  "student_state_sha256": "325cec85fb215e0a84a9277acc8a2390bd1960734afe3ddb1f68e249908aeb70",
+  "expected_merged_backbone_state": "3001c65e61a89e25f04c128dd98a4b53818e82b30b118af30edf2c5b44840adf",
+  "merged_native": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg1_seed12031/export_roundtrip/merged_native.pt",
+    "bytes": 419576073,
+    "sha256": "9a4eb2a962a6aeedb6762ab4ae0cfc25c7adc3e3c879d7a1a95cba09e98be572"
+  },
+  "expected_outputs": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg1_seed12031/export_roundtrip/expected_outputs.pt",
+    "bytes": 9163093,
+    "sha256": "78349370890594f69ee1f9ae6f2fc74318031fbe447a0fb96ce75e187311b2e0"
+  },
+  "source_serving_outputs": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg1_seed12031/export_roundtrip/source_serving_outputs.pt",
+    "bytes": 9163165,
+    "sha256": "c78fa1de2a6973922a73281a79486c22c8d508052313d54b71529d9b4c00a77b"
+  },
+  "export_inventory": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg1_seed12031/export_roundtrip/export_inventory.json",
+    "bytes": 35608,
+    "sha256": "ab8bc507eb4f79e6d5823c7db094701ef6e9ccb42a1f04a5079d6e22deeca350"
+  },
+  "helper_execution": {
+    "schema_version": 16,
+    "execution": "complete_declared_deployment_grid",
+    "steps": 1,
+    "times": [
+      1.0,
+      0.0
+    ],
+    "guidance": 1.0,
+    "callbacks": 1,
+    "network_branches": 1,
+    "native_branches": [
+      {
+        "timestep": 1000.0,
+        "padding_max": 0.0,
+        "conditioning": "conditional"
+      }
+    ],
+    "callback_timesteps": [
+      1000.0
+    ],
+    "callback_parameter_graphs": [
+      false
+    ],
+    "gradient": "none",
+    "output_requires_grad": false,
+    "native_callable_unchanged": true,
+    "native_hook_restored": true,
+    "sampling_rng_restored": true,
+    "rng_visibility_contract": "cpu_without_cuda_or_one_visible_cuda_at_logical0",
+    "native_action_shape": [
+      33,
+      64
+    ],
+    "generated_action_shape": [
+      32,
+      8
+    ],
+    "preserved_history_rows": [
+      0
+    ],
+    "action_padding_policy": "droid_rf_training_zero_action_padding",
+    "weight_training_status": "not_inferred_by_rollout"
+  },
+  "serving_execution": {
+    "sampler_calls": 1,
+    "preparation_calls": 1,
+    "sampler_denoiser_callbacks": 1,
+    "model_velocity_branch_calls": 1,
+    "sampler_class": "cosmos_framework.model.generator.diffusion.samplers.fixed_step.FixedStepSampler",
+    "sample_type": "sde",
+    "rf_grid": [
+      1.0,
+      0.0
+    ],
+    "num_train_timesteps": 1000.0,
+    "effective_sampler_arguments": {
+      "num_steps": 1,
+      "shift": 0.0,
+      "seed": [
+        1977068060
+      ]
+    },
+    "native_conditioning_passed": true,
+    "sampler_host_seconds": 0.07155856862664223,
+    "callback_timesteps": [
+      1000.0
+    ],
+    "native_initial_noise": [
+      {
+        "shape": [
+          572352
+        ],
+        "dtype": "torch.float32",
+        "sha256": "f2af0570f17d59c910e33beb4f69181012dd7326283c8ea70ccc03e7afde9e82"
+      }
+    ],
+    "native_condition_reference": [
+      {
+        "shape": [
+          572352
+        ],
+        "dtype": "torch.float32",
+        "sha256": "68b3291c974b4fd1ba11ab7ae961391cc1ed0f697378d9fbfcd60eb1b12292dc"
+      }
+    ],
+    "native_condition_mask": [
+      {
+        "shape": [
+          572352
+        ],
+        "dtype": "torch.float32",
+        "sha256": "6fa59985d67811da17dba7b3f3b2ba27ee3739b09e7cbc779284a45e5997c653"
+      }
+    ],
+    "generation_arguments": {
+      "seed": [
+        1977068060
+      ],
+      "guidance": 1.0,
+      "num_steps": 1,
+      "shift": 1.0,
+      "guidance_interval": null,
+      "normalize_cfg": false,
+      "skip_text_tokens_for_cfg": false
+    },
+    "action_padding_intervention": {
+      "schema_version": 1,
+      "policy": "droid_rf_training_zero_action_padding",
+      "raw_action_dim": 8,
+      "padded_action_dim": 64,
+      "sampler_change": "padded_coordinates_are_zero_reference_constraints",
+      "velocity_change": "project_only_padded_action_inputs_before_native_packing",
+      "prepared_calls": 1,
+      "prepared_original": {
+        "noise": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "f2af0570f17d59c910e33beb4f69181012dd7326283c8ea70ccc03e7afde9e82"
+          }
+        ],
+        "condition_reference": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "68b3291c974b4fd1ba11ab7ae961391cc1ed0f697378d9fbfcd60eb1b12292dc"
+          }
+        ],
+        "condition_mask": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "ca5c3496af371a05aa7e2a130553cd65821796c10e9bc94df897a87d820f5012"
+          }
+        ]
+      },
+      "prepared_effective": {
+        "noise": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "f2af0570f17d59c910e33beb4f69181012dd7326283c8ea70ccc03e7afde9e82"
+          }
+        ],
+        "condition_reference": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "68b3291c974b4fd1ba11ab7ae961391cc1ed0f697378d9fbfcd60eb1b12292dc"
+          }
+        ],
+        "condition_mask": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "6fa59985d67811da17dba7b3f3b2ba27ee3739b09e7cbc779284a45e5997c653"
+          }
+        ]
+      },
+      "nonpadding_unchanged": true,
+      "mask_delta_coordinates": [
+        1792
+      ],
+      "initial_padding_max_before": [
+        0.0
+      ],
+      "initial_padding_max_after": [
+        0.0
+      ],
+      "projected_velocity_branches": 1,
+      "velocity_padding_max_before": [
+        0.0
+      ],
+      "velocity_padding_max_after": [
+        0.0
+      ],
+      "hooks_restored": true
+    },
+    "action_offset": 570240,
+    "action_shape": [
+      33,
+      64
+    ],
+    "normalizer": {
+      "raw_action_dim": 8,
+      "qualified_class": null,
+      "offset": null,
+      "scale": null,
+      "forward_clamp": null,
+      "forward_clamp_mask": null
+    },
+    "native_module_bindings_restored": true,
+    "sampling_rng_restored": true,
+    "role_binding": true,
+    "output_arrays": {
+      "action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "e5c43982a0151441936734aea4610462895430d0cdde53ef9fbac5108370d081"
+      },
+      "model_action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "0c29b39d7c04eed560baabdc4d69451bcb5cc676ecde8309eee07437959be51b"
+      },
+      "measured_action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "9a69b99f9ce0181348ba3c38df5f87640570a6daf0b50d78c86cf456779af79f"
+      },
+      "model_measured_action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "3872e03e37d96b250019fc50633cde7ac097e1aa59ec641ac3da63c18b63166f"
+      }
+    },
+    "generation_host_seconds": 0.27235774509608746,
+    "full_joint_fp32": {
+      "shape": [
+        572352
+      ],
+      "dtype": "float32",
+      "sha256": "bc60ffabb7b7fe88453c8128c25bce14d5af58645e4705e009079306c36333fb"
+    }
+  },
+  "actual_callbacks": 2,
+  "actual_branches": 2,
+  "source_and_input_postcheck": "unchanged",
+  "seconds": 88.88874646369368
+}

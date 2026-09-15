@@ -1,0 +1,54 @@
+/home/ubuntu/.venv-lingbot/lib/python3.10/site-packages/torch/backends/__init__.py:46: UserWarning: Please use the new API settings to control TF32 behavior, such as torch.backends.cudnn.conv.fp32_precision = 'tf32' or torch.backends.cuda.matmul.fp32_precision = 'ieee'. Old settings, e.g, torch.backends.cuda.matmul.allow_tf32 = True, torch.backends.cudnn.allow_tf32 = True, allowTF32CuDNN() and allowTF32CuBLAS() will be deprecated after Pytorch 2.9. Please see https://pytorch.org/docs/main/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices (Triggered internally at /pytorch/aten/src/ATen/Context.cpp:80.)
+  self.setter(val)
+InstinctFlash: flash-attn not installed; using the import-only stub (this serving path runs attn_mode='torch' and never calls it).
+InstinctFlash observation geometry: declaration (/home/ubuntu/.cache/instinctflash/declared/robbyant__lingbot-va-posttrain-robotwin/instinctflash.json) — cameras ['observation.images.cam_high', 'observation.images.cam_left_wrist', 'observation.images.cam_right_wrist'], 256x320, env_type='robotwin_tshape' (non-geometry serving facts from upstream config 'robotwin')
+InstinctFlash operating point: schedule {kv_refresh=2 + video=2 + action=4} | guidance {action=positive_only@1 [implied by mode], video=cfg@5 [inherited from the family default]} | cfg batching {batch-2 on 8 of 8 declared forwards (negative branch requested by video); batch-1 on 0} -- server scales written: {'action': 1.0}
+The config attributes {'clip_output': False} were passed to AutoencoderKLWan, but are not expected and will be ignored. Please verify your config.json configuration file.
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 134.56it/s]
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 49.27it/s]
+Some weights of the model checkpoint at /home/ubuntu/.cache/instinctflash/composed/c9adcb327ba76505/transformer were not used when initializing WanTransformer3DModel: 
+ ['patch_embedding.weight, patch_embedding.bias']
+The config attributes {'clip_output': False} were passed to AutoencoderKLWan, but are not expected and will be ignored. Please verify your config.json configuration file.
+InstinctFlash observation decode residency: removed 2 decoder(s), released 2.07 GiB (actions-only deployment).
+InstinctFlash conv layout: autotuned: va_conv_layout chose ndhwc over stock (4.11x), equivalence NUMERIC [cache]
+InstinctFlash conv layout: streaming_vae: 28 Conv3d weights -> ndhwc [NUMERIC] via cudnn_conv3d
+InstinctFlash conv layout: streaming_vae_half: 28 Conv3d weights -> ndhwc [NUMERIC] via cudnn_conv3d
+InstinctFlash in-process: applied ['fsdp_elision', 'allocator_churn_elision', 'debug_dump_elision', 'obs_decode_elision', 'conditioning_prefill', 'ring_kv_addressing', 'action_terminal_forward_elision', 'conv_layout_ndhwc']
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.07it/s]100%|██████████| 3/3 [00:00<00:00,  3.02it/s]
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:00<00:03,  1.09it/s]100%|██████████| 5/5 [00:01<00:00,  4.96it/s]
+{'i': 0, 'cycle': 0, 'phase': 'warmup', 'ms': 2244.7675983421504, 'shape': [16, 2, 16]}
+InstinctFlash action_terminal_forward_elision: eliding the action pred-commit forward; bookkeeping variant = ring
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  2.22it/s]100%|██████████| 3/3 [00:00<00:00,  5.88it/s]
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:00<00:01,  2.11it/s]100%|██████████| 5/5 [00:00<00:00,  8.84it/s]
+{'i': 1, 'cycle': 1, 'phase': 'warmup', 'ms': 1251.1520399712026, 'shape': [16, 2, 16]}
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:00,  2.11it/s]100%|██████████| 3/3 [00:00<00:00,  5.61it/s]
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:00<00:01,  2.12it/s]100%|██████████| 5/5 [00:00<00:00,  8.90it/s]
+{'i': 2, 'cycle': 2, 'phase': 'warmup', 'ms': 1271.8375530093908, 'shape': [16, 2, 16]}
+  0%|          | 0/3 [00:00<?, ?it/s]100%|██████████| 3/3 [00:00<00:00, 33.32it/s]
+  0%|          | 0/5 [00:00<?, ?it/s] 80%|████████  | 4/5 [00:00<00:00, 33.93it/s]100%|██████████| 5/5 [00:00<00:00, 42.14it/s]
+{'i': 3, 'cycle': 0, 'phase': 'measured', 'ms': 223.20920182392, 'shape': [16, 2, 16]}
+  0%|          | 0/3 [00:00<?, ?it/s]100%|██████████| 3/3 [00:00<00:00, 34.45it/s]
+  0%|          | 0/5 [00:00<?, ?it/s] 80%|████████  | 4/5 [00:00<00:00, 34.32it/s]100%|██████████| 5/5 [00:00<00:00, 42.66it/s]
+{'i': 4, 'cycle': 1, 'phase': 'measured', 'ms': 281.5824090503156, 'shape': [16, 2, 16]}
+  0%|          | 0/3 [00:00<?, ?it/s]100%|██████████| 3/3 [00:00<00:00, 33.87it/s]
+  0%|          | 0/5 [00:00<?, ?it/s] 80%|████████  | 4/5 [00:00<00:00, 33.88it/s]100%|██████████| 5/5 [00:00<00:00, 42.10it/s]
+{'i': 5, 'cycle': 2, 'phase': 'measured', 'ms': 293.8206889666617, 'shape': [16, 2, 16]}
+  0%|          | 0/3 [00:00<?, ?it/s]100%|██████████| 3/3 [00:00<00:00, 33.36it/s]
+  0%|          | 0/5 [00:00<?, ?it/s] 80%|████████  | 4/5 [00:00<00:00, 33.48it/s]100%|██████████| 5/5 [00:00<00:00, 41.59it/s]
+{'i': 6, 'cycle': 0, 'phase': 'measured', 'ms': 224.54869886860251, 'shape': [16, 2, 16]}
+  0%|          | 0/3 [00:00<?, ?it/s]100%|██████████| 3/3 [00:00<00:00, 33.28it/s]
+  0%|          | 0/5 [00:00<?, ?it/s] 80%|████████  | 4/5 [00:00<00:00, 33.36it/s]100%|██████████| 5/5 [00:00<00:00, 41.47it/s]
+{'i': 7, 'cycle': 1, 'phase': 'measured', 'ms': 289.3807268701494, 'shape': [16, 2, 16]}
+  0%|          | 0/3 [00:00<?, ?it/s]100%|██████████| 3/3 [00:00<00:00, 33.33it/s]
+  0%|          | 0/5 [00:00<?, ?it/s] 80%|████████  | 4/5 [00:00<00:00, 33.33it/s]100%|██████████| 5/5 [00:00<00:00, 41.41it/s]
+{'i': 8, 'cycle': 2, 'phase': 'measured', 'ms': 295.5148578621447, 'shape': [16, 2, 16]}
+  0%|          | 0/3 [00:00<?, ?it/s]100%|██████████| 3/3 [00:00<00:00, 33.97it/s]
+  0%|          | 0/5 [00:00<?, ?it/s] 80%|████████  | 4/5 [00:00<00:00, 33.80it/s]100%|██████████| 5/5 [00:00<00:00, 41.99it/s]
+{'i': 9, 'cycle': 0, 'phase': 'measured', 'ms': 221.40671871602535, 'shape': [16, 2, 16]}
+  0%|          | 0/3 [00:00<?, ?it/s]100%|██████████| 3/3 [00:00<00:00, 33.95it/s]
+  0%|          | 0/5 [00:00<?, ?it/s] 80%|████████  | 4/5 [00:00<00:00, 33.70it/s]100%|██████████| 5/5 [00:00<00:00, 41.91it/s]
+{'i': 10, 'cycle': 1, 'phase': 'measured', 'ms': 285.60964204370975, 'shape': [16, 2, 16]}
+  0%|          | 0/3 [00:00<?, ?it/s]100%|██████████| 3/3 [00:00<00:00, 33.57it/s]
+  0%|          | 0/5 [00:00<?, ?it/s] 80%|████████  | 4/5 [00:00<00:00, 33.35it/s]100%|██████████| 5/5 [00:00<00:00, 41.45it/s]
+{'i': 11, 'cycle': 2, 'phase': 'measured', 'ms': 295.0137532316148, 'shape': [16, 2, 16]}
+[rank0]:[W910 23:46:29.241704257 ProcessGroupNCCL.cpp:1524] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())

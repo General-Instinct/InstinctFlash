@@ -1,0 +1,117 @@
+{
+  "capture_sha256": "8d1106bbc81c445169a2c1099690f508fcde65b3c4fdba0c137f49f739872fb9",
+  "cell": {
+    "assets": {
+      "checkpoint": {
+        "model_id": "GEAR-Dreams/DreamZero-DROID",
+        "revision": "96ad344138c66e82536422432ad742f015784942"
+      },
+      "tokenizer": {
+        "files": {
+          "special_tokens_map.json": {
+            "bytes": 6623,
+            "sha256": "14ef492a69e59396e918521a5f8394af1acf9f8dddd47273693b2b42570dfd12"
+          },
+          "spiece.model": {
+            "bytes": 4548313,
+            "sha256": "e3909a67b780650b35cf529ac782ad2b6b26e6d1f849d3fbb6a872905f452458"
+          },
+          "tokenizer.json": {
+            "bytes": 16853013,
+            "sha256": "af904105ce1071b1202bba0059a841f4a7b85b48b6ec179c4948e3483476e0dd"
+          },
+          "tokenizer_config.json": {
+            "bytes": 6841,
+            "sha256": "616015e2b6c26f9a98ae3171634518d440a46260ebc1115c2596792d33827bdc"
+          }
+        },
+        "model_id": "google/umt5-xxl",
+        "revision": "66cb9e7e85526fe440a945569e42c72fb6cbc0ad"
+      }
+    },
+    "auxiliary_repositories": {},
+    "compile": true,
+    "effective_schedule": {
+      "guidance": 5.0,
+      "shift": 5.0,
+      "step_cache": true,
+      "video_action": 16
+    },
+    "expected_shapes": [
+      [
+        24,
+        8
+      ]
+    ],
+    "family": "dreamzero",
+    "framework": "vllm-omni",
+    "historical": {
+      "receipt_name": "omni-dreamzero-compiled-v1.json",
+      "receipt_sha256": "6b4202980f1c841464d14953cae5b2008d2f5e20d67ba21e93b4788e14af1da1",
+      "selected_p50_ms": 8755.347033002181
+    },
+    "id": "vllm-omni-dreamzero",
+    "quality_certified": false,
+    "selected_indices": [
+      4,
+      5,
+      7,
+      8,
+      10,
+      11,
+      13,
+      14,
+      16,
+      17,
+      19,
+      20,
+      22,
+      23,
+      25,
+      26,
+      28,
+      29,
+      31,
+      32
+    ],
+    "total_calls": 33,
+    "warmup_calls": 3
+  },
+  "completion_sha256": "267bc4d00e1f43093b5eb5f47e7de51acfb32819b5be26926ca8362a79e6272d",
+  "latency": {
+    "all_measured_p50_ms": 8376.772580988472,
+    "classification": "SCREEN",
+    "historical_p50_ms": 8755.347033002181,
+    "p50_ms": 8729.643308994127,
+    "p95_ms": 9094.486360167502,
+    "p99_ms": 9102.388919230434,
+    "selected_count": 20,
+    "selected_indices": [
+      4,
+      5,
+      7,
+      8,
+      10,
+      11,
+      13,
+      14,
+      16,
+      17,
+      19,
+      20,
+      22,
+      23,
+      25,
+      26,
+      28,
+      29,
+      31,
+      32
+    ],
+    "task_quality_certified": false
+  },
+  "schema": "instinctflash.framework_comparison.v1",
+  "scope": "Local observation-to-CPU-actions wall time; Omni includes worker IPC. No network or simulator.",
+  "status": "passed",
+  "task_quality_certified": false
+}

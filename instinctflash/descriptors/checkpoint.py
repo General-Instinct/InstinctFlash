@@ -41,7 +41,7 @@ SCHEMA_VERSION = 1
 FORBIDDEN_IN_EXECUTION = (
     "recipe", "training_method", "teacher", "student", "solver", "dataset", "optimizer",
     "coverage_gate_pass", "min_updates_per_head", "head_updates_min", "endpoint_rmse",
-    "trainable", "paper", "training_diagnostics", "certification",
+    "trainable", "paper", "training_diagnostics", "certification", "distillation",
 )
 
 

@@ -1,0 +1,53 @@
+{
+  "constraints": {
+    "path": "hf_tool_constraints.txt",
+    "sha256": "c0d7ed87af5e6b8909031f42dfc7fd8f4b959359875ac3cf4401fc3af9945edc"
+  },
+  "native_argv_prefix": [
+    "uvx",
+    "--with",
+    "click",
+    "hf@1.16.4"
+  ],
+  "native_source": {
+    "path": "cosmos_framework/utils/checkpoint_db.py",
+    "repository": "https://github.com/NVIDIA/cosmos-framework",
+    "revision": "f734253f0f6af3e268372402f44435c38f55ef3e",
+    "sha256": "415478da8d40b9c01b5b063c80c11c615550c8d0046e183771372919b8a67a98"
+  },
+  "offline_scope": "UV_OFFLINE constrains the native subprocess tool resolver. HF_HUB_OFFLINE is set separately only for inference or an explicit cached-file probe. No Cosmos source changes.",
+  "packages": {
+    "annotated-doc": "0.0.5",
+    "anyio": "4.15.1",
+    "certifi": "2026.7.22",
+    "click": "8.5.0",
+    "filelock": "3.32.6",
+    "fsspec": "2026.7.0",
+    "h11": "0.16.0",
+    "hf": "1.16.4",
+    "hf-xet": "1.6.0",
+    "httpcore": "1.0.9",
+    "httpx": "0.28.1",
+    "huggingface-hub": "1.16.4",
+    "idna": "3.19",
+    "markdown-it-py": "4.2.0",
+    "mdurl": "0.1.2",
+    "packaging": "26.3",
+    "pygments": "2.21.0",
+    "pyyaml": "6.0.3",
+    "rich": "15.0.0",
+    "shellingham": "1.5.4",
+    "tqdm": "4.70.1",
+    "typer": "0.25.1",
+    "typing-extensions": "4.16.0"
+  },
+  "python_minor": "3.13",
+  "schema": "instinctflash.cosmos_native_hf_tool.v1",
+  "sources": [
+    "https://docs.astral.sh/uv/reference/environment/",
+    "https://docs.astral.sh/uv/concepts/tools/",
+    "https://pypi.org/project/hf/1.16.4/",
+    "https://pypi.org/project/uv/0.12.5/"
+  ],
+  "uv_version": "0.12.5"
+}

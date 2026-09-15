@@ -137,7 +137,7 @@ def test_layout_choice_can_be_measured_not_extrapolated():
               f"{ncdhw/ndhwc:.2f}x")
     # cached, so a second load does not re-time
     import instinctflash.backends.conv.apply as A
-    check(bool(A._MEASURED_CACHE), "the result is cached per (capability, shape)")
+    check(bool(A._MEASURED_CACHE), "the result is cached per (GPU/software identity, shape)")
 
 
 def test_cpu_is_a_hardware_target():

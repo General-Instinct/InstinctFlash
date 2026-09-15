@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "scope": "mechanics only, not task quality or NATTEN byte equivalence",
+  "checks": [
+    {
+      "test": "tail-mask-constant-values",
+      "q": 1,
+      "k": 1,
+      "pass": true
+    },
+    {
+      "test": "tail-mask-constant-values",
+      "q": 17,
+      "k": 31,
+      "pass": true
+    },
+    {
+      "test": "tail-mask-constant-values",
+      "q": 129,
+      "k": 257,
+      "pass": true
+    },
+    {
+      "test": "strided-input-and-retained-output",
+      "pass": true
+    },
+    {
+      "test": "graph-replay-changed-input",
+      "pass": true
+    }
+  ]
+}

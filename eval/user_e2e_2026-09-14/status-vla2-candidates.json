@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "pid": 237039,
+  "jobs": [
+    {
+      "cell": "vla2-runtime_update",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/vla2-update/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_update_vla2.json",
+        "--cell",
+        "vla2-runtime_update",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789357322.354735,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0"
+      },
+      "pid": 237042,
+      "exit_code": 0,
+      "ended": 1789357372.3868532,
+      "error": null
+    },
+    {
+      "cell": "vla2-runtime_numeric",
+      "status": "passed",
+      "command": [
+        "/home/guanming/ifl_eval/user_e2e_20260914/envs/vla2-update/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_eval/user_e2e_20260914/matrix_update_vla2.json",
+        "--cell",
+        "vla2-runtime_numeric",
+        "--output-root",
+        "/home/guanming/ifl_eval/user_e2e_20260914",
+        "--fixture",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789357372.8458881,
+      "environment": {
+        "DYNAMIC_CACHE_SCHEDULE": "false",
+        "NUM_DIT_STEPS": "8",
+        "ENABLE_TENSORRT": "false",
+        "TORCHDYNAMO_DISABLE": "0"
+      },
+      "pid": 237127,
+      "exit_code": 0,
+      "ended": 1789357445.4497385,
+      "error": null
+    }
+  ],
+  "started": 1789357321.8694942,
+  "matrix_sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d",
+  "installation_sha256": "37058a489d1058c6bd7ec3942d53bc264c1e4447f62672bf3bffdf9dbaaf21d3",
+  "ended": 1789357445.8709264
+}

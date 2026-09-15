@@ -48,9 +48,16 @@ class Runtime:
     """A loaded, planned, ready-to-run checkpoint."""
 
     def __init__(self, checkpoint: Checkpoint, adapter, plan, backend: ExecutionBackend,
-                 *, placement_reason: str = ""):
+                 *, placement_reason: str = "", precision: str = "native",
+                 tier_ceiling: str | None = None, nfe: Mapping[str, int] | None = None,
+                 step_cache=None):
         self._checkpoint, self._adapter, self._plan = checkpoint, adapter, plan
         self._backend, self._placement_reason = backend, placement_reason
+        self._precision = precision
+        self._tier_ceiling = tier_ceiling or ("numeric" if precision == "fp8" else "bitexact")
+        self._requested_nfe = dict(nfe or {})
+        self._step_cache = (step_cache if step_cache is not None
+                            else getattr(plan, "resolved_step_cache", None))
 
     # -- loading ---------------------------------------------------------------------------------
     @classmethod
@@ -62,8 +69,10 @@ class Runtime:
         nfe: Mapping[str, int] | None = None,
         device: str | None = None,
         placement: str = "auto",
+        precision: str = "native",
+        step_cache: str | None = None,
         strict: bool = True,
-        tier_ceiling: str = "bitexact",
+        tier_ceiling: str | None = None,
         exclude_passes: tuple[str, ...] | list[str] = (),
         startup_timeout_s: float = 900.0,
         seed: int | None = None,
@@ -78,29 +87,45 @@ class Runtime:
                     which is what makes value-for-value A/B possible at all, since stock serving
                     is unseeded and two stock servers already disagree. None keeps stock behaviour.
         `device`    None lets the adapter choose.
-        `placement` 'auto' | 'in_process' | 'worker'. WHERE the model runs, not WHAT it
+        `placement` 'auto' | 'in_process' | 'worker' | 'engine'. WHERE the model runs, not WHAT it
                     is; 'auto' is right unless you are deliberately isolating the model.
+        `precision` 'native' preserves checkpoint arithmetic; 'fp8' explicitly requests FP8
+                    and defaults the tier ceiling to NUMERIC. Unsupported FP8 requests refuse.
+                    NUMERIC permission alone never enables FP8. Neither option changes nfe.
+        `step_cache` 'dynamic' explicitly selects DreamZero approximate prediction reuse and
+                    requires a behavioral ceiling. 'checkpoint' restores declaration options,
+                    ignoring legacy schedule environment variables. None retains legacy options.
         `strict`    False downgrades the servable refusal to a warning, for inspection tooling.
-        `tier_ceiling`     the strongest accuracy claim the plan may spend: 'bitexact' (default),
-                           'numeric', or 'behavioral'. Raising it is a claim budget, not a speed knob.
+        `tier_ceiling`     the strongest accuracy claim the plan may spend: 'bitexact', 'numeric',
+                           or 'behavioral'. Raising it is a claim budget, not a speed knob.
+                           None means BITEXACT for native precision. A checkpoint cannot
+                           silently widen it; required numeric transforms need an explicit
+                           numeric ceiling. FP8 requests default to numeric permission.
         `exclude_passes`   pass names to drop via `Plan.without` — a CALLER EXCLUSION the runtime
-                           honors everywhere; an excluded pass cannot be resurrected by a placement.
+                           honors everywhere, including the engine placement (it cannot be
+                           resurrected; see tests/test_engine_exclusion.py).
         `startup_timeout_s` worker-placement only: how long a cold load may take before the spawn
                            is declared dead. Raise it for cold 10 GB loads.
         """
-        if placement not in {"auto", "in_process", "worker"}:
+        if placement not in {"auto", "in_process", "worker", "engine"}:
             raise ValueError(
-                f"placement must be one of auto, in_process, worker; got {placement!r}")
+                f"placement must be one of auto, in_process, worker, engine; got {placement!r}")
+        from instinctflash.runtime.precision import resolve_precision
+        tier_ceiling = resolve_precision(precision, tier_ceiling, placement)
         ckpt = _load_package(model_id_or_path, revision=revision, require_servable=strict)
         adapter, plan, _ = _compile_declaration(
-            ckpt, nfe=nfe, tier_ceiling=tier_ceiling, exclude_passes=exclude_passes,
+            ckpt, nfe=nfe, device=device, tier_ceiling=tier_ceiling,
+            exclude_passes=exclude_passes, step_cache=step_cache, placement=placement,
         )
 
+        resolved = getattr(plan, "resolved_step_cache", None)
         backend, why = choose_backend(
-            placement, adapter, ckpt, plan, device=device, nfe=nfe,
+            placement, adapter, ckpt, plan, device=device, nfe=nfe, precision=precision,
             startup_timeout_s=startup_timeout_s, seed=seed,
+            **({"step_cache": resolved} if resolved is not None else {}),
         )
-        return cls(ckpt, adapter, plan, backend, placement_reason=why)
+        return cls(ckpt, adapter, plan, backend, placement_reason=why, precision=precision,
+                   tier_ceiling=tier_ceiling, nfe=nfe, step_cache=resolved)
 
     # -- using -----------------------------------------------------------------------------------
     def predict(self, observation: Mapping[str, Any], *, executed_action: Any = None) -> Any:
@@ -142,6 +167,48 @@ class Runtime:
         self.close()
 
     # -- inspecting: present, documented, never required -----------------------------------------
+    @property
+    def precision(self) -> str:
+        """Selected arithmetic policy; not an accuracy or bit-exactness certificate."""
+        return self._precision
+
+    @property
+    def backend_stats(self) -> dict:
+        """Snapshot observed local statistics without loading a model or contacting a worker.
+
+        The envelope reports available, not_loaded or unsupported; available
+        statistics are detached copies. Errors from a loaded statistics provider
+        propagate. Selected execution policy remains in ``execution_policy``.
+        """
+        from instinctflash.runtime.telemetry import backend_stats_snapshot
+        return backend_stats_snapshot(self._backend)
+
+    @property
+    def execution_policy(self) -> dict:
+        """Selected permissions and schedule; independent of a measured equality certificate."""
+        from copy import deepcopy
+        checkpoint = getattr(self, "_checkpoint", None)
+        declared = dict(getattr(getattr(checkpoint, "execution", None), "nfe", None) or {})
+        effective = {**declared, **getattr(self, "_requested_nfe", {})}
+        changed = {name: {"checkpoint": declared.get(name), "selected": value}
+                   for name, value in effective.items() if declared.get(name) != value}
+        plan = getattr(self, "_plan", None)
+        transform_tier = plan.tier().name if plan is not None else "UNVERIFIED"
+        category = ("OPERATING-POINT" if changed or transform_tier == "BEHAVIORAL"
+                    else "FP8" if self.precision == "fp8"
+                    else "NUMERIC" if transform_tier == "NUMERIC"
+                    else "BITEXACT" if transform_tier == "BITEXACT" else "UNVERIFIED")
+        return {"category": category, "precision": self.precision,
+                "tier_ceiling": getattr(self, "_tier_ceiling", None),
+                "transform_tier": transform_tier, "nfe": effective,
+                "changed_schedule": changed,
+                "step_cache": (self._step_cache.to_dict()
+                               if getattr(self, "_step_cache", None) is not None else None),
+                "schedule_options": {r.name: deepcopy(r.params["execution_schedule"])
+                                     for r in getattr(plan, "applied", [])
+                                     if "execution_schedule" in r.params},
+                "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"}
+
     @property
     def model_id(self) -> str:
         return self._checkpoint.model_id
@@ -204,6 +271,8 @@ class Runtime:
                f"  package     : {self._checkpoint.path}",
                f"  backbone    : {ex.backbone}",
                f"  servable    : {ex.servable}",
+               f"  precision   : {self._precision}",
+               "  evidence    : no closed-loop certificate verified for this live execution; plan tiers are transformation claims",
                f"  placement   : {self._placement_reason}",
                f"  capabilities: {', '.join(sorted(self._checkpoint.capabilities()))}",
                "", self._plan.explain()]
@@ -377,13 +446,20 @@ def _compile_declaration(
     ckpt: Checkpoint,
     *,
     nfe: Mapping[str, int] | None = None,
-    tier_ceiling: str = "bitexact",
+    device: str | int | None = None,
+    tier_ceiling: str | None = None,
+    step_cache: str | None = None,
+    placement: str = "auto",
     exclude_passes: tuple[str, ...] | list[str] = (),
     world_size: int = 1,
     want_pixels: bool = False,
     probe_device: bool = True,
 ):
-    """Compile a plan from declaration facts.  Does not inspect or load checkpoint weights."""
+    """Compile a plan from declaration facts.  Does not inspect or load checkpoint weights.
+
+    ``tier_ceiling=None`` is the runtime's default policy; a string is an explicit caller demand
+    (see ``Runtime.from_pretrained`` and the planner's checkpoint-required decision note).
+    """
     from instinctflash.runtime.loader import available_models, load as load_adapter
     try:
         adapter = load_adapter(ckpt.execution.backbone)
@@ -393,7 +469,15 @@ def _compile_declaration(
     # Plan against the schedule that will actually run, not the model's own default. The
     # checkpoint declares `execution.nfe`; `nfe=` overrides it per stream. Without this the
     # planner priced a 79-forward cycle while a 10-forward cycle executed.
-    spec = adapter.spec()
+    spec = _adapter_spec_for_checkpoint(adapter, ckpt)
+    from instinctflash.runtime.step_cache_policy import resolve_step_cache, annotate_step_cache_plan
+    resolved_step_cache = resolve_step_cache(
+        ckpt, step_cache=step_cache, tier_ceiling=tier_ceiling, placement=placement,
+        family=spec.notes.get("backbone", ckpt.execution.backbone))
+    if (resolved_step_cache is not None
+            and (resolved_step_cache.dynamic or resolved_step_cache.fixed_steps != 8)
+            and "dreamzero_schedule" in exclude_passes):
+        raise ValueError("Selected DreamZero step schedule conflicts with excluded dreamzero_schedule")
     # The plan header names the CHECKPOINT being planned, not the adapter's default example.
     # `spec.model_id` is the adapter author's sample checkpoint id, so a local directory whose
     # declaration says `general-instinct/lingbot-va-fans-8000` printed "InstinctFlash plan for
@@ -418,26 +502,97 @@ def _compile_declaration(
     if probe_device:
         try:
             from instinctflash.passes.contract import DeviceProfile
-            probed = DeviceProfile.probe()
+            probed = DeviceProfile.probe(device)
         except Exception:                                        # noqa: BLE001 - no torch, no CUDA
-            pass
+            if device is not None:
+                raise
 
     from instinctflash.descriptors.deployment import DeploymentSpec
     from instinctflash.planners.planner import Optimizer, Tier
     tiers = {"bitexact": Tier.BITEXACT, "numeric": Tier.NUMERIC,
              "behavioral": Tier.BEHAVIORAL}
-    if tier_ceiling not in tiers:
+    ceiling_explicit = tier_ceiling is not None
+    if ceiling_explicit and tier_ceiling not in tiers:
         raise ValueError(f"unknown tier ceiling {tier_ceiling!r}; one of {sorted(tiers)}")
-    plan = Optimizer(tier_ceiling=tiers[tier_ceiling]).compile(
+    plan = Optimizer(tier_ceiling=tiers[tier_ceiling or "bitexact"],
+                     tier_ceiling_explicit=ceiling_explicit).compile(
         spec,
         deployment=DeploymentSpec(world_size=world_size, want_pixels=want_pixels, device=probed),
         capabilities=ckpt.capabilities(),
     )
+    annotate_step_cache_plan(plan, resolved_step_cache)
     if exclude_passes:
         # A caller exclusion, honored everywhere: Plan.without marks the entries excluded, and
-        # no placement may resurrect an excluded pass.
+        # choose_backend refuses to resurrect an excluded engine_offload.
         plan = plan.without(*exclude_passes)
+    if resolved_step_cache is not None:
+        plan.resolved_step_cache = resolved_step_cache
     return adapter, plan, probed
+
+
+def _adapter_spec_for_checkpoint(adapter, checkpoint):
+    """Bind an adapter's family spec to the concrete checkpoint, when the adapter supports it.
+
+    Most backbones have one immutable shape and identity, so their existing zero-argument
+    ``spec()`` remains the complete contract. A family adapter can optionally expose
+    ``spec_for_checkpoint(checkpoint)`` when a declaration selects among separately measured
+    upstream releases (pi05's pointer packages select ``base_weights``); the hook binds
+    checkpoint facts the passes need — evidence keys, per-checkpoint geometry via the adapter's
+    own ``observation_contract`` — without the planner learning any model's rules. The plan
+    header ``model_id`` stays owned by the declared-id override below, never by this hook.
+    """
+    checkpoint_hook = getattr(adapter, "spec_for_checkpoint", None)
+    return checkpoint_hook(checkpoint) if callable(checkpoint_hook) else adapter.spec()
+
+
+def _snapshot_revision(path: Path) -> str | None:
+    """Read the immutable Hub revision from a cache snapshot path, without resolving symlinks."""
+    parts = path.parts
+    for index, part in enumerate(parts[:-1]):
+        if part == "snapshots":
+            revision = parts[index + 1]
+            if len(revision) == 40 and all(char in "0123456789abcdef" for char in revision):
+                return revision
+    return None
+
+
+def _prepare_planning_metadata(adapter, checkpoint, repo_id: str, revision: str | None):
+    """Fetch an adapter's declared metadata files for Hub-only preflight; never weights.
+
+    Local checkpoint directories never reach this function. A resolved declaration's commit
+    pins further metadata; when a built-in declaration was used, the first metadata response
+    pins any following files. Adapter requests are restricted to relative metadata filenames.
+    """
+    from pathlib import PurePosixPath
+
+    filenames = getattr(adapter, "PLANNING_FILES", ())
+    if not isinstance(filenames, (tuple, list)):
+        raise ValueError("adapter PLANNING_FILES must be a sequence of metadata filenames")
+    for name in filenames:
+        if (not isinstance(name, str) or not name or "\\" in name
+                or PurePosixPath(name).is_absolute() or ":" in name
+                or any(part in {"", ".", ".."} for part in name.split("/"))
+                or PurePosixPath(name).suffix not in {".json", ".yaml", ".yml", ".toml"}):
+            raise ValueError(f"unsafe or non-metadata adapter PLANNING_FILES entry: {name!r}")
+    if not filenames:
+        return checkpoint
+    from huggingface_hub import hf_hub_download
+
+    pinned = _snapshot_revision(Path(checkpoint.path)) or revision
+    metadata_root = None
+    for name in filenames:
+        downloaded = Path(hf_hub_download(repo_id, name, revision=pinned))
+        resolved = _snapshot_revision(downloaded)
+        if resolved is not None:
+            if pinned and len(pinned) == 40 and resolved != pinned:
+                raise RuntimeError("Hub planning metadata did not resolve to the requested commit")
+            pinned = resolved
+        root = downloaded.parents[len(PurePosixPath(name).parts) - 1]
+        if metadata_root is not None and root != metadata_root:
+            raise RuntimeError("Hub planning metadata files resolved to different checkpoint directories")
+        metadata_root = root
+    from dataclasses import replace
+    return replace(checkpoint, path=str(metadata_root))
 
 
 def plan_declaration(
@@ -446,21 +601,44 @@ def plan_declaration(
     revision: str | None = None,
     strict: bool = True,
     nfe: Mapping[str, int] | None = None,
-    tier_ceiling: str = "bitexact",
+    tier_ceiling: str | None = None,
+    precision: str = "native",
+    step_cache: str | None = None,
+    placement: str = "auto",
+    device: str | int | None = None,
     exclude_passes: tuple[str, ...] | list[str] = (),
     world_size: int = 1,
     want_pixels: bool = False,
     probe_device: bool = True,
 ):
     """Return ``(checkpoint, adapter, plan, device_profile)`` without downloading weights."""
+    from instinctflash.runtime.precision import resolve_precision, constrain_precision, require_fp8_plan
+    tier_ceiling = resolve_precision(precision, tier_ceiling, placement)
     decl, _, source = load_declaration_ref(model_id_or_path, revision=revision)
     if strict:
         decl.require_servable(f"plan preflight for {model_id_or_path!r}")
-    ckpt = Checkpoint(source, decl)
+    local_path = Path(model_id_or_path)
+    is_local = local_path.is_dir()
+    # Checkpoint.path is a directory everywhere else in the runtime. A declaration filename
+    # here made checkpoint-specific geometry hooks look for instinctflash.json/config.json.
+    metadata_root = local_path if is_local else (
+        Path(source).parent if not source.startswith("known:") else Path(source))
+    ckpt = Checkpoint(str(metadata_root), decl)
+    if not is_local:
+        from instinctflash.runtime.loader import available_models, load as load_adapter
+        try:
+            metadata_adapter = load_adapter(decl.backbone)
+        except KeyError as error:
+            raise UnknownBackboneError(_unknown_backbone_message(ckpt, available_models())) from error
+        ckpt = _prepare_planning_metadata(metadata_adapter, ckpt, str(model_id_or_path), revision)
     adapter, plan, probed = _compile_declaration(
-        ckpt, nfe=nfe, tier_ceiling=tier_ceiling, exclude_passes=exclude_passes,
+        ckpt, nfe=nfe, device=device, tier_ceiling=tier_ceiling,
+        exclude_passes=exclude_passes, step_cache=step_cache, placement=placement,
         world_size=world_size, want_pixels=want_pixels, probe_device=probe_device,
     )
+    constrain_precision(plan, precision)
+    if precision == "fp8":
+        require_fp8_plan(plan, ckpt.execution.backbone)
     return ckpt, adapter, plan, probed
 
 

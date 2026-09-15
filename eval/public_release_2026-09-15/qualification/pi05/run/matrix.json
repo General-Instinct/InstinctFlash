@@ -1,0 +1,104 @@
+{
+  "bindings": [
+    {
+      "path": "inputs/recorded_inputs_v1.npz",
+      "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+    }
+  ],
+  "cells": [
+    {
+      "action_shape": [
+        7
+      ],
+      "arm": "eager_native",
+      "comparison_group": "pi05-checkpoint",
+      "effective_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "expected_optimizer_environment": {},
+      "expected_runtime_kwargs": {},
+      "experimental": false,
+      "family": "pi05",
+      "id": "pi05-eager_native",
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "receipt": "cells/pi05-eager_native/receipt.json",
+      "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1"
+    },
+    {
+      "action_shape": [
+        7
+      ],
+      "arm": "runtime_default",
+      "comparison_group": "pi05-checkpoint",
+      "effective_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "expected_optimizer_environment": {},
+      "expected_runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "experimental": false,
+      "family": "pi05",
+      "id": "pi05-runtime_default",
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "receipt": "cells/pi05-runtime_default/receipt.json",
+      "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1"
+    },
+    {
+      "action_shape": [
+        7
+      ],
+      "arm": "runtime_selected",
+      "comparison_group": "pi05-checkpoint",
+      "effective_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "expected_optimizer_environment": {},
+      "expected_runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8",
+        "step_cache": "checkpoint",
+        "tier_ceiling": "numeric"
+      },
+      "experimental": false,
+      "family": "pi05",
+      "id": "pi05-runtime_selected",
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "receipt": "cells/pi05-runtime_selected/receipt.json",
+      "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1"
+    }
+  ],
+  "expected_families": [
+    "pi05"
+  ],
+  "expected_main_cells": 3,
+  "expected_operating_point_cells": 0,
+  "expected_runtime_update_cells": 0,
+  "protocol": {
+    "history": {
+      "cycles_per_episode": 3,
+      "measured_episodes": 6,
+      "warmup_episodes": 1
+    },
+    "pi05_queue_calls": 51,
+    "stateless": {
+      "measured": 20,
+      "warmup": 5
+    }
+  },
+  "quality_certified": false,
+  "require_observed_schedule": true,
+  "schema": 1
+}

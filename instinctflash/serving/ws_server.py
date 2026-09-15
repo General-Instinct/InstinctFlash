@@ -84,10 +84,18 @@ def default_metadata(runtime) -> dict:
     model_id = getattr(runtime, "model_id", None)
     if model_id:
         md["model_id"] = model_id
+    precision = getattr(runtime, "precision", None)
+    if precision in ("native", "fp8"):
+        md["precision"] = precision
+    policy = getattr(runtime, "execution_policy", None)
+    if isinstance(policy, dict):
+        md["execution_policy"] = policy
     ex = getattr(getattr(runtime, "checkpoint", None), "execution", None)
     if ex is not None:
         md["backbone"] = getattr(ex, "backbone", None)
-        md["nfe"] = dict(getattr(ex, "nfe", None) or {})
+        md["checkpoint_nfe"] = dict(getattr(ex, "nfe", None) or {})
+        md["nfe"] = dict(policy["nfe"] if isinstance(policy, dict) and "nfe" in policy
+                         else md["checkpoint_nfe"])
         md["guidance"] = dict(getattr(ex, "guidance", None) or {})
         extra = dict(getattr(ex, "extra", None) or {})
         if extra:

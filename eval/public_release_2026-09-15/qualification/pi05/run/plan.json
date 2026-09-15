@@ -1,0 +1,160 @@
+{
+  "bootstrap": {
+    "install_guide": "INSTALL.rst",
+    "notes": [
+      "Use the PI05-compatible LeRobot policy/processor stack, including its patched Transformers integration. A version string or top-level lerobot import alone is insufficient.",
+      "The old lerobot 0.4.4 has no [pi] extra. The exact compatible vendor commit/patch bundle still needs qualification.",
+      "The pinned measured checkpoint is LIBERO v044, not pi05_base. Tokenizer access/weights are checked only after download is explicitly requested."
+    ],
+    "status": "fresh_vendor_install_not_qualified",
+    "upstream_install_guide": "https://github.com/huggingface/lerobot#readme"
+  },
+  "checkpoint": {
+    "model_id": "lerobot/pi05_libero_finetuned_v044",
+    "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1"
+  },
+  "execution_mode": "fp8",
+  "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+  "library_bindings": {},
+  "limitations": [
+    "Each model requires its own compatible installed vendor environment.",
+    "prepare resolves the pinned primary checkpoint; auxiliary tokenizers/base weights must also be prepared in that environment.",
+    "Runtime captures target Jetson Thor SM110 using the unchanged capture contract.",
+    "Changed sampling policies are separate operating points, never architecture-only speedups."
+  ],
+  "matrix": {
+    "bindings": [
+      {
+        "path": "inputs/recorded_inputs_v1.npz",
+        "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      }
+    ],
+    "cells": [
+      {
+        "action_shape": [
+          7
+        ],
+        "arm": "eager_native",
+        "comparison_group": "pi05-checkpoint",
+        "effective_schedule": {
+          "nfe": {
+            "action": 10,
+            "prefix": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "expected_optimizer_environment": {},
+        "expected_runtime_kwargs": {},
+        "experimental": false,
+        "family": "pi05",
+        "id": "pi05-eager_native",
+        "model_id": "lerobot/pi05_libero_finetuned_v044",
+        "receipt": "cells/pi05-eager_native/receipt.json",
+        "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1"
+      },
+      {
+        "action_shape": [
+          7
+        ],
+        "arm": "runtime_default",
+        "comparison_group": "pi05-checkpoint",
+        "effective_schedule": {
+          "nfe": {
+            "action": 10,
+            "prefix": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "expected_optimizer_environment": {},
+        "expected_runtime_kwargs": {
+          "device": "cuda:0"
+        },
+        "experimental": false,
+        "family": "pi05",
+        "id": "pi05-runtime_default",
+        "model_id": "lerobot/pi05_libero_finetuned_v044",
+        "receipt": "cells/pi05-runtime_default/receipt.json",
+        "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1"
+      },
+      {
+        "action_shape": [
+          7
+        ],
+        "arm": "runtime_selected",
+        "comparison_group": "pi05-checkpoint",
+        "effective_schedule": {
+          "nfe": {
+            "action": 10,
+            "prefix": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "expected_optimizer_environment": {},
+        "expected_runtime_kwargs": {
+          "device": "cuda:0",
+          "precision": "fp8",
+          "step_cache": "checkpoint",
+          "tier_ceiling": "numeric"
+        },
+        "experimental": false,
+        "family": "pi05",
+        "id": "pi05-runtime_selected",
+        "model_id": "lerobot/pi05_libero_finetuned_v044",
+        "receipt": "cells/pi05-runtime_selected/receipt.json",
+        "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1"
+      }
+    ],
+    "expected_families": [
+      "pi05"
+    ],
+    "expected_main_cells": 3,
+    "expected_operating_point_cells": 0,
+    "expected_runtime_update_cells": 0,
+    "protocol": {
+      "history": {
+        "cycles_per_episode": 3,
+        "measured_episodes": 6,
+        "warmup_episodes": 1
+      },
+      "pi05_queue_calls": 51,
+      "stateless": {
+        "measured": 20,
+        "warmup": 5
+      }
+    },
+    "quality_certified": false,
+    "require_observed_schedule": true,
+    "schema": 1
+  },
+  "model": "pi05",
+  "native_requirements": [
+    {
+      "kind": "extension",
+      "name": "flash_rt.flash_rt_kernels",
+      "remedy": "Build/install serving/ for this interpreter, CUDA toolkit and Thor SM110; a source-only wheel is insufficient."
+    },
+    {
+      "kind": "package_file",
+      "name": "flash_rt/libfmha_fp16_strided.so",
+      "remedy": "Build/install the FMHA library from serving/ for Thor. Doctor checks the portable packaged location only, not old absolute-path fallbacks."
+    }
+  ],
+  "profiles_sha256": "e2510cec1f61b2a3bcc6d0ba0cfd9b71cc68e375eb2b615263056623e4a484f1",
+  "publication_ready": false,
+  "schema": "instinctflash.public_reproduction.v1",
+  "scope": "Recorded cameras and synthetic state; public predict wall time; no network or simulator/task-success measurement.",
+  "shape_provenance": {
+    "path": "eval/user_e2e_2026-09-14/matrix_final.json",
+    "scope": "Public action shapes only; historical outcomes and machine paths are not inputs.",
+    "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+  },
+  "task_quality_validated": false,
+  "unresolved_library_options": [],
+  "vendor": {
+    "pin_status": "qualified_vendor_commit_and_patch_bundle_missing",
+    "repository": "https://github.com/huggingface/lerobot",
+    "revision": null,
+    "root_env": null,
+    "source_markers": []
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "status": "complete_numeric_latency_screen",
+  "quality_certified": false,
+  "latency_p50_ms": {
+    "reference-a": 5036.26151100616,
+    "capacity-cache": 4975.862826016964,
+    "split-prefill": 4812.934615998529,
+    "reference-b": 5037.493362528039
+  },
+  "capacity_reduction_percent_vs_references": [
+    1.1992761864569768,
+    1.2234365799768665
+  ],
+  "split_reduction_percent_vs_capacity": 3.2743710129335524,
+  "combined_reduction_percent_vs_references": [
+    4.43437844757616,
+    4.457747740174023
+  ],
+  "caches": [
+    {
+      "hits": 128,
+      "misses": 128,
+      "evictions": 123,
+      "invalidations": 0,
+      "entries": 5,
+      "bytes": 90701824,
+      "max_bytes": 134217728,
+      "max_entries": 16,
+      "closed": false,
+      "fallbacks": 0,
+      "kind": "native_full_timestep_result",
+      "quality_certified": false
+    },
+    {
+      "hits": 248,
+      "misses": 8,
+      "evictions": 0,
+      "invalidations": 0,
+      "entries": 8,
+      "bytes": 180355072,
+      "max_bytes": 268435456,
+      "max_entries": 16,
+      "closed": false,
+      "fallbacks": 0,
+      "kind": "native_full_timestep_result",
+      "quality_certified": false
+    },
+    {
+      "hits": 248,
+      "misses": 8,
+      "evictions": 0,
+      "invalidations": 0,
+      "entries": 8,
+      "bytes": 180355072,
+      "max_bytes": 268435456,
+      "max_entries": 16,
+      "closed": false,
+      "fallbacks": 0,
+      "kind": "native_full_timestep_result",
+      "quality_certified": false
+    },
+    {
+      "hits": 128,
+      "misses": 128,
+      "evictions": 123,
+      "invalidations": 0,
+      "entries": 5,
+      "bytes": 90701824,
+      "max_bytes": 134217728,
+      "max_entries": 16,
+      "closed": false,
+      "fallbacks": 0,
+      "kind": "native_full_timestep_result",
+      "quality_certified": false
+    }
+  ],
+  "reference_actions_byte_equal": true,
+  "candidate_actions_byte_equal": false,
+  "action_mae": 0.09566087446523852,
+  "action_max_abs": 0.6733875274658203,
+  "action_joint_mae": 0.09616830751032726,
+  "action_gripper_mae": 0.09210884314961731,
+  "native_prefill_checks": 108,
+  "native_eager_checks": 108,
+  "measured_gen_calls_before": 216,
+  "measured_gen_calls_after": 288,
+  "schedule": {
+    "action_chunk_size": 32,
+    "action_steps": 4,
+    "guidance": 3.0,
+    "conditioning_fps": 15.0
+  },
+  "receipts": [
+    {
+      "path": "nano-reference-a.json",
+      "sha256": "006aab79b54c093f34203eff626928809a8696b78b32983795672b006d764f33"
+    },
+    {
+      "path": "nano-capacity-cache.json",
+      "sha256": "3a0b5137a83212480bab6d4a4dec48f86aa313ed66df49950e7df11633d17761"
+    },
+    {
+      "path": "nano-split-prefill.json",
+      "sha256": "3d8c656d0ae2824b65f68aadfa43b81e33f4bd1ce54d673c68feb7fb9308a31a"
+    },
+    {
+      "path": "nano-reference-b.json",
+      "sha256": "f2405e59778a5e95b1c69aa9e5473cab8ca701ed752d3ffd88ab3ff1920a617d"
+    }
+  ]
+}

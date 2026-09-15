@@ -1,0 +1,5542 @@
+{
+  "schema": "instinctflash.user_report.v1",
+  "status": "passed",
+  "matrix": {
+    "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/matrix_final.json",
+    "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+  },
+  "validator": {
+    "path": "/home/ubuntu/InstinctFlash/benchmarks/regression/user_report.py",
+    "sha256": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+  },
+  "task_quality_validated": false,
+  "recommended": false,
+  "scope": "CPU artifact/protocol validation on recorded requests; no simulator or task-quality admission",
+  "errors": [],
+  "pending": [],
+  "bindings": [],
+  "cells": [
+    {
+      "id": "pi05-eager_native",
+      "family": "pi05",
+      "arm": "eager_native",
+      "status": "passed",
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+      "precision": "native",
+      "comparison_group": "pi05-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {},
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 10
+        },
+        "nfe_after": {
+          "action": 10
+        }
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "pi05",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          7
+        ]
+      },
+      "setup_seconds": 167.65657779603498,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 772.3033810034394,
+      "measured": {
+        "count": 20,
+        "p50_ms": 408.4098825114779,
+        "mean_ms": 408.773469197331,
+        "min_ms": 407.41980395978317,
+        "max_ms": 411.65910300333053
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 408.4098825114779,
+        "mean_ms": 408.773469197331,
+        "min_ms": 407.41980395978317,
+        "max_ms": 411.65910300333053
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 408.4098825114779,
+        "mean_ms": 408.773469197331,
+        "min_ms": 407.41980395978317,
+        "max_ms": 411.65910300333053
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 10570.989285828546,
+      "timed_session_mean_ms": 422.8395714331418,
+      "setup_plus_first_predict_ms": 168428.88117703842,
+      "setup_plus_timed_calls_mean_ms": 7129.102683274541,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        7
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-eager_native/receipt.npz",
+        "sha256": "f3169f697ae1e05fbe8aa5d39b606ff5023e9c0cf0f40234c4ed2bc749090737",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          7
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "5491ea76940ad02451396095f260ee4d277697a54b302bfda5ac81b2bcc85818",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-eager_native/receipt.json",
+        "sha256": "e62ef26e7f09db4a43726085a20f43f955cf5ed2522da65e14c43b9b998bdb9c"
+      },
+      "request_sequence_sha256": "f3556849d382c5d92cb2e6a6e58d14e4fa7f6364d447d147ca4d87f2a421da16",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "succeeded on recorded requests",
+      "queue_drain": {
+        "metrics": {
+          "count": 51,
+          "p50_ms": 3.8211389910429716,
+          "mean_ms": 19.50620967830878,
+          "min_ms": 3.3234889851883054,
+          "max_ms": 407.55874797469005
+        },
+        "first_call_ms": 407.55874797469005,
+        "call_51_ms": 402.1069639711641,
+        "middle_49_calls": {
+          "count": 49,
+          "p50_ms": 3.8209810154512525,
+          "mean_ms": 3.778591462201914,
+          "min_ms": 3.3234889851883054,
+          "max_ms": 3.9917679969221354
+        },
+        "total_ms": 994.8166935937479,
+        "reset_between_calls": false,
+        "actions": {
+          "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-eager_native/receipt.queue.npz",
+          "sha256": "28959d8a53e24a1d63dd60f872f8f9dd14e79ba15c69bbe100b9ea94f2286800",
+          "actions_key": "actions",
+          "shape": [
+            51,
+            7
+          ],
+          "dtype": "float32",
+          "finite": true,
+          "array_bytes_sha256": "b9029d626611ef2122e50a92e43cc0a6f0f44b7449a358ba9bc92d8ea9a9f429",
+          "additional_unverified_arrays": []
+        },
+        "request_sequence_sha256": "22282584e2c3e4bd6cb3ddc09346b5b641383297dc914456858d9586741a5a7d",
+        "scope": "separate continuous public select_action calls; excluded from generation latency"
+      }
+    },
+    {
+      "id": "pi05-runtime_default",
+      "family": "pi05",
+      "arm": "runtime_default",
+      "status": "passed",
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+      "precision": "native",
+      "comparison_group": "pi05-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 10
+        },
+        "nfe_after": {
+          "action": 10
+        }
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "precision": "native",
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "pi05",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          7
+        ]
+      },
+      "setup_seconds": 166.90024854097283,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 733.0598219996318,
+      "measured": {
+        "count": 20,
+        "p50_ms": 306.15705050877295,
+        "mean_ms": 305.89203310082667,
+        "min_ms": 302.9553020023741,
+        "max_ms": 306.4595460309647
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 306.15705050877295,
+        "mean_ms": 305.89203310082667,
+        "min_ms": 302.9553020023741,
+        "max_ms": 306.4595460309647
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 306.15705050877295,
+        "mean_ms": 305.89203310082667,
+        "min_ms": 302.9553020023741,
+        "max_ms": 306.4595460309647
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 12496.511495963205,
+      "timed_session_mean_ms": 499.8604598385282,
+      "setup_plus_first_predict_ms": 167633.30836297246,
+      "setup_plus_timed_calls_mean_ms": 7175.870401477441,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        7
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-runtime_default/receipt.npz",
+        "sha256": "f3169f697ae1e05fbe8aa5d39b606ff5023e9c0cf0f40234c4ed2bc749090737",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          7
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "5491ea76940ad02451396095f260ee4d277697a54b302bfda5ac81b2bcc85818",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-runtime_default/receipt.json",
+        "sha256": "c089598a6dd228bcdef727cee7f303e6b17c2317ba10492d9ad21e16437aac84"
+      },
+      "request_sequence_sha256": "f3556849d382c5d92cb2e6a6e58d14e4fa7f6364d447d147ca4d87f2a421da16",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "public default succeeded on recorded requests",
+      "queue_drain": {
+        "metrics": {
+          "count": 51,
+          "p50_ms": 3.7898769951425493,
+          "mean_ms": 15.6485710850022,
+          "min_ms": 3.708267002366483,
+          "max_ms": 306.05421197833493
+        },
+        "first_call_ms": 305.89064600644633,
+        "call_51_ms": 306.05421197833493,
+        "middle_49_calls": {
+          "count": 49,
+          "p50_ms": 3.789451962802559,
+          "mean_ms": 3.7986177010271622,
+          "min_ms": 3.708267002366483,
+          "max_ms": 4.044860019348562
+        },
+        "total_ms": 798.0771253351122,
+        "reset_between_calls": false,
+        "actions": {
+          "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-runtime_default/receipt.queue.npz",
+          "sha256": "28959d8a53e24a1d63dd60f872f8f9dd14e79ba15c69bbe100b9ea94f2286800",
+          "actions_key": "actions",
+          "shape": [
+            51,
+            7
+          ],
+          "dtype": "float32",
+          "finite": true,
+          "array_bytes_sha256": "b9029d626611ef2122e50a92e43cc0a6f0f44b7449a358ba9bc92d8ea9a9f429",
+          "additional_unverified_arrays": []
+        },
+        "request_sequence_sha256": "22282584e2c3e4bd6cb3ddc09346b5b641383297dc914456858d9586741a5a7d",
+        "scope": "separate continuous public select_action calls; excluded from generation latency"
+      }
+    },
+    {
+      "id": "pi05-runtime_selected",
+      "family": "pi05",
+      "arm": "runtime_selected",
+      "status": "passed",
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+      "precision": "fp8",
+      "comparison_group": "pi05-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 10
+        },
+        "nfe_after": {
+          "action": 10
+        }
+      },
+      "execution_policy": {
+        "category": "FP8",
+        "precision": "fp8",
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "pi05",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          7
+        ]
+      },
+      "setup_seconds": 3.2729384760023095,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 3164.6287589683197,
+      "measured": {
+        "count": 20,
+        "p50_ms": 51.65317602222785,
+        "mean_ms": 51.62960595043842,
+        "min_ms": 51.446981029585004,
+        "max_ms": 51.776851003523916
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 51.65317602222785,
+        "mean_ms": 51.62960595043842,
+        "min_ms": 51.446981029585004,
+        "max_ms": 51.776851003523916
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 51.65317602222785,
+        "mean_ms": 51.62960595043842,
+        "min_ms": 51.446981029585004,
+        "max_ms": 51.776851003523916
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 4404.56696995534,
+      "timed_session_mean_ms": 176.1826787982136,
+      "setup_plus_first_predict_ms": 6437.567234970629,
+      "setup_plus_timed_calls_mean_ms": 307.100217838306,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        7
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-runtime_selected/receipt.npz",
+        "sha256": "b74afa7ec8d317e9f2690057c95f121782d81c41c29d5d7306da86e09aeedb17",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          7
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "b12ba47feaaf831f7a100cff4ff71fafa54f2ca8a213432e0b588df4acfd0fe0",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-runtime_selected/receipt.json",
+        "sha256": "a6f2b3c4492ecf9e164f989ca715e1bd29974f2442b6c74d343777f3876b3148"
+      },
+      "request_sequence_sha256": "f3556849d382c5d92cb2e6a6e58d14e4fa7f6364d447d147ca4d87f2a421da16",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "explicit numerical candidate on recorded requests",
+      "queue_drain": {
+        "metrics": {
+          "count": 51,
+          "p50_ms": 1.4692990225739777,
+          "mean_ms": 3.4483438814241514,
+          "min_ms": 1.3354559778235853,
+          "max_ms": 51.74133297987282
+        },
+        "first_call_ms": 51.636871008668095,
+        "call_51_ms": 51.74133297987282,
+        "middle_49_calls": {
+          "count": 49,
+          "p50_ms": 1.4611889491789043,
+          "mean_ms": 1.4793333462059346,
+          "min_ms": 1.3354559778235853,
+          "max_ms": 1.8363179988227785
+        },
+        "total_ms": 175.8655379526317,
+        "reset_between_calls": false,
+        "actions": {
+          "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/pi05-runtime_selected/receipt.queue.npz",
+          "sha256": "3db99580fe99db5465d15793521b27faabe888dc6cff131d801abe90f46c6ec7",
+          "actions_key": "actions",
+          "shape": [
+            51,
+            7
+          ],
+          "dtype": "float32",
+          "finite": true,
+          "array_bytes_sha256": "40eba6402cac45f189d90051abb946edcba25e015f05359eea92beafd4161c0b",
+          "additional_unverified_arrays": []
+        },
+        "request_sequence_sha256": "22282584e2c3e4bd6cb3ddc09346b5b641383297dc914456858d9586741a5a7d",
+        "scope": "separate continuous public select_action calls; excluded from generation latency"
+      }
+    },
+    {
+      "id": "vla4-eager_native",
+      "family": "vla4",
+      "arm": "eager_native",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e",
+      "precision": "native",
+      "comparison_group": "vla4-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {},
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 10
+        },
+        "nfe_after": {
+          "action": 10
+        }
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "vla4",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          25,
+          14
+        ]
+      },
+      "setup_seconds": 46.46970004204195,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 1083.269676018972,
+      "measured": {
+        "count": 20,
+        "p50_ms": 655.4702445282601,
+        "mean_ms": 660.1959480933147,
+        "min_ms": 640.2193349786103,
+        "max_ms": 697.9699479998089
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 655.4702445282601,
+        "mean_ms": 660.1959480933147,
+        "min_ms": 640.2193349786103,
+        "max_ms": 697.9699479998089
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 655.4702445282601,
+        "mean_ms": 660.1959480933147,
+        "min_ms": 640.2193349786103,
+        "max_ms": 697.9699479998089
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 16940.39666088065,
+      "timed_session_mean_ms": 677.615866435226,
+      "setup_plus_first_predict_ms": 47552.96971806092,
+      "setup_plus_timed_calls_mean_ms": 2536.403868116904,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        25,
+        14
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla4-eager_native/receipt.npz",
+        "sha256": "66a170074d6437cd8ae36bfdaa105123d2a9725f3b75e30512ba5f3c185610f9",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          25,
+          14
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "f47d93fa2582a7b902f65dc56e8dbc0ff61deeca3d4b96747a10fc3a62f2e42d",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla4-eager_native/receipt.json",
+        "sha256": "ae1aaa5154aec22cff218c9da31501d54c2b8cfe9426b45c8493a28d4e38533d"
+      },
+      "request_sequence_sha256": "920aad6a8cf3951ae04b7c54132a0ddc2addbb1570a3172c719f5334d531a7c0",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "succeeded on recorded requests"
+    },
+    {
+      "id": "vla4-runtime_default",
+      "family": "vla4",
+      "arm": "runtime_default",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e",
+      "precision": "native",
+      "comparison_group": "vla4-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 10
+        },
+        "nfe_after": {
+          "action": 10
+        }
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "precision": "native",
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "vla4",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          25,
+          14
+        ]
+      },
+      "setup_seconds": 43.963853335008025,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 2251.3698079856113,
+      "measured": {
+        "count": 20,
+        "p50_ms": 249.1555954911746,
+        "mean_ms": 249.32613675191533,
+        "min_ms": 247.1099760150537,
+        "max_ms": 254.33560501551256
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 249.1555954911746,
+        "mean_ms": 249.32613675191533,
+        "min_ms": 247.1099760150537,
+        "max_ms": 254.33560501551256
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 249.1555954911746,
+        "mean_ms": 249.32613675191533,
+        "min_ms": 247.1099760150537,
+        "max_ms": 254.33560501551256
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 14065.611797035672,
+      "timed_session_mean_ms": 562.6244718814269,
+      "setup_plus_first_predict_ms": 46215.22314299364,
+      "setup_plus_timed_calls_mean_ms": 2321.178605281748,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        25,
+        14
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla4-runtime_default/receipt.npz",
+        "sha256": "66a170074d6437cd8ae36bfdaa105123d2a9725f3b75e30512ba5f3c185610f9",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          25,
+          14
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "f47d93fa2582a7b902f65dc56e8dbc0ff61deeca3d4b96747a10fc3a62f2e42d",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla4-runtime_default/receipt.json",
+        "sha256": "99f204d3318a79e40c54982c0a71ab43e79c26a09eee3c2a38da6e83f17d21f4"
+      },
+      "request_sequence_sha256": "920aad6a8cf3951ae04b7c54132a0ddc2addbb1570a3172c719f5334d531a7c0",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "public default succeeded on recorded requests"
+    },
+    {
+      "id": "vla4-runtime_selected",
+      "family": "vla4",
+      "arm": "runtime_selected",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e",
+      "precision": "fp8",
+      "comparison_group": "vla4-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 10
+        },
+        "nfe_after": {
+          "action": 10
+        }
+      },
+      "execution_policy": {
+        "category": "FP8",
+        "precision": "fp8",
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "vla4",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          25,
+          14
+        ]
+      },
+      "setup_seconds": 18.714942303020507,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 2044.7466209880076,
+      "measured": {
+        "count": 20,
+        "p50_ms": 756.5031980047934,
+        "mean_ms": 756.0694494575728,
+        "min_ms": 744.4063310394995,
+        "max_ms": 760.8050249982625
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 756.5031980047934,
+        "mean_ms": 756.0694494575728,
+        "min_ms": 744.4063310394995,
+        "max_ms": 760.8050249982625
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 756.5031980047934,
+        "mean_ms": 756.0694494575728,
+        "min_ms": 744.4063310394995,
+        "max_ms": 760.8050249982625
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 20224.7403471265,
+      "timed_session_mean_ms": 808.98961388506,
+      "setup_plus_first_predict_ms": 20759.688924008515,
+      "setup_plus_timed_calls_mean_ms": 1557.5873060058802,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        25,
+        14
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla4-runtime_selected/receipt.npz",
+        "sha256": "0ee32248118947d677e8d0bfbe8d88fd33be0e2eed79c037f91c849005c2bcc3",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          25,
+          14
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "d2d9d65fce82d7c31501958117c4adbbe597761b633cef53760d718db11cc173",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla4-runtime_selected/receipt.json",
+        "sha256": "00a3e0e9ffa025a2e5d6442c10d0252eb68cf9c2deab95688bb3d73fc009581b"
+      },
+      "request_sequence_sha256": "920aad6a8cf3951ae04b7c54132a0ddc2addbb1570a3172c719f5334d531a7c0",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "explicit numerical candidate on recorded requests"
+    },
+    {
+      "id": "vla2-eager_native",
+      "family": "vla2",
+      "arm": "eager_native",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "revision": "0451855729ec904f970600e0aec8b84661423afe",
+      "precision": "native",
+      "comparison_group": "vla2-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {},
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 10
+        },
+        "nfe_after": {
+          "action": 10
+        }
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "vla2",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          50,
+          14
+        ]
+      },
+      "setup_seconds": 58.85604822298046,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 1257.3001550044864,
+      "measured": {
+        "count": 20,
+        "p50_ms": 730.1150999846868,
+        "mean_ms": 730.2534296992235,
+        "min_ms": 728.4706030040979,
+        "max_ms": 732.146936992649
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 730.1150999846868,
+        "mean_ms": 730.2534296992235,
+        "min_ms": 728.4706030040979,
+        "max_ms": 732.146936992649
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 730.1150999846868,
+        "mean_ms": 730.2534296992235,
+        "min_ms": 728.4706030040979,
+        "max_ms": 732.146936992649
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 18785.227126034442,
+      "timed_session_mean_ms": 751.4090850413777,
+      "setup_plus_first_predict_ms": 60113.34837798495,
+      "setup_plus_timed_calls_mean_ms": 3105.651013960596,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        50,
+        14
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla2-eager_native/receipt.npz",
+        "sha256": "c8bc8dc2639267c49144bd6ed35bd9622784a9a3be988fbf7c525d9714be23f0",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          50,
+          14
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "c6c9df1d80836788ca1c7793ec7e8670bfd8383da2cd99a77395856115226bef",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla2-eager_native/receipt.json",
+        "sha256": "3985bcd2433625b5f96ab52d4d8213b4d05db3118cfde357b72275418dc1f771"
+      },
+      "request_sequence_sha256": "920aad6a8cf3951ae04b7c54132a0ddc2addbb1570a3172c719f5334d531a7c0",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "succeeded on recorded requests"
+    },
+    {
+      "id": "vla2-runtime_default",
+      "family": "vla2",
+      "arm": "runtime_default",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "revision": "0451855729ec904f970600e0aec8b84661423afe",
+      "precision": "native",
+      "comparison_group": "vla2-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 10
+        },
+        "nfe_after": {
+          "action": 10
+        }
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "precision": "native",
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "vla2",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          50,
+          14
+        ]
+      },
+      "setup_seconds": 53.79574535804568,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 1220.7743150065653,
+      "measured": {
+        "count": 20,
+        "p50_ms": 737.5382029567845,
+        "mean_ms": 737.6149283954874,
+        "min_ms": 731.2363850069232,
+        "max_ms": 742.2956659574993
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 737.5382029567845,
+        "mean_ms": 737.6149283954874,
+        "min_ms": 731.2363850069232,
+        "max_ms": 742.2956659574993
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 737.5382029567845,
+        "mean_ms": 737.6149283954874,
+        "min_ms": 731.2363850069232,
+        "max_ms": 742.2956659574993
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 18912.90348197799,
+      "timed_session_mean_ms": 756.5161392791197,
+      "setup_plus_first_predict_ms": 55016.519673052244,
+      "setup_plus_timed_calls_mean_ms": 2908.345953600947,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        50,
+        14
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla2-runtime_default/receipt.npz",
+        "sha256": "c8bc8dc2639267c49144bd6ed35bd9622784a9a3be988fbf7c525d9714be23f0",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          50,
+          14
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "c6c9df1d80836788ca1c7793ec7e8670bfd8383da2cd99a77395856115226bef",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla2-runtime_default/receipt.json",
+        "sha256": "cc323432eadb55f47217a47f0efaedd345f60e0f3875dc3a6221a8b932d32f41"
+      },
+      "request_sequence_sha256": "920aad6a8cf3951ae04b7c54132a0ddc2addbb1570a3172c719f5334d531a7c0",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "public default succeeded on recorded requests"
+    },
+    {
+      "id": "vla2-runtime_selected",
+      "family": "vla2",
+      "arm": "runtime_selected",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "revision": "0451855729ec904f970600e0aec8b84661423afe",
+      "precision": "fp8",
+      "comparison_group": "vla2-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 10
+        },
+        "nfe_after": {
+          "action": 10
+        }
+      },
+      "execution_policy": {
+        "category": "FP8",
+        "precision": "fp8",
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "vla2",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          50,
+          14
+        ]
+      },
+      "setup_seconds": 29.81319330498809,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 1511.4776089903899,
+      "measured": {
+        "count": 20,
+        "p50_ms": 933.0052605073433,
+        "mean_ms": 932.1669512515655,
+        "min_ms": 922.5905279745348,
+        "max_ms": 939.1076700412668
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 933.0052605073433,
+        "mean_ms": 932.1669512515655,
+        "min_ms": 922.5905279745348,
+        "max_ms": 939.1076700412668
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 933.0052605073433,
+        "mean_ms": 932.1669512515655,
+        "min_ms": 922.5905279745348,
+        "max_ms": 939.1076700412668
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 23860.155571077485,
+      "timed_session_mean_ms": 954.4062228430994,
+      "setup_plus_first_predict_ms": 31324.67091397848,
+      "setup_plus_timed_calls_mean_ms": 2146.933955042623,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        50,
+        14
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla2-runtime_selected/receipt.npz",
+        "sha256": "1b1bbe9be51597980cdd0249f3c1e269ec60c8ecc99da091526998771ed8fb6d",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          50,
+          14
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "f5a42195821da68dcc6ceec646073225537d408afada2d3449a106b54aedde9e",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla2-runtime_selected/receipt.json",
+        "sha256": "df40e9567097062a3a50d9e39d12a31f4a5478a97327abfc107ca750fc77b77a"
+      },
+      "request_sequence_sha256": "920aad6a8cf3951ae04b7c54132a0ddc2addbb1570a3172c719f5334d531a7c0",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "explicit numerical candidate on recorded requests"
+    },
+    {
+      "id": "groot-eager_native",
+      "family": "groot",
+      "arm": "eager_native",
+      "status": "passed",
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495",
+      "precision": "native",
+      "comparison_group": "groot-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {},
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 4,
+        "backbone": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 4
+        },
+        "nfe_after": {
+          "action": 4
+        }
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "groot",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          40,
+          17
+        ]
+      },
+      "setup_seconds": 12.175142945023254,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 588.3601869572885,
+      "measured": {
+        "count": 20,
+        "p50_ms": 138.05804899311624,
+        "mean_ms": 136.71284805168398,
+        "min_ms": 131.51648896746337,
+        "max_ms": 140.38299303501844
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 138.05804899311624,
+        "mean_ms": 136.71284805168398,
+        "min_ms": 131.51648896746337,
+        "max_ms": 140.38299303501844
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 138.05804899311624,
+        "mean_ms": 136.71284805168398,
+        "min_ms": 131.51648896746337,
+        "max_ms": 140.38299303501844
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 3852.672957989853,
+      "timed_session_mean_ms": 154.10691831959412,
+      "setup_plus_first_predict_ms": 12763.503131980542,
+      "setup_plus_timed_calls_mean_ms": 641.1126361205243,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        40,
+        17
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/groot-eager_native/receipt.npz",
+        "sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          40,
+          17
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "f57f5d422ea3b4aeb2e1869bc6d3f27d4cdbae8fbb076abd5d9b565a191a79cf",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/groot-eager_native/receipt.json",
+        "sha256": "48fefd503cc09b38e17cd364c833c05434825ae4eb9f7f4512c0c59e4314bc59"
+      },
+      "request_sequence_sha256": "9643494d5ac8d25c12a33705cdcaccd5033fbba8437d866211594e03855065b9",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "succeeded on recorded requests"
+    },
+    {
+      "id": "groot-runtime_default",
+      "family": "groot",
+      "arm": "runtime_default",
+      "status": "passed",
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495",
+      "precision": "native",
+      "comparison_group": "groot-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 4,
+        "backbone": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 4
+        },
+        "nfe_after": {
+          "action": 4
+        }
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "precision": "native",
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT",
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "groot",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          40,
+          17
+        ]
+      },
+      "setup_seconds": 10.293376232031733,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 748.3219160349108,
+      "measured": {
+        "count": 20,
+        "p50_ms": 111.06070250389166,
+        "mean_ms": 111.3914214540273,
+        "min_ms": 110.55700399447232,
+        "max_ms": 117.56002501351759
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 111.06070250389166,
+        "mean_ms": 111.3914214540273,
+        "min_ms": 110.55700399447232,
+        "max_ms": 117.56002501351759
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 111.06070250389166,
+        "mean_ms": 111.3914214540273,
+        "min_ms": 110.55700399447232,
+        "max_ms": 117.56002501351759
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 3457.7556960866787,
+      "timed_session_mean_ms": 138.31022784346715,
+      "setup_plus_first_predict_ms": 11041.698148066644,
+      "setup_plus_timed_calls_mean_ms": 550.0452771247365,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        40,
+        17
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/groot-runtime_default/receipt.npz",
+        "sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          40,
+          17
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "f57f5d422ea3b4aeb2e1869bc6d3f27d4cdbae8fbb076abd5d9b565a191a79cf",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/groot-runtime_default/receipt.json",
+        "sha256": "6e6785bb41d6f82290207241a556fb1f6ded0f0056f4c29fac351603ff10d8aa"
+      },
+      "request_sequence_sha256": "9643494d5ac8d25c12a33705cdcaccd5033fbba8437d866211594e03855065b9",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "public default succeeded on recorded requests"
+    },
+    {
+      "id": "groot-runtime_selected",
+      "family": "groot",
+      "arm": "runtime_selected",
+      "status": "passed",
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495",
+      "precision": "native",
+      "comparison_group": "groot-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 4,
+        "backbone": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 4
+        },
+        "nfe_after": {
+          "action": 4
+        }
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "precision": "native",
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT",
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "groot",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          40,
+          17
+        ]
+      },
+      "setup_seconds": 9.91370694001671,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 751.8618969479576,
+      "measured": {
+        "count": 20,
+        "p50_ms": 110.8901780389715,
+        "mean_ms": 111.2933007592801,
+        "min_ms": 110.58915196917951,
+        "max_ms": 117.57477401988581
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 110.8901780389715,
+        "mean_ms": 111.2933007592801,
+        "min_ms": 110.58915196917951,
+        "max_ms": 117.57477401988581
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 110.8901780389715,
+        "mean_ms": 111.2933007592801,
+        "min_ms": 110.58915196917951,
+        "max_ms": 117.57477401988581
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 3458.842328109313,
+      "timed_session_mean_ms": 138.3536931243725,
+      "setup_plus_first_predict_ms": 10665.568836964667,
+      "setup_plus_timed_calls_mean_ms": 534.9019707250409,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        40,
+        17
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/groot-runtime_selected/receipt.npz",
+        "sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          40,
+          17
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "f57f5d422ea3b4aeb2e1869bc6d3f27d4cdbae8fbb076abd5d9b565a191a79cf",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/groot-runtime_selected/receipt.json",
+        "sha256": "0030548afe9c885644d1ee5c950ada6c2fbe1eed84142d2109629c699f22ec1c"
+      },
+      "request_sequence_sha256": "9643494d5ac8d25c12a33705cdcaccd5033fbba8437d866211594e03855065b9",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "succeeded on recorded requests"
+    },
+    {
+      "id": "edge-eager_native",
+      "family": "edge",
+      "arm": "eager_native",
+      "status": "passed",
+      "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+      "revision": "f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+      "precision": "native",
+      "comparison_group": "edge-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {},
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 4,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "prefix": 1,
+          "action": 4
+        },
+        "nfe_after": {
+          "prefix": 1,
+          "action": 4
+        }
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.10.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "edge",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          32,
+          8
+        ]
+      },
+      "setup_seconds": 11.054411805002019,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 4691.7217100271955,
+      "measured": {
+        "count": 20,
+        "p50_ms": 3387.8594055131543,
+        "mean_ms": 3387.2093265410513,
+        "min_ms": 3382.9873310169205,
+        "max_ms": 3389.0770639991388
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 3387.8594055131543,
+        "mean_ms": 3387.2093265410513,
+        "min_ms": 3382.9873310169205,
+        "max_ms": 3389.0770639991388
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 3387.8594055131543,
+        "mean_ms": 3387.2093265410513,
+        "min_ms": 3382.9873310169205,
+        "max_ms": 3389.0770639991388
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 86001.87721982365,
+      "timed_session_mean_ms": 3440.075088792946,
+      "setup_plus_first_predict_ms": 15746.133515029214,
+      "setup_plus_timed_calls_mean_ms": 3882.251560993027,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        32,
+        8
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/edge-eager_native-path-recovery/receipt.npz",
+        "sha256": "b2c3f3c325ad048183d659f102eed53fc315b631d64e3a1a2e07c653f1254a89",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "3718858ae037df877c724f5e9e43086babbf5c3a49f4789f1a9a741469b6d0e9",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/edge-eager_native-path-recovery/receipt.json",
+        "sha256": "f50c098a7b7162ffb1c52900090c2796cede62762c6e0f123b12c3129158b46c"
+      },
+      "request_sequence_sha256": "0a3d79bdc9bbfe21ea1bd9006a74281373bec87cae0a0748a17bd51ac1983490",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "succeeded on recorded requests"
+    },
+    {
+      "id": "edge-runtime_default",
+      "family": "edge",
+      "arm": "runtime_default",
+      "status": "passed",
+      "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+      "revision": "f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+      "precision": "native",
+      "comparison_group": "edge-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 4,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "prefix": 1,
+          "action": 4
+        },
+        "nfe_after": {
+          "prefix": 1,
+          "action": 4
+        }
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "precision": "native",
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT",
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.10.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "edge",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          32,
+          8
+        ]
+      },
+      "setup_seconds": 9.260823032993358,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 6912.769726943225,
+      "measured": {
+        "count": 20,
+        "p50_ms": 2556.139107007766,
+        "mean_ms": 2556.1550826008897,
+        "min_ms": 2551.939796016086,
+        "max_ms": 2560.4820779990405
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 2556.139107007766,
+        "mean_ms": 2556.1550826008897,
+        "min_ms": 2551.939796016086,
+        "max_ms": 2560.4820779990405
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 2556.139107007766,
+        "mean_ms": 2556.1550826008897,
+        "min_ms": 2551.939796016086,
+        "max_ms": 2560.4820779990405
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 68272.77892205166,
+      "timed_session_mean_ms": 2730.9111568820663,
+      "setup_plus_first_predict_ms": 16173.592759936582,
+      "setup_plus_timed_calls_mean_ms": 3101.3440782018006,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        32,
+        8
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/edge-runtime_default/receipt.npz",
+        "sha256": "b2c3f3c325ad048183d659f102eed53fc315b631d64e3a1a2e07c653f1254a89",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "3718858ae037df877c724f5e9e43086babbf5c3a49f4789f1a9a741469b6d0e9",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/edge-runtime_default/receipt.json",
+        "sha256": "77124b2a98e26d02019f29b151111b0a882f9f9181cb794616140fdcf4c66951"
+      },
+      "request_sequence_sha256": "0a3d79bdc9bbfe21ea1bd9006a74281373bec87cae0a0748a17bd51ac1983490",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "public default succeeded on recorded requests"
+    },
+    {
+      "id": "edge-runtime_selected",
+      "family": "edge",
+      "arm": "runtime_selected",
+      "status": "passed",
+      "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+      "revision": "f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+      "precision": "native",
+      "comparison_group": "edge-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "tier_ceiling": "numeric"
+      },
+      "optimizer_environment": {
+        "IFL_COSMOS3_GEN_REGIONS": "1",
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1",
+        "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+        "IFL_BF16_LINEAR_RELU2": "1",
+        "IFL_BF16_KERNEL_LIBRARY": "/home/guanming/ifl_eval/user_e2e_20260914/native/libinstinctflash_bf16.so"
+      },
+      "default_schedule": {
+        "action": 4,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "prefix": 1,
+          "action": 4
+        },
+        "nfe_after": {
+          "prefix": 1,
+          "action": 4
+        }
+      },
+      "execution_policy": {
+        "category": "NUMERIC",
+        "precision": "native",
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC",
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.10.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "edge",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          32,
+          8
+        ]
+      },
+      "setup_seconds": 8.935299561009742,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 8050.181130995043,
+      "measured": {
+        "count": 20,
+        "p50_ms": 1041.5298150037415,
+        "mean_ms": 1041.599228506675,
+        "min_ms": 1036.3338580355048,
+        "max_ms": 1046.0735249798745
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 1041.5298150037415,
+        "mean_ms": 1041.599228506675,
+        "min_ms": 1036.3338580355048,
+        "max_ms": 1046.0735249798745
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 1041.5298150037415,
+        "mean_ms": 1041.599228506675,
+        "min_ms": 1036.3338580355048,
+        "max_ms": 1046.0735249798745
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 34255.041111202445,
+      "timed_session_mean_ms": 1370.2016444480978,
+      "setup_plus_first_predict_ms": 16985.480692004785,
+      "setup_plus_timed_calls_mean_ms": 1727.6136268884875,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        32,
+        8
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/edge-runtime_selected/receipt.npz",
+        "sha256": "adff00483c22a5f392347c03187d85c3ef5269658d27da1d5a2f7dd40a4d43d3",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "7e86192059d40704f87e5b02969fe377696c1c37eb9d31708d6dfddf9afeb496",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/edge-runtime_selected/receipt.json",
+        "sha256": "b2853f975b6325f65a3e32f753328749eb78600f9ad1af5f18c172e36e20f242"
+      },
+      "request_sequence_sha256": "0a3d79bdc9bbfe21ea1bd9006a74281373bec87cae0a0748a17bd51ac1983490",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "explicit numerical candidate on recorded requests"
+    },
+    {
+      "id": "nano-eager_native",
+      "family": "nano",
+      "arm": "eager_native",
+      "status": "passed",
+      "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+      "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e",
+      "precision": "native",
+      "comparison_group": "nano-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {},
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 4,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "prefix": 1,
+          "action": 4
+        },
+        "nfe_after": {
+          "prefix": 1,
+          "action": 4
+        }
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.10.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "nano",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          32,
+          8
+        ]
+      },
+      "setup_seconds": 29.16944606398465,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 10878.595529007725,
+      "measured": {
+        "count": 20,
+        "p50_ms": 10259.535404999042,
+        "mean_ms": 10259.308625999256,
+        "min_ms": 10238.810281967744,
+        "max_ms": 10279.677226033527
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 10259.535404999042,
+        "mean_ms": 10259.308625999256,
+        "min_ms": 10238.810281967744,
+        "max_ms": 10279.677226033527
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 10259.535404999042,
+        "mean_ms": 10259.308625999256,
+        "min_ms": 10238.810281967744,
+        "max_ms": 10279.677226033527
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 257101.83130501537,
+      "timed_session_mean_ms": 10284.073252200615,
+      "setup_plus_first_predict_ms": 40048.04159299238,
+      "setup_plus_timed_calls_mean_ms": 11450.85109476,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        32,
+        8
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/nano-eager_native/receipt.npz",
+        "sha256": "b5339d0905dbcb415af12e49eb6c9ff7886bcbeb2ef52d530b1c1eaa40fddf32",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "d7284d8be2a13065fb88dc8a41f0217be61e3a2ffa4a982f00967e7547a85edb",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/nano-eager_native/receipt.json",
+        "sha256": "85e53fd3cc1f8a9172288b8ca31cb9bc2cc4ae9522c9aa7b111e16a152e5111c"
+      },
+      "request_sequence_sha256": "0a3d79bdc9bbfe21ea1bd9006a74281373bec87cae0a0748a17bd51ac1983490",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "succeeded on recorded requests"
+    },
+    {
+      "id": "nano-runtime_default",
+      "family": "nano",
+      "arm": "runtime_default",
+      "status": "passed",
+      "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+      "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e",
+      "precision": "native",
+      "comparison_group": "nano-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 4,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "prefix": 1,
+          "action": 4
+        },
+        "nfe_after": {
+          "prefix": 1,
+          "action": 4
+        }
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "precision": "native",
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT",
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.10.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "nano",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          32,
+          8
+        ]
+      },
+      "setup_seconds": 25.434500992996618,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 9986.894892004784,
+      "measured": {
+        "count": 20,
+        "p50_ms": 8585.284603992477,
+        "mean_ms": 8585.215320347925,
+        "min_ms": 8567.852640990168,
+        "max_ms": 8597.994391981047
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 8585.284603992477,
+        "mean_ms": 8585.215320347925,
+        "min_ms": 8567.852640990168,
+        "max_ms": 8597.994391981047
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 8585.284603992477,
+        "mean_ms": 8585.215320347925,
+        "min_ms": 8567.852640990168,
+        "max_ms": 8597.994391981047
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 216021.23621694045,
+      "timed_session_mean_ms": 8640.849448677618,
+      "setup_plus_first_predict_ms": 35421.3958850014,
+      "setup_plus_timed_calls_mean_ms": 9658.229488397483,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        32,
+        8
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/nano-runtime_default/receipt.npz",
+        "sha256": "b5339d0905dbcb415af12e49eb6c9ff7886bcbeb2ef52d530b1c1eaa40fddf32",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "d7284d8be2a13065fb88dc8a41f0217be61e3a2ffa4a982f00967e7547a85edb",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/nano-runtime_default/receipt.json",
+        "sha256": "e1f14dd51c3c109da0b1e9051b8ab132039d6ac6620ed247abece8a9dcbc16d8"
+      },
+      "request_sequence_sha256": "0a3d79bdc9bbfe21ea1bd9006a74281373bec87cae0a0748a17bd51ac1983490",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "public default succeeded on recorded requests"
+    },
+    {
+      "id": "nano-runtime_selected",
+      "family": "nano",
+      "arm": "runtime_selected",
+      "status": "passed",
+      "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+      "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e",
+      "precision": "native",
+      "comparison_group": "nano-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "tier_ceiling": "numeric"
+      },
+      "optimizer_environment": {
+        "IFL_COSMOS3_GEN_REGIONS": "1",
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1",
+        "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+        "IFL_BF16_LINEAR_RELU2": "0"
+      },
+      "default_schedule": {
+        "action": 4,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "prefix": 1,
+          "action": 4
+        },
+        "nfe_after": {
+          "prefix": 1,
+          "action": 4
+        }
+      },
+      "execution_policy": {
+        "category": "NUMERIC",
+        "precision": "native",
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC",
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.10.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "nano",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          32,
+          8
+        ]
+      },
+      "setup_seconds": 22.26536351098912,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 11251.861121039838,
+      "measured": {
+        "count": 20,
+        "p50_ms": 4800.375280989101,
+        "mean_ms": 4801.163954194635,
+        "min_ms": 4785.502890998032,
+        "max_ms": 4816.245952970348
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 4800.375280989101,
+        "mean_ms": 4801.163954194635,
+        "min_ms": 4785.502890998032,
+        "max_ms": 4816.245952970348
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 4800.375280989101,
+        "mean_ms": 4801.163954194635,
+        "min_ms": 4785.502890998032,
+        "max_ms": 4816.245952970348
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 127878.48240294261,
+      "timed_session_mean_ms": 5115.139296117704,
+      "setup_plus_first_predict_ms": 33517.224632028956,
+      "setup_plus_timed_calls_mean_ms": 6005.753836557269,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        32,
+        8
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/nano-runtime_selected/receipt.npz",
+        "sha256": "c3d85891daced8d6a96a7c2cc34ea4a2b5f5fc32a1636cc15a3d5c96f9a38a01",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "fdda920e220b6b329ee894e5a9483e1f5cfaf2bdf9022696af4e8f8f39902dfa",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/nano-runtime_selected/receipt.json",
+        "sha256": "23f98fe419c72a0453c7be3d193be14c07fd612b80cd3a5d71e38406baba976e"
+      },
+      "request_sequence_sha256": "0a3d79bdc9bbfe21ea1bd9006a74281373bec87cae0a0748a17bd51ac1983490",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "explicit numerical candidate on recorded requests"
+    },
+    {
+      "id": "va-eager_native",
+      "family": "va",
+      "arm": "eager_native",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+      "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+      "precision": "native",
+      "comparison_group": "va-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {},
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 50,
+        "video": 25
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 25,
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        }
+      },
+      "guidance": "{'action': 'positive_only', 'video': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "video": 25,
+          "action": 50
+        },
+        "nfe_after": {
+          "video": 25,
+          "action": 50
+        }
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "va",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          16,
+          2,
+          16
+        ]
+      },
+      "setup_seconds": 24.428499403991736,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 14645.341106981505,
+      "measured": {
+        "count": 18,
+        "p50_ms": 14856.715006491868,
+        "mean_ms": 14731.595934659708,
+        "min_ms": 13936.39649200486,
+        "max_ms": 15459.763552004006
+      },
+      "primary_metric": "continuation_p50_ms",
+      "primary": {
+        "count": 12,
+        "p50_ms": 15105.693432473345,
+        "mean_ms": 15111.347580575966,
+        "min_ms": 14816.247401002329,
+        "max_ms": 15459.763552004006
+      },
+      "new_episode": {
+        "count": 6,
+        "p50_ms": 13960.128907987382,
+        "mean_ms": 13972.092642827192,
+        "min_ms": 13936.39649200486,
+        "max_ms": 14035.860717995092
+      },
+      "total_calls": 21,
+      "warmup_calls": 3,
+      "timed_session_ms": 310131.4322918188,
+      "timed_session_mean_ms": 14768.163442467561,
+      "setup_plus_first_predict_ms": 39073.84051097324,
+      "setup_plus_timed_calls_mean_ms": 15931.42531884812,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-eager_native/receipt.npz",
+        "sha256": "9ec5a12fa2e802f4a3349bef062a2414d1a5c794881de829941b6bfcdef47cb4",
+        "actions_key": "actions",
+        "shape": [
+          21,
+          16,
+          2,
+          16
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "919d8be855176a58339fd4685f768d96205aa6c3f5b1e134f1dfb96a6d236d1d",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-eager_native/receipt.json",
+        "sha256": "1af8f85271fb6bdebdd4d5331271aab8444d77ce70546c77965215dacc17db8b"
+      },
+      "request_sequence_sha256": "381ae93226814840d1d05035dc9d8fa9cd7e2ebe12abf485610bd0ead50e4ab1",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "succeeded on recorded requests"
+    },
+    {
+      "id": "va-runtime_default",
+      "family": "va",
+      "arm": "runtime_default",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+      "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+      "precision": "native",
+      "comparison_group": "va-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 50,
+        "video": 25
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 25,
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        }
+      },
+      "guidance": "{'action': 'positive_only', 'video': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "video": 25,
+          "action": 50
+        },
+        "nfe_after": {
+          "video": 25,
+          "action": 50
+        }
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "precision": "native",
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT",
+        "nfe": {
+          "action": 50,
+          "video": 25
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "va",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          16,
+          2,
+          16
+        ]
+      },
+      "setup_seconds": 17.920420380018186,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 5781.340433983132,
+      "measured": {
+        "count": 18,
+        "p50_ms": 5539.765772526152,
+        "mean_ms": 5510.241598398554,
+        "min_ms": 5264.296784007456,
+        "max_ms": 5720.359993050806
+      },
+      "primary_metric": "continuation_p50_ms",
+      "primary": {
+        "count": 12,
+        "p50_ms": 5632.089959020959,
+        "mean_ms": 5628.238897756091,
+        "min_ms": 5531.9387940107845,
+        "max_ms": 5720.359993050806
+      },
+      "new_episode": {
+        "count": 6,
+        "p50_ms": 5267.709421023028,
+        "mean_ms": 5274.24699968348,
+        "min_ms": 5264.296784007456,
+        "max_ms": 5301.956650044303
+      },
+      "total_calls": 21,
+      "warmup_calls": 3,
+      "timed_session_ms": 116302.47501115082,
+      "timed_session_mean_ms": 5538.213095769087,
+      "setup_plus_first_predict_ms": 23701.760814001318,
+      "setup_plus_timed_calls_mean_ms": 6391.566447198524,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-runtime_default/receipt.npz",
+        "sha256": "9ec5a12fa2e802f4a3349bef062a2414d1a5c794881de829941b6bfcdef47cb4",
+        "actions_key": "actions",
+        "shape": [
+          21,
+          16,
+          2,
+          16
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "919d8be855176a58339fd4685f768d96205aa6c3f5b1e134f1dfb96a6d236d1d",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-runtime_default/receipt.json",
+        "sha256": "e0e6faed8ea2090fcfd5cda59a3c7b6cbb48536f7b5831c3d1452286596f8e6b"
+      },
+      "request_sequence_sha256": "381ae93226814840d1d05035dc9d8fa9cd7e2ebe12abf485610bd0ead50e4ab1",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "public default succeeded on recorded requests"
+    },
+    {
+      "id": "va-runtime_selected",
+      "family": "va",
+      "arm": "runtime_selected",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+      "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+      "precision": "fp8",
+      "comparison_group": "va-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8",
+        "exclude_passes": [
+          "cfg_branch_elision"
+        ]
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 50,
+        "video": 25
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 25,
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        }
+      },
+      "guidance": "{'action': 'positive_only', 'video': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "video": 25,
+          "action": 50
+        },
+        "nfe_after": {
+          "video": 25,
+          "action": 50
+        }
+      },
+      "execution_policy": {
+        "category": "FP8",
+        "precision": "fp8",
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC",
+        "nfe": {
+          "action": 50,
+          "video": 25
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "va",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          16,
+          2,
+          16
+        ]
+      },
+      "setup_seconds": 20.61727280699415,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 7002.633824013174,
+      "measured": {
+        "count": 18,
+        "p50_ms": 2812.0275319670327,
+        "mean_ms": 2822.030024942554,
+        "min_ms": 2677.239790034946,
+        "max_ms": 2959.238667972386
+      },
+      "primary_metric": "continuation_p50_ms",
+      "primary": {
+        "count": 12,
+        "p50_ms": 2889.5130584714934,
+        "mean_ms": 2885.9356314884885,
+        "min_ms": 2811.3918240414932,
+        "max_ms": 2959.238667972386
+      },
+      "new_episode": {
+        "count": 6,
+        "p50_ms": 2678.755336033646,
+        "mean_ms": 2694.2188118506842,
+        "min_ms": 2677.239790034946,
+        "max_ms": 2773.4920569928363
+      },
+      "total_calls": 21,
+      "warmup_calls": 3,
+      "timed_session_ms": 65497.371207980905,
+      "timed_session_mean_ms": 3118.922438475281,
+      "setup_plus_first_predict_ms": 27619.906631007325,
+      "setup_plus_timed_calls_mean_ms": 4100.697334046431,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-runtime_selected/receipt.npz",
+        "sha256": "71ad5839f6851b70eafa896129cd3cfc637a9c743fe7825ff0013c06880c56fc",
+        "actions_key": "actions",
+        "shape": [
+          21,
+          16,
+          2,
+          16
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "ae35fee9a60cbd83adc82545442542acd55a8110f65a8a4ad04ef5040b961851",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-runtime_selected/receipt.json",
+        "sha256": "4107339b13a31007a37fcefce89e8d0ac8e0c4b6270ad772f8ddc3fd8287e494"
+      },
+      "request_sequence_sha256": "381ae93226814840d1d05035dc9d8fa9cd7e2ebe12abf485610bd0ead50e4ab1",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "explicit numerical candidate on recorded requests"
+    },
+    {
+      "id": "dreamzero-eager_native",
+      "family": "dreamzero",
+      "arm": "eager_native",
+      "status": "passed",
+      "model_id": "GEAR-Dreams/DreamZero-DROID",
+      "revision": "96ad344138c66e82536422432ad742f015784942",
+      "precision": "native",
+      "comparison_group": "dreamzero-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {},
+      "optimizer_environment": {},
+      "default_schedule": {
+        "video_action": 16
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint",
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "guidance": "{'video_action': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "video_action": 16
+        },
+        "nfe_after": {
+          "video_action": 16
+        },
+        "schedule_before": {
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "steps": {
+            "video_action": 16,
+            "kv_commit": 1
+          },
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+        },
+        "schedule_after": {
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "steps": {
+            "video_action": 16,
+            "kv_commit": 1
+          },
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+        }
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "dreamzero",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          24,
+          8
+        ]
+      },
+      "setup_seconds": 395.6831226850045,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 53736.719675012864,
+      "measured": {
+        "count": 18,
+        "p50_ms": 22868.0801599985,
+        "mean_ms": 23124.842750500346,
+        "min_ms": 21888.044853985775,
+        "max_ms": 24368.83835302433
+      },
+      "primary_metric": "continuation_p50_ms",
+      "primary": {
+        "count": 12,
+        "p50_ms": 23599.0017594886,
+        "mean_ms": 23587.679638915386,
+        "min_ms": 22792.414730996825,
+        "max_ms": 24368.83835302433
+      },
+      "new_episode": {
+        "count": 6,
+        "p50_ms": 22262.466982530896,
+        "mean_ms": 22199.168973670265,
+        "min_ms": 21888.044853985775,
+        "max_ms": 22276.24376100721
+      },
+      "total_calls": 21,
+      "warmup_calls": 3,
+      "timed_session_ms": 667767.8520589834,
+      "timed_session_mean_ms": 31798.469145665877,
+      "setup_plus_first_predict_ms": 449419.84236001736,
+      "setup_plus_timed_calls_mean_ms": 50640.52260685657,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        24,
+        8
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-eager_native/receipt.npz",
+        "sha256": "257775d26e45a703f484d252892b73fddaee4a7d4c491a614c363da239c36b77",
+        "actions_key": "actions",
+        "shape": [
+          21,
+          24,
+          8
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "06bb300981e4d2846d8af56ba962ca04812743e47655f7db384371db8ac12172",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-eager_native/receipt.json",
+        "sha256": "55861ea342d9307a1391f87b890ca38a02f542a66d44607c10396b4d6855990b"
+      },
+      "request_sequence_sha256": "4a8717a69485be7cf38b7aea95f6f2a3eeecbe0585a4cd269a0ecce6c20368c7",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "succeeded on recorded requests"
+    },
+    {
+      "id": "dreamzero-runtime_default",
+      "family": "dreamzero",
+      "arm": "runtime_default",
+      "status": "passed",
+      "model_id": "GEAR-Dreams/DreamZero-DROID",
+      "revision": "96ad344138c66e82536422432ad742f015784942",
+      "precision": "native",
+      "comparison_group": "dreamzero-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "video_action": 16
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint",
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "guidance": "{'video_action': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "video_action": 16
+        },
+        "nfe_after": {
+          "video_action": 16
+        },
+        "schedule_before": {
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "steps": {
+            "video_action": 16,
+            "kv_commit": 1
+          },
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+        },
+        "schedule_after": {
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "steps": {
+            "video_action": 16,
+            "kv_commit": 1
+          },
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+        }
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "precision": "native",
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT",
+        "nfe": {
+          "video_action": 16
+        },
+        "changed_schedule": {},
+        "step_cache": {
+          "dynamic": false,
+          "fixed_steps": 8,
+          "profile": null,
+          "source": "environment:DYNAMIC_CACHE_SCHEDULE,NUM_DIT_STEPS"
+        },
+        "schedule_options": {
+          "dreamzero_schedule": {
+            "grid_steps": 16,
+            "computed_steps": 8,
+            "fixed_mask_steps": 8,
+            "dynamic_cache_schedule": false,
+            "profile": null,
+            "source": "environment:DYNAMIC_CACHE_SCHEDULE,NUM_DIT_STEPS"
+          }
+        },
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "dreamzero",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          24,
+          8
+        ]
+      },
+      "setup_seconds": 124.81040295300772,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 42589.88781500375,
+      "measured": {
+        "count": 18,
+        "p50_ms": 22672.130053513683,
+        "mean_ms": 22587.24263693956,
+        "min_ms": 20383.38145095622,
+        "max_ms": 24414.416915969923
+      },
+      "primary_metric": "continuation_p50_ms",
+      "primary": {
+        "count": 12,
+        "p50_ms": 23560.286417487077,
+        "mean_ms": 23488.932799416943,
+        "min_ms": 22611.35485896375,
+        "max_ms": 24414.416915969923
+      },
+      "new_episode": {
+        "count": 6,
+        "p50_ms": 20863.093165506143,
+        "mean_ms": 20783.8623119848,
+        "min_ms": 20383.38145095622,
+        "max_ms": 20884.301610989496
+      },
+      "total_calls": 21,
+      "warmup_calls": 3,
+      "timed_session_ms": 498322.043574939,
+      "timed_session_mean_ms": 23729.621122616143,
+      "setup_plus_first_predict_ms": 167400.29076801147,
+      "setup_plus_timed_calls_mean_ms": 29672.97364418794,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        24,
+        8
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-runtime_default/receipt.npz",
+        "sha256": "346a41b48fda8538fc7abd098a7caa858f9ba66bc9d26eb2420d9b4a5127503b",
+        "actions_key": "actions",
+        "shape": [
+          21,
+          24,
+          8
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "bed210896c81150ec21973271aca3d66db321236733a6ab70c0b7e8845d6fcc8",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-runtime_default/receipt.json",
+        "sha256": "abcd365e0918eac58484256222ab4885cd3136c907781d777a9bbe1e1cd0ab8d"
+      },
+      "request_sequence_sha256": "4a8717a69485be7cf38b7aea95f6f2a3eeecbe0585a4cd269a0ecce6c20368c7",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "public default succeeded on recorded requests"
+    },
+    {
+      "id": "dreamzero-runtime_selected",
+      "family": "dreamzero",
+      "arm": "runtime_selected",
+      "status": "passed",
+      "model_id": "GEAR-Dreams/DreamZero-DROID",
+      "revision": "96ad344138c66e82536422432ad742f015784942",
+      "precision": "fp8",
+      "comparison_group": "dreamzero-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "video_action": 16
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint",
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "guidance": "{'video_action': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "video_action": 16
+        },
+        "nfe_after": {
+          "video_action": 16
+        },
+        "schedule_before": {
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "steps": {
+            "video_action": 16,
+            "kv_commit": 1
+          },
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+        },
+        "schedule_after": {
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "steps": {
+            "video_action": 16,
+            "kv_commit": 1
+          },
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+        }
+      },
+      "execution_policy": {
+        "category": "FP8",
+        "precision": "fp8",
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC",
+        "nfe": {
+          "video_action": 16
+        },
+        "changed_schedule": {},
+        "step_cache": {
+          "dynamic": false,
+          "fixed_steps": 8,
+          "profile": null,
+          "source": "environment:DYNAMIC_CACHE_SCHEDULE,NUM_DIT_STEPS"
+        },
+        "schedule_options": {
+          "dreamzero_schedule": {
+            "grid_steps": 16,
+            "computed_steps": 8,
+            "fixed_mask_steps": 8,
+            "dynamic_cache_schedule": false,
+            "profile": null,
+            "source": "environment:DYNAMIC_CACHE_SCHEDULE,NUM_DIT_STEPS"
+          }
+        },
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "dreamzero",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          24,
+          8
+        ]
+      },
+      "setup_seconds": 114.40434284496587,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 38276.41895698616,
+      "measured": {
+        "count": 18,
+        "p50_ms": 20252.631109469803,
+        "mean_ms": 20161.74156188693,
+        "min_ms": 18004.915080033243,
+        "max_ms": 21833.291521994397
+      },
+      "primary_metric": "continuation_p50_ms",
+      "primary": {
+        "count": 12,
+        "p50_ms": 21035.69622800569,
+        "mean_ms": 21025.809517658974,
+        "min_ms": 20163.47464901628,
+        "max_ms": 21833.291521994397
+      },
+      "new_episode": {
+        "count": 6,
+        "p50_ms": 18519.553559017368,
+        "mean_ms": 18433.605650342844,
+        "min_ms": 18004.915080033243,
+        "max_ms": 18537.777060992084
+      },
+      "total_calls": 21,
+      "warmup_calls": 3,
+      "timed_session_ms": 445615.9430179978,
+      "timed_session_mean_ms": 21219.806810380847,
+      "setup_plus_first_predict_ms": 152680.76180195203,
+      "setup_plus_timed_calls_mean_ms": 26667.632660141127,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        24,
+        8
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-runtime_selected/receipt.npz",
+        "sha256": "ff840de51d9c3eeaeec9c8508bdfe09d22331d7c48f785ca8a797726d028b2a2",
+        "actions_key": "actions",
+        "shape": [
+          21,
+          24,
+          8
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "2987652c176cb9d5c9accd308b7be22b8b2953069c84d2831497c11488304179",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-runtime_selected/receipt.json",
+        "sha256": "4f072a57ae03db434d3ddec2e8a7c4716f8fad22f14103befb8b493a5b0b4ee1"
+      },
+      "request_sequence_sha256": "4a8717a69485be7cf38b7aea95f6f2a3eeecbe0585a4cd269a0ecce6c20368c7",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "explicit numerical candidate on recorded requests"
+    },
+    {
+      "id": "va-2v4a-native",
+      "family": "va",
+      "arm": "operating_point",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+      "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+      "precision": "native",
+      "comparison_group": "va-2v4a",
+      "experimental": true,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "native",
+        "tier_ceiling": "behavioral",
+        "nfe": {
+          "video": 2,
+          "action": 4
+        },
+        "exclude_passes": [
+          "cfg_branch_elision"
+        ]
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 50,
+        "video": 25
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 2,
+        "action_steps": 4,
+        "nfe": {
+          "action": 4,
+          "video": 2
+        }
+      },
+      "guidance": "{'action': 'positive_only', 'video': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "video": 2,
+          "action": 4
+        },
+        "nfe_after": {
+          "video": 2,
+          "action": 4
+        }
+      },
+      "execution_policy": {
+        "category": "OPERATING-POINT",
+        "precision": "native",
+        "tier_ceiling": "behavioral",
+        "transform_tier": "NUMERIC",
+        "nfe": {
+          "action": 4,
+          "video": 2
+        },
+        "changed_schedule": {
+          "action": {
+            "checkpoint": 50,
+            "selected": 4
+          },
+          "video": {
+            "checkpoint": 25,
+            "selected": 2
+          }
+        },
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "va",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          16,
+          2,
+          16
+        ]
+      },
+      "setup_seconds": 23.12046075699618,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 837.8402199596167,
+      "measured": {
+        "count": 18,
+        "p50_ms": 738.2641364820302,
+        "mean_ms": 698.7091623369553,
+        "min_ms": 539.6739579737186,
+        "max_ms": 807.7777170110494
+      },
+      "primary_metric": "continuation_p50_ms",
+      "primary": {
+        "count": 12,
+        "p50_ms": 772.3748265125323,
+        "mean_ms": 772.3431657553496,
+        "min_ms": 737.3982080025598,
+        "max_ms": 807.7777170110494
+      },
+      "new_episode": {
+        "count": 6,
+        "p50_ms": 551.491676538717,
+        "mean_ms": 551.4411555001667,
+        "min_ms": 539.6739579737186,
+        "max_ms": 563.029947981704
+      },
+      "total_calls": 21,
+      "warmup_calls": 3,
+      "timed_session_ms": 15044.79346005246,
+      "timed_session_mean_ms": 716.4187361929743,
+      "setup_plus_first_predict_ms": 23958.300976955798,
+      "setup_plus_timed_calls_mean_ms": 1817.3930579546973,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-2v4a-native/receipt.npz",
+        "sha256": "9800162314a021ea5d5c4257d6c9ebca5cb20091ad96bb2f949c2d394e051df9",
+        "actions_key": "actions",
+        "shape": [
+          21,
+          16,
+          2,
+          16
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "5fb20304a87b33c7c93eee430a2e84af443bede60aaa2059b4ec3adbe0798955",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-2v4a-native/receipt.json",
+        "sha256": "14daae558760ece64778ed03a8cd1a8cde780fe84a4bf6fdc254f5f194216444"
+      },
+      "request_sequence_sha256": "381ae93226814840d1d05035dc9d8fa9cd7e2ebe12abf485610bd0ead50e4ab1",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "experimental operating point"
+    },
+    {
+      "id": "va-2v4a-fp8",
+      "family": "va",
+      "arm": "operating_point",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+      "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+      "precision": "fp8",
+      "comparison_group": "va-2v4a",
+      "experimental": true,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8",
+        "tier_ceiling": "behavioral",
+        "nfe": {
+          "video": 2,
+          "action": 4
+        },
+        "exclude_passes": [
+          "cfg_branch_elision"
+        ]
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 50,
+        "video": 25
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 2,
+        "action_steps": 4,
+        "nfe": {
+          "action": 4,
+          "video": 2
+        }
+      },
+      "guidance": "{'action': 'positive_only', 'video': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "video": 2,
+          "action": 4
+        },
+        "nfe_after": {
+          "video": 2,
+          "action": 4
+        }
+      },
+      "execution_policy": {
+        "category": "OPERATING-POINT",
+        "precision": "fp8",
+        "tier_ceiling": "behavioral",
+        "transform_tier": "NUMERIC",
+        "nfe": {
+          "action": 4,
+          "video": 2
+        },
+        "changed_schedule": {
+          "action": {
+            "checkpoint": 50,
+            "selected": 4
+          },
+          "video": {
+            "checkpoint": 25,
+            "selected": 2
+          }
+        },
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "va",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          16,
+          2,
+          16
+        ]
+      },
+      "setup_seconds": 20.14621516299667,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 885.6467320001684,
+      "measured": {
+        "count": 18,
+        "p50_ms": 410.23543701157905,
+        "mean_ms": 403.0051456130524,
+        "min_ms": 294.3590420181863,
+        "max_ms": 500.46314898645505
+      },
+      "primary_metric": "continuation_p50_ms",
+      "primary": {
+        "count": 12,
+        "p50_ms": 457.3124224843923,
+        "mean_ms": 455.53352183681756,
+        "min_ms": 408.34069601260126,
+        "max_ms": 500.46314898645505
+      },
+      "new_episode": {
+        "count": 6,
+        "p50_ms": 298.0500834819395,
+        "mean_ms": 297.94839316552196,
+        "min_ms": 294.3590420181863,
+        "max_ms": 301.4589709928259
+      },
+      "total_calls": 21,
+      "warmup_calls": 3,
+      "timed_session_ms": 9258.401086030062,
+      "timed_session_mean_ms": 440.87624219190775,
+      "setup_plus_first_predict_ms": 21031.861894996837,
+      "setup_plus_timed_calls_mean_ms": 1400.2198213822253,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-2v4a-fp8/receipt.npz",
+        "sha256": "c664e4851fbab124a4234f453ef0f526ab16839f809244afc408214626915164",
+        "actions_key": "actions",
+        "shape": [
+          21,
+          16,
+          2,
+          16
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "b8bbb022dcaaeec3fce6b6650bd8c80b6bb32d1eaae37d8644b7702c87b86f5e",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/va-2v4a-fp8/receipt.json",
+        "sha256": "c4c60f02432f28cc9a6c40b371acaf28652eb03633167991273a79990588490a"
+      },
+      "request_sequence_sha256": "381ae93226814840d1d05035dc9d8fa9cd7e2ebe12abf485610bd0ead50e4ab1",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "experimental operating point"
+    },
+    {
+      "id": "dreamzero-dynamic-native",
+      "family": "dreamzero",
+      "arm": "operating_point",
+      "status": "passed",
+      "model_id": "GEAR-Dreams/DreamZero-DROID",
+      "revision": "96ad344138c66e82536422432ad742f015784942",
+      "precision": "native",
+      "comparison_group": "dreamzero-dynamic",
+      "experimental": true,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "native",
+        "tier_ceiling": "behavioral",
+        "step_cache": "dynamic"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "video_action": 16
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "dynamic",
+        "guidance": 5.0,
+        "profile": "dreamzero_velocity_v1",
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "guidance": "{'video_action': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "video_action": 16
+        },
+        "nfe_after": {
+          "video_action": 16
+        },
+        "schedule_before": {
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "steps": {
+            "video_action": 16,
+            "kv_commit": 1
+          },
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": true,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+        },
+        "schedule_after": {
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "steps": {
+            "video_action": 16,
+            "kv_commit": 1
+          },
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": true,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+        }
+      },
+      "execution_policy": {
+        "category": "OPERATING-POINT",
+        "precision": "native",
+        "tier_ceiling": "behavioral",
+        "transform_tier": "BEHAVIORAL",
+        "nfe": {
+          "video_action": 16
+        },
+        "changed_schedule": {},
+        "step_cache": {
+          "dynamic": true,
+          "fixed_steps": 8,
+          "profile": "dreamzero_velocity_v1",
+          "source": "runtime.step_cache=dynamic"
+        },
+        "schedule_options": {
+          "dreamzero_schedule": {
+            "grid_steps": 16,
+            "computed_steps": null,
+            "fixed_mask_steps": 8,
+            "dynamic_cache_schedule": true,
+            "profile": "dreamzero_velocity_v1",
+            "source": "runtime.step_cache=dynamic",
+            "config": {
+              "profile": "dreamzero_velocity_v1",
+              "thresholds": [
+                0.95,
+                0.93
+              ],
+              "skip_counts": [
+                4,
+                2
+              ],
+              "max_bytes": 67108864
+            }
+          }
+        },
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "dreamzero",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          24,
+          8
+        ]
+      },
+      "setup_seconds": 153.94259563303785,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 70722.6748020039,
+      "measured": {
+        "count": 18,
+        "p50_ms": 12853.691500495188,
+        "mean_ms": 12752.264191774884,
+        "min_ms": 11462.673533998895,
+        "max_ms": 13782.158227986656
+      },
+      "primary_metric": "continuation_p50_ms",
+      "primary": {
+        "count": 12,
+        "p50_ms": 13281.889476987999,
+        "mean_ms": 13291.019171248385,
+        "min_ms": 12835.056370007806,
+        "max_ms": 13782.158227986656
+      },
+      "new_episode": {
+        "count": 6,
+        "p50_ms": 11714.38078850042,
+        "mean_ms": 11674.754232827885,
+        "min_ms": 11462.673533998895,
+        "max_ms": 11731.95946298074
+      },
+      "total_calls": 21,
+      "warmup_calls": 3,
+      "timed_session_ms": 383747.68171895994,
+      "timed_session_mean_ms": 18273.699129474284,
+      "setup_plus_first_predict_ms": 224665.27043504175,
+      "setup_plus_timed_calls_mean_ms": 25604.298921523703,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        24,
+        8
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-dynamic-native/receipt.npz",
+        "sha256": "92fe6d3e5998738bf51db41b8d1331602679a7f7654a7d6cd4433c3e6a75075a",
+        "actions_key": "actions",
+        "shape": [
+          21,
+          24,
+          8
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "015b6a5009178d6facacf96b0aba0cd94a56c3ce9137ba37a0874c96b3911bf7",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-dynamic-native/receipt.json",
+        "sha256": "a1cdee6d49b941914bcf1e74f3c21bb9460c092a475a6d8c414f751201f9843c"
+      },
+      "request_sequence_sha256": "4a8717a69485be7cf38b7aea95f6f2a3eeecbe0585a4cd269a0ecce6c20368c7",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "experimental operating point"
+    },
+    {
+      "id": "dreamzero-dynamic-fp8",
+      "family": "dreamzero",
+      "arm": "operating_point",
+      "status": "passed",
+      "model_id": "GEAR-Dreams/DreamZero-DROID",
+      "revision": "96ad344138c66e82536422432ad742f015784942",
+      "precision": "fp8",
+      "comparison_group": "dreamzero-dynamic",
+      "experimental": true,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8",
+        "tier_ceiling": "behavioral",
+        "step_cache": "dynamic"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "video_action": 16
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "dynamic",
+        "guidance": 5.0,
+        "profile": "dreamzero_velocity_v1",
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "guidance": "{'video_action': 'cfg'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "video_action": 16
+        },
+        "nfe_after": {
+          "video_action": 16
+        },
+        "schedule_before": {
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "steps": {
+            "video_action": 16,
+            "kv_commit": 1
+          },
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": true,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+        },
+        "schedule_after": {
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "steps": {
+            "video_action": 16,
+            "kv_commit": 1
+          },
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": true,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+        }
+      },
+      "execution_policy": {
+        "category": "OPERATING-POINT",
+        "precision": "fp8",
+        "tier_ceiling": "behavioral",
+        "transform_tier": "BEHAVIORAL",
+        "nfe": {
+          "video_action": 16
+        },
+        "changed_schedule": {},
+        "step_cache": {
+          "dynamic": true,
+          "fixed_steps": 8,
+          "profile": "dreamzero_velocity_v1",
+          "source": "runtime.step_cache=dynamic"
+        },
+        "schedule_options": {
+          "dreamzero_schedule": {
+            "grid_steps": 16,
+            "computed_steps": null,
+            "fixed_mask_steps": 8,
+            "dynamic_cache_schedule": true,
+            "profile": "dreamzero_velocity_v1",
+            "source": "runtime.step_cache=dynamic",
+            "config": {
+              "profile": "dreamzero_velocity_v1",
+              "thresholds": [
+                0.95,
+                0.93
+              ],
+              "skip_counts": [
+                4,
+                2
+              ],
+              "max_bytes": 67108864
+            }
+          }
+        },
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "dreamzero",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          24,
+          8
+        ]
+      },
+      "setup_seconds": 127.7479030409595,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 29559.51301997993,
+      "measured": {
+        "count": 18,
+        "p50_ms": 11414.801860024454,
+        "mean_ms": 11362.90402555864,
+        "min_ms": 10267.284548957832,
+        "max_ms": 12306.485457986128
+      },
+      "primary_metric": "continuation_p50_ms",
+      "primary": {
+        "count": 12,
+        "p50_ms": 11843.389057496097,
+        "mean_ms": 11849.227693421804,
+        "min_ms": 11401.108831050806,
+        "max_ms": 12306.485457986128
+      },
+      "new_episode": {
+        "count": 6,
+        "p50_ms": 10405.50370150595,
+        "mean_ms": 10390.256689832313,
+        "min_ms": 10267.284548957832,
+        "max_ms": 10432.69450700609
+      },
+      "total_calls": 21,
+      "warmup_calls": 3,
+      "timed_session_ms": 261746.48413900286,
+      "timed_session_mean_ms": 12464.118292333469,
+      "setup_plus_first_predict_ms": 157307.41606093943,
+      "setup_plus_timed_calls_mean_ms": 18547.351770474397,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        24,
+        8
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-dynamic-fp8/receipt.npz",
+        "sha256": "df4b09947eb642f19eabb084d3654e25475318a541b1eb57234ae387d1f2fe4d",
+        "actions_key": "actions",
+        "shape": [
+          21,
+          24,
+          8
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "a219621f9280b2f730ff049f7b0e0abe5af5c8a50ec17e3b6f87070b38bfc9d0",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/dreamzero-dynamic-fp8/receipt.json",
+        "sha256": "ab6b230574c6ad8ea1928e93d9555cb7b1aeb686d35df7fdd2900900ca6d7d4a"
+      },
+      "request_sequence_sha256": "4a8717a69485be7cf38b7aea95f6f2a3eeecbe0585a4cd269a0ecce6c20368c7",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "experimental operating point"
+    },
+    {
+      "id": "vla4-runtime_update",
+      "family": "vla4",
+      "arm": "runtime_update",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e",
+      "precision": "fp8",
+      "comparison_group": "vla4-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 10
+        },
+        "nfe_after": {
+          "action": 10
+        }
+      },
+      "execution_policy": {
+        "category": "FP8",
+        "precision": "fp8",
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "vla4",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          25,
+          14
+        ]
+      },
+      "setup_seconds": 24.905660257965792,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 2107.5677749468014,
+      "measured": {
+        "count": 20,
+        "p50_ms": 217.8043200110551,
+        "mean_ms": 218.13033779908437,
+        "min_ms": 217.53534395247698,
+        "max_ms": 224.15388002991676
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 217.8043200110551,
+        "mean_ms": 218.13033779908437,
+        "min_ms": 217.53534395247698,
+        "max_ms": 224.15388002991676
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 217.8043200110551,
+        "mean_ms": 218.13033779908437,
+        "min_ms": 217.53534395247698,
+        "max_ms": 224.15388002991676
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 7369.649363972712,
+      "timed_session_mean_ms": 294.7859745589085,
+      "setup_plus_first_predict_ms": 27013.228032912593,
+      "setup_plus_timed_calls_mean_ms": 1291.0123848775402,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        25,
+        14
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla4-runtime_update/receipt.npz",
+        "sha256": "0ee32248118947d677e8d0bfbe8d88fd33be0e2eed79c037f91c849005c2bcc3",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          25,
+          14
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "d2d9d65fce82d7c31501958117c4adbbe597761b633cef53760d718db11cc173",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla4-runtime_update/receipt.json",
+        "sha256": "ee6def4cf35a9808eaa5ae3841d8f7d0b5474df0624c65469a0d9187201d8846"
+      },
+      "request_sequence_sha256": "920aad6a8cf3951ae04b7c54132a0ddc2addbb1570a3172c719f5334d531a7c0",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "runtime source update candidate on recorded requests",
+      "baseline_cell": "vla4-runtime_selected"
+    },
+    {
+      "id": "vla2-runtime_update",
+      "family": "vla2",
+      "arm": "runtime_update",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "revision": "0451855729ec904f970600e0aec8b84661423afe",
+      "precision": "fp8",
+      "comparison_group": "vla2-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 10
+        },
+        "nfe_after": {
+          "action": 10
+        }
+      },
+      "execution_policy": {
+        "category": "FP8",
+        "precision": "fp8",
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "vla2",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          50,
+          14
+        ]
+      },
+      "setup_seconds": 35.18599742895458,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 1554.6429440146312,
+      "measured": {
+        "count": 20,
+        "p50_ms": 388.67516798200086,
+        "mean_ms": 389.8356519464869,
+        "min_ms": 385.11249498697,
+        "max_ms": 400.59314598329365
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 388.67516798200086,
+        "mean_ms": 389.8356519464869,
+        "min_ms": 385.11249498697,
+        "max_ms": 400.59314598329365
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 388.67516798200086,
+        "mean_ms": 389.8356519464869,
+        "min_ms": 385.11249498697,
+        "max_ms": 400.59314598329365
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 10902.582235983573,
+      "timed_session_mean_ms": 436.1032894393429,
+      "setup_plus_first_predict_ms": 36740.64037296921,
+      "setup_plus_timed_calls_mean_ms": 1843.543186597526,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        50,
+        14
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla2-runtime_update/receipt.npz",
+        "sha256": "1b1bbe9be51597980cdd0249f3c1e269ec60c8ecc99da091526998771ed8fb6d",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          50,
+          14
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "f5a42195821da68dcc6ceec646073225537d408afada2d3449a106b54aedde9e",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla2-runtime_update/receipt.json",
+        "sha256": "5be742f02791d629284860e9a8bd2c84a0123c65e8481d011b11d369bcd45139"
+      },
+      "request_sequence_sha256": "920aad6a8cf3951ae04b7c54132a0ddc2addbb1570a3172c719f5334d531a7c0",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "runtime source update candidate on recorded requests",
+      "baseline_cell": "vla2-runtime_selected"
+    },
+    {
+      "id": "vla2-runtime_numeric",
+      "family": "vla2",
+      "arm": "runtime_update",
+      "status": "passed",
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "revision": "0451855729ec904f970600e0aec8b84661423afe",
+      "precision": "native",
+      "comparison_group": "vla2-checkpoint",
+      "experimental": false,
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "tier_ceiling": "numeric"
+      },
+      "optimizer_environment": {},
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "effective_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "guidance": "{'action': 'none'}",
+      "observed_schedule": {
+        "status": "passed",
+        "nfe_before": {
+          "action": 10
+        },
+        "nfe_after": {
+          "action": 10
+        }
+      },
+      "execution_policy": {
+        "category": "NUMERIC",
+        "precision": "native",
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "changed_schedule": {},
+        "step_cache": null,
+        "schedule_options": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+      },
+      "device": "NVIDIA Thor",
+      "torch": "2.11.0+cu130",
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "input_contract": {
+        "family": "vla2",
+        "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "action_shape": [
+          50,
+          14
+        ]
+      },
+      "setup_seconds": 56.63578718598001,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "first_predict_ms": 1258.764637983404,
+      "measured": {
+        "count": 20,
+        "p50_ms": 407.0039814687334,
+        "mean_ms": 407.73940754588693,
+        "min_ms": 406.0058079776354,
+        "max_ms": 411.396553972736
+      },
+      "primary_metric": "generation_p50_ms",
+      "primary": {
+        "count": 20,
+        "p50_ms": 407.0039814687334,
+        "mean_ms": 407.73940754588693,
+        "min_ms": 406.0058079776354,
+        "max_ms": 411.396553972736
+      },
+      "new_episode": {
+        "count": 20,
+        "p50_ms": 407.0039814687334,
+        "mean_ms": 407.73940754588693,
+        "min_ms": 406.0058079776354,
+        "max_ms": 411.396553972736
+      },
+      "total_calls": 25,
+      "warmup_calls": 5,
+      "timed_session_ms": 12974.668112932704,
+      "timed_session_mean_ms": 518.9867245173082,
+      "setup_plus_first_predict_ms": 57894.55182396341,
+      "setup_plus_timed_calls_mean_ms": 2784.4182119565085,
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "action_shape": [
+        50,
+        14
+      ],
+      "actions": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla2-runtime_numeric/receipt.npz",
+        "sha256": "c8bc8dc2639267c49144bd6ed35bd9622784a9a3be988fbf7c525d9714be23f0",
+        "actions_key": "actions",
+        "shape": [
+          25,
+          50,
+          14
+        ],
+        "dtype": "float32",
+        "finite": true,
+        "array_bytes_sha256": "c6c9df1d80836788ca1c7793ec7e8670bfd8383da2cd99a77395856115226bef",
+        "additional_unverified_arrays": []
+      },
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/user_e2e_2026-09-14/cells/vla2-runtime_numeric/receipt.json",
+        "sha256": "213441dbdf08872ad942c05c5d6f83eeab8e2021f737b9563b0076872eee19ae"
+      },
+      "request_sequence_sha256": "920aad6a8cf3951ae04b7c54132a0ddc2addbb1570a3172c719f5334d531a7c0",
+      "task_quality_validated": false,
+      "recommended": false,
+      "usability": "runtime source update candidate on recorded requests",
+      "baseline_cell": "vla2-eager_native"
+    }
+  ],
+  "comparisons": [
+    {
+      "baseline": "pi05-eager_native",
+      "candidate": "pi05-runtime_default",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 1.3339881666379423,
+      "median_paired_ratio": 1.333814377748133,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "queue_drain_actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "queue_drain_total_ratio": 1.2465169869090345
+    },
+    {
+      "baseline": "pi05-eager_native",
+      "candidate": "pi05-runtime_selected",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 7.906771934715638,
+      "median_paired_ratio": 7.907481400455664,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.3901025354862213,
+        "rmse": 0.06737675194679091,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "queue_drain_actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.27249082922935486,
+        "rmse": 0.05958034820122958,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "queue_drain_total_ratio": 5.65668922504701
+    },
+    {
+      "baseline": "vla4-eager_native",
+      "candidate": "vla4-runtime_default",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 2.6307667031763597,
+      "median_paired_ratio": 2.6263129455006613,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "vla4-eager_native",
+      "candidate": "vla4-runtime_selected",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 0.8664474205224799,
+      "median_paired_ratio": 0.8671067498224989,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.8350388966500759,
+        "rmse": 0.04834691319376125,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "vla2-eager_native",
+      "candidate": "vla2-runtime_default",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 0.9899352969889037,
+      "median_paired_ratio": 0.9897364484263923,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "vla2-eager_native",
+      "candidate": "vla2-runtime_selected",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 0.7825412469675356,
+      "median_paired_ratio": 0.7827596471178555,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.10081000626087189,
+        "rmse": 0.009328359350090812,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "groot-eager_native",
+      "candidate": "groot-runtime_default",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 1.2430864012252991,
+      "median_paired_ratio": 1.2439516331984275,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "groot-eager_native",
+      "candidate": "groot-runtime_selected",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 1.2449979920187053,
+      "median_paired_ratio": 1.2450107526916017,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "edge-eager_native",
+      "candidate": "edge-runtime_default",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 1.3253814693516448,
+      "median_paired_ratio": 1.3250289467876768,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "edge-eager_native",
+      "candidate": "edge-runtime_selected",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 3.2527723707083545,
+      "median_paired_ratio": 3.2526727235682573,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.35493433475494385,
+        "rmse": 0.032459680213897,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "nano-eager_native",
+      "candidate": "nano-runtime_default",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 1.1950140127245141,
+      "median_paired_ratio": 1.1950140358097072,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "nano-eager_native",
+      "candidate": "nano-runtime_selected",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 2.137236112690985,
+      "median_paired_ratio": 2.138170691294868,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.9997949600219727,
+        "rmse": 0.15466817023254822,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "unipc",
+        "steps": 4,
+        "shift": 5.0,
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "va-eager_native",
+      "candidate": "va-runtime_default",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 2.682076021935418,
+      "median_paired_ratio": 2.682837751351244,
+      "paired_samples": 12,
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 25,
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 25,
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "va-eager_native",
+      "candidate": "va-runtime_selected",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 5.227764376487718,
+      "median_paired_ratio": 5.24748954972522,
+      "paired_samples": 12,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.03124961256980896,
+        "rmse": 0.005553425842466127,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 25,
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 25,
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "dreamzero-eager_native",
+      "candidate": "dreamzero-runtime_default",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 1.001643245812699,
+      "median_paired_ratio": 1.003921100911528,
+      "paired_samples": 12,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.10812661051750183,
+        "rmse": 0.027128452079613154,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint",
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint",
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "dreamzero-eager_native",
+      "candidate": "dreamzero-runtime_selected",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 1.1218550364912703,
+      "median_paired_ratio": 1.1209813131247532,
+      "paired_samples": 12,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.10402050614356995,
+        "rmse": 0.02777003250420498,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint",
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint",
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "va-2v4a-native",
+      "candidate": "va-2v4a-fp8",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 1.6889434630192948,
+      "median_paired_ratio": 1.6969251899962776,
+      "paired_samples": 12,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 1.1406254768371582,
+        "rmse": 0.10949289541194704,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 2,
+        "action_steps": 4,
+        "nfe": {
+          "action": 4,
+          "video": 2
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 2,
+        "action_steps": 4,
+        "nfe": {
+          "action": 4,
+          "video": 2
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "dreamzero-dynamic-native",
+      "candidate": "dreamzero-dynamic-fp8",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 1.1214602013417287,
+      "median_paired_ratio": 1.1236807632007748,
+      "paired_samples": 12,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.087890625,
+        "rmse": 0.01928783258057662,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "dynamic",
+        "guidance": 5.0,
+        "profile": "dreamzero_velocity_v1",
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "dynamic",
+        "guidance": 5.0,
+        "profile": "dreamzero_velocity_v1",
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "vla4-runtime_selected",
+      "candidate": "vla4-runtime_update",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 3.4733158551051493,
+      "median_paired_ratio": 3.4730275023563077,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "vla2-runtime_selected",
+      "candidate": "vla2-runtime_update",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 2.4004756088522483,
+      "median_paired_ratio": 2.4025304536105954,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "vla2-eager_native",
+      "candidate": "vla2-runtime_numeric",
+      "kind": "matched_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 1.793877045993407,
+      "median_paired_ratio": 1.793644354539889,
+      "paired_samples": 20,
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "rmse": 0.0,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": true,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        }
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence"
+    },
+    {
+      "baseline": "va-eager_native",
+      "candidate": "va-2v4a-native",
+      "kind": "changed_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 19.557464735974595,
+      "median_paired_ratio": 19.626898554766335,
+      "paired_samples": 12,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 1.1562504768371582,
+        "rmse": 0.12265788586198778,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": false,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 25,
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 2,
+        "action_steps": 4,
+        "nfe": {
+          "action": 4,
+          "video": 2
+        }
+      },
+      "interpretation": "changes sampling policy; latency ratio is not an architecture-only speedup or quality evidence"
+    },
+    {
+      "baseline": "va-eager_native",
+      "candidate": "va-2v4a-fp8",
+      "kind": "changed_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 33.031452219054664,
+      "median_paired_ratio": 33.394111602038535,
+      "paired_samples": 12,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 1.121094286441803,
+        "rmse": 0.12598099500086474,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": false,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 25,
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        }
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "video_steps": 2,
+        "action_steps": 4,
+        "nfe": {
+          "action": 4,
+          "video": 2
+        }
+      },
+      "interpretation": "changes sampling policy; latency ratio is not an architecture-only speedup or quality evidence"
+    },
+    {
+      "baseline": "dreamzero-eager_native",
+      "candidate": "dreamzero-dynamic-native",
+      "kind": "changed_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 1.776780464886105,
+      "median_paired_ratio": 1.7733730853124934,
+      "paired_samples": 12,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.1796875,
+        "rmse": 0.055424600070794805,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": false,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint",
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "dynamic",
+        "guidance": 5.0,
+        "profile": "dreamzero_velocity_v1",
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "interpretation": "changes sampling policy; latency ratio is not an architecture-only speedup or quality evidence"
+    },
+    {
+      "baseline": "dreamzero-eager_native",
+      "candidate": "dreamzero-dynamic-fp8",
+      "kind": "changed_policy_latency_ratio",
+      "status": "passed",
+      "task_quality_validated": false,
+      "recommended": false,
+      "ratio_of_p50": 1.9925885778912213,
+      "median_paired_ratio": 1.99045761603714,
+      "paired_samples": 12,
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.2509765625,
+        "rmse": 0.05636535649966621,
+        "metric_overflow": false,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "same_sampling_policy": false,
+      "baseline_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint",
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "candidate_schedule": {
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "dynamic",
+        "guidance": 5.0,
+        "profile": "dreamzero_velocity_v1",
+        "nfe": {
+          "video_action": 16
+        },
+        "checkpoint_num_dit_steps": 8,
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ]
+      },
+      "interpretation": "changes sampling policy; latency ratio is not an architecture-only speedup or quality evidence"
+    }
+  ],
+  "require_observed_schedule": true,
+  "counts": {
+    "expected_cells": 31,
+    "main_cells": 24,
+    "operating_point_cells": 4,
+    "runtime_update_cells": 3,
+    "passed_cells": 31,
+    "failed_cells": 0,
+    "incomplete_cells": 0,
+    "failed_comparisons": 0,
+    "finite_public_actions": 735,
+    "finite_queue_actions": 153
+  }
+}

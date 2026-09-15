@@ -1,0 +1,29 @@
+{
+  "scope": "Simulator integration and core regression checks; GPU performance is separate from quality evidence",
+  "full_suite": {
+    "passed_test_files_after_targeted_environment_rechecks": 83,
+    "skipped_test_files": 22,
+    "remaining_failures": [
+      {
+        "test": "test_hardware_probe.py",
+        "assertion": "conv layout ratio on sm_90 must be between 2x and 9x",
+        "observed_ratio": 1.18,
+        "ncdhw_ms": 0.586,
+        "ndhwc_ms": 0.496,
+        "note": "Existing hardware performance expectation does not hold in this software environment. Threshold and implementation unchanged; no speed certificate claimed."
+      }
+    ]
+  },
+  "environment_rechecks": {
+    "system_numpy_binary_mismatch": "isolated environment with numpy 1.26.4",
+    "legacy_networkx_numpy_alias": "networkx 3.4.2 in isolated environment",
+    "kernel_framework": "passed after dependency correction",
+    "paired_runner": "4 tests passed: overlap/barrier, resume identity and attempt archival/recovery, fail-fast, concurrent child termination"
+  },
+  "logs": {
+    "core-tests-final.log": "/home/ubuntu/ifl_eval/screen10_20260906/core-tests-final.log",
+    "core-tests-compatible.log": "/home/ubuntu/ifl_eval/screen10_20260906/core-tests-compatible.log",
+    "hardware-probe-isolated.log": "/home/ubuntu/ifl_eval/screen10_20260906/hardware-probe-isolated.log",
+    "kernel-framework-compatible.log": "/home/ubuntu/ifl_eval/screen10_20260906/kernel-framework-compatible.log"
+  }
+}

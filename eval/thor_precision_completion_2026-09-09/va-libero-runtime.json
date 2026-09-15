@@ -1,0 +1,55 @@
+{
+  "scope": "Public FP8 Runtime, LIBERO-long revision 0e89d1e753019988aba484e8da2dc0810e264d9f, native20V50A, recorded simulator frames and executed actions; no closed-loop quality certificate",
+  "ok": true,
+  "shape": [
+    6,
+    7,
+    4,
+    4
+  ],
+  "repeated_episode_equal": true,
+  "final_frame": 8,
+  "engine_frame": 8,
+  "declaration": {
+    "backbone": "wan_va",
+    "frontend": "serving/flash_rt/frontends/torch/wan_va_thor.py",
+    "steps": {
+      "video": 20,
+      "action": 50
+    },
+    "shifts": {
+      "video": 5.0,
+      "action": 0.05
+    },
+    "guidance": {
+      "video": [
+        "cfg",
+        5.0
+      ],
+      "action": [
+        "positive_only",
+        1.0
+      ]
+    },
+    "cfg_batch": 2,
+    "forwards_per_cycle": 74,
+    "forwards_per_cycle_served_p010": 73,
+    "evidence": "the build sizes its AdaLN step tables from the declared grids (video t=[1000.0, 989.5833129882812, 978.2608642578125, 965.9090576171875, 952.3810424804688, 937.5, 921.0526123046875, 902.7777709960938, 882.3529052734375, 859.375, 833.3333129882812, 803.5714111328125, 769.2307739257812, 729.1666259765625, 681.8181762695312, 625.0, 555.5556030273438, 468.75, 357.1428527832031, 208.3333282470703, 0.0], action t=[999.999755859375, 710.1448974609375, 545.4542236328125, 439.25238037109375, 365.07940673828125, 310.3447265625, 268.2926330566406, 234.9727325439453, 207.9208526611328, 185.52035522460938, 166.6666717529297, 150.5791473388672, 136.69064331054688, 124.57913208007812, 113.92406463623047, 104.47760009765625, 96.04521179199219, 88.47187042236328, 81.63265228271484, 75.42578887939453, 69.76744842529297, 64.58797454833984, 59.829063415527344, 55.44147872924805, 51.383392333984375, 47.61905288696289, 44.117645263671875, 40.85257339477539, 37.80068588256836, 34.9417610168457, 32.25806427001953, 29.733957290649414, 27.355623245239258, 25.11078453063965, 22.988508224487305, 20.979019165039062, 19.073570251464844, 17.26427459716797, 15.54404067993164, 13.906447410583496, 12.34567928314209, 10.856452941894531, 9.43396282196045, 8.07381820678711, 6.772008895874023, 5.524861812591553, 4.329004287719727, 3.1813361644744873, 2.0790021419525146, 1.019368052482605, 0.0]), allocates a 2-stream KV slab, and runs 74 DiT forwards per cycle; WanVaTorchFrontendThor.assert_point refuses any other request",
+    "geometry": {
+      "frame_chunk": 4,
+      "latent_h": 8,
+      "latent_w": 16,
+      "action_per_frame": 4
+    },
+    "pool_slots": 2160,
+    "precision": "fp8",
+    "fp16_families": [],
+    "action_terminal_elision": true,
+    "forwards_per_cycle_served": 73,
+    "slab_rows": 15360,
+    "gate_kernel": "kernel"
+  },
+  "graphs": 216,
+  "actions_sha256": "637c13fb8b8ecc42a030c0a3c6ad5628471b68b7d822256dc8e1dbf28a7ed6b9",
+  "action_sha256_verified": "637c13fb8b8ecc42a030c0a3c6ad5628471b68b7d822256dc8e1dbf28a7ed6b9"
+}

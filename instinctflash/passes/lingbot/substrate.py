@@ -83,12 +83,72 @@ class AllocatorChurnElision:
 
 
     def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
+        device = getattr(deployment, "device", None)
+        if (device is not None and device.capability == (12, 0)
+                and device.total_memory <= 40 << 30):
+            return PassResult(
+                self.name, False, Tier.BITEXACT,
+                "low-memory SM120 wan_va deployment: decoder residency elision makes the model "
+                "fit, but suppressing the upstream post-action empty_cache leaves fragmented "
+                "reserved blocks and the later 8-frame VAE commit OOMs on a 32 GiB RTX 5090. "
+                "Keep the pressure-release calls on this measured device class",
+                expected_win="memory-safety gate measured on RTX 5090; no numerical change",
+            )
         return PassResult(
             self.name, True, Tier.BITEXACT,
             "closed-loop serving has a stable working set, so releasing the pool between "
             "control steps only forces re-allocation next step",
             expected_win="small alone; larger once per-layer KV gathers stop churning the pool",
         )
+
+
+class PromptEncoderStaging:
+    """Stage the 5.7B T5 prompt encoder to CPU between episode resets on low-memory SM120.
+
+    The T5 is only exercised inside `_reset`, which encodes the episode prompt; between episodes
+    it is dead weight. On a 32 GiB RTX 5090 with the decoder residency already elided, returning
+    its blocks (with a real `torch.cuda.empty_cache()`) is what gives the following 8-frame VAE
+    commit contiguous headroom. The runtime action lives in
+    `runtime/lingbot_install.py:install_conditioning_prefill._reset`: move the encoder back to
+    the device for reset, encode on the SAME CUDA kernels as the reference, then stage it out.
+
+    This class exists so that decision is a PLAN LINE rather than a silent per-reset device sniff
+    buried in an installer: `explain()` must show per-reset device moves + empty_cache on the
+    device class where they happen, exactly as the sibling `AllocatorChurnElision` declares its
+    low-memory-SM120 decline. Bit-exact: parameter placement between episodes cannot change a
+    tensor value, and the prompt encode itself always runs on-device.
+    """
+
+    name = "prompt_encoder_staging"
+
+    requires_capabilities = frozenset({"backbone:wan_va"})   # see fsdp_elision above
+
+    def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
+        device = getattr(deployment, "device", None)
+        if device is None:
+            return PassResult(
+                self.name, False, Tier.BITEXACT,
+                "no probed device: staging is a memory-pressure decision for a measured device "
+                "class, and an unprobed target must decline rather than be left undecided")
+        if device.capability == (12, 0) and device.total_memory <= 40 << 30:
+            return PassResult(
+                self.name, True, Tier.BITEXACT,
+                "low-memory SM120 wan_va deployment: the 5.7B T5 prompt encoder is dead weight "
+                "between episodes; staging it to CPU at the end of each reset (with a real "
+                "empty_cache) gives the 8-frame VAE commit contiguous headroom",
+                params={
+                    "staged_module": "text_encoder (5.7B T5)",
+                    "when": "per episode reset",
+                    "action": "to('cpu') after prompt encode + torch.cuda.empty_cache()",
+                    "requires_pass": "conditioning_prefill",
+                },
+                expected_win="memory-safety gate measured on RTX 5090; no latency claim",
+            )
+        return PassResult(
+            self.name, False, Tier.BITEXACT,
+            f"no memory pressure on this device class (sm_{device.capability[0]}"
+            f"{device.capability[1]}, {device.total_memory / 2**30:.0f} GiB): keeping the "
+            f"prompt encoder resident avoids per-reset PCIe moves and allocator churn")
 
 
 class DebugDumpElision:

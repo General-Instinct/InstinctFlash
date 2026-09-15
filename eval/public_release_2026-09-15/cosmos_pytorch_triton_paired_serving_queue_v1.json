@@ -1,0 +1,93 @@
+{
+  "base": "/home/guanming/ifl_public_qualification_20260915_v1",
+  "output": "cosmos_pytorch_triton_paired_serving_queue_v1",
+  "jobs": [
+    {
+      "id": "edge-numeric-paired",
+      "python": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+      "activation": [
+        "bootstrap_edge_v3/run.env",
+        "native_hf_tool_v1/prepared/run.env",
+        "auxiliary_assets_v2/edge/run.env"
+      ],
+      "environment": {
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "module": "benchmarks.regression.reproduce",
+      "arguments": [
+        "run",
+        "--prepared",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_prepared_v1",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1"
+      ],
+      "receipt": "edge_numeric_pytorch_triton_run_v1/run.json",
+      "timeout": 7200
+    },
+    {
+      "id": "edge-numeric-serving",
+      "python": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+      "activation": [
+        "bootstrap_edge_v3/run.env",
+        "native_hf_tool_v1/prepared/run.env",
+        "auxiliary_assets_v2/edge/run.env"
+      ],
+      "environment": {
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "module": "benchmarks.regression.serve_smoke",
+      "arguments": [
+        "--prepared",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_prepared_v1",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_serving_v1"
+      ],
+      "receipt": "edge_numeric_pytorch_triton_serving_v1/receipt.json",
+      "timeout": 5400
+    },
+    {
+      "id": "nano-numeric-paired",
+      "python": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+      "activation": [
+        "bootstrap_edge_v3/run.env",
+        "native_hf_tool_v1/prepared/run.env",
+        "auxiliary_assets_v2/nano/run.env"
+      ],
+      "environment": {
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "module": "benchmarks.regression.reproduce",
+      "arguments": [
+        "run",
+        "--prepared",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_prepared_v1",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1"
+      ],
+      "receipt": "nano_numeric_pytorch_triton_run_v1/run.json",
+      "timeout": 7200
+    },
+    {
+      "id": "nano-numeric-serving",
+      "python": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+      "activation": [
+        "bootstrap_edge_v3/run.env",
+        "native_hf_tool_v1/prepared/run.env",
+        "auxiliary_assets_v2/nano/run.env"
+      ],
+      "environment": {
+        "VIRTUAL_ENV": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1"
+      },
+      "module": "benchmarks.regression.serve_smoke",
+      "arguments": [
+        "--prepared",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_prepared_v1",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_serving_v1"
+      ],
+      "receipt": "nano_numeric_pytorch_triton_serving_v1/receipt.json",
+      "timeout": 5400
+    }
+  ],
+  "parent_queue_sha256": "631bcd97035dccb5d6613321dba827195740ada8a9c2c78660af1e676cff5fb6"
+}

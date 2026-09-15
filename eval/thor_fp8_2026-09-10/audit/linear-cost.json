@@ -1,0 +1,52 @@
+{
+  "device": "NVIDIA Thor",
+  "torch": "2.10.0+cu130",
+  "rows": [
+    {
+      "M": 1,
+      "K": 2048,
+      "N": 2048,
+      "bf16_ms": 0.016543999314308167,
+      "fp8_full_ms": 0.025329598784446718,
+      "fp8_prepacked_mm_ms": 0.011316800117492675,
+      "dynamic_pack_ms": 0.015583999454975128
+    },
+    {
+      "M": 40,
+      "K": 2048,
+      "N": 2048,
+      "bf16_ms": 0.02269279956817627,
+      "fp8_full_ms": 0.04555999934673309,
+      "fp8_prepacked_mm_ms": 0.014590400457382201,
+      "dynamic_pack_ms": 0.03296479880809784
+    },
+    {
+      "M": 256,
+      "K": 2048,
+      "N": 2048,
+      "bf16_ms": 0.05358080267906189,
+      "fp8_full_ms": 0.07106720209121704,
+      "fp8_prepacked_mm_ms": 0.03294079899787903,
+      "dynamic_pack_ms": 0.041352000832557675
+    },
+    {
+      "M": 2048,
+      "K": 2048,
+      "N": 2048,
+      "bf16_ms": 0.23352479934692383,
+      "fp8_full_ms": 0.31047520637512205,
+      "fp8_prepacked_mm_ms": 0.07170720100402832,
+      "dynamic_pack_ms": 0.06396480202674866
+    },
+    {
+      "M": 256,
+      "K": 5120,
+      "N": 5120,
+      "bf16_ms": 0.2300112009048462,
+      "fp8_full_ms": 0.069896000623703,
+      "fp8_prepacked_mm_ms": 0.053724801540374754,
+      "dynamic_pack_ms": 0.03086400032043457
+    }
+  ],
+  "scope": "Representative synthetic projection shapes, CUDA graph replay; not a model speed or task-quality claim"
+}

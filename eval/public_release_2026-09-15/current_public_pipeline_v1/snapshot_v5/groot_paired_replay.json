@@ -1,0 +1,461 @@
+{
+  "bindings": [
+    {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/inputs/recorded_inputs_v1.npz",
+      "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+      "status": "passed"
+    }
+  ],
+  "cells": [
+    {
+      "action_shape": [
+        40,
+        17
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "f57f5d422ea3b4aeb2e1869bc6d3f27d4cdbae8fbb076abd5d9b565a191a79cf",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/cells/groot-eager_native/receipt.npz",
+        "sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+        "shape": [
+          25,
+          40,
+          17
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "eager_native",
+      "comparison_group": "groot-checkpoint",
+      "default_schedule": {
+        "action": 4,
+        "backbone": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "experimental": false,
+      "family": "groot",
+      "first_predict_ms": 758.579462999478,
+      "guidance": "{'action': 'none'}",
+      "id": "groot-eager_native",
+      "input_contract": {
+        "action_shape": [
+          40,
+          17
+        ],
+        "family": "groot",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 142.8657830110751,
+        "mean_ms": 139.67129820666742,
+        "min_ms": 137.69709202460945,
+        "p50_ms": 139.49823949951679
+      },
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 142.8657830110751,
+        "mean_ms": 139.67129820666742,
+        "min_ms": 137.69709202460945,
+        "p50_ms": 139.49823949951679
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 4
+        },
+        "nfe_before": {
+          "action": 4
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 20,
+        "max_ms": 142.8657830110751,
+        "mean_ms": 139.67129820666742,
+        "min_ms": 137.69709202460945,
+        "p50_ms": 139.49823949951679
+      },
+      "primary_metric": "generation_p50_ms",
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/cells/groot-eager_native/receipt.json",
+        "sha256": "a57230b8457ccc9908f7e7a73c8d2e1cbaf261a0a5c39d8edff9ed722bc06aa2"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "9643494d5ac8d25c12a33705cdcaccd5033fbba8437d866211594e03855065b9",
+      "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495",
+      "runtime_kwargs": {},
+      "setup_plus_first_predict_ms": 16853.985455003567,
+      "setup_plus_timed_calls_mean_ms": 808.2061087642796,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 16.09540599200409,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 164.38986908411607,
+      "timed_session_ms": 4109.746727102902,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.11.0+cu130",
+      "total_calls": 25,
+      "usability": "succeeded on recorded requests",
+      "warmup_calls": 5
+    },
+    {
+      "action_shape": [
+        40,
+        17
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "f57f5d422ea3b4aeb2e1869bc6d3f27d4cdbae8fbb076abd5d9b565a191a79cf",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/cells/groot-runtime_default/receipt.npz",
+        "sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+        "shape": [
+          25,
+          40,
+          17
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "runtime_default",
+      "comparison_group": "groot-checkpoint",
+      "default_schedule": {
+        "action": 4,
+        "backbone": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "changed_schedule": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        },
+        "precision": "native",
+        "schedule_options": {},
+        "step_cache": null,
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT"
+      },
+      "experimental": false,
+      "family": "groot",
+      "first_predict_ms": 922.4568459903821,
+      "guidance": "{'action': 'none'}",
+      "id": "groot-runtime_default",
+      "input_contract": {
+        "action_shape": [
+          40,
+          17
+        ],
+        "family": "groot",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 125.11015398195013,
+        "mean_ms": 114.08229765365832,
+        "min_ms": 110.22497405065224,
+        "p50_ms": 115.03954351064749
+      },
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 125.11015398195013,
+        "mean_ms": 114.08229765365832,
+        "min_ms": 110.22497405065224,
+        "p50_ms": 115.03954351064749
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 4
+        },
+        "nfe_before": {
+          "action": 4
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 20,
+        "max_ms": 125.11015398195013,
+        "mean_ms": 114.08229765365832,
+        "min_ms": 110.22497405065224,
+        "p50_ms": 115.03954351064749
+      },
+      "primary_metric": "generation_p50_ms",
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/cells/groot-runtime_default/receipt.json",
+        "sha256": "8f137232f114c37e7a0b08236423a23be99a46690611db755b1d5182d4ab64c1"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "9643494d5ac8d25c12a33705cdcaccd5033fbba8437d866211594e03855065b9",
+      "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495",
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "setup_plus_first_predict_ms": 15742.125958029646,
+      "setup_plus_timed_calls_mean_ms": 741.1560721253045,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 14.819669112039264,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 148.36930764373392,
+      "timed_session_ms": 3709.232691093348,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.11.0+cu130",
+      "total_calls": 25,
+      "usability": "public default succeeded on recorded requests",
+      "warmup_calls": 5
+    },
+    {
+      "action_shape": [
+        40,
+        17
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "f57f5d422ea3b4aeb2e1869bc6d3f27d4cdbae8fbb076abd5d9b565a191a79cf",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/cells/groot-runtime_selected/receipt.npz",
+        "sha256": "649a8da08290c8861aeaf3d0df103edb13e298fffdab19011d35064d5b2dc95d",
+        "shape": [
+          25,
+          40,
+          17
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "runtime_selected",
+      "comparison_group": "groot-checkpoint",
+      "default_schedule": {
+        "action": 4,
+        "backbone": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "changed_schedule": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        },
+        "precision": "native",
+        "schedule_options": {},
+        "step_cache": null,
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT"
+      },
+      "experimental": false,
+      "family": "groot",
+      "first_predict_ms": 942.4297669902444,
+      "guidance": "{'action': 'none'}",
+      "id": "groot-runtime_selected",
+      "input_contract": {
+        "action_shape": [
+          40,
+          17
+        ],
+        "family": "groot",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 133.0427480279468,
+        "mean_ms": 118.21277900307905,
+        "min_ms": 115.66640995442867,
+        "p50_ms": 117.29710450163111
+      },
+      "model_id": "nvidia/GR00T-N1.7-3B",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 133.0427480279468,
+        "mean_ms": 118.21277900307905,
+        "min_ms": 115.66640995442867,
+        "p50_ms": 117.29710450163111
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 4
+        },
+        "nfe_before": {
+          "action": 4
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 20,
+        "max_ms": 133.0427480279468,
+        "mean_ms": 118.21277900307905,
+        "min_ms": 115.66640995442867,
+        "p50_ms": 117.29710450163111
+      },
+      "primary_metric": "generation_p50_ms",
+      "receipt": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/cells/groot-runtime_selected/receipt.json",
+        "sha256": "a81a8c744468329bfb52e46f330013dc4f96d6433c1affba03b068007ec806fe"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "9643494d5ac8d25c12a33705cdcaccd5033fbba8437d866211594e03855065b9",
+      "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495",
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "native",
+        "step_cache": "checkpoint",
+        "tier_ceiling": "bitexact"
+      },
+      "setup_plus_first_predict_ms": 15089.891867013648,
+      "setup_plus_timed_calls_mean_ms": 719.1342595615424,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 14.147462100023404,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 153.23577556060627,
+      "timed_session_ms": 3830.894389015157,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.11.0+cu130",
+      "total_calls": 25,
+      "usability": "succeeded on recorded requests",
+      "warmup_calls": 5
+    }
+  ],
+  "comparisons": [
+    {
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "metric_overflow": false,
+        "rmse": 0.0,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "baseline": "groot-eager_native",
+      "baseline_schedule": {
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "candidate": "groot-runtime_default",
+      "candidate_schedule": {
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "kind": "matched_policy_latency_ratio",
+      "median_paired_ratio": 1.2169459300681535,
+      "paired_samples": 20,
+      "ratio_of_p50": 1.2126112051775093,
+      "recommended": false,
+      "same_sampling_policy": true,
+      "status": "passed",
+      "task_quality_validated": false
+    },
+    {
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "metric_overflow": false,
+        "rmse": 0.0,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "baseline": "groot-eager_native",
+      "baseline_schedule": {
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "candidate": "groot-runtime_selected",
+      "candidate_schedule": {
+        "nfe": {
+          "action": 4,
+          "backbone": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "kind": "matched_policy_latency_ratio",
+      "median_paired_ratio": 1.1936369552558703,
+      "paired_samples": 20,
+      "ratio_of_p50": 1.1892726601582646,
+      "recommended": false,
+      "same_sampling_policy": true,
+      "status": "passed",
+      "task_quality_validated": false
+    }
+  ],
+  "counts": {
+    "expected_cells": 3,
+    "failed_cells": 0,
+    "failed_comparisons": 0,
+    "finite_public_actions": 75,
+    "finite_queue_actions": 0,
+    "incomplete_cells": 0,
+    "main_cells": 3,
+    "operating_point_cells": 0,
+    "passed_cells": 3,
+    "runtime_update_cells": 0
+  },
+  "errors": [],
+  "matrix": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/groot/run/matrix.json",
+    "sha256": "dac0290d73bce7f01b7860241bceb083690033cc56a697761a7a863b52d92036"
+  },
+  "pending": [],
+  "recommended": false,
+  "require_observed_schedule": true,
+  "schema": "instinctflash.user_report.v1",
+  "scope": "CPU artifact/protocol validation on recorded requests; no simulator or task-quality admission",
+  "status": "passed",
+  "task_quality_validated": false,
+  "validator": {
+    "path": "/home/ubuntu/ifl-public-full-stage-20260915-v9-docfix1/source/benchmarks/regression/user_report.py",
+    "sha256": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+  }
+}

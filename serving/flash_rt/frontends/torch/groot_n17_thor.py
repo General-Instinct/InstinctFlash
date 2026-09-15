@@ -1,18 +1,10 @@
-"""GR00T N1.7 Thor torch frontend — ``GrootN17TorchFrontendThor``.
+"""GR00T N1.7 Thor frontend with auxiliary-tensor calibration and BF16 DiT.
 
-Public surface mirrors ``GrootTorchFrontendThor`` (N1.6):
-
-* ``__init__(checkpoint_path, num_views, embodiment_tag, ...)``
-* ``set_prompt(prompt: str, embodiment_tag: str | None = None)``
-* ``infer(observation: dict) -> np.ndarray``  # (action_horizon=40, 132)
-* ``predict(...)`` — alias kept for API parity
-* ``get_latency_stats()``
-
-
-This commit (Phase 3c.a) lands the foundation: ``__init__`` +
-``_load_weights`` driven by ``MultiSafetensorsSource`` and the
-declarative ``WEIGHT_SPEC`` (Phase 3a). ``set_prompt``/``infer`` are
-still stubbed.
+``set_prompt(aux=...)`` initializes calibration and the current backbone;
+``update_backbone_features`` refreshes observed features and graph-owned cross-KV;
+``infer`` consumes normalized state and returns normalized action chunks.
+Raw-camera preprocessing and live FP8 backbone execution still require integration
+before this frontend can serve the unified Runtime's complete FP8 policy.
 """
 
 from __future__ import annotations
@@ -49,7 +41,7 @@ class GrootN17TorchFrontendThor:
         load_strided_fmha: bool = True,
     ):
         from flash_rt.models.groot_n17.embodiments import (
-            EMBODIMENT_TAG_TO_INDEX, EMBODIMENT_NUM_VIEWS,
+            checkpoint_embodiment_slot,
         )
 
         self.checkpoint_path = str(checkpoint_path)
@@ -57,11 +49,7 @@ class GrootN17TorchFrontendThor:
         self.embodiment_tag = str(embodiment_tag)
         self.device = device
 
-        if embodiment_tag not in EMBODIMENT_TAG_TO_INDEX:
-            raise ValueError(
-                f"unknown embodiment_tag {embodiment_tag!r}; supported: "
-                f"{sorted(EMBODIMENT_TAG_TO_INDEX)}")
-        self._embodiment_id = EMBODIMENT_TAG_TO_INDEX[embodiment_tag]
+        self._embodiment_id = checkpoint_embodiment_slot(checkpoint_path, embodiment_tag)
 
         # Side-load the strided FMHA library (pi05_thor.py:126 production
         # pattern) — required for vit's multi-view fmha_strided_full.
@@ -108,25 +96,8 @@ class GrootN17TorchFrontendThor:
         source = MultiSafetensorsSource(shards, device=self.device)
         WeightLoader(source=source, target=self, spec=WEIGHT_SPEC).run()
 
-        # DiT weights are loaded FP8 per spec (Quant() in WEIGHT_SPEC). N1.7
-        # ckpt is natively bfloat16, so we dequant directly to bf16 (not fp16):
-        # w_bf16 = w_fp8.float() * weight_scale → bf16. Biases are likewise
-        # cast to bf16 so bf16_nn_bias's epilogue can consume them in-place.
-        for i in range(32):
-            base = i * 7
-            for attr_w, attr_b, scale_idx in [
-                ("_dit_q_w",       "_dit_q_b",       base + 0),
-                ("_dit_k_w",       "_dit_k_b",       base + 1),
-                ("_dit_v_w",       "_dit_v_b",       base + 2),
-                ("_dit_o_w",       "_dit_o_b",       base + 3),
-                ("_dit_ada_w",     "_dit_ada_b",     base + 4),
-                ("_dit_ff_proj_w", "_dit_ff_proj_b", base + 5),
-                ("_dit_ff_down_w", "_dit_ff_down_b", base + 6),
-            ]:
-                w_list = getattr(self, attr_w)
-                b_list = getattr(self, attr_b)
-                w_list[i] = (w_list[i].float() * float(self._dit_alpha[scale_idx])).bfloat16().contiguous()
-                b_list[i] = b_list[i].bfloat16().contiguous()
+        # DiT GEMMs execute in BF16. The spec loads those weights and biases
+        # directly in BF16; an FP8 round-trip would add loss without speedup.
 
         # Per-embodiment slot slicing: WEIGHT_SPEC loads dense
         # (32, in, out) and (32, out) tensors; the pipeline's per-embodiment
@@ -141,6 +112,10 @@ class GrootN17TorchFrontendThor:
             "_ac_dec_l1_W", "_ac_dec_l1_b", "_ac_dec_l2_W", "_ac_dec_l2_b",
         ):
             full = getattr(self, name)
+            if slot >= full.shape[0]:
+                raise ValueError(
+                    f"embodiment {self.embodiment_tag!r} slot {slot} exceeds "
+                    f"{name} weight slots ({full.shape[0]})")
             sliced = full[slot].contiguous()
             setattr(self, name, sliced)
             # Drop the (32, ...) tensor's reference so the unused slots
@@ -312,7 +287,7 @@ class GrootN17TorchFrontendThor:
         self._bake_calibration(out_vit, out_ds, out_llm, out_vlsa)
 
         # ── Stash backbone for infer; also stash deepstack injection bufs ──
-        self._backbone_features = out_vlsa["backbone_features"].half()
+        self.update_backbone_features(out_vlsa["backbone_features"], self._visual_pos_masks)
         # Pre-build the (S, D) DeepStack injection buffers (zero except at
         # visual positions) — used by qwen3vl_llm_forward.
         self._deepstack_inject = []
@@ -593,7 +568,7 @@ class GrootN17TorchFrontendThor:
             is the actual prompt.
 
         DiT alphas are absent because the DiT path runs bf16 native
-        (see calibration.py module docstring); ``_dit_alpha`` is
+        (see calibration.py module docstring); DiT weights are
         deliberately untouched here.
 
         Args:
@@ -796,8 +771,9 @@ class GrootN17TorchFrontendThor:
         if not hasattr(self, "_backbone_features"):
             raise RuntimeError("call set_prompt before infer")
 
-        # Lazy first-call: pre-compute DiT cross-KV from backbone (constant
-        # across diffusion steps; only depends on prompt → backbone).
+        # Cross-KV is constant only within one denoise cycle. Call
+        # update_backbone_features for each new observation, even when the
+        # language prompt is unchanged.
         if not hasattr(self, "_dit_cross_K"):
             self._precompute_dit_cross_kv()
 
@@ -910,7 +886,52 @@ class GrootN17TorchFrontendThor:
     # Internal helpers (eager; will be CUDA-graph wrapped in 3c.d)
     # ────────────────────────────────────────────────────────────────
 
-    def _precompute_dit_cross_kv(self) -> None:
+    @torch.no_grad()
+    def update_backbone_features(self, features, visual_pos_masks) -> None:
+        """Refresh the current observation without leaving stale captured KV.
+
+        The caller must recompute backbone features from the current cameras and
+        prompt. This handoff does not implement or certify that upstream path.
+        Same-geometry updates retain KV addresses read by captured DiT graphs;
+        changed text/image token counts invalidate those graphs and attention.
+        Calls on a frontend must be serialized, as with infer/set_prompt.
+        """
+        features = torch.as_tensor(features, device=self.device)
+        mask = torch.as_tensor(visual_pos_masks, device=self.device)
+        if features.ndim != 3 or features.shape[0] != 1 or features.shape[2] != 2048:
+            raise ValueError('GR00T backbone features must have shape [1, tokens, 2048]')
+        if mask.dtype != torch.bool or mask.numel() != features.shape[1]:
+            raise ValueError('GR00T visual mask must be boolean with one entry per token')
+        mask = mask.reshape(-1)
+        if not bool(mask.any()) or not bool((~mask).any()):
+            raise ValueError('GR00T backbone requires both text and image tokens')
+        features = features.to(torch.float16)
+        if not bool(torch.isfinite(features).all()):
+            raise ValueError('GR00T backbone features are nonfinite in engine precision')
+        features, mask = features.clone(), mask.clone()
+        self._precompute_dit_cross_kv(features, mask)
+        self._backbone_features = features
+        self._visual_pos_masks = mask
+        self.Se = features.shape[1]
+
+    def _fp32_weight(self, name, index=None):
+        # Candidate: retain only weight casts, never observation features/KV.
+        source = getattr(self, name)
+        if index is not None:
+            source = source[index]
+        try:
+            version = source._version
+        except RuntimeError:
+            return source.float()
+        cache = self.__dict__.setdefault('_fp32_weight_cache', {})
+        key = (name, index)
+        prior = cache.get(key)
+        if prior is None or prior[0] is not source or prior[1] != version:
+            prior = (source, version, source.float())
+            cache[key] = prior
+        return prior[2]
+
+    def _precompute_dit_cross_kv(self, features=None, visual_mask=None) -> None:
         """For each cross-attn DiT layer (even idx 0,2,...,30), compute K and V
         from backbone_features filtered to text or image positions per the
         ``attend_text_every_n_blocks=2`` rule:
@@ -920,8 +941,8 @@ class GrootN17TorchFrontendThor:
         Storage: ``self._dit_cross_K[16]``, ``self._dit_cross_V[16]`` each
         a (kv_seq_li, D=1536) fp16 tensor. Layer i (cross) maps to slot j=i//2.
         """
-        backbone = self._backbone_features.squeeze(0)   # (S, 2048)
-        mask = self._visual_pos_masks
+        backbone = (self._backbone_features if features is None else features).squeeze(0)
+        mask = self._visual_pos_masks if visual_mask is None else visual_mask
         text_kv_src = backbone[~mask]    # (text_count=21, 2048)
         image_kv_src = backbone[mask]    # (256, 2048)
 
@@ -935,16 +956,35 @@ class GrootN17TorchFrontendThor:
             kv_src = text_kv_src if target_text else image_kv_src
             # DiT weights are bf16 (pre-dequantized in _load_weights); no
             # additional scale multiply.
-            k_w = self._dit_k_w[li].float()
-            v_w = self._dit_v_w[li].float()
-            k_b = self._dit_k_b[li].float()
-            v_b = self._dit_v_b[li].float()
+            k_w = self._fp32_weight("_dit_k_w", li)
+            v_w = self._fp32_weight("_dit_v_w", li)
+            k_b = self._fp32_weight("_dit_k_b", li)
+            v_b = self._fp32_weight("_dit_v_b", li)
             K = (kv_src.float() @ k_w + k_b).bfloat16().contiguous()
             V = (kv_src.float() @ v_w + v_b).bfloat16().contiguous()
             K_list.append(K)
             V_list.append(V)
-        self._dit_cross_K = K_list
-        self._dit_cross_V = V_list
+        if not bool(torch.stack([torch.isfinite(t).all() for t in K_list + V_list]).all()):
+            raise RuntimeError('GR00T cross-attention projections returned nonfinite KV')
+        old_k = getattr(self, '_dit_cross_K', [])
+        old_v = getattr(self, '_dit_cross_V', [])
+        same_geometry = (len(old_k) == len(K_list) and len(old_v) == len(V_list)
+                         and all(a.shape == b.shape and a.dtype == b.dtype and a.device == b.device
+                                 for a,b in zip(old_k + old_v, K_list + V_list)))
+        if same_geometry:
+            for target,source in zip(old_k + old_v, K_list + V_list):
+                target.copy_(source)
+        else:
+            # Attention descriptors and CUDA graphs retain raw KV pointers.
+            # Release them before replacing allocations on a geometry change.
+            if hasattr(self, '_dit_graphs') and torch.device(self.device).type == 'cuda':
+                torch.cuda.synchronize(self.device)
+            for name in ('_dit_graphs', '_dit_attn', '_dit_ctx',
+                         '_dit_self_bufs', '_dit_cross_bufs'):
+                if hasattr(self,name):
+                    delattr(self,name)
+            self._dit_cross_K = K_list
+            self._dit_cross_V = V_list
 
     def _compute_timestep_emb(self, t_disc: int) -> torch.Tensor:
         """diffusers Timesteps + TimestepEmbedding → (1, 1536) fp16."""
@@ -1005,9 +1045,9 @@ class GrootN17TorchFrontendThor:
         for 3c.c eager mode (small MLP; perf-irrelevant). bf16 matches the
         ckpt's native dtype and the DiT main path."""
         x = state_flat.view(1, 132).float()
-        h = x @ self._st_enc_l1_W.float() + self._st_enc_l1_b.float()
+        h = x @ self._fp32_weight("_st_enc_l1_W") + self._fp32_weight("_st_enc_l1_b")
         h = torch.nn.functional.relu(h)
-        out = h @ self._st_enc_l2_W.float() + self._st_enc_l2_b.float()
+        out = h @ self._fp32_weight("_st_enc_l2_W") + self._fp32_weight("_st_enc_l2_b")
         return out.bfloat16().view(1, 1, 1536)
 
     def _run_action_encode(self, actions: torch.Tensor, t_disc: int,
@@ -1044,35 +1084,35 @@ class GrootN17TorchFrontendThor:
             [torch.sin(freqs), torch.cos(freqs)], dim=-1)       # (T, H)
 
         x = actions.view(action_horizon, 132).float()
-        a_emb = x @ self._ac_enc_W1_W.float() + self._ac_enc_W1_b.float()   # (T, H)
+        a_emb = x @ self._fp32_weight("_ac_enc_W1_W") + self._fp32_weight("_ac_enc_W1_b")   # (T, H)
         cat = torch.cat([a_emb, tau_emb], dim=-1)                           # (T, 2H)
-        h = cat @ self._ac_enc_W2_W.float() + self._ac_enc_W2_b.float()
+        h = cat @ self._fp32_weight("_ac_enc_W2_W") + self._fp32_weight("_ac_enc_W2_b")
         h = torch.nn.functional.silu(h)                                     # swish
-        out = h @ self._ac_enc_W3_W.float() + self._ac_enc_W3_b.float()
+        out = h @ self._fp32_weight("_ac_enc_W3_W") + self._fp32_weight("_ac_enc_W3_b")
         return out.bfloat16().view(1, action_horizon, H)
 
     def _run_action_decode(self, dit_out: torch.Tensor) -> torch.Tensor:
         """dit_output (1, 40, 1024) bf16 → velocity (1, 40, 132) bf16."""
         x = dit_out.view(-1, 1024).float()
-        h = x @ self._ac_dec_l1_W.float() + self._ac_dec_l1_b.float()
+        h = x @ self._fp32_weight("_ac_dec_l1_W") + self._fp32_weight("_ac_dec_l1_b")
         h = torch.nn.functional.relu(h)
-        out = h @ self._ac_dec_l2_W.float() + self._ac_dec_l2_b.float()
+        out = h @ self._fp32_weight("_ac_dec_l2_W") + self._fp32_weight("_ac_dec_l2_b")
         return out.bfloat16().view(1, dit_out.shape[1], 132)
 
     def _run_dit_output_proj(self, h: torch.Tensor, temb: torch.Tensor) -> torch.Tensor:
         """proj_out_1(SiLU(temb)) → (shift, scale) → AdaLN(h) → proj_out_2 → (1, 41, 1024)."""
         D = 1536
         x = torch.nn.functional.silu(temb.float())   # (1, 1536)
-        po1_w = self._proj_out_1_w.float() * self._dit_misc_alpha[2]   # (1536, 3072)
-        po1_b = self._proj_out_1_b.float()
+        po1_w = self._fp32_weight("_proj_out_1_w") * self._dit_misc_alpha[2]   # (1536, 3072)
+        po1_b = self._fp32_weight("_proj_out_1_b")
         mod = x @ po1_w + po1_b                       # (1, 3072)
         shift, scale = mod.chunk(2, dim=-1)
         # LayerNorm(no_affine) on h
         h_norm = torch.nn.functional.layer_norm(
             h.float(), (D,), eps=1e-5)               # (1, 41, D)
         h_mod = h_norm * (1 + scale.unsqueeze(1)) + shift.unsqueeze(1)
-        po2_w = self._proj_out_2_w.float() * self._dit_misc_alpha[3]   # (1536, 1024)
-        po2_b = self._proj_out_2_b.float()
+        po2_w = self._fp32_weight("_proj_out_2_w") * self._dit_misc_alpha[3]   # (1536, 1024)
+        po2_b = self._fp32_weight("_proj_out_2_b")
         return (h_mod @ po2_w + po2_b).bfloat16().contiguous()
 
     def _run_dit(self, bufs: dict, shift_list, scale_list, Sa: int) -> None:

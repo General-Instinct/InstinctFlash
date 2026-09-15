@@ -1,0 +1,77 @@
+{
+  "scope": "Paired Thor deployed-variant historical development screen, not independent confirmation or closed-loop realtime",
+  "protocol_sha256": "6416fe48849b6fcc715ce16745a16b2b079d18344f2fb665cf37905bc1d95c5a",
+  "data": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/data_distillation_v3/development.npz",
+    "bytes": 39512673,
+    "sha256": "45c047f262d5fa7d7e7839838e2288c3d98c698aaadd39245a67a395dc8c8dbe"
+  },
+  "variants": [
+    {
+      "configuration_id": "edge_sde1_cfg1_seed12031_update0064",
+      "attention": "native"
+    },
+    {
+      "configuration_id": "edge_sde1_cfg1_seed12031_update0064",
+      "attention": "cudnn"
+    },
+    {
+      "configuration_id": "edge_sde1_cfg1_seed12032_update0064",
+      "attention": "native"
+    },
+    {
+      "configuration_id": "edge_sde1_cfg1_seed12032_update0064",
+      "attention": "cudnn"
+    },
+    {
+      "configuration_id": "edge_sde1_cfg4_seed12031_update0064",
+      "attention": "native"
+    },
+    {
+      "configuration_id": "edge_sde1_cfg4_seed12031_update0064",
+      "attention": "cudnn"
+    },
+    {
+      "configuration_id": "edge_sde1_cfg4_seed12032_update0064",
+      "attention": "native"
+    },
+    {
+      "configuration_id": "edge_sde1_cfg4_seed12032_update0064",
+      "attention": "cudnn"
+    }
+  ],
+  "requests_per_variant": 128,
+  "total_requests": 1024,
+  "conditions": 16,
+  "draws_per_condition": 8,
+  "latency_scope": "instrumented quality calls, not latency benchmark",
+  "conclusion_gate": "producer quality_execution_completion_v2 and independent audit success, plus deployed capture identity and score validation",
+  "source_capture_sha256": "a47d4b4edd55d72feed08bf2f87ba5392b0fc89be457c4d7a0f0fe4a6b84980a",
+  "packages": {
+    "edge_sde1_cfg1_seed12031_update0064": {
+      "manifest_sha256": "b6b8c5bb3e9d6403e9298ea7940d9c4cba41b1a1fcf21617a37506e53e76b934",
+      "student_state_sha256": "325cec85fb215e0a84a9277acc8a2390bd1960734afe3ddb1f68e249908aeb70",
+      "export_gate_sha256": "d3e144be4136fa2c168804736ce1456c2c4fdeabb7dcfaad59a6e6c4fc496197"
+    },
+    "edge_sde1_cfg1_seed12032_update0064": {
+      "manifest_sha256": "a740d5b952b16dcce6292e50ef3a19d940335552583e75dd4ce7436358b2a40f",
+      "student_state_sha256": "a66a077b96d1ee0313223721fd65accfdfcc60477e6d1aeabcf54ae0b5df625d",
+      "export_gate_sha256": "c8855feabf1bfd87887f0e648e76a55c204245fe661eb03c19d73f551f11b52b"
+    },
+    "edge_sde1_cfg4_seed12031_update0064": {
+      "manifest_sha256": "84ae239eadf755079a58ece9c348ea05a50bdd90f8841e1eaab252665500a2d8",
+      "student_state_sha256": "0216f5559387d744ed0b11a8290b03b5069065f70bebf6a8aa424bcb40d7e9f9",
+      "export_gate_sha256": "76b1b91acb50f3d7e3e241288fdb915e36a95d9ee69af4105fe8e7bfe84078d8"
+    },
+    "edge_sde1_cfg4_seed12032_update0064": {
+      "manifest_sha256": "d85649c3352fcc1a5230d385575507b678bb44d9346a2d31949aab39d89ab43f",
+      "student_state_sha256": "2fdacd843d052dd0fe9696dedb55930d5b4dbf4c0ed2b335a6d98be6b3025030",
+      "export_gate_sha256": "e321a480b20c78087de7e2aaa64204d7606a948027d3682e6a0f7089389c9fe6"
+    }
+  },
+  "capture_sources": {
+    "capture_request.py": "481e6a91ff96a18a8e33561e8997d9a3a5251fef7370eca5903f0d20626810c0",
+    "run_capture.py": "f3963e7be1b3ddb60e46934811cdb7e21734c58c5582d21b62a02f0b213169f4",
+    "producer_capture.py": "a47d4b4edd55d72feed08bf2f87ba5392b0fc89be457c4d7a0f0fe4a6b84980a"
+  }
+}

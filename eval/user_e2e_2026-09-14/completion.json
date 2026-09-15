@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "completed_utc": "2026-09-14T03:47:52.214487+00:00",
+  "purpose": "Eight-family installed public Runtime study and repository integration verification on Jetson Thor",
+  "counts": {
+    "expected_cells": 31,
+    "main_cells": 24,
+    "operating_point_cells": 4,
+    "runtime_update_cells": 3,
+    "passed_cells": 31,
+    "failed_cells": 0,
+    "incomplete_cells": 0,
+    "failed_comparisons": 0,
+    "finite_public_actions": 735,
+    "finite_queue_actions": 153
+  },
+  "installed_environment_audits": 10,
+  "artifacts": [
+    {
+      "path": "matrix_final.json",
+      "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+    },
+    {
+      "path": "report.json",
+      "sha256": "2a0a5e8f85b7d5b1362d1a98b4c2ef910678e80582b43ac6768ee0ec2ad8046c"
+    },
+    {
+      "path": "report.csv",
+      "sha256": "f0c9a0a09e1f47dc28d04b25e65880be8e79ae6856a8844a8445d7df27bc65cc"
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "5348dde2e10b3b350d22ad2d80d54b8867b628d7303247cd4ced11ebfe410b69"
+    },
+    {
+      "path": "provenance_report.json",
+      "sha256": "3457e775b14927a0659d253d41ac7185419a99e2ae5dda153860dd881a5f995b"
+    },
+    {
+      "path": "prompt_update_gate.json",
+      "sha256": "c68135317f69564725c05f4b676d4b59d1b7116b8034f9014c4f2f3bfba30aa1"
+    },
+    {
+      "path": "results.csv",
+      "sha256": "96a040f00c23bf49b5e22a23ea1680462a124fe2fafa42c4bafb1bdf27ce83db"
+    },
+    {
+      "path": "results.rst",
+      "sha256": "d851e282e6e5167f5a422a55f306096ea2bfa5eab0af80f6a7a0914db90fbd58"
+    },
+    {
+      "path": "source_post_execution_check.json",
+      "sha256": "8f121253c547369402a3d11ee76e33819a996191301a397e26ab60c66c3e3ec5"
+    },
+    {
+      "path": "publication_inventory.json",
+      "sha256": "d46a9d18ac3d4838da506a7d1e78315ddf8d0e8a8607ac2635a24ff17c626b6d"
+    },
+    {
+      "path": "dreamzero_default_difference.json",
+      "sha256": "af6d2443954ab21d95aa0ec51b1fc108404c93df796e9c58d28f8aeae8149d2b"
+    },
+    {
+      "path": "documentation_reference_cleanup.json",
+      "sha256": "074f32035c0b3387df1aa13fe8d21d16fbb79d3cf05d152d3cb876699d54b0c5"
+    },
+    {
+      "path": "validation/validation_current_final.json",
+      "sha256": "be7c2b6945906827e84c751a8cd782cb862ba4645f4846feacd408941eded4e0"
+    }
+  ],
+  "source_versions": [
+    {
+      "version": "A",
+      "cells": 28,
+      "scope": "Original core, serving and adapter wheels; initial twelve and sixteen PATH-recovery cells"
+    },
+    {
+      "version": "B",
+      "cells": 1,
+      "scope": "VLA4 update rebuilt core and serving wheels; all adapter wheels retained from A"
+    },
+    {
+      "version": "C",
+      "cells": 2,
+      "scope": "VLA2 update and native NUMERIC rebuilt core and serving wheels; all adapter wheels retained from A"
+    }
+  ],
+  "post_capture_scope": "Final report/receipt joins and eval Pillow dependency are covered by the final CI. DreamZero admission guards have CPU evidence only. Two later module-docstring link fixes preserve the executable AST and have their own before/after hashes. GPU cells do not all execute the final repository bytes",
+  "cpu_validation": {
+    "full_scan_files": 193,
+    "passed_files": 174,
+    "optional_skipped_files": 19,
+    "failed_files": 0,
+    "exact_ci_cases": 273,
+    "exact_ci_failures": 0
+  },
+  "numerical_scope": "Seven default native action archives match eager bytes; DreamZero default differs under the declared eager/native compiler settings. Update gates compare identical FP8 policies. NUMERIC, FP8 and changed operating points are numerical/latency screens only.",
+  "user_scope": "New wheels in fresh isolated overlays over existing model-specific vendor environments; same public API, not a fresh OS/CUDA/vendor installation. Recorded cameras and synthetic states; network transport, robot execution and closed-loop task quality are outside this study.",
+  "failures_preserved": [
+    "Original Edge setup receipt before the uvx PATH repair",
+    "Initial clean-checkout test registration failure",
+    "Initial minimal CI Pillow dependency failure"
+  ],
+  "task_quality_validated": false,
+  "recommended": false
+}

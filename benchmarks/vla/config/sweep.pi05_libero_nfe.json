@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "name": "pi05 v044 LIBERO untrained step-schedule frontier",
+  "baseline": {"id": "nfe10", "nfe": {"action": 10}, "forwards_per_cycle": 11},
+  "points": [
+    {"id": "nfe5", "nfe": {"action": 5}, "forwards_per_cycle": 6},
+    {"id": "nfe4", "nfe": {"action": 4}, "forwards_per_cycle": 5},
+    {"id": "nfe3", "nfe": {"action": 3}, "forwards_per_cycle": 4},
+    {"id": "nfe2", "nfe": {"action": 2}, "forwards_per_cycle": 3},
+    {"id": "nfe1", "nfe": {"action": 1}, "forwards_per_cycle": 2}
+  ],
+  "repeat_baseline": true,
+  "driver": {
+    "adapter_id": "pi05-libero-schedule-v1",
+    "command": ["${IFL_BENCH_FAMILY_PYTHON}", "-m", "benchmarks.vla.pi05_libero_driver"],
+    "environment": {
+      "MUJOCO_GL": "egl",
+      "OMP_NUM_THREADS": "2",
+      "MKL_NUM_THREADS": "2",
+      "TQDM_DISABLE": "1"
+    },
+    "timeout_seconds": 3600,
+    "revision": "${IFL_BENCH_DRIVER_REVISION}"
+  },
+  "screening": {"margin": -0.05, "interval": "wald_central95", "min_pairs": 10},
+  "control_steps_per_cycle": 10
+}

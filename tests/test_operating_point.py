@@ -170,6 +170,7 @@ def test_both_placements_serve_the_same_declaration():
             (base / comp).mkdir(parents=True, exist_ok=True)
 
         class Ex:
+            model_id = "example-org/x"
             nfe = {"video": 2, "action": 4}
             guidance = {"video": "cfg", "action": "positive_only"}
             # geometry declared like any real wan_va checkpoint must: the adapter now refuses
@@ -233,6 +234,21 @@ def test_both_placements_serve_the_same_declaration():
         apply_declared_guidance(c, dict(p.split("=", 1) for p in flag.split(",")))
         check(c.guidance_scale == 3.0 and c.action_guidance_scale == 1.0,
               "and the worker-side parse of that flag serves the identical scales")
+        class Plan:
+            applied = [type("R", (), {"name": name})() for name in (
+                "fsdp_elision", "debug_dump_elision", "conditioning_prefill",
+                "ring_kv_addressing",
+            )]
+
+        argv3, _ = LingBotVA().worker_command(
+            Ck(), Plan(), port=1234, python="python3", device=None, nfe=None)
+        joined3 = " ".join(argv3)
+        check("--ring-kv" in joined3, "worker keeps a pass applied by the plan")
+        check("--no-empty-cache" not in joined3,
+              "worker honors the low-memory allocator exclusion")
+        check("--conv-layout" not in joined3,
+              "worker does not exceed a BITEXACT plan with NUMERIC P007")
+
 
 
 def test_plan_is_priced_at_the_declared_guidance_and_prints_the_tuple():

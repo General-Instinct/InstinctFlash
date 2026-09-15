@@ -1,0 +1,35 @@
+{
+  "scope": "Synthetic operator feasibility only; not model support, model speed, or quality",
+  "torch": "2.11.0+cu130",
+  "capability": [
+    11,
+    0
+  ],
+  "cases": [
+    {
+      "m": 4,
+      "k": 2048,
+      "n": 2048,
+      "dtype": "torch.bfloat16",
+      "finite": true,
+      "relative_rmse": 0.03803851082921028
+    },
+    {
+      "m": 128,
+      "k": 3072,
+      "n": 3072,
+      "dtype": "torch.bfloat16",
+      "finite": true,
+      "relative_rmse": 0.03747299313545227
+    },
+    {
+      "m": 256,
+      "k": 2048,
+      "n": 8192,
+      "dtype": "torch.bfloat16",
+      "finite": true,
+      "relative_rmse": 0.037587061524391174
+    }
+  ],
+  "ok": true
+}

@@ -1,0 +1,336 @@
+{
+  "schema_version": 16,
+  "status": "success",
+  "stage": "source-export",
+  "plan": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/export_plans/edge_sde1_cfg4_seed12031_v2.json",
+    "bytes": 10561,
+    "sha256": "cb21dbce443e8ba31631138d325385337248dae94cfd61e4cd5f7e38b29ad2e5"
+  },
+  "protocol": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training_protocol.json",
+    "bytes": 1180815,
+    "sha256": "8121fc79add569684ce8c191300db459a234c3582e4c8cffa29ad2aac3f9e018"
+  },
+  "arm_id": "edge_sde1_cfg4_seed12031",
+  "training_seed": 12031,
+  "student_updates": 64,
+  "steps": 1,
+  "guidance": 4,
+  "snapshot": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg4_seed12031/checkpoints/update_0064/training.pt",
+    "bytes": 302984621,
+    "sha256": "bcdab8fc382e157f34343efacdfb010dba58b59a48bc190c823ad41d6d6c84fb"
+  },
+  "training_report": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg4_seed12031/report.json",
+    "bytes": 42294,
+    "sha256": "567591f3b3ce006d162740374a59d333165dc558a4f6d39bca9bd8b8fce0d2ce"
+  },
+  "manifest": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg4_seed12031/checkpoints/update_0064/manifest.json",
+    "bytes": 2592,
+    "sha256": "f01f0d68567b1b6539e974940a610b38d41c84a273d3235bd70fe469f6868113"
+  },
+  "pid": 1599040,
+  "process_nonce": "15b600a803b64f4e9d9da701f3a09c65",
+  "created_at": "2026-09-12T07:10:16.473136+00:00",
+  "runtime": {
+    "python": "3.13.14 (main, Jul 18 2026, 17:02:37) [Clang 22.1.3 ]",
+    "numpy": "2.2.6",
+    "torch": "2.10.0+cu130",
+    "cuda": "13.0",
+    "device": "NVIDIA H100 80GB HBM3",
+    "capability": [
+      9,
+      0
+    ],
+    "tf32_matmul": false,
+    "tf32_cudnn": false
+  },
+  "live_state_matches_snapshot": true,
+  "native_serving_bitexact": true,
+  "student_state_sha256": "0216f5559387d744ed0b11a8290b03b5069065f70bebf6a8aa424bcb40d7e9f9",
+  "expected_merged_backbone_state": "396f171ce885ed5f51570cec4f4afe30c3b31ec85b1a374ab5198ae5f635edce",
+  "merged_native": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg4_seed12031/export_roundtrip/merged_native.pt",
+    "bytes": 419576073,
+    "sha256": "e0035560723e6fef955f808359fbad34fb3537cadfc1abb98b40012c520d9f42"
+  },
+  "expected_outputs": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg4_seed12031/export_roundtrip/expected_outputs.pt",
+    "bytes": 9163093,
+    "sha256": "f532559e5337c4e3e2e9013fa151d75fd2a23b717720ee37e7b62b4c117c287e"
+  },
+  "source_serving_outputs": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg4_seed12031/export_roundtrip/source_serving_outputs.pt",
+    "bytes": 9163165,
+    "sha256": "467366d315095d2b456fec4f7d169e220b6a2a6556ab069af056f1a4f48b236f"
+  },
+  "export_inventory": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/training/edge_sde1_cfg4_seed12031/export_roundtrip/export_inventory.json",
+    "bytes": 35608,
+    "sha256": "0730230d9e7ca7224f01c21c7b09600cd689bbb1e633b1c520225185ae2cdf8f"
+  },
+  "helper_execution": {
+    "schema_version": 16,
+    "execution": "complete_declared_deployment_grid",
+    "steps": 1,
+    "times": [
+      1.0,
+      0.0
+    ],
+    "guidance": 4.0,
+    "callbacks": 1,
+    "network_branches": 2,
+    "native_branches": [
+      {
+        "timestep": 1000.0,
+        "padding_max": 0.0,
+        "conditioning": "conditional"
+      },
+      {
+        "timestep": 1000.0,
+        "padding_max": 0.0,
+        "conditioning": "unconditional"
+      }
+    ],
+    "callback_timesteps": [
+      1000.0
+    ],
+    "callback_parameter_graphs": [
+      false
+    ],
+    "gradient": "none",
+    "output_requires_grad": false,
+    "native_callable_unchanged": true,
+    "native_hook_restored": true,
+    "sampling_rng_restored": true,
+    "rng_visibility_contract": "cpu_without_cuda_or_one_visible_cuda_at_logical0",
+    "native_action_shape": [
+      33,
+      64
+    ],
+    "generated_action_shape": [
+      32,
+      8
+    ],
+    "preserved_history_rows": [
+      0
+    ],
+    "action_padding_policy": "droid_rf_training_zero_action_padding",
+    "weight_training_status": "not_inferred_by_rollout"
+  },
+  "serving_execution": {
+    "sampler_calls": 1,
+    "preparation_calls": 1,
+    "sampler_denoiser_callbacks": 1,
+    "model_velocity_branch_calls": 2,
+    "sampler_class": "cosmos_framework.model.generator.diffusion.samplers.fixed_step.FixedStepSampler",
+    "sample_type": "sde",
+    "rf_grid": [
+      1.0,
+      0.0
+    ],
+    "num_train_timesteps": 1000.0,
+    "effective_sampler_arguments": {
+      "num_steps": 1,
+      "shift": 0.0,
+      "seed": [
+        1977068060
+      ]
+    },
+    "native_conditioning_passed": true,
+    "sampler_host_seconds": 0.138019360601902,
+    "callback_timesteps": [
+      1000.0
+    ],
+    "native_initial_noise": [
+      {
+        "shape": [
+          572352
+        ],
+        "dtype": "torch.float32",
+        "sha256": "f2af0570f17d59c910e33beb4f69181012dd7326283c8ea70ccc03e7afde9e82"
+      }
+    ],
+    "native_condition_reference": [
+      {
+        "shape": [
+          572352
+        ],
+        "dtype": "torch.float32",
+        "sha256": "68b3291c974b4fd1ba11ab7ae961391cc1ed0f697378d9fbfcd60eb1b12292dc"
+      }
+    ],
+    "native_condition_mask": [
+      {
+        "shape": [
+          572352
+        ],
+        "dtype": "torch.float32",
+        "sha256": "6fa59985d67811da17dba7b3f3b2ba27ee3739b09e7cbc779284a45e5997c653"
+      }
+    ],
+    "generation_arguments": {
+      "seed": [
+        1977068060
+      ],
+      "guidance": 4.0,
+      "num_steps": 1,
+      "shift": 1.0,
+      "guidance_interval": null,
+      "normalize_cfg": false,
+      "skip_text_tokens_for_cfg": false
+    },
+    "action_padding_intervention": {
+      "schema_version": 1,
+      "policy": "droid_rf_training_zero_action_padding",
+      "raw_action_dim": 8,
+      "padded_action_dim": 64,
+      "sampler_change": "padded_coordinates_are_zero_reference_constraints",
+      "velocity_change": "project_only_padded_action_inputs_before_native_packing",
+      "prepared_calls": 1,
+      "prepared_original": {
+        "noise": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "f2af0570f17d59c910e33beb4f69181012dd7326283c8ea70ccc03e7afde9e82"
+          }
+        ],
+        "condition_reference": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "68b3291c974b4fd1ba11ab7ae961391cc1ed0f697378d9fbfcd60eb1b12292dc"
+          }
+        ],
+        "condition_mask": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "ca5c3496af371a05aa7e2a130553cd65821796c10e9bc94df897a87d820f5012"
+          }
+        ]
+      },
+      "prepared_effective": {
+        "noise": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "f2af0570f17d59c910e33beb4f69181012dd7326283c8ea70ccc03e7afde9e82"
+          }
+        ],
+        "condition_reference": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "68b3291c974b4fd1ba11ab7ae961391cc1ed0f697378d9fbfcd60eb1b12292dc"
+          }
+        ],
+        "condition_mask": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "6fa59985d67811da17dba7b3f3b2ba27ee3739b09e7cbc779284a45e5997c653"
+          }
+        ]
+      },
+      "nonpadding_unchanged": true,
+      "mask_delta_coordinates": [
+        1792
+      ],
+      "initial_padding_max_before": [
+        0.0
+      ],
+      "initial_padding_max_after": [
+        0.0
+      ],
+      "projected_velocity_branches": 2,
+      "velocity_padding_max_before": [
+        0.0,
+        0.0
+      ],
+      "velocity_padding_max_after": [
+        0.0,
+        0.0
+      ],
+      "hooks_restored": true
+    },
+    "action_offset": 570240,
+    "action_shape": [
+      33,
+      64
+    ],
+    "normalizer": {
+      "raw_action_dim": 8,
+      "qualified_class": null,
+      "offset": null,
+      "scale": null,
+      "forward_clamp": null,
+      "forward_clamp_mask": null
+    },
+    "native_module_bindings_restored": true,
+    "sampling_rng_restored": true,
+    "role_binding": true,
+    "output_arrays": {
+      "action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "c77823b10c4728583ac1f07e4881f46972d0256e07ac843222df045497a706bb"
+      },
+      "model_action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "5f1ad881eebab38e6d79117444391e14de74149fbef73c3d9ee911d3bbbc65bf"
+      },
+      "measured_action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "9a69b99f9ce0181348ba3c38df5f87640570a6daf0b50d78c86cf456779af79f"
+      },
+      "model_measured_action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "3872e03e37d96b250019fc50633cde7ac097e1aa59ec641ac3da63c18b63166f"
+      }
+    },
+    "generation_host_seconds": 0.3470649253576994,
+    "full_joint_fp32": {
+      "shape": [
+        572352
+      ],
+      "dtype": "float32",
+      "sha256": "57865eaf2789a8588a908ec0f0e49aab366b998c10c099af4600f293b0e87073"
+    }
+  },
+  "actual_callbacks": 2,
+  "actual_branches": 4,
+  "source_and_input_postcheck": "unchanged",
+  "seconds": 94.47588752117008
+}

@@ -1,0 +1,960 @@
+{
+  "schema": 1,
+  "scope": "full CPU test suite against frozen package sources and HEAD Markdown plus hash-bound test fixture/test/catalog overlays; no model inference",
+  "command": [
+    "/tmp/instinctflash-install-audit-ili1zejm/venv/bin/python",
+    "-u",
+    "tests/run_tests.py"
+  ],
+  "cwd": "/tmp/ifl-user-e2e-core-validation-20260914-a",
+  "returncode": 1,
+  "elapsed_seconds": 83.47780407872051,
+  "torch_installed": false,
+  "numpy_installed": false,
+  "counts": {
+    "PASS": 68,
+    "SKIP": 117,
+    "FAIL": 2
+  },
+  "count_unit": "test files, including explicit optional-dependency skips",
+  "modules": [
+    {
+      "status": "SKIP",
+      "module": "test_action_terminal_elision.py",
+      "detail": "6 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_adapter.py",
+      "detail": "12 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_attention_backend.py",
+      "detail": ""
+    },
+    {
+      "status": "SKIP",
+      "module": "test_attribution.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_autotune.py",
+      "detail": "10 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_bf16_linear.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_campaign_doctor.py",
+      "detail": "1 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_capture_default_families.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_capture_reference_integrity.py",
+      "detail": "6 tests skipped"
+    },
+    {
+      "status": "PASS",
+      "module": "test_certify.py",
+      "detail": ""
+    },
+    {
+      "status": "FAIL",
+      "module": "test_checkpoint_platform.py",
+      "detail": "MISSING  weights -- one of model.safetensors, model.safetensors.index.json, diffusion_pytorch_model.safetensors, diffusion_pytorch_model.safetensors.index.json, or an execution.base_weights pointer"
+    },
+    {
+      "status": "PASS",
+      "module": "test_checkpoint_revision_views.py",
+      "detail": "3 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_checkpoint_variants.py",
+      "detail": "2 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_clean_wheel_snapshot.py",
+      "detail": "8 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_cli.py",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "module": "test_cli_config.py",
+      "detail": "8 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_cli_preflight.py",
+      "detail": "4 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_closed_loop_action_report.py",
+      "detail": "6 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_compiled_region.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_controller_trace_validation.py",
+      "detail": "2 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_conv_autotune_site.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_conv_backend.py",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "module": "test_core_stability.py",
+      "detail": ""
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos3_conditioning_cache.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos3_engine.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos3_nano_action_only.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos3_persistent_text_kv.py",
+      "detail": "7 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos3_policy_adapter.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos3_thor_graphs.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos3_thor_pointwise.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos_backend_dispatch.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos_dense_mlp_fp8.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos_droid_loop.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos_fp8_install.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos_generation_region.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos_numeric_attention.py",
+      "detail": "2 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos_numeric_regression.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos_real_weights_probe.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_cosmos_timestep_cache.py",
+      "detail": "1 tests skipped"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_deps.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_device_class.py",
+      "detail": "7 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_distill_control_gate.py",
+      "detail": "8 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_distill_evidence.py",
+      "detail": "4 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_distill_provenance.py",
+      "detail": ""
+    },
+    {
+      "status": "SKIP",
+      "module": "test_dreamzero_adapter.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_dreamzero_backend_dispatch.py",
+      "detail": "2 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_dreamzero_checkpoint_geometry.py",
+      "detail": "7 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_dreamzero_checkpoint_loading.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_dreamzero_fp8_builder.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_dreamzero_fp8_install.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_dreamzero_owned_loading.py",
+      "detail": "5 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_dreamzero_step_cache.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_dynamic_fp8_pack.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_end_to_end_example.py",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "module": "test_engine_available_kernels.py",
+      "detail": "5 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_engine_exclusion.py",
+      "detail": "5 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_engine_geometry_gate.py",
+      "detail": "13 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_engine_graph.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_engine_lang_embeds_stability.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_engine_operating_point_gate.py",
+      "detail": "13 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_eval_integration.py",
+      "detail": "3 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_evidence_bundle.py",
+      "detail": "4 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_exact_tensor_contract.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_execution_selection.py",
+      "detail": "16 passed; needs numpy"
+    },
+    {
+      "status": "PASS",
+      "module": "test_external_plugin.py",
+      "detail": ""
+    },
+    {
+      "status": "SKIP",
+      "module": "test_fixed_input_replay.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_fp8_projection_evidence.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_generic_pass.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_groot_action_generator.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_groot_backbone_refresh.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_groot_checkpoint_embodiments.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_groot_engine_native_options.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_groot_fast_decode_selection.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_groot_fp8_install.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_groot_full_capture_reference.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_groot_gpu_collate.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_groot_libero_driver.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_groot_n17_adapter.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_groot_policy_server_precision.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "PASS",
+      "module": "test_guidance_schema.py",
+      "detail": ""
+    },
+    {
+      "status": "SKIP",
+      "module": "test_h100_fp8.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_hardware_probe.py",
+      "detail": ""
+    },
+    {
+      "status": "SKIP",
+      "module": "test_hoist_pass.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_install_preflight.py",
+      "detail": "15 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_joint_policy_server_precision.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_joint_robotwin_driver.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_kernel_framework.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_l3_noop.py",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "module": "test_layer5_flow.py",
+      "detail": ""
+    },
+    {
+      "status": "SKIP",
+      "module": "test_lingbot_vla4b_adapter.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_lingbot_vla4b_full_path.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_lingbot_vla_v2_adapter.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_moe_schedule_site.py",
+      "detail": "1 tests skipped"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_native_coverage_comparison.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_native_total_comparison.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_numeric_total_comparison.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "PASS",
+      "module": "test_operating_point.py",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "module": "test_optimizer.py",
+      "detail": "17 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_p3_cosmos3.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_p8_scratch_arena.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_paired_runner.py",
+      "detail": "4 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_pdd_lingbot_parity.py",
+      "detail": "Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_pdd_parity.py",
+      "detail": "Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_pdd_recipe.py",
+      "detail": "Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_pi05_adapter.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_pi05_capture_default.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_pi05_compile_neutralize.py",
+      "detail": "8 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_pi05_engine_loop.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_pi05_legacy_cache.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_pi05_libero_driver.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "PASS",
+      "module": "test_pi05_runtime_libero_campaign.py",
+      "detail": "9 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_pi05_runtime_libero_compare.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_pi05_scenes.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_pi05_static_capture.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_pi05_tf32_closed_loop.py",
+      "detail": "12 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_pi05_tf32_operating_point.py",
+      "detail": "18 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_pi05_weights.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_plan_header_model_id.py",
+      "detail": "3 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_policy_trace.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_promote_operand.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_qualification.py",
+      "detail": "7 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_realtime_budget.py",
+      "detail": "6 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_recipe.py",
+      "detail": "Skipped: the PDD training recipe lives in the instinct-pdd companion repo; pip install it to run these tests"
+    },
+    {
+      "status": "FAIL",
+      "module": "test_repo_surface.py",
+      "detail": "FAILED 2: [\"the first screen does not mention 'tier_ceiling'\", 'the news section is not a results table']"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_ring_allocator.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_robotwin_driver.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "PASS",
+      "module": "test_robotwin_reset_bounds.py",
+      "detail": "2 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_robotwin_transport.py",
+      "detail": "0 passed; needs websockets"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_rope_kernel.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_runtime.py",
+      "detail": "6 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_runtime_boundary.py",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "module": "test_runtime_bundle.py",
+      "detail": "3 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_runtime_facade.py",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "module": "test_runtime_precision.py",
+      "detail": "15 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_runtime_regression.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "PASS",
+      "module": "test_runtime_telemetry.py",
+      "detail": "10 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_scaffold_evidence_readers.py",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "module": "test_scene_prepare.py",
+      "detail": "3 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_schedule_sweep.py",
+      "detail": "6 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_screening_summary.py",
+      "detail": "3 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_serve_autoscaffold.py",
+      "detail": ""
+    },
+    {
+      "status": "SKIP",
+      "module": "test_serve_parity.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_serve_seed.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_serve_viz.py",
+      "detail": "needs msgpack"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_shared_bf16_pointwise.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_shipped_config.py",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "module": "test_simulator_campaign.py",
+      "detail": "5 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_simulator_doctor.py",
+      "detail": "3 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_sm120_native_pass.py",
+      "detail": "6 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_sm120_wan_stage2.py",
+      "detail": "7 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_stable_pools.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_stable_pools_pass.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_static_tensor_graph.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_step_cache.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_step_cache_policy.py",
+      "detail": "15 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_tensor_cache.py",
+      "detail": "1 tests skipped"
+    },
+    {
+      "status": "PASS",
+      "module": "test_test_runner.py",
+      "detail": "40 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_trainer.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_triton_residual.py",
+      "detail": "needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_user_report.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_v2_complete_fallback.py",
+      "detail": "4 tests skipped"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_v2_vision_capture_metadata.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_va_checkpoint_history.py",
+      "detail": "9 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_va_geometry.py",
+      "detail": "9 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_va_saturated_stress_compare.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "PASS",
+      "module": "test_validate_certificate.py",
+      "detail": ""
+    },
+    {
+      "status": "PASS",
+      "module": "test_validate_layout_hint.py",
+      "detail": "9 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_validate_scaffold.py",
+      "detail": ""
+    },
+    {
+      "status": "SKIP",
+      "module": "test_vla2_checkpoint_moe.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_vla2_scale_accumulator.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_vla4_engine.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_vla4_preprocess_ownership.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "PASS",
+      "module": "test_vla_adapter_contracts.py",
+      "detail": "8 tests passed"
+    },
+    {
+      "status": "PASS",
+      "module": "test_vla_benchmark_pipeline.py",
+      "detail": "17 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_vla_instinctflash_driver.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "PASS",
+      "module": "test_vla_replay_driver.py",
+      "detail": "2 tests passed"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_wan_va_backend_dispatch.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_wan_va_checkpoint_geometry.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_wan_va_engine_operating_point.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_wan_va_engine_server.py",
+      "detail": "0 passed; needs torch"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_wan_va_libero_driver.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_wan_va_runtime_robotwin_bridge.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_wan_va_runtime_robotwin_scene.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_wan_va_runtime_rollout.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_wan_va_runtime_server.py",
+      "detail": "0 passed; needs numpy"
+    },
+    {
+      "status": "PASS",
+      "module": "test_worker_output.py",
+      "detail": "1 tests passed, 1 skipped"
+    },
+    {
+      "status": "SKIP",
+      "module": "test_ws_server.py",
+      "detail": "needs msgpack"
+    }
+  ],
+  "log_sha256": "e5afa831b9051ef45dd96b8f4a1874350af5093b44188f846040b0aa0d15c0ca",
+  "inputs_manifest": "core_validation_inputs.json",
+  "inputs_manifest_sha256": "2b8bf4a8188d448bc17bce14ba4591c6d655449dabc281284a057b746da4e239"
+}

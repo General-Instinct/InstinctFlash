@@ -1,0 +1,2301 @@
+{
+  "analysis_source_sha256": "2e5e247ca8e2b778fafb66a8760933811b8f2df5ef901104c22816f432982bf1",
+  "bundles": {
+    "repeat1": {
+      "bundle_sha256": "abdc6211ac015580567d0494c65a503ce8220b7b315bc0e3aff810379317dfd0",
+      "plan_id": "e762890179a0685c5a9fd204cb5e4fe13c61805318fb67c571860af86ff60709"
+    },
+    "repeat2": {
+      "bundle_sha256": "5c7744cd644c8522fac76abc695e2642b628bc70d3c20f404c42f636ca555e6e",
+      "plan_id": "04af80265076b4a54c44da5991b9142b7851db9f1f79cf8aa05e821d098d6d44"
+    }
+  },
+  "campaign_timing_scope": "Operational launch-to-completion marker times, including simulator startup and per-episode asset checks; independent campaigns overlap.",
+  "campaign_wall_seconds": {
+    "repeat1": 3413.461881875992,
+    "repeat2": 3414.249372959137
+  },
+  "closed_loop_noise_scope": "Same declared episode seeds and frozen scenes; actual-noise tensors were not recorded or injected. AA/BB measure full-system repeatability, not isolated kernel error.",
+  "comparisons": {
+    "aa": [
+      {
+        "delta": -0.1,
+        "identical_action_pairs": 2,
+        "left_only_successes": 2,
+        "left_successes": 18,
+        "pairs": 20,
+        "right_only_successes": 0,
+        "right_successes": 16,
+        "rows": [
+          {
+            "left_job_id": "211e7da4d21cbf342d4a46bc",
+            "left_steps": 114,
+            "left_success": true,
+            "requested_seed": 50100,
+            "resolved_seed": 50100,
+            "right_job_id": "395fd3ead9f79bde40de8852",
+            "right_steps": 114,
+            "right_success": true,
+            "same_executed_actions": true,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "4acbb0023d1e506fcb145fdb",
+            "left_steps": 126,
+            "left_success": true,
+            "requested_seed": 50101,
+            "resolved_seed": 50101,
+            "right_job_id": "763ef6f2ce72c5a3a4c6cdaa",
+            "right_steps": 126,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "dad9d951778168fc64c5126c",
+            "left_steps": 107,
+            "left_success": true,
+            "requested_seed": 60100,
+            "resolved_seed": 60100,
+            "right_job_id": "3690286c9599d0e030e6a9b8",
+            "right_steps": 108,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "dcec369c1d095bad817af5c7",
+            "left_steps": 115,
+            "left_success": true,
+            "requested_seed": 60101,
+            "resolved_seed": 60101,
+            "right_job_id": "9391a3a6f0be552ef7446723",
+            "right_steps": 116,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "c5c095a1396111e5033d37eb",
+            "left_steps": 451,
+            "left_success": true,
+            "requested_seed": 70100,
+            "resolved_seed": 70100,
+            "right_job_id": "c71fa4a41a42178d49cd94d8",
+            "right_steps": 451,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "e919116fe0dd7a303aec84b1",
+            "left_steps": 429,
+            "left_success": true,
+            "requested_seed": 70101,
+            "resolved_seed": 70101,
+            "right_job_id": "c50ae183c9445957ec4a420c",
+            "right_steps": 429,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "002f375a4aee69aed1f66e8c",
+            "left_steps": 548,
+            "left_success": true,
+            "requested_seed": 80100,
+            "resolved_seed": 80100,
+            "right_job_id": "d5d7354e1b3e359b2e01e608",
+            "right_steps": 1200,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "beb26fafbb388b5406d20b11",
+            "left_steps": 1200,
+            "left_success": false,
+            "requested_seed": 80101,
+            "resolved_seed": 80101,
+            "right_job_id": "eb301d1ed728e5957f85d4fd",
+            "right_steps": 1200,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "d746fc6446487f4fc38e0b7c",
+            "left_steps": 59,
+            "left_success": true,
+            "requested_seed": 90100,
+            "resolved_seed": 90100,
+            "right_job_id": "315edecb6cc908b3ca69a094",
+            "right_steps": 60,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "7fb81e9c56760c487efc2d9e",
+            "left_steps": 68,
+            "left_success": true,
+            "requested_seed": 90101,
+            "resolved_seed": 90102,
+            "right_job_id": "3271757cb3f801d53d958dde",
+            "right_steps": 68,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "abd22cce9a855a76a370372e",
+            "left_steps": 55,
+            "left_success": true,
+            "requested_seed": 100100,
+            "resolved_seed": 100100,
+            "right_job_id": "0f7c6240c0b9d83aa77c32aa",
+            "right_steps": 55,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "5f4f97910b65a72a2c2e2141",
+            "left_steps": 400,
+            "left_success": false,
+            "requested_seed": 100101,
+            "resolved_seed": 100101,
+            "right_job_id": "109733d8eb314a41795f567b",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "e4938148bc1487e9cea57147",
+            "left_steps": 275,
+            "left_success": true,
+            "requested_seed": 110100,
+            "resolved_seed": 110108,
+            "right_job_id": "6c807b684b29553bc65c1731",
+            "right_steps": 275,
+            "right_success": true,
+            "same_executed_actions": true,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "6f10fe6129bb9e4c3c97ca3b",
+            "left_steps": 323,
+            "left_success": true,
+            "requested_seed": 110101,
+            "resolved_seed": 110101,
+            "right_job_id": "933c07a12c1d11f48870cc1a",
+            "right_steps": 600,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "bd04166397e76907cf0697b1",
+            "left_steps": 82,
+            "left_success": true,
+            "requested_seed": 120100,
+            "resolved_seed": 120101,
+            "right_job_id": "250d63dd145e554b7ac436fd",
+            "right_steps": 82,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "a6694ae86462f72dd187f53e",
+            "left_steps": 80,
+            "left_success": true,
+            "requested_seed": 120101,
+            "resolved_seed": 120102,
+            "right_job_id": "eeae6be33bc23c4f2b3798cb",
+            "right_steps": 81,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "351dbb4709c1a853e5b622f9",
+            "left_steps": 270,
+            "left_success": true,
+            "requested_seed": 130100,
+            "resolved_seed": 130100,
+            "right_job_id": "f2968bdcdad90e1ef1ebd080",
+            "right_steps": 267,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "5f735e462b0acf0d8d6f68ae",
+            "left_steps": 266,
+            "left_success": true,
+            "requested_seed": 130101,
+            "resolved_seed": 130101,
+            "right_job_id": "a4a6c51f0be16c6c72e67fa0",
+            "right_steps": 260,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "abe0a9245e628b9ac93719be",
+            "left_steps": 215,
+            "left_success": true,
+            "requested_seed": 140100,
+            "resolved_seed": 140100,
+            "right_job_id": "f4b402c657ad62513962e245",
+            "right_steps": 201,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          },
+          {
+            "left_job_id": "1eada343aa10df68ee5f9494",
+            "left_steps": 217,
+            "left_success": true,
+            "requested_seed": 140101,
+            "resolved_seed": 140101,
+            "right_job_id": "63c2bb893344c9da52348774",
+            "right_steps": 200,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          }
+        ],
+        "scope": "Descriptive matched episodes on fixed tasks; task clustering is not modeled. No quality certificate.",
+        "suite_id": "robotwin50_easy",
+        "tango_central95": [
+          -0.3010336443781853,
+          0.0772376738197636
+        ]
+      },
+      {
+        "delta": 0.05,
+        "identical_action_pairs": 0,
+        "left_only_successes": 0,
+        "left_successes": 16,
+        "pairs": 20,
+        "right_only_successes": 1,
+        "right_successes": 17,
+        "rows": [
+          {
+            "left_job_id": "e6819a5324624f06c258d5ad",
+            "left_steps": 112,
+            "left_success": true,
+            "requested_seed": 60100,
+            "resolved_seed": 60100,
+            "right_job_id": "10e5f650b0b3a255893043ff",
+            "right_steps": 112,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "a422809d11d5d08c413a5b50",
+            "left_steps": 127,
+            "left_success": true,
+            "requested_seed": 60101,
+            "resolved_seed": 60101,
+            "right_job_id": "59f67d0f1cb652353344c17d",
+            "right_steps": 127,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "dfa7f7546e9c9e5d7a8aec2f",
+            "left_steps": 110,
+            "left_success": true,
+            "requested_seed": 70100,
+            "resolved_seed": 70101,
+            "right_job_id": "60b062cc3ce00c5f6f8d9379",
+            "right_steps": 111,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "81a2d792f0f0cf36b8f3ea2f",
+            "left_steps": 400,
+            "left_success": false,
+            "requested_seed": 70101,
+            "resolved_seed": 70102,
+            "right_job_id": "a40637b7ad21b223ce8c28e5",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "3be10d3e0cdb89d9c8d5babb",
+            "left_steps": 1200,
+            "left_success": false,
+            "requested_seed": 80100,
+            "resolved_seed": 80100,
+            "right_job_id": "7867cd44b486f1cb25b51dad",
+            "right_steps": 1200,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "970d4aecc909368b71bb1908",
+            "left_steps": 1200,
+            "left_success": false,
+            "requested_seed": 80101,
+            "resolved_seed": 80101,
+            "right_job_id": "31b9fcef0a42ff3c10233eee",
+            "right_steps": 431,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "48e6820e11b6c32e3dacdedc",
+            "left_steps": 404,
+            "left_success": true,
+            "requested_seed": 90100,
+            "resolved_seed": 90100,
+            "right_job_id": "67790567be62ce2889959ae6",
+            "right_steps": 404,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "a54f6db8ff4510aac9e523d2",
+            "left_steps": 438,
+            "left_success": true,
+            "requested_seed": 90101,
+            "resolved_seed": 90101,
+            "right_job_id": "ac1d84d56c536c1a67ff25b6",
+            "right_steps": 437,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "3ff2f8e2e2dd0130fe64f954",
+            "left_steps": 400,
+            "left_success": false,
+            "requested_seed": 100100,
+            "resolved_seed": 100100,
+            "right_job_id": "a2325a13fa5ff380c0addaee",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "391d4c09592cd5b5779a6782",
+            "left_steps": 68,
+            "left_success": true,
+            "requested_seed": 100101,
+            "resolved_seed": 100101,
+            "right_job_id": "951680b216cfd716381082e5",
+            "right_steps": 68,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "f73bc7207fbb0b5d041cede5",
+            "left_steps": 158,
+            "left_success": true,
+            "requested_seed": 110100,
+            "resolved_seed": 110101,
+            "right_job_id": "a08e71ce9c245fcea074e182",
+            "right_steps": 157,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "e98905a3195b3f3d21ac78a7",
+            "left_steps": 56,
+            "left_success": true,
+            "requested_seed": 110101,
+            "resolved_seed": 110102,
+            "right_job_id": "fc43bab4d4a561f2c7dae865",
+            "right_steps": 56,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "7d101e5f4e548354df33c028",
+            "left_steps": 116,
+            "left_success": true,
+            "requested_seed": 120100,
+            "resolved_seed": 120100,
+            "right_job_id": "9dbdc28321b84859a05215ea",
+            "right_steps": 115,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "a3c6f5f0f3d040296aa278d3",
+            "left_steps": 272,
+            "left_success": true,
+            "requested_seed": 120101,
+            "resolved_seed": 120102,
+            "right_job_id": "611b047b26a7c51e4167c9f3",
+            "right_steps": 273,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "57013a688bdfb7c4390288b1",
+            "left_steps": 81,
+            "left_success": true,
+            "requested_seed": 130100,
+            "resolved_seed": 130100,
+            "right_job_id": "40f338c084e94f4a3acee666",
+            "right_steps": 80,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "c847487a598eaef1fdd5b02d",
+            "left_steps": 87,
+            "left_success": true,
+            "requested_seed": 130101,
+            "resolved_seed": 130103,
+            "right_job_id": "1491db2f029dab55a4484e6f",
+            "right_steps": 87,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "799ed6557309956edde11073",
+            "left_steps": 272,
+            "left_success": true,
+            "requested_seed": 140100,
+            "resolved_seed": 140100,
+            "right_job_id": "0360722d0beab301f2bce786",
+            "right_steps": 263,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "026545fdf84e8d44d9d517a0",
+            "left_steps": 274,
+            "left_success": true,
+            "requested_seed": 140101,
+            "resolved_seed": 140101,
+            "right_job_id": "fc5b0f899bf3edb1a596c8a4",
+            "right_steps": 270,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "74b1d93f031d9953972eef6e",
+            "left_steps": 210,
+            "left_success": true,
+            "requested_seed": 150100,
+            "resolved_seed": 150103,
+            "right_job_id": "367ffc645d9e061497a04cfa",
+            "right_steps": 218,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          },
+          {
+            "left_job_id": "19e87613646d1b9c890e9ebf",
+            "left_steps": 219,
+            "left_success": true,
+            "requested_seed": 150101,
+            "resolved_seed": 150102,
+            "right_job_id": "15a41f88d383a6cb2c1efb84",
+            "right_steps": 216,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          }
+        ],
+        "scope": "Descriptive matched episodes on fixed tasks; task clustering is not modeled. No quality certificate.",
+        "suite_id": "robotwin50_hard",
+        "tango_central95": [
+          -0.11918141487985852,
+          0.23613119342771824
+        ]
+      }
+    ],
+    "ab_repeat1": [
+      {
+        "delta": 0.0,
+        "identical_action_pairs": 0,
+        "left_only_successes": 0,
+        "left_successes": 18,
+        "pairs": 20,
+        "right_only_successes": 0,
+        "right_successes": 18,
+        "rows": [
+          {
+            "left_job_id": "211e7da4d21cbf342d4a46bc",
+            "left_steps": 114,
+            "left_success": true,
+            "requested_seed": 50100,
+            "resolved_seed": 50100,
+            "right_job_id": "310c60251f4a975dc7322cde",
+            "right_steps": 114,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "4acbb0023d1e506fcb145fdb",
+            "left_steps": 126,
+            "left_success": true,
+            "requested_seed": 50101,
+            "resolved_seed": 50101,
+            "right_job_id": "82f1032712c1b1b1cfc45c12",
+            "right_steps": 126,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "dad9d951778168fc64c5126c",
+            "left_steps": 107,
+            "left_success": true,
+            "requested_seed": 60100,
+            "resolved_seed": 60100,
+            "right_job_id": "640fcbbc9e45ba040e13ef6c",
+            "right_steps": 108,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "dcec369c1d095bad817af5c7",
+            "left_steps": 115,
+            "left_success": true,
+            "requested_seed": 60101,
+            "resolved_seed": 60101,
+            "right_job_id": "3ed3eec96e9940884a168510",
+            "right_steps": 116,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "c5c095a1396111e5033d37eb",
+            "left_steps": 451,
+            "left_success": true,
+            "requested_seed": 70100,
+            "resolved_seed": 70100,
+            "right_job_id": "9a1e9a47e40e7d47f3471508",
+            "right_steps": 451,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "e919116fe0dd7a303aec84b1",
+            "left_steps": 429,
+            "left_success": true,
+            "requested_seed": 70101,
+            "resolved_seed": 70101,
+            "right_job_id": "b949d32147de4915ed613936",
+            "right_steps": 429,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "002f375a4aee69aed1f66e8c",
+            "left_steps": 548,
+            "left_success": true,
+            "requested_seed": 80100,
+            "resolved_seed": 80100,
+            "right_job_id": "a03e5f04f80a66a2d2284169",
+            "right_steps": 548,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "beb26fafbb388b5406d20b11",
+            "left_steps": 1200,
+            "left_success": false,
+            "requested_seed": 80101,
+            "resolved_seed": 80101,
+            "right_job_id": "833cda779837fea87eea72c8",
+            "right_steps": 1200,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "d746fc6446487f4fc38e0b7c",
+            "left_steps": 59,
+            "left_success": true,
+            "requested_seed": 90100,
+            "resolved_seed": 90100,
+            "right_job_id": "2c17d4ce89bace0f6fd5bec6",
+            "right_steps": 60,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "7fb81e9c56760c487efc2d9e",
+            "left_steps": 68,
+            "left_success": true,
+            "requested_seed": 90101,
+            "resolved_seed": 90102,
+            "right_job_id": "0c081579c238c9072641d929",
+            "right_steps": 68,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "abd22cce9a855a76a370372e",
+            "left_steps": 55,
+            "left_success": true,
+            "requested_seed": 100100,
+            "resolved_seed": 100100,
+            "right_job_id": "ae60383ea96bda3cad4f6e0f",
+            "right_steps": 56,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "5f4f97910b65a72a2c2e2141",
+            "left_steps": 400,
+            "left_success": false,
+            "requested_seed": 100101,
+            "resolved_seed": 100101,
+            "right_job_id": "fe8f506022e0b98de481ed64",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "e4938148bc1487e9cea57147",
+            "left_steps": 275,
+            "left_success": true,
+            "requested_seed": 110100,
+            "resolved_seed": 110108,
+            "right_job_id": "3730667081de7c051a979a3d",
+            "right_steps": 275,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "6f10fe6129bb9e4c3c97ca3b",
+            "left_steps": 323,
+            "left_success": true,
+            "requested_seed": 110101,
+            "resolved_seed": 110101,
+            "right_job_id": "363e9aceb0e50b1c77caf929",
+            "right_steps": 370,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "bd04166397e76907cf0697b1",
+            "left_steps": 82,
+            "left_success": true,
+            "requested_seed": 120100,
+            "resolved_seed": 120101,
+            "right_job_id": "49748c0341eec9c1379d1e87",
+            "right_steps": 82,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "a6694ae86462f72dd187f53e",
+            "left_steps": 80,
+            "left_success": true,
+            "requested_seed": 120101,
+            "resolved_seed": 120102,
+            "right_job_id": "6c153dd8ac4c22ded4654b56",
+            "right_steps": 80,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "351dbb4709c1a853e5b622f9",
+            "left_steps": 270,
+            "left_success": true,
+            "requested_seed": 130100,
+            "resolved_seed": 130100,
+            "right_job_id": "2b013730f8363952cfa875e1",
+            "right_steps": 271,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "5f735e462b0acf0d8d6f68ae",
+            "left_steps": 266,
+            "left_success": true,
+            "requested_seed": 130101,
+            "resolved_seed": 130101,
+            "right_job_id": "252d9805116c9914158f3767",
+            "right_steps": 266,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "abe0a9245e628b9ac93719be",
+            "left_steps": 215,
+            "left_success": true,
+            "requested_seed": 140100,
+            "resolved_seed": 140100,
+            "right_job_id": "d47df25bd0af2849830e4407",
+            "right_steps": 215,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          },
+          {
+            "left_job_id": "1eada343aa10df68ee5f9494",
+            "left_steps": 217,
+            "left_success": true,
+            "requested_seed": 140101,
+            "resolved_seed": 140101,
+            "right_job_id": "6beec5aad15e4fa2462ffd61",
+            "right_steps": 220,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          }
+        ],
+        "scope": "Descriptive matched episodes on fixed tasks; task clustering is not modeled. No quality certificate.",
+        "suite_id": "robotwin50_easy",
+        "tango_central95": [
+          -0.16112515702843666,
+          0.1611251580179669
+        ]
+      },
+      {
+        "delta": 0.05,
+        "identical_action_pairs": 0,
+        "left_only_successes": 0,
+        "left_successes": 16,
+        "pairs": 20,
+        "right_only_successes": 1,
+        "right_successes": 17,
+        "rows": [
+          {
+            "left_job_id": "e6819a5324624f06c258d5ad",
+            "left_steps": 112,
+            "left_success": true,
+            "requested_seed": 60100,
+            "resolved_seed": 60100,
+            "right_job_id": "ff1149e680ae576272764ce1",
+            "right_steps": 112,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "a422809d11d5d08c413a5b50",
+            "left_steps": 127,
+            "left_success": true,
+            "requested_seed": 60101,
+            "resolved_seed": 60101,
+            "right_job_id": "71d230c2d72a0237cb749914",
+            "right_steps": 127,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "dfa7f7546e9c9e5d7a8aec2f",
+            "left_steps": 110,
+            "left_success": true,
+            "requested_seed": 70100,
+            "resolved_seed": 70101,
+            "right_job_id": "1b5f3fbfb5aad6a011c753c6",
+            "right_steps": 110,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "81a2d792f0f0cf36b8f3ea2f",
+            "left_steps": 400,
+            "left_success": false,
+            "requested_seed": 70101,
+            "resolved_seed": 70102,
+            "right_job_id": "3be0a785947a1ed2c26dba20",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "3be10d3e0cdb89d9c8d5babb",
+            "left_steps": 1200,
+            "left_success": false,
+            "requested_seed": 80100,
+            "resolved_seed": 80100,
+            "right_job_id": "d68ddedbfcbe6d97d69c6677",
+            "right_steps": 1200,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "970d4aecc909368b71bb1908",
+            "left_steps": 1200,
+            "left_success": false,
+            "requested_seed": 80101,
+            "resolved_seed": 80101,
+            "right_job_id": "38ab9ec687a20fc5a3688d9d",
+            "right_steps": 427,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "48e6820e11b6c32e3dacdedc",
+            "left_steps": 404,
+            "left_success": true,
+            "requested_seed": 90100,
+            "resolved_seed": 90100,
+            "right_job_id": "b3fe5c905d16be774bef2b53",
+            "right_steps": 404,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "a54f6db8ff4510aac9e523d2",
+            "left_steps": 438,
+            "left_success": true,
+            "requested_seed": 90101,
+            "resolved_seed": 90101,
+            "right_job_id": "1699dc4f30ab594ce043151f",
+            "right_steps": 437,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "3ff2f8e2e2dd0130fe64f954",
+            "left_steps": 400,
+            "left_success": false,
+            "requested_seed": 100100,
+            "resolved_seed": 100100,
+            "right_job_id": "961fe0997dd6671a2d8d4133",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "391d4c09592cd5b5779a6782",
+            "left_steps": 68,
+            "left_success": true,
+            "requested_seed": 100101,
+            "resolved_seed": 100101,
+            "right_job_id": "6a6d81463daee331892bb7a9",
+            "right_steps": 68,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "f73bc7207fbb0b5d041cede5",
+            "left_steps": 158,
+            "left_success": true,
+            "requested_seed": 110100,
+            "resolved_seed": 110101,
+            "right_job_id": "5504c409b29fac1ed6c0f718",
+            "right_steps": 157,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "e98905a3195b3f3d21ac78a7",
+            "left_steps": 56,
+            "left_success": true,
+            "requested_seed": 110101,
+            "resolved_seed": 110102,
+            "right_job_id": "f41e219733164adf249a66e5",
+            "right_steps": 56,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "7d101e5f4e548354df33c028",
+            "left_steps": 116,
+            "left_success": true,
+            "requested_seed": 120100,
+            "resolved_seed": 120100,
+            "right_job_id": "31f8327fdd12d529c808136a",
+            "right_steps": 116,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "a3c6f5f0f3d040296aa278d3",
+            "left_steps": 272,
+            "left_success": true,
+            "requested_seed": 120101,
+            "resolved_seed": 120102,
+            "right_job_id": "19609f4ef2b9a930b59fb944",
+            "right_steps": 272,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "57013a688bdfb7c4390288b1",
+            "left_steps": 81,
+            "left_success": true,
+            "requested_seed": 130100,
+            "resolved_seed": 130100,
+            "right_job_id": "1b4c6dc4737eec04b74685ac",
+            "right_steps": 81,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "c847487a598eaef1fdd5b02d",
+            "left_steps": 87,
+            "left_success": true,
+            "requested_seed": 130101,
+            "resolved_seed": 130103,
+            "right_job_id": "d087bc92e36864bd01bf2318",
+            "right_steps": 88,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "799ed6557309956edde11073",
+            "left_steps": 272,
+            "left_success": true,
+            "requested_seed": 140100,
+            "resolved_seed": 140100,
+            "right_job_id": "b9e872982f02eb844f884605",
+            "right_steps": 266,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "026545fdf84e8d44d9d517a0",
+            "left_steps": 274,
+            "left_success": true,
+            "requested_seed": 140101,
+            "resolved_seed": 140101,
+            "right_job_id": "70a1f92c18a61f6ed6b3012d",
+            "right_steps": 263,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "74b1d93f031d9953972eef6e",
+            "left_steps": 210,
+            "left_success": true,
+            "requested_seed": 150100,
+            "resolved_seed": 150103,
+            "right_job_id": "6699e689acd80503256cebf0",
+            "right_steps": 221,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          },
+          {
+            "left_job_id": "19e87613646d1b9c890e9ebf",
+            "left_steps": 219,
+            "left_success": true,
+            "requested_seed": 150101,
+            "resolved_seed": 150102,
+            "right_job_id": "b1d586ecd71e08877c1cd81f",
+            "right_steps": 214,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          }
+        ],
+        "scope": "Descriptive matched episodes on fixed tasks; task clustering is not modeled. No quality certificate.",
+        "suite_id": "robotwin50_hard",
+        "tango_central95": [
+          -0.11918141487985852,
+          0.23613119342771824
+        ]
+      }
+    ],
+    "ab_repeat2": [
+      {
+        "delta": 0.05,
+        "identical_action_pairs": 0,
+        "left_only_successes": 1,
+        "left_successes": 16,
+        "pairs": 20,
+        "right_only_successes": 2,
+        "right_successes": 17,
+        "rows": [
+          {
+            "left_job_id": "395fd3ead9f79bde40de8852",
+            "left_steps": 114,
+            "left_success": true,
+            "requested_seed": 50100,
+            "resolved_seed": 50100,
+            "right_job_id": "a9b29116369874d288ad43af",
+            "right_steps": 114,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "763ef6f2ce72c5a3a4c6cdaa",
+            "left_steps": 126,
+            "left_success": true,
+            "requested_seed": 50101,
+            "resolved_seed": 50101,
+            "right_job_id": "8f07e1eb5944bf9374129fc7",
+            "right_steps": 126,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "3690286c9599d0e030e6a9b8",
+            "left_steps": 108,
+            "left_success": true,
+            "requested_seed": 60100,
+            "resolved_seed": 60100,
+            "right_job_id": "c0b0bdfab67bc3d540cbd215",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "9391a3a6f0be552ef7446723",
+            "left_steps": 116,
+            "left_success": true,
+            "requested_seed": 60101,
+            "resolved_seed": 60101,
+            "right_job_id": "1d34e3c5bcd81d993a1836bf",
+            "right_steps": 115,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "c71fa4a41a42178d49cd94d8",
+            "left_steps": 451,
+            "left_success": true,
+            "requested_seed": 70100,
+            "resolved_seed": 70100,
+            "right_job_id": "7d25c799541f97610ffb0147",
+            "right_steps": 451,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "c50ae183c9445957ec4a420c",
+            "left_steps": 429,
+            "left_success": true,
+            "requested_seed": 70101,
+            "resolved_seed": 70101,
+            "right_job_id": "47488411e80599e47b862785",
+            "right_steps": 429,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "d5d7354e1b3e359b2e01e608",
+            "left_steps": 1200,
+            "left_success": false,
+            "requested_seed": 80100,
+            "resolved_seed": 80100,
+            "right_job_id": "5bc05e717f30e031debe434d",
+            "right_steps": 559,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "eb301d1ed728e5957f85d4fd",
+            "left_steps": 1200,
+            "left_success": false,
+            "requested_seed": 80101,
+            "resolved_seed": 80101,
+            "right_job_id": "fad5ab045d8e070b3c877857",
+            "right_steps": 1200,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "315edecb6cc908b3ca69a094",
+            "left_steps": 60,
+            "left_success": true,
+            "requested_seed": 90100,
+            "resolved_seed": 90100,
+            "right_job_id": "8b124233bad19a0b197fa05f",
+            "right_steps": 60,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "3271757cb3f801d53d958dde",
+            "left_steps": 68,
+            "left_success": true,
+            "requested_seed": 90101,
+            "resolved_seed": 90102,
+            "right_job_id": "ccc648e786e23f2e441cf67f",
+            "right_steps": 68,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "0f7c6240c0b9d83aa77c32aa",
+            "left_steps": 55,
+            "left_success": true,
+            "requested_seed": 100100,
+            "resolved_seed": 100100,
+            "right_job_id": "4cf13df7c2bfd706d621836f",
+            "right_steps": 55,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "109733d8eb314a41795f567b",
+            "left_steps": 400,
+            "left_success": false,
+            "requested_seed": 100101,
+            "resolved_seed": 100101,
+            "right_job_id": "c67d9dc6429f5688ffb6b748",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "6c807b684b29553bc65c1731",
+            "left_steps": 275,
+            "left_success": true,
+            "requested_seed": 110100,
+            "resolved_seed": 110108,
+            "right_job_id": "b06e7443898d9d4664cc9d5b",
+            "right_steps": 314,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "933c07a12c1d11f48870cc1a",
+            "left_steps": 600,
+            "left_success": false,
+            "requested_seed": 110101,
+            "resolved_seed": 110101,
+            "right_job_id": "ada6c53e3472cb1771c0adf6",
+            "right_steps": 414,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "250d63dd145e554b7ac436fd",
+            "left_steps": 82,
+            "left_success": true,
+            "requested_seed": 120100,
+            "resolved_seed": 120101,
+            "right_job_id": "443d2aa894aaeb98f9eae8fe",
+            "right_steps": 82,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "eeae6be33bc23c4f2b3798cb",
+            "left_steps": 81,
+            "left_success": true,
+            "requested_seed": 120101,
+            "resolved_seed": 120102,
+            "right_job_id": "69f4e823dd1d6b39ec84dff9",
+            "right_steps": 81,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "f2968bdcdad90e1ef1ebd080",
+            "left_steps": 267,
+            "left_success": true,
+            "requested_seed": 130100,
+            "resolved_seed": 130100,
+            "right_job_id": "fa3dcf69a9fbe9803ff8fc44",
+            "right_steps": 270,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "a4a6c51f0be16c6c72e67fa0",
+            "left_steps": 260,
+            "left_success": true,
+            "requested_seed": 130101,
+            "resolved_seed": 130101,
+            "right_job_id": "d15754e38f3e0ecaca448f3a",
+            "right_steps": 274,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "f4b402c657ad62513962e245",
+            "left_steps": 201,
+            "left_success": true,
+            "requested_seed": 140100,
+            "resolved_seed": 140100,
+            "right_job_id": "486a9b788a8176bfe3f1cb79",
+            "right_steps": 215,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          },
+          {
+            "left_job_id": "63c2bb893344c9da52348774",
+            "left_steps": 200,
+            "left_success": true,
+            "requested_seed": 140101,
+            "resolved_seed": 140101,
+            "right_job_id": "bd3760e1941aaef495ec678d",
+            "right_steps": 220,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          }
+        ],
+        "scope": "Descriptive matched episodes on fixed tasks; task clustering is not modeled. No quality certificate.",
+        "suite_id": "robotwin50_easy",
+        "tango_central95": [
+          -0.16139354147017002,
+          0.26563059984764553
+        ]
+      },
+      {
+        "delta": 0.0,
+        "identical_action_pairs": 1,
+        "left_only_successes": 0,
+        "left_successes": 17,
+        "pairs": 20,
+        "right_only_successes": 0,
+        "right_successes": 17,
+        "rows": [
+          {
+            "left_job_id": "10e5f650b0b3a255893043ff",
+            "left_steps": 112,
+            "left_success": true,
+            "requested_seed": 60100,
+            "resolved_seed": 60100,
+            "right_job_id": "7d225f5d8fe43bf942c9bd56",
+            "right_steps": 112,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "59f67d0f1cb652353344c17d",
+            "left_steps": 127,
+            "left_success": true,
+            "requested_seed": 60101,
+            "resolved_seed": 60101,
+            "right_job_id": "eed568c6328294adf679a08a",
+            "right_steps": 127,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "60b062cc3ce00c5f6f8d9379",
+            "left_steps": 111,
+            "left_success": true,
+            "requested_seed": 70100,
+            "resolved_seed": 70101,
+            "right_job_id": "33e00acf2f8bfc83701c1439",
+            "right_steps": 110,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "a40637b7ad21b223ce8c28e5",
+            "left_steps": 400,
+            "left_success": false,
+            "requested_seed": 70101,
+            "resolved_seed": 70102,
+            "right_job_id": "d7b0085a271bc4740140b355",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "7867cd44b486f1cb25b51dad",
+            "left_steps": 1200,
+            "left_success": false,
+            "requested_seed": 80100,
+            "resolved_seed": 80100,
+            "right_job_id": "9e125306019313e0c12068d4",
+            "right_steps": 1200,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "31b9fcef0a42ff3c10233eee",
+            "left_steps": 431,
+            "left_success": true,
+            "requested_seed": 80101,
+            "resolved_seed": 80101,
+            "right_job_id": "a4d93545d02472047e5333e7",
+            "right_steps": 426,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "67790567be62ce2889959ae6",
+            "left_steps": 404,
+            "left_success": true,
+            "requested_seed": 90100,
+            "resolved_seed": 90100,
+            "right_job_id": "d884a6bbdd73ce5cd5bcb54f",
+            "right_steps": 404,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "ac1d84d56c536c1a67ff25b6",
+            "left_steps": 437,
+            "left_success": true,
+            "requested_seed": 90101,
+            "resolved_seed": 90101,
+            "right_job_id": "525c7e6feb1bea8589bf7e99",
+            "right_steps": 437,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "a2325a13fa5ff380c0addaee",
+            "left_steps": 400,
+            "left_success": false,
+            "requested_seed": 100100,
+            "resolved_seed": 100100,
+            "right_job_id": "0510b65930ecc1a917f827f8",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "951680b216cfd716381082e5",
+            "left_steps": 68,
+            "left_success": true,
+            "requested_seed": 100101,
+            "resolved_seed": 100101,
+            "right_job_id": "d077fa797c1741aefcbce38e",
+            "right_steps": 68,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "a08e71ce9c245fcea074e182",
+            "left_steps": 157,
+            "left_success": true,
+            "requested_seed": 110100,
+            "resolved_seed": 110101,
+            "right_job_id": "9734a44950c003ec1b1ed53a",
+            "right_steps": 156,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "fc43bab4d4a561f2c7dae865",
+            "left_steps": 56,
+            "left_success": true,
+            "requested_seed": 110101,
+            "resolved_seed": 110102,
+            "right_job_id": "7665282aaa25ea41dab69d47",
+            "right_steps": 56,
+            "right_success": true,
+            "same_executed_actions": true,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "9dbdc28321b84859a05215ea",
+            "left_steps": 115,
+            "left_success": true,
+            "requested_seed": 120100,
+            "resolved_seed": 120100,
+            "right_job_id": "769878ac3223af5e6d3764c4",
+            "right_steps": 116,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "611b047b26a7c51e4167c9f3",
+            "left_steps": 273,
+            "left_success": true,
+            "requested_seed": 120101,
+            "resolved_seed": 120102,
+            "right_job_id": "d33b56c0e8b2191a14b5f427",
+            "right_steps": 273,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "40f338c084e94f4a3acee666",
+            "left_steps": 80,
+            "left_success": true,
+            "requested_seed": 130100,
+            "resolved_seed": 130100,
+            "right_job_id": "88fa8278e0affca4f5f2485d",
+            "right_steps": 80,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "1491db2f029dab55a4484e6f",
+            "left_steps": 87,
+            "left_success": true,
+            "requested_seed": 130101,
+            "resolved_seed": 130103,
+            "right_job_id": "4dbacbb609b49645ef35c30b",
+            "right_steps": 88,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "0360722d0beab301f2bce786",
+            "left_steps": 263,
+            "left_success": true,
+            "requested_seed": 140100,
+            "resolved_seed": 140100,
+            "right_job_id": "fe757fdf7de990398d7f7e8a",
+            "right_steps": 269,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "fc5b0f899bf3edb1a596c8a4",
+            "left_steps": 270,
+            "left_success": true,
+            "requested_seed": 140101,
+            "resolved_seed": 140101,
+            "right_job_id": "cdea2bc07eef5c3f40f7c49c",
+            "right_steps": 269,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "367ffc645d9e061497a04cfa",
+            "left_steps": 218,
+            "left_success": true,
+            "requested_seed": 150100,
+            "resolved_seed": 150103,
+            "right_job_id": "436cb9732a5841eb8f912c60",
+            "right_steps": 219,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          },
+          {
+            "left_job_id": "15a41f88d383a6cb2c1efb84",
+            "left_steps": 216,
+            "left_success": true,
+            "requested_seed": 150101,
+            "resolved_seed": 150102,
+            "right_job_id": "0066c4e0848a2b54a943c408",
+            "right_steps": 216,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          }
+        ],
+        "scope": "Descriptive matched episodes on fixed tasks; task clustering is not modeled. No quality certificate.",
+        "suite_id": "robotwin50_hard",
+        "tango_central95": [
+          -0.16112515702843666,
+          0.1611251580179669
+        ]
+      }
+    ],
+    "bb": [
+      {
+        "delta": -0.05,
+        "identical_action_pairs": 1,
+        "left_only_successes": 1,
+        "left_successes": 18,
+        "pairs": 20,
+        "right_only_successes": 0,
+        "right_successes": 17,
+        "rows": [
+          {
+            "left_job_id": "310c60251f4a975dc7322cde",
+            "left_steps": 114,
+            "left_success": true,
+            "requested_seed": 50100,
+            "resolved_seed": 50100,
+            "right_job_id": "a9b29116369874d288ad43af",
+            "right_steps": 114,
+            "right_success": true,
+            "same_executed_actions": true,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "82f1032712c1b1b1cfc45c12",
+            "left_steps": 126,
+            "left_success": true,
+            "requested_seed": 50101,
+            "resolved_seed": 50101,
+            "right_job_id": "8f07e1eb5944bf9374129fc7",
+            "right_steps": 126,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "640fcbbc9e45ba040e13ef6c",
+            "left_steps": 108,
+            "left_success": true,
+            "requested_seed": 60100,
+            "resolved_seed": 60100,
+            "right_job_id": "c0b0bdfab67bc3d540cbd215",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "3ed3eec96e9940884a168510",
+            "left_steps": 116,
+            "left_success": true,
+            "requested_seed": 60101,
+            "resolved_seed": 60101,
+            "right_job_id": "1d34e3c5bcd81d993a1836bf",
+            "right_steps": 115,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "9a1e9a47e40e7d47f3471508",
+            "left_steps": 451,
+            "left_success": true,
+            "requested_seed": 70100,
+            "resolved_seed": 70100,
+            "right_job_id": "7d25c799541f97610ffb0147",
+            "right_steps": 451,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "b949d32147de4915ed613936",
+            "left_steps": 429,
+            "left_success": true,
+            "requested_seed": 70101,
+            "resolved_seed": 70101,
+            "right_job_id": "47488411e80599e47b862785",
+            "right_steps": 429,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "a03e5f04f80a66a2d2284169",
+            "left_steps": 548,
+            "left_success": true,
+            "requested_seed": 80100,
+            "resolved_seed": 80100,
+            "right_job_id": "5bc05e717f30e031debe434d",
+            "right_steps": 559,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "833cda779837fea87eea72c8",
+            "left_steps": 1200,
+            "left_success": false,
+            "requested_seed": 80101,
+            "resolved_seed": 80101,
+            "right_job_id": "fad5ab045d8e070b3c877857",
+            "right_steps": 1200,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "2c17d4ce89bace0f6fd5bec6",
+            "left_steps": 60,
+            "left_success": true,
+            "requested_seed": 90100,
+            "resolved_seed": 90100,
+            "right_job_id": "8b124233bad19a0b197fa05f",
+            "right_steps": 60,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "0c081579c238c9072641d929",
+            "left_steps": 68,
+            "left_success": true,
+            "requested_seed": 90101,
+            "resolved_seed": 90102,
+            "right_job_id": "ccc648e786e23f2e441cf67f",
+            "right_steps": 68,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "ae60383ea96bda3cad4f6e0f",
+            "left_steps": 56,
+            "left_success": true,
+            "requested_seed": 100100,
+            "resolved_seed": 100100,
+            "right_job_id": "4cf13df7c2bfd706d621836f",
+            "right_steps": 55,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "fe8f506022e0b98de481ed64",
+            "left_steps": 400,
+            "left_success": false,
+            "requested_seed": 100101,
+            "resolved_seed": 100101,
+            "right_job_id": "c67d9dc6429f5688ffb6b748",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "3730667081de7c051a979a3d",
+            "left_steps": 275,
+            "left_success": true,
+            "requested_seed": 110100,
+            "resolved_seed": 110108,
+            "right_job_id": "b06e7443898d9d4664cc9d5b",
+            "right_steps": 314,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "363e9aceb0e50b1c77caf929",
+            "left_steps": 370,
+            "left_success": true,
+            "requested_seed": 110101,
+            "resolved_seed": 110101,
+            "right_job_id": "ada6c53e3472cb1771c0adf6",
+            "right_steps": 414,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "49748c0341eec9c1379d1e87",
+            "left_steps": 82,
+            "left_success": true,
+            "requested_seed": 120100,
+            "resolved_seed": 120101,
+            "right_job_id": "443d2aa894aaeb98f9eae8fe",
+            "right_steps": 82,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "6c153dd8ac4c22ded4654b56",
+            "left_steps": 80,
+            "left_success": true,
+            "requested_seed": 120101,
+            "resolved_seed": 120102,
+            "right_job_id": "69f4e823dd1d6b39ec84dff9",
+            "right_steps": 81,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "2b013730f8363952cfa875e1",
+            "left_steps": 271,
+            "left_success": true,
+            "requested_seed": 130100,
+            "resolved_seed": 130100,
+            "right_job_id": "fa3dcf69a9fbe9803ff8fc44",
+            "right_steps": 270,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "252d9805116c9914158f3767",
+            "left_steps": 266,
+            "left_success": true,
+            "requested_seed": 130101,
+            "resolved_seed": 130101,
+            "right_job_id": "d15754e38f3e0ecaca448f3a",
+            "right_steps": 274,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "d47df25bd0af2849830e4407",
+            "left_steps": 215,
+            "left_success": true,
+            "requested_seed": 140100,
+            "resolved_seed": 140100,
+            "right_job_id": "486a9b788a8176bfe3f1cb79",
+            "right_steps": 215,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          },
+          {
+            "left_job_id": "6beec5aad15e4fa2462ffd61",
+            "left_steps": 220,
+            "left_success": true,
+            "requested_seed": 140101,
+            "resolved_seed": 140101,
+            "right_job_id": "bd3760e1941aaef495ec678d",
+            "right_steps": 220,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          }
+        ],
+        "scope": "Descriptive matched episodes on fixed tasks; task clustering is not modeled. No quality certificate.",
+        "suite_id": "robotwin50_easy",
+        "tango_central95": [
+          -0.23613119293004275,
+          0.11918141591886526
+        ]
+      },
+      {
+        "delta": 0.0,
+        "identical_action_pairs": 2,
+        "left_only_successes": 0,
+        "left_successes": 17,
+        "pairs": 20,
+        "right_only_successes": 0,
+        "right_successes": 17,
+        "rows": [
+          {
+            "left_job_id": "ff1149e680ae576272764ce1",
+            "left_steps": 112,
+            "left_success": true,
+            "requested_seed": 60100,
+            "resolved_seed": 60100,
+            "right_job_id": "7d225f5d8fe43bf942c9bd56",
+            "right_steps": 112,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "71d230c2d72a0237cb749914",
+            "left_steps": 127,
+            "left_success": true,
+            "requested_seed": 60101,
+            "resolved_seed": 60101,
+            "right_job_id": "eed568c6328294adf679a08a",
+            "right_steps": 127,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "adjust_bottle"
+          },
+          {
+            "left_job_id": "1b5f3fbfb5aad6a011c753c6",
+            "left_steps": 110,
+            "left_success": true,
+            "requested_seed": 70100,
+            "resolved_seed": 70101,
+            "right_job_id": "33e00acf2f8bfc83701c1439",
+            "right_steps": 110,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "3be0a785947a1ed2c26dba20",
+            "left_steps": 400,
+            "left_success": false,
+            "requested_seed": 70101,
+            "resolved_seed": 70102,
+            "right_job_id": "d7b0085a271bc4740140b355",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "beat_block_hammer"
+          },
+          {
+            "left_job_id": "d68ddedbfcbe6d97d69c6677",
+            "left_steps": 1200,
+            "left_success": false,
+            "requested_seed": 80100,
+            "resolved_seed": 80100,
+            "right_job_id": "9e125306019313e0c12068d4",
+            "right_steps": 1200,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "38ab9ec687a20fc5a3688d9d",
+            "left_steps": 427,
+            "left_success": true,
+            "requested_seed": 80101,
+            "resolved_seed": 80101,
+            "right_job_id": "a4d93545d02472047e5333e7",
+            "right_steps": 426,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_rgb"
+          },
+          {
+            "left_job_id": "b3fe5c905d16be774bef2b53",
+            "left_steps": 404,
+            "left_success": true,
+            "requested_seed": 90100,
+            "resolved_seed": 90100,
+            "right_job_id": "d884a6bbdd73ce5cd5bcb54f",
+            "right_steps": 404,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "1699dc4f30ab594ce043151f",
+            "left_steps": 437,
+            "left_success": true,
+            "requested_seed": 90101,
+            "resolved_seed": 90101,
+            "right_job_id": "525c7e6feb1bea8589bf7e99",
+            "right_steps": 437,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "blocks_ranking_size"
+          },
+          {
+            "left_job_id": "961fe0997dd6671a2d8d4133",
+            "left_steps": 400,
+            "left_success": false,
+            "requested_seed": 100100,
+            "resolved_seed": 100100,
+            "right_job_id": "0510b65930ecc1a917f827f8",
+            "right_steps": 400,
+            "right_success": false,
+            "same_executed_actions": false,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "6a6d81463daee331892bb7a9",
+            "left_steps": 68,
+            "left_success": true,
+            "requested_seed": 100101,
+            "resolved_seed": 100101,
+            "right_job_id": "d077fa797c1741aefcbce38e",
+            "right_steps": 68,
+            "right_success": true,
+            "same_executed_actions": true,
+            "task": "click_alarmclock"
+          },
+          {
+            "left_job_id": "5504c409b29fac1ed6c0f718",
+            "left_steps": 157,
+            "left_success": true,
+            "requested_seed": 110100,
+            "resolved_seed": 110101,
+            "right_job_id": "9734a44950c003ec1b1ed53a",
+            "right_steps": 156,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "f41e219733164adf249a66e5",
+            "left_steps": 56,
+            "left_success": true,
+            "requested_seed": 110101,
+            "resolved_seed": 110102,
+            "right_job_id": "7665282aaa25ea41dab69d47",
+            "right_steps": 56,
+            "right_success": true,
+            "same_executed_actions": true,
+            "task": "click_bell"
+          },
+          {
+            "left_job_id": "31f8327fdd12d529c808136a",
+            "left_steps": 116,
+            "left_success": true,
+            "requested_seed": 120100,
+            "resolved_seed": 120100,
+            "right_job_id": "769878ac3223af5e6d3764c4",
+            "right_steps": 116,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "19609f4ef2b9a930b59fb944",
+            "left_steps": 272,
+            "left_success": true,
+            "requested_seed": 120101,
+            "resolved_seed": 120102,
+            "right_job_id": "d33b56c0e8b2191a14b5f427",
+            "right_steps": 273,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "dump_bin_bigbin"
+          },
+          {
+            "left_job_id": "1b4c6dc4737eec04b74685ac",
+            "left_steps": 81,
+            "left_success": true,
+            "requested_seed": 130100,
+            "resolved_seed": 130100,
+            "right_job_id": "88fa8278e0affca4f5f2485d",
+            "right_steps": 80,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "d087bc92e36864bd01bf2318",
+            "left_steps": 88,
+            "left_success": true,
+            "requested_seed": 130101,
+            "resolved_seed": 130103,
+            "right_job_id": "4dbacbb609b49645ef35c30b",
+            "right_steps": 88,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "grab_roller"
+          },
+          {
+            "left_job_id": "b9e872982f02eb844f884605",
+            "left_steps": 266,
+            "left_success": true,
+            "requested_seed": 140100,
+            "resolved_seed": 140100,
+            "right_job_id": "fe757fdf7de990398d7f7e8a",
+            "right_steps": 269,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "70a1f92c18a61f6ed6b3012d",
+            "left_steps": 263,
+            "left_success": true,
+            "requested_seed": 140101,
+            "resolved_seed": 140101,
+            "right_job_id": "cdea2bc07eef5c3f40f7c49c",
+            "right_steps": 269,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_block"
+          },
+          {
+            "left_job_id": "6699e689acd80503256cebf0",
+            "left_steps": 221,
+            "left_success": true,
+            "requested_seed": 150100,
+            "resolved_seed": 150103,
+            "right_job_id": "436cb9732a5841eb8f912c60",
+            "right_steps": 219,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          },
+          {
+            "left_job_id": "b1d586ecd71e08877c1cd81f",
+            "left_steps": 214,
+            "left_success": true,
+            "requested_seed": 150101,
+            "resolved_seed": 150102,
+            "right_job_id": "0066c4e0848a2b54a943c408",
+            "right_steps": 216,
+            "right_success": true,
+            "same_executed_actions": false,
+            "task": "handover_mic"
+          }
+        ],
+        "scope": "Descriptive matched episodes on fixed tasks; task clustering is not modeled. No quality certificate.",
+        "suite_id": "robotwin50_hard",
+        "tango_central95": [
+          -0.16112515702843666,
+          0.1611251580179669
+        ]
+      }
+    ]
+  },
+  "complete": true,
+  "latency": {
+    "native_capture": {
+      "count": 128,
+      "max_ms": 135.11024927720428,
+      "p50_ms": 131.0793429147452,
+      "p95_ms": 133.5760117508471,
+      "p99_ms": 134.73463616333902,
+      "profile_id": "cf8aed88b65ed22c7df83eeba49b26489fd0b97ba516baf294bab60bd487782d",
+      "quality_status": "screen"
+    },
+    "original": {
+      "count": 128,
+      "max_ms": 833.823760971427,
+      "p50_ms": 822.8163823951036,
+      "p95_ms": 829.2823558906093,
+      "p99_ms": 832.6679348247126,
+      "profile_id": "3aa008cbf1ed5f1e808deb6965bb36dcad32919d0f350bed425993abf589bef7",
+      "quality_status": "screen"
+    }
+  },
+  "latency_scope": "128 endpoint roundtrips per arm after both simulator campaigns; real observations, 8 warmups, seeded reset, no stored-noise injection.",
+  "limitations": [
+    "AA/BB reuse the two AB repeats; comparisons are dependent and are not pooled as new seeds.",
+    "10 tasks and two seeds per setting are screening, not a five-percentage-point noninferiority certificate.",
+    "Capture quality is conditional on the accepted endpoint; a separate startup failed the unchanged self-check.",
+    "H100 execution evidence does not certify Thor or another checkpoint, precision, schedule or source revision.",
+    "Paused simulation does not establish realtime deployment performance."
+  ],
+  "profiles": {
+    "candidate": {
+      "facts": {
+        "adapter_sha256": "216a9b4916f3e3602691909331b268a6a990b08ad1226f95eee45bc4d5d54003",
+        "checkpoint_sha256": "3773dbcef95c0eac8dbf5261be89ac0285db8e2649368dbddbbb4059edda1aff",
+        "execution": {
+          "action_shape": [
+            50,
+            14
+          ],
+          "backend": "in_process",
+          "capture_required": true,
+          "declared": {
+            "backbone": "lingbot_vla_v2",
+            "base_weights": "robbyant/lingbot-vla-v2-6b-robotwin",
+            "checkpoint_subdir": "checkpoints/global_step_50000/hf_ckpt",
+            "guidance": {
+              "action": "none"
+            },
+            "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+            "nfe": {
+              "action": 10,
+              "prefix": 1
+            },
+            "param_bytes": 25503630044,
+            "robot": "robotwin",
+            "servable": true,
+            "tokenizer_repo": "Qwen/Qwen3-VL-4B-Instruct"
+          },
+          "graph_stats": {
+            "captured": true,
+            "cuda_kernels": false,
+            "gpu_image_preprocess": true,
+            "moe_layers": 0,
+            "prefill_graph": true,
+            "rmsnorm_modules": 0,
+            "vision_graph": true
+          },
+          "mode": "runtime_default",
+          "precision": "native",
+          "tier_ceiling": "numeric",
+          "transforms": [
+            {
+              "name": "graph_capture",
+              "params": {
+                "capture_unit_from": "adapter sites of kind CAPTURE_UNIT",
+                "self_check": {
+                  "n": 6,
+                  "passed": true,
+                  "tolerance": 0.05083918571472168,
+                  "tolerance_provenance": "the stock-vs-stock null control on identical seeds, moe_kernel_results.json (H100, 6-case protocol)"
+                },
+                "verify": "host-effect gate refuses a region that mutates host state"
+              },
+              "tier": "NUMERIC"
+            }
+          ]
+        },
+        "hardware": {
+          "capability": [
+            9,
+            0
+          ],
+          "cuda": "12.8",
+          "cudnn": 91002,
+          "gpu_name": "NVIDIA H100 80GB HBM3"
+        },
+        "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+        "model_revision": "0451855729ec904f970600e0aec8b84661423afe",
+        "numeric_environment": {
+          "cudnn_benchmark": false,
+          "cudnn_tf32": true,
+          "deterministic_algorithms": false,
+          "matmul_tf32": true
+        },
+        "packages": {
+          "numpy": "2.2.6",
+          "torch": "2.8.0",
+          "transformers": "4.57.3"
+        },
+        "pipeline_sha256": "8c3cb9cfcf9e7d25f98e02601e16c5b9c4d5276f6c22a2a2bb33c5d4d2f7936d",
+        "runtime_source_sha256": "dad07df135cd8b3fef5f5f537945475660d2a041554722c1e2ac43f8e2870e9a",
+        "upstream_sha256": "ba75d01644bc3228ec460e3a517c360b2f8c5e080ae1f4562cf203fc5e3fabf8"
+      },
+      "profile_id": "cf8aed88b65ed22c7df83eeba49b26489fd0b97ba516baf294bab60bd487782d",
+      "schema_version": 1
+    },
+    "stock": {
+      "facts": {
+        "adapter_sha256": null,
+        "checkpoint_sha256": "3773dbcef95c0eac8dbf5261be89ac0285db8e2649368dbddbbb4059edda1aff",
+        "execution": {
+          "action_shape": [
+            50,
+            14
+          ],
+          "backend": "stock",
+          "capture_required": false,
+          "declared": {
+            "backbone": "lingbot_vla_v2",
+            "base_weights": "robbyant/lingbot-vla-v2-6b-robotwin",
+            "checkpoint_subdir": "checkpoints/global_step_50000/hf_ckpt",
+            "guidance": {
+              "action": "none"
+            },
+            "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+            "nfe": {
+              "action": 10,
+              "prefix": 1
+            },
+            "param_bytes": 25503630044,
+            "robot": "robotwin",
+            "servable": true,
+            "tokenizer_repo": "Qwen/Qwen3-VL-4B-Instruct"
+          },
+          "graph_stats": {},
+          "mode": "stock",
+          "precision": "native",
+          "tier_ceiling": null,
+          "transforms": []
+        },
+        "hardware": {
+          "capability": [
+            9,
+            0
+          ],
+          "cuda": "12.8",
+          "cudnn": 91002,
+          "gpu_name": "NVIDIA H100 80GB HBM3"
+        },
+        "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+        "model_revision": "0451855729ec904f970600e0aec8b84661423afe",
+        "numeric_environment": {
+          "cudnn_benchmark": false,
+          "cudnn_tf32": true,
+          "deterministic_algorithms": false,
+          "matmul_tf32": true
+        },
+        "packages": {
+          "numpy": "2.2.6",
+          "torch": "2.8.0",
+          "transformers": "4.57.3"
+        },
+        "pipeline_sha256": "8c3cb9cfcf9e7d25f98e02601e16c5b9c4d5276f6c22a2a2bb33c5d4d2f7936d",
+        "runtime_source_sha256": "dad07df135cd8b3fef5f5f537945475660d2a041554722c1e2ac43f8e2870e9a",
+        "upstream_sha256": "ba75d01644bc3228ec460e3a517c360b2f8c5e080ae1f4562cf203fc5e3fabf8"
+      },
+      "profile_id": "3aa008cbf1ed5f1e808deb6965bb36dcad32919d0f350bed425993abf589bef7",
+      "schema_version": 1
+    }
+  },
+  "scenario_scope": "Illustrative budgets, not a user-specified robot deployment contract.",
+  "scene_sha256": "86101f7f1024a7b585ee66926cfd6a5049f465d08b5833d7b58ca714d0d22c8f",
+  "schema_version": 1,
+  "selection_scenarios": {
+    "blocking_50hz": {
+      "expected_cli_exit_code": 3,
+      "reason": "no_configuration_has_both_matching_evidence_and_budget_compliance",
+      "selected_profile_id": null
+    },
+    "pipelined_20hz": {
+      "expected_cli_exit_code": 0,
+      "reason": "native_baseline_meets_observed_budget",
+      "selected_profile_id": "3aa008cbf1ed5f1e808deb6965bb36dcad32919d0f350bed425993abf589bef7"
+    },
+    "reaction_500ms": {
+      "expected_cli_exit_code": 3,
+      "reason": "no_configuration_has_both_matching_evidence_and_budget_compliance",
+      "selected_profile_id": null
+    },
+    "thor_requires_local_evidence": {
+      "expected_cli_exit_code": 3,
+      "reason": "no_configuration_has_both_matching_evidence_and_budget_compliance",
+      "selected_profile_id": null
+    }
+  },
+  "startup": {
+    "bb_endpoint": "two independent accepted endpoints of the same hardware/software execution profile",
+    "capture_attempts": 3,
+    "capture_ready": 2,
+    "capture_rejected": 1,
+    "rejected_max_abs": 0.0859375,
+    "scope": "Two independent accepted capture endpoints; rejected startup retained. Three attempts are not a reliable failure-rate estimate.",
+    "unchanged_gate": 0.05083918571472168
+  },
+  "synthetic": false,
+  "unique_executed_episodes": 160
+}

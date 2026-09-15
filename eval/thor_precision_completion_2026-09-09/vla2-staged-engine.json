@@ -1,0 +1,22 @@
+{
+  "graph_replays": 4,
+  "vision": "native BF16 eager; three deepstack taps",
+  "prefill": "FP16 from checkpoint",
+  "expert": "FP8; FP16 router input",
+  "calibration": "first real observation; maxima over all ten denoise steps; no historical artifacts",
+  "repeat_byte_equal": true,
+  "camera_changes_actions": true,
+  "latency_ms": [
+    1200.8606808958575,
+    242.83665895927697,
+    217.46707300189883,
+    217.0935709727928
+  ],
+  "artifacts_sha256": "1470d376e2f92f25760ac92c5d35dec013838d31ab4fce8d659b3a2d60d9e66a",
+  "source_sha256": {
+    "Vla2StagedEngine": "d6cb678569b7dd54c6938bf305f9e9e5dc74f019e4a076311112a87170aafb95",
+    "Vla2MoeEngine": "4c626cff3e42f90576ab3fd24e476f0b05a69cbf326b92d34537de9ff6cfa0e0",
+    "Vla2TorchFrontendThor": "477b08efb6480374da6f76e95ba42c8394d04b480c1243d4e82538929cd4c7bf"
+  },
+  "scope": "Recorded patches, fixed BF16 noise, normalized 50x55 actions; not public Runtime or task-quality evidence"
+}

@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "instinctflash-cosmos3-sde1"
+version = "0.1.0"
+description = "Experimental Cosmos SDE1 receipt reproduction, not a task-quality certificate"
+requires-python = ">=3.10"
+readme = "README.rst"
+license = {text = "AGPL-3.0-or-later"}
+dependencies = ["instinctflash", "cosmos3-iwm", "numpy", "Pillow", "huggingface_hub"]
+
+[tool.setuptools.packages.find]
+include = ["cosmos3_sde1*", "instinct_compress*"]
+
+[tool.setuptools.package-data]
+cosmos3_sde1 = ["data/*.json", "data/*.txt", "data/LICENSE.*", "data/sidecars/*.json", "data/sidecars/*.txt"]

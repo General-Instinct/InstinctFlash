@@ -1,0 +1,107 @@
+{
+  "ok": true,
+  "torch_version": "2.11.0+cu130",
+  "device": "NVIDIA Thor",
+  "recipe": "e4m3fn_weights_dynamic_per_tensor_activations_fp32_accum_bf16_output",
+  "cases": [
+    {
+      "bias": false,
+      "shape": [
+        1,
+        2048
+      ],
+      "relative_rmse": 0.03870707005262375
+    },
+    {
+      "bias": false,
+      "shape": [
+        128,
+        2048
+      ],
+      "relative_rmse": 0.036810413002967834
+    },
+    {
+      "bias": false,
+      "shape": [
+        2,
+        3,
+        2048
+      ],
+      "relative_rmse": 0.036214977502822876
+    },
+    {
+      "bias": false,
+      "shape": [
+        0,
+        2048
+      ],
+      "relative_rmse": null
+    },
+    {
+      "bias": false,
+      "shape": [
+        2048
+      ],
+      "relative_rmse": 0.034985825419425964
+    },
+    {
+      "bias": true,
+      "shape": [
+        1,
+        2048
+      ],
+      "relative_rmse": 0.03623045235872269
+    },
+    {
+      "bias": true,
+      "shape": [
+        128,
+        2048
+      ],
+      "relative_rmse": 0.03679174929857254
+    },
+    {
+      "bias": true,
+      "shape": [
+        2,
+        3,
+        2048
+      ],
+      "relative_rmse": 0.03732134401798248
+    },
+    {
+      "bias": true,
+      "shape": [
+        0,
+        2048
+      ],
+      "relative_rmse": null
+    },
+    {
+      "bias": true,
+      "shape": [
+        2048
+      ],
+      "relative_rmse": 0.03696309030056
+    }
+  ],
+  "graph_changed_and_restored": true,
+  "noncontiguous": true,
+  "zero_input_and_weight": true,
+  "packed_cast_refused": true,
+  "scope": "Thor operator execution only; no Cosmos model speed or task quality certificate",
+  "source_artifacts": [
+    {
+      "path": "/home/ubuntu/ifl_eval/thor_precision_completion_20260909/probe_torch_fp8_linear.py",
+      "sha256": "e44198175c970c060cfeebe5529138ee5d5fd2cb37a23707527ae845e73a0441"
+    },
+    {
+      "path": "/home/ubuntu/ifl_eval/thor_precision_completion_20260909/probe_torch_fp8_linear.json",
+      "sha256": "6f5ab17ccb3b7b69ef6e75769d21f22009042a8f7182cb61ffb0fa6802faaedb"
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash/instinctflash/runtime/torch_fp8_linear.py",
+      "sha256": "067204c6c3eb37f5422013203140a025794b24f3a479a8add6e60acf40e2102a"
+    }
+  ]
+}

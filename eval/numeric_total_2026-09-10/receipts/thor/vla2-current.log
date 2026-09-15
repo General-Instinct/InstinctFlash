@@ -1,0 +1,94 @@
+Overwriting feature type 'VideoFrame' (VideoFrame -> VideoFrame)
+[INFO][lingbotvla.models.vla.lingbot_vla.qwen3vl_in_vla:114] 09/10/2026 16:11:36 >> apply Qwen3-VL Lingbot patch
+loading model from: /home/guanming/.cache/instinctflash/declared/robbyant__lingbot-vla-v2-6b-robotwin/checkpoints/global_step_50000/hf_ckpt
+✅ Merged Qwen3-VL text: intermediate_size = 9728
+✅ Merged Qwen3-VL text: num_hidden_layers = 36
+✅ Merged Qwen3-VL text: vocab_size = 151936
+✅ Merged Qwen3-VL text: tie_word_embeddings = True
+✅ Merged Qwen3-VL text: rope_theta = 5000000
+✅ Merged Qwen3-VL text: hidden_size = 2560
+✅ Merged Qwen3-VL text: num_attention_heads = 32
+✅ Merged Qwen3-VL text: hidden_act = silu
+✅ Merged Qwen3-VL text: rms_norm_eps = 1e-06
+✅ Merged Qwen3-VL text: max_position_embeddings = 262144
+✅ Merged Qwen3-VL text: num_key_value_heads = 8
+Initializing model ... 
+=====Action Expert V2 init 36 Layers, hidden=768, q_heads=32, kv_heads=8, head_dim=128.=====
+=====Using Eager Attn=====
+  0%|          | 0/6 [00:00<?, ?it/s]100%|██████████| 6/6 [00:00<00:00, 185.83it/s]
+Model initialized ... 
+InstinctFlash LingBot-VLA-V2: static vision/prefill CUDA Graph backend installed.
+InstinctFlash LingBot-VLA-V2: static-KV CUDA Graph backend installed — the NUMERIC arm on eligible devices. The first capture is gated by a startup self-check (replay vs upstream eager on staged inputs it was not captured from, three comparisons per input) against a legacy cross-domain implementation guard (5.084e-02 — not a calibrated velocity envelope; the fused-MoE kernel is nondeterministic even against itself, so its capture tier is NUMERIC, not BITEXACT); a miss releases every graph and falls back to eager, loudly. Kill-switch: IFL_VLA2_NO_CAPTURE=1.
+InstinctFlash LingBot-VLA-V2: GPU image preprocessing installed (processor, 3 cameras, (480, 640)->(256, 256)).
+/home/guanming/lingbot-vla-v2-repo/deploy/lingbot_vla_v2_policy.py:370: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+  image = torch.as_tensor(observation[image_feature]).permute(2, 0, 1).contiguous()
+Denoise 10 steps
+sample_actions batch=1 cost 1.2554888725280762 s
+{'i': 0, 'cycle': 0, 'phase': 'warmup', 'ms': 1341.1186770244967, 'shape': [50, 14]}
+InstinctFlash LingBot-VLA-V2: graph_capture self-check within the legacy cross-domain guard on 6 inputs (max |Δ| 0.000e+00 ≤ 5.084e-02 — legacy implementation guard derived from controller actions, moe_kernel_results.json (H100, 6-case protocol); not calibrated for denoise velocity or target-device quality; staged 3 captured-chunk + 3 refilled; 1.7 s startup cost, once per process).
+Denoise 10 steps
+sample_actions batch=1 cost 2.2999267578125 s
+{'i': 1, 'cycle': 0, 'phase': 'warmup', 'ms': 2310.948605008889, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.4187133312225342 s
+{'i': 2, 'cycle': 0, 'phase': 'warmup', 'ms': 436.0101689817384, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.5173797607421875 s
+{'i': 3, 'cycle': 0, 'phase': 'measured', 'ms': 536.0637819976546, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.4057655334472656 s
+{'i': 4, 'cycle': 0, 'phase': 'measured', 'ms': 419.19384300126694, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.4054603576660156 s
+{'i': 5, 'cycle': 0, 'phase': 'measured', 'ms': 424.2640979937278, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.4047529697418213 s
+{'i': 6, 'cycle': 0, 'phase': 'measured', 'ms': 423.1636490148958, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.40454864501953125 s
+{'i': 7, 'cycle': 0, 'phase': 'measured', 'ms': 422.95288800960407, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.40471506118774414 s
+{'i': 8, 'cycle': 0, 'phase': 'measured', 'ms': 423.18487699958496, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.40491390228271484 s
+{'i': 9, 'cycle': 0, 'phase': 'measured', 'ms': 423.31005400046706, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.4046669006347656 s
+{'i': 10, 'cycle': 0, 'phase': 'measured', 'ms': 422.89129801793024, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.40311241149902344 s
+{'i': 11, 'cycle': 0, 'phase': 'measured', 'ms': 421.3261030090507, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.40415072441101074 s
+{'i': 12, 'cycle': 0, 'phase': 'measured', 'ms': 422.28067500400357, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.4045073986053467 s
+{'i': 13, 'cycle': 0, 'phase': 'measured', 'ms': 422.6624649891164, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.40406084060668945 s
+{'i': 14, 'cycle': 0, 'phase': 'measured', 'ms': 422.19799300073646, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.4046945571899414 s
+{'i': 15, 'cycle': 0, 'phase': 'measured', 'ms': 422.8364480077289, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.40456414222717285 s
+{'i': 16, 'cycle': 0, 'phase': 'measured', 'ms': 422.6095380145125, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.40511345863342285 s
+{'i': 17, 'cycle': 0, 'phase': 'measured', 'ms': 423.2553439796902, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.4041867256164551 s
+{'i': 18, 'cycle': 0, 'phase': 'measured', 'ms': 422.3779510066379, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.40407347679138184 s
+{'i': 19, 'cycle': 0, 'phase': 'measured', 'ms': 422.1392469771672, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.4042491912841797 s
+{'i': 20, 'cycle': 0, 'phase': 'measured', 'ms': 422.4654889840167, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.40488243103027344 s
+{'i': 21, 'cycle': 0, 'phase': 'measured', 'ms': 422.945262020221, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.4053330421447754 s
+{'i': 22, 'cycle': 0, 'phase': 'measured', 'ms': 423.511695000343, 'shape': [50, 14]}

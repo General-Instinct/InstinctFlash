@@ -1,0 +1,152 @@
+{
+  "bootstrap": {
+    "install_guide": "INSTALL.rst",
+    "notes": [
+      "Use the N1.7-compatible Isaac-GR00T checkout and its own processor/Qwen3 dependencies, not DreamZero groot modules."
+    ],
+    "status": "fresh_vendor_install_not_qualified",
+    "upstream_install_guide": "https://github.com/NVIDIA/Isaac-GR00T#readme"
+  },
+  "checkpoint": {
+    "model_id": "nvidia/GR00T-N1.7-3B",
+    "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495"
+  },
+  "execution_mode": "native",
+  "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+  "library_bindings": {},
+  "limitations": [
+    "Each model requires its own compatible installed vendor environment.",
+    "prepare resolves the pinned primary checkpoint; auxiliary tokenizers/base weights must also be prepared in that environment.",
+    "Runtime captures target Jetson Thor SM110 using the unchanged capture contract.",
+    "Changed sampling policies are separate operating points, never architecture-only speedups."
+  ],
+  "matrix": {
+    "bindings": [
+      {
+        "path": "inputs/recorded_inputs_v1.npz",
+        "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      }
+    ],
+    "cells": [
+      {
+        "action_shape": [
+          40,
+          17
+        ],
+        "arm": "eager_native",
+        "comparison_group": "groot-checkpoint",
+        "effective_schedule": {
+          "nfe": {
+            "action": 4,
+            "backbone": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "expected_optimizer_environment": {},
+        "expected_runtime_kwargs": {},
+        "experimental": false,
+        "family": "groot",
+        "id": "groot-eager_native",
+        "model_id": "nvidia/GR00T-N1.7-3B",
+        "receipt": "cells/groot-eager_native/receipt.json",
+        "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495"
+      },
+      {
+        "action_shape": [
+          40,
+          17
+        ],
+        "arm": "runtime_default",
+        "comparison_group": "groot-checkpoint",
+        "effective_schedule": {
+          "nfe": {
+            "action": 4,
+            "backbone": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "expected_optimizer_environment": {},
+        "expected_runtime_kwargs": {
+          "device": "cuda:0"
+        },
+        "experimental": false,
+        "family": "groot",
+        "id": "groot-runtime_default",
+        "model_id": "nvidia/GR00T-N1.7-3B",
+        "receipt": "cells/groot-runtime_default/receipt.json",
+        "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495"
+      },
+      {
+        "action_shape": [
+          40,
+          17
+        ],
+        "arm": "runtime_selected",
+        "comparison_group": "groot-checkpoint",
+        "effective_schedule": {
+          "nfe": {
+            "action": 4,
+            "backbone": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "expected_optimizer_environment": {},
+        "expected_runtime_kwargs": {
+          "device": "cuda:0",
+          "precision": "native",
+          "step_cache": "checkpoint",
+          "tier_ceiling": "bitexact"
+        },
+        "experimental": false,
+        "family": "groot",
+        "id": "groot-runtime_selected",
+        "model_id": "nvidia/GR00T-N1.7-3B",
+        "receipt": "cells/groot-runtime_selected/receipt.json",
+        "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495"
+      }
+    ],
+    "expected_families": [
+      "groot"
+    ],
+    "expected_main_cells": 3,
+    "expected_operating_point_cells": 0,
+    "expected_runtime_update_cells": 0,
+    "protocol": {
+      "history": {
+        "cycles_per_episode": 3,
+        "measured_episodes": 6,
+        "warmup_episodes": 1
+      },
+      "pi05_queue_calls": 51,
+      "stateless": {
+        "measured": 20,
+        "warmup": 5
+      }
+    },
+    "quality_certified": false,
+    "require_observed_schedule": true,
+    "schema": 1
+  },
+  "model": "groot",
+  "native_requirements": [],
+  "profiles_sha256": "e2510cec1f61b2a3bcc6d0ba0cfd9b71cc68e375eb2b615263056623e4a484f1",
+  "publication_ready": false,
+  "schema": "instinctflash.public_reproduction.v1",
+  "scope": "Recorded cameras and synthetic state; public predict wall time; no network or simulator/task-success measurement.",
+  "shape_provenance": {
+    "path": "eval/user_e2e_2026-09-14/matrix_final.json",
+    "scope": "Public action shapes only; historical outcomes and machine paths are not inputs.",
+    "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+  },
+  "task_quality_validated": false,
+  "unresolved_library_options": [],
+  "vendor": {
+    "pin_status": "qualified_vendor_commit_and_patch_bundle_missing",
+    "repository": "https://github.com/NVIDIA/Isaac-GR00T",
+    "revision": null,
+    "root_env": "GR00T_ROOT",
+    "source_markers": [
+      "gr00t/policy/gr00t_policy.py"
+    ]
+  }
+}

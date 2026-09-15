@@ -1,0 +1,220 @@
+{
+  "comparisons": [
+    {
+      "closed_loop": [],
+      "control": "stock",
+      "models": [
+        {
+          "action": {
+            "digest_matches": 9,
+            "incomplete_pairs": [],
+            "max_abs": null,
+            "max_abs_limit": null,
+            "min_cosine_limit": null,
+            "minimum_cosine": null,
+            "mode": "bitexact",
+            "pairs": 9,
+            "verdict": "PASS"
+          },
+          "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+          "performance": {
+            "control_p50_ms": 532.6502276584506,
+            "min_speedup": 1.2,
+            "samples": 30,
+            "speedup": 3.2323698498810844,
+            "treatment_p50_ms": 164.78628758341074,
+            "verdict": "PASS"
+          },
+          "suites": [
+            {
+              "action": {
+                "digest_matches": 8,
+                "incomplete_pairs": [],
+                "max_abs": null,
+                "max_abs_limit": null,
+                "min_cosine_limit": null,
+                "minimum_cosine": null,
+                "mode": "bitexact",
+                "pairs": 8,
+                "verdict": "PASS"
+              },
+              "performance": {
+                "samples": 0,
+                "verdict": "NOT_APPLICABLE"
+              },
+              "suite_id": "model_contract"
+            },
+            {
+              "action": {
+                "digest_matches": 1,
+                "incomplete_pairs": [],
+                "max_abs": null,
+                "max_abs_limit": null,
+                "min_cosine_limit": null,
+                "minimum_cosine": null,
+                "mode": "bitexact",
+                "pairs": 1,
+                "verdict": "PASS"
+              },
+              "performance": {
+                "control_p50_ms": 532.6502276584506,
+                "min_speedup": 1.2,
+                "samples": 30,
+                "speedup": 3.2323698498810844,
+                "treatment_p50_ms": 164.78628758341074,
+                "verdict": "PASS"
+              },
+              "suite_id": "single_gpu_latency"
+            }
+          ]
+        }
+      ],
+      "paired_jobs": 9,
+      "treatment": "runtime_default"
+    }
+  ],
+  "complete": true,
+  "environment_consistency": [
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "36af118897e4fa85908925d34ed04055eafc33ba2b3d3afe056b71ca3e2d252f"
+      ],
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "36af118897e4fa85908925d34ed04055eafc33ba2b3d3afe056b71ca3e2d252f"
+      ],
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "verdict": "PASS"
+    }
+  ],
+  "environment_sha256": "e0284e608f867f844c6ed8fb74250d7520545bcfaa7fc06499f7631ed0a82804",
+  "expected_results": 18,
+  "gates_passed": true,
+  "issues": [],
+  "plan_id": "f4864a14dd906f4a85fa292894208ba4ea69e29f34dcfabf32485302d896b9cf",
+  "registry_sha256": "b1174c86e86015f57df75f79ffcc6dc4c86b47c5d9fc28d300fc60fd493ee8aa",
+  "repeatability": [
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "36af118897e4fa85908925d34ed04055eafc33ba2b3d3afe056b71ca3e2d252f"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "repeats": 2,
+      "seed": 30100,
+      "suite_id": "model_contract",
+      "task": "changed_prompt",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "36af118897e4fa85908925d34ed04055eafc33ba2b3d3afe056b71ca3e2d252f"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "repeats": 2,
+      "seed": 30100,
+      "suite_id": "model_contract",
+      "task": "changed_prompt",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "36af118897e4fa85908925d34ed04055eafc33ba2b3d3afe056b71ca3e2d252f"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "repeats": 2,
+      "seed": 40100,
+      "suite_id": "model_contract",
+      "task": "reset_replay",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "36af118897e4fa85908925d34ed04055eafc33ba2b3d3afe056b71ca3e2d252f"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "repeats": 2,
+      "seed": 40100,
+      "suite_id": "model_contract",
+      "task": "reset_replay",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "36af118897e4fa85908925d34ed04055eafc33ba2b3d3afe056b71ca3e2d252f"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "repeats": 2,
+      "seed": 10100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_a",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "36af118897e4fa85908925d34ed04055eafc33ba2b3d3afe056b71ca3e2d252f"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "repeats": 2,
+      "seed": 10100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_a",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "runtime_default",
+      "environment_fingerprints": [
+        "36af118897e4fa85908925d34ed04055eafc33ba2b3d3afe056b71ca3e2d252f"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "repeats": 2,
+      "seed": 20100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_b",
+      "verdict": "PASS"
+    },
+    {
+      "arm": "stock",
+      "environment_fingerprints": [
+        "36af118897e4fa85908925d34ed04055eafc33ba2b3d3afe056b71ca3e2d252f"
+      ],
+      "limit": 0.0,
+      "max_abs": 0.0,
+      "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "repeats": 2,
+      "seed": 20100,
+      "suite_id": "model_contract",
+      "task": "seeded_prompt_b",
+      "verdict": "PASS"
+    }
+  ],
+  "report_sha256": "b4b279367a89c698bc3147489a98513f53a253632233651e31728cb76e59cb56",
+  "reportable": true,
+  "results": 18,
+  "schema_version": 1,
+  "synthetic": false
+}

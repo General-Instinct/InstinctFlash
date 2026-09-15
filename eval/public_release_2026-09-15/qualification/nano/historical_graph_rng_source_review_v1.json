@@ -1,0 +1,184 @@
+{
+  "actual_native_request_seeds": [
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615,
+    1826701615
+  ],
+  "actual_new_log": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/nano/run/logs/nano-runtime_selected.log",
+    "sha256": "cb9b1ec5c78d15d977d617a50dd6ee92dcc1a0cad59625649232da59444b88b6"
+  },
+  "findings": [
+    {
+      "finding": "Graph admission has no explicit RNG save/restore and repeats the original callable: reference + side-stream warmup + CUDA capture + one immediate native graph replay. Only later steady replays increment the replays counter.",
+      "scope": "Exact LayerGraph source; zero reported replays does not imply graph was never executed."
+    },
+    {
+      "finding": "For this admitted dense Nano decoder, the inspected native layer route contains no random sampling or dropout call. Numeric attention explicitly uses dropout_p=0. Global RNG preservation remains a generic wrapper concern, not a demonstrated cause here.",
+      "scope": "Native decoder/no memory/no prompt upsampling route; not a claim about every possible future custom module."
+    },
+    {
+      "finding": "Native image transform, prompt preparation, service NumPy seed draw, vision encoding and explicit-seed diffusion noise happen before decoder graph admission. Noise uses a new local NumPy RandomState(seed); each public request resets global torch/NumPy/Python seeds, and each reset recreates the native per-episode seed stream.",
+      "scope": "Pinned native service/model and public harness; all25 observed actual native seeds are1826701615."
+    },
+    {
+      "finding": "Conditioning-cache graphs are created independently of IFL_COSMOS3_LAYER_GRAPHS. Disabling that outer install flag alone is not a valid isolation experiment.",
+      "scope": "conditioning_cache.py139-143."
+    },
+    {
+      "finding": "In the enabled generation-region route, these layer graphs service extraction admission; after state.checked the compiled pure region bypasses the original layer. Captured output is byte-checked against its same-call reference, but this does not prove whole-model resource-invariant behavior.",
+      "scope": "No E2E graph-on versus graph-bypass comparison has been run."
+    },
+    {
+      "finding": "Actual counts agree with25 added captures: +450 module hits =25*9*2 extra Python forwards; +50 eligible and +50 fallback attention Python calls =25*2 each. Captured kernels replay without additional Python counters.",
+      "scope": "Historical and current backend receipts; not a causal numeric-quality conclusion."
+    }
+  ],
+  "historical_equivalence_proven": false,
+  "implementation_changes": 0,
+  "native_executions_launched": 0,
+  "prospective_minimum_isolation": [
+    "One new explicit diagnostic that holds checkpoint, inputs, complete UniPC4/CFG3 schedule, compiler options and source fixed, compares current conditioning graph admission to disabled admission. Do not rely on the outer layer-graph flag.",
+    "Record actual pre/post decoder CPU/CUDA/NumPy RNG state hashes and preprocessed/noise input digests, plus first differing layer/gen-region inputs/outputs and compiled specialization metadata; retain both paths even if not equal.",
+    "If graph admission is not causal, compare exact Torch/Triton/cuDNN build provenance and compiler artifacts. Do not relabel the unresolved numerical difference as successful historical reproduction."
+  ],
+  "schema": "instinctflash.nano_historical_graph_rng_source_review.v1",
+  "source_refs": {
+    "compiled_region": {
+      "lines": [
+        13,
+        68
+      ],
+      "new_receipt_source_match": true,
+      "old_receipt_source_match": true,
+      "path": "/home/ubuntu/InstinctFlash/instinctflash/runtime/compiled_region.py",
+      "sha256": "ac8f955bbdaf67d35b911095caec4d2fc5549d5bb3c06e435337c2b87602f35d"
+    },
+    "conditioning_cache": {
+      "lines": [
+        128,
+        143
+      ],
+      "new_receipt_source_match": true,
+      "old_receipt_source_match": true,
+      "path": "/home/ubuntu/InstinctFlash/examples/cosmos3_policy/cosmos3_iwm/conditioning_cache.py",
+      "sha256": "d7e95e165e0e3de3b1048656f0c4ec68def4d23cec3fbf294a85fedf779c9d60"
+    },
+    "generation_regions": {
+      "lines": [
+        133,
+        210
+      ],
+      "new_receipt_source_match": true,
+      "old_receipt_source_match": true,
+      "path": "/home/ubuntu/InstinctFlash/examples/cosmos3_policy/cosmos3_iwm/generation_region.py",
+      "sha256": "1ac8b8e27557c3861edea3fafbd0df67590f4e13adfb8fbdbbce0475fb7fe589"
+    },
+    "layer_graph": {
+      "lines": [
+        81,
+        177
+      ],
+      "new_receipt_source_match": true,
+      "old_receipt_source_match": true,
+      "path": "/home/ubuntu/InstinctFlash/examples/cosmos3_policy/cosmos3_iwm/thor_graphs.py",
+      "sha256": "abbffe142c39cfd091f50556c333d3328838e6e13fde049f094699294ed693c9"
+    },
+    "loop_reset": {
+      "lines": [
+        85,
+        99
+      ],
+      "new_receipt_source_match": true,
+      "old_receipt_source_match": true,
+      "path": "/home/ubuntu/InstinctFlash/instinctflash/runtime/cosmos_droid.py",
+      "sha256": "a3d1ae1c4c995645bcc87d9920ae26f3f7bd9f7c2a4a56daa9589933795d2bca"
+    },
+    "native_decoder": {
+      "lines": [
+        1066,
+        1225
+      ],
+      "new_receipt_source_match": true,
+      "old_receipt_source_match": true,
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/model/generator/mot/unified_mot.py",
+      "sha256": "92fb455e597f4cdfbbde182dab192f370bebd1068f24d917e05f34268fcf7032"
+    },
+    "native_generation": {
+      "lines": [
+        1707,
+        1796,
+        2371,
+        2399
+      ],
+      "new_receipt_source_match": true,
+      "old_receipt_source_match": true,
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/model/generator/omni_mot_model.py",
+      "sha256": "167e8c012d6ad243187a88e67facba8a681f8d2fa3406672cea0de9dac37c161"
+    },
+    "native_noise": {
+      "lines": [
+        144,
+        163
+      ],
+      "new_receipt_source_match": true,
+      "old_receipt_source_match": true,
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/utils/misc.py",
+      "sha256": "ca1cb71d01ce4f3d630dbdb6f3cc8f508e3ba8effe9b69b5c1b64709b65e4cb7"
+    },
+    "native_service": {
+      "lines": [
+        501,
+        604
+      ],
+      "new_receipt_source_match": true,
+      "old_receipt_source_match": true,
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/scripts/action_policy_server_robolab.py",
+      "sha256": "33d0d6356b9dde2f2ffba5b0fdbb7cb78e534c97cd2cbe5b37aa695f3bdc83fb"
+    },
+    "numeric_attention": {
+      "lines": [
+        33,
+        50
+      ],
+      "new_receipt_source_match": true,
+      "old_receipt_source_match": true,
+      "path": "/home/ubuntu/InstinctFlash/examples/cosmos3_policy/cosmos3_iwm/numeric_attention.py",
+      "sha256": "901fb424f61a8af346f99e3d4c57212f428ac80928324e85bfd2f1df73ff1489"
+    },
+    "public_requests": {
+      "lines": [
+        275,
+        317
+      ],
+      "new_receipt_source_match": false,
+      "old_receipt_source_match": false,
+      "path": "/home/ubuntu/InstinctFlash/benchmarks/regression/user_e2e.py",
+      "sha256": "057ae88f713d417a49622c97bba353765e2fbb1e81bac6205c250009042c6ce7"
+    }
+  },
+  "status": "cause_unresolved_no_changes",
+  "task_quality_certified": false
+}

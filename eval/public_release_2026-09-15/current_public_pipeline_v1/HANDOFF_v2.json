@@ -1,0 +1,144 @@
+{
+  "CPU_validation": {
+    "Ruff": "passed",
+    "combined_tests": 49,
+    "focused_current_assembler_tests": 25,
+    "focused_finalizer_v3_tests": 24,
+    "groups_overlap": true,
+    "ruff_log": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_stage_v9_docfix1_ruff_v2.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "test_log": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_stage_v9_docfix1_tests_v2.log",
+      "sha256": "da6ca9ab3ff78a166a6193026a47edcc213ea29174dd85b3f0c721a5de4e5771"
+    }
+  },
+  "GPU_or_remote_actions": false,
+  "actual_assembly_run": false,
+  "actual_selection_created": false,
+  "candidate_source_stage_manifest": {
+    "path": "/home/ubuntu/ifl-public-full-stage-20260915-v9-docfix1/manifest.json",
+    "sha256": "a316bd918ae4426460f0779f90f34985b31a8639f3b6be7f9dd20e86c9cbdbc4"
+  },
+  "created_utc": "2026-09-15T05:53:08.976138+00:00",
+  "future_hash_placeholders": "These three placeholders refer to artifacts that do not yet exist or are not yet admitted. Resolve them only after the actual copy/bind succeeds; all source, contract, queue and stage identities are already fixed.",
+  "independent_source_review": {
+    "V2_narrow_review_requested": true,
+    "no_V2_independent_review_claim_at_handoff_time": true,
+    "prior_V1_review_preserved": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/independent_source_review_v1.json",
+      "sha256": "d9114bf4770a12a0c0f71bb153a2dbbfc98b265f66a4ea64fdebd1635139e685"
+    }
+  },
+  "notes": [
+    "Historical array comparison recomputes exact own-arm bytes. Valid inequality is disclosed separately; invalid/missing historical input cannot complete qualification.",
+    "Selection fixes both new Cosmos roots and explicit serving directories. Old complete Cosmos runs cannot satisfy new-root readiness.",
+    "DreamZeroV5 outer process exits, commands, actual PTXAS variables and binary hashes must match its frozen CPU probe and queue.",
+    "Only the prospective installer/docs source delta is accepted over V8; the selected later stage is recorded exactly for V9-docfix1\u2192V10 finalization.",
+    "Read-only Edge preview found all3 new own-arm archives exact; this did not create an actual selection or full current report.",
+    "V9 is preserved. The selected baseline must be V9-docfix1; only core and SDE1 README metadata changed versus V8, and seven other wheel payloads are exact."
+  ],
+  "old_arrays_thresholds_inventories_changed": false,
+  "outputs_written_to_selected_evidence": false,
+  "previous_strict_V3_V4_acceptance_changed": false,
+  "prospective_commands": {
+    "assemble_once_selection_exists": [
+      "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+      "-I",
+      "-B",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/assemble_current_v2.py",
+      "assemble",
+      "--contract",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/contract_v1.json",
+      "--contract-sha256",
+      "1086a7e236219f6b8a073bee9e695d870981877cd52dda8646d75dace0146f0d",
+      "--selection",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v2.json",
+      "--selection-sha256",
+      "SHA256_PRINTED_BY_BIND",
+      "--output",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v2"
+    ],
+    "bind_after_required_receipts_are_copied": [
+      "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+      "-I",
+      "-B",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/assemble_current_v2.py",
+      "bind",
+      "--contract",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/contract_v1.json",
+      "--contract-sha256",
+      "1086a7e236219f6b8a073bee9e695d870981877cd52dda8646d75dace0146f0d",
+      "--stage",
+      "/home/ubuntu/ifl-public-full-stage-20260915-v9-docfix1",
+      "--stage-manifest-sha256",
+      "a316bd918ae4426460f0779f90f34985b31a8639f3b6be7f9dd20e86c9cbdbc4",
+      "--dreamzero-queue-completion",
+      "ACTUAL_COPIED_DREAMZERO_V5_COMPLETION_JSON",
+      "--dreamzero-queue-completion-sha256",
+      "SHA256_OF_THAT_COPIED_COMPLETION",
+      "--output",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/actual_selection_v2.json"
+    ]
+  },
+  "schema": "instinctflash.current_public_pipeline_handoff.v2",
+  "sources": {
+    "assemble_current_v2.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/assemble_current_v2.py",
+      "sha256": "99fca39c85806695024596aefcc3a71a46881a6ed4bca3af18549a733427b89b"
+    },
+    "contract_v1.json": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/contract_v1.json",
+      "sha256": "1086a7e236219f6b8a073bee9e695d870981877cd52dda8646d75dace0146f0d"
+    },
+    "source_addendum_v2.json": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/source_addendum_v2.json",
+      "sha256": "b87396171e4fecdf1d68987245331722b7619d426e51e2a6b7b7f6f9ffb44621"
+    },
+    "test_assemble_current_v2.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/test_assemble_current_v2.py",
+      "sha256": "4c246f4ca1b6607724bcfbd249db8a3797e1b764f51619708aded9d00e0f818d"
+    }
+  },
+  "status": "prospective_CPU_qualified_no_actual_selection_admitted",
+  "summary_interface": {
+    "always_false": [
+      "complete_historical_reproduction",
+      "task_quality_certified",
+      "prior_cosmos_SCREEN_transferred",
+      "diagnostic_latency_used"
+    ],
+    "required_counts": {
+      "foreign_passed": 6,
+      "historical_families_assessed": 8,
+      "main_passed": 8
+    },
+    "schema": "instinctflash.current_public_pipeline_qualification.v1",
+    "separate_historical_fields": [
+      "historical_equivalence",
+      "main[family].historical_equivalence.arrays",
+      "preserved_prior_nano_diagnostic"
+    ],
+    "source_stage_manifest": "Exact V9-docfix1 manifest reference in the frozen selection",
+    "success_status": "current_pipeline_qualified"
+  },
+  "supersedes": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/HANDOFF_v1.json",
+    "sha256": "87dc67c402e00b8c38e9ee72523122e630eb84b55171734217b733f2937363be"
+  },
+  "unchanged_validator_functions_AST_exact_v1": [
+    "load_contract",
+    "validate_dreamzero_compiler",
+    "fixed_roots",
+    "snapshot_inputs",
+    "require_new_cosmos",
+    "assess_historical",
+    "summarize"
+  ],
+  "v1_to_v2_scope": [
+    "Exact hash-bound SDE1 README correction is added to prospective later-stage admission.",
+    "Table presentation maps the LeRobot VA measurement only to va-2v4a-fp8; full VA LeRobot is unmeasured.",
+    "The 2V4A row leaves direct native/default timing empty and labels the full 25V50A native/default values as comparison references."
+  ]
+}

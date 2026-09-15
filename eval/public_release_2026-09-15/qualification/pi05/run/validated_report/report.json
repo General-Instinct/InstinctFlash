@@ -1,0 +1,579 @@
+{
+  "bindings": [
+    {
+      "path": "/home/guanming/ifl_public_qualification_20260915_v1/pi05_fp8_run_v1/inputs/recorded_inputs_v1.npz",
+      "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+      "status": "passed"
+    }
+  ],
+  "cells": [
+    {
+      "action_shape": [
+        7
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "5491ea76940ad02451396095f260ee4d277697a54b302bfda5ac81b2bcc85818",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/pi05_fp8_run_v1/cells/pi05-eager_native/receipt.npz",
+        "sha256": "f3169f697ae1e05fbe8aa5d39b606ff5023e9c0cf0f40234c4ed2bc749090737",
+        "shape": [
+          25,
+          7
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "eager_native",
+      "comparison_group": "pi05-checkpoint",
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "experimental": false,
+      "family": "pi05",
+      "first_predict_ms": 761.2691759713925,
+      "guidance": "{'action': 'none'}",
+      "id": "pi05-eager_native",
+      "input_contract": {
+        "action_shape": [
+          7
+        ],
+        "family": "pi05",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 410.06114601623267,
+        "mean_ms": 407.6932395109907,
+        "min_ms": 399.22344201477244,
+        "p50_ms": 408.58450400992297
+      },
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 410.06114601623267,
+        "mean_ms": 407.6932395109907,
+        "min_ms": 399.22344201477244,
+        "p50_ms": 408.58450400992297
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 10
+        },
+        "nfe_before": {
+          "action": 10
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 20,
+        "max_ms": 410.06114601623267,
+        "mean_ms": 407.6932395109907,
+        "min_ms": 399.22344201477244,
+        "p50_ms": 408.58450400992297
+      },
+      "primary_metric": "generation_p50_ms",
+      "queue_drain": {
+        "actions": {
+          "actions_key": "actions",
+          "additional_unverified_arrays": [],
+          "array_bytes_sha256": "b9029d626611ef2122e50a92e43cc0a6f0f44b7449a358ba9bc92d8ea9a9f429",
+          "dtype": "float32",
+          "finite": true,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/pi05_fp8_run_v1/cells/pi05-eager_native/receipt.queue.npz",
+          "sha256": "28959d8a53e24a1d63dd60f872f8f9dd14e79ba15c69bbe100b9ea94f2286800",
+          "shape": [
+            51,
+            7
+          ]
+        },
+        "call_51_ms": 403.2827219925821,
+        "first_call_ms": 409.0483780018985,
+        "metrics": {
+          "count": 51,
+          "max_ms": 409.0483780018985,
+          "mean_ms": 19.77348451128266,
+          "min_ms": 3.669735975563526,
+          "p50_ms": 3.9961879956535995
+        },
+        "middle_49_calls": {
+          "count": 49,
+          "max_ms": 4.431409994140267,
+          "mean_ms": 4.002379797570104,
+          "min_ms": 3.669735975563526,
+          "p50_ms": 3.9854940259829164
+        },
+        "request_sequence_sha256": "22282584e2c3e4bd6cb3ddc09346b5b641383297dc914456858d9586741a5a7d",
+        "reset_between_calls": false,
+        "scope": "separate continuous public select_action calls; excluded from generation latency",
+        "total_ms": 1008.4477100754157
+      },
+      "receipt": {
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/pi05_fp8_run_v1/cells/pi05-eager_native/receipt.json",
+        "sha256": "b8bfbb51481b9282845f97cd7b6b35bc5383e1761500011ae085138c5107550d"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "f3556849d382c5d92cb2e6a6e58d14e4fa7f6364d447d147ca4d87f2a421da16",
+      "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+      "runtime_kwargs": {},
+      "setup_plus_first_predict_ms": 176729.16470497148,
+      "setup_plus_timed_calls_mean_ms": 7459.238082766533,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 175.9678955290001,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 420.52226160652936,
+      "timed_session_ms": 10513.056540163234,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.11.0+cu130",
+      "total_calls": 25,
+      "usability": "succeeded on recorded requests",
+      "warmup_calls": 5
+    },
+    {
+      "action_shape": [
+        7
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "5491ea76940ad02451396095f260ee4d277697a54b302bfda5ac81b2bcc85818",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/pi05_fp8_run_v1/cells/pi05-runtime_default/receipt.npz",
+        "sha256": "f3169f697ae1e05fbe8aa5d39b606ff5023e9c0cf0f40234c4ed2bc749090737",
+        "shape": [
+          25,
+          7
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "runtime_default",
+      "comparison_group": "pi05-checkpoint",
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "changed_schedule": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "precision": "native",
+        "schedule_options": {},
+        "step_cache": null,
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT"
+      },
+      "experimental": false,
+      "family": "pi05",
+      "first_predict_ms": 744.7557320119813,
+      "guidance": "{'action': 'none'}",
+      "id": "pi05-runtime_default",
+      "input_contract": {
+        "action_shape": [
+          7
+        ],
+        "family": "pi05",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 308.61365399323404,
+        "mean_ms": 306.8865860492224,
+        "min_ms": 303.6311619798653,
+        "p50_ms": 306.8672350200359
+      },
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 308.61365399323404,
+        "mean_ms": 306.8865860492224,
+        "min_ms": 303.6311619798653,
+        "p50_ms": 306.8672350200359
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 10
+        },
+        "nfe_before": {
+          "action": 10
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 20,
+        "max_ms": 308.61365399323404,
+        "mean_ms": 306.8865860492224,
+        "min_ms": 303.6311619798653,
+        "p50_ms": 306.8672350200359
+      },
+      "primary_metric": "generation_p50_ms",
+      "queue_drain": {
+        "actions": {
+          "actions_key": "actions",
+          "additional_unverified_arrays": [],
+          "array_bytes_sha256": "b9029d626611ef2122e50a92e43cc0a6f0f44b7449a358ba9bc92d8ea9a9f429",
+          "dtype": "float32",
+          "finite": true,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/pi05_fp8_run_v1/cells/pi05-runtime_default/receipt.queue.npz",
+          "sha256": "28959d8a53e24a1d63dd60f872f8f9dd14e79ba15c69bbe100b9ea94f2286800",
+          "shape": [
+            51,
+            7
+          ]
+        },
+        "call_51_ms": 306.88725697109476,
+        "first_call_ms": 306.596387992613,
+        "metrics": {
+          "count": 51,
+          "max_ms": 306.88725697109476,
+          "mean_ms": 15.858850252412845,
+          "min_ms": 3.714273974765092,
+          "p50_ms": 4.029800998978317
+        },
+        "middle_49_calls": {
+          "count": 49,
+          "max_ms": 4.3458539876155555,
+          "mean_ms": 3.9860758757009647,
+          "min_ms": 3.714273974765092,
+          "p50_ms": 4.016911960206926
+        },
+        "request_sequence_sha256": "22282584e2c3e4bd6cb3ddc09346b5b641383297dc914456858d9586741a5a7d",
+        "reset_between_calls": false,
+        "scope": "separate continuous public select_action calls; excluded from generation latency",
+        "total_ms": 808.801362873055
+      },
+      "receipt": {
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/pi05_fp8_run_v1/cells/pi05-runtime_default/receipt.json",
+        "sha256": "dd2239c94c29a06336e5bf94d61120ee87957ca2c957922cc76eb9bfc34dab58"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "f3556849d382c5d92cb2e6a6e58d14e4fa7f6364d447d147ca4d87f2a421da16",
+      "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "setup_plus_first_predict_ms": 162675.4753870191,
+      "setup_plus_timed_calls_mean_ms": 6978.198393757921,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 161.93071965500712,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 500.96960755763575,
+      "timed_session_ms": 12524.240188940894,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.11.0+cu130",
+      "total_calls": 25,
+      "usability": "public default succeeded on recorded requests",
+      "warmup_calls": 5
+    },
+    {
+      "action_shape": [
+        7
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "b12ba47feaaf831f7a100cff4ff71fafa54f2ca8a213432e0b588df4acfd0fe0",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/pi05_fp8_run_v1/cells/pi05-runtime_selected/receipt.npz",
+        "sha256": "b74afa7ec8d317e9f2690057c95f121782d81c41c29d5d7306da86e09aeedb17",
+        "shape": [
+          25,
+          7
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "runtime_selected",
+      "comparison_group": "pi05-checkpoint",
+      "default_schedule": {
+        "action": 10,
+        "prefix": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "execution_policy": {
+        "category": "FP8",
+        "changed_schedule": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "precision": "fp8",
+        "schedule_options": {},
+        "step_cache": null,
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC"
+      },
+      "experimental": false,
+      "family": "pi05",
+      "first_predict_ms": 3208.789472002536,
+      "guidance": "{'action': 'none'}",
+      "id": "pi05-runtime_selected",
+      "input_contract": {
+        "action_shape": [
+          7
+        ],
+        "family": "pi05",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 52.19681601738557,
+        "mean_ms": 51.823279037489556,
+        "min_ms": 51.52249394450337,
+        "p50_ms": 51.84710197499953
+      },
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 52.19681601738557,
+        "mean_ms": 51.823279037489556,
+        "min_ms": 51.52249394450337,
+        "p50_ms": 51.84710197499953
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 10
+        },
+        "nfe_before": {
+          "action": 10
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "fp8",
+      "primary": {
+        "count": 20,
+        "max_ms": 52.19681601738557,
+        "mean_ms": 51.823279037489556,
+        "min_ms": 51.52249394450337,
+        "p50_ms": 51.84710197499953
+      },
+      "primary_metric": "generation_p50_ms",
+      "queue_drain": {
+        "actions": {
+          "actions_key": "actions",
+          "additional_unverified_arrays": [],
+          "array_bytes_sha256": "40eba6402cac45f189d90051abb946edcba25e015f05359eea92beafd4161c0b",
+          "dtype": "float32",
+          "finite": true,
+          "path": "/home/guanming/ifl_public_qualification_20260915_v1/pi05_fp8_run_v1/cells/pi05-runtime_selected/receipt.queue.npz",
+          "sha256": "3db99580fe99db5465d15793521b27faabe888dc6cff131d801abe90f46c6ec7",
+          "shape": [
+            51,
+            7
+          ]
+        },
+        "call_51_ms": 51.65740300435573,
+        "first_call_ms": 51.711208012420684,
+        "metrics": {
+          "count": 51,
+          "max_ms": 51.711208012420684,
+          "mean_ms": 3.6836879798119853,
+          "min_ms": 1.6714750090613961,
+          "p50_ms": 1.7215959960594773
+        },
+        "middle_49_calls": {
+          "count": 49,
+          "max_ms": 1.9498449983075261,
+          "mean_ms": 1.7244791010945884,
+          "min_ms": 1.6714750090613961,
+          "p50_ms": 1.7210310325026512
+        },
+        "request_sequence_sha256": "22282584e2c3e4bd6cb3ddc09346b5b641383297dc914456858d9586741a5a7d",
+        "reset_between_calls": false,
+        "scope": "separate continuous public select_action calls; excluded from generation latency",
+        "total_ms": 187.86808697041124
+      },
+      "receipt": {
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/pi05_fp8_run_v1/cells/pi05-runtime_selected/receipt.json",
+        "sha256": "b9cf21ec36976ca027a599ea24299903e2f36a96232631bfca85c5f1a3e1a069"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "f3556849d382c5d92cb2e6a6e58d14e4fa7f6364d447d147ca4d87f2a421da16",
+      "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8",
+        "step_cache": "checkpoint",
+        "tier_ceiling": "numeric"
+      },
+      "setup_plus_first_predict_ms": 6710.036493022926,
+      "setup_plus_timed_calls_mean_ms": 318.1979355914518,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 3.50124702102039,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 178.14805475063622,
+      "timed_session_ms": 4453.7013687659055,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.11.0+cu130",
+      "total_calls": 25,
+      "usability": "explicit numerical candidate on recorded requests",
+      "warmup_calls": 5
+    }
+  ],
+  "comparisons": [
+    {
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "metric_overflow": false,
+        "rmse": 0.0,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "baseline": "pi05-eager_native",
+      "baseline_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "candidate": "pi05-runtime_default",
+      "candidate_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "kind": "matched_policy_latency_ratio",
+      "median_paired_ratio": 1.329924378041785,
+      "paired_samples": 20,
+      "queue_drain_actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "metric_overflow": false,
+        "rmse": 0.0,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "queue_drain_total_ratio": 1.2468422487484063,
+      "ratio_of_p50": 1.3314699563257244,
+      "recommended": false,
+      "same_sampling_policy": true,
+      "status": "passed",
+      "task_quality_validated": false
+    },
+    {
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.3901025354862213,
+        "metric_overflow": false,
+        "rmse": 0.06737675194679091,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "baseline": "pi05-eager_native",
+      "baseline_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "candidate": "pi05-runtime_selected",
+      "candidate_schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "kind": "matched_policy_latency_ratio",
+      "median_paired_ratio": 7.879489175193317,
+      "paired_samples": 20,
+      "queue_drain_actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.27249082922935486,
+        "metric_overflow": false,
+        "rmse": 0.05958034820122958,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "queue_drain_total_ratio": 5.367849996972843,
+      "ratio_of_p50": 7.880565903315884,
+      "recommended": false,
+      "same_sampling_policy": true,
+      "status": "passed",
+      "task_quality_validated": false
+    }
+  ],
+  "counts": {
+    "expected_cells": 3,
+    "failed_cells": 0,
+    "failed_comparisons": 0,
+    "finite_public_actions": 75,
+    "finite_queue_actions": 153,
+    "incomplete_cells": 0,
+    "main_cells": 3,
+    "operating_point_cells": 0,
+    "passed_cells": 3,
+    "runtime_update_cells": 0
+  },
+  "errors": [],
+  "matrix": {
+    "path": "/home/guanming/ifl_public_qualification_20260915_v1/pi05_fp8_run_v1/matrix.json",
+    "sha256": "0adeb5d3b930498942ee8173383ee2e92a23d363b320129a12cf5d6471b0909d"
+  },
+  "pending": [],
+  "recommended": false,
+  "reproduction_plan": {
+    "execution_mode": "fp8",
+    "sha256": "1ea6a5051492a63e1d7c7449507486e40e61b6eea9271488aeade7b337d9d3bb"
+  },
+  "require_observed_schedule": true,
+  "schema": "instinctflash.user_report.v1",
+  "scope": "CPU artifact/protocol validation on recorded requests; no simulator or task-quality admission",
+  "status": "passed",
+  "task_quality_validated": false,
+  "validator": {
+    "path": "/dev/shm/ifl_public_envs_20260915_v1/pi05/lib/python3.12/site-packages/benchmarks/regression/user_report.py",
+    "sha256": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+  }
+}

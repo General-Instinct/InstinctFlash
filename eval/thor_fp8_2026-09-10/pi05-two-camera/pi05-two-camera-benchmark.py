@@ -1,0 +1,115 @@
+"""Matched public Runtime native/FP8 generation timing on one Thor, sequential fresh processes."""
+import argparse,hashlib,io,json,os,sys,time,traceback,random
+from pathlib import Path
+import numpy as np
+from PIL import Image
+import torch
+from instinctflash import Runtime
+P=argparse.ArgumentParser();P.add_argument('family');P.add_argument('precision',choices=['native','fp8']);P.add_argument('output',type=Path);P.add_argument('--iterations',type=int,default=12);a=P.parse_args()
+assert not a.output.exists()
+MODELS={'pi05':'lerobot/pi05_libero_finetuned_v044','vla4':'robbyant/lingbot-vla-4b-posttrain-robotwin','vla2':'robbyant/lingbot-vla-v2-6b-robotwin','groot':'nvidia/GR00T-N1.7-3B','va':'robbyant/lingbot-va-posttrain-robotwin','va_2v4a':'robbyant/lingbot-va-posttrain-robotwin','edge':'nvidia/Cosmos3-Edge-Policy-DROID','nano':'nvidia/Cosmos3-Nano-Policy-DROID','dreamzero':'GEAR-Dreams/DreamZero-DROID'}
+model=MODELS[a.family]
+from huggingface_hub import snapshot_download
+snapshot=Path(snapshot_download(model,local_files_only=True));revision=snapshot.name
+assert torch.cuda.get_device_capability()==(11,0)
+torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False;torch.backends.cudnn.benchmark=False
+torch.manual_seed(9173);np.random.seed(9173);random.seed(9173)
+report={'family':a.family,'precision':a.precision,'model_id':model,'revision':revision,'device':torch.cuda.get_device_name(),'torch':torch.__version__,'scope':'Matched public Runtime generation latency, synchronized wall time; recorded cameras and synthetic state, no network or simulator. No task-quality certificate.','calls':[]}
+api=None
+try:
+ options={'nfe':{'video':2,'action':4}} if a.family=='va_2v4a' else {}
+ if a.family.startswith('va'):options['exclude_passes']=['cfg_branch_elision']
+ start=time.perf_counter();api=Runtime.from_pretrained(model,revision=revision,precision=a.precision,device='cuda:0',tier_ceiling='numeric',**options)
+ api.reset(prompt='pick up the object');report['setup_seconds']=time.perf_counter()-start
+ loop=api._backend._loop if a.precision=='fp8' else api._backend._impl
+ inner=loop
+ if a.family=='groot' and a.precision=='fp8':inner=loop
+ data=np.load('/home/guanming/thor_va_engine/va_eval_obs.npz',allow_pickle=True)
+ def decode(v):return [np.asarray(Image.open(io.BytesIO(bytes(x))).convert('RGB')) for x in v]
+ frames=[decode(data['frame0_0'])]+[decode(x) for x in data['jpeg_0'][:12]]
+ def obs(i,cycle):
+  ims=frames[1+i%12]
+  if a.family=='pi05':return {'observation.images.image':ims[0].transpose(2,0,1).astype(np.float32)/255.0,'observation.images.image2':ims[1].transpose(2,0,1).astype(np.float32)/255.0,'observation.state':np.zeros(8,np.float32)}
+  if a.family in ('vla4','vla2'):return dict(zip(('observation.images.cam_high','observation.images.cam_left_wrist','observation.images.cam_right_wrist'),ims),**{'observation.state':np.full(14,.05*(i%3),np.float32)})
+  if a.family=='groot':
+   state={k:np.zeros(n,np.float32) for k,n in inner._state_dims.items()}
+   for k,v in state.items():
+    if k.endswith('eef_9d'):v[3:9]=[1,0,0,0,1,0]
+   return {'images':ims[:2],'state':state}
+  if a.family in ('edge','nano'):return {'image':np.asarray(Image.fromarray(ims[0]).resize((640,540))),'state':np.zeros(8,np.float32),'prompt':'pick up the object'}
+  if a.family.startswith('va'):
+   keys=('observation.images.cam_high','observation.images.cam_left_wrist','observation.images.cam_right_wrist')
+   indices=[0] if cycle==0 else list(range(1,5)) if cycle==1 else list(range(5,13))
+   return {'obs':[dict(zip(keys,frames[j])) for j in indices]}
+  keys=('observation/exterior_image_0_left','observation/exterior_image_1_left','observation/wrist_image_left')
+  indices=[0] if cycle==0 else list(range(1,5))
+  o={k:np.stack([frames[j][v] for j in indices]) for v,k in enumerate(keys)}
+  o.update({'observation/joint_position':np.zeros(7,np.float32),'observation/gripper_position':np.zeros(1,np.float32)});return o
+ outputs=[]
+ history=a.family.startswith('va') or a.family=='dreamzero'
+ total=4*3 if history else 3+a.iterations
+ for i in range(total):
+  cycle=i%3 if history else 0
+  if (history and cycle==0) or a.family=='pi05':api.reset(prompt='pick up the object')
+  observation=obs(i,cycle)
+  torch.manual_seed(1300+cycle if history else 707+i)
+  torch.cuda.synchronize();start=time.perf_counter()
+  feedback={'executed_action':data['actions_0'][cycle % len(data['actions_0'])].copy()} if a.family.startswith('va') else {}
+  action=np.asarray(api.predict(observation,**feedback)['action'])
+  torch.cuda.synchronize();ms=1000*(time.perf_counter()-start)
+  assert action.size and np.isfinite(action).all(),action.shape
+  phase=('warmup' if i<3 else 'measured') if history else ('warmup' if i<3 else 'measured')
+  row={'i':i,'cycle':cycle,'phase':phase,'ms':ms,'shape':list(action.shape)}
+  report['calls'].append(row);outputs.append(action.copy());print(row,flush=True)
+ stats=getattr(loop,'backend_stats',{})
+ if callable(stats):stats=stats()
+ def packed_tensors(root):
+  seen=set();found=[]
+  def walk(obj,path,depth=0):
+   if id(obj) in seen or depth>128:return
+   seen.add(id(obj))
+   if isinstance(obj,torch.Tensor):
+    if obj.dtype==torch.float8_e4m3fn and obj.ndim==2:found.append({'path':path,'shape':list(obj.shape)})
+    return
+   if isinstance(obj,dict):
+    for k,v in obj.items():walk(v,path+'.'+str(k),depth+1)
+   elif isinstance(obj,(list,tuple)):
+    for i,v in enumerate(obj):walk(v,path+'['+str(i)+']',depth+1)
+   elif isinstance(obj,torch.nn.Module) or type(obj).__module__.startswith(('instinctflash','flash_rt','lingbot','groot','cosmos','dreamzero','pi05','eval_utils')):
+    if hasattr(obj,'__dict__'):walk(vars(obj),path,depth+1)
+  walk(root,'loop');return found
+ if a.precision=='fp8':
+  report['e4m3_tensors']=packed_tensors(loop)
+  assert report['e4m3_tensors'],'FP8 requested but no actual packed E4M3 tensors found'
+ report['input_camera_format']='float32_CHW_0_1'
+ report['observation_camera_keys']=['observation.images.image','observation.images.image2']
+ if a.precision=='fp8':
+  report['active_camera_counts']=sorted(loop._frontends)
+  assert report['active_camera_counts']==[2]
+ report['backend_stats']=stats
+ report['physical_gpu']=os.environ.get('CUDA_VISIBLE_DEVICES')
+ report['schedule_override']=options.get('nfe')
+ report['default_schedule']=dict(api._checkpoint.execution.nfe or {})
+ report['guidance']=str(api._checkpoint.execution.guidance)
+ report['history_feedback']='fixed recorded actions' if a.family.startswith('va') else 'native policy'
+ report['plan']=api.plan.explain()
+ report['benchmark_sha256']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+ report['input_archive_sha256']=hashlib.sha256(Path('/home/guanming/thor_va_engine/va_eval_obs.npz').read_bytes()).hexdigest()
+ if a.precision=='fp8':
+  if a.family in ('edge','nano','dreamzero'):
+   assert stats.get('fp8_recipe',{}).get('projections'),'FP8 receipt absent'
+  else:
+   # Thor fused executors expose family-specific graph/weight receipts.
+   report['engine_type']=type(loop).__module__+'.'+type(loop).__name__
+   declaration=getattr(loop,'declaration',None)
+   if declaration is not None:report['engine_declaration']=declaration()
+
+ measured=[r['ms'] for r in report['calls'] if r['phase']=='measured']
+ report.update(ok=True,p50_ms=float(np.median(measured)),min_ms=min(measured),max_ms=max(measured),measured_count=len(measured),peak_allocated_bytes=torch.cuda.max_memory_allocated(),numeric_environment={'matmul_tf32':torch.backends.cuda.matmul.allow_tf32,'cudnn_tf32':torch.backends.cudnn.allow_tf32,'cudnn_benchmark':torch.backends.cudnn.benchmark})
+ np.savez_compressed(a.output.with_suffix('.npz'),actions=np.stack(outputs));report['actions_sha256']=hashlib.sha256(a.output.with_suffix('.npz').read_bytes()).hexdigest()
+except Exception as e:report.update(ok=False,error=repr(e),traceback=traceback.format_exc());traceback.print_exc()
+finally:
+ if api is not None:api.close()
+ report['sources']={str(Path(m.__file__).resolve()):hashlib.sha256(Path(m.__file__).read_bytes()).hexdigest() for name,m in list(sys.modules.items()) if (name.startswith(('instinctflash','pi05_iwm','lingbot_vla','groot_n17_iwm','cosmos3_iwm','dreamzero_iwm'))) and getattr(m,'__file__',None) and str(m.__file__).endswith('.py') and Path(m.__file__).is_file()}
+ a.output.write_text(json.dumps(report,indent=2,default=str)+'\n')
+if not report['ok']:raise SystemExit(1)

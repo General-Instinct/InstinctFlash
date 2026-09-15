@@ -1,0 +1,53 @@
+{
+  "ok": true,
+  "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+  "revision": "f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+  "precision": "fp8",
+  "public_runtime": true,
+  "repeated_restored_equal": true,
+  "changed_input_changes_action": true,
+  "shape": [
+    4,
+    32,
+    8
+  ],
+  "scope": "Public Runtime execution on recorded resized image and synthetic state; not task quality or speed qualification",
+  "verified_artifacts": [
+    {
+      "path": "/home/ubuntu/ifl_eval/thor_precision_completion_20260909/cosmos-public-edge-fp8-actions.npz",
+      "sha256": "3bb6ea309cae93c94bd442e5e1b93f903876c8b3a84d45cf4f079541400c14f6"
+    },
+    {
+      "path": "/home/ubuntu/ifl_eval/thor_precision_completion_20260909/probe_cosmos_public.py",
+      "sha256": "183a04e12c87b30bfd4534df8cd4ffc2104831e2669840a5a2666b9b2caff946"
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash/instinctflash/runtime/cosmos_droid.py",
+      "sha256": "77f1e57b40506d34de9d5d40f8dfca85f933dfa920c72773018146106b0c3a0c"
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash/instinctflash/runtime/cosmos_fp8.py",
+      "sha256": "12c05f2dce7dc740b598094af24ca5580091fb9e33bd5bec0e66db26c377b6bf"
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash/instinctflash/runtime/torch_fp8_linear.py",
+      "sha256": "067204c6c3eb37f5422013203140a025794b24f3a479a8add6e60acf40e2102a"
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash/instinctflash/runtime/engine_backend.py",
+      "sha256": "b55f15705006df577b455cec3304bd154e4f2b6e11c5ffcfeb3cd688c214a739"
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash/instinctflash/runtime/execution.py",
+      "sha256": "48889a1c505f65746afb3177e052562579bb31baa44b1826e569176f1445eaf6"
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash/instinctflash/descriptors/known.py",
+      "sha256": "05f6d5587a3c8ef543e2560ac0c91d1def49caec3d89851b50c9a190edab6834"
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash/examples/cosmos3_policy/cosmos3_iwm/adapter.py",
+      "sha256": "cf890210ea857906d8fea043dc8ff3927f8df0b07e0e73fd9f9239ae492baf68"
+    }
+  ]
+}

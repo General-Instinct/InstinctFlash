@@ -1,0 +1,116 @@
+{
+  "checkpoint_manifest_sha256": "a65418e98ff6c29d882ea2c8e9dab4d41d72e627a13575f62173014eea0ddff1",
+  "checkpoint_sha256": "6116832928a413452c72be9b1fee06a427d378ea257ef123dff52bde127d828d",
+  "engine_source_sha256": "15663e635cd44b2a65a7290ecf9755d16e6afd24969c67c0239563398229b553",
+  "execution": {
+    "action_semantics_sha256": "a83598ece4eae9c4ca32547408b356da79df778aea1f45cf72b2abe024fc43bf",
+    "applied": [
+      "engine_offload"
+    ],
+    "dtype": "torch.bfloat16",
+    "geometry": {
+      "action_per_frame": 16,
+      "env_type": "robotwin_tshape",
+      "frame_chunk_size": 2,
+      "height": 256,
+      "obs_cam_keys": [
+        "observation.images.cam_high",
+        "observation.images.cam_left_wrist",
+        "observation.images.cam_right_wrist"
+      ],
+      "width": 320
+    },
+    "grid_shifts": {
+      "action": 1.0,
+      "video": 5.0
+    },
+    "guidance": {
+      "action": 1.0,
+      "video": 5.0
+    },
+    "nfe": {
+      "action": 50,
+      "video": 25
+    }
+  },
+  "fp8": {
+    "declaration": {
+      "action_terminal_elision": true,
+      "backbone": "wan_va",
+      "cfg_batch": 2,
+      "evidence": "the build sizes its AdaLN step tables from the declared grids (video t=[1000.0, 991.7354736328125, 982.9059448242188, 973.4513549804688, 963.3027954101562, 952.3810424804688, 940.5940551757812, 927.8350219726562, 913.978515625, 898.8763427734375, 882.3529052734375, 864.197509765625, 844.1558227539062, 821.917724609375, 797.1015014648438, 769.230712890625, 737.7048950195312, 701.7543334960938, 660.3773803710938, 612.244873046875, 555.5555419921875, 487.80487060546875, 405.4053649902344, 303.0303039550781, 172.41378784179688, 0.0], action t=[1000.0, 980.0, 960.0, 940.0, 920.0, 900.0, 880.0, 860.0, 840.0000610351562, 820.0, 800.0, 780.0000610351562, 760.0, 740.0, 720.0, 700.0, 680.0, 660.0, 640.0, 620.0, 600.0, 580.0, 560.0, 540.0, 520.0, 500.0, 480.0, 459.9999694824219, 440.0, 420.0, 399.9999694824219, 380.0, 359.9999694824219, 340.0, 320.0, 299.9999694824219, 280.0, 260.0, 240.0, 220.0, 199.99998474121094, 179.99998474121094, 160.0, 140.0, 120.0, 99.99999237060547, 80.0, 60.0, 40.0, 20.0, 0.0]), allocates a 2-stream KV slab, and runs 79 DiT forwards per cycle; WanVaTorchFrontendThor.assert_point refuses any other request",
+      "forwards_per_cycle": 79,
+      "forwards_per_cycle_served": 78,
+      "forwards_per_cycle_served_p010": 78,
+      "fp16_families": [],
+      "frontend": "serving/flash_rt/frontends/torch/wan_va_thor.py",
+      "gate_kernel": "kernel",
+      "geometry": {
+        "action_per_frame": 16,
+        "frame_chunk": 2,
+        "latent_h": 24,
+        "latent_w": 20
+      },
+      "guidance": {
+        "action": [
+          "positive_only",
+          1.0
+        ],
+        "video": [
+          "cfg",
+          5.0
+        ]
+      },
+      "pool_slots": 9792,
+      "precision": "fp8",
+      "shifts": {
+        "action": 1.0,
+        "video": 5.0
+      },
+      "slab_rows": 15360,
+      "steps": {
+        "action": 50,
+        "video": 25
+      }
+    },
+    "graphs": 231,
+    "packed_e4m3_tensors": 180
+  },
+  "hardware": {
+    "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+    "cuda": "13.0",
+    "gpu": "NVIDIA Thor"
+  },
+  "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+  "model_revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+  "numeric_environment": {
+    "cudnn_benchmark": false,
+    "cudnn_tf32": false,
+    "matmul_tf32": false
+  },
+  "package_declaration_sha256": "7dd21b68b842604d9c68996afafddd06b20110612c51e80578ffc9a6db44d88f",
+  "packages_sha256": "9c75a75b4b26d753758968925e0273a8b6928dbf05e0f8336ca290bfe6a57797",
+  "pipeline_sha256": "07d8af55284c40bb50f8d72cc80d981e3491c26096c5d0a3b4d81dcc5088be96",
+  "precision": "fp8",
+  "protocol": "wan-va-runtime-observed-history-v1",
+  "runtime_explanation": "InstinctFlash runtime for 'robbyant/lingbot-va-posttrain-robotwin'\n  package     : /home/guanming/ifl_eval/thor_precision_completion_20260909/runtime-robotwin-checkpoint\n  backbone    : wan_va\n  servable    : True\n  precision   : fp8\n  evidence    : no closed-loop certificate verified for this live execution; plan tiers are transformation claims\n  placement   : engine: SM110 + engine kernels present -> fused-fp8 pipeline; chain tier NUMERIC (live execution uncertified)\n  capabilities: backbone:wan_va, declares:base_weights, declares:env_type, declares:frame_chunk_size, declares:height, declares:obs_cam_keys, declares:param_bytes, declares:va_config, declares:width, guidance:action=positive_only, guidance:video=cfg, servable\n\nInstinctFlash plan for robbyant/lingbot-va-posttrain-robotwin\n  plan tier: NUMERIC\n  operating point: schedule {kv_refresh=2 + video=25 + action=50} | guidance {action=positive_only@1 [implied by mode], video=cfg@5 [inherited from the family default]} | cfg batching {batch-2 on 77 of 77 declared forwards (negative branch requested by video); batch-1 on 0}\n\n  skip   graph_capture              [BITEXACT  ] Thor capture performance is unmeasured for this family/operating point; retain the eager default pending a paired device measurement.\n  APPLY  engine_offload             [NUMERIC   ] engine placement selected: SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation\n         expected: Measure this checkpoint with matched views, action horizon, denoise steps and timing scope. The matched Thor study separates native capture, FP16 engine and FP8 arithmetic; it does not establish robot-facing Runtime parity.\n  skip   fsdp_elision               [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: world_size=1, so every FSDP all-gather is identity while still paying a flat-param copy and stream sync per unit per forward\n  skip   allocator_churn_elision    [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: closed-loop serving has a stable working set, so releasing the pool between control steps only forces re-allocation next step\n  skip   debug_dump_elision         [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: per-chunk tensor dumps do a synchronous D2H on the critical path and are not consumed by the serving client\n  skip   obs_decode_elision         [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: caller wants actions only; ['vae.decoder'] need never be resident or executed\n  skip   conditioning_prefill       [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: ['text_kv', 'negative_text_kv'] declared pure in ['episode'] scope, but recomputed on all 77 forwards per control step (kv_refresh=2 + video=25 + action=50)\n  skip   prompt_encoder_staging     [BITEXACT  ] no memory pressure on this device class (sm_110, 123 GiB): keeping the prompt encoder resident avoids per-reset PCIe moves and allocator churn\n  skip   ring_kv_addressing         [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: streams ['video', 'action'] live across control steps in a pool that is currently addressed by boolean mask, costing a host sync and a full-pool copy per layer per forward\n  skip   action_terminal_forward_elision [BITEXACT  ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: the action phase's terminal forward writes provisional K/V that clear_pred_cache drops before any forward reads it; its output is discarded by construction\n  skip   sm120_gated_residual       [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  skip   sm120_wan_stage2           [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  skip   conv_layout_ndhwc          [NUMERIC   ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: two Wan VAE Conv3D subgraphs can choose NCDHW or NDHWC by measurement on this device; NDHWC changes convolution accumulation order, so the swap is NUMERIC\n  skip   cfg_branch_elision         [NUMERIC   ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: streams ['action'] discard their negative branch while ['video'] force batch duplication; forwards that can drop to batch 1 \u2014 action: 49 of 50 (commit steps exempt: their K/V feeds the other stream's negative branch)\n\n  NOTE: plan is NUMERIC because of ['engine_offload'].\n        Any accuracy-neutrality claim for this plan requires a paired\n        non-inferiority run.\n        `plan.bitexact_subset()` is the largest configuration that does not.",
+  "runtime_source_sha256": "8a0858b27cf9b6294e2d178bdc4b01434579a60e4573e74a43597b95ac9d399d",
+  "schema_version": 1,
+  "seed_mode": "episode_plus_frame",
+  "startup": {
+    "action_shape": [
+      16,
+      2,
+      16
+    ],
+    "actions_sha256": "9d1877fb8febbeb1acacce44f4f2f15887537666fe3855ff7d753304dadce3fc",
+    "calls": 6,
+    "repeat_byte_equal": true,
+    "scope": "Recorded-history startup only; not closed-loop quality or real-time qualification",
+    "seed": 9173
+  },
+  "startup_observation_sha256": "f63ff6920586ddef39732a5f479aebe80bc8c6aa6afa2dd684d388be7e6e9d78",
+  "startup_prompt": "Pick the green bottle with indented base upright from the table",
+  "synthetic": false,
+  "upstream_source_sha256": "2cb70400debda9b65849754bda51ce865b95e03bf15b050ecb919a8b7d88723d"
+}

@@ -1,0 +1,48 @@
+{
+  "status": "PREREGISTERED - READY; NOT RUN",
+  "declared_before_paired_run": true,
+  "checkpoint": {
+    "repo": "lerobot/pi05_libero_finetuned_v044",
+    "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1"
+  },
+  "control": "v044, FP32 highest/allow_tf32=false, replay-safe static-KV stack",
+  "treatment": "same v044 weights, TF32 high/allow_tf32=true, same replay-safe static-KV stack selected by the formal NUMERIC package",
+  "suite": "LIBERO spatial, official task ids 0..9",
+  "task_ids": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "pairing_key": ["episode_id", "seed"],
+  "episodes_per_task": 50,
+  "tasks": 10,
+  "exact_pairs": 500,
+  "min_pairs": 500,
+  "seed_base": 1000,
+  "seed_stride": 50,
+  "seed_rule": "seed = 1000 + 50 * task_id + episode_index; all 500 seeds are unique, and each pair uses the identical seed and initial state in both arms",
+  "policy_rng_rule": "batch size 1; torch is explicitly reseeded to 1000 + 50 * task_id + episode_index at every policy.reset, independently of preceding trajectory length",
+  "simulator_rule": "init_states=true, hard_reset=true, init_state_id=episode_index, synchronous single environment, 256x256 observations",
+  "arm_order": "even task id: control then treatment; odd task id: treatment then control",
+  "primary_estimand": "treatment task success rate minus control task success rate over paired episodes",
+  "margin": -0.05,
+  "statistical_method": {
+    "name": "Tango matched-pair score confidence bound for the paired binary risk difference",
+    "confidence_bound": "one-sided 95% lower",
+    "nominal_alpha": 0.05,
+    "z": 1.6448536269514722,
+    "mcnemar_role": "two-sided exact McNemar p-value is descriptive for equality only and never decides non-inferiority",
+    "power_assumption": "at true difference 0 and 500 pairs, approximately 80% power requires a discordance rate no greater than about 0.20"
+  },
+  "decision_rule": "the Tango paired one-sided 95% lower confidence bound for treatment minus control must exceed -0.05; this is a nominal one-sided alpha=0.05 score procedure, not a finite-sample exact test",
+  "secondary_gates": {
+    "task_collapse": {
+      "enabled": true,
+      "definition": "for any preregistered task, control has at least one success and treatment has zero successes",
+      "decision": "FAIL regardless of the aggregate primary non-inferiority result"
+    }
+  },
+  "input_format": "JSONL, exactly 500 rows per arm with run_id, arm, suite, task_id, task, episode_index, episode_id, seed, init_state_id, policy_seed, checkpoint_revision and boolean success",
+  "identity_rule": "paired_run_manifest.json locks the checkpoint revision, preregistration hash, source hashes, and control/treatment hashes before the first outcome; the certifier takes identities only from that immutable manifest",
+  "null_controls": [
+    "before any paired outcome is written, run task 0 episode 0 twice in fresh FP32 processes and require identical success and action-trace hash",
+    "before any paired outcome is written, run task 0 episode 0 twice in fresh TF32 processes and require identical success and action-trace hash"
+  ],
+  "runner": "examples/pi05_vla/run_tf32_closed_loop.py"
+}

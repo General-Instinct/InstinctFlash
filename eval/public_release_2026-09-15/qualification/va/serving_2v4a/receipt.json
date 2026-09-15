@@ -1,0 +1,192 @@
+{
+  "action_archive_sha256": "e1588e1b3948b9a2f74f03253dcd4a6ddffcc730b67375312d4175ade261d03f",
+  "calls": [
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "cycle": 0,
+      "episode": 0,
+      "request_sha256": "1d54b67ef7966972aeb4414942ffc32efc551108c433fdc4df0bfa058474b901",
+      "roundtrip_ms": 938.0098099936731,
+      "server_timing": {
+        "infer_ms": 936.2847600132227,
+        "prev_total_ms": 925.0624360283837
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "cycle": 1,
+      "episode": 0,
+      "request_sha256": "0b8bbce683b1edf74b790be13a67de9f4ab75d6c292e9f5de4731a0022c7309a",
+      "roundtrip_ms": 547.9633290087804,
+      "server_timing": {
+        "infer_ms": 543.1827339925803,
+        "prev_total_ms": 938.615751976613
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "cycle": 2,
+      "episode": 0,
+      "request_sha256": "213a91872eb42c1d3aa4402c2bdb7bb4bc22993ded30421466321f9ff010f874",
+      "roundtrip_ms": 607.0618989760987,
+      "server_timing": {
+        "infer_ms": 600.9191219927743,
+        "prev_total_ms": 550.1567670144141
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "cycle": 0,
+      "episode": 1,
+      "request_sha256": "e432cbcacb5a68cd598ee33686873d11abc17918fa6091ea19154de6e890cab3",
+      "roundtrip_ms": 303.89973102137446,
+      "server_timing": {
+        "infer_ms": 302.4445500341244,
+        "prev_total_ms": 380.4971629870124
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "cycle": 1,
+      "episode": 1,
+      "request_sha256": "f6d12fce383b2ecb8dbd8a4abaf4c50ee686501865eb57931a96a8b694f6da33",
+      "roundtrip_ms": 430.95455103321,
+      "server_timing": {
+        "infer_ms": 427.0528960041702,
+        "prev_total_ms": 304.52602496370673
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        16,
+        2,
+        16
+      ],
+      "cycle": 2,
+      "episode": 1,
+      "request_sha256": "5021f43634401bea1027b383f00c32ba80c1a7b1a6f5957c8686e87b4ea7beb7",
+      "roundtrip_ms": 504.6760599943809,
+      "server_timing": {
+        "infer_ms": 498.43781295930967,
+        "prev_total_ms": 433.10355296125636
+      }
+    }
+  ],
+  "cell_id": "va-2v4a-fp8",
+  "checkpoint": {
+    "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+    "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70"
+  },
+  "checkpoint_path": "/home/guanming/.cache/instinctflash/declared/robbyant__lingbot-va-posttrain-robotwin/25c73c83cd83866da8ef6cc9b0bd869b5430f626e6c2814bcb654f2a3dea8b72",
+  "command": [
+    "/dev/shm/ifl_public_envs_20260915_v1/va/bin/python",
+    "-I",
+    "-m",
+    "instinctflash.cli",
+    "serve",
+    "--config_path=/home/guanming/ifl_public_qualification_20260915_v1/va_2v4a_fp8_serving_v1/serve.json"
+  ],
+  "config_sha256": "202b4b9ff082e9ca0f668d6c7566670964e007db2833fb0ca8ab4161b3d52f6b",
+  "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+  "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/va/bin/python",
+  "latency_benchmark": false,
+  "metadata": {
+    "backbone": "wan_va",
+    "checkpoint_nfe": {
+      "action": 50,
+      "video": 25
+    },
+    "execution_policy": {
+      "category": "OPERATING-POINT",
+      "changed_schedule": {
+        "action": {
+          "checkpoint": 50,
+          "selected": 4
+        },
+        "video": {
+          "checkpoint": 25,
+          "selected": 2
+        }
+      },
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+      "nfe": {
+        "action": 4,
+        "video": 2
+      },
+      "precision": "fp8",
+      "schedule_options": {},
+      "step_cache": null,
+      "tier_ceiling": "behavioral",
+      "transform_tier": "NUMERIC"
+    },
+    "extra": {
+      "base_weights": "robbyant/lingbot-va-posttrain-robotwin",
+      "env_type": "robotwin_tshape",
+      "frame_chunk_size": 2,
+      "height": 256,
+      "obs_cam_keys": [
+        "observation.images.cam_high",
+        "observation.images.cam_left_wrist",
+        "observation.images.cam_right_wrist"
+      ],
+      "param_bytes": 10179017396,
+      "va_config": "robotwin",
+      "width": 320
+    },
+    "guidance": {
+      "action": "positive_only",
+      "video": "cfg"
+    },
+    "instinctflash_version": "0.1.0",
+    "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+    "nfe": {
+      "action": 4,
+      "video": 2
+    },
+    "observation": "a list of 8 under 'obs': observation.images.cam_high (256, 320, 3) uint8; observation.images.cam_left_wrist (256, 320, 3) uint8; observation.images.cam_right_wrist (256, 320, 3) uint8; plus prompt",
+    "observation_source": "declaration (/home/guanming/.cache/instinctflash/declared/robbyant__lingbot-va-posttrain-robotwin/25c73c83cd83866da8ef6cc9b0bd869b5430f626e6c2814bcb654f2a3dea8b72/instinctflash.json)",
+    "precision": "fp8",
+    "protocol": {
+      "prompt_rotation": true,
+      "reset_extension": true,
+      "wire": "openpi-websocket-msgpack-numpy"
+    }
+  },
+  "plan_sha256": "c24ae9c9383803d998e37cdf704cb139217d7370a2712d27e5d915e0071583ec",
+  "request_timeout_s": 600,
+  "rng_scope": "unseeded FP8 transport check",
+  "schema": "instinctflash.serving_smoke.v1",
+  "scope": "Installed CLI and loopback WebSocket; two episodes, three calls each",
+  "seed": null,
+  "server_exit_code": 0,
+  "server_pid": 270687,
+  "startup_timeout_s": 1200,
+  "status": "passed",
+  "task_quality_validated": false
+}

@@ -25,6 +25,13 @@ KNOWN_DECLARATIONS: dict[str, dict] = {
             "nfe": {"backbone": 1, "action": 4},
             "base_weights": "nvidia/GR00T-N1.7-3B",
             "embodiment_tag": "OXE_DROID_RELATIVE_EEF_RELATIVE_JOINT",
+            # The published H100 row's default arm includes the bit-exact fast decode and
+            # backbone fastpath; the pointer package always declared them and this table had
+            # drifted, so a bare Hub id served ~11% slower than the row (caught by the
+            # benchmark pipeline's first real GROOT pair, 57.4 vs 51.8 ms). One checkpoint,
+            # one set of execution facts, both sources.
+            "fast_decode": True,
+            "backbone_fastpath": True,
             "param_bytes": 6910499416,
         },
     },
@@ -35,8 +42,10 @@ KNOWN_DECLARATIONS: dict[str, dict] = {
             "backbone": "wan_va",
             "servable": True,
             "guidance": {"video": "cfg", "action": "positive_only"},
-            "nfe": {"video": 2, "action": 4},
+            "nfe": {"video": 25, "action": 50},
             "base_weights": "robbyant/lingbot-va-posttrain-robotwin",
+            "va_config": "robotwin",
+            "frame_chunk_size": 2,
             # Observation geometry, transcribed from wan_va/configs/va_robotwin_cfg.py. Declared
             # EXPLICITLY because the adapter refuses to guess these: a wan_va checkpoint states
             # its cameras and resolution or names an IFL_CFG entry, and the built-ins follow the
@@ -48,6 +57,23 @@ KNOWN_DECLARATIONS: dict[str, dict] = {
             "width": 320,
             "env_type": "robotwin_tshape",
             "param_bytes": 10179017396,
+        },
+    },
+    "robbyant/lingbot-va-posttrain-libero-long": {
+        "instinctflash_schema": 1,
+        "execution": {
+            "model_id": "robbyant/lingbot-va-posttrain-libero-long",
+            "backbone": "wan_va",
+            "servable": True,
+            "guidance": {"video": "cfg", "action": "positive_only"},
+            "nfe": {"video": 20, "action": 50},
+            "base_weights": "robbyant/lingbot-va-posttrain-libero-long",
+            "va_config": "libero",
+            "frame_chunk_size": 4,
+            "obs_cam_keys": ["observation.images.agentview_rgb", "observation.images.eye_in_hand_rgb"],
+            "height": 128,
+            "width": 128,
+            "env_type": "none",
         },
     },
     # LeRobot publishes pi05 checkpoints without a declaration. The adapter package is
@@ -115,23 +141,23 @@ KNOWN_DECLARATIONS: dict[str, dict] = {
             "param_bytes": 45848344232,
         },
     },
-    # Cosmos3 action policies (DROID post-trains). One adapter package
-    # (examples/cosmos3_policy, backbone "cosmos3_policy") serves both sizes; the serving
-    # config below is the measured protocol of the published rows (canonical policy request:
-    # one 540x640 image, [16, 8] action chunk, 4 denoise steps, guidance 1.0) — declared,
-    # because a guessed value silently skews serve-time preprocessing away from training.
+    # Released DROID native RoboLab profile:32 actions, FPS15,4 UniPC steps,
+    # CFG3; Edge JSON prompt, Nano plain prompt. Historical16-action RoboTwin
+    # service measurements are a different contract and remain separately labelled.
     "nvidia/Cosmos3-Edge-Policy-DROID": {
         "instinctflash_schema": 1,
         "execution": {
             "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
             "backbone": "cosmos3_policy",
             "servable": True,
-            "guidance": {"action": "none"},
+            "guidance": {"action": "cfg"},
             "nfe": {"prefix": 1, "action": 4},
             "base_weights": "nvidia/Cosmos3-Edge-Policy-DROID",
             "domain_name": "droid_lerobot",
             "action_dim": 8,
-            "action_chunk_size": 16,
+            "action_chunk_size": 32,
+            "conditioning_fps": 15.0,
+            "format_prompt_as_json": True,
             "image_height": 540,
             "image_width": 640,
             "param_bytes": 7574066016,
@@ -143,12 +169,14 @@ KNOWN_DECLARATIONS: dict[str, dict] = {
             "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
             "backbone": "cosmos3_policy",
             "servable": True,
-            "guidance": {"action": "none"},
+            "guidance": {"action": "cfg"},
             "nfe": {"prefix": 1, "action": 4},
             "base_weights": "nvidia/Cosmos3-Nano-Policy-DROID",
             "domain_name": "droid_lerobot",
             "action_dim": 8,
-            "action_chunk_size": 16,
+            "action_chunk_size": 32,
+            "conditioning_fps": 15.0,
+            "format_prompt_as_json": False,
             "image_height": 540,
             "image_width": 640,
             "param_bytes": 31499049824,

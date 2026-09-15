@@ -74,6 +74,45 @@ def test_public_loader_routes_lingbot_options_to_sm80_frontend():
     assert captured["qwen3vl_path"] == "Qwen/test"
 
 
+def test_hardware_table_keys_both_v2_arms_by_arch():
+    # One config name, two arms: the SM80/SM90 upstream-BF16 graft and the from-scratch Thor
+    # SM110 engine (fp8 experts via cuBLASLt, fp16 prefill arm shipped) coexist, keyed by arch.
+    from flash_rt.hardware import _PIPELINE_MAP
+
+    assert _PIPELINE_MAP[("lingbot_vla_v2", "torch", "cuda_sm80")] == (
+        "flash_rt.frontends.torch.lingbot_vla_v2", "LingBotVLAV2TorchFrontend")
+    assert _PIPELINE_MAP[("lingbot_vla_v2", "torch", "cuda_sm90")] == (
+        "flash_rt.frontends.torch.lingbot_vla_v2", "LingBotVLAV2TorchFrontend")
+    assert _PIPELINE_MAP[("lingbot_vla_v2", "torch", "thor")] == (
+        "flash_rt.frontends.torch.vla2_thor", "Vla2TorchFrontendThor")
+
+
+def test_public_loader_routes_thor_arm_without_datacenter_knobs():
+    # The Thor engine frontend accepts only its own signature; the loader must feature-detect
+    # rather than force the datacenter graft's knobs onto it.
+    captured = {}
+
+    class FakeThorFrontend:
+        def __init__(self, checkpoint, num_views=3, use_cuda_graph=True):
+            captured.update(locals())
+
+        def set_prompt(self, prompt):
+            pass
+
+        def infer(self, observation):
+            return {"actions": np.zeros((50, 14), dtype=np.float32)}
+
+    with patch("flash_rt.hardware.detect_arch", return_value="thor"), patch(
+        "flash_rt.hardware.resolve_pipeline_class", return_value=FakeThorFrontend
+    ):
+        model = load_model("/checkpoint", config="lingbot_vla_v2", framework="torch")
+    assert model.framework == "torch"
+    assert captured["num_views"] == 3
+    assert captured["use_cuda_graph"] is True
+    assert "robot" not in captured and "use_gpu_preprocess" not in captured
+
+
+
 if __name__ == "__main__":
     import traceback
 

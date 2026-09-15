@@ -1,0 +1,49 @@
+diff --git a/lingbotvla/models/vla/pi0/modeling_lingbot_vla.py b/lingbotvla/models/vla/pi0/modeling_lingbot_vla.py
+index 4e40980..0a416bb 100644
+--- a/lingbotvla/models/vla/pi0/modeling_lingbot_vla.py
++++ b/lingbotvla/models/vla/pi0/modeling_lingbot_vla.py
+@@ -1097,13 +1097,13 @@ class QwenvlWithExpertModel(PreTrainedModel):
+         if self.config.vocab_size != 0 and self.config.vocab_size != 257152 and vlm_config.vocab_size != self.config.vocab_size:
+             vlm_config.vocab_size = self.config.vocab_size
+         
+-        vlm_config._attn_implementation = 'flash_attention_2'
+-        self.qwenvl = Qwen2_5_VLForConditionalGeneration._from_config(vlm_config, use_flash_attention_2=True)
++        vlm_config._attn_implementation = 'eager'
++        self.qwenvl = Qwen2_5_VLForConditionalGeneration._from_config(vlm_config)
+         if self.config.use_lm_head:
+             self.qwenvl.tie_weights()
+         self.config.qwen_expert_config.norm_qkv = self.config.norm_qkv
+-        self.config.qwen_expert_config._attn_implementation = 'flash_attention_2'
+-        self.qwen_expert = Qwen2ForCausalLM._from_config(self.config.qwen_expert_config, use_flash_attention_2=True, eval=eval)
++        self.config.qwen_expert_config._attn_implementation = 'sdpa'
++        self.qwen_expert = Qwen2ForCausalLM._from_config(self.config.qwen_expert_config, eval=eval)
+ 
+         self.rotary_pos_emb = None
+         self.window_index = None
+diff --git a/lingbotvla/models/vla/pi0/qwenvl_in_vla.py b/lingbotvla/models/vla/pi0/qwenvl_in_vla.py
+index 661aa21..1704995 100644
+--- a/lingbotvla/models/vla/pi0/qwenvl_in_vla.py
++++ b/lingbotvla/models/vla/pi0/qwenvl_in_vla.py
+@@ -232,6 +232,13 @@ class Qwen2_5_VLVisionFlashAttention2(nn.Module):
+         return attn_output
+ 
+ 
++def rotate_half(x):
++    """Rotates half the hidden dims of the input."""
++    x1 = x[..., : x.shape[-1] // 2]
++    x2 = x[..., x.shape[-1] // 2 :]
++    return torch.cat((-x2, x1), dim=-1)
++
++
+ def apply_rotary_pos_emb_vision(
+     q: torch.Tensor, k: torch.Tensor, cos: torch.Tensor, sin: torch.Tensor
+ ) -> Tuple[torch.Tensor, torch.Tensor]:
+@@ -1322,7 +1329,7 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
+ 
+     def __init__(self, config, **kwargs):
+         super().__init__(config)
+-        self.visual = Qwen2_5_VisionTransformerPretrainedModel._from_config(config.vision_config, use_flash_attention_2=True)
++        self.visual = Qwen2_5_VisionTransformerPretrainedModel._from_config(config.vision_config, attn_implementation="eager")
+         self.model = Qwen2_5_VLModel(config)
+         self.vocab_size = config.vocab_size
+         self.lm_head = nn.Linear(config.hidden_size, config.vocab_size, bias=False)

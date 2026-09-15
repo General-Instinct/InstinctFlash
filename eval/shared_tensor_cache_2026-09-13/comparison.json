@@ -1,0 +1,110 @@
+{
+  "edge": {
+    "action_bytes_equal": true,
+    "max_action_delta": 0.0,
+    "latency_p50_ms": {
+      "reference-a": 1090.5462029913906,
+      "exact-cache": 1042.7162529958878,
+      "reference-b": 1093.4716755000409
+    },
+    "reduction_percent_vs_references": [
+      4.385871030892985,
+      4.64167693058376
+    ],
+    "measured_region_counts": {
+      "compiled_calls": 224,
+      "compiled_prefill_calls": 56,
+      "prefill_checks": 0,
+      "eager_checks": 0
+    },
+    "cache": {
+      "hits": 248,
+      "misses": 8,
+      "evictions": 0,
+      "invalidations": 0,
+      "entries": 8,
+      "bytes": 90177536,
+      "max_bytes": 134217728,
+      "max_entries": 16,
+      "closed": false,
+      "fallbacks": 0,
+      "kind": "native_full_timestep_result",
+      "quality_certified": false
+    },
+    "schedule": {
+      "action_chunk_size": 32,
+      "action_steps": 4,
+      "guidance": 3.0,
+      "conditioning_fps": 15.0
+    },
+    "quality_certified": false,
+    "receipts": [
+      {
+        "path": "edge-reference-a.json",
+        "sha256": "446f6024818cbb3264a6f165d7d631851ac861ccfcea9e7b63617150820d008d"
+      },
+      {
+        "path": "edge-exact-cache.json",
+        "sha256": "fc8bf1fcda6e66f7887f90f80e11e33bc53e82fc0f5f7d97e6721e1a8cdeb04c"
+      },
+      {
+        "path": "edge-reference-b.json",
+        "sha256": "a0ba38965a9a83246b7b6e673799e3993597150cfe9ef33d1e63d5b7fcb6f5f5"
+      }
+    ]
+  },
+  "nano": {
+    "action_bytes_equal": true,
+    "max_action_delta": 0.0,
+    "latency_p50_ms": {
+      "reference-a": 5104.4721194775775,
+      "exact-cache": 5027.098838996608,
+      "reference-b": 5112.560509995092
+    },
+    "reduction_percent_vs_references": [
+      1.515793967915502,
+      1.671602142046158
+    ],
+    "measured_region_counts": {
+      "compiled_calls": 216,
+      "compiled_prefill_calls": 0,
+      "prefill_checks": 0,
+      "eager_checks": 0
+    },
+    "cache": {
+      "hits": 128,
+      "misses": 128,
+      "evictions": 123,
+      "invalidations": 0,
+      "entries": 5,
+      "bytes": 90701824,
+      "max_bytes": 134217728,
+      "max_entries": 16,
+      "closed": false,
+      "fallbacks": 0,
+      "kind": "native_full_timestep_result",
+      "quality_certified": false
+    },
+    "schedule": {
+      "action_chunk_size": 32,
+      "action_steps": 4,
+      "guidance": 3.0,
+      "conditioning_fps": 15.0
+    },
+    "quality_certified": false,
+    "receipts": [
+      {
+        "path": "nano-reference-a.json",
+        "sha256": "7f9c40b7e15a20176fe468dc7ca89cd1d970f9cf9e55db8217811864be70fe07"
+      },
+      {
+        "path": "nano-exact-cache.json",
+        "sha256": "f6464a8a39441bd1e6a69447f8cd52fc6aabc11597110ea4a6c7bee988a3d4a8"
+      },
+      {
+        "path": "nano-reference-b.json",
+        "sha256": "abe864443bfdd660750d0d8fbb66d2d6d6aaa4a57e3dd037af7aebe25abd005a"
+      }
+    ]
+  }
+}

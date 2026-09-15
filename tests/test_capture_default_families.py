@@ -177,7 +177,7 @@ def test_4b_fresh_finetune_gets_capture_by_default():
     driver, installed, plan, printed = _install_4b()
     assert driver is not None and installed["model"] is not None
     assert callable(installed["on_self_check"]), "the gate must be WIRED, not just described"
-    assert "the family default on capture-capable devices" in printed
+    assert "family default on capture-capable devices" in printed
     assert "self-check" in printed and "IFL_VLA4B_NO_CAPTURE" in printed
 
 
@@ -200,7 +200,7 @@ def test_4b_eager_backend_selector_stays_honored_and_names_the_kill_switch():
 # ── LingBot-VLA-V2: default install with the envelope gate, kill-switch kills the whole arm ──
 
 
-def _install_v2(env=None):
+def _install_v2(env=None, tier=Tier.NUMERIC):
     import lingbot_vla_v2_iwm.prefix_capture as pc
     import lingbot_vla_v2_iwm.static_capture as sc
     from lingbot_vla_v2_iwm.adapter import LingBotVLAV2Adapter
@@ -214,7 +214,7 @@ def _install_v2(env=None):
         installed["prefix"] = True
         return SimpleNamespace(close=lambda: installed.update(prefix_closed=True))
 
-    plan = _plan()
+    plan = Plan("test/fresh-finetune", [PassResult("graph_capture", True, tier, "shapes repeat")])
     server = SimpleNamespace(vla=SimpleNamespace(model=object()))
     out = io.StringIO()
     with _clean_env(env), \
@@ -225,14 +225,23 @@ def _install_v2(env=None):
     return driver, installed, plan, server, out.getvalue()
 
 
-def test_v2_fresh_finetune_gets_capture_by_default_with_the_envelope_gate():
+def test_v2_numeric_plan_installs_capture_with_the_envelope_gate():
     driver, installed, plan, server, printed = _install_v2()
     assert driver is not None and installed["model"] is not None
     assert callable(installed["on_self_check"])
     assert installed.get("prefix"), "the vision/prefill graphs stay in the default arm"
-    assert "the family default on capture-capable devices" in printed
-    assert "stock-vs-stock envelope" in printed and "5.084e-02" in printed
+    assert "the NUMERIC arm on eligible devices" in printed
+    assert "cross-domain implementation guard" in printed and "5.084e-02" in printed
     assert "NUMERIC, not BITEXACT" in printed and "IFL_VLA2_NO_CAPTURE" in printed
+
+
+def test_v2_installer_refuses_a_mislabeled_bitexact_plan():
+    try:
+        _install_v2(tier=Tier.BITEXACT)
+    except ValueError as exc:
+        assert "requires a NUMERIC plan" in str(exc)
+    else:
+        raise AssertionError("a numeric-envelope executor must not install under BITEXACT")
 
 
 def test_v2_kill_switch_kills_the_whole_capture_arm():

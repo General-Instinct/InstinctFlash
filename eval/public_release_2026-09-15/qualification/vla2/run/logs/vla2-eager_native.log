@@ -1,0 +1,95 @@
+Overwriting feature type 'VideoFrame' (VideoFrame -> VideoFrame)
+InstinctFlash LingBot-VLA-V2: Thor MoE compiler /usr/local/cuda/bin/ptxas (TRITON_PTXAS_PATH, TRITON_PTXAS_BLACKWELL_PATH).
+[INFO][lingbotvla.models.vla.lingbot_vla.qwen3vl_in_vla:114] 09/14/2026 20:26:02 >> apply Qwen3-VL Lingbot patch
+loading model from: /home/guanming/.cache/instinctflash/declared/robbyant__lingbot-vla-v2-6b-robotwin/96bfb578edf426f46cfe1d6546eb0057324120116335d46fc617f429d020f303/checkpoints/global_step_50000/hf_ckpt
+✅ Merged Qwen3-VL text: vocab_size = 151936
+✅ Merged Qwen3-VL text: rope_theta = 5000000
+✅ Merged Qwen3-VL text: num_attention_heads = 32
+✅ Merged Qwen3-VL text: rms_norm_eps = 1e-06
+✅ Merged Qwen3-VL text: num_key_value_heads = 8
+✅ Merged Qwen3-VL text: tie_word_embeddings = True
+✅ Merged Qwen3-VL text: num_hidden_layers = 36
+✅ Merged Qwen3-VL text: hidden_size = 2560
+✅ Merged Qwen3-VL text: hidden_act = silu
+✅ Merged Qwen3-VL text: intermediate_size = 9728
+✅ Merged Qwen3-VL text: max_position_embeddings = 262144
+Initializing model ... 
+=====Action Expert V2 init 36 Layers, hidden=768, q_heads=32, kv_heads=8, head_dim=128.=====
+=====Using Eager Attn=====
+  0%|          | 0/6 [00:00<?, ?it/s] 17%|█▋        | 1/6 [00:00<00:01,  3.49it/s] 50%|█████     | 3/6 [00:00<00:00,  8.52it/s] 83%|████████▎ | 5/6 [00:00<00:00,  7.65it/s]100%|██████████| 6/6 [00:00<00:00,  7.90it/s]
+Model initialized ... 
+Denoise 10 steps
+sample_actions batch=1 cost 1.2183470726013184 s
+{"i": 0, "episode": 0, "cycle": 0, "phase": "warmup", "seed": 707, "input_sha256": "47e2b2e4fc6f4896df7af29b9260bd0f7e9253553833efb83cec2af8b137c43f", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 1254.3899339507334, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7140867710113525 s
+{"i": 1, "episode": 1, "cycle": 0, "phase": "warmup", "seed": 708, "input_sha256": "11e053335fa536dfe1f4025436e8921e622c6ae3cc2800bc7c8ab39d3500deb0", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 733.6724330089055, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7158298492431641 s
+{"i": 2, "episode": 2, "cycle": 0, "phase": "warmup", "seed": 709, "input_sha256": "ee9704e5b5554bb7d117508ebbe740a3ffa209266dc518cc4fd7cf6780ab3475", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 735.0931370165199, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7133049964904785 s
+{"i": 3, "episode": 3, "cycle": 0, "phase": "warmup", "seed": 710, "input_sha256": "453f98040621fdffb9160e57520df43e2ebaeb0236a5dd5c8c2ac4ed8700b668", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 723.6924290191382, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7158374786376953 s
+{"i": 4, "episode": 4, "cycle": 0, "phase": "warmup", "seed": 711, "input_sha256": "90fd2418fba9cb9530c1de3e6ce1fd004288b0ec410ae5df30125221a00e8bba", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 735.6536990264431, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7136099338531494 s
+{"i": 5, "episode": 5, "cycle": 0, "phase": "measured", "seed": 712, "input_sha256": "9877901f2570ba86da174b6e96194032fd9aead47293b6d1936bb4892e379f2f", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 734.5445840037428, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7191331386566162 s
+{"i": 6, "episode": 6, "cycle": 0, "phase": "measured", "seed": 713, "input_sha256": "a5dc577a133501bc0dbadc4cb0b3c3328428b9399a545904772fe60870ca3e95", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 738.6569239897653, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7146713733673096 s
+{"i": 7, "episode": 7, "cycle": 0, "phase": "measured", "seed": 714, "input_sha256": "fdd0ce2507b411b2bc69d38fc211f26e6fa68bfeb3925c4aa66138395cda0aff", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 733.7202900089324, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7145497798919678 s
+{"i": 8, "episode": 8, "cycle": 0, "phase": "measured", "seed": 715, "input_sha256": "399623c567fcfeffa73cdbab269f6ab45781b828c4f9234ae2b28dd145409456", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 734.0917509864084, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7128241062164307 s
+{"i": 9, "episode": 9, "cycle": 0, "phase": "measured", "seed": 716, "input_sha256": "ab5010b2096b6ce4f3eeee9454a1541d3bb9d501cf85c688b12768f2041f439c", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 733.5698190145195, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7148990631103516 s
+{"i": 10, "episode": 10, "cycle": 0, "phase": "measured", "seed": 717, "input_sha256": "5788b4ab4ca0a2315584481c47c9b22d1f8ae3f02d492c13c7e7299f44ba4513", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 735.0228340364993, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7149741649627686 s
+{"i": 11, "episode": 11, "cycle": 0, "phase": "measured", "seed": 718, "input_sha256": "fb3860b6b3095e3d2d885f0584b87b5e12e946b36a81720a6feb397f2dd4483e", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 740.8360529807396, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.715294599533081 s
+{"i": 12, "episode": 12, "cycle": 0, "phase": "measured", "seed": 719, "input_sha256": "47e2b2e4fc6f4896df7af29b9260bd0f7e9253553833efb83cec2af8b137c43f", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 733.9747750083916, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7178916931152344 s
+{"i": 13, "episode": 13, "cycle": 0, "phase": "measured", "seed": 720, "input_sha256": "11e053335fa536dfe1f4025436e8921e622c6ae3cc2800bc7c8ab39d3500deb0", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 739.9508230155334, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7139618396759033 s
+{"i": 14, "episode": 14, "cycle": 0, "phase": "measured", "seed": 721, "input_sha256": "ee9704e5b5554bb7d117508ebbe740a3ffa209266dc518cc4fd7cf6780ab3475", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 733.3860600483604, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7138071060180664 s
+{"i": 15, "episode": 15, "cycle": 0, "phase": "measured", "seed": 722, "input_sha256": "453f98040621fdffb9160e57520df43e2ebaeb0236a5dd5c8c2ac4ed8700b668", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 734.3960480066016, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7138400077819824 s
+{"i": 16, "episode": 16, "cycle": 0, "phase": "measured", "seed": 723, "input_sha256": "90fd2418fba9cb9530c1de3e6ce1fd004288b0ec410ae5df30125221a00e8bba", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 732.8860510024242, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7152073383331299 s
+{"i": 17, "episode": 17, "cycle": 0, "phase": "measured", "seed": 724, "input_sha256": "9877901f2570ba86da174b6e96194032fd9aead47293b6d1936bb4892e379f2f", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 734.9380480009131, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.714000940322876 s
+{"i": 18, "episode": 18, "cycle": 0, "phase": "measured", "seed": 725, "input_sha256": "a5dc577a133501bc0dbadc4cb0b3c3328428b9399a545904772fe60870ca3e95", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 733.4265729878098, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7146248817443848 s
+{"i": 19, "episode": 19, "cycle": 0, "phase": "measured", "seed": 726, "input_sha256": "fdd0ce2507b411b2bc69d38fc211f26e6fa68bfeb3925c4aa66138395cda0aff", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 734.5659449929371, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.715496301651001 s
+{"i": 20, "episode": 20, "cycle": 0, "phase": "measured", "seed": 727, "input_sha256": "399623c567fcfeffa73cdbab269f6ab45781b828c4f9234ae2b28dd145409456", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 735.474837012589, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7111530303955078 s
+{"i": 21, "episode": 21, "cycle": 0, "phase": "measured", "seed": 728, "input_sha256": "ab5010b2096b6ce4f3eeee9454a1541d3bb9d501cf85c688b12768f2041f439c", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 731.1948369606398, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.715489387512207 s
+{"i": 22, "episode": 22, "cycle": 0, "phase": "measured", "seed": 729, "input_sha256": "5788b4ab4ca0a2315584481c47c9b22d1f8ae3f02d492c13c7e7299f44ba4513", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 735.697022988461, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7157838344573975 s
+{"i": 23, "episode": 23, "cycle": 0, "phase": "measured", "seed": 730, "input_sha256": "fb3860b6b3095e3d2d885f0584b87b5e12e946b36a81720a6feb397f2dd4483e", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 735.5844939593226, "shape": [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.716256856918335 s
+{"i": 24, "episode": 24, "cycle": 0, "phase": "measured", "seed": 731, "input_sha256": "47e2b2e4fc6f4896df7af29b9260bd0f7e9253553833efb83cec2af8b137c43f", "feedback_sha256": "f25df03fdb0817d8b326b086d5621fc9690481ea010f91e3a25eb058bb604ad3", "call_kind": "generation", "ms": 736.2246029661037, "shape": [50, 14]}

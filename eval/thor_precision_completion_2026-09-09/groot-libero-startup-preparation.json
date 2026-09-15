@@ -1,0 +1,90 @@
+{
+  "purpose": "calibration/startup only; exclude this task/seed from evaluation",
+  "suite": "libero_10",
+  "task": 0,
+  "seed": 9173,
+  "prompt": "put both the alphabet soup and the tomato sauce in the basket",
+  "observation_sha256": "b192e88cb950ef2f39cbc60bfabc1f886393d6098a3125df57972192f283b964",
+  "native_observation_digest": "4b925916cf58813dfa984dbb0e0790edbdfce91783d59c5b9d88c42a7a79ed98",
+  "repeated_native_reset_byte_equal": true,
+  "sources": {
+    "revision": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+    "tree_sha256": "fa6da4d20c9ab1a67e45f6aec4c7ec38a4adfd9cf42dea65bb5519d311c63e48",
+    "environment": {
+      "numpy": "1.26.4",
+      "scipy": "1.17.1",
+      "mujoco": "3.3.1",
+      "robosuite": "1.4.0",
+      "torch": "2.9.0"
+    },
+    "render_environment": {
+      "MUJOCO_GL": "osmesa",
+      "PYOPENGL_PLATFORM": "osmesa",
+      "LP_NUM_THREADS": "1",
+      "PYTHONHASHSEED": "0"
+    },
+    "groot_wrapper_sha256": "49a8017517f1f21b7c21bf5f599244189720c83785763e4ab05a3cd0292cf5b1"
+  },
+  "preparation_source_sha256": "32574f58204a359539afc58696a744dd7491a4462020e5fb7bd96e5053bf835e",
+  "native_protocol": "Gr00t LiberoEnv.reset(seed), no added settling or init-state replacement",
+  "arrays": {
+    "video.image": {
+      "shape": [
+        256,
+        256,
+        3
+      ],
+      "dtype": "|u1"
+    },
+    "video.wrist_image": {
+      "shape": [
+        256,
+        256,
+        3
+      ],
+      "dtype": "|u1"
+    },
+    "state.x": {
+      "shape": [
+        1
+      ],
+      "dtype": "<f8"
+    },
+    "state.y": {
+      "shape": [
+        1
+      ],
+      "dtype": "<f8"
+    },
+    "state.z": {
+      "shape": [
+        1
+      ],
+      "dtype": "<f8"
+    },
+    "state.roll": {
+      "shape": [
+        1
+      ],
+      "dtype": "<f8"
+    },
+    "state.pitch": {
+      "shape": [
+        1
+      ],
+      "dtype": "<f8"
+    },
+    "state.yaw": {
+      "shape": [
+        1
+      ],
+      "dtype": "<f8"
+    },
+    "state.gripper": {
+      "shape": [
+        2
+      ],
+      "dtype": "<f8"
+    }
+  }
+}

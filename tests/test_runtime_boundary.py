@@ -75,6 +75,53 @@ PROVENANCE_KEYS = (
 QUARANTINE_FILE = "instinctflash/descriptors/checkpoint.py"
 QUARANTINE_CONTEXTS = ("FORBIDDEN_IN_EXECUTION", "_from_legacy_delta", "provenance_of")
 
+# "recipe" also names the explicit FP8 execution format. Permit only these
+# output dictionary values; a checkpoint.get("recipe") in the same file still
+# fails. This does not exempt a module, function, or provenance-key spelling.
+FP8_METADATA_VALUES = {
+    "instinctflash/runtime/cosmos_fp8.py": (
+        '"cosmos_mot_qkv_" + ThorFP8Linear.recipe',
+        '"cosmos_mot_dense_mlp_" + ThorFP8Linear.recipe',
+    ),
+    "instinctflash/runtime/dreamzero_fp8.py": (
+        '("dreamzero_causal_qkv_ffn_" if include_ffn else "dreamzero_causal_qkv_") + ThorFP8Linear.recipe',
+    ),
+    "instinctflash/runtime/h100_fp8.py": ('ThorFP8Linear.recipe', 'self.recipe'),
+}
+# This one assignment combines the two locally produced FP8 installation
+# receipts. Its exact AST is required, including the receiver of the read.
+FP8_METADATA_ASSIGNMENT = (
+    'receipt["recipe"] = "cosmos_mot_qkv_dense_mlp_" + '
+    'mlp["recipe"].split("cosmos_mot_dense_mlp_", 1)[1]'
+)
+
+
+def _fp8_metadata_recipe_nodes(tree, relative_path):
+    allowed = set()
+    values = {ast.dump(ast.parse(value, mode="eval").body)
+              for value in FP8_METADATA_VALUES.get(relative_path, ())}
+    for parent in ast.walk(tree):
+        if isinstance(parent, ast.Dict):
+            for key, value in zip(parent.keys, parent.values):
+                if (isinstance(key, ast.Constant) and key.value == "recipe"
+                        and ast.dump(value) in values):
+                    allowed.add(key)
+        if (relative_path == "instinctflash/runtime/cosmos_droid.py"
+                and isinstance(parent, ast.Assign)
+                and ast.dump(parent) == ast.dump(ast.parse(FP8_METADATA_ASSIGNMENT).body[0])):
+            allowed.update(node for node in ast.walk(parent)
+                           if isinstance(node, ast.Constant) and node.value == "recipe")
+    return allowed
+
+
+def provenance_reads(tree, relative_path):
+    allowed_lines = _quarantined_lines(tree) if relative_path == QUARANTINE_FILE else set()
+    metadata = _fp8_metadata_recipe_nodes(tree, relative_path)
+    return [node for node in ast.walk(tree)
+            if isinstance(node, ast.Constant) and isinstance(node.value, str)
+            and node.value in PROVENANCE_KEYS and not _is_docstring(tree, node)
+            and node.lineno not in allowed_lines and node not in metadata]
+
 
 def modules_under(*dirs) -> list[Path]:
     out = []
@@ -149,18 +196,36 @@ def test_no_provenance_reads():
     for m in modules_under(*GOVERNED):
         rel = m.relative_to(ROOT).as_posix()
         tree = ast.parse(m.read_text(), filename=str(m))
-        allowed_lines = (_quarantined_lines(tree) if rel == QUARANTINE_FILE else set())
-        for node in ast.walk(tree):
-            # Only string LITERALS in code count. A key named in a comment or docstring is the rule
-            # being explained, not broken -- which is why this walks constants rather than text.
-            if isinstance(node, ast.Constant) and isinstance(node.value, str):
-                if node.value in PROVENANCE_KEYS and not _is_docstring(tree, node):
-                    if node.lineno not in allowed_lines:
-                        bad.append(f"{rel}:{node.lineno} reads {node.value!r}")
+        for node in provenance_reads(tree, rel):
+            bad.append(f"{rel}:{node.lineno} reads {node.value!r}")
     for b in bad:
         print(f"        {b}")
-    check(not bad, f"no runtime module names any of {list(PROVENANCE_KEYS)} as a live string",
-          "one file exempt, scoped to 3 named contexts" if not bad else f"{len(bad)} found")
+    check(not bad, f"no runtime module reads training provenance {list(PROVENANCE_KEYS)}",
+          "legacy boundary contexts and exact FP8 output-metadata expressions only" if not bad else f"{len(bad)} found")
+
+
+def test_fp8_metadata_exception_does_not_admit_checkpoint_provenance():
+    print("\n=== 2b. FP8 execution metadata is distinct from checkpoint training provenance ===")
+    for relative_path, expressions in FP8_METADATA_VALUES.items():
+        for expression in expressions:
+            tree = ast.parse('result = {"recipe": ' + expression + '}')
+            check(not provenance_reads(tree, relative_path),
+                  f"{relative_path}: the audited FP8 metadata value is allowed")
+        for bad in ('return checkpoint.get("recipe")',
+                    'return {"recipe": checkpoint["recipe"]}',
+                    'return checkpoint.get("coverage_gate_pass")'):
+            tree = ast.parse("def install(model, checkpoint):\n    " + bad + "\n")
+            check(bool(provenance_reads(tree, relative_path)),
+                  f"{relative_path}: a provenance read in the same module remains rejected")
+    path = "instinctflash/runtime/cosmos_droid.py"
+    check(not provenance_reads(ast.parse(FP8_METADATA_ASSIGNMENT), path),
+          "combining local FP8 receipts is allowed at its exact output assignment")
+    changed = FP8_METADATA_ASSIGNMENT.replace('mlp["recipe"]', 'checkpoint["recipe"]')
+    check(bool(provenance_reads(ast.parse(changed), path)),
+          "changing the metadata source to checkpoint provenance is rejected")
+    check(bool(provenance_reads(ast.parse('result = {"recipe": ThorFP8Linear.recipe}'),
+                                "instinctflash/planners/planner.py")),
+          "the output-metadata exception does not apply to an unrelated module")
 
 
 def _quarantined_lines(tree) -> set[int]:
@@ -226,6 +291,7 @@ def test_the_check_can_actually_fail():
 def main() -> int:
     test_no_training_imports()
     test_no_provenance_reads()
+    test_fp8_metadata_exception_does_not_admit_checkpoint_provenance()
     test_the_quarantine_is_real()
     test_the_check_can_actually_fail()
     print("\n" + "=" * 72)

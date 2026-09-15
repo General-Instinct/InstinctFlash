@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "status": "origin_and_declared_dataset_license_verified",
+  "created_at": "2026-09-15T03:21:08.363341+00:00",
+  "fixture": {
+    "path": "/home/ubuntu/InstinctFlash/benchmarks/regression/fixtures/recorded_inputs_v1.npz",
+    "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+    "bytes": 1312979
+  },
+  "legacy_fixture": {
+    "path": "/home/ubuntu/iwm_distill/thor_va_engine/va_eval_obs.npz",
+    "sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+    "bytes": 14255531
+  },
+  "builder": {
+    "path": "/home/ubuntu/iwm_distill/thor_va_engine/tools/build_va_obs_set.py",
+    "sha256": "f0e3dfa86cb510076b93e0b044555a07497f8298896bca7ea48fe3f763a38d32",
+    "bytes": 5341
+  },
+  "selection": {
+    "dataset": "TianxingChen/RoboTwin2.0",
+    "download_revision": "9dc9299c163db059931898a9f0852098a61155a1",
+    "task": "blocks_ranking_rgb",
+    "setting": "aloha-agilex_clean_50",
+    "episode": 7,
+    "frames": [
+      0,
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      28,
+      32,
+      36,
+      40,
+      44,
+      48
+    ],
+    "cameras": [
+      "head_camera",
+      "left_camera",
+      "right_camera"
+    ],
+    "feedback": "8 chunks derived from original endpose/gripper observations;4096 float32 values"
+  },
+  "archive": {
+    "path": "dataset/blocks_ranking_rgb/aloha-agilex_clean_50.zip",
+    "bytes": 927813070,
+    "sha256": "3752a61e42081ce64e3d3d76b5634836904bced29007b6cec8f3bfa12b4d6387",
+    "actual_local_hash_measured": true,
+    "extraction_receipt": {
+      "path": "/home/ubuntu/data/robotwin_staging/pilot10/blocks_ranking_rgb/clean_50/.extract_complete.json",
+      "sha256": "75535d2225100fc889ef0e3167f82bd951cac7aaa1cbbc731558313a708737b7",
+      "bytes": 168
+    },
+    "official_current_revision": "981c92aa34d8f94d4cff47e0d5bc2f7d4e0af042",
+    "official_lfs_hash_matches": true
+  },
+  "conversion": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/recorded_fixture_origin_v1/conversion_chain.json",
+    "sha256": "bc8ef2d355f02706e06d3a834982a7074bdcc9ac16bb32f422fc396a3674eef8",
+    "bytes": 14274
+  },
+  "license": {
+    "declared_dataset_license": "MIT",
+    "historical_card_url": "https://huggingface.co/datasets/TianxingChen/RoboTwin2.0/blob/9dc9299c163db059931898a9f0852098a61155a1/README.md",
+    "current_card_url": "https://huggingface.co/datasets/TianxingChen/RoboTwin2.0/blob/981c92aa34d8f94d4cff47e0d5bc2f7d4e0af042/README.md",
+    "project_license_url": "https://raw.githubusercontent.com/RoboTwin-Platform/RoboTwin/c3ddfa8b97d5519efa828b075999bd0006778e5e/LICENSE",
+    "project_copyright": "Copyright (c) 2025 Tianxing Chen (陈天行)",
+    "distribution_condition": "Retain original MIT copyright and permission notice; add exact dataset/archive/task/episode provenance and describe the decoded selection as modified packaging.",
+    "dataset_card_has_no_full_notice_text": true,
+    "archive_contains_no_license_or_notice_member": true,
+    "inference": "The original dataset explicitly declares MIT at its exact historical download revision. The matched-byte image/action derivative can be distributed consistently with that declaration while retaining the separately identified official RoboTwin MIT notice and provenance. This is scoped source evidence, not a warranty of all underlying third-party rights.",
+    "separate_robolab_screen": "This fixture predates and is not sourced from RoboLab/Isaac SCREEN; that distinct mixed-asset-license review does not apply to this RoboTwin archive."
+  },
+  "suggested_attribution": "Recorded inputs derived from RoboTwin2.0 by Tianxing Chen and the RoboTwin contributors (MIT): blocks_ranking_rgb, aloha-agilex_clean_50, episode7, dataset revision9dc9299c163db059931898a9f0852098a61155a1. InstinctFlash decodes39 JPEG camera frames to RGB and packages8 original end-effector feedback chunks into a pickle-free NPZ. Synthetic robot states/prompts are benchmark-generated; no task-success certificate.",
+  "unchanged_sources": true,
+  "network_scope": "Official metadata/card/license only; no model or asset downloads.",
+  "evidence": [
+    {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/recorded_fixture_origin_v1/LICENSE.RoboTwin.txt",
+      "sha256": "c695d421718e54e6f3a60858f0c601125c3ecc60c199332c15947360561e2a9f",
+      "bytes": 1081
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/recorded_fixture_origin_v1/conversion_chain.json",
+      "sha256": "bc8ef2d355f02706e06d3a834982a7074bdcc9ac16bb32f422fc396a3674eef8",
+      "bytes": 14274
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/recorded_fixture_origin_v1/hf_card.md.txt",
+      "sha256": "d8d7a46d41a1a37fe4f0a5f637bf55c649310185329127d8a2204632e480be17",
+      "bytes": 24
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/recorded_fixture_origin_v1/hf_dataset_api.json",
+      "sha256": "c072270f794073c4fa8a56f10fee21e0c9f7ec07ec3b9f335927f720f6e03713",
+      "bytes": 33743
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/recorded_fixture_origin_v1/hf_original_revision_card.md.txt",
+      "sha256": "d8d7a46d41a1a37fe4f0a5f637bf55c649310185329127d8a2204632e480be17",
+      "bytes": 24
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/recorded_fixture_origin_v1/hf_task_tree.json",
+      "sha256": "f8624480edbc2c71274fc1afb927691fdc796e7827cae3b719fe9d7441206f67",
+      "bytes": 533092
+    }
+  ]
+}

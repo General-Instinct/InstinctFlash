@@ -10,10 +10,12 @@ Supported models: Pi0.5, Pi0, Pi0-FAST, GROOT N1.6, GR00T N1.7, LingBot-VLA-V2.
 Supported hardware: Jetson Thor (SM110), RTX 5090 (SM120), RTX 4090 (SM89); GR00T N1.7 and
 LingBot-VLA-V2 add A100 (SM80) / H100 (SM90) paths.
 
-The LingBot-VLA-V2 arm in this tree is the ``cuda_sm80`` / ``cuda_sm90`` upstream-BF16
-datacenter graft: upstream kernels plus static-KV CUDA-graph replay and optional Triton
-MoE/RMSNorm kernels (never on Thor). There is no SM110 dispatch row for it here; an engine
-tier for launch-bound edge devices is available under commercial access.
+LingBot-VLA-V2 ships two distinct arms, dispatched by arch key:
+  * ``cuda_sm80`` / ``cuda_sm90`` — upstream-BF16 datacenter graft: upstream kernels plus
+    static-KV CUDA-graph replay and optional Triton MoE/RMSNorm kernels (never on Thor).
+  * ``thor`` — the from-scratch SM110 engine (``models/vla2`` + ``vla2_thor``): full-engine
+    210.3 ms measured, fp8 experts via cuBLASLt with the fp16 prefill arm shipped — fp8
+    prefill failed the static-calibration parity gate and is not served.
 
 Extending with new models: see ``docs/plugin_model_template.md``.
 

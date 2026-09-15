@@ -1,0 +1,356 @@
+[
+  {
+    "baseline": "eval/native_optimization_2026-09-10/receipts/h100/vla4-baseline_a.json",
+    "candidate": "eval/native_optimization_2026-09-10/receipts/h100/vla4-optimized.json",
+    "baseline_sha256": "8ceed2d21a5676a9c8c1e44eb0a660a7f7a8eb07a1b453a8583858fd6f563361",
+    "candidate_sha256": "229787d747f5bb1286eec271f3ced84d278b0791c8eb9fd51a33d1e01e4ef537",
+    "protocol_differences": {},
+    "bitexact": true,
+    "arrays": [
+      {
+        "name": "actions",
+        "shape": [
+          63,
+          25,
+          14
+        ],
+        "finite": true,
+        "bitexact": true,
+        "max_abs_delta": 0.0
+      }
+    ],
+    "candidate_stats": {
+      "captured": true,
+      "replays": 680,
+      "full_graph": true,
+      "prefix_replays": 68,
+      "chunk_replays": 68,
+      "gpu_preprocess": true,
+      "gpu_preprocess_passed": true,
+      "gpu_preprocess_checks": 6,
+      "gpu_preprocess_max_abs_delta": 0.0
+    },
+    "baseline_p50_ms": 184.4358635134995,
+    "candidate_p50_ms": 99.18164205737412,
+    "speedup": 1.8595766281708457,
+    "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+    "device_class": "h100",
+    "family": "vla4",
+    "baseline_repeat_p50_ms": 185.3172609116882,
+    "baseline_repeat_bitexact": true
+  },
+  {
+    "baseline": "eval/native_optimization_2026-09-10/receipts/h100/groot-baseline_a.json",
+    "candidate": "eval/native_optimization_2026-09-10/receipts/h100/groot-collate.json",
+    "baseline_sha256": "6b878aa820cecbedd258cea2f31144ab0cd16dc0fd005dfc7867aa89311b26a0",
+    "candidate_sha256": "a3cf3d474fec089029db7484432549aedd356da92e1db8ae1fed685a314197b0",
+    "protocol_differences": {},
+    "bitexact": true,
+    "arrays": [
+      {
+        "name": "actions",
+        "shape": [
+          63,
+          40,
+          17
+        ],
+        "finite": true,
+        "bitexact": true,
+        "max_abs_delta": 0.0
+      }
+    ],
+    "candidate_stats": {
+      "backend": "upstream_bf16_cuda_graph",
+      "precision": "bfloat16",
+      "captured": true,
+      "graph_captures": 1,
+      "graph_replays": 252,
+      "action_nfe": 4,
+      "cpu_threads": null,
+      "fast_decode": true,
+      "backbone_fastpath": true,
+      "gpu_collate": true,
+      "gpu_collate_self_check_passed": true,
+      "gpu_collate_self_check_inputs": 6,
+      "gpu_collate_max_abs_delta": 0.0,
+      "full_backbone_graph": false,
+      "full_flow_graph": false,
+      "backbone_cache_hits": 185,
+      "backbone_cache_misses": 4
+    },
+    "baseline_p50_ms": 66.33649463765323,
+    "candidate_p50_ms": 60.8538209926337,
+    "speedup": 1.09009579933663,
+    "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+    "device_class": "h100",
+    "family": "groot",
+    "baseline_repeat_p50_ms": 67.00704758986831,
+    "baseline_repeat_bitexact": true
+  },
+  {
+    "baseline": "eval/native_optimization_2026-09-10/receipts/h100/pi05-step_a.json",
+    "candidate": "eval/native_optimization_2026-09-10/receipts/h100/pi05-prefix.json",
+    "baseline_sha256": "abaa95af9e43e2d5ef3918e064e63ea7c314f9ea55e466ebe281610c0b3a69a1",
+    "candidate_sha256": "bee91e76b064a33c38d6f3fcb94e06263f014fed2f3a9f204910266ad8495162",
+    "protocol_differences": {},
+    "bitexact": true,
+    "arrays": [
+      {
+        "name": "actions",
+        "shape": [
+          23,
+          7
+        ],
+        "finite": true,
+        "bitexact": true,
+        "max_abs_delta": 0.0
+      },
+      {
+        "name": "queued_actions",
+        "shape": [
+          23,
+          49,
+          1,
+          7
+        ],
+        "finite": true,
+        "bitexact": true,
+        "max_abs_delta": 0.0
+      }
+    ],
+    "candidate_stats": {
+      "captured": true,
+      "rejected": false,
+      "full_graph": true,
+      "prefix_graph": true,
+      "replays": 280,
+      "prefix_replays": 28,
+      "chunk_replays": 28,
+      "self_check": {
+        "n": 6,
+        "bitexact": true,
+        "max_abs_delta": 0.0,
+        "seconds": 2.180626519024372,
+        "cases": [
+          {
+            "input": 1,
+            "prefix": "captured-chunk",
+            "max_abs_delta": 0.0
+          },
+          {
+            "input": 2,
+            "prefix": "captured-chunk",
+            "max_abs_delta": 0.0
+          },
+          {
+            "input": 3,
+            "prefix": "captured-chunk",
+            "max_abs_delta": 0.0
+          },
+          {
+            "input": 4,
+            "prefix": "refilled",
+            "max_abs_delta": 0.0
+          },
+          {
+            "input": 5,
+            "prefix": "refilled",
+            "max_abs_delta": 0.0
+          },
+          {
+            "input": 6,
+            "prefix": "refilled",
+            "max_abs_delta": 0.0
+          }
+        ],
+        "scope": "sample_actions",
+        "prefix_graph": true
+      }
+    },
+    "baseline_p50_ms": 96.57687251456082,
+    "candidate_p50_ms": 86.41049545258284,
+    "speedup": 1.1176521093731804,
+    "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+    "device_class": "h100",
+    "family": "pi05",
+    "baseline_repeat_p50_ms": 96.0581204853952,
+    "baseline_repeat_bitexact": true
+  },
+  {
+    "baseline": "eval/native_optimization_2026-09-10/receipts/thor/vla4-step_a.json",
+    "candidate": "eval/native_optimization_2026-09-10/receipts/thor/vla4-preprocess.json",
+    "baseline_sha256": "ec77ea8d83088bff7418425823a10ffca6127c0f6090ce7c97e7d78e81f5590d",
+    "candidate_sha256": "e62f4c06761a3e60a309d8044c460d285c9a40979735967d9d7f013ed220a1ab",
+    "protocol_differences": {},
+    "bitexact": true,
+    "arrays": [
+      {
+        "name": "actions",
+        "shape": [
+          23,
+          25,
+          14
+        ],
+        "finite": true,
+        "bitexact": true,
+        "max_abs_delta": 0.0
+      }
+    ],
+    "candidate_stats": {
+      "captured": true,
+      "replays": 280,
+      "full_graph": true,
+      "prefix_replays": 28,
+      "chunk_replays": 28,
+      "gpu_preprocess": true,
+      "gpu_preprocess_passed": true,
+      "gpu_preprocess_checks": 6,
+      "gpu_preprocess_max_abs_delta": 0.0
+    },
+    "baseline_p50_ms": 363.95836250449065,
+    "candidate_p50_ms": 261.91890700283693,
+    "speedup": 1.3895841528559392,
+    "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+    "device_class": "thor",
+    "family": "vla4",
+    "baseline_repeat_p50_ms": 364.0733444990474,
+    "baseline_repeat_bitexact": true
+  },
+  {
+    "baseline": "eval/native_optimization_2026-09-10/receipts/thor/groot-baseline_a.json",
+    "candidate": "eval/native_optimization_2026-09-10/receipts/thor/groot-collate.json",
+    "baseline_sha256": "362ca7060a9431fae1c6729357a8b348a3603c62425600d7c0b58733aa2589f8",
+    "candidate_sha256": "3572ab44efe5ae2de75e8f12f0971b60618c4132a067aa87e32b427c041b749f",
+    "protocol_differences": {},
+    "bitexact": true,
+    "arrays": [
+      {
+        "name": "actions",
+        "shape": [
+          23,
+          40,
+          17
+        ],
+        "finite": true,
+        "bitexact": true,
+        "max_abs_delta": 0.0
+      }
+    ],
+    "candidate_stats": {
+      "backend": "upstream_bf16_eager",
+      "precision": "bfloat16",
+      "captured": false,
+      "graph_captures": 0,
+      "graph_replays": 0,
+      "action_nfe": 4,
+      "cpu_threads": null,
+      "fast_decode": true,
+      "backbone_fastpath": true,
+      "gpu_collate": true,
+      "gpu_collate_self_check_passed": true,
+      "gpu_collate_self_check_inputs": 6,
+      "gpu_collate_max_abs_delta": 0.0,
+      "full_backbone_graph": false,
+      "full_flow_graph": false,
+      "backbone_cache_hits": 65,
+      "backbone_cache_misses": 4
+    },
+    "baseline_p50_ms": 134.97984550485853,
+    "candidate_p50_ms": 126.84065599751193,
+    "speedup": 1.0641686172571219,
+    "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+    "device_class": "thor",
+    "family": "groot",
+    "baseline_repeat_p50_ms": 139.07927100808593,
+    "baseline_repeat_bitexact": true
+  },
+  {
+    "baseline": "eval/native_optimization_2026-09-10/receipts/thor/pi05-baseline_a.json",
+    "candidate": "eval/native_optimization_2026-09-10/receipts/thor/pi05-prefix.json",
+    "baseline_sha256": "2a1a09409ee5a5f31f05fdd1cf12deb68104779d808a948d4e36611a499ed78b",
+    "candidate_sha256": "ff6e4dc010e4913a9242bc77f2d30de950edf666f23001e0070e4fd6948a4232",
+    "protocol_differences": {},
+    "bitexact": true,
+    "arrays": [
+      {
+        "name": "actions",
+        "shape": [
+          23,
+          7
+        ],
+        "finite": true,
+        "bitexact": true,
+        "max_abs_delta": 0.0
+      },
+      {
+        "name": "queued_actions",
+        "shape": [
+          23,
+          49,
+          1,
+          7
+        ],
+        "finite": true,
+        "bitexact": true,
+        "max_abs_delta": 0.0
+      }
+    ],
+    "candidate_stats": {
+      "captured": true,
+      "rejected": false,
+      "full_graph": true,
+      "prefix_graph": true,
+      "replays": 280,
+      "prefix_replays": 28,
+      "chunk_replays": 28,
+      "self_check": {
+        "n": 6,
+        "bitexact": true,
+        "max_abs_delta": 0.0,
+        "seconds": 4.404125556000508,
+        "cases": [
+          {
+            "input": 1,
+            "prefix": "captured-chunk",
+            "max_abs_delta": 0.0
+          },
+          {
+            "input": 2,
+            "prefix": "captured-chunk",
+            "max_abs_delta": 0.0
+          },
+          {
+            "input": 3,
+            "prefix": "captured-chunk",
+            "max_abs_delta": 0.0
+          },
+          {
+            "input": 4,
+            "prefix": "refilled",
+            "max_abs_delta": 0.0
+          },
+          {
+            "input": 5,
+            "prefix": "refilled",
+            "max_abs_delta": 0.0
+          },
+          {
+            "input": 6,
+            "prefix": "refilled",
+            "max_abs_delta": 0.0
+          }
+        ],
+        "scope": "sample_actions",
+        "prefix_graph": true
+      }
+    },
+    "baseline_p50_ms": 324.49841499328613,
+    "candidate_p50_ms": 309.1258819986251,
+    "speedup": 1.0497290388474472,
+    "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+    "device_class": "thor",
+    "family": "pi05",
+    "baseline_repeat_p50_ms": 327.1004014968639,
+    "baseline_repeat_bitexact": true
+  }
+]

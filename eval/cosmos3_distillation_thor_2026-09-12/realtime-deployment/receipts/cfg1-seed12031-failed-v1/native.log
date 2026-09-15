@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/guanming/ifl_eval/cosmos_distill_20260912/realtime-deployment-v1/benchmark_candidate.py", line 54, in <module>
+    with audit_vae_load() as assets:
+         ~~~~~~~~~~~~~~^^
+  File "/home/guanming/.local/share/uv/python/cpython-3.13.15-linux-aarch64-gnu/lib/python3.13/contextlib.py", line 148, in __exit__
+    next(self.gen)
+    ~~~~^^^^^^^^^^
+  File "/home/guanming/ifl_eval/cosmos_distill_20260912/realtime-deployment-v1/runtime_assets.py", line 49, in audit_vae_load
+    raise RuntimeError('Expected exactly one observed native external WanVAE load')
+RuntimeError: Expected exactly one observed native external WanVAE load

@@ -8,7 +8,9 @@ tokenization and action un-normalisation therefore stay byte-identical to upstre
 The T1 arm is :mod:`lingbot_vla_iwm.static_capture`: a replay-safe CUDA graph over the 10-step
 denoise loop on static max-extent KV buffers — the 671 -> 185 ms row (54.7 -> 11.9 ms/step),
 BITEXACT across six gate cases including a re-prefilled new prompt
-(``examples/lingbot_vla/verify_static_capture.py``).
+(``examples/lingbot_vla/verify_static_capture.py``). On SM120,
+:mod:`lingbot_vla_iwm.full_capture` additionally captures vision/prefix and the complete
+ten-step schedule, with bitexact GPU image normalization.
 """
 
 from __future__ import annotations
@@ -28,6 +30,10 @@ MODEL_ID = "robbyant/lingbot-vla-4b-posttrain-robotwin"
 #: (the IFL_PI05_NO_CAPTURE convention): the default it disables is this family's, and other
 #: families' capture policies are their own. Honored by `install`, recorded on the plan, printed.
 CAPTURE_KILL_SWITCH = "IFL_VLA4B_NO_CAPTURE"
+#: SM120 full vision/prefix + fixed ten-step flow graph override.
+FULL_GRAPH_ENV = "IFL_VLA4B_FULL_GRAPH"
+#: CPU-exact patchify with pinned staging and CUDA normalization.
+GPU_PREPROCESS_ENV = "IFL_VLA4B_GPU_PREPROCESS"
 #: Where the upstream checkout is looked for when LINGBOT_VLA_ROOT is unset. The env var is the
 #: contract; these are the documented conventions.
 SOURCE_ROOT_CANDIDATES = (
@@ -74,6 +80,11 @@ class LingBotVLA4BAdapter:
             ),
             notes={
                 "family": "vla",
+                # "backbone" identifies this spec to backbone-keyed planner checks (the engine
+                # operating-point gate in passes/generic/engine_offload.py keys on it: the
+                # vla4b_thor frontend bakes a 10-step schedule, and a plan at any other nfe
+                # must decline the engine rather than print one schedule and run another).
+                "backbone": BACKBONE,
                 "chunk_size": "50",
                 "action_reply": "(use_length, 14); the shipped declaration serves use_length=25",
                 "numeric_tier": "BITEXACT (static-KV capture, 6 gate cases all 0.0)",
@@ -135,11 +146,40 @@ class LingBotVLA4BAdapter:
             str(model_path), use_length=use_length, robot_norm_path=str(norm_path),
             num_denoising_step=steps,
         )
-        driver = self.install(server, plan, device=dev)
-        robot = str(extra.get("robot") or "robotwin")
-        return _LingBotVLA4BLoop(server, root, robot=robot, driver=driver)
+        from instinctflash.runtime.precision import install_requested_fp8
+        install_requested_fp8(server.vla.model, plan, "lingbot_vla")
+        full_graph = _env_flag(
+            FULL_GRAPH_ENV,
+            default=torch.cuda.get_device_capability() in {(9, 0), (11, 0), (12, 0)},
+        )
+        driver = self.install(
+            server,
+            plan,
+            device=dev,
+            full_graph=full_graph,
+        )
+        gpu_preprocess = None
+        if (
+            driver is not None
+            and hasattr(driver, "full")
+            and _env_flag(GPU_PREPROCESS_ENV, default=True)
+        ):
+            from .image_preprocess import install_gpu_image_preprocess
 
-    def install(self, server, plan, *, device=None):
+            gpu_preprocess = install_gpu_image_preprocess(
+                server,
+                device=dev,
+            )
+        robot = str(extra.get("robot") or "robotwin")
+        return _LingBotVLA4BLoop(
+            server,
+            root,
+            robot=robot,
+            driver=driver,
+            gpu_preprocess=gpu_preprocess,
+        )
+
+    def install(self, server, plan, *, device=None, full_graph: bool = False):
         """Install the static-KV denoise graph when the compiled plan applies graph_capture.
 
         The plan is READ, not decorative (same rule as GR00T and VLA-V2): a plan whose capture
@@ -182,25 +222,51 @@ class LingBotVLA4BAdapter:
             return None
         from instinctflash.runtime.capture_self_check import record_self_check_on_plan
 
-        from .static_capture import install_static_capture
+        recorder = record_self_check_on_plan(capture, "LingBot-VLA-4B")
+        if full_graph:
+            from .full_capture import install_full_capture
 
-        driver = install_static_capture(
-            server.vla.model,
-            on_self_check=record_self_check_on_plan(capture, "LingBot-VLA-4B"))
-        print("InstinctFlash LingBot-VLA-4B: static-KV CUDA Graph backend installed — the "
-              "family default on capture-capable devices. The first capture is gated by a "
-              "bit-exact self-check (replay vs upstream eager on staged inputs it was not "
-              "captured from, exact equality); a mismatch releases the graph and falls back "
-              f"to eager, loudly. Kill-switch: {CAPTURE_KILL_SWITCH}=1.")
+            driver = install_full_capture(
+                server.vla.model,
+                on_self_check=recorder,
+            )
+        else:
+            from .static_capture import install_static_capture
+
+            driver = install_static_capture(
+                server.vla.model,
+                on_self_check=recorder,
+            )
+        scope = (
+            "full vision/prefix + ten-step flow"
+            if full_graph else "static-KV velocity"
+        )
+        print(
+            f"InstinctFlash LingBot-VLA-4B: {scope} CUDA Graph backend installed — "
+            "the family default on capture-capable devices. The first capture is gated by a "
+            "bit-exact self-check (replay vs upstream eager on staged inputs it was not "
+            "captured from, exact equality); a mismatch releases the affected graphs and "
+            f"falls back loudly. Kill-switch: {CAPTURE_KILL_SWITCH}=1; full-graph "
+            f"override: {FULL_GRAPH_ENV}=0."
+        )
         return driver
 
 
 class _LingBotVLA4BLoop:
-    def __init__(self, server, source_root: Path, *, robot: str, driver=None):
+    def __init__(
+        self,
+        server,
+        source_root: Path,
+        *,
+        robot: str,
+        driver=None,
+        gpu_preprocess=None,
+    ):
         self._server = server
         self._root = source_root
         self._robot = robot
         self._driver = driver
+        self._gpu_preprocess = gpu_preprocess
         self._prompt = ""
         self.reset(robot=robot)
 
@@ -235,15 +301,49 @@ class _LingBotVLA4BLoop:
     def graph_stats(self) -> dict:
         d = self._driver
         return {
-            "captured": bool(d and d._graph is not None),
+            "captured": bool(
+                d and (
+                    bool(getattr(d, "captured", False))
+                    or getattr(d, "_graph", None) is not None
+                )
+            ),
             "replays": int(d.replays if d else 0),
+            "full_graph": bool(d and hasattr(d, "full")),
+            "prefix_replays": int(getattr(d, "prefix_replays", 0) if d else 0),
+            "chunk_replays": int(getattr(d, "chunk_replays", 0) if d else 0),
+            "gpu_preprocess": self._gpu_preprocess is not None,
+            "gpu_preprocess_passed": bool(
+                self._gpu_preprocess and self._gpu_preprocess.passed
+            ),
+            "gpu_preprocess_checks": int(
+                self._gpu_preprocess.checks if self._gpu_preprocess else 0
+            ),
+            "gpu_preprocess_max_abs_delta": float(
+                self._gpu_preprocess.max_abs_delta
+                if self._gpu_preprocess else 0.0
+            ),
         }
 
     def close(self) -> None:
         if self._driver is not None:
             self._driver.close()
             self._driver = None
+        if self._gpu_preprocess is not None:
+            self._gpu_preprocess.close()
+            self._gpu_preprocess = None
         self._server = None
+
+
+def _env_flag(name: str, *, default: bool) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return bool(default)
+    normalized = value.strip().lower()
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    raise ValueError(f"{name} must be a boolean flag, got {value!r}")
 
 
 def _source_root(*, required: bool = True) -> "Path | None":

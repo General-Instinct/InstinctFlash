@@ -29,6 +29,33 @@ class _RunLike:
     runtime: RuntimeConfig = field(default_factory=RuntimeConfig)
 
 
+def test_fp8_alias_is_explicit_and_overrides_file_precision():
+    assert parse_config(_RunLike, []).runtime.precision == "native"
+    assert parse_config(_RunLike, ["--fp8"]).runtime.precision == "fp8"
+    assert parse_config(_RunLike, ["--fp8=false"]).runtime.precision == "native"
+    with tempfile.TemporaryDirectory() as td:
+        p = Path(td) / "run.yaml"
+        p.write_text("runtime:\n  precision: fp8\n")
+        cfg = parse_config(_RunLike, [f"--config_path={p}", "--fp8=false"])
+        assert cfg.runtime.precision == "native"
+        p.write_text("runtime:\n  precision: native\n")
+        cfg = parse_config(_RunLike, [f"--config_path={p}", "--fp8"])
+        assert cfg.runtime.precision == "fp8"
+
+
+def test_fp8_alias_rejects_conflicting_or_invalid_cli_choices():
+    for args in (["--fp8", "--runtime.precision=native"],
+                 ["--runtime.precision=native", "--fp8"],
+                 ["--fp8", "--fp8=false"], ["--fp8=perhaps"]):
+        try:
+            parse_config(_RunLike, args)
+        except ConfigError:
+            pass
+        else:
+            raise AssertionError(args)
+    assert parse_config(_RunLike, ["--fp8", "--runtime.precision=fp8"]).runtime.precision == "fp8"
+
+
 def test_yaml_then_dotted_override_precedence():
     with tempfile.TemporaryDirectory() as td:
         p = Path(td) / "run.yaml"
@@ -36,7 +63,10 @@ def test_yaml_then_dotted_override_precedence():
         cfg = parse_config(_RunLike, [f"--config_path={p}", "--runtime.nfe.action=4"])
     assert cfg.model.path == "org/model"        # from the file
     assert cfg.runtime.nfe == {"action": 4}     # the CLI override wins
-    assert cfg.runtime.tier_ceiling == "bitexact"
+    # None = the runtime's default POLICY (not an explicit caller demand); the distinction is
+    # what lets a checkpoint-declared operating point apply by selection while an explicit
+    # --runtime.tier_ceiling=bitexact refuses it loudly. See planners/planner.py.
+    assert cfg.runtime.tier_ceiling is None
 
 
 def test_unknown_field_is_a_hard_error_not_a_silent_noop():

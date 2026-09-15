@@ -1,0 +1,369 @@
+{
+  "expected_jobs": [
+    {
+      "seed": 0,
+      "task": 0
+    },
+    {
+      "seed": 1,
+      "task": 0
+    },
+    {
+      "seed": 10000,
+      "task": 1
+    },
+    {
+      "seed": 10001,
+      "task": 1
+    },
+    {
+      "seed": 20000,
+      "task": 2
+    },
+    {
+      "seed": 20001,
+      "task": 2
+    },
+    {
+      "seed": 30000,
+      "task": 3
+    },
+    {
+      "seed": 30001,
+      "task": 3
+    },
+    {
+      "seed": 40000,
+      "task": 4
+    },
+    {
+      "seed": 40001,
+      "task": 4
+    },
+    {
+      "seed": 50000,
+      "task": 5
+    },
+    {
+      "seed": 50001,
+      "task": 5
+    },
+    {
+      "seed": 60000,
+      "task": 6
+    },
+    {
+      "seed": 60001,
+      "task": 6
+    },
+    {
+      "seed": 70000,
+      "task": 7
+    },
+    {
+      "seed": 70001,
+      "task": 7
+    },
+    {
+      "seed": 80000,
+      "task": 8
+    },
+    {
+      "seed": 80001,
+      "task": 8
+    },
+    {
+      "seed": 90000,
+      "task": 9
+    },
+    {
+      "seed": 90001,
+      "task": 9
+    }
+  ],
+  "identity": {
+    "checkpoint_manifest_sha256": "e5a5daf0fc2c5e6a03c50b0ffcd83393ac6d335938c7e97f700afa32819eb169",
+    "checkpoint_sha256": "95ac69826a1bf65d118acf6a9e65f4e11520b9389360eee51ab4c54b3925e0cc",
+    "engine_source_sha256": "15663e635cd44b2a65a7290ecf9755d16e6afd24969c67c0239563398229b553",
+    "execution": {
+      "action_semantics_sha256": "8941738b1ca2f1aaed14638fef8204f936ad950bebdf4f05cd6a0de9117a8ace",
+      "applied": [
+        "fsdp_elision",
+        "allocator_churn_elision",
+        "debug_dump_elision",
+        "obs_decode_elision",
+        "conditioning_prefill",
+        "ring_kv_addressing",
+        "action_terminal_forward_elision"
+      ],
+      "dtype": "torch.bfloat16",
+      "geometry": {
+        "action_per_frame": 4,
+        "env_type": "none",
+        "frame_chunk_size": 4,
+        "height": 128,
+        "obs_cam_keys": [
+          "observation.images.agentview_rgb",
+          "observation.images.eye_in_hand_rgb"
+        ],
+        "width": 128
+      },
+      "grid_shifts": {
+        "action": 0.05,
+        "video": 5.0
+      },
+      "guidance": {
+        "action": 1.0,
+        "video": 5.0
+      },
+      "nfe": {
+        "action": 50,
+        "video": 20
+      }
+    },
+    "hardware": {
+      "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+      "cuda": "13.0",
+      "gpu": "NVIDIA Thor"
+    },
+    "model_id": "robbyant/lingbot-va-posttrain-libero-long",
+    "model_revision": "0e89d1e753019988aba484e8da2dc0810e264d9f",
+    "numeric_environment": {
+      "cudnn_benchmark": false,
+      "cudnn_tf32": false,
+      "matmul_tf32": false
+    },
+    "package_declaration_sha256": "a39f1244a46254e4987c1d114441847b604002419925e97e18f60edb8f05340a",
+    "packages_sha256": "9c75a75b4b26d753758968925e0273a8b6928dbf05e0f8336ca290bfe6a57797",
+    "pipeline_sha256": "27d967305e6beaed5018e262e003b5938f63cadc53efe79e8dd541a322a4c1ca",
+    "precision": "native",
+    "protocol": "wan-va-runtime-observed-history-v1",
+    "runtime_explanation": "InstinctFlash runtime for 'robbyant/lingbot-va-posttrain-libero-long'\n  package     : /home/guanming/ifl_eval/thor_precision_completion_20260909/runtime-libero-checkpoint\n  backbone    : wan_va\n  servable    : True\n  precision   : native\n  evidence    : no closed-loop certificate verified for this live execution; plan tiers are transformation claims\n  placement   : placement='in_process' (explicit)\n  capabilities: backbone:wan_va, declares:base_weights, declares:env_type, declares:frame_chunk_size, declares:height, declares:obs_cam_keys, declares:va_config, declares:width, guidance:action=positive_only, guidance:video=cfg, servable\n\nInstinctFlash plan for robbyant/lingbot-va-posttrain-libero-long\n  plan tier: BITEXACT\n  operating point: schedule {kv_refresh=2 + video=20 + action=50} | guidance {action=positive_only@1 [implied by mode], video=cfg@5 [inherited from the family default]} | cfg batching {batch-2 on 72 of 72 declared forwards (negative branch requested by video); batch-1 on 0}\n\n  skip   graph_capture              [BITEXACT  ] Thor capture performance is unmeasured for this family/operating point; retain the eager default pending a paired device measurement.\n  skip   engine_offload             [NUMERIC   ] precision='native': FP8 engine is not authorized; legal but tier NUMERIC exceeds ceiling BITEXACT: SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation\n  APPLY  fsdp_elision               [BITEXACT  ] world_size=1, so every FSDP all-gather is identity while still paying a flat-param copy and stream sync per unit per forward\n         expected: measured 1.75x standalone on LingBot-VA\n  APPLY  allocator_churn_elision    [BITEXACT  ] closed-loop serving has a stable working set, so releasing the pool between control steps only forces re-allocation next step\n         expected: small alone; larger once per-layer KV gathers stop churning the pool\n  APPLY  debug_dump_elision         [BITEXACT  ] per-chunk tensor dumps do a synchronous D2H on the critical path and are not consumed by the serving client\n         expected: measured ~1.10x on top of fsdp_elision\n  APPLY  obs_decode_elision         [BITEXACT  ] caller wants actions only; ['vae.decoder'] need never be resident or executed\n         expected: no latency win on this model (already skipped); frees resident memory, which is what sets episodes-per-GPU\n  APPLY  conditioning_prefill       [BITEXACT  ] ['text_kv', 'negative_text_kv'] declared pure in ['episode'] scope, but recomputed on all 72 forwards per control step (kv_refresh=2 + video=20 + action=50)\n         expected: hoists 2 artifact(s) out of the denoise loop. Measured ON LingBot-VA: 89 of 226 TFLOP per control cycle (39%), 67.6% of an action forward's layer FLOPs, 360 MiB resident. Those figures are that model's; for any other backbone the FLOP share and the residency cost follow its own layer count and artifact size. Launch-bound share means the wall-clock win is less than the FLOP win either way \u2014 measure it\n  skip   prompt_encoder_staging     [BITEXACT  ] no memory pressure on this device class (sm_110, 123 GiB): keeping the prompt encoder resident avoids per-reset PCIe moves and allocator churn\n  APPLY  ring_kv_addressing         [BITEXACT  ] streams ['video', 'action'] live across control steps in a pool that is currently addressed by boolean mask, costing a host sync and a full-pool copy per layer per forward\n         expected: measured 1.40x on LingBot-VA; measure this operating point and device (cost model: 208.8 ms)\n  APPLY  action_terminal_forward_elision [BITEXACT  ] the action phase's terminal forward writes provisional K/V that clear_pred_cache drops before any forward reads it; its output is discarded by construction\n         expected: one forward per cycle (the action pred-commit): 1 of 10 at 2V/4A, 1 of 8 at 2V/2A (cost model: 68.4 ms)\n  skip   sm120_gated_residual       [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  skip   sm120_wan_stage2           [BITEXACT  ] hardware: needs sm_120, device is sm_110. This is a DEVICE decision, not a model one.\n  skip   conv_layout_ndhwc          [NUMERIC   ] legal but tier NUMERIC exceeds ceiling BITEXACT: two Wan VAE Conv3D subgraphs can choose NCDHW or NDHWC by measurement on this device; NDHWC changes convolution accumulation order, so the swap is NUMERIC\n  skip   cfg_branch_elision         [NUMERIC   ] legal but tier NUMERIC exceeds ceiling BITEXACT: streams ['action'] discard their negative branch while ['video'] force batch duplication; forwards that can drop to batch 1 \u2014 action: 49 of 50 (commit steps exempt: their K/V feeds the other stream's negative branch)",
+    "runtime_source_sha256": "8a0858b27cf9b6294e2d178bdc4b01434579a60e4573e74a43597b95ac9d399d",
+    "schema_version": 1,
+    "seed_mode": "episode_plus_frame",
+    "startup": {
+      "action_shape": [
+        7,
+        4,
+        4
+      ],
+      "actions_sha256": "1d2101c3a39e13c422ec6b88b96963dbf8916f40dc0c25d1201287ccc826593c",
+      "calls": 6,
+      "repeat_byte_equal": true,
+      "scope": "Recorded-history startup only; not closed-loop quality or real-time qualification",
+      "seed": 9173
+    },
+    "startup_observation_sha256": "462d16557248b4923d3f4ed546d12a818461b8a94939f7737f4e360bdafbbc8b",
+    "startup_prompt": "put both the alphabet soup and the tomato sauce in the basket",
+    "synthetic": false,
+    "upstream_source_sha256": "2cb70400debda9b65849754bda51ce865b95e03bf15b050ecb919a8b7d88723d"
+  },
+  "jobs": [
+    {
+      "exit_code": 0,
+      "result": "task0-seed0.json",
+      "seed": 0,
+      "sha256": "3cd5ffb9629d85b09d61ecd2bec09c59dc80d640ec9e1ea86097138801058be4",
+      "steps": 280,
+      "success": true,
+      "task": 0,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task0-seed1.json",
+      "seed": 1,
+      "sha256": "684fc5c1185656cabc13b16866ff900e2b230eda21dba95f810eb7cf07c70166",
+      "steps": 280,
+      "success": true,
+      "task": 0,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task1-seed10000.json",
+      "seed": 10000,
+      "sha256": "a6b327a4d28fe56d18485e4cf864f4a611b935588ca0cde8cb9757877a09849c",
+      "steps": 271,
+      "success": true,
+      "task": 1,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task1-seed10001.json",
+      "seed": 10001,
+      "sha256": "e7acad186dc9fe8e989e36cdba9b30f11fd88c1241e9c66d5d254911e9dcd2bc",
+      "steps": 256,
+      "success": true,
+      "task": 1,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task2-seed20000.json",
+      "seed": 20000,
+      "sha256": "0c9b97345593ad7fa5a7d89352884654d3c7f0f1abedbe5b9a41a0b8d433c78b",
+      "steps": 274,
+      "success": true,
+      "task": 2,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task2-seed20001.json",
+      "seed": 20001,
+      "sha256": "8c541e6b70c87be03009f94e0242d9d4fdf85e6cbc599082e2002f2967af894f",
+      "steps": 242,
+      "success": true,
+      "task": 2,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task3-seed30000.json",
+      "seed": 30000,
+      "sha256": "aa232da2683b0a2387d9b527c86a0ca940ff9e7f574b3ad267275e81558c012f",
+      "steps": 240,
+      "success": true,
+      "task": 3,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task3-seed30001.json",
+      "seed": 30001,
+      "sha256": "be301d6f40c374c6f1ece56ea922cc7bf4828a5ee5740f0d9d135b776fffb143",
+      "steps": 266,
+      "success": true,
+      "task": 3,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task4-seed40000.json",
+      "seed": 40000,
+      "sha256": "d3869f6399d115d0dfdabe6fa730759bbaf1af795f24787e2099c4d0d8f61ffe",
+      "steps": 273,
+      "success": true,
+      "task": 4,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task4-seed40001.json",
+      "seed": 40001,
+      "sha256": "f03f003d6ce100e562ee8fd06831f0a3df583073d823d5a19fb6ad5c58864912",
+      "steps": 228,
+      "success": true,
+      "task": 4,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task5-seed50000.json",
+      "seed": 50000,
+      "sha256": "4b659baddef550e46c409321b673a2a65ecd4978b809e07afa46e3ca3262f07d",
+      "steps": 161,
+      "success": true,
+      "task": 5,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task5-seed50001.json",
+      "seed": 50001,
+      "sha256": "aa1de7c2866cfe00acb8d5da15c143f9d0e31280acdbaece2d9ff5a5050e4673",
+      "steps": 218,
+      "success": true,
+      "task": 5,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task6-seed60000.json",
+      "seed": 60000,
+      "sha256": "cd82b3e62702ba51b3ecceb0b1b94156c1fb70031108fec777b86ff996bb8325",
+      "steps": 379,
+      "success": true,
+      "task": 6,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task6-seed60001.json",
+      "seed": 60001,
+      "sha256": "ae21e6584cb9ded508decbfdeeaad7beced8f2212c0aaec550d34003eedf5594",
+      "steps": 215,
+      "success": true,
+      "task": 6,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task7-seed70000.json",
+      "seed": 70000,
+      "sha256": "64d85fc638e80331bc55bdf48e8107d0206ed1914948be263fd8551e2ebb00c0",
+      "steps": 277,
+      "success": true,
+      "task": 7,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task7-seed70001.json",
+      "seed": 70001,
+      "sha256": "bed17ddbfed7d76ed1364d68502c2fc1f34e7fc9305aa21bdc23245d652f6e48",
+      "steps": 280,
+      "success": true,
+      "task": 7,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task8-seed80000.json",
+      "seed": 80000,
+      "sha256": "cca9cd809bd9a91e8606e6195661a06036d2d0552a89048bb157c6b977bd470d",
+      "steps": 362,
+      "success": true,
+      "task": 8,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task8-seed80001.json",
+      "seed": 80001,
+      "sha256": "357caa4320899fa358e04df6ac89f775ff7376aa59a8a09698159b2a2440199a",
+      "steps": 366,
+      "success": true,
+      "task": 8,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task9-seed90000.json",
+      "seed": 90000,
+      "sha256": "5ffca21b98851070ece58b8a0d2bebff1bd0193923243dfaab833e6b8ec62cf5",
+      "steps": 254,
+      "success": true,
+      "task": 9,
+      "verified": true
+    },
+    {
+      "exit_code": 0,
+      "result": "task9-seed90001.json",
+      "seed": 90001,
+      "sha256": "9b75a4d0d1cb375e89a989ed5ce10a05370117ded29a8a9b536b5413f81e169e",
+      "steps": 284,
+      "success": true,
+      "task": 9,
+      "verified": true
+    }
+  ],
+  "precision": "native",
+  "runner_sha256": "ebbd6caaead88cd13fd2568dca6d39919712a68551f7031ae58be1635a9ca4de",
+  "scene_sha256": "3db9c51395720a1b95a0a2b4a766de33360e5670200eb020946073e3092bff74",
+  "status": "complete",
+  "verifier_sha256": "a6ac8b5338b01d443f761e2ebf799a75551ebf6fe3aa776b84ea97ebfa16e847"
+}

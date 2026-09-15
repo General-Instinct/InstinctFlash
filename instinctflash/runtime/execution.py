@@ -29,6 +29,8 @@ be a checkpoint describing its transport, which is exactly the coupling the plat
 from __future__ import annotations
 
 import atexit
+from collections import deque
+import threading
 import os
 import shutil
 import socket
@@ -131,9 +133,11 @@ class InProcessBackend:
     """
 
     def __init__(self, adapter, checkpoint, plan, *, device: str | None = None,
-                 nfe: Mapping[str, int] | None = None, seed: int | None = None):
+                 nfe: Mapping[str, int] | None = None, seed: int | None = None,
+                 step_cache=None):
         self._adapter, self._checkpoint, self._plan = adapter, checkpoint, plan
         self._device, self._nfe, self._seed = device, dict(nfe or {}), seed
+        self._step_cache = step_cache
         self._impl = None
 
     def _ensure(self):
@@ -149,29 +153,27 @@ class InProcessBackend:
             # from reset() below, so an older adapter signature is never called with a keyword
             # it does not know.
             kw = {"seed": self._seed} if self._seed is not None and _accepts_seed(build) else {}
+            if self._step_cache is not None:
+                kw["step_cache"] = self._step_cache
             self._impl = build(self._checkpoint, self._plan, device=self._device, nfe=self._nfe,
                                **kw)
             self._report_unapplied()
         return self._impl
 
     def _report_unapplied(self) -> None:
-        """Say so when a plan APPLIES passes the adapter cannot install.
+        """Distinguish planned passes from backend-reported installation.
 
-        A plan is a claim about what will happen to this model. An adapter without `install` cannot
-        make any of it happen, so a plan reporting APPLY while nothing is installed is the plan lying
-        -- and it lied quietly: pi05's plan says `conditioning_prefill` APPLIES, its adapter has no
-        install method, and the optimization simply did not occur. Reporting beats asserting, because
-        an adapter that deliberately builds an already-optimized object is legitimate; what is not
-        legitimate is the caller being unable to tell which case they are in.
+        A family may install optimizations inside build_in_process without a
+        separate install hook. Missing that hook cannot prove an unoptimized run.
         """
         if getattr(self._adapter, "install", None) is not None:
             return
         applied = [r.name for r in getattr(self._plan, "results", []) if getattr(r, "applies", False)]
         if applied:
             print(f"InstinctFlash: the plan applies {applied}, but the adapter for "
-                  f"{self._checkpoint.execution.backbone!r} implements no install(), so NONE of them "
-                  f"were installed. The model runs unoptimized. Implement install(server_module, plan) "
-                  f"to act on a plan, or treat the plan as advisory for this backbone.")
+                  f"{self._checkpoint.execution.backbone!r} has no separate install() hook. "
+                  f"Its build_in_process() may install family optimizations; inspect backend "
+                  f"statistics for actual execution. The plan alone is not installation evidence.")
 
     def predict(self, observation, *, executed_action=None):
         """One control cycle. Every internal phase the model needs happens inside this call.
@@ -187,8 +189,14 @@ class InProcessBackend:
         after producing an action (LingBot-VA advances a KV ring; an autoregressive model may append
         tokens) implements it and the runtime drives it here. That is what makes `predict` loopable
         WITHOUT the caller learning that phases exist.
+        An optional `validate_executed_action(action)` hook rejects unsupported
+        feedback before prediction changes the model's state.
         """
         impl = self._ensure()
+        validate_feedback = getattr(impl, "validate_executed_action", None)
+        if validate_feedback is not None:
+            # Reject unsupported feedback before prediction mutates model history.
+            validate_feedback(executed_action)
         fn = getattr(impl, "predict", None) or getattr(impl, "infer", None)
         if fn is None:
             raise NotImplementedError(
@@ -217,6 +225,12 @@ class InProcessBackend:
             impl.infer(dict(reset=True, **conditioning))
 
     def close(self):
+        impl = self._impl
+        close = getattr(impl, "close", None) if impl is not None else None
+        if close is not None:
+            close()
+        # Refused/failed cleanup retains the owned loop so the caller can retry
+        # after its active generation ends instead of orphaning model resources.
         self._impl = None
 
 
@@ -242,6 +256,9 @@ class WorkerBackend:
         self._timeout = startup_timeout_s
         self._proc: subprocess.Popen | None = None
         self._client = None
+        self._transport_client = None
+        self._log_chunks = deque(maxlen=16)
+        self._log_thread = None
 
     # -- lifecycle -------------------------------------------------------------------------------
     def _spawn(self):
@@ -269,6 +286,17 @@ class WorkerBackend:
                           device=self._device, nfe=self._nfe, **kw)
         self._proc = subprocess.Popen(cmd, env={**os.environ, **(env or {})},
                                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        # Model loaders and progress bars can fill a PIPE before the listener starts,
+        # or midway through an episode. Drain continuously and retain bounded diagnostics.
+        pipe = self._proc.stdout
+        def drain():
+            try:
+                for chunk in iter(lambda: pipe.read(4096), ''):
+                    self._log_chunks.append(chunk)
+            finally:
+                pipe.close()
+        self._log_thread = threading.Thread(target=drain, daemon=True)
+        self._log_thread.start()
         atexit.register(self.close)
         self._wait_for_port()
 
@@ -276,7 +304,9 @@ class WorkerBackend:
         deadline = time.time() + self._timeout
         while time.time() < deadline:
             if self._proc.poll() is not None:
-                out = (self._proc.stdout.read() if self._proc.stdout else "") or ""
+                if self._log_thread is not None:
+                    self._log_thread.join(timeout=1)
+                out = ''.join(self._log_chunks)
                 raise RuntimeError(
                     f"the model worker exited with code {self._proc.returncode} before it began "
                     f"serving.\n--- worker output (last 4000 chars) ---\n{out[-4000:]}")
@@ -294,22 +324,47 @@ class WorkerBackend:
         if self._client is None:
             if self._proc is None:
                 self._spawn()
-            self._client = _connect_client(self._port)
+            client = _connect_client(self._port)
+            wrap = getattr(self._adapter, "wrap_worker_client", None)
+            try:
+                self._client = wrap(client, self._checkpoint) if wrap is not None else client
+            except Exception:
+                close = getattr(client, "close", None)
+                if close is not None:
+                    close()
+                raise
+            self._transport_client = client
         return self._client
 
     # -- the same three methods ------------------------------------------------------------------
     def predict(self, observation, *, executed_action=None):
-        # `executed_action` feeds a commit phase, which lives server-side behind this transport.
-        # The facade passes the keyword unconditionally -- without accepting it here, every
-        # worker predict died on a TypeError before the adapter's own diagnostics could run.
-        # The existing websocket protocol carries no field for it, so it is not forwarded.
-        return self._ensure().infer(dict(observation))
+        client = self._ensure()
+        predict = getattr(client, "predict", None) or client.infer
+        out = predict(dict(observation))
+        commit = getattr(client, "commit", None)
+        if commit is not None:
+            action = out.get("action") if isinstance(out, dict) else out
+            commit(dict(observation), executed_action if executed_action is not None else action)
+        return out
 
     def reset(self, **conditioning):
-        self._ensure().infer(dict(reset=True, **conditioning))
+        client = self._ensure()
+        reset = getattr(client, "reset", None)
+        if reset is not None:
+            reset(**conditioning)
+        else:
+            client.infer(dict(reset=True, **conditioning))
 
     def close(self):
         self._client = None
+        transport, self._transport_client = self._transport_client, None
+        if transport is not None:
+            close = getattr(transport, "close", None)
+            if close is not None:
+                try:
+                    close()
+                except Exception:
+                    pass  # A failed socket close must not prevent terminating our child.
         p, self._proc = self._proc, None
         if p is not None and p.poll() is None:
             p.terminate()
@@ -317,6 +372,9 @@ class WorkerBackend:
                 p.wait(timeout=30)
             except subprocess.TimeoutExpired:
                 p.kill()
+                p.wait(timeout=5)
+        if self._log_thread is not None:
+            self._log_thread.join(timeout=1)
 
 
 # -- helpers -------------------------------------------------------------------------------------
@@ -339,21 +397,63 @@ def _serving_interpreter() -> str:
 
 
 def _connect_client(port: int):
-    """The websocket client the project already ships. Imported lazily and only by the worker path."""
-    root = os.environ.get("LINGBOT_ROOT", "/home/ubuntu/lingbot-va")
-    for cand in (f"{root}/wan_va/utils/Simple_Remote_Infer/deploy", f"{root}/evaluation/robotwin"):
-        if Path(cand, "websocket_client_policy.py").exists():
-            if cand not in sys.path:
-                sys.path.insert(0, cand)
-            from websocket_client_policy import WebsocketClientPolicy  # noqa: PLC0415
-            return WebsocketClientPolicy(host="127.0.0.1", port=port)
-    raise RuntimeError(
-        f"no websocket client found under {root}. Set LINGBOT_ROOT, or load with "
-        f"placement='in_process' in an interpreter that can host the model.")
+    """Use the shipped wire codec; transport must not depend on a model checkout's imports."""
+    from websockets.sync.client import connect
+    from instinctflash.serving.msgpack_numpy import Packer, unpackb
+
+    class Client:
+        def __init__(self):
+            self.packer = Packer()
+            self.connection = connect(f"ws://127.0.0.1:{port}", compression=None,
+                                      max_size=None, ping_interval=None, close_timeout=5)
+            try:
+                self.metadata = unpackb(self.connection.recv())
+            except Exception:
+                self.connection.close()
+                raise
+
+        def infer(self, observation):
+            self.connection.send(self.packer.pack(observation))
+            message = self.connection.recv()
+            if isinstance(message, str):
+                raise RuntimeError(f"model worker refused prediction: {message[:4000]}")
+            return unpackb(message)
+
+        def close(self):
+            self.connection.close()
+
+    return Client()
 
 
 def choose_backend(placement: str, adapter, checkpoint, plan, **kw) -> tuple[ExecutionBackend, str]:
     """Pick a placement. Returns (backend, one-line reason) so `explain()` can report it."""
+    from instinctflash.runtime.precision import constrain_precision, resolve_precision, require_fp8_plan
+
+    precision = kw.pop("precision", "native")
+    if kw.get("step_cache") is None:
+        kw.pop("step_cache", None)
+    resolve_precision(precision, None, placement)
+    constrain_precision(plan, precision)
+    if precision == "fp8":
+        from instinctflash.runtime.engine_backend import (
+            EngineBackend, engine_available,
+        )
+        eng_result = require_fp8_plan(plan, checkpoint.execution.backbone)
+        eng_ok, eng_why = (engine_available(checkpoint.execution.backbone)
+                           if checkpoint.execution.backbone in ("cosmos3_policy", "dreamzero")
+                           else engine_available())
+        if not eng_ok:
+            raise RuntimeError(f"precision='fp8' unavailable: {eng_why}")
+        if kw.get("seed") is not None:
+            raise RuntimeError(
+                "seed= is not supported by the FP8 engine. Use precision='native' for seeded execution.")
+        engine_kw = dict(kw)
+        engine_kw.pop("startup_timeout_s", None)
+        engine_kw.pop("seed", None)
+        backend = EngineBackend(adapter, checkpoint, plan, **engine_kw)
+        _mark_plan_engine_executed(plan, eng_result)
+        return backend, ("engine: " + eng_why + " -> explicit FP8 execution; chain tier "
+                         f"{plan.tier().name} (live execution uncertified)")
     ok, why = can_host_in_process(adapter)
     if placement == "auto":
         placement = "in_process" if ok else "worker"
@@ -368,5 +468,46 @@ def choose_backend(placement: str, adapter, checkpoint, plan, **kw) -> tuple[Exe
     backend_kw = dict(kw)
     if backend_cls is InProcessBackend:
         backend_kw.pop("startup_timeout_s", None)
+    else:
+        resolved = backend_kw.pop("step_cache", None)
+        if resolved is not None and (resolved.dynamic or resolved.fixed_steps != 8):
+            raise ValueError("DreamZero altered step schedule is not supported by worker placement; "
+                             "use placement='in_process'")
     backend = backend_cls(adapter, checkpoint, plan, **backend_kw)
     return backend, why
+
+
+def _mark_plan_engine_executed(plan, eng_result) -> None:
+    """Report the selected FP8 engine and demote torch passes it does not execute."""
+    results = getattr(plan, "results", None)
+    if not isinstance(results, list):
+        return
+    from instinctflash.planners.planner import PassResult
+
+    # H100 wraps the native Torch adapter; its installed passes remain in effect.
+    # Only the separate fused engine replaces that graph.
+    retains_torch_passes = eng_result.params.get("executor") == "h100_torch_fp8"
+    for i, r in enumerate(results):
+        if r.name == "engine_offload":
+            if getattr(r, "excluded", False):
+                # A caller exclusion is never rewritten to APPLY. choose_backend refuses to build
+                # the engine for an excluded plan, so reaching this line means a bug upstream --
+                # leaving the entry untouched keeps explain() truthful either way.
+                continue
+            # Strip the optimizer's ceiling-demotion prefix (planner.compile writes
+            # "legal but tier ... exceeds ceiling ...: <original reason>") so the restored
+            # entry reads as the pass's own verdict, not as a contradiction.
+            reason = r.reason
+            if reason.startswith("legal but tier ") and ": " in reason:
+                reason = reason.split(": ", 1)[1]
+            results[i] = PassResult(
+                name=r.name, applies=True, tier=r.tier,
+                reason=f"engine placement selected: {reason}",
+                params=r.params, expected_win=r.expected_win)
+        elif r.applies and not retains_torch_passes and r.name != "dreamzero_schedule":
+            results[i] = PassResult(
+                name=r.name, applies=False, tier=r.tier,
+                reason=(f"engine placement: execution goes through the fused engine pipeline, "
+                        f"which is not a torch module graph, so there is nothing for this pass "
+                        f"to install into. It was legal here: {r.reason}"),
+                params=r.params, expected_win=r.expected_win)

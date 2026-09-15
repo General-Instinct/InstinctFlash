@@ -50,27 +50,52 @@ class GraphCaptureApplicable:
     hardware = HardwareReq(requires=("cuda", "cuda_graphs"))
 
     def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
-        # LAUNCH-BOUND DEVICES ONLY, and that is a measured law, not taste. Capture pays where
-        # kernel LAUNCH overhead dominates the forward; on the one bandwidth-bound edge class
-        # this repo has measured (sm110/Thor) the same forwards run ~10x longer on ~15x less
-        # memory bandwidth, launch overhead vanishes into them, and capture measured 1.04x on
-        # pi05 -- no battlefield. Checked before the shape question because it holds for every
-        # model on the device. Only the MEASURED class declines; an unmeasured sm keeps the
-        # launch-bound default, stated as such by the device_class surface.
-        dev = getattr(deployment, "device", None)
-        if dev is not None and dev.device_class()[0] == "bandwidth-bound-edge":
+        # Capture safety and benefit are model/path properties, not an SM-wide law.
+        # Keep unmeasured edge paths conservative, but never cite pi05 as their evidence.
+        notes = getattr(spec, "notes", {}) or {}
+        declared_tier = notes.get("capture_tier")
+        if declared_tier is None and str(notes.get("numeric_tier", "")).startswith("NUMERIC"):
+            # Older separately installed adapters already describe a numeric execution
+            # contract but predate capture_tier. A core upgrade must not label them exact.
+            declared_tier = "NUMERIC"
+        tier = Tier[declared_tier or "BITEXACT"]
+        if notes.get("capture_supported") is False:
             return PassResult(
-                self.name, False, Tier.BITEXACT,
-                reason=(f"device class bandwidth-bound-edge "
-                        f"(sm{dev.capability[0]}{dev.capability[1]}): capture is a launch-bound-"
-                        f"device optimization and the measured law flips here -- forwards run "
-                        f"~10x longer on ~15x less memory bandwidth, launch overhead vanishes "
-                        f"into them, capture measured 1.04x on pi05 (Thor). Declined so the plan "
-                        f"reports the device truth rather than a legal-but-pointless apply."))
+                self.name, False, tier,
+                reason=notes.get("capture_unavailable_reason",
+                                 "This adapter does not implement CUDA graph capture"))
+        dev = getattr(deployment, "device", None)
+        device_evidence = None
+        if dev is not None and dev.capability == (11, 0):
+            backbone = notes.get("backbone")
+            if backbone in {"pi05", "lingbot_vla"} and spec.phase("action").nfe == 10:
+                device_evidence = (
+                    f"{backbone} native NFE=10 on Thor: the 2026-09-09 matched study "
+                    "measured capture gains with byte-equal actions on its inputs; "
+                    "see eval/fp8_comparison_2026-09-09. The family startup exact "
+                    "self-check still decides admission for this checkpoint and process.")
+            elif backbone == "lingbot_vla_v2" and spec.phase("action").nfe == 10:
+                device_evidence = (
+                    "LingBot-VLA-V2 native NFE=10 on Thor: capture measured separately; "
+                    "see eval/edge_defaults_2026-09-06. Performance evidence is scoped to "
+                    "the recorded checkpoint, inputs and stack, not a quality certificate.")
+            elif backbone == "groot_n17" and spec.phase("action").nfe == 4:
+                device_evidence = (
+                    "GR00T N1.7 native NFE=4 on Thor: paired and repeated 2026-09-11 "
+                    "DiT graph measurements preserved finite action bytes on the tested "
+                    "checkpoint and inputs, with modest latency gains; see "
+                    "eval/groot_native_graphs_2026-09-11. Only the existing DiT graph "
+                    "is admitted here, not experimental text-block fusions. The family "
+                    "startup exact self-check still decides admission for this process.")
+            else:
+                return PassResult(
+                    self.name, False, tier,
+                    reason="Thor capture performance is unmeasured for this family/operating point; "
+                           "retain the eager default pending a paired device measurement.")
 
         static, why = spec.shapes_static_across_cycles()
         if not static:
-            return PassResult(self.name, False, Tier.BITEXACT,
+            return PassResult(self.name, False, tier,
                               f"{why}, so a captured graph is invalidated every cycle and recapture "
                               f"costs more than replay saves (measured 1.43x SLOWER on LingBot-VA)")
 
@@ -78,11 +103,15 @@ class GraphCaptureApplicable:
         return PassResult(
             name=self.name,
             applies=True,
-            tier=Tier.BITEXACT,
+            tier=tier,
             reason=(f"{why}, so one capture serves every cycle; {n_fwd} forward(s) per control step "
-                    f"({spec.forwards_breakdown()}) each pay full dispatch cost today"),
+                    f"({spec.forwards_breakdown()}) each pay full dispatch cost today"
+                    + (f"; {device_evidence}" if device_evidence else "")
+                    + ("; this adapter uses a numerical-envelope self-check, not an exact gate"
+                       if tier == Tier.NUMERIC else "")),
             params={"capture_unit_from": "adapter sites of kind CAPTURE_UNIT",
-                    "verify": "host-effect gate refuses a region that mutates host state"},
+                    "verify": "host-effect gate refuses a region that mutates host state",
+                    **({"device_evidence": device_evidence} if device_evidence else {})},
             # ATTRIBUTED. This pass is generic and will fire on models these numbers were never taken
             # on, so the number names the model it came from. Presenting pi05's 3.16x as a forecast
             # for an unseen backbone is the failure mode conditioning_prefill already had once.

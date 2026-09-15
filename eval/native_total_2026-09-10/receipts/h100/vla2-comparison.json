@@ -1,0 +1,157 @@
+{
+  "family": "vla2",
+  "device": "NVIDIA H100 80GB HBM3",
+  "status": "BASELINE_VARIABLE",
+  "baseline_p50_ms": 848.8664506003261,
+  "current_p50_ms": 840.5214988160878,
+  "repeated_baseline_p50_ms": 907.4559628497809,
+  "speedup_range": [
+    1.0099283026026014,
+    1.0796344461479845
+  ],
+  "applied_passes": [],
+  "baseline_applied_passes": [],
+  "unchanged_transform_plan": true,
+  "execution_policy": {
+    "category": "BITEXACT",
+    "precision": "native",
+    "tier_ceiling": "bitexact",
+    "transform_tier": "BITEXACT",
+    "nfe": {
+      "prefix": 1,
+      "action": 10
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "source_drift": {
+    "current": [],
+    "baseline_b": []
+  },
+  "backend_stats": {},
+  "reference_scope": "Direct upstream eager policy versus full default native Runtime; same I/O wrappers, weights, dtype and steps",
+  "comparisons": {
+    "baseline_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/vla2-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/vla2-current.json",
+      "baseline_sha256": "19680176c4b99a79a9d5fdd2a0acd945c540eacb350aa0176225cc35d99dcf5c",
+      "candidate_sha256": "44334b68943ed20ce27f5c427f187b3e4ebabf0940ba263edf4caeb25784b539",
+      "protocol_differences": {},
+      "bitexact": false,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            50,
+            14
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.030101507902145386
+        }
+      ],
+      "candidate_stats": {
+        "captured": false,
+        "replays": 0,
+        "cuda_kernels": false,
+        "moe_layers": 0,
+        "rmsnorm_modules": 0,
+        "gpu_image_preprocess": false,
+        "vision_graph": false,
+        "vision_replays": 0,
+        "prefill_graph": false,
+        "prefill_replays": 0,
+        "ptxas": {}
+      },
+      "baseline_p50_ms": 848.8664506003261,
+      "candidate_p50_ms": 840.5214988160878,
+      "speedup": 1.0099283026026014,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 4,
+      "total_calls": 23
+    },
+    "baseline_repeat": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/vla2-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/vla2-baseline_b.json",
+      "baseline_sha256": "19680176c4b99a79a9d5fdd2a0acd945c540eacb350aa0176225cc35d99dcf5c",
+      "candidate_sha256": "1a97b4029bc21fa7c7a95e341bb4a3fd8ba6e029bc389c5502d8f6f4c3bdfc48",
+      "protocol_differences": {},
+      "bitexact": false,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            50,
+            14
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.03225162625312805
+        }
+      ],
+      "candidate_stats": {
+        "captured": false,
+        "replays": 0,
+        "cuda_kernels": false,
+        "moe_layers": 0,
+        "rmsnorm_modules": 0,
+        "gpu_image_preprocess": false,
+        "vision_graph": false,
+        "vision_replays": 0,
+        "prefill_graph": false,
+        "prefill_replays": 0,
+        "ptxas": {}
+      },
+      "baseline_p50_ms": 848.8664506003261,
+      "candidate_p50_ms": 907.4559628497809,
+      "speedup": 0.9354354209481858,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 1,
+      "total_calls": 23
+    },
+    "repeat_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/vla2-baseline_b.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/vla2-current.json",
+      "baseline_sha256": "1a97b4029bc21fa7c7a95e341bb4a3fd8ba6e029bc389c5502d8f6f4c3bdfc48",
+      "candidate_sha256": "44334b68943ed20ce27f5c427f187b3e4ebabf0940ba263edf4caeb25784b539",
+      "protocol_differences": {},
+      "bitexact": false,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            50,
+            14
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.01910102367401123
+        }
+      ],
+      "candidate_stats": {
+        "captured": false,
+        "replays": 0,
+        "cuda_kernels": false,
+        "moe_layers": 0,
+        "rmsnorm_modules": 0,
+        "gpu_image_preprocess": false,
+        "vision_graph": false,
+        "vision_replays": 0,
+        "prefill_graph": false,
+        "prefill_replays": 0,
+        "ptxas": {}
+      },
+      "baseline_p50_ms": 907.4559628497809,
+      "candidate_p50_ms": 840.5214988160878,
+      "speedup": 1.0796344461479845,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 4,
+      "total_calls": 23
+    }
+  },
+  "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+}

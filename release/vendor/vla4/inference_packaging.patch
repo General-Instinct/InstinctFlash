@@ -1,0 +1,156 @@
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -1,38 +1,45 @@
+ [build-system]
+-requires = ["setuptools>=61.0", "wheel"]
++requires = ["setuptools>=77", "wheel"]
+ build-backend = "setuptools.build_meta"
+ 
+ [project]
+ name = "lingbotvla"
+-dynamic = ["dependencies", "optional-dependencies"]
+ version = "0.0.1"
+-authors = [
+-  { name="Robbyant Team"},
++description = "Pinned upstream inference package with explicit Thor dependency metadata"
++requires-python = ">=3.12,<3.13"
++dependencies = [
++  "accelerate==1.14.0",
++  "datasets==5.0.1",
++  "diffusers==0.36.0",
++  "einops==0.8.2",
++  "huggingface-hub==0.35.3",
++  "ipdb==0.13.13",
++  "lerobot==0.4.4",
++  "msgpack==1.2.1",
++  "numpy==2.2.6",
++  "omegaconf==2.3.1",
++  "opencv-python-headless==4.13.0.92",
++  "packaging==25.0",
++  "pandas==3.0.5",
++  "pillow==12.3.0",
++  "pip==24.0",
++  "pydantic==2.13.4",
++  "pyyaml==6.0.3",
++  "safetensors==0.8.0",
++  "scipy==1.18.1",
++  "sentencepiece==0.2.2",
++  "setuptools==81.0.0",
++  "tokenizers==0.21.1",
++  "torch==2.11.0",
++  "torchdata==0.11.0",
++  "torchvision==0.26.0",
++  "transformers==4.51.3",
++  "websockets==17.0.1"
+ ]
+-description = "LingBot-VLA: A Pragmatic VLA Foundation Model"
+-requires-python = ">=3.8"
+-license = "Apache-2.0"
+-license-files = ["LICENSE"]
+ 
+-[tool.ruff]
+-target-version = "py312"
+-line-length = 119
+-indent-width = 4
++[tool.setuptools.packages.find]
++where = ["."]
++include = ["lingbotvla*"]
+ 
+-[tool.ruff.lint]
+-ignore = ["C901", "E501", "E741", "W605", "C408"]
+-select = ["C", "E", "F", "I", "W"]
+-
+-[tool.ruff.lint.per-file-ignores]
+-"__init__.py" = ["E402", "F401", "F403", "F811"]
+-
+-[tool.ruff.lint.isort]
+-lines-after-imports = 2
+-known-first-party = ["lingbotvla"]
+-known-third-party = ["torch", "transformers", "wandb"]
+-
+-[tool.ruff.format]
+-quote-style = "double"
+-indent-style = "space"
+-skip-magic-trailing-comma = false
+-line-ending = "auto"
++[tool.setuptools.package-data]
++"*" = ["**/*.json", "**/*.yaml", "**/*.yml", "**/*.toml", "**/*.txt", "**/*.npy", "**/*.npz"]
+--- a/setup.py
++++ b/setup.py
+@@ -1,74 +1,3 @@
+-import importlib.metadata
+-import importlib.util
+-import os
+-import re
+-from typing import List
++from setuptools import setup
+ 
+-from setuptools import find_packages, setup
+-
+-
+-def _is_package_available(name: str) -> bool:
+-    return importlib.util.find_spec(name) is not None
+-
+-
+-def _is_torch_npu_available() -> bool:
+-    return _is_package_available("torch_npu")
+-
+-
+-def _is_torch_available() -> bool:
+-    return _is_package_available("torch")
+-
+-
+-def _is_torch_cuda_available() -> bool:
+-    if _is_torch_available():
+-        import torch
+-
+-        return torch.cuda.is_available()
+-    else:
+-        return False
+-
+-
+-def get_version() -> str:
+-    with open(os.path.join("lingbotvla", "__init__.py"), encoding="utf-8") as f:
+-        file_content = f.read()
+-        pattern = r"{}\W*=\W*\"([^\"]+)\"".format("__version__")
+-        (version,) = re.findall(pattern, file_content)
+-        return version
+-
+-
+-def get_requires() -> List[str]:
+-    with open("requirements.txt", encoding="utf-8") as f:
+-        file_content = f.read()
+-        lines = [line.strip() for line in file_content.strip().split("\n") if not line.startswith("#")]
+-        return lines
+-
+-
+-BASE_REQUIRE = [
+-    "torchdata>=0.8.0,<1.0",
+-    "blobfile>=3.0.0",
+-    "torch==2.8.0",
+-    "torchvision==0.23.0",
+-    "torchaudio==2.8.0",
+-]
+-
+-def main():
+-    # Update install_requires and extras_require
+-    install_requires = list(set(BASE_REQUIRE + get_requires()))
+-
+-
+-    setup(
+-        name="lingbotvla",
+-        version=get_version(),
+-        python_requires=">=3.8.0",
+-        packages=find_packages(exclude=["scripts", "tasks", "tests"]),
+-        url="https://www.robbyant.com",
+-        license="Apache 2.0",
+-        author="Robbyant Team",
+-        description="LingBot-VLA: A Pragmatic VLA Foundation Model",
+-        install_requires=install_requires,
+-        include_package_data=False,
+-    )
+-
+-
+-if __name__ == "__main__":
+-    main()
++setup()

@@ -59,18 +59,32 @@ Two properties worth knowing before changing this file:
 
 from __future__ import annotations
 
-import torch
-
 from instinctflash.adapters.base import AdapterSpec, KVLifetime
+from instinctflash.descriptors.deployment import DeploymentSpec
 from instinctflash.passes.contract import (
     Applicability, BenchResult, CostTerm, DeviceProfile, Discovery, HardwareReq, Tier,
     VerifyResult,
 )
+from instinctflash.planners.planner import PassResult, Tier as PlanTier
 
 
 class RingKVAddressing:
     name = "ring_kv_addressing"
     hardware = HardwareReq()   # pure indexing change; no arch requirement
+    requires_capabilities = frozenset({"backbone:wan_va"})
+
+    def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
+        """Bridge the state-pass protocol into the public planner's PassResult protocol."""
+        app = self.applicability(spec, deployment.device)
+        expected = "measured 1.40x on LingBot-VA; measure this operating point and device"
+        if app.applies and deployment.device is not None:
+            expected += (
+                f" (cost model: {self.expected_delta_ms(spec, deployment.device):.1f} ms)"
+            )
+        return PassResult(
+            self.name, app.applies, PlanTier[app.claimed_tier.name], app.reason,
+            params=app.params, expected_win=expected,
+        )
 
     # ---- 1 + 2. detection and applicability ------------------------------------------------
     def applicability(self, spec: AdapterSpec, device: DeviceProfile) -> Applicability:
@@ -105,6 +119,7 @@ class RingKVAddressing:
 
     # ---- install ---------------------------------------------------------------------------
     def install(self, server_module, server_cls) -> None:
+        import torch
         import modules.model as M
 
         Attn = M.WanAttention

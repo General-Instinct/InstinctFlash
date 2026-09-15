@@ -1,0 +1,229 @@
+{
+  "arms": {
+    "pi05-libero-native-api-latency": {
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+      "precision": "native",
+      "action_dim": 7,
+      "chunk_size": 50,
+      "n_action_steps": 50,
+      "setup_seconds": 165.69735829497222,
+      "groups": {
+        "initial/generation": {
+          "count": 1,
+          "p50_ms": 828.0103679280728,
+          "p99_ms": 828.0103679280728,
+          "max_ms": 828.0103679280728
+        },
+        "initial/buffered": {
+          "count": 49,
+          "p50_ms": 2.6210800278931856,
+          "p99_ms": 3.205436281859873,
+          "max_ms": 3.44109907746315
+        },
+        "fixed_state/generation": {
+          "count": 8,
+          "p50_ms": 408.8471530121751,
+          "p99_ms": 420.38934966898523,
+          "max_ms": 421.0195209598169
+        },
+        "fixed_state/buffered": {
+          "count": 392,
+          "p50_ms": 2.4610694963485003,
+          "p99_ms": 2.834295961074531,
+          "max_ms": 3.0101638985797763
+        },
+        "varying_state/generation": {
+          "count": 8,
+          "p50_ms": 405.38297896273434,
+          "p99_ms": 420.4699441243429,
+          "max_ms": 420.63929000869393
+        },
+        "varying_state/buffered": {
+          "count": 392,
+          "p50_ms": 2.4559999583289027,
+          "p99_ms": 2.829552044859156,
+          "max_ms": 3.1943940557539463
+        }
+      },
+      "matmul_tf32": false,
+      "cudnn_benchmark": false,
+      "runtime_backend": "InProcessBackend",
+      "probe_sha256": "430490027656e2305648531d889b11642fef1100dfd7dadfe06afd11fa80a864",
+      "artifacts_sha256": "f29314c6a0affbc478602953586a344d1ea01c2a3ae6ef92bbb3c5885664027c",
+      "scope": "Public API latency on recorded images and synthetic states; no transport, simulator or task-quality certificate"
+    },
+    "pi05-libero-native-capture-api-latency-frt": {
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+      "precision": "native",
+      "action_dim": 7,
+      "chunk_size": 50,
+      "n_action_steps": 50,
+      "setup_seconds": 166.1903065959923,
+      "groups": {
+        "initial/generation": {
+          "count": 1,
+          "p50_ms": 808.7321229977533,
+          "p99_ms": 808.7321229977533,
+          "max_ms": 808.7321229977533
+        },
+        "initial/buffered": {
+          "count": 49,
+          "p50_ms": 2.5790140498429537,
+          "p99_ms": 3.128613545559344,
+          "max_ms": 3.442366956733167
+        },
+        "fixed_state/generation": {
+          "count": 8,
+          "p50_ms": 339.05146445613354,
+          "p99_ms": 563.364812536165,
+          "max_ms": 579.7776450635865
+        },
+        "fixed_state/buffered": {
+          "count": 392,
+          "p50_ms": 4.218643938656896,
+          "p99_ms": 6.911858761450275,
+          "max_ms": 7.061898009851575
+        },
+        "varying_state/generation": {
+          "count": 8,
+          "p50_ms": 339.123476005625,
+          "p99_ms": 340.60832654940896,
+          "max_ms": 340.61609290074557
+        },
+        "varying_state/buffered": {
+          "count": 392,
+          "p50_ms": 4.322160966694355,
+          "p99_ms": 6.80144849931821,
+          "max_ms": 7.10574199911207
+        }
+      },
+      "matmul_tf32": false,
+      "cudnn_benchmark": false,
+      "runtime_backend": "InProcessBackend",
+      "probe_sha256": "9828c068601500c45edd8a1879da5ee203f39b2497f1a50f06005adc057620b3",
+      "artifacts_sha256": "5e22b5c957a1fc82195466264e69ed56129fac2d5c371774a653228b0f807742",
+      "scope": "Public API latency on recorded images and synthetic states; no transport, simulator or task-quality certificate",
+      "graph_stats": {
+        "installed": true,
+        "captured": true,
+        "rejected": false,
+        "replays": 158
+      },
+      "parameter_dtypes": [
+        "torch.bfloat16",
+        "torch.float32"
+      ],
+      "capture_self_check": [
+        {
+          "n": 6,
+          "bitexact": true,
+          "max_abs_delta": 0.0,
+          "seconds": 0.1816318400669843,
+          "cases": [
+            {
+              "input": 1,
+              "timestep": 1.0,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 2,
+              "timestep": 0.899999976,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 3,
+              "timestep": 0.800000012,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 4,
+              "timestep": 1.0,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 5,
+              "timestep": 0.899999976,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 6,
+              "timestep": 0.800000012,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    "pi05-libero-fp8-api-latency-cached": {
+      "model_id": "lerobot/pi05_libero_finetuned_v044",
+      "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+      "precision": "fp8",
+      "action_dim": 7,
+      "chunk_size": 50,
+      "n_action_steps": 50,
+      "setup_seconds": 3.8355570279527456,
+      "groups": {
+        "initial/generation": {
+          "count": 1,
+          "p50_ms": 3612.7152210101485,
+          "p99_ms": 3612.7152210101485,
+          "max_ms": 3612.7152210101485
+        },
+        "initial/buffered": {
+          "count": 49,
+          "p50_ms": 0.9068630170077085,
+          "p99_ms": 1.4964528614655124,
+          "max_ms": 1.665901974774897
+        },
+        "fixed_state/generation": {
+          "count": 8,
+          "p50_ms": 61.255489476025105,
+          "p99_ms": 61.77714494871907,
+          "max_ms": 61.80299399420619
+        },
+        "fixed_state/buffered": {
+          "count": 392,
+          "p50_ms": 1.3992390013299882,
+          "p99_ms": 1.6850637272000306,
+          "max_ms": 1.7916240030899644
+        },
+        "varying_state/generation": {
+          "count": 8,
+          "p50_ms": 53.86810650816187,
+          "p99_ms": 659.8384898842778,
+          "max_ms": 661.5988470148295
+        },
+        "varying_state/buffered": {
+          "count": 392,
+          "p50_ms": 1.3747710036113858,
+          "p99_ms": 1.6386734670959413,
+          "max_ms": 1.8270689761266112
+        }
+      },
+      "matmul_tf32": false,
+      "cudnn_benchmark": false,
+      "runtime_backend": "EngineBackend",
+      "probe_sha256": "8fac225a75b49cc539e936d0aba870ab294b94e7d775a8270ad526b0b4d174f5",
+      "artifacts_sha256": "b6cd36b657ee13574467a63a72da93e90f5865a70037924a5ce03dfd6fb2f995",
+      "scope": "Public API latency on recorded images and synthetic states; no transport, simulator or task-quality certificate",
+      "source_sha256": {
+        "Pi05EngineLoop": "be4acf231032d8e24e588962aea32a22efcb601d54275994c12f32b540526668",
+        "Pi05TorchFrontendThor": "1045470b6bc0e3288aed00fae7421828561754787fde6f6fcc047b9d012904b9"
+      }
+    }
+  },
+  "native_eager_capture_actions_equal": true,
+  "compared_action_count": 850,
+  "ratios": {
+    "fixed_state": 5.535038040775684,
+    "varying_state": 6.295440808825207
+  }
+}

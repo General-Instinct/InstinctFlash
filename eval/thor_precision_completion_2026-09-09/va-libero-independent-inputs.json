@@ -1,0 +1,204 @@
+{
+  "scope": "Native and FP8 public Runtime independent camera/prompt/executed-history/reset controls. Diagnostic single calls are not a latency benchmark or closed-loop task quality certificate.",
+  "arms": {
+    "native": {
+      "precision": "native",
+      "scope": "Independent input/reset controls, recorded LIBERO frames and executed actions; no closed-loop quality or sustained latency certificate",
+      "setup_seconds": 24.4850398840008,
+      "nfe": {
+        "video": 20,
+        "action": 50
+      },
+      "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+      "torch": "2.11.0+cu130",
+      "source_sha256": {
+        "instinctflash.adapters.lingbot_va": "dbb0c54404dd84b04f78383c9ad983ded476694b76390ee7595aeeb44c1c3ce4",
+        "instinctflash.runtime.wan_va_engine": "b4b254da55986c2d30c706714d5ae50c6314ef02985b405bf18b446aa50424df"
+      },
+      "ok": true,
+      "calls": [
+        {
+          "label": "baseline_initial",
+          "ms": 4433.872841000266,
+          "frame": 0
+        },
+        {
+          "label": "baseline_history",
+          "ms": 4217.121515999679,
+          "frame": 4
+        },
+        {
+          "label": "camera_observation.images.agentview_rgb",
+          "ms": 3936.7901919995347,
+          "frame": 0
+        },
+        {
+          "label": "camera_observation.images.eye_in_hand_rgb",
+          "ms": 3934.33757099956,
+          "frame": 0
+        },
+        {
+          "label": "changed_prompt",
+          "ms": 3936.436376000529,
+          "frame": 0
+        },
+        {
+          "label": "execution_initial",
+          "ms": 3937.910646999626,
+          "frame": 0
+        },
+        {
+          "label": "changed_execution",
+          "ms": 4166.680413999529,
+          "frame": 4
+        },
+        {
+          "label": "restored_initial",
+          "ms": 3941.657913000199,
+          "frame": 0
+        },
+        {
+          "label": "restored_history",
+          "ms": 4150.146742999823,
+          "frame": 4
+        }
+      ],
+      "camera_controls": [
+        "observation.images.agentview_rgb",
+        "observation.images.eye_in_hand_rgb"
+      ],
+      "prompt_changes_actions": true,
+      "executed_history_changes_actions": true,
+      "reset_restores_action_bytes": true,
+      "future_feedback_does_not_change_current_action": true,
+      "actions_sha256": "cf3dbaf45bdd3891486e26a21304b7694e6db30cd303de1191b2a575b009bc2a",
+      "local_verification": {
+        "finite_arrays": 9,
+        "byte_controls_verified": true,
+        "sha256": {
+          "va-libero-public-inputs-native.json": "f0f85f7a25b9de1beb7e9f4e11e21d5a4f5ef830c031e350a08fabbd6329faa7",
+          "va-libero-public-inputs-native.npz": "cf3dbaf45bdd3891486e26a21304b7694e6db30cd303de1191b2a575b009bc2a"
+        }
+      }
+    },
+    "fp8": {
+      "precision": "fp8",
+      "scope": "Independent input/reset controls, recorded LIBERO frames and executed actions; no closed-loop quality or sustained latency certificate",
+      "setup_seconds": 24.48367892799979,
+      "fp8_declaration": {
+        "backbone": "wan_va",
+        "frontend": "serving/flash_rt/frontends/torch/wan_va_thor.py",
+        "steps": {
+          "video": 20,
+          "action": 50
+        },
+        "shifts": {
+          "video": 5.0,
+          "action": 0.05
+        },
+        "guidance": {
+          "video": [
+            "cfg",
+            5.0
+          ],
+          "action": [
+            "positive_only",
+            1.0
+          ]
+        },
+        "cfg_batch": 2,
+        "forwards_per_cycle": 74,
+        "forwards_per_cycle_served_p010": 73,
+        "evidence": "the build sizes its AdaLN step tables from the declared grids (video t=[1000.0, 989.5833129882812, 978.2608642578125, 965.9090576171875, 952.3810424804688, 937.5, 921.0526123046875, 902.7777709960938, 882.3529052734375, 859.375, 833.3333129882812, 803.5714111328125, 769.2307739257812, 729.1666259765625, 681.8181762695312, 625.0, 555.5556030273438, 468.75, 357.1428527832031, 208.3333282470703, 0.0], action t=[999.999755859375, 710.1448974609375, 545.4542236328125, 439.25238037109375, 365.07940673828125, 310.3447265625, 268.2926330566406, 234.9727325439453, 207.9208526611328, 185.52035522460938, 166.6666717529297, 150.5791473388672, 136.69064331054688, 124.57913208007812, 113.92406463623047, 104.47760009765625, 96.04521179199219, 88.47187042236328, 81.63265228271484, 75.42578887939453, 69.76744842529297, 64.58797454833984, 59.829063415527344, 55.44147872924805, 51.383392333984375, 47.61905288696289, 44.117645263671875, 40.85257339477539, 37.80068588256836, 34.9417610168457, 32.25806427001953, 29.733957290649414, 27.355623245239258, 25.11078453063965, 22.988508224487305, 20.979019165039062, 19.073570251464844, 17.26427459716797, 15.54404067993164, 13.906447410583496, 12.34567928314209, 10.856452941894531, 9.43396282196045, 8.07381820678711, 6.772008895874023, 5.524861812591553, 4.329004287719727, 3.1813361644744873, 2.0790021419525146, 1.019368052482605, 0.0]), allocates a 2-stream KV slab, and runs 74 DiT forwards per cycle; WanVaTorchFrontendThor.assert_point refuses any other request",
+        "geometry": {
+          "frame_chunk": 4,
+          "latent_h": 8,
+          "latent_w": 16,
+          "action_per_frame": 4
+        },
+        "pool_slots": 2160,
+        "precision": "fp8",
+        "fp16_families": [],
+        "action_terminal_elision": true,
+        "forwards_per_cycle_served": 73,
+        "slab_rows": 15360,
+        "gate_kernel": "kernel"
+      },
+      "nfe": {
+        "video": 20,
+        "action": 50
+      },
+      "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+      "torch": "2.11.0+cu130",
+      "source_sha256": {
+        "instinctflash.adapters.lingbot_va": "dbb0c54404dd84b04f78383c9ad983ded476694b76390ee7595aeeb44c1c3ce4",
+        "instinctflash.runtime.wan_va_engine": "b4b254da55986c2d30c706714d5ae50c6314ef02985b405bf18b446aa50424df"
+      },
+      "ok": true,
+      "calls": [
+        {
+          "label": "baseline_initial",
+          "ms": 6486.511866999535,
+          "frame": 0
+        },
+        {
+          "label": "baseline_history",
+          "ms": 3822.6667699991594,
+          "frame": 4
+        },
+        {
+          "label": "camera_observation.images.agentview_rgb",
+          "ms": 2076.6637300002913,
+          "frame": 0
+        },
+        {
+          "label": "camera_observation.images.eye_in_hand_rgb",
+          "ms": 2065.5024719999346,
+          "frame": 0
+        },
+        {
+          "label": "changed_prompt",
+          "ms": 2064.4137230001434,
+          "frame": 0
+        },
+        {
+          "label": "execution_initial",
+          "ms": 2063.3781030001046,
+          "frame": 0
+        },
+        {
+          "label": "changed_execution",
+          "ms": 2086.506841999835,
+          "frame": 4
+        },
+        {
+          "label": "restored_initial",
+          "ms": 2005.327922000106,
+          "frame": 0
+        },
+        {
+          "label": "restored_history",
+          "ms": 2086.245563000375,
+          "frame": 4
+        }
+      ],
+      "camera_controls": [
+        "observation.images.agentview_rgb",
+        "observation.images.eye_in_hand_rgb"
+      ],
+      "prompt_changes_actions": true,
+      "executed_history_changes_actions": true,
+      "reset_restores_action_bytes": true,
+      "future_feedback_does_not_change_current_action": true,
+      "actions_sha256": "75fd6b4be82fc27526215beb15bac10450d0fed9356e95e935f307fd0b224a11",
+      "local_verification": {
+        "finite_arrays": 9,
+        "byte_controls_verified": true,
+        "sha256": {
+          "va-libero-public-inputs-fp8.json": "505af9b92a96bca7a32e0c8388547e3fbe3f3ba71f0797cbf889fdfcccde8379",
+          "va-libero-public-inputs-fp8.npz": "75fd6b4be82fc27526215beb15bac10450d0fed9356e95e935f307fd0b224a11"
+        }
+      }
+    }
+  }
+}

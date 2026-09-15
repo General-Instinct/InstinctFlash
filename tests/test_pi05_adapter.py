@@ -31,6 +31,7 @@ def test_example_surface_stays_product_shaped():
     # silently delete or replace them.
     root_files = {path.name for path in PLUGIN_ROOT.iterdir() if path.is_file()}
     assert root_files == {
+        "LICENSE",
         "README.md",
         "instinctwm.json",
         "measure_chunk_cost.py",
@@ -41,6 +42,17 @@ def test_example_surface_stays_product_shaped():
         "static_capture_results.json",
         "verify_capture_equivalence.py",
         "verify_static_capture.py",
+        # The TF32 operating point (PR #4): the preregistered closed-loop protocol and the
+        # author-measured static evidence behind the two pointer packages. The certificate is
+        # PENDING (closed_loop NOT RUN in both results jsons) -- these artifacts are the
+        # pre-registration, not the verdict.
+        "certify_tf32_closed_loop.py",
+        "emit_tf32_closed_loop_outcomes.py",
+        "run_tf32_closed_loop.py",
+        "tf32_closed_loop_preregistration.json",
+        "tf32_static_h100_results.json",
+        "tf32_v044_static_h100_results.json",
+        "verify_tf32_operating_point.py",
     }, root_files
     assert os.access(PLUGIN_ROOT / "reproduce_h100.sh", os.X_OK)
 

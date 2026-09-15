@@ -1,0 +1,100 @@
+{
+  "status": "incomplete_quality_evidence_audit",
+  "selection_rule": "Each model existing quality acceptance standard; no new universal threshold",
+  "rows": [
+    {
+      "model": "pi05",
+      "fastest_measured_candidate": "FP8",
+      "p50_ms": 49.4707525067,
+      "admission": "pending",
+      "reason": "Historical 500-pair non-inferiority claim; governing certificate and exact checkpoint/recipe binding must be checked. The current LIBERO v044 two-camera route is not admitted by the historical summary alone."
+    },
+    {
+      "model": "LingBot-VLA-4B",
+      "fastest_measured_candidate": "FP8",
+      "p50_ms": 143.716996507,
+      "admission": "passed_existing_T2_numerical_quality_gate",
+      "reason": "Current public engine normalized-action generator passed the original 12-reference T2 gate without changed thresholds. This is a numerical gate, not a closed-loop certificate.",
+      "quality_gate": {
+        "mean_mae": 0.029925544979050756,
+        "mean_cosine": 0.9941191573937734,
+        "max_mean_mae": 0.045,
+        "min_mean_cosine": 0.99,
+        "receipt": "vla4-current-t2-gate-v2.json"
+      }
+    },
+    {
+      "model": "LingBot-VLA-V2",
+      "fastest_measured_candidate": "FP8",
+      "p50_ms": 195.819490997,
+      "admission": "pending",
+      "reason": "Historical pooled closed-loop certificate exists. Current FP8 deployment and source binding have not yet been matched to that certificate."
+    },
+    {
+      "model": "GR00T N1.7",
+      "fastest_measured_candidate": "native",
+      "p50_ms": 109.057939495,
+      "admission": "passed_existing_BITEXACT_startup_gate",
+      "reason": "The timed native receipt records graph_capture BITEXACT on six fresh startup inputs. Original four-step schedule and native precision retained. This is transformation admission on tested inputs, not a task success certificate.",
+      "receipt": "native/groot-current.json"
+    },
+    {
+      "model": "LingBot-VA",
+      "fastest_measured_candidate": "FP8",
+      "p50_ms": 2820.151140506,
+      "admission": "pending",
+      "reason": "Historical native-chain certificates do not automatically cover FP8. Bind exact deployed weights, numerics and episode regime."
+    },
+    {
+      "model": "LingBot-VA @2V/4A",
+      "fastest_measured_candidate": "FP8",
+      "p50_ms": 408.550716995,
+      "admission": "pending",
+      "reason": "Existing 2V/4A certificate reports a -0.05 margin, but current FP8 configuration has not been shown to be covered by it."
+    },
+    {
+      "model": "Cosmos Edge",
+      "fastest_measured_candidate": "NUMERIC, UniPC4 CFG3",
+      "p50_ms": 1364.011551486,
+      "admission": "pending",
+      "reason": "Current numeric route is documented as SCREEN without task-quality certification. Existing acceptable-loss rule and matching passing evidence remain to be established from the archives; no new threshold is authorized."
+    },
+    {
+      "model": "Cosmos Nano",
+      "fastest_measured_candidate": "NUMERIC, UniPC4 CFG3",
+      "p50_ms": 5523.210057989,
+      "admission": "pending",
+      "reason": "Current numeric route is SCREEN. Trained SDE1 results did not recover the historical UP4 control overall; do not promote the fast student on latency alone."
+    },
+    {
+      "model": "DreamZero",
+      "fastest_measured_candidate": "FP8, fixed 8-of-16 DiT mask",
+      "p50_ms": 20217.942035495,
+      "admission": "pending",
+      "reason": "Current FP8 changes lack inherited quality certification; documented native repeatability issue prevents attributing raw differences solely to FP8."
+    }
+  ],
+  "references": [
+    "eval/results_2026-08_thor_h100/final_table.md",
+    "eval/results_2026-08_thor_h100/va_2v4a_certificate_final.json",
+    "eval/results_2026-08_thor_h100/m3_certificate_pooled.json",
+    "eval/thor_fp8_complete_2026-09-10/PROTOCOL.md",
+    "eval/thor_precision_completion_2026-09-09/COMPARISON.md"
+  ],
+  "note": "Pending means not yet demonstrated to pass this audit, not demonstrated to fail. These are measured candidates, not publishable quality-admitted winners.",
+  "additional_candidates": [
+    {
+      "model": "pi05",
+      "configuration": "native NFE1",
+      "evidence": "/home/ubuntu/iwm_distill/fewstep/cert_pi05_nfe1_certificate.json",
+      "status": "historical 2000-pair non-inferiority found; current Thor schedule and numerical binding pending"
+    },
+    {
+      "model": "LingBot-VA",
+      "configuration": "2V/2A window1",
+      "evidence": "/home/ubuntu/iwm_distill/fewstep/cert_2v2a_w1_certificate.json",
+      "status": "historical certificate found; current route binding pending"
+    }
+  ],
+  "latency_note": "Latency fields here preserve the original receipt all-measured-call p50; the final speed matrix uses aligned continuation calls for history models. Use measured_candidates.json for current selected latencies."
+}

@@ -1,0 +1,153 @@
+{
+  "family": "vla4",
+  "device": "NVIDIA Thor",
+  "status": "BITEXACT",
+  "baseline_p50_ms": 685.4453260020819,
+  "current_p50_ms": 264.66934551717713,
+  "repeated_baseline_p50_ms": 689.9385509896092,
+  "speedup_range": [
+    2.5898175879140344,
+    2.6067943366899358
+  ],
+  "applied_passes": [
+    "graph_capture"
+  ],
+  "baseline_applied_passes": [],
+  "unchanged_transform_plan": false,
+  "execution_policy": {
+    "category": "BITEXACT",
+    "precision": "native",
+    "tier_ceiling": "bitexact",
+    "transform_tier": "BITEXACT",
+    "nfe": {
+      "prefix": 1,
+      "action": 10
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "source_drift": {
+    "current": [],
+    "baseline_b": []
+  },
+  "backend_stats": {},
+  "reference_scope": "Direct upstream eager policy versus full default native Runtime; same I/O wrappers, weights, dtype and steps",
+  "comparisons": {
+    "baseline_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910/thor-results/vla4-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910/thor-results/vla4-current.json",
+      "baseline_sha256": "2eedc3adeb2b6b4a4c7cc05c89348718ee4b9a7fca3d4586982afa6ca8c68689",
+      "candidate_sha256": "baa9804309a87a502def0edb296edc74935b9c3004ce858c4ab79dfaf3e5039f",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            25,
+            14
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "captured": true,
+        "replays": 280,
+        "full_graph": true,
+        "prefix_replays": 28,
+        "chunk_replays": 28,
+        "gpu_preprocess": true,
+        "gpu_preprocess_passed": true,
+        "gpu_preprocess_checks": 6,
+        "gpu_preprocess_max_abs_delta": 0.0
+      },
+      "baseline_p50_ms": 685.4453260020819,
+      "candidate_p50_ms": 264.66934551717713,
+      "speedup": 2.5898175879140344,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    },
+    "baseline_repeat": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910/thor-results/vla4-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910/thor-results/vla4-baseline_b.json",
+      "baseline_sha256": "2eedc3adeb2b6b4a4c7cc05c89348718ee4b9a7fca3d4586982afa6ca8c68689",
+      "candidate_sha256": "fbf2cf52cca2a1a3320e90ff154e8c4b4753159880301e5d8b9489eab249c612",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            25,
+            14
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "captured": false,
+        "replays": 0,
+        "full_graph": false,
+        "prefix_replays": 0,
+        "chunk_replays": 0,
+        "gpu_preprocess": false,
+        "gpu_preprocess_passed": false,
+        "gpu_preprocess_checks": 0,
+        "gpu_preprocess_max_abs_delta": 0.0
+      },
+      "baseline_p50_ms": 685.4453260020819,
+      "candidate_p50_ms": 689.9385509896092,
+      "speedup": 0.9934874997475028,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    },
+    "repeat_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910/thor-results/vla4-baseline_b.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910/thor-results/vla4-current.json",
+      "baseline_sha256": "fbf2cf52cca2a1a3320e90ff154e8c4b4753159880301e5d8b9489eab249c612",
+      "candidate_sha256": "baa9804309a87a502def0edb296edc74935b9c3004ce858c4ab79dfaf3e5039f",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            25,
+            14
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "captured": true,
+        "replays": 280,
+        "full_graph": true,
+        "prefix_replays": 28,
+        "chunk_replays": 28,
+        "gpu_preprocess": true,
+        "gpu_preprocess_passed": true,
+        "gpu_preprocess_checks": 6,
+        "gpu_preprocess_max_abs_delta": 0.0
+      },
+      "baseline_p50_ms": 689.9385509896092,
+      "candidate_p50_ms": 264.66934551717713,
+      "speedup": 2.6067943366899358,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    }
+  },
+  "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+}

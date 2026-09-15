@@ -1,0 +1,1422 @@
+{
+  "data": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/data_distillation_v3/development.npz",
+    "bytes": 39512673,
+    "sha256": "45c047f262d5fa7d7e7839838e2288c3d98c698aaadd39245a67a395dc8c8dbe"
+  },
+  "conditions": [
+    {
+      "source_index": 40,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:41:56_2023",
+      "frame_index": 57
+    },
+    {
+      "source_index": 28,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:59_2023",
+      "frame_index": 46
+    },
+    {
+      "source_index": 62,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:51_2023",
+      "frame_index": 35
+    },
+    {
+      "source_index": 8,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:51:55_2023",
+      "frame_index": 46
+    },
+    {
+      "source_index": 46,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:48_2023",
+      "frame_index": 42
+    },
+    {
+      "source_index": 14,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:54:36_2023",
+      "frame_index": 80
+    },
+    {
+      "source_index": 34,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:39:14_2023",
+      "frame_index": 82
+    },
+    {
+      "source_index": 0,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:38:55_2023",
+      "frame_index": 38
+    },
+    {
+      "source_index": 48,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:44:09_2023",
+      "frame_index": 52
+    },
+    {
+      "source_index": 38,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:32_2023",
+      "frame_index": 92
+    },
+    {
+      "source_index": 56,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:00_2023",
+      "frame_index": 37
+    },
+    {
+      "source_index": 44,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:18_2023",
+      "frame_index": 56
+    },
+    {
+      "source_index": 30,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:35:20_2023",
+      "frame_index": 95
+    },
+    {
+      "source_index": 18,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:55:37_2023",
+      "frame_index": 72
+    },
+    {
+      "source_index": 36,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:05_2023",
+      "frame_index": 58
+    },
+    {
+      "source_index": 26,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:32_2023",
+      "frame_index": 52
+    }
+  ],
+  "k": 8,
+  "metrics": {
+    "spaces": [
+      "raw",
+      "model"
+    ],
+    "parts": [
+      "joint",
+      "gripper"
+    ],
+    "horizons": [
+      1,
+      32
+    ],
+    "recorded": "V9 fair energy_u, mean draw MSE/RMSE, mean prediction MSE, spread; no best-of-K",
+    "teacher": "independent UniPC32 K8: two-sample energy U and mean teacher energy score; teacher is a reference above budget, not ground truth",
+    "uncertainty": "paired episode bootstrap; same indices across configurations; training seeds separately and averaged within episode, not 32 independent episodes",
+    "bootstrap_replicates": 5000,
+    "bootstrap_seed": 13051,
+    "selection": "No selection; all four online64 students primary, two paired-seed means and all seeds reported.",
+    "primary_command_metrics": [
+      "raw/joint/h1/energy_u",
+      "raw/gripper/h1/energy_u",
+      "raw/joint/h32/energy_u",
+      "raw/gripper/h32/energy_u"
+    ],
+    "primary_interpretation": "Four raw command energy scores jointly displayed; no single weighted aggregate or retrospective winner threshold"
+  },
+  "status": "frozen",
+  "scope": "Historical diagnostic: original weights, complete SDE2 CFG1, no trained two-step student or quality admission",
+  "configurations": [
+    {
+      "id": "original_sde2_cfg1",
+      "kind": "fixed",
+      "steps": 2,
+      "times": [
+        1.0,
+        0.5,
+        0.0
+      ],
+      "guidance": 1.0,
+      "shift": 1.0,
+      "action_padding": "zero",
+      "weight": "original",
+      "reference_only": false,
+      "endpoint": "untrained_two_step_control"
+    }
+  ],
+  "requests": [
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 0,
+      "source_index": 40,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:41:56_2023",
+      "frame_index": 57,
+      "draw_index": 0,
+      "seed": 4209754247,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 0,
+      "source_index": 40,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:41:56_2023",
+      "frame_index": 57,
+      "draw_index": 1,
+      "seed": 3000876619,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 0,
+      "source_index": 40,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:41:56_2023",
+      "frame_index": 57,
+      "draw_index": 2,
+      "seed": 2451080837,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 0,
+      "source_index": 40,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:41:56_2023",
+      "frame_index": 57,
+      "draw_index": 3,
+      "seed": 1577379113,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 0,
+      "source_index": 40,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:41:56_2023",
+      "frame_index": 57,
+      "draw_index": 4,
+      "seed": 2029043202,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 0,
+      "source_index": 40,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:41:56_2023",
+      "frame_index": 57,
+      "draw_index": 5,
+      "seed": 737495572,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 0,
+      "source_index": 40,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:41:56_2023",
+      "frame_index": 57,
+      "draw_index": 6,
+      "seed": 44526671,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 0,
+      "source_index": 40,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:41:56_2023",
+      "frame_index": 57,
+      "draw_index": 7,
+      "seed": 731900867,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 1,
+      "source_index": 28,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:59_2023",
+      "frame_index": 46,
+      "draw_index": 0,
+      "seed": 154925263,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 1,
+      "source_index": 28,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:59_2023",
+      "frame_index": 46,
+      "draw_index": 1,
+      "seed": 3818086045,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 1,
+      "source_index": 28,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:59_2023",
+      "frame_index": 46,
+      "draw_index": 2,
+      "seed": 203921236,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 1,
+      "source_index": 28,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:59_2023",
+      "frame_index": 46,
+      "draw_index": 3,
+      "seed": 900141618,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 1,
+      "source_index": 28,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:59_2023",
+      "frame_index": 46,
+      "draw_index": 4,
+      "seed": 1356293161,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 1,
+      "source_index": 28,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:59_2023",
+      "frame_index": 46,
+      "draw_index": 5,
+      "seed": 108541540,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 1,
+      "source_index": 28,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:59_2023",
+      "frame_index": 46,
+      "draw_index": 6,
+      "seed": 2121675557,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 1,
+      "source_index": 28,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:59_2023",
+      "frame_index": 46,
+      "draw_index": 7,
+      "seed": 4083226858,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 2,
+      "source_index": 62,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:51_2023",
+      "frame_index": 35,
+      "draw_index": 0,
+      "seed": 245283492,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 2,
+      "source_index": 62,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:51_2023",
+      "frame_index": 35,
+      "draw_index": 1,
+      "seed": 1591773192,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 2,
+      "source_index": 62,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:51_2023",
+      "frame_index": 35,
+      "draw_index": 2,
+      "seed": 3935929813,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 2,
+      "source_index": 62,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:51_2023",
+      "frame_index": 35,
+      "draw_index": 3,
+      "seed": 2821366237,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 2,
+      "source_index": 62,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:51_2023",
+      "frame_index": 35,
+      "draw_index": 4,
+      "seed": 1714410105,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 2,
+      "source_index": 62,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:51_2023",
+      "frame_index": 35,
+      "draw_index": 5,
+      "seed": 194330946,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 2,
+      "source_index": 62,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:51_2023",
+      "frame_index": 35,
+      "draw_index": 6,
+      "seed": 635387205,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 2,
+      "source_index": 62,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:51_2023",
+      "frame_index": 35,
+      "draw_index": 7,
+      "seed": 882315967,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 3,
+      "source_index": 8,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:51:55_2023",
+      "frame_index": 46,
+      "draw_index": 0,
+      "seed": 4170909216,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 3,
+      "source_index": 8,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:51:55_2023",
+      "frame_index": 46,
+      "draw_index": 1,
+      "seed": 1331410850,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 3,
+      "source_index": 8,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:51:55_2023",
+      "frame_index": 46,
+      "draw_index": 2,
+      "seed": 1564579222,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 3,
+      "source_index": 8,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:51:55_2023",
+      "frame_index": 46,
+      "draw_index": 3,
+      "seed": 3211355853,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 3,
+      "source_index": 8,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:51:55_2023",
+      "frame_index": 46,
+      "draw_index": 4,
+      "seed": 3923114883,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 3,
+      "source_index": 8,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:51:55_2023",
+      "frame_index": 46,
+      "draw_index": 5,
+      "seed": 885932344,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 3,
+      "source_index": 8,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:51:55_2023",
+      "frame_index": 46,
+      "draw_index": 6,
+      "seed": 2928315803,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 3,
+      "source_index": 8,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:51:55_2023",
+      "frame_index": 46,
+      "draw_index": 7,
+      "seed": 1050176034,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 4,
+      "source_index": 46,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:48_2023",
+      "frame_index": 42,
+      "draw_index": 0,
+      "seed": 741632332,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 4,
+      "source_index": 46,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:48_2023",
+      "frame_index": 42,
+      "draw_index": 1,
+      "seed": 2655601313,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 4,
+      "source_index": 46,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:48_2023",
+      "frame_index": 42,
+      "draw_index": 2,
+      "seed": 581885760,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 4,
+      "source_index": 46,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:48_2023",
+      "frame_index": 42,
+      "draw_index": 3,
+      "seed": 66238531,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 4,
+      "source_index": 46,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:48_2023",
+      "frame_index": 42,
+      "draw_index": 4,
+      "seed": 3090063599,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 4,
+      "source_index": 46,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:48_2023",
+      "frame_index": 42,
+      "draw_index": 5,
+      "seed": 654126823,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 4,
+      "source_index": 46,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:48_2023",
+      "frame_index": 42,
+      "draw_index": 6,
+      "seed": 2438377430,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 4,
+      "source_index": 46,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:48_2023",
+      "frame_index": 42,
+      "draw_index": 7,
+      "seed": 2397498251,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 5,
+      "source_index": 14,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:54:36_2023",
+      "frame_index": 80,
+      "draw_index": 0,
+      "seed": 634152306,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 5,
+      "source_index": 14,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:54:36_2023",
+      "frame_index": 80,
+      "draw_index": 1,
+      "seed": 3078927226,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 5,
+      "source_index": 14,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:54:36_2023",
+      "frame_index": 80,
+      "draw_index": 2,
+      "seed": 1677011653,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 5,
+      "source_index": 14,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:54:36_2023",
+      "frame_index": 80,
+      "draw_index": 3,
+      "seed": 3652762556,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 5,
+      "source_index": 14,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:54:36_2023",
+      "frame_index": 80,
+      "draw_index": 4,
+      "seed": 667968060,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 5,
+      "source_index": 14,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:54:36_2023",
+      "frame_index": 80,
+      "draw_index": 5,
+      "seed": 3111815111,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 5,
+      "source_index": 14,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:54:36_2023",
+      "frame_index": 80,
+      "draw_index": 6,
+      "seed": 3729233860,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 5,
+      "source_index": 14,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:54:36_2023",
+      "frame_index": 80,
+      "draw_index": 7,
+      "seed": 4102288761,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 6,
+      "source_index": 34,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:39:14_2023",
+      "frame_index": 82,
+      "draw_index": 0,
+      "seed": 1311013651,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 6,
+      "source_index": 34,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:39:14_2023",
+      "frame_index": 82,
+      "draw_index": 1,
+      "seed": 844853851,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 6,
+      "source_index": 34,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:39:14_2023",
+      "frame_index": 82,
+      "draw_index": 2,
+      "seed": 4224813835,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 6,
+      "source_index": 34,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:39:14_2023",
+      "frame_index": 82,
+      "draw_index": 3,
+      "seed": 359645852,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 6,
+      "source_index": 34,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:39:14_2023",
+      "frame_index": 82,
+      "draw_index": 4,
+      "seed": 2206517753,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 6,
+      "source_index": 34,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:39:14_2023",
+      "frame_index": 82,
+      "draw_index": 5,
+      "seed": 724635873,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 6,
+      "source_index": 34,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:39:14_2023",
+      "frame_index": 82,
+      "draw_index": 6,
+      "seed": 485202769,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 6,
+      "source_index": 34,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:39:14_2023",
+      "frame_index": 82,
+      "draw_index": 7,
+      "seed": 289157846,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 7,
+      "source_index": 0,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:38:55_2023",
+      "frame_index": 38,
+      "draw_index": 0,
+      "seed": 2300032681,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 7,
+      "source_index": 0,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:38:55_2023",
+      "frame_index": 38,
+      "draw_index": 1,
+      "seed": 599794045,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 7,
+      "source_index": 0,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:38:55_2023",
+      "frame_index": 38,
+      "draw_index": 2,
+      "seed": 3826444018,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 7,
+      "source_index": 0,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:38:55_2023",
+      "frame_index": 38,
+      "draw_index": 3,
+      "seed": 3317945500,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 7,
+      "source_index": 0,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:38:55_2023",
+      "frame_index": 38,
+      "draw_index": 4,
+      "seed": 1420166211,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 7,
+      "source_index": 0,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:38:55_2023",
+      "frame_index": 38,
+      "draw_index": 5,
+      "seed": 1393810159,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 7,
+      "source_index": 0,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:38:55_2023",
+      "frame_index": 38,
+      "draw_index": 6,
+      "seed": 3266433476,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 7,
+      "source_index": 0,
+      "episode_id": "AUTOLab/success/2023-07-13/Thu_Jul_13_10:38:55_2023",
+      "frame_index": 38,
+      "draw_index": 7,
+      "seed": 1561267481,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 8,
+      "source_index": 48,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:44:09_2023",
+      "frame_index": 52,
+      "draw_index": 0,
+      "seed": 1412556077,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 8,
+      "source_index": 48,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:44:09_2023",
+      "frame_index": 52,
+      "draw_index": 1,
+      "seed": 2365070120,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 8,
+      "source_index": 48,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:44:09_2023",
+      "frame_index": 52,
+      "draw_index": 2,
+      "seed": 3970234403,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 8,
+      "source_index": 48,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:44:09_2023",
+      "frame_index": 52,
+      "draw_index": 3,
+      "seed": 1675398939,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 8,
+      "source_index": 48,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:44:09_2023",
+      "frame_index": 52,
+      "draw_index": 4,
+      "seed": 941556769,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 8,
+      "source_index": 48,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:44:09_2023",
+      "frame_index": 52,
+      "draw_index": 5,
+      "seed": 2576017821,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 8,
+      "source_index": 48,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:44:09_2023",
+      "frame_index": 52,
+      "draw_index": 6,
+      "seed": 1755949291,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 8,
+      "source_index": 48,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:44:09_2023",
+      "frame_index": 52,
+      "draw_index": 7,
+      "seed": 117062939,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 9,
+      "source_index": 38,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:32_2023",
+      "frame_index": 92,
+      "draw_index": 0,
+      "seed": 4018149262,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 9,
+      "source_index": 38,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:32_2023",
+      "frame_index": 92,
+      "draw_index": 1,
+      "seed": 2337711192,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 9,
+      "source_index": 38,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:32_2023",
+      "frame_index": 92,
+      "draw_index": 2,
+      "seed": 2337864169,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 9,
+      "source_index": 38,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:32_2023",
+      "frame_index": 92,
+      "draw_index": 3,
+      "seed": 3881409017,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 9,
+      "source_index": 38,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:32_2023",
+      "frame_index": 92,
+      "draw_index": 4,
+      "seed": 1459755189,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 9,
+      "source_index": 38,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:32_2023",
+      "frame_index": 92,
+      "draw_index": 5,
+      "seed": 582252532,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 9,
+      "source_index": 38,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:32_2023",
+      "frame_index": 92,
+      "draw_index": 6,
+      "seed": 1403089772,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 9,
+      "source_index": 38,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:32_2023",
+      "frame_index": 92,
+      "draw_index": 7,
+      "seed": 2442472053,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 10,
+      "source_index": 56,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:00_2023",
+      "frame_index": 37,
+      "draw_index": 0,
+      "seed": 773413730,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 10,
+      "source_index": 56,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:00_2023",
+      "frame_index": 37,
+      "draw_index": 1,
+      "seed": 2176386387,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 10,
+      "source_index": 56,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:00_2023",
+      "frame_index": 37,
+      "draw_index": 2,
+      "seed": 458526292,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 10,
+      "source_index": 56,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:00_2023",
+      "frame_index": 37,
+      "draw_index": 3,
+      "seed": 850129999,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 10,
+      "source_index": 56,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:00_2023",
+      "frame_index": 37,
+      "draw_index": 4,
+      "seed": 123586061,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 10,
+      "source_index": 56,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:00_2023",
+      "frame_index": 37,
+      "draw_index": 5,
+      "seed": 2308285643,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 10,
+      "source_index": 56,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:00_2023",
+      "frame_index": 37,
+      "draw_index": 6,
+      "seed": 2298781240,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 10,
+      "source_index": 56,
+      "episode_id": "AUTOLab/success/2023-07-27/Thu_Jul_27_08:44:00_2023",
+      "frame_index": 37,
+      "draw_index": 7,
+      "seed": 99777790,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 11,
+      "source_index": 44,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:18_2023",
+      "frame_index": 56,
+      "draw_index": 0,
+      "seed": 674461883,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 11,
+      "source_index": 44,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:18_2023",
+      "frame_index": 56,
+      "draw_index": 1,
+      "seed": 1318965704,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 11,
+      "source_index": 44,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:18_2023",
+      "frame_index": 56,
+      "draw_index": 2,
+      "seed": 175749435,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 11,
+      "source_index": 44,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:18_2023",
+      "frame_index": 56,
+      "draw_index": 3,
+      "seed": 668886879,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 11,
+      "source_index": 44,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:18_2023",
+      "frame_index": 56,
+      "draw_index": 4,
+      "seed": 1927674115,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 11,
+      "source_index": 44,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:18_2023",
+      "frame_index": 56,
+      "draw_index": 5,
+      "seed": 2039538609,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 11,
+      "source_index": 44,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:18_2023",
+      "frame_index": 56,
+      "draw_index": 6,
+      "seed": 1932809992,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 11,
+      "source_index": 44,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:43:18_2023",
+      "frame_index": 56,
+      "draw_index": 7,
+      "seed": 3475568831,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 12,
+      "source_index": 30,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:35:20_2023",
+      "frame_index": 95,
+      "draw_index": 0,
+      "seed": 155338132,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 12,
+      "source_index": 30,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:35:20_2023",
+      "frame_index": 95,
+      "draw_index": 1,
+      "seed": 2627495359,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 12,
+      "source_index": 30,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:35:20_2023",
+      "frame_index": 95,
+      "draw_index": 2,
+      "seed": 1555754398,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 12,
+      "source_index": 30,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:35:20_2023",
+      "frame_index": 95,
+      "draw_index": 3,
+      "seed": 2782113203,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 12,
+      "source_index": 30,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:35:20_2023",
+      "frame_index": 95,
+      "draw_index": 4,
+      "seed": 1526674738,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 12,
+      "source_index": 30,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:35:20_2023",
+      "frame_index": 95,
+      "draw_index": 5,
+      "seed": 894188343,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 12,
+      "source_index": 30,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:35:20_2023",
+      "frame_index": 95,
+      "draw_index": 6,
+      "seed": 835314486,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 12,
+      "source_index": 30,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:35:20_2023",
+      "frame_index": 95,
+      "draw_index": 7,
+      "seed": 3697255875,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 13,
+      "source_index": 18,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:55:37_2023",
+      "frame_index": 72,
+      "draw_index": 0,
+      "seed": 960866805,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 13,
+      "source_index": 18,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:55:37_2023",
+      "frame_index": 72,
+      "draw_index": 1,
+      "seed": 3175222094,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 13,
+      "source_index": 18,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:55:37_2023",
+      "frame_index": 72,
+      "draw_index": 2,
+      "seed": 21389133,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 13,
+      "source_index": 18,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:55:37_2023",
+      "frame_index": 72,
+      "draw_index": 3,
+      "seed": 2337894416,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 13,
+      "source_index": 18,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:55:37_2023",
+      "frame_index": 72,
+      "draw_index": 4,
+      "seed": 3506142637,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 13,
+      "source_index": 18,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:55:37_2023",
+      "frame_index": 72,
+      "draw_index": 5,
+      "seed": 2957961032,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 13,
+      "source_index": 18,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:55:37_2023",
+      "frame_index": 72,
+      "draw_index": 6,
+      "seed": 1873039099,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 13,
+      "source_index": 18,
+      "episode_id": "AUTOLab/success/2023-07-23/Sun_Jul_23_20:55:37_2023",
+      "frame_index": 72,
+      "draw_index": 7,
+      "seed": 2189164936,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 14,
+      "source_index": 36,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:05_2023",
+      "frame_index": 58,
+      "draw_index": 0,
+      "seed": 4036401255,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 14,
+      "source_index": 36,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:05_2023",
+      "frame_index": 58,
+      "draw_index": 1,
+      "seed": 3850360162,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 14,
+      "source_index": 36,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:05_2023",
+      "frame_index": 58,
+      "draw_index": 2,
+      "seed": 1905571013,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 14,
+      "source_index": 36,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:05_2023",
+      "frame_index": 58,
+      "draw_index": 3,
+      "seed": 1894840488,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 14,
+      "source_index": 36,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:05_2023",
+      "frame_index": 58,
+      "draw_index": 4,
+      "seed": 4000531108,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 14,
+      "source_index": 36,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:05_2023",
+      "frame_index": 58,
+      "draw_index": 5,
+      "seed": 1010751582,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 14,
+      "source_index": 36,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:05_2023",
+      "frame_index": 58,
+      "draw_index": 6,
+      "seed": 2944418370,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 14,
+      "source_index": 36,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:40:05_2023",
+      "frame_index": 58,
+      "draw_index": 7,
+      "seed": 844445636,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 15,
+      "source_index": 26,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:32_2023",
+      "frame_index": 52,
+      "draw_index": 0,
+      "seed": 2561861306,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 15,
+      "source_index": 26,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:32_2023",
+      "frame_index": 52,
+      "draw_index": 1,
+      "seed": 1245261525,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 15,
+      "source_index": 26,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:32_2023",
+      "frame_index": 52,
+      "draw_index": 2,
+      "seed": 851338343,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 15,
+      "source_index": 26,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:32_2023",
+      "frame_index": 52,
+      "draw_index": 3,
+      "seed": 2254799942,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 15,
+      "source_index": 26,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:32_2023",
+      "frame_index": 52,
+      "draw_index": 4,
+      "seed": 1139405836,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 15,
+      "source_index": 26,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:32_2023",
+      "frame_index": 52,
+      "draw_index": 5,
+      "seed": 3680658263,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 15,
+      "source_index": 26,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:32_2023",
+      "frame_index": 52,
+      "draw_index": 6,
+      "seed": 3960291206,
+      "seed_namespace": "paired_policy"
+    },
+    {
+      "configuration_id": "original_sde2_cfg1",
+      "condition_index": 15,
+      "source_index": 26,
+      "episode_id": "AUTOLab/success/2023-07-26/Wed_Jul_26_19:34:32_2023",
+      "frame_index": 52,
+      "draw_index": 7,
+      "seed": 2851782516,
+      "seed_namespace": "paired_policy"
+    }
+  ],
+  "parent_protocol_sha256": "6416fe48849b6fcc715ce16745a16b2b079d18344f2fb665cf37905bc1d95c5a",
+  "historical_outputs_already_seen": true,
+  "new_two_step_quality_outputs_seen": false
+}

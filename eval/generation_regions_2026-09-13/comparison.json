@@ -1,0 +1,69 @@
+{
+  "status": "complete_numerical_latency_screen",
+  "quality_certified": false,
+  "default_enabled": false,
+  "rows": [
+    {
+      "family": "edge",
+      "reference_p50_ms": 1390.6939675216563,
+      "candidate_p50_ms": 1208.9458074769937,
+      "latency_reduction_percent": 13.068882463663412,
+      "speedup": 1.1503360687638775,
+      "extraction_checks": 84,
+      "compiled_calls": 2520,
+      "final_actions_byte_equal": false,
+      "action_mae": 0.012629948733319907,
+      "action_max_abs": 0.1015625,
+      "joint_mae": 0.012394206418061262,
+      "gripper_mae": 0.014280144940130413,
+      "schedule": {
+        "action_chunk_size": 32,
+        "action_steps": 4,
+        "guidance": 3.0,
+        "conditioning_fps": 15.0
+      },
+      "receipts": [
+        {
+          "name": "edge-reference.json",
+          "sha256": "0c7c2b36470e4574ae578660d0ea31780241d76da64ed548748ae3705aaaf0bd"
+        },
+        {
+          "name": "edge-generation-regions.json",
+          "sha256": "649d0a21cbec807706ea38077a49dec1f6b66b0ea02a35a419c0828ec5016f04"
+        }
+      ],
+      "reference_matches_prior_unchanged_run_bytes": true
+    },
+    {
+      "family": "nano",
+      "reference_p50_ms": 5541.757474013139,
+      "candidate_p50_ms": 5130.344092001906,
+      "latency_reduction_percent": 7.423879228574437,
+      "speedup": 1.080192161506792,
+      "extraction_checks": 108,
+      "compiled_calls": 3240,
+      "final_actions_byte_equal": false,
+      "action_mae": 0.10371661434851376,
+      "action_max_abs": 1.3241949081420898,
+      "joint_mae": 0.10390535078243245,
+      "gripper_mae": 0.10239545931108296,
+      "schedule": {
+        "action_chunk_size": 32,
+        "action_steps": 4,
+        "guidance": 3.0,
+        "conditioning_fps": 15.0
+      },
+      "receipts": [
+        {
+          "name": "nano-reference.json",
+          "sha256": "d0fc23b4313e2bc34e2490de7975fa049485246ddbf4405fb35ff3262e58bc5e"
+        },
+        {
+          "name": "nano-generation-regions.json",
+          "sha256": "022421f876ea7a6c9e6c7f7a871446b5d9963daab3226f63ec29f30ef37b7c6e"
+        }
+      ],
+      "reference_matches_prior_unchanged_run_bytes": true
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "actions": {
+    "corrected_vs_fresh": {
+      "exact_bytes": true,
+      "max_abs": 0.0,
+      "rmse": 0.0,
+      "same_shape_dtype": true
+    },
+    "corrected_vs_historical": {
+      "exact_bytes": false,
+      "max_abs": 0.943751335144043,
+      "rmse": 0.10877598388147659,
+      "same_shape_dtype": true
+    },
+    "corrected_vs_prior_observed": {
+      "exact_bytes": true,
+      "max_abs": 0.0,
+      "rmse": 0.0,
+      "same_shape_dtype": true
+    }
+  },
+  "compiler_binding": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/compiler_binding_v1.json",
+    "sha256": "41c536a582d3c318e07bbdaf1f4b90787eb25c4e6fcf387425d727a98f3ed211"
+  },
+  "current": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/observed_v1/diagnostic.json",
+    "sha256": "be4afff13241361779af6f472277dad7b20f7636fee98742070c32e8eb45cc4d"
+  },
+  "external_completion": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/queue_run_v1/completion.json",
+    "sha256": "31d10b4b6ceeef79d89e37709288ed9fed920625499b1d8056ba482af40caf5e"
+  },
+  "generated_artifacts": {
+    "bytes": 120846,
+    "dynamic_kernel_execution_trace": false,
+    "files": 4,
+    "manifest": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/observed_v1/generated_code/manifest.json",
+      "sha256": "b516a7a640006b2bf1da97cf3c1e46d19592fecd30f1ea2cbef64c0f19ea5fbf"
+    },
+    "modules": 4,
+    "selected_cached_launchers": 0
+  },
+  "historical_action_bytes_recovered_on_tested_inputs": false,
+  "limitations": [
+    "Exact source/shape/schedule/compiler and external process gates remain enforced; action differences are reported without tolerance waivers.",
+    "Trace helper field labels observed/conditioning_bypass mean prior observed/corrected compiler here; this run contains no bypass treatment.",
+    "The corrected run uses newly empty compiler caches; the prior control reused its existing cache. Compiler package and cache state are both explicit, so causal attribution must inspect emitted code and first differing tensors.",
+    "Instrumented diagnostic timing is not a benchmark. Separate additive Edge/Nano paired and WebSocket qualifications remain required."
+  ],
+  "normal_benchmark_or_serving_qualified": false,
+  "previous_control": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_conditioning_diagnostic_v1/observed_v1/diagnostic.json",
+    "sha256": "6fcadbb91a141155985a9b3b571cb87460bc031fb7efab8554872e091457da3b"
+  },
+  "queue_config": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/queue_config_v1.json",
+    "sha256": "655372f51c71bd01a93f305d64e4bf9d359e6dcdb2a97a3545207e60ede445eb"
+  },
+  "schema": "instinctflash.nano_compiler_diagnostic_comparison.v1",
+  "source": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/analyze_compiler_diagnostic_v1.py",
+    "sha256": "0a5533abdd7502c4f19b75ebb8575fa1077e6d8bd3d89a3b11f2d6e6d313fd42"
+  },
+  "status": "diagnostic_comparison_complete",
+  "task_quality_certified": false,
+  "traces_prior_observed_then_corrected": {
+    "layer_after": {
+      "all_exact": true,
+      "all_present": true,
+      "events": 288,
+      "first_difference": null
+    },
+    "layer_before": {
+      "all_exact": true,
+      "all_present": true,
+      "events": 288,
+      "first_difference": null
+    },
+    "native_seed": {
+      "all_exact": true,
+      "all_present": true,
+      "events": 25,
+      "first_difference": null
+    },
+    "prepared_noise": {
+      "all_exact": true,
+      "all_present": true,
+      "events": 25,
+      "first_difference": null
+    },
+    "request_before": {
+      "all_exact": true,
+      "all_present": true,
+      "events": 25,
+      "first_difference": null
+    },
+    "velocity_after": {
+      "all_exact": true,
+      "all_present": true,
+      "events": 8,
+      "first_difference": null
+    },
+    "velocity_before": {
+      "all_exact": true,
+      "all_present": true,
+      "events": 8,
+      "first_difference": null
+    }
+  },
+  "worker": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_compiler_diagnostic_v1/run_compiler_diagnostic_v1.py",
+    "sha256": "d9d32f526d34e7fb5758c9e08ce8db9f2ff0483428af94a0ed20200b90e8615b"
+  }
+}

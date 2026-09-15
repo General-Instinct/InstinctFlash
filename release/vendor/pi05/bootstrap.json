@@ -1,0 +1,36 @@
+{
+  "adapter_directory": "examples/pi05_vla",
+  "constraints": {
+    "path": "pi05/constraints.txt",
+    "sha256": "905c172e03803e94334ead5e5dd548ac1d6c2774bdad144aca2aca0b912f5482"
+  },
+  "explicit_exclusions": [
+    "Training, hardware robot drivers, visualization UI, vendor TensorRT builders, CUDA source compilation are not installed by this inference-only bootstrap.",
+    "FlashAttention/native acceleration remains a separately built and qualified dependency where selected."
+  ],
+  "family": "pi05",
+  "packaging_patch": null,
+  "public_wheel_overrides": {},
+  "qualification": {
+    "GPU_verified": false,
+    "evidence": "release/vendor/qualification.json",
+    "status": "fresh_package_checks_passed",
+    "task_quality_certified": false
+  },
+  "requirements": {
+    "path": "pi05/inference_requirements.txt",
+    "sha256": "9444ae3caae3d37abb71c8e1755f70cb7435d658167c18c1601c17130f743f09",
+    "unconstrained_direct_packages": [
+      "accelerate"
+    ]
+  },
+  "root_env": null,
+  "schema": "instinctflash.vendor_bootstrap.v1",
+  "source_manifest": null,
+  "target": {
+    "machine": "aarch64",
+    "python_minor": "3.12",
+    "system": "Linux"
+  },
+  "wheel_metadata_repair": "nvidia-cusparselt-cu13-0.8.0-aarch64"
+}

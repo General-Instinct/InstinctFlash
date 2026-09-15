@@ -1,0 +1,31 @@
+{
+  "qualification": "Exploratory native BF16 numerical screen. No BITEXACT or closed-loop quality certificate; single candidate arms vs archived references.",
+  "results": {
+    "edge": {
+      "candidate_p50_ms": 1309.409899491584,
+      "reference_p50_ms": 2125.7894834998297,
+      "speed_ratio": 1.6234713700616046,
+      "byte_equal": false,
+      "max_abs_action_delta": 0.36227208375930786,
+      "mean_abs_action_delta": 0.01746019907295704,
+      "calls": 3584,
+      "shapes": {
+        "((1, 3094, 16, 128), (1, 3245, 8, 128))": 1792,
+        "((1, 3094, 16, 128), (1, 3112, 8, 128))": 1792
+      }
+    },
+    "nano": {
+      "candidate_p50_ms": 5283.219205506612,
+      "reference_p50_ms": 7404.116357502062,
+      "speed_ratio": 1.4014403093070367,
+      "byte_equal": false,
+      "max_abs_action_delta": 1.0011138916015625,
+      "mean_abs_action_delta": 0.08759070187807083,
+      "calls": 4608,
+      "shapes": {
+        "((1, 3094, 32, 128), (1, 3182, 8, 128))": 2304,
+        "((1, 3094, 32, 128), (1, 3103, 8, 128))": 2304
+      }
+    }
+  }
+}

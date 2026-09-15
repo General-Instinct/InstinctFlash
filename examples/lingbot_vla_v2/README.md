@@ -66,9 +66,9 @@ They were gated on H100 under the same 6-case null-control protocol as the publi
   (6.10e-02, outside the envelope). It remains available for measurement via
   `IFL_VLA2_RMSNORM_KERNEL=1` but is NOT RECOMMENDED until it passes.
 
-Both are REFUSED on Thor (SM110): Triton codegen is measured-dead there and the vendor fallback
-path crashes; that device class is served by a separate engine tier available under commercial
-access.
+Both experimental kernels are refused on Thor (SM110). The supported native
+Thor route uses SDPA; FP8 is a separate explicit precision choice through the
+same Runtime interface.
 
 GPU image processing is enabled by default. `IFL_VLA2_GPU_PREPROCESS_MODE=processor` batches
 the three upstream CPU resizes without changing their values, then uses reusable pinned staging
@@ -84,28 +84,45 @@ these two graphs with `IFL_VLA2_PREFIX_GRAPH=0`; the denoise static-KV graph rem
 
 The FlashRT route is a BF16 backend with static-KV CUDA Graph replay (plus the optional kernels
 above). It retains the official Qwen3-VL processor, `FeatureTransform`, and action
-un-normalisation. It is the upstream-BF16 datacenter graft; the from-scratch Thor SM110 engine
-(fp8 experts via cuBLASLt, fp16 prefill) is a separate arm, not part of this repository.
+un-normalisation. Thor also has a native SDPA route and an opt-in engine with
+FP8 experts and BF16 vision under `serving/flash_rt/models/vla2/`. Select the
+engine with `precision="fp8"` or CLI `--fp8`; native precision remains the default.
 
 The graph owns fixed `[prefix | suffix]` K/V allocations for all 36 layers. At each observation it
 refills the 286-token prefix and Qwen3-VL 3D-RoPE position ids. At each flow step it overwrites the
 51-token state/action suffix, noisy action, and timestep, then replays the same graph. MoE routing
 remains data-dependent and is recomputed on device during replay.
 
-## Graph capture is the default, and the self-check is the reason it can be
+## Current Thor evidence
 
-The capture arm installs whenever the plan applies `graph_capture` — for every V2-class
-checkpoint, fresh fine-tunes included — and the first capture is gated by a runtime
+With the same native processing, ten denoise steps and 50-action chunks,
+short-run median latency measured 764.29 ms native eager, 423.50 ms native
+NUMERIC capture and 238.98 ms FP8. FP8 is 1.77× faster than the measured
+capture alternative; that native comparison explicitly permits NUMERIC capture.
+Prompt-reset FP8 calls exceeded one second, so the median is not a deadline guarantee.
+
+The complete 40-pair RoboTwin screen measured clean 17/20 → 18/20 and randomized
+16/20 → 18/20 successes. These small samples establish neither superiority nor
+non-inferiority. [Current measurements and paired results](../../eval/thor_precision_completion_2026-09-09/COMPARISON.md).
+
+## Graph capture requires the NUMERIC tier
+
+Select `tier_ceiling="numeric", placement="in_process"` to allow the native capture arm.
+The default BITEXACT ceiling declines it because its self-check accepts nonzero differences.
+Device eligibility is measured separately: Thor uses its V2 evidence, not pi05 timings.
+Fresh fine-tunes inherit the adapter, not a performance or quality certificate.
+The first capture is gated by a runtime
 **self-check**: replay vs upstream eager `predict_velocity` (through the stock concat-per-step
 KV path) on staged inputs the capture never saw, including a synthetically *refilled* prefix so
 a graph that baked K/V values cannot pass. The gate is NOT `atol=0`, and that is a statement
-about upstream, not the graph: the fused-MoE kernel disagrees with itself on identical seeds, so
-the check gates on the family's recorded stock-vs-stock envelope (**5.08e-02**,
-`moe_kernel_results.json` null_control_deltas — the same standard the published row was
-verified under), and the printed verdict states the threshold and its provenance. PASS → replay
-serves and the plan's `graph_capture` entry gains the verdict line. FAIL → the denoise graph AND
-the vision/prefill graphs are released together, `predict_velocity` is rebound to upstream, and
-serving continues on eager arithmetic.
+about repeatability: upstream can disagree with itself under fixed inputs, but that does
+not establish the graph's error. The unchanged **5.08e-02** guard came from controller
+actions in `moe_kernel_results.json`; startup compares denoise velocity. This domain
+mismatch is printed as a legacy guard, not a calibrated accuracy margin. Each staged
+input is compared three times. PASS admits replay and records the verdict. FAIL removes
+denoise/prefix graphs and GPU preprocessing; the in-flight call is discarded and rerun
+upstream after restoring RNG and server counters. Experimental custom kernels refuse
+further serving when complete fallback cannot be guaranteed.
 
 Kill-switch: `IFL_VLA2_NO_CAPTURE=1` disables the whole capture arm (recorded on the plan,
 printed). `IFL_VLA2_SELFCHECK_FAULT=1` is the drill switch: it rebinds the x buffer between
@@ -115,10 +132,10 @@ capture and check so the loud-fallback path stays demonstrable on demand.
 
 `reproduce_h100.sh` is the protocol artifact behind the published H100 row
 (671.1 -> 127.5 ms p50, 5.26x — H100 re-sweep 2026-08-28, 4xH100 box): upstream eager vs what
-the Runtime DEFAULT serves (denoise graph + vision/prefill graphs + GPU preprocessing), one
+the historical capture arm (denoise graph + vision/prefill graphs + GPU preprocessing;
+the reproduction script now requests NUMERIC explicitly), one
 fresh process per arm, with the 6-case ours-vs-stock gate judged against the model's own
-nondeterminism envelope (the fused-MoE null control — BITEXACT is unattainable for any serving
-of this model, including upstream's own; measured max |d| 2.57e-02 vs the 5.08e-02 envelope).
+nondeterminism envelope (the fused-MoE null control — upstream was not bit-repeatable under that H100 protocol; measured max |d| 2.57e-02 vs the 5.08e-02 envelope).
 Its output is committed as `reproduce_h100_results.json`.
 
 `verify_static_capture.py` is the module-level 6-case gate for the denoise static-KV graph in

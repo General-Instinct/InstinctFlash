@@ -327,6 +327,14 @@ class FusedGateUp:
 #  Transforms
 # ════════════════════════════════════════════════════════════════════
 
+class ToBf16:
+    """Preserve checkpoint BF16 values for BF16 execution, without quantization."""
+
+    def apply(self, x, ctx):
+        import torch
+        return x.to(dtype=torch.bfloat16)
+
+
 class ToFp16:
     def apply(self, x, ctx):
         return x.to(_FP16)

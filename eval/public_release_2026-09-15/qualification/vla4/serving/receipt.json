@@ -1,0 +1,170 @@
+{
+  "action_archive_sha256": "c0b5d3d8c1b3d5e4561e46309e61e1b88454503a5a423b9fa91d0c7795c0d158",
+  "calls": [
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        25,
+        14
+      ],
+      "cycle": 0,
+      "episode": 0,
+      "request_sha256": "0a0498f0cff7c8b83e04494c2b61f47c83a8310a1bd74f64316f54a1513d9d5c",
+      "roundtrip_ms": 2164.978638989851,
+      "server_timing": {
+        "infer_ms": 2163.4302730089985,
+        "prev_total_ms": 83.58461695024744
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        25,
+        14
+      ],
+      "cycle": 1,
+      "episode": 0,
+      "request_sha256": "13137705e19f8ff81bcd97f66cad54caf4078d5908c2a7e8e7a31876831d3147",
+      "roundtrip_ms": 155.63473699148744,
+      "server_timing": {
+        "infer_ms": 154.14274897193536,
+        "prev_total_ms": 2165.4821829870343
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        25,
+        14
+      ],
+      "cycle": 2,
+      "episode": 0,
+      "request_sha256": "a5695d64d7ccfa0cb81304cf45545778863d0524d9f19d18ad10fec2a3d4a26f",
+      "roundtrip_ms": 155.48360301181674,
+      "server_timing": {
+        "infer_ms": 154.3795139878057,
+        "prev_total_ms": 156.45462303655222
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        25,
+        14
+      ],
+      "cycle": 0,
+      "episode": 1,
+      "request_sha256": "54bae1e0c16f4faa3ab015a14311f19169960fe7447ffd956c40aad41716234e",
+      "roundtrip_ms": 225.9256059769541,
+      "server_timing": {
+        "infer_ms": 225.17396800685674,
+        "prev_total_ms": 3.306230006273836
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        25,
+        14
+      ],
+      "cycle": 1,
+      "episode": 1,
+      "request_sha256": "d0e36a9a804c9b79e590bcbe1d62fa1e015c34a5e780cba39edbd8b4eb96ef37",
+      "roundtrip_ms": 152.59904798585922,
+      "server_timing": {
+        "infer_ms": 151.52474597562104,
+        "prev_total_ms": 226.3950950000435
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        25,
+        14
+      ],
+      "cycle": 2,
+      "episode": 1,
+      "request_sha256": "8d96e49b4be233b8a1f2f9ed498db55dc716d10e4108f8b394226cd9c036889a",
+      "roundtrip_ms": 152.7999400277622,
+      "server_timing": {
+        "infer_ms": 151.7009429517202,
+        "prev_total_ms": 153.16819603322074
+      }
+    }
+  ],
+  "cell_id": "vla4-runtime_selected",
+  "checkpoint": {
+    "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+    "revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e"
+  },
+  "checkpoint_path": "/home/guanming/.cache/instinctflash/declared/robbyant__lingbot-vla-4b-posttrain-robotwin/dc8ecd2400cccbfcebb00bdde639a9fe635b84e919d8533ce6f8427e03438214",
+  "command": [
+    "/dev/shm/ifl_public_envs_20260915_v1/vla4_v3/bin/python",
+    "-I",
+    "-m",
+    "instinctflash.cli",
+    "serve",
+    "--config_path=/home/guanming/ifl_public_qualification_20260915_v1/vla4_fp8_serving_v1/serve.json"
+  ],
+  "config_sha256": "19c4dbcc297952004be75579e54ed190e58550db5089452ad00123ad3a49833d",
+  "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+  "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/vla4_v3/bin/python",
+  "latency_benchmark": false,
+  "metadata": {
+    "backbone": "lingbot_vla",
+    "checkpoint_nfe": {
+      "action": 10,
+      "prefix": 1
+    },
+    "execution_policy": {
+      "category": "FP8",
+      "changed_schedule": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+      "nfe": {
+        "action": 10,
+        "prefix": 1
+      },
+      "precision": "fp8",
+      "schedule_options": {},
+      "step_cache": null,
+      "tier_ceiling": "numeric",
+      "transform_tier": "NUMERIC"
+    },
+    "extra": {
+      "base_weights": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "norm_stats": "assets/norm_stats/robotwin_50.json",
+      "param_bytes": 16789932052,
+      "robot": "robotwin",
+      "tokenizer_repo": "Qwen/Qwen2.5-VL-3B-Instruct",
+      "use_length": 25
+    },
+    "guidance": {
+      "action": "none"
+    },
+    "instinctflash_version": "0.1.0",
+    "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+    "nfe": {
+      "action": 10,
+      "prefix": 1
+    },
+    "observation": "flat keys: observation.images.cam_high (480, 640, 3) uint8; observation.images.cam_left_wrist (480, 640, 3) uint8; observation.images.cam_right_wrist (480, 640, 3) uint8; observation.state (14,) float32; plus prompt",
+    "observation_source": "the adapter's static declaration",
+    "precision": "fp8",
+    "protocol": {
+      "prompt_rotation": true,
+      "reset_extension": true,
+      "wire": "openpi-websocket-msgpack-numpy"
+    }
+  },
+  "plan_sha256": "6edd3f91796361cea0a5a1792db5b4c7471e6ec4aa300b0a2b9a18a74a4799f9",
+  "request_timeout_s": 600,
+  "rng_scope": "unseeded FP8 transport check",
+  "schema": "instinctflash.serving_smoke.v1",
+  "scope": "Installed CLI and loopback WebSocket; two episodes, three calls each",
+  "seed": null,
+  "server_exit_code": 0,
+  "server_pid": 271856,
+  "startup_timeout_s": 1200,
+  "status": "passed",
+  "task_quality_validated": false
+}

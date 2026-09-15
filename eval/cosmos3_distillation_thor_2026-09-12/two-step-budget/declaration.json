@@ -1,0 +1,41 @@
+{
+  "execution": {
+    "action_chunk_size": 32,
+    "action_dim": 8,
+    "action_padding": "zero",
+    "backbone": "cosmos3_policy_action_realtime_v16",
+    "conditioning_fps": 15.0,
+    "domain_name": "droid_lerobot",
+    "format_prompt_as_json": true,
+    "guidance": {
+      "action": {
+        "mode": "cfg",
+        "scale": 1
+      }
+    },
+    "image_height": 540,
+    "image_width": 640,
+    "model_id": "instinctflash/cosmos3-edge-original-sde2-cost",
+    "nfe": {
+      "action": 2,
+      "prefix": 1
+    },
+    "sampling": {
+      "kind": "rectified_flow_fixed_step",
+      "num_train_timesteps": 1000.0,
+      "sample_type": "sde",
+      "sigmas": [
+        1.0,
+        0.5,
+        0.0
+      ]
+    },
+    "servable": false,
+    "shift": 1.0
+  },
+  "instinctflash_schema": 1,
+  "provenance": {
+    "scope": "Untrained original-weight cost screen only; not a DMD student or quality candidate",
+    "source_revision": "3ea407af3e156c0af3b4bb6edd85842cc9a58777"
+  }
+}

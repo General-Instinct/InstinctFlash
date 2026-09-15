@@ -1,0 +1,113 @@
+{
+  "CPU_tests": {
+    "Ruff": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/ruff_v2.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "combined_passed": 53,
+    "curation_tests": 21,
+    "current_assembler_tests": 32,
+    "groups_overlap": true,
+    "test_log": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/tests_v2.log",
+      "sha256": "d6f6f516cedef49cf66d4c7df24ffe2623ac48a96391439cb849c81d883c7e8b"
+    }
+  },
+  "commands_after_inputs_exist": {
+    "copy_only_after_reviewed_plan_hash": [
+      "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+      "-I",
+      "-B",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/curate_v2.py",
+      "copy",
+      "--checkout",
+      "/home/ubuntu/InstinctFlash-public-release-20260915",
+      "--manifest",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/final_plan_v2/manifest.json",
+      "--manifest-sha256",
+      "SHA256_PRINTED_BY_PLAN",
+      "--output",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/copy_v2.json"
+    ],
+    "force_add_by_root_only": "git add -f --pathspec-from-file=/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/final_plan_v2/approved_force_add_paths.txt",
+    "plan_only": [
+      "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+      "-I",
+      "-B",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/curate_v2.py",
+      "plan",
+      "--checkout",
+      "/home/ubuntu/InstinctFlash-public-release-20260915",
+      "--summary",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v3/summary.json",
+      "--summary-sha256",
+      "FINAL_CURRENT_SUMMARY_SHA256",
+      "--output",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/final_plan_v2"
+    ]
+  },
+  "created_utc": "2026-09-15T06:09:45.210094+00:00",
+  "current_assembler_handoff": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/HANDOFF_v3.json",
+    "sha256": "fe8d78d981fef7e3ba81213bc79a05c5908ef9cbbb4b9131e0b743e7933ff5fa"
+  },
+  "current_blocking_inputs": [
+    "eval/public_release_2026-09-15/qualification/dreamzero/run",
+    "eval/public_release_2026-09-15/qualification/dreamzero/serving",
+    "Final current qualification summary+selection",
+    "Root-owned results.rst"
+  ],
+  "final_source_stage_plan": {
+    "allowed_docs": [
+      "README.md",
+      "INSTALL.rst",
+      "REPRODUCE.rst"
+    ],
+    "core_payload_delta_only_METADATA_RECORD": true,
+    "eight_noncore_payloads_must_remain_exact_qualified_baseline": true,
+    "finalizer": "finalize_release_v3.py",
+    "later_documentation_only_refresh": "V10 after root final results",
+    "manifest_sha256": "a316bd918ae4426460f0779f90f34985b31a8639f3b6be7f9dd20e86c9cbdbc4",
+    "qualified_baseline": "/home/ubuntu/ifl-public-full-stage-20260915-v9-docfix1",
+    "root_owns_final_README_Git_index_commit_publication": true
+  },
+  "limitations": [
+    "Final copy requires complete current assemblerV3 summary, exact selection snapshot and root-owned results.rst. Current preview cannot be copied.",
+    "V5 OOM evidence is retained; V6 applies one compiler thread and exact new owned cache paths, independently recorded for both jobs. No failed attempt is promoted.",
+    "Three broad reclaim inventories remain local; small CPU precheck/completion, OOM log and their inventory hashes are included.",
+    "Frozen administrative audit paths preserve original absolute provenance and are explicitly indexed as bundled/already-public/local-only; portable public reproduction entrypoints do not require those private paths.",
+    "No GPU, SSH, Git/index, release API or public evidence copy occurred. Pattern-based credential checks are bounded review aids, not a publication certificate."
+  ],
+  "preview": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/preview_v3/manifest.json",
+    "sha256": "dca3ad91f0f9a8b92ff5d1170785a56ed573585d68be1482d93dd3ce0f5368cc"
+  },
+  "preview_approved_paths": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/preview_v3/approved_force_add_paths.txt",
+  "preview_counts": {
+    "files": 429,
+    "largest_file_bytes": 3137086,
+    "logical_bytes": 35813010,
+    "unique_Git_blob_bytes": 13278008
+  },
+  "public_copies_Git_staging_or_publication": false,
+  "schema": "instinctflash.public_evidence_curation_handoff.v2",
+  "sources": {
+    "curate_v2.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/curate_v2.py",
+      "sha256": "a68c385eed151ddad48a7c1e9dce0c0b988403c605e23da88644ce033c5a569f"
+    },
+    "policy_v2.json": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/policy_v2.json",
+      "sha256": "a95f38d928709900f657660f78fdcb383d7f8b72c5f93cae737856987301fa4d"
+    },
+    "test_curate_v2.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/test_curate_v2.py",
+      "sha256": "3c96a491cbf9028764b6f2282cbad08d9310749c7c2ff33ad988931224a773f0"
+    }
+  },
+  "status": "CPU_qualified_preview_only_no_public_copy",
+  "supersedes": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/HANDOFF_v1.json",
+    "sha256": "77f0dd151225eea14d7c8317ddacf006d05afe29d30ae6b10c45fc67e7b18593"
+  }
+}

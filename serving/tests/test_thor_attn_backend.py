@@ -296,6 +296,23 @@ def test_unknown_kernel_rejected():
     raise AssertionError("unknown kernel should have raised")
 
 
+def test_odd_key_counts_use_padded_softmax_without_adding_a_key():
+    from types import SimpleNamespace
+    from flash_rt.hardware.thor.attn_backend import ThorFlashAttnBackend, make_pi05_attention_spec
+    siglip, encoder, decoder, _, _ = _fake_slots()
+    backend = ThorFlashAttnBackend(make_pi05_attention_spec(num_views=2, enc_seq_max=576, chunk_size=50),
+        SimpleNamespace(cpp=0), siglip_slots=siglip, encoder_slots=encoder, decoder_slots=decoder)
+    calls = []
+    kernels = SimpleNamespace(
+        attention_qkv_fp16=lambda *args: calls.append(("even", args[7])),
+        attention_qkv_fp16_padded=lambda *args: calls.append(("padded", args[7])))
+    backend._fvk_mod = lambda: kernels
+    backend.run("encoder", 0, q_seq=576, kv_seq=561)
+    backend.run("decoder", 0, q_seq=50, kv_seq=611)
+    backend.run("encoder", 0, q_seq=560, kv_seq=560)
+    assert calls == [("padded", 561), ("padded", 611), ("even", 560)]
+
+
 def main() -> int:
     tests = [
         test_construct_ok,
@@ -310,6 +327,7 @@ def main() -> int:
         test_state_masked_requires_state_nk,
         test_state_masked_state_nk_range,
         test_unknown_kernel_rejected,
+        test_odd_key_counts_use_padded_softmax_without_adding_a_key,
     ]
     print("=== ThorFlashAttnBackend unit tests ===")
     failures = 0

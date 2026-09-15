@@ -1,0 +1,78 @@
+{
+  "command": [
+    "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+    "-I",
+    "-B",
+    "-m",
+    "cosmos3_sde1.benchmark_edge",
+    "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12031",
+    "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12031/receipt.json",
+    "--attention",
+    "cudnn",
+    "--allow-unqualified",
+    "--fixture",
+    "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/lib/python3.13/site-packages/benchmarks/regression/fixtures/recorded_inputs_v1.npz"
+  ],
+  "plan": {
+    "recipe": "edge-seed12031",
+    "category": "SCREEN",
+    "task_quality_certified": false,
+    "base": {
+      "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+      "revision": "3ea407af3e156c0af3b4bb6edd85842cc9a58777"
+    },
+    "overlay": {
+      "path": "cosmos3-edge-sde1-cfg1-seed12031.safetensors",
+      "bytes": 419568688,
+      "sha256": "0d6e90101673cac8a1c4c621e31a2c1349a51515d01003903d39d3ad8ec563a2",
+      "url": "https://github.com/General-Instinct/InstinctFlash/releases/download/thor-2026-09-15/cosmos3-edge-sde1-cfg1-seed12031.safetensors"
+    },
+    "auxiliary": {
+      "model_id": "Wan-AI/Wan2.2-TI2V-5B",
+      "revision": "921dbaf3f1674a56f47e83fb80a34bac8a8f203e",
+      "filename": "Wan2.2_VAE.pth",
+      "bytes": 2818839170,
+      "sha256": "20eb789667fa5e60e7516bf509512f6cb61f01b0aa0695eadaea930c13892b36"
+    },
+    "precision": "native BF16",
+    "tier": "NUMERIC",
+    "execution": {
+      "action_chunk_size": 32,
+      "action_dim": 8,
+      "action_padding": "zero",
+      "backbone": "cosmos3_policy_action_realtime_v16",
+      "conditioning_fps": 15.0,
+      "domain_name": "droid_lerobot",
+      "format_prompt_as_json": true,
+      "guidance": {
+        "action": {
+          "mode": "cfg",
+          "scale": 1
+        }
+      },
+      "image_height": 540,
+      "image_width": 640,
+      "model_id": "instinctcompress/cosmos3-edge-v16-cfg1-seed12031",
+      "nfe": {
+        "action": 1,
+        "prefix": 1
+      },
+      "sampling": {
+        "kind": "rectified_flow_fixed_step",
+        "num_train_timesteps": 1000.0,
+        "sample_type": "sde",
+        "sigmas": [
+          1.0,
+          0.0
+        ]
+      },
+      "servable": false,
+      "shift": 1.0
+    },
+    "warmup_requests": 6,
+    "measured_requests": 10,
+    "historical_p50_ms": 271.35175600415096,
+    "current_build_reproduction_not_historical_source_identity": true
+  },
+  "source_sha256": "922e10fbd56d930ad3f7eb828a2f2ba8f1178a3286a96966d8d769c096690081"
+}

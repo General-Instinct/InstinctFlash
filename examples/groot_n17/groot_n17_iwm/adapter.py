@@ -40,6 +40,10 @@ class GR00TN17Adapter:
     CPU_THREADS_ENV = "IFL_GROOT_CPU_THREADS"
     FAST_DECODE_ENV = "IFL_GROOT_FAST_DECODE"
     BACKBONE_FASTPATH_ENV = "IFL_GROOT_BACKBONE_FASTPATH"
+    #: Full Qwen backbone + fixed four-step flow graphs. Defaults on only for SM120.
+    FULL_GRAPH_ENV = "IFL_GROOT_FULL_GRAPH"
+    #: CPU-exact uint8 resize/patchify with GPU normalization and device staging.
+    GPU_COLLATE_ENV = "IFL_GROOT_GPU_COLLATE"
 
     def spec(self) -> AdapterSpec:
         return AdapterSpec(
@@ -85,9 +89,15 @@ class GR00TN17Adapter:
             ),
             notes={
                 "family": "vla",
+                # "backbone" identifies this spec to backbone-keyed planner checks (the engine
+                # operating-point gate in passes/generic/engine_offload.py keys on it: the
+                # groot_n17_thor frontend captures its DiT graphs at 4 steps, and a plan at
+                # any other nfe must decline the engine rather than print one schedule and
+                # run another).
+                "backbone": BACKBONE,
                 "action_horizon": "40",
                 "default_embodiment": DEFAULT_EMBODIMENT,
-                "backend": "upstream BF16; optional bitexact DiT CUDA Graph",
+                "backend": "upstream BF16; SM120 full graphs + bitexact GPU collate",
                 "numeric_tier": "upstream BF16",
             },
         )
@@ -126,6 +136,11 @@ class GR00TN17Adapter:
         # host-specific (~165 ms on a 240-CPU box vs ~2 ms measured on our 208-CPU H100),
         # a co-hosted engine inherits the cap, and on <16-core hosts a fixed value RAISES
         # rather than caps threads.
+        if _env_flag(self.FULL_GRAPH_ENV, default=False):
+            raise ValueError(
+                "GR00T full-backbone capture is not qualified against the installed upstream. "
+                "Use the native default and independent IFL_GROOT_GPU_COLLATE option; "
+                "the full-capture module is an offline experiment.")
         cpu_threads = _configure_preprocessing_threads(os.environ.get(self.CPU_THREADS_ENV))
         root = _source_root()
         if str(root) not in sys.path:
@@ -175,7 +190,27 @@ class GR00TN17Adapter:
             from .backbone_fastpath import install_backbone_fastpath
 
             backbone_fastpath = install_backbone_fastpath(policy.model)
-        self.install(policy, plan, device=dev)
+        from instinctflash.runtime.precision import install_requested_fp8
+        install_requested_fp8(policy.model, plan, "groot_n17")
+        gpu_collate = None
+        if _env_flag(
+            self.GPU_COLLATE_ENV,
+            default=torch.cuda.get_device_capability() in {(9, 0), (11, 0)},
+        ):
+            try:
+                from .gpu_collate import install_gpu_collate
+
+                gpu_collate = install_gpu_collate(policy, device=dev)
+            except (AttributeError, ValueError) as error:
+                print(
+                    "InstinctFlash GR00T N1.7: GPU collate is unsupported by this "
+                    f"processor ({error}); retaining upstream CPU collate."
+                )
+        self.install(
+            policy,
+            plan,
+            device=dev,
+        )
         driver = getattr(policy, "_instinctflash_static_capture", None)
         return _GR00TN17Loop(
             policy,
@@ -185,10 +220,17 @@ class GR00TN17Adapter:
             cpu_threads=cpu_threads,
             fast_decode=fast_decoder is not None,
             backbone_fastpath=backbone_fastpath,
+            gpu_collate=gpu_collate,
         )
 
     @classmethod
-    def install(cls, policy, plan, *, device=None) -> list[str]:
+    def install(
+        cls,
+        policy,
+        plan,
+        *,
+        device=None,
+    ) -> list[str]:
         """Act on the plan: the DiT graph is the FAMILY DEFAULT, gated by the self-check.
 
         This SUPERSEDES the old release policy that kept capture opt-in through
@@ -236,18 +278,19 @@ class GR00TN17Adapter:
                   f"devices now ({cls.CAPTURE_KILL_SWITCH}=1 disables it).")
         from instinctflash.runtime.capture_self_check import record_self_check_on_plan
 
+        recorder = record_self_check_on_plan(capture, "GR00T N1.7")
         from .static_capture import install_static_capture
-
-        driver = install_static_capture(
-            policy.model,
-            on_self_check=record_self_check_on_plan(capture, "GR00T N1.7"))
+        driver = install_static_capture(policy.model, on_self_check=recorder)
         policy._instinctflash_static_capture = driver
-        print("InstinctFlash GR00T N1.7: DiT CUDA Graph installed — the family default on "
-              "capture-capable devices, superseding the retired IFL_GROOT_STATIC_CAPTURE "
-              "opt-in. Each captured signature is gated by a bit-exact self-check (replay vs "
-              "upstream eager on staged inputs it was not captured from, exact equality); a "
-              "mismatch releases the graphs and falls back to eager, loudly. Kill-switch: "
-              f"{cls.CAPTURE_KILL_SWITCH}=1.")
+        scope = "DiT"
+        print(
+            f"InstinctFlash GR00T N1.7: {scope} CUDA Graph installed — the family "
+            "default for this device, superseding the retired IFL_GROOT_STATIC_CAPTURE opt-in. "
+            "Each captured signature is gated by a bit-exact "
+            "self-check (replay vs eager on staged unseen inputs, exact equality); a "
+            "mismatch releases the affected graphs and falls back loudly. Kill-switch: "
+            f"{cls.CAPTURE_KILL_SWITCH}=1."
+        )
         return ["graph_capture"]
 
 
@@ -262,6 +305,7 @@ class _GR00TN17Loop:
         cpu_threads: "_ThreadPin | None" = None,
         fast_decode: bool = False,
         backbone_fastpath=None,
+        gpu_collate=None,
     ):
         self._policy = policy
         self._model_path = model_path
@@ -271,6 +315,7 @@ class _GR00TN17Loop:
         self._cpu_threads = cpu_threads
         self._fast_decode = bool(fast_decode)
         self._backbone_fastpath = backbone_fastpath
+        self._gpu_collate = gpu_collate
         self._state_dims = _state_dimensions(
             model_path,
             policy.embodiment_tag.value,
@@ -294,9 +339,14 @@ class _GR00TN17Loop:
 
     @property
     def backend_stats(self) -> dict[str, Any]:
+        full_graph = bool(self._driver and hasattr(self._driver, "backbone"))
         return {
             "backend": (
-                "upstream_bf16_cuda_graph" if self._driver else "upstream_bf16_eager"
+                "upstream_bf16_full_cuda_graph_gpu_collate"
+                if full_graph and self._gpu_collate
+                else "upstream_bf16_full_cuda_graph" if full_graph
+                else "upstream_bf16_cuda_graph" if self._driver
+                else "upstream_bf16_eager"
             ),
             "precision": "bfloat16",
             "captured": bool(self._driver and self._driver.captured),
@@ -306,6 +356,20 @@ class _GR00TN17Loop:
             "cpu_threads": (self._cpu_threads.target if self._cpu_threads else None),
             "fast_decode": self._fast_decode,
             "backbone_fastpath": self._backbone_fastpath is not None,
+            "gpu_collate": self._gpu_collate is not None,
+            "gpu_collate_self_check_passed": bool(
+                self._gpu_collate and self._gpu_collate.passed
+            ),
+            "gpu_collate_self_check_inputs": int(
+                self._gpu_collate.checks if self._gpu_collate else 0
+            ),
+            "gpu_collate_max_abs_delta": float(
+                self._gpu_collate.max_abs_delta if self._gpu_collate else 0.0
+            ),
+            "full_backbone_graph": bool(
+                full_graph and self._driver.backbone.captured
+            ),
+            "full_flow_graph": bool(full_graph and self._driver.flow.captured),
             "backbone_cache_hits": int(
                 self._backbone_fastpath.hits if self._backbone_fastpath else 0
             ),
@@ -317,12 +381,15 @@ class _GR00TN17Loop:
     def close(self) -> None:
         if self._driver is not None:
             self._driver.close()
+        if self._gpu_collate is not None:
+            self._gpu_collate.close()
         if self._backbone_fastpath is not None:
             self._backbone_fastpath.close()
         if self._cpu_threads is not None:
             # The pin is process-global; a closed model must not leave its cap on the process.
             self._cpu_threads.restore()
         self._driver = None
+        self._gpu_collate = None
         self._backbone_fastpath = None
         self._cpu_threads = None
         self._policy = None

@@ -1,0 +1,80 @@
+{
+  "attempts": [
+    {
+      "cell": "nano-eager_native",
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1/matrix.json",
+        "--cell",
+        "nano-eager_native",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1/inputs/recorded_inputs_v1.npz"
+      ],
+      "exit_code": 0,
+      "log_sha256": "95d109e79415fe627eb67ec1f2c7c1d95630216443c81a9dbd43da1d230ce553",
+      "optimizer_environment": {}
+    },
+    {
+      "cell": "nano-runtime_default",
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1/matrix.json",
+        "--cell",
+        "nano-runtime_default",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1/inputs/recorded_inputs_v1.npz"
+      ],
+      "exit_code": 0,
+      "log_sha256": "4493607fbb2e3ff8847646dcecae6d0af558a24f88f36eaccc5f0bfacdcecbc9",
+      "optimizer_environment": {}
+    },
+    {
+      "cell": "nano-runtime_selected",
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1/matrix.json",
+        "--cell",
+        "nano-runtime_selected",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_run_v1/inputs/recorded_inputs_v1.npz"
+      ],
+      "exit_code": 0,
+      "log_sha256": "cb9b1ec5c78d15d977d617a50dd6ee92dcc1a0cad59625649232da59444b88b6",
+      "optimizer_environment": {
+        "IFL_BF16_LINEAR_RELU2": "0",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+        "IFL_COSMOS3_GEN_REGIONS": "1",
+        "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1"
+      }
+    }
+  ],
+  "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+  "plan_sha256": "51ed54d80f9069db4b9f119905a4cc7deecd2f2718e2a79c9f63190da2bac8a9",
+  "prepared": "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_prepared_v1",
+  "report_status": "passed",
+  "schema": "instinctflash.public_reproduction.v1",
+  "status": "passed",
+  "task_quality_validated": false
+}

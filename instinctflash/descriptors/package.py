@@ -469,17 +469,42 @@ def _declared_view(snapshot: Path, model_id: str, doc: dict) -> Path:
     """A checkpoint directory for an upstream snapshot that carries no declaration.
 
     Symlinks every snapshot entry (weights stay in the HF cache, nothing is copied or mutated)
-    and writes the known declaration next to them. Rebuilt on every call: cheap, and it tracks
-    snapshot updates.
+    and writes the known declaration next to them. A snapshot and declaration own an
+    immutable view: loading another revision cannot change an existing runtime's files.
     """
     import json as _json
     import os
+    import hashlib
+    import shutil
+    import tempfile
+    snapshot = snapshot.absolute()
+    declaration = _json.dumps(doc, sort_keys=True, indent=1)
+    key = hashlib.sha256((str(snapshot) + "\0" + declaration).encode()).hexdigest()
     base = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
-    view = base / "instinctflash" / "declared" / model_id.replace("/", "__")
-    view.mkdir(parents=True, exist_ok=True)
-    for entry in view.iterdir():
-        if entry.is_symlink() or entry.name == "instinctflash.json":
-            entry.unlink()
+    parent = base / "instinctflash" / "declared" / model_id.replace("/", "__")
+    parent.mkdir(parents=True, exist_ok=True)
+    view = parent / key
+    if view.is_dir():
+        if (view / "instinctflash.json").read_text() != declaration:
+            raise RuntimeError(f"Declared checkpoint cache was modified: {view}")
+        return view
+    # Build beside the destination and publish the complete tree with one rename.
+    # Concurrent readers never observe a half-populated checkpoint.
+    temporary = Path(tempfile.mkdtemp(prefix=".building-", dir=parent))
+    try:
+        _populate_declared_view(temporary, snapshot, doc, declaration)
+        try:
+            temporary.rename(view)
+        except OSError:
+            if not view.is_dir() or (view / "instinctflash.json").read_text() != declaration:
+                raise
+        return view
+    finally:
+        if temporary.exists():
+            shutil.rmtree(temporary)
+
+
+def _populate_declared_view(view: Path, snapshot: Path, doc: dict, declaration: str) -> None:
     for entry in snapshot.iterdir():
         (view / entry.name).symlink_to(entry)
     if not (view / "config.json").exists() and (snapshot / "transformer" / "config.json").exists():
@@ -495,8 +520,7 @@ def _declared_view(snapshot: Path, model_id: str, doc: dict) -> Path:
     if (not (view / "config.json").exists() and nested is not None
             and (nested / "config.json").exists()):
         (view / "config.json").symlink_to(nested / "config.json")
-    (view / "instinctflash.json").write_text(_json.dumps(doc, indent=1))
-    return view
+    (view / "instinctflash.json").write_text(declaration)
 
 
 def from_pretrained(model_id_or_path: str | Path, *, revision: str | None = None,

@@ -1,0 +1,673 @@
+{
+  "scope": "Matched checkpoint-native DROID public API, same boot, one process per arm with 2 warmups and 12 measured calls. No sustained tail or closed-loop certificate. Candidate changes activation-scale reduction allocation, not quantization arithmetic.",
+  "models": {
+    "edge": {
+      "arms": {
+        "native": {
+          "mode": "native",
+          "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+          "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+          "revision": "f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+          "precision": "native",
+          "setup_seconds": 0.3535761180000918,
+          "calls": [
+            {
+              "index": 0,
+              "phase": "initial",
+              "ms": 4760.576295999726
+            },
+            {
+              "index": 1,
+              "phase": "warmup",
+              "ms": 3462.066466000124
+            },
+            {
+              "index": 2,
+              "phase": "warmup",
+              "ms": 3449.7060369999417
+            },
+            {
+              "index": 3,
+              "phase": "measured",
+              "ms": 3452.879749999738
+            },
+            {
+              "index": 4,
+              "phase": "measured",
+              "ms": 3448.374516000058
+            },
+            {
+              "index": 5,
+              "phase": "measured",
+              "ms": 3461.568683999758
+            },
+            {
+              "index": 6,
+              "phase": "measured",
+              "ms": 3445.7484300000942
+            },
+            {
+              "index": 7,
+              "phase": "measured",
+              "ms": 3459.8814240002866
+            },
+            {
+              "index": 8,
+              "phase": "measured",
+              "ms": 3452.497400000084
+            },
+            {
+              "index": 9,
+              "phase": "measured",
+              "ms": 3453.558798999893
+            },
+            {
+              "index": 10,
+              "phase": "measured",
+              "ms": 3453.837537000254
+            },
+            {
+              "index": 11,
+              "phase": "measured",
+              "ms": 3457.229369000288
+            },
+            {
+              "index": 12,
+              "phase": "measured",
+              "ms": 3457.3402609998993
+            },
+            {
+              "index": 13,
+              "phase": "measured",
+              "ms": 3461.01457199984
+            },
+            {
+              "index": 14,
+              "phase": "measured",
+              "ms": 3454.773944000408
+            }
+          ],
+          "torch": "2.10.0+cu130",
+          "matmul_tf32": false,
+          "cudnn_tf32": false,
+          "cudnn_benchmark": false,
+          "chunk_size": 32,
+          "guidance": 3,
+          "steps": 4,
+          "conditioning_fps": 15,
+          "scope": "Short one-process public API performance diagnostic; alternating recorded camera frames, prompts and synthetic states. No transport, simulator, sustained tail or quality certificate.",
+          "measured": {
+            "count": 12,
+            "p50_ms": 3454.305740500331,
+            "p99_ms": 3461.507731679767,
+            "max_ms": 3461.568683999758
+          },
+          "source_sha256": {
+            "linear": "890eeffc07686f88a0927362c278ae20912d08ee7b3ce6bf2a4f961a3108e532",
+            "fp8_pack": "5148c35adbe53c592aa431b69f8fabbbcf45f6dd7ec466aaa3f7ce2c855f37f1",
+            "installer": "12c05f2dce7dc740b598094af24ca5580091fb9e33bd5bec0e66db26c377b6bf"
+          },
+          "sha256": {
+            "cosmos-scale-study-edge-native.json": "677e8f8a18978ba93170e49f05d78b8e75f75e24e31a1b0ba05dfa64614fb115",
+            "cosmos-scale-study-edge-native-actions.npz": "3dd8efea9a589fc59befd03f236247d25d436a0803d8eea9a02e9c03dc5a9607"
+          }
+        },
+        "fp8": {
+          "mode": "fp8",
+          "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+          "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+          "revision": "f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+          "precision": "fp8",
+          "setup_seconds": 11.319696443999874,
+          "calls": [
+            {
+              "index": 0,
+              "phase": "initial",
+              "ms": 5310.323515000164
+            },
+            {
+              "index": 1,
+              "phase": "warmup",
+              "ms": 3779.4531419999657
+            },
+            {
+              "index": 2,
+              "phase": "warmup",
+              "ms": 3774.9284100000295
+            },
+            {
+              "index": 3,
+              "phase": "measured",
+              "ms": 3767.843490999894
+            },
+            {
+              "index": 4,
+              "phase": "measured",
+              "ms": 3765.34924400039
+            },
+            {
+              "index": 5,
+              "phase": "measured",
+              "ms": 3765.972570000031
+            },
+            {
+              "index": 6,
+              "phase": "measured",
+              "ms": 3764.9490170001627
+            },
+            {
+              "index": 7,
+              "phase": "measured",
+              "ms": 3770.79097800015
+            },
+            {
+              "index": 8,
+              "phase": "measured",
+              "ms": 3764.3441899999743
+            },
+            {
+              "index": 9,
+              "phase": "measured",
+              "ms": 3768.309161000161
+            },
+            {
+              "index": 10,
+              "phase": "measured",
+              "ms": 3770.2873110001747
+            },
+            {
+              "index": 11,
+              "phase": "measured",
+              "ms": 3773.435574999894
+            },
+            {
+              "index": 12,
+              "phase": "measured",
+              "ms": 3772.2607629998492
+            },
+            {
+              "index": 13,
+              "phase": "measured",
+              "ms": 3764.1140790001373
+            },
+            {
+              "index": 14,
+              "phase": "measured",
+              "ms": 3762.3008160003337
+            }
+          ],
+          "torch": "2.10.0+cu130",
+          "matmul_tf32": false,
+          "cudnn_tf32": false,
+          "cudnn_benchmark": false,
+          "chunk_size": 32,
+          "guidance": 3,
+          "steps": 4,
+          "conditioning_fps": 15,
+          "scope": "Short one-process public API performance diagnostic; alternating recorded camera frames, prompts and synthetic states. No transport, simulator, sustained tail or quality certificate.",
+          "measured": {
+            "count": 12,
+            "p50_ms": 3766.9080304999625,
+            "p99_ms": 3773.306345679889,
+            "max_ms": 3773.435574999894
+          },
+          "source_sha256": {
+            "linear": "890eeffc07686f88a0927362c278ae20912d08ee7b3ce6bf2a4f961a3108e532",
+            "fp8_pack": "5148c35adbe53c592aa431b69f8fabbbcf45f6dd7ec466aaa3f7ce2c855f37f1",
+            "installer": "12c05f2dce7dc740b598094af24ca5580091fb9e33bd5bec0e66db26c377b6bf"
+          },
+          "sha256": {
+            "cosmos-scale-study-edge-fp8.json": "f81f748d66254a5bca9c06a1274dceab1afaa9dd66ab89a63ecb0d9524ac5046",
+            "cosmos-scale-study-edge-fp8-actions.npz": "2f83336ef25e8385e2671b1c6084d77ff430e484dad6fbf0d1cd2c31b7537447"
+          }
+        },
+        "fp8_scale": {
+          "mode": "fp8_scale",
+          "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+          "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+          "revision": "f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+          "precision": "fp8",
+          "setup_seconds": 11.304624741000225,
+          "calls": [
+            {
+              "index": 0,
+              "phase": "initial",
+              "ms": 5027.61165999982
+            },
+            {
+              "index": 1,
+              "phase": "warmup",
+              "ms": 3572.9453459998695
+            },
+            {
+              "index": 2,
+              "phase": "warmup",
+              "ms": 3562.7836819999175
+            },
+            {
+              "index": 3,
+              "phase": "measured",
+              "ms": 3573.295240999869
+            },
+            {
+              "index": 4,
+              "phase": "measured",
+              "ms": 3564.046479999888
+            },
+            {
+              "index": 5,
+              "phase": "measured",
+              "ms": 3557.5972020001245
+            },
+            {
+              "index": 6,
+              "phase": "measured",
+              "ms": 3561.4008140000806
+            },
+            {
+              "index": 7,
+              "phase": "measured",
+              "ms": 3561.4023690000067
+            },
+            {
+              "index": 8,
+              "phase": "measured",
+              "ms": 3564.585079000153
+            },
+            {
+              "index": 9,
+              "phase": "measured",
+              "ms": 3558.609906000129
+            },
+            {
+              "index": 10,
+              "phase": "measured",
+              "ms": 3560.4943039998034
+            },
+            {
+              "index": 11,
+              "phase": "measured",
+              "ms": 3565.009672999622
+            },
+            {
+              "index": 12,
+              "phase": "measured",
+              "ms": 3559.7020899999734
+            },
+            {
+              "index": 13,
+              "phase": "measured",
+              "ms": 3561.4252840000518
+            },
+            {
+              "index": 14,
+              "phase": "measured",
+              "ms": 3567.071371000111
+            }
+          ],
+          "torch": "2.10.0+cu130",
+          "matmul_tf32": false,
+          "cudnn_tf32": false,
+          "cudnn_benchmark": false,
+          "chunk_size": 32,
+          "guidance": 3,
+          "steps": 4,
+          "conditioning_fps": 15,
+          "scope": "Short one-process public API performance diagnostic; alternating recorded camera frames, prompts and synthetic states. No transport, simulator, sustained tail or quality certificate.",
+          "measured": {
+            "count": 12,
+            "p50_ms": 3561.4138265000292,
+            "p99_ms": 3572.6106152998955,
+            "max_ms": 3573.295240999869
+          },
+          "source_sha256": {
+            "linear": "e6dafec2cd7829da77de4dfaf22f2aad9f023e16f478c6042dd2b9c19a8ba71f",
+            "fp8_pack": "5148c35adbe53c592aa431b69f8fabbbcf45f6dd7ec466aaa3f7ce2c855f37f1",
+            "installer": "12c05f2dce7dc740b598094af24ca5580091fb9e33bd5bec0e66db26c377b6bf"
+          },
+          "sha256": {
+            "cosmos-scale-study-edge-fp8_scale.json": "12236fb36a448dbc313ddf03cb01de1b1c4d183615d85929b8b78e31ecfe6ec5",
+            "cosmos-scale-study-edge-fp8_scale-actions.npz": "2f83336ef25e8385e2671b1c6084d77ff430e484dad6fbf0d1cd2c31b7537447"
+          }
+        }
+      },
+      "fp8_candidate_actions_byte_equal": true,
+      "candidate_fp8_latency_reduction_percent": 5.455248769974852,
+      "candidate_vs_native_latency_change_percent": 3.1007123875544496
+    },
+    "nano": {
+      "arms": {
+        "native": {
+          "mode": "native",
+          "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+          "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+          "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e",
+          "precision": "native",
+          "setup_seconds": 0.2473700790001203,
+          "calls": [
+            {
+              "index": 0,
+              "phase": "initial",
+              "ms": 10988.326060999952
+            },
+            {
+              "index": 1,
+              "phase": "warmup",
+              "ms": 10320.15408999996
+            },
+            {
+              "index": 2,
+              "phase": "warmup",
+              "ms": 10309.42467900013
+            },
+            {
+              "index": 3,
+              "phase": "measured",
+              "ms": 10323.616460000267
+            },
+            {
+              "index": 4,
+              "phase": "measured",
+              "ms": 10305.887911000355
+            },
+            {
+              "index": 5,
+              "phase": "measured",
+              "ms": 10318.33762899987
+            },
+            {
+              "index": 6,
+              "phase": "measured",
+              "ms": 10291.81827299999
+            },
+            {
+              "index": 7,
+              "phase": "measured",
+              "ms": 10322.280537000097
+            },
+            {
+              "index": 8,
+              "phase": "measured",
+              "ms": 10311.320000999785
+            },
+            {
+              "index": 9,
+              "phase": "measured",
+              "ms": 10324.47696500003
+            },
+            {
+              "index": 10,
+              "phase": "measured",
+              "ms": 10323.923040999944
+            },
+            {
+              "index": 11,
+              "phase": "measured",
+              "ms": 10326.787540000169
+            },
+            {
+              "index": 12,
+              "phase": "measured",
+              "ms": 10324.286591000146
+            },
+            {
+              "index": 13,
+              "phase": "measured",
+              "ms": 10319.93639600023
+            },
+            {
+              "index": 14,
+              "phase": "measured",
+              "ms": 10317.409823999697
+            }
+          ],
+          "torch": "2.10.0+cu130",
+          "matmul_tf32": false,
+          "cudnn_tf32": false,
+          "cudnn_benchmark": false,
+          "chunk_size": 32,
+          "guidance": 3,
+          "steps": 4,
+          "conditioning_fps": 15,
+          "scope": "Short one-process public API performance diagnostic; alternating recorded camera frames, prompts and synthetic states. No transport, simulator, sustained tail or quality certificate.",
+          "measured": {
+            "count": 12,
+            "p50_ms": 10321.108466500164,
+            "p99_ms": 10326.533376750154,
+            "max_ms": 10326.787540000169
+          },
+          "source_sha256": {
+            "linear": "890eeffc07686f88a0927362c278ae20912d08ee7b3ce6bf2a4f961a3108e532",
+            "fp8_pack": "5148c35adbe53c592aa431b69f8fabbbcf45f6dd7ec466aaa3f7ce2c855f37f1",
+            "installer": "12c05f2dce7dc740b598094af24ca5580091fb9e33bd5bec0e66db26c377b6bf"
+          },
+          "sha256": {
+            "cosmos-scale-study-nano-native.json": "113f2911b0559d107c8e04bdb9a8ddbd4323336070e9dc0532ea64d7894bc9ce",
+            "cosmos-scale-study-nano-native-actions.npz": "0404c7ef0dc26ec93df7b0f93740496b12e4b310c3b93429cc11ecb7aacaf138"
+          }
+        },
+        "fp8": {
+          "mode": "fp8",
+          "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+          "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+          "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e",
+          "precision": "fp8",
+          "setup_seconds": 29.244711242999983,
+          "calls": [
+            {
+              "index": 0,
+              "phase": "initial",
+              "ms": 12089.527786999952
+            },
+            {
+              "index": 1,
+              "phase": "warmup",
+              "ms": 10970.888713000022
+            },
+            {
+              "index": 2,
+              "phase": "warmup",
+              "ms": 10959.711108000192
+            },
+            {
+              "index": 3,
+              "phase": "measured",
+              "ms": 10972.256738999931
+            },
+            {
+              "index": 4,
+              "phase": "measured",
+              "ms": 10968.557332999808
+            },
+            {
+              "index": 5,
+              "phase": "measured",
+              "ms": 10965.825777000191
+            },
+            {
+              "index": 6,
+              "phase": "measured",
+              "ms": 10964.283565000187
+            },
+            {
+              "index": 7,
+              "phase": "measured",
+              "ms": 10967.825858999731
+            },
+            {
+              "index": 8,
+              "phase": "measured",
+              "ms": 10968.930940000064
+            },
+            {
+              "index": 9,
+              "phase": "measured",
+              "ms": 10970.719113000087
+            },
+            {
+              "index": 10,
+              "phase": "measured",
+              "ms": 10970.295596000142
+            },
+            {
+              "index": 11,
+              "phase": "measured",
+              "ms": 10967.573556999923
+            },
+            {
+              "index": 12,
+              "phase": "measured",
+              "ms": 10963.568750999912
+            },
+            {
+              "index": 13,
+              "phase": "measured",
+              "ms": 10958.646985000087
+            },
+            {
+              "index": 14,
+              "phase": "measured",
+              "ms": 10964.436932999888
+            }
+          ],
+          "torch": "2.10.0+cu130",
+          "matmul_tf32": false,
+          "cudnn_tf32": false,
+          "cudnn_benchmark": false,
+          "chunk_size": 32,
+          "guidance": 3,
+          "steps": 4,
+          "conditioning_fps": 15,
+          "scope": "Short one-process public API performance diagnostic; alternating recorded camera frames, prompts and synthetic states. No transport, simulator, sustained tail or quality certificate.",
+          "measured": {
+            "count": 12,
+            "p50_ms": 10967.699707999827,
+            "p99_ms": 10972.087600139948,
+            "max_ms": 10972.256738999931
+          },
+          "source_sha256": {
+            "linear": "890eeffc07686f88a0927362c278ae20912d08ee7b3ce6bf2a4f961a3108e532",
+            "fp8_pack": "5148c35adbe53c592aa431b69f8fabbbcf45f6dd7ec466aaa3f7ce2c855f37f1",
+            "installer": "12c05f2dce7dc740b598094af24ca5580091fb9e33bd5bec0e66db26c377b6bf"
+          },
+          "sha256": {
+            "cosmos-scale-study-nano-fp8.json": "87dc41ab4f4e6d0239e10ae82b1cabbaee624032d6a1769f96890d51df609bfc",
+            "cosmos-scale-study-nano-fp8-actions.npz": "80e03202764102e19719b3463673b540d75e63d6fb6e4955db395f75997c0c46"
+          }
+        },
+        "fp8_scale": {
+          "mode": "fp8_scale",
+          "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+          "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+          "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e",
+          "precision": "fp8",
+          "setup_seconds": 26.60555519499985,
+          "calls": [
+            {
+              "index": 0,
+              "phase": "initial",
+              "ms": 11454.81971800018
+            },
+            {
+              "index": 1,
+              "phase": "warmup",
+              "ms": 10402.112661000047
+            },
+            {
+              "index": 2,
+              "phase": "warmup",
+              "ms": 10410.354466000172
+            },
+            {
+              "index": 3,
+              "phase": "measured",
+              "ms": 10395.325069000137
+            },
+            {
+              "index": 4,
+              "phase": "measured",
+              "ms": 10385.579296999822
+            },
+            {
+              "index": 5,
+              "phase": "measured",
+              "ms": 10393.21188599979
+            },
+            {
+              "index": 6,
+              "phase": "measured",
+              "ms": 10391.948430999946
+            },
+            {
+              "index": 7,
+              "phase": "measured",
+              "ms": 10402.933282000049
+            },
+            {
+              "index": 8,
+              "phase": "measured",
+              "ms": 10407.690672000172
+            },
+            {
+              "index": 9,
+              "phase": "measured",
+              "ms": 10390.163923999808
+            },
+            {
+              "index": 10,
+              "phase": "measured",
+              "ms": 10386.887663999914
+            },
+            {
+              "index": 11,
+              "phase": "measured",
+              "ms": 10398.931057000027
+            },
+            {
+              "index": 12,
+              "phase": "measured",
+              "ms": 10392.469581999649
+            },
+            {
+              "index": 13,
+              "phase": "measured",
+              "ms": 10391.330732999904
+            },
+            {
+              "index": 14,
+              "phase": "measured",
+              "ms": 10407.123442999819
+            }
+          ],
+          "torch": "2.10.0+cu130",
+          "matmul_tf32": false,
+          "cudnn_tf32": false,
+          "cudnn_benchmark": false,
+          "chunk_size": 32,
+          "guidance": 3,
+          "steps": 4,
+          "conditioning_fps": 15,
+          "scope": "Short one-process public API performance diagnostic; alternating recorded camera frames, prompts and synthetic states. No transport, simulator, sustained tail or quality certificate.",
+          "measured": {
+            "count": 12,
+            "p50_ms": 10392.84073399972,
+            "p99_ms": 10407.628276810134,
+            "max_ms": 10407.690672000172
+          },
+          "source_sha256": {
+            "linear": "e6dafec2cd7829da77de4dfaf22f2aad9f023e16f478c6042dd2b9c19a8ba71f",
+            "fp8_pack": "5148c35adbe53c592aa431b69f8fabbbcf45f6dd7ec466aaa3f7ce2c855f37f1",
+            "installer": "12c05f2dce7dc740b598094af24ca5580091fb9e33bd5bec0e66db26c377b6bf"
+          },
+          "sha256": {
+            "cosmos-scale-study-nano-fp8_scale.json": "fb2b5d956ad277c8df565f42f1d4a6ec7264ce6db916cb5389c994024c773160",
+            "cosmos-scale-study-nano-fp8_scale-actions.npz": "80e03202764102e19719b3463673b540d75e63d6fb6e4955db395f75997c0c46"
+          }
+        }
+      },
+      "fp8_candidate_actions_byte_equal": true,
+      "candidate_fp8_latency_reduction_percent": 5.241381413650547,
+      "candidate_vs_native_latency_change_percent": 0.6950054612097301
+    }
+  }
+}

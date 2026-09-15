@@ -1,0 +1,21 @@
+{
+  "model": "LingBot-VLA-4B (robbyant/lingbot-vla-4b-posttrain-robotwin, snapshot fb71a2c9)",
+  "hardware": "Jetson Thor (SM110, aarch64), torch 2.11.0+cu130",
+  "date": "2026-08-25",
+  "torch_ms": 695.6,
+  "ours_ms": 97.5,
+  "speedup": 7.13,
+  "arm_notes": {
+    "torch": "In-process official pipeline (LingbotVLAServer.infer), 12 calls p50 + 3 warmup, robotwin trio obs (3x480x640x3 + 14-dim state + prompt), num_denoising_step=10, use_length=25, bf16 — same protocol as the H100 in-process round. mean 692.8, p90 708.4, load 39.7 s. Loader patched away hardcoded flash_attention_2 (no flash-attn wheel exists for SM110/aarch64): vendored VLM/vision constructed with 'eager' (the vendored class dicts have no sdpa entry; expert config set sdpa but is construction-only). The attention that actually executes in prefill+denoise is upstream's own our_eager_attention_forward einsum (deploy sets attention_implementation='eager'), identical to what the H100 baseline ran; only the vision tower kernel differs (eager vs fa2 on H100). Two latent upstream bugs surfaced because the never-exercised eager-vision path ran: rotate_half() undefined in qwenvl_in_vla.py — fixed with the canonical transformers definition.",
+    "ours": "InstinctFlash T2-V1 engine frontend, REUSED from /home/ubuntu/iwm_distill/thor_t2/gate_p4_thor_e2e.json (p50 97.50 ms, p90 99.70, PASS: action_cos 0.995 agg, 12 samples) — not re-run per instruction."
+  },
+  "walls": [
+    "flash-attn wheel absent for SM110/aarch64 -> baseline cannot run the as-shipped fa2 vision kernel; eager vision is the honest best-available torch arm on this device (vision is a small share of the cycle: prefill was 44.7 of 659.8 ms on H100).",
+    "venv build: frt_env lerobot 0.6.1 requires transformers>=4.53; mirrored the H100 substrate instead (transformers 4.51.3 + lerobot 0.4.4 + datasets in venv_vla4b, torch shared from frt_env via .pth)."
+  ],
+  "raw": {
+    "torch_json": "thor:~/thorcol/vla4b_torch.json",
+    "ours_json": "/home/ubuntu/iwm_distill/thor_t2/gate_p4_thor_e2e.json",
+    "h100_reference": {"inprocess_stock_ms": 672.7, "ws_stock_ms": 704.8, "capture_ms": 184.0}
+  }
+}

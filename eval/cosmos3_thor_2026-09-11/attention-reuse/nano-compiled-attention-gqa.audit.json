@@ -1,0 +1,29 @@
+{
+  "guidance_interval": null,
+  "diffusion_cache": false,
+  "use_torch_compile": true,
+  "batched_cfg": false,
+  "qualification": "exploratory",
+  "effective_setup": {
+    "diffusion_cache": false,
+    "guardrails": false,
+    "use_torch_compile": true,
+    "use_cuda_graphs": false
+  },
+  "engine_attention": {
+    "calls": 4608,
+    "shapes": {
+      "((1, 3094, 32, 128), (1, 3182, 8, 128))": 2304,
+      "((1, 3094, 32, 128), (1, 3103, 8, 128))": 2304
+    },
+    "kind": "native BF16 numeric candidate; not BITEXACT",
+    "library_sha256": "fbc4b669be9e8e5dca7eab46fbd9df1006f6cd57b346c28d1ec6eacedae94c43"
+  },
+  "effective_guidance_interval": null,
+  "counts": {
+    "_can_reuse_inference_pack_templates:True": 16,
+    "_can_reuse_inference_text_kv:True": 16,
+    "_get_velocity": 128
+  },
+  "audit_script_sha256": "61fd720928518cf9f34970bb44e3a74c607631f9c568ddc8a94cee67fb3c16ca"
+}

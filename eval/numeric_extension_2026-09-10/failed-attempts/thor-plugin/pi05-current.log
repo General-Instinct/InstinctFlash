@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/home/guanming/ifl_eval/numeric_extension_20260910/source/eval/numeric_extension_2026-09-10/benchmark.py", line 57, in <module>
+    api.reset(prompt='pick up the object')
+  File "/home/guanming/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/facade.py", line 136, in reset
+    self._backend.reset(**conditioning)
+  File "/home/guanming/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/execution.py", line 218, in reset
+    impl = self._ensure()
+           ^^^^^^^^^^^^^^
+  File "/home/guanming/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/execution.py", line 154, in _ensure
+    self._impl = build(self._checkpoint, self._plan, device=self._device, nfe=self._nfe,
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/ifl_eval/numeric_extension_20260910/source/examples/pi05_vla/pi05_iwm/adapter.py", line 176, in build_in_process
+    tf32_planned = _validate_tf32_plan(checkpoint, plan)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/ifl_eval/numeric_extension_20260910/source/examples/pi05_vla/pi05_iwm/adapter.py", line 628, in _validate_tf32_plan
+    raise RuntimeError(
+RuntimeError: pi0.5 TF32 operating-point declaration and plan disagree: declared=True, applied=False. pass was not evaluated. The runtime refuses to silently substitute FP32 or TF32 semantics.

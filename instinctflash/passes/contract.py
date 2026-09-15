@@ -104,6 +104,7 @@ def _cudnn_available() -> bool:
 #: `requires={"cudnn"}` came to be dormant-broken. Enforced by tests/test_hardware_probe.py.
 KNOWN_FEATURES = frozenset({
     "cpu", "cuda", "cuda_graphs", "triton", "fp8", "nvfp4", "wgmma", "tma", "cudnn", "cublas",
+    "sm120_kernels", "sm120_stage2_kernels",
 })
 
 
@@ -131,9 +132,9 @@ class DeviceProfile:
             return "cpu", "no CUDA device; GPU passes decline on their own requirements"
         if self.capability == (11, 0):
             return "bandwidth-bound-edge", (
-                "measured on Thor (sm110): ~15x less memory bandwidth than H100, the same "
-                "forwards run ~10x longer, launch overhead vanishes into them -- graph capture "
-                "measured 1.04x on pi05, no battlefield")
+                "Thor (sm110): capture benefit depends on the model and execution scope; "
+                "the matched 2026-09-09 study supersedes the older pi05-only timing. "
+                "Capture defaults require family/operating-point evidence")
         if self.capability == (9, 0):
             return "launch-bound", (
                 "measured on H100 (sm90): batch-1 GEMMs are 17-88 us, kernel launch overhead "
@@ -144,8 +145,21 @@ class DeviceProfile:
             f"class-conditional default keeps its measured-class behaviour")
 
     @staticmethod
-    def probe() -> "DeviceProfile":
+    def probe(device: str | int | None = None) -> "DeviceProfile":
+        """Probe the requested CUDA target, not merely the process current device.
+
+        Worker placement may remap ``device='cuda:1'`` through CUDA_VISIBLE_DEVICES only after
+        planning. Looking at current_device here would plan for one GPU and execute on another.
+        """
+
         import torch
+
+        def cpu_profile():
+            import platform
+            return DeviceProfile(
+                name=f"CPU ({platform.machine()})", capability=(0, 0),
+                total_memory=0, features=frozenset({"cpu"}))
+
         # CPU IS A HARDWARE TARGET, and treating it as "no device" was wrong. This raised
         # `RuntimeError: No CUDA GPUs are available` on a GPU-less machine, the facade swallowed it,
         # and the planner then reported every hardware requirement as UNCHECKED -- when the truthful
@@ -153,12 +167,22 @@ class DeviceProfile:
         # genuinely absent, so passes needing them must decline rather than be left undecided.
         # It is also the machine most external users have, so it is the one where an honest plan
         # matters most.
+        if device is not None:
+            if isinstance(device, int) or str(device).isdigit():
+                target_type, target_index = "cuda", int(device)
+            else:
+                target = torch.device(device)
+                target_type, target_index = target.type, target.index
+            if target_type == "cpu":
+                return cpu_profile()
+            if target_type != "cuda":
+                raise ValueError(f"DeviceProfile can probe cpu or cuda, got {device!r}")
+        else:
+            target_index = None
+
         if not torch.cuda.is_available():
-            import platform
-            return DeviceProfile(
-                name=f"CPU ({platform.machine()})", capability=(0, 0),
-                total_memory=0, features=frozenset({"cpu"}))
-        i = torch.cuda.current_device()
+            return cpu_profile()
+        i = torch.cuda.current_device() if target_index is None else target_index
         p = torch.cuda.get_device_properties(i)
         cap = (p.major, p.minor)
         # "cuda" is vacuously true here -- probe() cannot run without a CUDA device -- but
@@ -185,6 +209,23 @@ class DeviceProfile:
                     feats.add(name)
             except Exception:                                    # noqa: BLE001  never fail a probe
                 pass
+        # Optional repo-native kernels are a runtime capability, not a property of Blackwell by
+        # itself. A 5090 without the built library must decline P009 at PLAN time; otherwise the
+        # plan would claim APPLY and the installer could only fail or silently no-op.
+        try:
+            from instinctflash.backends.sm120_residual import available as sm120_available
+
+            if cap == (12, 0) and sm120_available():
+                feats.add("sm120_kernels")
+        except Exception:                                    # noqa: BLE001  never fail a probe
+            pass
+        try:
+            from instinctflash.backends.sm120_wan_stage2 import available as stage2_available
+
+            if cap == (12, 0) and stage2_available():
+                feats.add("sm120_stage2_kernels")
+        except Exception:                                    # noqa: BLE001  never fail a probe
+            pass
         return DeviceProfile(name=p.name, capability=cap, total_memory=p.total_memory,
                              features=frozenset(feats))
 

@@ -1,0 +1,3065 @@
+diff --git a/cosmos_framework/configs/base/config.py b/cosmos_framework/configs/base/config.py
+index cf67208..7c170b1 100644
+--- a/cosmos_framework/configs/base/config.py
++++ b/cosmos_framework/configs/base/config.py
+@@ -97,6 +97,7 @@ def make_config() -> Config:
+     import cosmos_framework.configs.base.experiment.action.posttrain_config.action_policy_droid_nano  # noqa: F401
+     import cosmos_framework.configs.base.experiment.action.posttrain_config.action_policy_libero_all_nano  # noqa: F401
+     import cosmos_framework.configs.base.experiment.action.posttrain_config.action_policy_libero_nano  # noqa: F401
++    import cosmos_framework.configs.base.experiment.action.posttrain_config.action_policy_robotwin_edge  # noqa: F401
+     import cosmos_framework.configs.base.experiment.sft.vision_sft_nano  # noqa: F401
+     import cosmos_framework.configs.base.experiment.sft.vision_sft_super  # noqa: F401
+     import cosmos_framework.configs.base.experiment.sft.vision_sft_edge  # noqa: F401
+diff --git a/cosmos_framework/configs/base/defaults/compile.py b/cosmos_framework/configs/base/defaults/compile.py
+index 3d5ebf7..22c0d34 100644
+--- a/cosmos_framework/configs/base/defaults/compile.py
++++ b/cosmos_framework/configs/base/defaults/compile.py
+@@ -31,6 +31,21 @@ class CompileConfig:
+     # Whether to use CUDA graphs for faster inference. This option does not work during training.
+     use_cuda_graphs: bool = False
+ 
++    # InstinctWM: get CUDA-graph capture WITHOUT changing kernel selection.
++    #
++    # `use_cuda_graphs` currently sets torch.compile(mode="reduce-overhead"), which switches on
++    # cudagraph trees AND changes inductor's fusion and memory-planning decisions. Measured
++    # consequence: actions move by max|Δ| = 1.72e-02 versus the uncaptured path, so the engine
++    # arm cannot claim bit-exactness and has to buy a non-inferiority certificate instead.
++    #
++    # Capture itself should be numerically neutral -- it records and replays the same kernel
++    # launches, and static addresses do not change arithmetic. So the delta is very likely the
++    # MODE, not the capture. With this on, cudagraphs are requested through
++    # `options={"triton.cudagraphs": True}` with mode left at the default, which keeps
++    # inductor's ordinary decisions. If that turns out bit-exact, the 3.5x at NFE 30 comes for
++    # free and the certificate is unnecessary.
++    cudagraphs_via_options: bool = False
++
+     # Enable autotuning for pointwise/reduction Triton kernels (e.g. RMSNorm).
+     # Explores 6 candidate configs instead of the default 1, improving kernel performance
+     # at the cost of longer first-iteration compilation time.
+diff --git a/cosmos_framework/data/generator/action/datasets/action_sft_dataset.py b/cosmos_framework/data/generator/action/datasets/action_sft_dataset.py
+index 6053259..4865b90 100644
+--- a/cosmos_framework/data/generator/action/datasets/action_sft_dataset.py
++++ b/cosmos_framework/data/generator/action/datasets/action_sft_dataset.py
+@@ -23,6 +23,7 @@ from cosmos_framework.data.generator.action.datasets.droid_lerobot_dataset impor
+     DROIDLeRobotDataset,
+ )
+ from cosmos_framework.data.generator.action.datasets.libero_lerobot_dataset import LIBEROLeRobotDataset
++from cosmos_framework.data.generator.action.datasets.robotwin_lerobot_dataset import RoboTwinLeRobotDataset
+ from cosmos_framework.data.generator.action.transforms import ActionTransformPipeline
+ 
+ 
+@@ -151,6 +152,87 @@ def get_action_droid_sft_dataset(
+     return sft
+ 
+ 
++def get_action_robotwin_sft_dataset(
++    *,
++    root: str,
++    fps: float = 16.0,
++    chunk_length: int = 16,
++    mode: str = "policy",
++    use_state: bool = True,
++    action_normalization: str | None = None,
++    viewpoint: str = "concat_view",
++    use_image_augmentation: bool = False,
++    split: str = "full",
++    val_ratio: float = 0.01,
++    seed: int = 0,
++    resolution: str | int | None = "480",
++    max_action_dim: int = 64,
++    tokenizer_config: dict | None = None,
++    cfg_dropout_rate: float = 0.1,
++    append_viewpoint_info: bool = True,
++    append_duration_fps_timestamps: bool = True,
++    append_resolution_info: bool = True,
++    append_idle_frames: bool = False,
++    format_prompt_as_json: bool = True,
++    iterable_shuffle: bool = True,
++    episode_shuffle_seed: int = 42,
++) -> Dataset:
++    """Build the RoboTwin 2.0 ``aloha-agilex`` action SFT dataset.
++
++    Mirrors :func:`get_action_droid_sft_dataset`: feeds
++    ``RoboTwinLeRobotDataset`` (14-D absolute joint position ``qpos14``,
++    ``use_state=True`` so the current state is conditioning row 0, raw /
++    un-normalized, no gripper flip) through ``ActionTransformPipeline``.
++
++    ``root`` is ONE local LeRobot v3.0 root covering all pilot tasks (one
++    multi-task checkpoint); ``viewpoint="concat_view"`` reads the single
++    pre-composed ``observation.images.mosaic`` video key.
++
++    ``resolution="480"`` is the tier whose closest aspect bucket (``"1,1"`` ->
++    640x640) is >= the 320x360 mosaic in both dimensions, so
++    ``reflection_pad_to_target`` caps ``scaling_ratio`` at 1.0 and the mosaic
++    reaches the model at NATIVE pixel scale (padded, never resampled). The
++    ``"256"`` tier would resolve to 256x256 and downscale the mosaic to 228x256
++    (-29% linear), i.e. crush the 320x240 head camera to 228x171.
++
++    ``use_image_augmentation`` is accepted for signature parity with the DROID
++    factory and must stay ``False``: ``RoboTwinLeRobotDataset`` has no augmentor
++    (random crop/rescale would break the frozen mosaic geometry the policy
++    server reproduces at eval time).
++    """
++    if use_image_augmentation:
++        raise NotImplementedError(
++            "RoboTwinLeRobotDataset has no image augmentor; cropping/rescaling would break the "
++            "frozen mosaic geometry shared with the policy server. Keep use_image_augmentation=False."
++        )
++    dataset: Dataset = RoboTwinLeRobotDataset(
++        root=root,
++        fps=fps,
++        chunk_length=chunk_length,
++        mode=mode,
++        use_state=use_state,
++        viewpoint=viewpoint,
++        action_normalization=action_normalization,
++        split=split,
++        val_ratio=val_ratio,
++        seed=seed,
++    )
++    transform = ActionTransformPipeline(
++        tokenizer_config=tokenizer_config,
++        cfg_dropout_rate=cfg_dropout_rate,
++        max_action_dim=max_action_dim,
++        append_viewpoint_info=append_viewpoint_info,
++        append_duration_fps_timestamps=append_duration_fps_timestamps,
++        append_resolution_info=append_resolution_info,
++        append_idle_frames=append_idle_frames,
++        format_prompt_as_json=format_prompt_as_json,
++    )
++    sft = ActionSFTDataset(dataset, transform, resolution)
++    if iterable_shuffle:
++        return ActionIterableShuffleDataset(sft, seed=episode_shuffle_seed)
++    return sft
++
++
+ def get_action_libero_sft_dataset(
+     *,
+     root: str,
+diff --git a/cosmos_framework/data/generator/action/domain_utils.py b/cosmos_framework/data/generator/action/domain_utils.py
+index 6317a09..2d5db52 100644
+--- a/cosmos_framework/data/generator/action/domain_utils.py
++++ b/cosmos_framework/data/generator/action/domain_utils.py
+@@ -17,6 +17,11 @@ EMBODIMENT_TO_DOMAIN_ID: dict[str, int] = {
+     "embodiment_b": 9,
+     "robomind-franka-dual": 12,
+     "robomind-ur": 13,
++    # RoboTwin 2.0 aloha-agilex (dual ARX arms, 14-D absolute joint position).
++    # Domain id 11 was the only unused slot below num_embodiment_domains and is
++    # provably untrained in the released Cosmos3-Edge weights (its
++    # action_modality_embed bias row is exactly zero).
++    "robotwin_aloha_agilex": 11,
+     "agibotworld": 15,
+     "embodiment_c_gripper": 15,
+     "embodiment_c_gripper_ext": 15,
+@@ -37,6 +42,8 @@ EMBODIMENT_TO_RAW_ACTION_DIM: dict[str, int] = {
+     "robomind-franka": 10,
+     "robomind-franka-dual": 20,
+     "robomind-ur": 10,
++    # [left_arm(6), left_gripper, right_arm(6), right_gripper]
++    "robotwin_aloha_agilex": 14,
+     "embodiment_b": 30,
+     "agibotworld": 29,
+     "embodiment_c_gripper": 29,
+diff --git a/cosmos_framework/inference/common/args.py b/cosmos_framework/inference/common/args.py
+index 83d2fe0..00bc64a 100644
+--- a/cosmos_framework/inference/common/args.py
++++ b/cosmos_framework/inference/common/args.py
+@@ -669,6 +669,7 @@ class ParallelismArgs(ArgsBase):
+     cfgp_size: CfgpSize
+     use_torch_compile: bool
+     use_cuda_graphs: bool
++    cudagraphs_via_options: bool
+     compiled_region: CompiledRegion
+     compile_dynamic: bool
+     use_separate_pipeline_vision_decode_gpu: bool
+@@ -708,6 +709,7 @@ class ParallelismOverrides(OverridesBase):
+     use_torch_compile: bool = True
+     """Whether to use torch compile."""
+     use_cuda_graphs: bool = True
++    cudagraphs_via_options: bool = False
+     """Whether to use CUDA graphs."""
+     compiled_region: CompiledRegion = "all"
+     """Torch compile region."""
+diff --git a/cosmos_framework/inference/inference.py b/cosmos_framework/inference/inference.py
+index 62db733..8aef287 100644
+--- a/cosmos_framework/inference/inference.py
++++ b/cosmos_framework/inference/inference.py
+@@ -1154,6 +1154,7 @@ class OmniInference(Inference):
+             enabled=setup_args.use_torch_compile,
+             use_cuda_graphs=setup_args.use_cuda_graphs
+             and setup_args.dp_shard_size * setup_args.cp_size * setup_args.cfgp_size == 1,
++            cudagraphs_via_options=getattr(setup_args, "cudagraphs_via_options", False),
+             compiled_region=setup_args.compiled_region,
+             compile_dynamic=setup_args.compile_dynamic,
+         )
+diff --git a/cosmos_framework/model/generator/mot/parallelize_unified_mot.py b/cosmos_framework/model/generator/mot/parallelize_unified_mot.py
+index d8f97a8..c61115d 100644
+--- a/cosmos_framework/model/generator/mot/parallelize_unified_mot.py
++++ b/cosmos_framework/model/generator/mot/parallelize_unified_mot.py
+@@ -307,12 +307,16 @@ def apply_compile(model: nn.Module, config: CompileConfig) -> None:
+     if config.coordinate_descent_tuning:
+         compile_options["coordinate_descent_tuning"] = True
+ 
++    # InstinctWM: see CompileConfig.cudagraphs_via_options.
++    _via_options = config.use_cuda_graphs and getattr(config, "cudagraphs_via_options", False)
++    if _via_options:
++        compile_options["triton.cudagraphs"] = True
+     for layer_id, block in model.model.layers.named_children():
+         block = torch.compile(
+             block,
+             fullgraph=True,
+             dynamic=config.compile_dynamic,
+-            mode="reduce-overhead" if config.use_cuda_graphs else None,
++            mode="reduce-overhead" if (config.use_cuda_graphs and not _via_options) else None,
+             options=compile_options or None,
+         )
+         model.model.layers.register_module(layer_id, block)
+diff --git a/cosmos_framework/model/generator/mot/parallelize_vfm_network.py b/cosmos_framework/model/generator/mot/parallelize_vfm_network.py
+index e2279cf..9d98b4b 100644
+--- a/cosmos_framework/model/generator/mot/parallelize_vfm_network.py
++++ b/cosmos_framework/model/generator/mot/parallelize_vfm_network.py
+@@ -27,10 +27,15 @@ def apply_compile(model: torch.nn.Module, config: CompileConfig):
+     if config.coordinate_descent_tuning:
+         inductor_options["coordinate_descent_tuning"] = True
+ 
++    # InstinctWM: cudagraphs through inductor options keeps the default mode, so kernel
++    # selection is unchanged -- see CompileConfig.cudagraphs_via_options.
++    _via_options = config.use_cuda_graphs and getattr(config, "cudagraphs_via_options", False)
++    if _via_options:
++        inductor_options["triton.cudagraphs"] = True
+     compile_options = {
+         "fullgraph": True,
+         "dynamic": True,
+-        "mode": "reduce-overhead" if config.use_cuda_graphs else None,
++        "mode": "reduce-overhead" if (config.use_cuda_graphs and not _via_options) else None,
+         "options": inductor_options or None,
+     }
+ 
+diff --git a/uv.lock b/uv.lock
+index 467d8e7..cf12f5f 100644
+--- a/uv.lock
++++ b/uv.lock
+@@ -108,12 +108,12 @@ conflicts = [[
+     { package = "cosmos-framework", group = "cu130" },
+     { package = "cosmos-framework", group = "cu130-train" },
+ ], [
+-    { package = "cosmos-framework", group = "cu128" },
+     { package = "cosmos-framework", group = "cu128-train" },
++    { package = "cosmos-framework", group = "cu130" },
+     { package = "cosmos-framework", group = "cu130-train" },
+ ], [
++    { package = "cosmos-framework", group = "cu128" },
+     { package = "cosmos-framework", group = "cu128-train" },
+-    { package = "cosmos-framework", group = "cu130" },
+     { package = "cosmos-framework", group = "cu130-train" },
+ ], [
+     { package = "cosmos-framework", group = "cu128-train" },
+@@ -2519,12 +2519,17 @@ source = { registry = "https://pypi.org/simple" }
+ resolution-markers = [
+     "python_full_version >= '3.14' and sys_platform == 'linux'",
+     "python_full_version == '3.13.*' and sys_platform == 'linux'",
++    "python_full_version >= '3.14' and sys_platform != 'linux'",
++    "python_full_version == '3.13.*' and sys_platform != 'linux'",
+     "python_full_version == '3.12.*' and sys_platform == 'linux'",
++    "python_full_version == '3.12.*' and sys_platform != 'linux'",
+     "python_full_version == '3.11.*' and sys_platform == 'linux'",
++    "python_full_version == '3.11.*' and sys_platform != 'linux'",
+     "python_full_version < '3.11' and sys_platform == 'linux'",
++    "python_full_version < '3.11' and sys_platform != 'linux'",
+ ]
+ dependencies = [
+-    { name = "cuda-pathfinder", marker = "(sys_platform == 'linux' and extra == 'group-16-cosmos-framework-cu128') or (sys_platform == 'linux' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu130' and extra == 'group-16-cosmos-framework-cu130-train')" },
++    { name = "cuda-pathfinder", marker = "extra == 'group-16-cosmos-framework-cu128' or extra == 'group-16-cosmos-framework-cu128-train' or (extra == 'group-16-cosmos-framework-cu130' and extra == 'group-16-cosmos-framework-cu130-train')" },
+ ]
+ wheels = [
+     { url = "https://files.pythonhosted.org/packages/37/31/bfcc870f69c6a017c4ad5c42316207fc7551940db6f3639aa4466ec5faf3/cuda_bindings-12.9.4-cp310-cp310-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:a022c96b8bd847e8dc0675523431149a4c3e872f440e3002213dbb9e08f0331a", size = 11800959, upload-time = "2025-10-21T14:51:26.458Z" },
+@@ -2615,16 +2620,6 @@ resolution-markers = [
+     "python_full_version == '3.11.*' and platform_machine != 'aarch64' and platform_machine != 'x86_64' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+     "python_full_version < '3.11' and platform_machine != 'aarch64' and platform_machine != 'x86_64' and sys_platform == 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+     "python_full_version < '3.11' and platform_machine != 'aarch64' and platform_machine != 'x86_64' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version >= '3.14' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version == '3.13.*' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version == '3.12.*' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version == '3.11.*' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version < '3.11' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version >= '3.14' and sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version == '3.13.*' and sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version == '3.12.*' and sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version == '3.11.*' and sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version < '3.11' and sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+     "python_full_version >= '3.14' and sys_platform == 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+     "python_full_version == '3.13.*' and sys_platform == 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+     "python_full_version >= '3.14' and sys_platform != 'darwin' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+@@ -2642,7 +2637,7 @@ resolution-markers = [
+     "python_full_version < '3.11' and sys_platform == 'darwin' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+ ]
+ dependencies = [
+-    { name = "cuda-pathfinder", marker = "sys_platform != 'linux' or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train')" },
++    { name = "cuda-pathfinder", marker = "extra == 'group-16-cosmos-framework-cu130' or extra == 'group-16-cosmos-framework-cu130-train' or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train')" },
+ ]
+ wheels = [
+     { url = "https://files.pythonhosted.org/packages/3b/98/0666ee759cd2e5306f911cbc95d2c6c814326906ed6b9c09e817a4b4a7c8/cuda_bindings-13.0.3-cp310-cp310-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:d56e46a9e984bb754e56b9d060cf027fe99f08a97651ce6d8aa1c2032476d01e", size = 11762523, upload-time = "2025-10-21T15:08:45.913Z" },
+@@ -2683,12 +2678,17 @@ source = { registry = "https://pypi.org/simple" }
+ resolution-markers = [
+     "python_full_version >= '3.14' and sys_platform == 'linux'",
+     "python_full_version == '3.13.*' and sys_platform == 'linux'",
++    "python_full_version >= '3.14' and sys_platform != 'linux'",
++    "python_full_version == '3.13.*' and sys_platform != 'linux'",
+     "python_full_version == '3.12.*' and sys_platform == 'linux'",
++    "python_full_version == '3.12.*' and sys_platform != 'linux'",
+     "python_full_version == '3.11.*' and sys_platform == 'linux'",
++    "python_full_version == '3.11.*' and sys_platform != 'linux'",
+     "python_full_version < '3.11' and sys_platform == 'linux'",
++    "python_full_version < '3.11' and sys_platform != 'linux'",
+ ]
+ dependencies = [
+-    { name = "cuda-bindings", version = "12.9.4", source = { registry = "https://pypi.org/simple" }, marker = "(sys_platform == 'linux' and extra == 'group-16-cosmos-framework-cu128') or (sys_platform == 'linux' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu130' and extra == 'group-16-cosmos-framework-cu130-train')" },
++    { name = "cuda-bindings", version = "12.9.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-16-cosmos-framework-cu128' or extra == 'group-16-cosmos-framework-cu128-train' or (extra == 'group-16-cosmos-framework-cu130' and extra == 'group-16-cosmos-framework-cu130-train')" },
+ ]
+ wheels = [
+     { url = "https://files.pythonhosted.org/packages/af/f3/6b032a554019cfb3447e671798c1bd3e79b5f1af20d10253f56cea269ef2/cuda_python-12.9.4-py3-none-any.whl", hash = "sha256:d2cacea882a69863f1e7d27ee71d75f0684f4c76910aff839067e4f89c902279", size = 7594, upload-time = "2025-10-21T14:55:12.846Z" },
+@@ -2759,16 +2759,6 @@ resolution-markers = [
+     "python_full_version == '3.11.*' and platform_machine != 'aarch64' and platform_machine != 'x86_64' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+     "python_full_version < '3.11' and platform_machine != 'aarch64' and platform_machine != 'x86_64' and sys_platform == 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+     "python_full_version < '3.11' and platform_machine != 'aarch64' and platform_machine != 'x86_64' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version >= '3.14' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version == '3.13.*' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version == '3.12.*' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version == '3.11.*' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version < '3.11' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version >= '3.14' and sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version == '3.13.*' and sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version == '3.12.*' and sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version == '3.11.*' and sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+-    "python_full_version < '3.11' and sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+     "python_full_version >= '3.14' and sys_platform == 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+     "python_full_version == '3.13.*' and sys_platform == 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+     "python_full_version >= '3.14' and sys_platform != 'darwin' and sys_platform != 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+@@ -2786,8 +2776,8 @@ resolution-markers = [
+     "python_full_version < '3.11' and sys_platform == 'darwin' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train' and extra != 'group-16-cosmos-framework-cu130' and extra != 'group-16-cosmos-framework-cu130-train'",
+ ]
+ dependencies = [
+-    { name = "cuda-bindings", version = "13.0.3", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'linux' or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train')" },
+-    { name = "cuda-pathfinder", marker = "sys_platform != 'linux' or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train')" },
++    { name = "cuda-bindings", version = "13.0.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-16-cosmos-framework-cu130' or extra == 'group-16-cosmos-framework-cu130-train' or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train')" },
++    { name = "cuda-pathfinder", marker = "extra == 'group-16-cosmos-framework-cu130' or extra == 'group-16-cosmos-framework-cu130-train' or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train')" },
+ ]
+ wheels = [
+     { url = "https://files.pythonhosted.org/packages/31/5f/beaa12a11b051027eec0b041df01c6690db4f02e3b2e8fadd5a0eeb4df52/cuda_python-13.0.3-py3-none-any.whl", hash = "sha256:914cd7e2dd075bd06a2d5121c1d9ccdd3d0c94b03ea5a44dbd98d24d8ed93bab", size = 7605, upload-time = "2025-10-21T15:48:59.222Z" },
+@@ -3266,7 +3256,7 @@ name = "exceptiongroup"
+ version = "1.3.1"
+ source = { registry = "https://pypi.org/simple" }
+ dependencies = [
+-    { name = "typing-extensions", marker = "python_full_version < '3.11' or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu130' and extra == 'group-16-cosmos-framework-cu130-train')" },
++    { name = "typing-extensions", marker = "python_full_version < '3.12' or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu130' and extra == 'group-16-cosmos-framework-cu130-train')" },
+ ]
+ sdist = { url = "https://files.pythonhosted.org/packages/50/79/66800aadf48771f6b62f7eb014e352e5d06856655206165d775e675a02c9/exceptiongroup-1.3.1.tar.gz", hash = "sha256:8b412432c6055b0b7d14c310000ae93352ed6754f70fa8f7c34141f91c4e3219", size = 30371, upload-time = "2025-11-21T23:01:54.787Z" }
+ wheels = [
+@@ -7671,7 +7661,7 @@ name = "nvidia-cudnn-cu13"
+ version = "9.15.1.9"
+ source = { registry = "https://pypi.org/simple" }
+ dependencies = [
+-    { name = "nvidia-cublas", marker = "(sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu130') or (sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu130-train') or (sys_platform == 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train')" },
++    { name = "nvidia-cublas", marker = "(sys_platform == 'darwin' and extra == 'group-16-cosmos-framework-cu130') or (sys_platform == 'darwin' and extra == 'group-16-cosmos-framework-cu130-train') or (sys_platform != 'darwin' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train')" },
+ ]
+ wheels = [
+     { url = "https://files.pythonhosted.org/packages/ff/93/b3c9db2c35d6183361333d2dcfea50e094c012d012c8a4d7effbfb53ef62/nvidia_cudnn_cu13-9.15.1.9-py3-none-manylinux_2_27_aarch64.whl", hash = "sha256:44cd2ec83c3ef62a7357614bd02ce7f3dac35ffcbb04ad20999e730741f0ba17", size = 415636241, upload-time = "2025-11-12T20:22:26.582Z" },
+@@ -7706,7 +7696,7 @@ name = "nvidia-cufft"
+ version = "12.0.0.61"
+ source = { registry = "https://pypi.org/simple" }
+ dependencies = [
+-    { name = "nvidia-nvjitlink", marker = "(sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu130') or (sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu130-train') or (sys_platform == 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train')" },
++    { name = "nvidia-nvjitlink", marker = "(sys_platform == 'darwin' and extra == 'group-16-cosmos-framework-cu130') or (sys_platform == 'darwin' and extra == 'group-16-cosmos-framework-cu130-train') or (sys_platform != 'darwin' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train')" },
+ ]
+ wheels = [
+     { url = "https://files.pythonhosted.org/packages/8b/ae/f417a75c0259e85c1d2f83ca4e960289a5f814ed0cea74d18c353d3e989d/nvidia_cufft-12.0.0.61-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:2708c852ef8cd89d1d2068bdbece0aa188813a0c934db3779b9b1faa8442e5f5", size = 214053554, upload-time = "2025-09-04T08:31:38.196Z" },
+@@ -7770,9 +7760,9 @@ name = "nvidia-cusolver"
+ version = "12.0.4.66"
+ source = { registry = "https://pypi.org/simple" }
+ dependencies = [
+-    { name = "nvidia-cublas", marker = "(sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu130') or (sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu130-train') or (sys_platform == 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train')" },
+-    { name = "nvidia-cusparse", marker = "(sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu130') or (sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu130-train') or (sys_platform == 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train')" },
+-    { name = "nvidia-nvjitlink", marker = "(sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu130') or (sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu130-train') or (sys_platform == 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train')" },
++    { name = "nvidia-cublas", marker = "(sys_platform == 'darwin' and extra == 'group-16-cosmos-framework-cu130') or (sys_platform == 'darwin' and extra == 'group-16-cosmos-framework-cu130-train') or (sys_platform != 'darwin' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train')" },
++    { name = "nvidia-cusparse", marker = "(sys_platform == 'darwin' and extra == 'group-16-cosmos-framework-cu130') or (sys_platform == 'darwin' and extra == 'group-16-cosmos-framework-cu130-train') or (sys_platform != 'darwin' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train')" },
++    { name = "nvidia-nvjitlink", marker = "(sys_platform == 'darwin' and extra == 'group-16-cosmos-framework-cu130') or (sys_platform == 'darwin' and extra == 'group-16-cosmos-framework-cu130-train') or (sys_platform != 'darwin' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train')" },
+ ]
+ wheels = [
+     { url = "https://files.pythonhosted.org/packages/c8/c3/b30c9e935fc01e3da443ec0116ed1b2a009bb867f5324d3f2d7e533e776b/nvidia_cusolver-12.0.4.66-py3-none-manylinux_2_27_aarch64.whl", hash = "sha256:02c2457eaa9e39de20f880f4bd8820e6a1cfb9f9a34f820eb12a155aa5bc92d2", size = 223467760, upload-time = "2025-09-04T08:33:04.222Z" },
+@@ -7800,7 +7790,7 @@ name = "nvidia-cusparse"
+ version = "12.6.3.3"
+ source = { registry = "https://pypi.org/simple" }
+ dependencies = [
+-    { name = "nvidia-nvjitlink", marker = "(sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu130') or (sys_platform != 'linux' and extra == 'group-16-cosmos-framework-cu130-train') or (sys_platform == 'linux' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train')" },
++    { name = "nvidia-nvjitlink", marker = "(sys_platform == 'darwin' and extra == 'group-16-cosmos-framework-cu130') or (sys_platform == 'darwin' and extra == 'group-16-cosmos-framework-cu130-train') or (sys_platform != 'darwin' and extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train')" },
+ ]
+ wheels = [
+     { url = "https://files.pythonhosted.org/packages/f8/94/5c26f33738ae35276672f12615a64bd008ed5be6d1ebcb23579285d960a9/nvidia_cusparse-12.6.3.3-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:80bcc4662f23f1054ee334a15c72b8940402975e0eab63178fc7e670aa59472c", size = 162155568, upload-time = "2025-09-04T08:33:42.864Z" },
+@@ -7857,8 +7847,8 @@ name = "nvidia-cutlass-dsl-libs-base"
+ version = "4.4.2"
+ source = { registry = "https://pypi.org/simple" }
+ dependencies = [
+-    { name = "cuda-python", version = "12.9.4", source = { registry = "https://pypi.org/simple" }, marker = "(sys_platform == 'linux' and extra == 'group-16-cosmos-framework-cu128') or (sys_platform == 'linux' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu130' and extra == 'group-16-cosmos-framework-cu130-train')" },
+-    { name = "cuda-python", version = "13.0.3", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'linux' or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu130-train') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130') or (extra == 'group-16-cosmos-framework-cu128-train' and extra == 'group-16-cosmos-framework-cu130-train') or (extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train')" },
++    { name = "cuda-python", version = "12.9.4", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-16-cosmos-framework-cu128' or extra == 'group-16-cosmos-framework-cu128-train' or (extra == 'group-16-cosmos-framework-cu130' and extra == 'group-16-cosmos-framework-cu130-train')" },
++    { name = "cuda-python", version = "13.0.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'group-16-cosmos-framework-cu130' or extra == 'group-16-cosmos-framework-cu130-train' or (extra == 'group-16-cosmos-framework-cu128' and extra == 'group-16-cosmos-framework-cu128-train') or (extra != 'group-16-cosmos-framework-cu128' and extra != 'group-16-cosmos-framework-cu128-train')" },
+     { name = "numpy" },
+     { name = "typing-extensions" },
+ ]
+diff --git a/cosmos_framework/configs/base/experiment/action/posttrain_config/action_policy_robotwin_edge.py b/cosmos_framework/configs/base/experiment/action/posttrain_config/action_policy_robotwin_edge.py
+new file mode 100644
+index 0000000..1198a1c
+--- /dev/null
++++ b/cosmos_framework/configs/base/experiment/action/posttrain_config/action_policy_robotwin_edge.py
+@@ -0,0 +1,282 @@
++# SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
++# SPDX-License-Identifier: OpenMDW-1.1
++
++"""``action_policy_robotwin_edge`` — Cosmos3-Edge RoboTwin 2.0 action-policy SFT recipe.
++
++Structured on ``action_policy_droid_nano`` but on the EDGE backbone
++(``copy.deepcopy(EDGE_MODEL_CONFIG)``, Nemotron-2B-Dense-VL / base
++``nvidia/Cosmos3-Edge``, 3.86B). The Nano -> Edge swap CANNOT be expressed as a
++TOML override: ``toml_config_helper.PATH_REMAPS["vfm"]`` maps
++``("model", "backbone")`` to ``None`` (VFM has no ``model.config.backbone``), so
++the backbone is only selectable by which model-config constant this experiment
++deep-copies. Hence a separate registered experiment rather than a TOML variant of
++the DROID recipe.
++
++Data: ``RoboTwinLeRobotDataset`` via ``get_action_robotwin_sft_dataset`` — 14-D
++absolute joint position ``qpos14`` ``[left_arm(6), left_gripper, right_arm(6),
++right_gripper]``, ``use_state=True`` (current state = conditioning action row 0
++-> 17 action rows / 17 video frames at ``chunk_length=16``),
++``action_normalization=None``, no gripper flip, ``concat_view`` over the single
++pre-composed ``observation.images.mosaic`` (320x360) video key, fps 16. ONE
++dataset root and ONE checkpoint over the 10 pilot tasks.
++
++Usage (1 node, 8 GPU)::
++
++    ROBOTWIN_ROOT=/path/to/robotwin_lerobot_root \\
++    BASE_CHECKPOINT_PATH=<Cosmos3-Edge DCP dir> \\
++    WAN_VAE_PATH=<Wan2.2_VAE.pth> \\
++    IMAGINAIRE_OUTPUT_ROOT=<output root> \\
++    torchrun --nproc_per_node=8 -m cosmos_framework.scripts.train \\
++        --sft-toml examples/toml/sft_config/action_policy_robotwin_edge.toml
++"""
++
++import copy
++
++from hydra.core.config_store import ConfigStore
++
++from cosmos_framework.configs.base.experiment.sft.models.edge_model_config import EDGE_MODEL_CONFIG
++from cosmos_framework.data.generator.action.datasets.action_sft_dataset import get_action_robotwin_sft_dataset
++from cosmos_framework.data.generator.joint_dataloader import (
++    PackingDataLoader,
++    RankPartitionedDataLoader,
++)
++from cosmos_framework.utils.lazy_config import LazyCall as L
++from cosmos_framework.utils.lazy_config import LazyDict
++
++cs = ConfigStore.instance()
++
++# chunk_length=16 + use_state -> 17 video frames per sample.
++_CHUNK_LENGTH = 16
++_VIDEO_FRAMES = _CHUNK_LENGTH + 1
++
++
++def _action_policy_robotwin_edge_model_config() -> dict:
++    """Edge baseline + the RoboTwin action-policy deltas.
++
++    ``EDGE_MODEL_CONFIG`` already carries ``action_gen=True``,
++    ``max_action_dim=64``, ``resolution="480"``, ``loss_scale=10.0``,
++    ``image_loss_scale=None`` and ``action_loss_weight=10.0``, so the only
++    deltas are the VAE encode duration and selective activation checkpointing.
++    """
++    cfg = copy.deepcopy(EDGE_MODEL_CONFIG)  # action_gen=True, max_action_dim=64, resolution="480"
++    # Selective AC on fmha (the pre-registered schedule); Edge's baseline is "full".
++    cfg["activation_checkpointing"]["mode"] = "selective"
++    # 17-frame windows: encode at their exact length instead of padding to
++    # 1 + encode_chunk_frames["480"] = 25 frames.
++    cfg["tokenizer"]["encode_exact_durations"] = [_VIDEO_FRAMES]
++    return cfg
++
++
++action_policy_robotwin_edge = LazyDict(
++    dict(
++        defaults=[
++            {"override /model": "mot_fsdp"},
++            {"override /data_train": None},
++            {"override /data_val": None},
++            # FusedAdam with fp32 master_weights + eps 1e-8 (bf16 params + eps 1e-6
++            # diverged on the action loss).
++            {"override /optimizer": "fusedadamw"},
++            {"override /scheduler": "lambdalinear"},  # linear LR decay
++            {"override /checkpoint": "s3"},
++            {
++                "override /callbacks": [
++                    "basic",
++                    "optimization",
++                    "job_monitor",
++                ]
++            },
++            {"override /ema": "power"},
++            {"override /tokenizer": "wan2pt2_tokenizer"},
++            {"override /sound_tokenizer": None},
++            {"override /vlm_config": None},
++            {"override /ckpt_type": "dcp"},
++            "_self_",
++        ],
++        job=dict(
++            project="cosmos3_action_robotwin",
++            group="action_sft",
++            name="action_policy_robotwin_edge",
++            wandb_mode="disabled",
++        ),
++        model=dict(
++            config=_action_policy_robotwin_edge_model_config(),
++        ),
++        optimizer=dict(
++            betas=[0.9, 0.99],
++            eps=1.0e-08,
++            fused=True,  # popped by build_optimizer for FusedAdam (fused by construction)
++            # Train the generation + action heads.
++            keys_to_select=[
++                "moe_gen",
++                "time_embedder",
++                "vae2llm",
++                "llm2vae",
++                "action2llm",
++                "llm2action",
++                "action_modality_embed",
++                # EDGE-ONLY, and the reason this list differs from the Nano action
++                # recipes: edge_model_config sets use_und_k_norm_for_gen=True with
++                # qk_norm_for_text=False, so UnifiedMoTAttention builds a real
++                # RMSNorm named ``k_norm_und_for_gen`` (unified_mot.py:532). That
++                # name does NOT contain the substring "moe_gen", so with the Nano
++                # key list _build_params_with_metadata would flip its
++                # requires_grad to False and silently FREEZE the norm that scales
++                # every und K token the generator cross-attends to. vision_sft_edge
++                # lists it for exactly this reason; the Nano action recipes omit it
++                # only because Nano has qk_norm_for_text=True and therefore never
++                # constructs the module.
++                "k_norm_und_for_gen",
++            ],
++            lr=5.0e-05,  # pre-registered (protocol §3); global batch 2048
++            lr_multipliers={
++                "action2llm": 5.0,
++                "llm2action": 5.0,
++                "action_modality_embed": 5.0,
++            },
++            optimizer_type="FusedAdam",
++            weight_decay=0.05,
++        ),
++        scheduler=dict(
++            lr_scheduler_type="LambdaLinear",
++            cycle_lengths=[100],  # smoke: 100 iters (real run sets cycle_lengths=[max_iter] via TOML)
++            f_max=[1.0],
++            f_min=[0.0],
++            f_start=[1.0e-06],
++            verbosity_interval=0,
++            warm_up_steps=[0],  # smoke (real run sets 500 via TOML)
++        ),
++        trainer=dict(
++            distributed_parallelism="fsdp",
++            grad_accum_iter=1,  # real run sets 2 via TOML
++            logging_iter=1,
++            max_iter=100,  # smoke (real run sets the pre-registered value via TOML)
++            max_val_iter=None,
++            run_validation=False,
++            run_validation_on_start=False,
++            save_zero_checkpoint=False,
++            seed=42,
++            timeout_period=999999999,
++            validation_iter=100,
++            compile_config=dict(recompile_limit=8, use_duck_shape=False),
++            cudnn=dict(benchmark=True, deterministic=False),
++            ddp=dict(broadcast_buffers=True, find_unused_parameters=False, static_graph=True),
++            grad_scaler_args=dict(enabled=False),
++            callbacks=dict(
++                dataloader_speed=dict(every_n=100, save_s3=False, step_size=1),
++                device_monitor=dict(
++                    every_n=200, log_memory_detail=True, save_s3=False, step_size=1, upload_every_n_mul=5
++                ),
++                grad_clip=dict(clip_norm=1.0, force_finite=True),
++                heart_beat=dict(every_n=200, save_s3=False, step_size=1, update_interval_in_minute=20),
++                iter_speed=dict(every_n=1, hit_thres=50, save_s3=False, save_s3_every_log_n=500),
++                low_precision=dict(update_iter=1),
++                manual_gc=dict(every_n=5, gc_level=1, warm_up=1),
++                param_count=dict(save_s3=False),
++                skip_nan_step=dict(max_consecutive_nan=100),
++                training_stats=dict(log_freq=100),
++            ),
++        ),
++        checkpoint=dict(
++            broadcast_via_filesystem=False,
++            dcp_async_mode_enabled=False,
++            enable_gcs_patch_in_boto3=True,
++            keys_not_to_resume=[],
++            # Skip net_ema (EMA warm-starts from net, see dcp.py) and the action
++            # heads, so they init FRESH from the base: the released Cosmos3-Edge
++            # ships DROID-trained action heads whose domain-11 row is untrained,
++            # and whose chunk geometry differs from ours.
++            keys_to_skip_loading=[
++                "net_ema.",
++                "action2llm",
++                "llm2action",
++                "action_modality_embed",
++                "action_pos_embed",
++            ],
++            load_ema_to_reg=False,
++            load_path="???",  # base Cosmos3-Edge DCP dir; supply via TOML/env
++            load_training_state=False,
++            only_load_scheduler_state=False,
++            save_iter=100,  # smoke (real run sets max_iter/10 via TOML)
++            strict_resume=False,  # base init: tolerate key set differences
++            verbose=True,
++            hf_export=dict(
++                enabled=False,
++                export_every_n=1,
++                hf_repo_id=None,
++                upload_to_object_store=dict(bucket="", credentials="", enabled=False),
++            ),
++            jit=dict(device="cuda", dtype="bfloat16", enabled=False, input_shape=None, strict=True),
++            load_from_object_store=dict(bucket="", credentials="", enabled=False),
++            save_to_object_store=dict(bucket="", credentials="", enabled=False),
++        ),
++        dataloader_train=L(PackingDataLoader)(
++            audio_sample_rate=48000,
++            dataset_name="action_robotwin",
++            # 128 x (shard 8 x replicate 1) x grad_accum 2 = 2048 global batch.
++            max_samples_per_batch=128,
++            max_sequence_length=None,  # None disables token packing (TOML can't express null)
++            patch_spatial=2,
++            sound_latent_fps=0,
++            tokenizer_spatial_compression_factor=16,
++            tokenizer_temporal_compression_factor=4,
++            dataloader=L(RankPartitionedDataLoader)(
++                batch_size=1,
++                in_order=False,
++                num_workers=4,
++                persistent_workers=True,
++                pin_memory=True,
++                prefetch_factor=4,
++                sampler=None,
++                # Shuffling is handled by the dataset (iterable_shuffle=True below):
++                # ActionIterableShuffleDataset streams rank x worker-sharded, episode-order-
++                # shuffled, sequential-within-episode. RoboTwin episodes are short (~112
++                # frames -> ~96 windows), so a rank's workers cycle episodes quickly.
++                datasets=dict(
++                    robotwin=dict(
++                        ratio=1,
++                        dataset=L(get_action_robotwin_sft_dataset)(
++                            # ONE LeRobot v3.0 root over the 10 pilot tasks.
++                            root="${oc.env:ROBOTWIN_ROOT}",
++                            # 16 everywhere (timestamps, conditioning_fps, mp4 rate).
++                            # The true RoboTwin rate is 16.67 Hz; conditioning_fps is cast
++                            # to torch.long, so a fractional value would truncate silently.
++                            fps=16,
++                            chunk_length=_CHUNK_LENGTH,
++                            # Policy-only task mode. "joint" would randomly pick
++                            # forward_dynamics/inverse_dynamics/policy per sample (multi-task),
++                            # which dilutes each per-task loss by ~1/3.
++                            mode="policy",
++                            # Prepend the current absolute qpos14 as conditioning action row 0.
++                            use_state=True,
++                            # Raw absolute joint targets; no stats file anywhere.
++                            action_normalization=None,
++                            viewpoint="concat_view",  # single pre-composed 320x360 mosaic
++                            # Train on all episodes: the protocol holds out no demos.
++                            split="full",
++                            # 640x640 bucket; scaling_ratio caps at 1.0 so the 320x360
++                            # mosaic arrives at native scale (padded, never resampled).
++                            resolution="480",
++                            # No crop/jitter: it would break the frozen mosaic geometry
++                            # that the eval-time policy server reproduces.
++                            use_image_augmentation=False,
++                            iterable_shuffle=True,  # rank x worker episode-shuffle stream
++                            episode_shuffle_seed=42,
++                            max_action_dim="${model.config.max_action_dim}",
++                            cfg_dropout_rate=0.1,
++                            tokenizer_config="${model.config.vlm_config.tokenizer}",
++                            format_prompt_as_json=True,
++                        ),
++                    ),
++                ),
++            ),
++        ),
++        dataloader_val=None,
++        upload_reproducible_setup=False,
++    ),
++    flags={"allow_objects": True},
++)
++
++
++for _item in [action_policy_robotwin_edge]:
++    _name = [k for k, v in globals().items() if v is _item][0]
++    cs.store(group="experiment", package="_global_", name=_name, node=_item)
+diff --git a/cosmos_framework/data/generator/action/datasets/robotwin_lerobot_dataset.py b/cosmos_framework/data/generator/action/datasets/robotwin_lerobot_dataset.py
+new file mode 100644
+index 0000000..28809ab
+--- /dev/null
++++ b/cosmos_framework/data/generator/action/datasets/robotwin_lerobot_dataset.py
+@@ -0,0 +1,435 @@
++# SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
++# SPDX-License-Identifier: OpenMDW-1.1
++
++"""RoboTwin 2.0 ``aloha-agilex`` LeRobot dataset (14-D absolute joint-position policy).
++
++Templated on :class:`LIBEROLeRobotDataset`: a compact per-episode frame index
++(contiguous numpy arrays, copy-on-write across DataLoader worker forks),
++``get_shuffle_blocks`` for ``ActionIterableShuffleDataset``, a deterministic
++per-episode split, and video decoding at each frame's REAL parquet timestamp.
++
++Why NOT ``RoboMINDFrankaDataset``: it indexes ``self._rows[row_idx : row_idx +
++chunk_length + 1]`` off the flat, dataset-global row list and inherits
++``ActionBaseDataset.__len__`` (``len(self._rows) - chunk_length``), with no
++per-episode boundary guard anywhere. Any ``row_idx`` within ``chunk_length`` of
++an episode's last frame therefore produces a window that straddles into the NEXT
++episode: the video frames are decoded from episode ``i`` (a single
++``episode_index`` is read from ``observation_rows[0]``) while the trailing action
++rows come from episode ``i+1``. On RoboMIND's ~500-frame episodes that corrupts
++~3% of windows; on RoboTwin's ~112-frame episodes it would corrupt ~14% of them
++(16/112), and the corrupted windows are exactly the task-completion frames.
++The LIBERO-style index used here allots ``episode_length - chunk_length`` windows
++per episode, so every window is strictly within one episode.
++
++Action layout (14-D, RoboTwin native, joint space)::
++
++    [left_arm(6), left_gripper(1), right_arm(6), right_gripper(1)]
++
++The stored ``actions.qpos14[t]`` is the ABSOLUTE next joint target
++(``actions[t] == states[t+1]``), executed by RoboTwin as
++``TASK_ENV.take_action(a)`` with the default ``action_type='qpos'``. There is no
++pose convention, no rotation encoding, no normalization
++(``action_normalization=None``, so no stats file exists or is needed) and
++**no gripper flip**: RoboTwin's native convention (1.0 = open) is passed through
++verbatim. The DROID / RoboMIND datasets apply ``1.0 - gripper`` at both ends;
++that is a DROID convention and is deliberately NOT copied here.
++
++``use_state=True`` prepends ``states.qpos14[t]`` (the current absolute joint
++position) as action row 0. ``build_sequence_plan_from_mode`` then sees
++``action_length == video_length`` ("Case B"), marks row 0 as a CONDITIONING row
++(``condition_frame_indexes_action == [0]``) and sets
++``action_start_frame_offset = 0`` so action row *k* aligns with video frame *k*.
++That is why the video window must be ``chunk_length + 1`` frames long: with
++``chunk_length=16`` a sample is 17 action rows and 17 video frames.
++
++Video: the ``observation.images.mosaic`` key is a PRE-COMPOSED mosaic written at
++conversion time (head_camera 320x240 on top; left/right wrist cameras each
++resized to 160x120 and concatenated along width below -> 320x360). This class
++reads that single video key and never re-composes from separate camera videos.
++"""
++
++from __future__ import annotations
++
++import random
++from pathlib import Path
++from typing import Any, Literal
++
++import numpy as np
++import pyarrow.parquet as pq
++import torch
++
++from cosmos_framework.data.generator.action.action_spec import ActionSpec, Gripper, Joint, build_action_spec
++from cosmos_framework.data.generator.action.datasets.base_dataset import ActionBaseDataset
++from cosmos_framework.utils import log
++
++Viewpoint = Literal["concat_view"]
++
++#: Embodiment / domain-name string. Registered in ``domain_utils`` as domain id
++#: 11 with raw action dim 14.
++ROBOTWIN_EMBODIMENT: str = "robotwin_aloha_agilex"
++
++_STATE_FEATURE = "observation.states.qpos14"
++_ACTION_FEATURE = "actions.qpos14"
++_MOSAIC_FEATURE = "observation.images.mosaic"
++
++_QPOS_DIM = 14
++
++#: Frozen mosaic geometry (see the module docstring). Used for a one-time
++#: sanity check against the decoded frames, not to resize them.
++MOSAIC_HEIGHT = 360
++MOSAIC_WIDTH = 320
++
++#: Emitted verbatim as ``extras["additional_view_description"]`` and imported
++#: verbatim by the RoboTwin action-policy server, so the prompt the model sees at
++#: eval time is byte-identical to the training prompt.
++ROBOTWIN_VIEW_DESC = (
++    "The top row is a third-person head-camera view of the dual-arm robot. "
++    "The bottom row contains two horizontally concatenated wrist-camera views, left arm then right arm."
++)
++
++# ---------------------------------------------------------------------------
++# Action-row window offset.
++#
++# ``_ACTION_ROW_START_OFFSET`` is the offset, relative to the window's first
++# frame ``t``, of the first SUPERVISED action row:
++#
++#     row 0        = states.qpos14[t]                                (conditioning)
++#     rows 1..16   = actions.qpos14[t + off : t + off + chunk_length] (supervised)
++#
++# The value 1 is what the pilot contract pre-registers, and is what ships here.
++#
++# NOTE (recorded objection, not a silent deviation): off=1 makes row *k* equal
++# ``actions[t+k] == states[t+k+1]``, i.e. one step AHEAD of video frame *k*,
++# while row 0 is ``states[t]`` == video frame 0. off=0 is the self-consistent
++# choice (row k == states[t+k] == the joint configuration visible in video frame
++# k, exactly the alignment ``action_start_frame_offset=0`` declares, and exactly
++# what ``DROIDLeRobotDataset`` does for ``action_space='joint_pos'`` +
++# ``use_state=True``). Flipping this single constant to 0 switches to that
++# alignment; nothing else in the file depends on the value.
++# ---------------------------------------------------------------------------
++_ACTION_ROW_START_OFFSET = 1
++
++
++def robotwin_action_spec() -> ActionSpec:
++    """14-D joint-space spec: ``[left_arm(6), left_gripper, right_arm(6), right_gripper]``.
++
++    All 12 arm columns are :class:`DimType.JOINT` (idle detection by frame-diff
++    against ``joint_threshold``) and the two gripper columns are
++    :class:`DimType.GRIPPER`. No POS/ROT columns: RoboTwin actions are joint
++    targets, so there is no pose convention or rotation format to encode.
++    """
++    return build_action_spec(
++        Joint(n=6, label="arm", prefix="left"),
++        Gripper(prefix="left"),
++        Joint(n=6, label="arm", prefix="right"),
++        Gripper(prefix="right"),
++    )
++
++
++class RoboTwinLeRobotDataset(ActionBaseDataset):
++    """RoboTwin 2.0 ``aloha-agilex`` 14-D absolute-joint-position policy dataset.
++
++    One dataset root spans all pilot tasks (multi-task, one checkpoint); tasks
++    are distinguished only by the LeRobot ``task_index`` -> instruction string.
++    """
++
++    def __init__(
++        self,
++        root: str,
++        fps: float = 16.0,
++        chunk_length: int = 16,
++        mode: str = "policy",
++        tolerance_s: float = 1e-4,
++        viewpoint: Viewpoint = "concat_view",
++        use_state: bool = True,
++        embodiment_type: str = ROBOTWIN_EMBODIMENT,
++        action_normalization: str | None = None,
++        split: str = "full",
++        val_ratio: float = 0.01,
++        seed: int = 0,
++        sample_stride: int = 1,
++    ) -> None:
++        if viewpoint != "concat_view":
++            raise NotImplementedError(
++                f"RoboTwinLeRobotDataset only supports viewpoint='concat_view' (the pre-composed "
++                f"{_MOSAIC_FEATURE!r} mosaic), got {viewpoint!r}."
++            )
++        if action_normalization is not None:
++            # No normalizer stats file exists for RoboTwin, by design: the pilot
++            # protocol pins action_normalization=None so there is no train/serve
++            # normalizer mismatch to get wrong.
++            raise ValueError(
++                "RoboTwinLeRobotDataset requires action_normalization=None (raw absolute qpos14); "
++                f"got {action_normalization!r}. No stats file exists for this embodiment."
++            )
++        split = split.lower().strip()
++        if split not in {"train", "val", "valid", "validation", "eval", "test", "full"}:
++            raise ValueError(f"Unsupported split={split!r}. Use train/val/full.")
++        if chunk_length < 1:
++            raise ValueError(f"chunk_length must be >= 1, got {chunk_length}.")
++
++        super().__init__(
++            root=root,
++            domain_name=embodiment_type,
++            fps=fps,
++            chunk_length=chunk_length,
++            # Joint-space actions have no pose deltas; this only satisfies the
++            # base-class assert and is never read (see _action_spec: no POS/ROT).
++            pose_convention="backward_framewise",
++            mode=mode,
++            tolerance_s=tolerance_s,
++            viewpoint=viewpoint,
++            action_normalization=None,
++            sample_stride=sample_stride,
++        )
++        self._embodiment_type = embodiment_type
++        self._use_state = bool(use_state)
++        self._warned_geometry = False
++
++        # ``conditioning_fps`` is emitted as torch.long, so a non-integer fps is
++        # silently truncated. RoboTwin's true rate is 16.67 Hz (save_freq 15 at
++        # timestep 1/250); the pilot pins 16 everywhere (data timestamps,
++        # conditioning_fps, mp4 rate) so it is exact rather than truncated.
++        info_fps = self._info.get("fps")
++        if info_fps is not None and abs(float(info_fps) - float(fps)) > 1e-6:
++            raise ValueError(
++                f"fps mismatch: dataset meta/info.json says fps={info_fps} but the recipe requested "
++                f"{fps}. The converter and the recipe must agree (the pilot pins 16)."
++            )
++        if not float(self._fps).is_integer():
++            raise ValueError(
++                f"fps must be an integer ({self._fps} given): conditioning_fps is cast to torch.long, "
++                "so a fractional fps would be silently truncated."
++            )
++
++        self._validate_features()
++
++        # Compact, lazy frame index (mirrors LIBEROLeRobotDataset / DROID): read
++        # only the columns the sample builder needs into contiguous arrays,
++        # ordered by global frame index, so DataLoader worker forks share them
++        # copy-on-write. Never touches ActionBaseDataset._rows.
++        index_parts: list[np.ndarray] = []
++        episode_parts: list[np.ndarray] = []
++        task_parts: list[np.ndarray] = []
++        ts_parts: list[np.ndarray] = []
++        state_parts: list[np.ndarray] = []
++        action_parts: list[np.ndarray] = []
++        for path in sorted((self._root / "data").glob("chunk-*/file-*.parquet")):
++            table = pq.read_table(
++                path,
++                columns=["index", "episode_index", "task_index", "timestamp", _STATE_FEATURE, _ACTION_FEATURE],
++            )
++            index_parts.append(table["index"].to_numpy())
++            episode_parts.append(table["episode_index"].to_numpy())
++            task_parts.append(table["task_index"].to_numpy())
++            ts_parts.append(table["timestamp"].to_numpy())
++            state_parts.append(np.asarray(table[_STATE_FEATURE].to_pylist(), dtype=np.float32))
++            action_parts.append(np.asarray(table[_ACTION_FEATURE].to_pylist(), dtype=np.float32))
++        if not index_parts:
++            raise FileNotFoundError(f"No data parquet found under {self._root / 'data'}.")
++        order = np.argsort(np.concatenate(index_parts).astype(np.int64), kind="stable")
++        self._row_episode = np.concatenate(episode_parts).astype(np.int64)[order]
++        self._row_task = np.concatenate(task_parts).astype(np.int64)[order]
++        self._row_timestamp = np.concatenate(ts_parts).astype(np.float64)[order]
++        self._row_state = np.concatenate(state_parts, axis=0).astype(np.float32)[order]
++        self._row_action = np.concatenate(action_parts, axis=0).astype(np.float32)[order]
++
++        for name, arr in ((_STATE_FEATURE, self._row_state), (_ACTION_FEATURE, self._row_action)):
++            if arr.ndim != 2 or arr.shape[1] != _QPOS_DIM:
++                raise ValueError(f"{name} must be [T, {_QPOS_DIM}]; got {tuple(arr.shape)} at {self._root}.")
++
++        assert np.all(np.diff(self._row_episode) >= 0), "episode_index not contiguous after sorting by frame index"
++        ep_vals, ep_starts, ep_counts = np.unique(self._row_episode, return_index=True, return_counts=True)
++
++        # Deterministic per-episode split (seeded; identical on every rank).
++        # The pilot trains on all 5,500 episodes -> split="full" (no held-out demos).
++        keep = self._split_episode_ids(ep_vals.tolist(), split, val_ratio, seed)
++        kept = np.array([int(v) in keep for v in ep_vals], dtype=bool)
++        self._ep_vals = ep_vals.astype(np.int64)[kept]
++        self._ep_starts = ep_starts.astype(np.int64)[kept]
++        kept_counts = ep_counts.astype(np.int64)[kept]
++        # WITHIN-episode windows only: an episode of length L yields
++        # L - chunk_length windows, whose last touched row is start + chunk_length
++        # (the 17th video frame / the last action row) -> always inside the episode.
++        self._valid_cum = np.cumsum(np.maximum(0, kept_counts - self._chunk_length)).astype(np.int64)
++
++        log.info(
++            f"Loaded RoboTwin dataset root={self._root} split={split!r} viewpoint={viewpoint!r} "
++            f"fps={self._fps} chunk_length={self._chunk_length} use_state={self._use_state} "
++            f"kept_episodes={len(self._ep_vals)}/{len(ep_vals)} tasks={len(self._tasks)} "
++            f"valid_indices={len(self)}"
++        )
++
++    # ---- schema validation -------------------------------------------------
++
++    def _validate_features(self) -> None:
++        """Fail loudly at construction if the converter wrote a different schema."""
++        features = self._info.get("features", {})
++        for name in (_STATE_FEATURE, _ACTION_FEATURE):
++            feat = features.get(name)
++            if feat is None:
++                raise KeyError(
++                    f"Missing feature {name!r} in {self._root / 'meta' / 'info.json'}. "
++                    f"Available: {sorted(features)}"
++                )
++            shape = list(feat.get("shape", []))
++            if shape != [_QPOS_DIM]:
++                raise ValueError(f"Feature {name!r} must have shape [{_QPOS_DIM}]; info.json says {shape}.")
++            if feat.get("dtype") not in (None, "float32"):
++                raise ValueError(f"Feature {name!r} must be float32; info.json says {feat.get('dtype')!r}.")
++        if _MOSAIC_FEATURE not in features:
++            raise KeyError(
++                f"Missing video feature {_MOSAIC_FEATURE!r} in {self._root / 'meta' / 'info.json'}. "
++                "This dataset reads the PRE-COMPOSED mosaic only; it does not re-compose "
++                f"per-camera videos. Available: {sorted(features)}"
++            )
++
++    # ---- spec / dims -------------------------------------------------------
++
++    @property
++    def action_dim(self) -> int:
++        return _QPOS_DIM
++
++    def _action_spec(self) -> ActionSpec:
++        return robotwin_action_spec()
++
++    @classmethod
++    def _stats_path(cls) -> Path:
++        raise NotImplementedError(
++            "RoboTwin actions are raw absolute qpos14 (action_normalization=None); "
++            "there is no normalizer stats file by design."
++        )
++
++    def _load_norm_stats(self) -> dict[str, torch.Tensor]:
++        # Unreachable while action_normalization is pinned to None (the base only
++        # calls this when self.action_normalization is truthy), but make the
++        # failure explicit instead of a FileNotFoundError on a bogus path.
++        raise NotImplementedError(
++            "RoboTwin actions are not normalized; _load_norm_stats must never be called."
++        )
++
++    # ---- index helpers -----------------------------------------------------
++
++    @staticmethod
++    def _split_episode_ids(ep_ids: list[int], split: str, val_ratio: float, seed: int) -> set[int]:
++        if split == "full":
++            return {int(v) for v in ep_ids}
++        if not (0.0 < val_ratio < 1.0):
++            raise ValueError(f"val_ratio must be in (0, 1), got {val_ratio}.")
++        n_val = max(1, int(round(len(ep_ids) * val_ratio)))
++        rng = random.Random(seed)  # identical selection on every rank
++        val = {int(v) for v in rng.sample(list(ep_ids), n_val)}
++        if split == "train":
++            return {int(v) for v in ep_ids} - val
++        return val  # val/valid/validation/eval/test
++
++    def __len__(self) -> int:
++        return int(self._valid_cum[-1]) if self._valid_cum.size else 0
++
++    def get_shuffle_blocks(self) -> list[tuple[int, int]]:
++        """Per-episode ``(start, length)`` flat-index blocks for
++        ``ActionIterableShuffleDataset`` (shuffle block ORDER + shard across
++        ranks, sequential within a block)."""
++        blocks: list[tuple[int, int]] = []
++        prev = 0
++        for c in np.asarray(self._valid_cum).tolist():
++            c = int(c)
++            if c > prev:
++                blocks.append((prev, c - prev))
++            prev = c
++        return blocks
++
++    # ---- sample build ------------------------------------------------------
++
++    def __getitem__(self, idx: int) -> dict[str, Any]:
++        # Resample a different valid window if a frame fails to decode (bounded retries).
++        n = len(self)
++        last_err: Exception | None = None
++        for _attempt in range(8):
++            try:
++                return self._build_item(idx)
++            except Exception as e:  # noqa: BLE001 — skip past undecodable frames
++                last_err = e
++                log.warning(f"RoboTwin: sample idx={idx} failed to load ({type(e).__name__}: {e}); resampling")
++                if n > 0:
++                    idx = random.randint(0, n - 1)
++        raise RuntimeError(f"RoboTwin: failed to load a sample after 8 resamples; last error: {last_err}")
++
++    def _build_item(self, idx: int) -> dict[str, Any]:
++        mode = self._choose_mode()
++        idx = int(idx)
++        ep = int(np.searchsorted(self._valid_cum, idx, side="right"))
++        prev = int(self._valid_cum[ep - 1]) if ep > 0 else 0
++        start = int(self._ep_starts[ep]) + (idx - prev)
++        episode_index = int(self._ep_vals[ep])
++        episode = self._episodes[episode_index]
++
++        # chunk_length + 1 video frames (17 at chunk_length=16): frame 0 is the
++        # conditioning frame, frames 1..chunk_length are predicted. video_length
++        # must equal the action-row count for the Case-B sequence plan.
++        stop = start + self._chunk_length + 1
++        timestamps = [float(self._row_timestamp[j]) for j in range(start, stop)]
++        video = self._load_video(episode, timestamps)
++
++        action = self._build_action(start)
++
++        task = self._tasks[int(self._row_task[start])]
++        # The converter joins an episode's ``seen`` instruction pool with " | ";
++        # sample one phrasing per window (same convention as DROID/LIBERO).
++        ai_caption = random.choice([p.strip() for p in task.split(" | ") if p.strip()] or [task])
++
++        return self._build_result(
++            mode=mode,
++            video=video,
++            action=action,
++            ai_caption=ai_caption,
++            additional_view_description=ROBOTWIN_VIEW_DESC,
++        )
++
++    def _build_action(self, start: int) -> torch.Tensor:
++        """Absolute qpos14 action rows for the window beginning at flat row ``start``.
++
++        ``chunk_length`` supervised rows, plus (``use_state``) the current
++        absolute state as conditioning row 0. Raw values: no normalization, no
++        gripper flip.
++        """
++        off = _ACTION_ROW_START_OFFSET
++        rows = self._row_action[start + off : start + off + self._chunk_length]  # [chunk, 14]
++        action = torch.from_numpy(np.ascontiguousarray(rows)).float()
++        if self._use_state:
++            state = torch.from_numpy(np.ascontiguousarray(self._row_state[start])).float()  # [14]
++            action = torch.cat([state.unsqueeze(0), action], dim=0)  # [chunk + 1, 14]
++        return action
++
++    def _load_video(self, episode: dict[str, Any], timestamps: list[float]) -> torch.Tensor:
++        """Decode the pre-composed mosaic at the window's real frame timestamps."""
++        # lerobot is a heavy, optional ("train" extra) dependency; import lazily.
++        from lerobot.datasets.video_utils import decode_video_frames
++
++        from_ts = float(episode.get(f"videos/{_MOSAIC_FEATURE}/from_timestamp", 0.0))
++        frames = decode_video_frames(
++            self._video_path(episode, _MOSAIC_FEATURE),
++            [from_ts + ts for ts in timestamps],
++            self._tolerance_s,
++        )  # [T, C, H, W] in [0, 1]
++        h, w = int(frames.shape[-2]), int(frames.shape[-1])
++        if (h, w) != (MOSAIC_HEIGHT, MOSAIC_WIDTH) and not self._warned_geometry:
++            self._warned_geometry = True
++            log.warning(
++                f"RoboTwin mosaic geometry is {h}x{w}, expected {MOSAIC_HEIGHT}x{MOSAIC_WIDTH} "
++                "(head 320x240 on top; two 160x120 wrist views below). The frozen geometry must "
++                "match the policy server's mosaic, or train/serve inputs differ."
++            )
++        # No resize here: ActionTransformPipeline resizes/reflection-pads to the
++        # resolution tier, and the server applies the identical transform.
++        return frames
++
++
++__all__ = [
++    "MOSAIC_HEIGHT",
++    "MOSAIC_WIDTH",
++    "ROBOTWIN_EMBODIMENT",
++    "ROBOTWIN_VIEW_DESC",
++    "RoboTwinLeRobotDataset",
++    "robotwin_action_spec",
++]
+diff --git a/cosmos_framework/scripts/action_policy_server_robotwin.py b/cosmos_framework/scripts/action_policy_server_robotwin.py
+new file mode 100644
+index 0000000..a10b82a
+--- /dev/null
++++ b/cosmos_framework/scripts/action_policy_server_robotwin.py
+@@ -0,0 +1,1812 @@
++# SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
++# SPDX-License-Identifier: OpenMDW-1.1
++
++"""HTTP inference server for the RoboTwin 2.0 (aloha-agilex) Cosmos3 action policy.
++
++This is a fork of two shipped servers, taking the model path from one and the
++transport from the other:
++
++- **Model path** from ``action_policy_server_robolab.py``: the request is turned
++  into a raw dataset-style sample and pushed through the *training-time*
++  ``ActionTransformPipeline`` (resize/reflection-pad, viewpoint/duration/resolution
++  caption augmentation or the JSON prompt formatter, sequence-plan construction,
++  action padding + ``action_processing_record``).  That is the only way to keep
++  serve-time preprocessing byte-identical to train-time preprocessing.  Like
++  robolab, this server applies **no action denormalization** — the RoboTwin pilot
++  is pre-registered with ``action_normalization = None``, so there is no stats
++  file anywhere and nothing to invert.
++- **Transport** from ``action_policy_server_libero.py``: plain ``ThreadingHTTPServer``
++  + JSON + base64 PNG.  RoboTwin 2.0 runs in a python 3.10 / torch 2.4 venv that
++  cannot import ``openpi-client``, so robolab's msgpack WebSocket protocol is not
++  usable from the eval harness.
++
++Differences from robolab that are **pre-registered contract**, not preference
++(see ``InstinctWM/docs/robotwin_pilot_protocol.md``):
++
++- 14-D absolute joint state/action, layout ``[left_arm(6), left_gripper,
++  right_arm(6), right_gripper]``.  Robolab hard-codes 7 for DROID's single-arm
++  ``joint_position`` plus a separate 1-D gripper; that is replaced by a single
++  ``qpos14`` vector here.
++- **No gripper flip.**  Robolab applies ``1.0 - g`` on input
++  (``gripper_position = 1.0 - _ensure_gripper_array(...)``) and again on output
++  (``action_np[:, -1] = 1.0 - action_np[:, -1]``).  Those are a DROID convention.
++  RoboTwin's native convention is ``1.0 = open`` on both sides, so both flips are
++  removed.  Outside this docstring there is no gripper arithmetic anywhere in this
++  file: ``qpos14`` goes into action row 0 verbatim and the model's action rows come
++  back out verbatim.
++- ``fps`` is 16 everywhere (the true rate is 16.67 Hz, but ``conditioning_fps`` is
++  cast to ``long`` downstream, so a non-integer would silently truncate).
++- ``use_state=True``: the current absolute state is prepended as action row 0 and
++  is a *conditioning* row, so the model sees 17 action rows / 17 video frames for a
++  chunk of 16, and row 0 is dropped from the reply.
++
++Endpoints:
++
++- ``POST /predict``            one observation -> one action chunk + timing
++- ``POST /predict_batch``      N observations -> N action chunks (one diffusion forward)
++- ``GET  /info``               resolved runtime config
++- ``POST /notify_next_episode`` reset per-episode server state (seed stream, counters)
++- ``GET  /``                   health check
++
++Timing instrumentation is a first-class product requirement here, not a nicety:
++we already measured ``t_chunk(ms) = 1029 + 29.06 x denoise_steps`` on H100 at
++chunk 16, i.e. ~90% of latency at 4 steps is fixed overhead.  The per-request
++breakdown returned under ``"timing"`` is how we find out *which* fixed component
++to attack.  See ``_ModelTimingProbe`` for how the sub-timers are collected and
++``_build_timing_payload`` for the additivity contract (the exclusive components
++sum to ``total_ms`` up to ``residual_ms``).
++
++Example (guardrails default OFF; ``nvidia/Cosmos-Guardrail1`` is a gated repo):
++
++  cd /home/ubuntu/cosmos-framework && source .venv/bin/activate
++  PYTHONPATH=. python -m cosmos_framework.scripts.action_policy_server_robotwin \
++    --checkpoint-path /path/to/train-output/model \
++    --config-file /path/to/train-output/config.yaml \
++    --port 8000 --num-steps 4 --guidance 1.0
++"""
++
++# Initialize the script runtime before any cosmos-framework imports, mirroring
++# both upstream servers.
++from cosmos_framework.inference.common.init import init_script
++
++init_script()
++
++import base64
++import binascii
++import datetime
++import io
++import json
++import statistics
++import threading
++import time
++import traceback
++from dataclasses import dataclass, field
++from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
++from pathlib import Path
++from typing import Any, Callable, Literal
++
++import numpy as np
++import pydantic
++import torch
++import tyro
++from PIL import Image
++
++from cosmos_framework.data.generator.action.domain_utils import get_domain_id
++from cosmos_framework.data.generator.action.transforms import ActionTransformPipeline
++from cosmos_framework.data.generator.joint_dataloader import IterativeJointDataLoader
++from cosmos_framework.inference.args import OmniSetupArgs, OmniSetupOverrides
++from cosmos_framework.inference.common.args import ConfigFileType, ConfigOverrides, tyro_cli
++from cosmos_framework.inference.common.config import deserialize_config, deserialize_config_dict, load_config
++from cosmos_framework.inference.common.init import init_output_dir
++from cosmos_framework.inference.inference import OmniInference
++from cosmos_framework.scripts.action_policy_server_utils import (
++    DEFAULT_FALLBACK_OUTPUT_DIR,
++    disable_runtime_ema_for_frozen_config,
++    get_local_ip,
++    maybe_init_distributed,
++)
++from cosmos_framework.utils import log
++from cosmos_framework.utils.lazy_config import instantiate
++
++# ---------------------------------------------------------------------------
++# Frozen contract constants (other agents depend on these exact values)
++# ---------------------------------------------------------------------------
++
++ROBOTWIN_DOMAIN_NAME = "robotwin_aloha_agilex"
++"""Cosmos domain name string for the RoboTwin aloha-agilex embodiment."""
++
++ROBOTWIN_DOMAIN_ID_FALLBACK = 11
++"""Pre-registered domain id.  Only used if ``domain_utils.py`` does not know the
++domain name yet (that file is owned by another agent).  Never invent a different id."""
++
++ROBOTWIN_RAW_ACTION_DIM = 14
++"""[left_arm(6), left_gripper, right_arm(6), right_gripper] absolute joint positions."""
++
++_DEFAULT_ACTION_CHUNK_SIZE = 16
++_DEFAULT_CONDITIONING_FPS = 16.0
++_DEFAULT_RESOLUTION = "480"
++_DEFAULT_ROBOTWIN_OUTPUT_DIR = DEFAULT_FALLBACK_OUTPUT_DIR / "robotwin"
++_MOSAIC_H = 360
++_MOSAIC_W = 320
++
++# The dataset module (owned by another agent) exports the canonical view
++# description.  Import it so train and serve share one string; fall back to a
++# verbatim copy if the module does not exist yet.  A mismatch between these two
++# strings is a silent train/serve prompt skew, so /info reports which one is live.
++# Kept byte-identical to robotwin_lerobot_dataset.ROBOTWIN_VIEW_DESC; asserted equal
++# below whenever the real module is importable, so drift is caught at startup.
++_FALLBACK_ROBOTWIN_VIEW_DESC = (
++    "The top row is a third-person head-camera view of the dual-arm robot. "
++    "The bottom row contains two horizontally concatenated wrist-camera views, left arm then right arm."
++)
++try:  # pragma: no cover - depends on a module owned by another agent
++    from cosmos_framework.data.generator.action.datasets.robotwin_lerobot_dataset import (  # type: ignore[import-not-found]
++        ROBOTWIN_VIEW_DESC,
++    )
++
++    _VIEW_DESC_SOURCE = "robotwin_lerobot_dataset.ROBOTWIN_VIEW_DESC"
++    if ROBOTWIN_VIEW_DESC != _FALLBACK_ROBOTWIN_VIEW_DESC:
++        # The imported value always wins (it is what training used); this only warns
++        # that the local copy has gone stale and would skew the prompt if it were used.
++        log.warning(
++            "[robotwin-policy-server] _FALLBACK_ROBOTWIN_VIEW_DESC has drifted from the dataset module's "
++            "ROBOTWIN_VIEW_DESC. Using the imported value; update the fallback copy in this file."
++        )
++except Exception as _view_desc_exc:  # noqa: BLE001 - any import failure must not kill serving
++    ROBOTWIN_VIEW_DESC = _FALLBACK_ROBOTWIN_VIEW_DESC
++    _VIEW_DESC_SOURCE = f"module-level fallback ({type(_view_desc_exc).__name__}: {_view_desc_exc})"
++
++
++# ---------------------------------------------------------------------------
++# Checkpoint / training-config resolution (ported from robolab)
++# ---------------------------------------------------------------------------
++
++
++def _load_checkpoint_metadata(checkpoint_path: str) -> dict[str, Any] | None:
++    if "://" in checkpoint_path:
++        return None
++    checkpoint_dir = Path(checkpoint_path).expanduser().absolute()
++    if (checkpoint_dir / "model").is_dir():
++        checkpoint_dir = checkpoint_dir / "model"
++    metadata_path = checkpoint_dir / "checkpoint.json"
++    if not metadata_path.exists():
++        return None
++    return deserialize_config_dict(metadata_path)
++
++
++def _load_training_config_from_metadata(metadata: dict[str, Any]) -> Any | None:
++    config_file = metadata.get("config_file")
++    if not isinstance(config_file, str) or not config_file:
++        return None
++    config_overrides = ConfigOverrides(
++        config_file=config_file,
++        experiment=str(metadata.get("experiment", "")),
++        experiment_overrides=list(metadata.get("experiment_overrides", [])),
++    )
++    config_args = config_overrides.build_config()
++    if config_args.config_file_type == ConfigFileType.MODULE:
++        return load_config(config_args.config_file, config_args.experiment, overrides=config_args.experiment_overrides)
++    return deserialize_config(Path(config_args.config_file))
++
++
++def _load_training_config(setup_args: OmniSetupArgs, checkpoint_path: str) -> Any | None:
++    """Best-effort load of the training config so the serve-time transform is the
++    train-time transform.  Returns ``None`` when only a consolidated HF export is
++    available (then a default ``ActionTransformPipeline`` is used)."""
++    metadata = _load_checkpoint_metadata(checkpoint_path)
++    if metadata is not None:
++        try:
++            config = _load_training_config_from_metadata(metadata)
++        except Exception as exc:  # noqa: BLE001
++            log.warning(f"[robotwin-policy-server] could not load checkpoint metadata config for transforms: {exc}")
++            config = None
++        if config is not None:
++            return config
++
++    if setup_args.config_file_type == ConfigFileType.MODULE and not setup_args.experiment:
++        return None
++
++    try:
++        return setup_args.load_config()
++    except Exception as exc:  # noqa: BLE001
++        log.warning(f"[robotwin-policy-server] could not load training config for transforms: {exc}")
++        return None
++
++
++def _walk_config_nodes(node: Any, depth: int = 0) -> Any:
++    """Yield every mapping node in a (possibly omegaconf) config tree."""
++    if depth > 24:
++        return
++    try:
++        if isinstance(node, (list, tuple)):
++            for item in node:
++                yield from _walk_config_nodes(item, depth + 1)
++            return
++        keys = list(node.keys())  # dict, DictConfig, LazyDict all support this
++    except (AttributeError, TypeError):
++        return
++    yield node
++    for key in keys:
++        try:
++            child = node[key]
++        except Exception:  # noqa: BLE001 - unresolvable interpolations must not abort the walk
++            continue
++        yield from _walk_config_nodes(child, depth + 1)
++
++
++def _dataloader_train_node(training_config: Any) -> Any:
++    """Return ``config.dataloader_train`` (item or attribute access), else the config.
++
++    Scoping the search to the dataloader subtree keeps the walk away from the model
++    /network config, which can hold arbitrary objects."""
++    for getter in (lambda c: c["dataloader_train"], lambda c: getattr(c, "dataloader_train")):
++        try:
++            node = getter(training_config)
++        except Exception:  # noqa: BLE001
++            continue
++        if node is not None:
++            return node
++    return training_config
++
++
++def _transform_parity(t: Any) -> dict[str, Any]:
++    """Everything about the serve-time transform that has to match training.
++
++    Read off the live object: `prompt_json_formatter is not None` IS
++    format_prompt_as_json, whatever the config said it should be.
++    """
++    if t is None:
++        return {"error": "no transform on this server"}
++    return {
++        "format_prompt_as_json": getattr(t, "prompt_json_formatter", None) is not None,
++        "append_viewpoint_info": getattr(t, "viewpoint_augmentor", None) is not None,
++        "append_duration_fps_timestamps": getattr(t, "duration_fps_augmentor", None) is not None,
++        "append_resolution_info": getattr(t, "resolution_info_augmentor", None) is not None,
++        "append_idle_frames": getattr(t, "idle_frames_augmentor", None) is not None,
++        "max_action_dim": getattr(t, "max_action_dim", None),
++        "action_channel_masking": getattr(t, "action_channel_masking", None),
++        "video_temporal_downsample": getattr(t, "video_temporal_downsample", None),
++        "caption_key": getattr(t, "caption_key", None),
++        "transform_class": type(t).__name__,
++    }
++
++
++def _find_action_dataset_node(training_config: Any) -> Any | None:
++    """Locate the training action-dataset config node.
++
++    Robolab's introspection assumed one specific nesting
++    (``dataloader_train.dataloaders.action_data.dataloader.dataset.list_of_datasets[0]``).
++    The RoboTwin experiment config uses
++    ``dataloader_train.dataloader.datasets.<name>.dataset`` with every knob on the
++    dataset factory call itself, so a structural lookup misses it and silently falls
++    back to a *different* prompt format.  Searching by content, not by path, works for
++    either layout."""
++    best = None
++    for node in _walk_config_nodes(_dataloader_train_node(training_config)):
++        try:
++            if "chunk_length" not in node:
++                continue
++        except Exception:  # noqa: BLE001
++            continue
++        target = ""
++        try:
++            target = str(node.get("_target_", "") or "")
++        except Exception:  # noqa: BLE001
++            target = ""
++        if "robotwin" in target.lower():
++            return node
++        if best is None:
++            best = node
++    return best
++
++
++def _config_value(node: Any, key: str, default: Any = None) -> Any:
++    """Read one config value, tolerating unresolvable interpolations."""
++    try:
++        if key not in node:
++            return default
++        value = node[key]
++    except Exception:  # noqa: BLE001
++        return default
++    if value is None:
++        return default
++    try:
++        # Unwrap omegaconf scalars / interpolations that resolve to primitives.
++        if isinstance(value, (bool, int, float, str)):
++            return value
++        return default if hasattr(value, "keys") or isinstance(value, (list, tuple)) else value
++    except Exception:  # noqa: BLE001
++        return default
++
++
++def _resolve_domain_id(domain_name: str) -> int:
++    """Resolve a domain id, tolerating a ``domain_utils.py`` that has not been
++    updated yet (that file is owned by another agent).
++
++    Only ``robotwin_aloha_agilex`` gets a fallback, and only to its
++    pre-registered id 11.  Every other unknown name still raises."""
++    try:
++        return get_domain_id(domain_name)
++    except KeyError:
++        if domain_name.lower().strip() == ROBOTWIN_DOMAIN_NAME:
++            log.warning(
++                f"[robotwin-policy-server] {ROBOTWIN_DOMAIN_NAME!r} is not registered in domain_utils.py yet; "
++                f"using the pre-registered domain id {ROBOTWIN_DOMAIN_ID_FALLBACK}. "
++                "Training MUST use the same id or the action modality embedding will not match."
++            )
++            return ROBOTWIN_DOMAIN_ID_FALLBACK
++        raise
++
++
++# ---------------------------------------------------------------------------
++# Image / array helpers
++# ---------------------------------------------------------------------------
++
++
++def _strip_data_url_prefix(b64: str) -> str:
++    if "," in b64 and b64[:64].lower().startswith("data:"):
++        return b64.split(",", 1)[1].strip()
++    return b64.strip()
++
++
++def _b64decode_loose(b64: str) -> bytes:
++    """Decode base64 permissively (clients may add whitespace, drop padding, or use urlsafe)."""
++    s = _strip_data_url_prefix(b64)
++    s = "".join(s.split())
++    pad = (-len(s)) % 4
++    if pad:
++        s = s + ("=" * pad)
++    try:
++        return base64.b64decode(s, validate=False)
++    except binascii.Error:
++        return base64.urlsafe_b64decode(s)
++
++
++def _decode_base64_png_to_rgb_uint8(image_b64: str) -> torch.Tensor:
++    """base64 PNG -> uint8 RGB tensor ``[3,H,W]``.
++
++    The client is responsible for building the mosaic and PNG-encoding *RGB*
++    channel order.  RoboTwin's hdf5 stores ``cv2.imencode`` output of an RGB
++    array, so the harness must decode with ``cv2.imdecode`` and PNG-encode the
++    resulting RGB array without a channel swap."""
++    try:
++        raw = _b64decode_loose(image_b64)
++    except (binascii.Error, ValueError) as exc:
++        raise ValueError(f"Invalid base64 image: {exc}") from exc
++
++    with Image.open(io.BytesIO(raw)) as img:
++        img = img.convert("RGB")
++        arr = np.asarray(img, dtype=np.uint8).copy()
++    if arr.ndim != 3 or arr.shape[2] != 3:
++        raise ValueError(f"Expected RGB image, got shape {arr.shape}")
++    return torch.from_numpy(arr).permute(2, 0, 1).contiguous()  # [3,H,W]
++
++
++def _ensure_2d_float_array(value: Any, key: str, width: int) -> np.ndarray:
++    """Coerce ``[D]`` or ``[T,D]`` to a contiguous float32 ``[T,D]`` array."""
++    array = np.asarray(value, dtype=np.float32)
++    if array.ndim == 1:
++        array = array[None, :]
++    if array.ndim != 2:
++        raise ValueError(f"{key!r} must have shape [T,D] or [D], got {array.shape}")
++    if array.shape[-1] != width:
++        raise ValueError(f"{key!r} must have width {width}, got {array.shape[-1]}")
++    if not np.isfinite(array).all():
++        raise ValueError(f"{key!r} contains non-finite values")
++    return np.ascontiguousarray(array)
++
++
++def _build_data_batch_from_sample(sample: dict[str, Any]) -> dict[str, Any]:
++    """Wrap a single transformed sample into the model's collated batch layout."""
++    data_batch: dict[str, Any] = {}
++    for key, value in sample.items():
++        if key in IterativeJointDataLoader._MULTI_ITEM_KEYS:
++            data_batch[key] = [[value]]
++        elif isinstance(value, torch.Tensor):
++            data_batch[key] = [value.unsqueeze(0)]  # value: [...], batch item: [1,...]
++        else:
++            data_batch[key] = [value]
++    return data_batch
++
++
++def _merge_data_batches(batches: list[dict[str, Any]]) -> dict[str, Any]:
++    """Concatenate per-sample batch dicts into one batch of size N.
++
++    Every value produced by ``_build_data_batch_from_sample`` is a length-1 list,
++    so merging is a plain list concat.  Keys must agree across samples."""
++    if not batches:
++        raise ValueError("cannot merge an empty batch list")
++    keys = set(batches[0])
++    for other in batches[1:]:
++        if set(other) != keys:
++            raise ValueError(
++                f"batch items produced different keys: {sorted(keys ^ set(other))}; refusing to build a ragged batch"
++            )
++    merged: dict[str, Any] = {}
++    for key in batches[0]:
++        merged[key] = [item for batch in batches for item in batch[key]]
++    return merged
++
++
++def _video_tensor_to_pil_images(video_c_t_h_w: torch.Tensor) -> list[Image.Image]:
++    if video_c_t_h_w.dim() != 4:
++        raise ValueError(f"Expected (C,T,H,W), got {tuple(video_c_t_h_w.shape)}")
++    images: list[Image.Image] = []
++    for ti in range(int(video_c_t_h_w.shape[1])):
++        frame = video_c_t_h_w[:, ti].detach().cpu().float()
++        if frame.min().item() < 0.0:
++            frame = (frame + 1.0) / 2.0
++        frame_uint8 = (frame.clamp(0.0, 1.0) * 255.0).round().to(torch.uint8)  # [3,H,W]
++        images.append(Image.fromarray(frame_uint8.permute(1, 2, 0).numpy()))
++    return images
++
++
++class _DummyDataset(torch.utils.data.IterableDataset):
++    """Placeholder swapped in for the training dataset so the wrapper that owns the
++    transform can be instantiated without touching the real data root."""
++
++    def __iter__(self) -> Any:
++        return iter(())
++
++
++# ---------------------------------------------------------------------------
++# Timing instrumentation
++# ---------------------------------------------------------------------------
++
++
++@dataclass
++class _PhaseTimings:
++    """One request's worth of model-internal sub-timers (milliseconds)."""
++
++    prepare_ms: float = 0.0
++    vision_encode_ms: float = 0.0
++    prompt_tokenize_ms: float = 0.0
++    pack_prepare_ms: float = 0.0
++    pack_in_denoise_ms: float = 0.0
++    velocity_ms: list[float] = field(default_factory=list)
++    first_velocity_t0: float | None = None
++    last_velocity_t1: float | None = None
++    sequence_length: int | None = None
++
++    @property
++    def nfe(self) -> int:
++        return len(self.velocity_ms)
++
++    @property
++    def denoise_loop_ms(self) -> float:
++        if self.first_velocity_t0 is None or self.last_velocity_t1 is None:
++            return 0.0
++        return (self.last_velocity_t1 - self.first_velocity_t0) * 1000.0
++
++
++class _ModelTimingProbe:
++    """Wraps ``OmniMoTModel`` internals with timers, without editing the model.
++
++    The instrumented boundaries were chosen to split the *fixed* per-chunk cost
++    (which dominates at low step counts) into attackable pieces:
++
++    ==============================  ===========================================
++    ``get_data_and_condition``      vision/VAE encode of the conditioning frame
++    ``_get_inference_text_tokens``  prompt tokenization (VLM chat template)
++    ``_pack_input_sequence``        sequence packing (once in prepare, then once
++                                    per network forward inside the denoise loop)
++    ``_prepare_inference_data``     everything above plus noise init
++    ``_get_velocity``              one network forward = one NFE
++    ==============================  ===========================================
++
++    Because CUDA work is asynchronous, wall-clock around an un-synchronized call
++    attributes GPU time to whatever later call happens to block.  With
++    ``sync=True`` (default) each boundary calls ``torch.cuda.synchronize()``, which
++    makes the breakdown truthful at the cost of removing a little launch-queue
++    overlap; ``--no-sync-timing`` restores the fastest possible wall time and
++    reports a breakdown that must not be trusted component-by-component.
++
++    All inference in this server is serialized under one lock, so a single
++    timing slot is sufficient; ``reset()`` is called at the start of each request.
++    """
++
++    def __init__(self, model: Any, *, sync: bool = True) -> None:
++        self.sync = bool(sync)
++        self.current = _PhaseTimings()
++        self._in_velocity = False
++        self._installed_on = model
++
++        model.get_data_and_condition = self._timed(model.get_data_and_condition, "vision_encode_ms")
++        model._get_inference_text_tokens = self._timed(model._get_inference_text_tokens, "prompt_tokenize_ms")
++        model._prepare_inference_data = self._timed(model._prepare_inference_data, "prepare_ms")
++        model._pack_input_sequence = self._timed_pack(model._pack_input_sequence)
++        model._get_velocity = self._timed_velocity(model._get_velocity)
++
++    def reset(self) -> None:
++        self.current = _PhaseTimings()
++        self._in_velocity = False
++
++    def _sync_point(self) -> None:
++        if self.sync and torch.cuda.is_available():
++            torch.cuda.synchronize()
++
++    def _timed(self, fn: Callable[..., Any], attr: str) -> Callable[..., Any]:
++        def wrapper(*args: Any, **kwargs: Any) -> Any:
++            self._sync_point()
++            t0 = time.perf_counter()
++            try:
++                return fn(*args, **kwargs)
++            finally:
++                self._sync_point()
++                setattr(self.current, attr, getattr(self.current, attr) + (time.perf_counter() - t0) * 1000.0)
++
++        return wrapper
++
++    def _timed_pack(self, fn: Callable[..., Any]) -> Callable[..., Any]:
++        def wrapper(*args: Any, **kwargs: Any) -> Any:
++            # No sync: packing is CPU-side bookkeeping plus H2D copies, and syncing
++            # here would fire once per denoise step for no information gain.
++            t0 = time.perf_counter()
++            packed = fn(*args, **kwargs)
++            dt_ms = (time.perf_counter() - t0) * 1000.0
++            if self._in_velocity:
++                self.current.pack_in_denoise_ms += dt_ms
++            else:
++                self.current.pack_prepare_ms += dt_ms
++            seq_len = getattr(packed, "sequence_length", None)
++            if isinstance(seq_len, int) and seq_len > 0:
++                self.current.sequence_length = seq_len
++            return packed
++
++        return wrapper
++
++    def _timed_velocity(self, fn: Callable[..., Any]) -> Callable[..., Any]:
++        def wrapper(*args: Any, **kwargs: Any) -> Any:
++            self._sync_point()
++            t0 = time.perf_counter()
++            if self.current.first_velocity_t0 is None:
++                self.current.first_velocity_t0 = t0
++            self._in_velocity = True
++            try:
++                return fn(*args, **kwargs)
++            finally:
++                self._in_velocity = False
++                self._sync_point()
++                t1 = time.perf_counter()
++                self.current.last_velocity_t1 = t1
++                self.current.velocity_ms.append((t1 - t0) * 1000.0)
++
++        return wrapper
++
++
++def _stats(values: list[float]) -> dict[str, float | None]:
++    if not values:
++        return {"mean": None, "min": None, "max": None, "p50": None}
++    ordered = sorted(values)
++    return {
++        "mean": round(statistics.fmean(values), 3),
++        "min": round(ordered[0], 3),
++        "max": round(ordered[-1], 3),
++        "p50": round(ordered[len(ordered) // 2], 3),
++    }
++
++
++# ---------------------------------------------------------------------------
++# CLI args
++# ---------------------------------------------------------------------------
++
++
++class RobotwinServerArgs(pydantic.BaseModel):
++    model_config = pydantic.ConfigDict(extra="forbid", use_attribute_docstrings=True)
++
++    # ----- checkpoint / config ------------------------------------------------
++    checkpoint_path: str = ""
++    """Consolidated safetensors checkpoint directory (from cosmos_framework.scripts.export_model),
++    a registered checkpoint name, or a DCP path when --config-file is also given."""
++    config_file: str | None = None
++    """Hydra config store module (.py), config yaml, or HF model json. Required for
++    direct DCP checkpoint loading; inferred from the checkpoint directory otherwise."""
++    experiment: str | None = None
++    """Hydra experiment name, e.g. robotwin_aloha_agilex_edge_policy. Needed with a .py --config-file."""
++    experiment_overrides: list[str] = pydantic.Field(default_factory=list)
++    """Hydra experiment overrides forwarded to OmniSetup."""
++    credential_path: str | None = None
++    """Object-store credential path for s3:// DCP checkpoints."""
++    use_ema_weights: bool = True
++    """Load net_ema when the checkpoint has EMA weights (matches the shipped eval default)."""
++
++    # ----- InstinctWM: expose the execution knobs this server did not forward --------
++    # `use_cuda_graphs` and `compiled_region` are top-level OmniSetupOverrides fields, NOT
++    # part of the `model.config.compile.*` namespace that --experiment-overrides reaches. The
++    # shipped build_setup_args() forwards neither, so on this server CUDA graphs could not be
++    # turned on at all -- and an --experiment-overrides attempt at
++    # `model.config.compile.use_cuda_graphs=True` is silently discarded by the inference-side
++    # config, which then reports use_cuda_graphs=False. That cost us a whole void experiment
++    # (results/invalid/p2_bitexact_INVALID_inert_overrides.json), so both are surfaced in
++    # /info as well: a knob that cannot be observed is a knob that cannot be trusted.
++    nfe_rungs: list[int] = pydantic.Field(default_factory=list)
++    """InstinctWM: NFE values a request may select via the `num_steps` field.
++
++    Empty means only --num-steps is servable, i.e. the shipped behaviour where the step count
++    is fixed for the lifetime of the process. That makes L3's deadline-derived step count
++    unimplementable: choosing how much to think per chunk needs several rungs behind ONE
++    loaded model, not one server per rung.
++
++    A request asking for a rung outside this set is REFUSED rather than served, because an
++    uncaptured shape would pay the ~33 s capture cliff mid-episode. Same rule as
++    instinctwm.execution.ShapeManifest.require.
++    """
++    use_cuda_graphs: bool = False
++    """Enable torch.compile(mode="reduce-overhead") CUDA-graph capture for inference."""
++    compiled_region: Literal["all", "language"] = "all"
++    """Which region torch.compile covers. "all" also compiles encode/decode."""
++    cudagraphs_via_options: bool = False
++    """InstinctWM: request cudagraphs through inductor options and leave torch.compile's mode
++    at the default, instead of mode="reduce-overhead" which also changes kernel selection.
++    Exists to isolate whether the measured 1.72e-02 action delta comes from CAPTURE or from
++    the MODE -- capture alone should be numerically neutral."""
++    compile_dynamic: bool = True
++    """torch.compile(dynamic=...). Forwarded so it can be varied independently of capture; the
++    shipped server hardcoded the setup default and it could not be isolated."""
++
++    # ----- HTTP ---------------------------------------------------------------
++    host: str = "0.0.0.0"
++    """HTTP host to bind."""
++    port: int = 8000
++    """HTTP port to bind."""
++    http_400_on_error: bool = False
++    """Return HTTP 400 on inference errors. Default is HTTP 200 with an empty action list."""
++
++    # ----- sampling -----------------------------------------------------------
++    sampler: Literal["unipc", "edm"] = "unipc"
++    """Diffusion sampler used by OmniInference."""
++    num_steps: int = 4
++    """Number of denoising steps. Accuracy must be published at every step count we quote a latency for."""
++    guidance: float = 1.0
++    """Guidance scale. 1.0 keeps NFE == num_steps; anything else doubles the network forwards."""
++    shift: float = 5.0
++    """UniPC sampler shift."""
++    seed: int = 0
++    """Base generation seed used to initialize the per-request RNG."""
++    deterministic_seed: bool = True
++    """Use --seed for every request. Set --no-deterministic-seed to advance an RNG per request."""
++
++    # ----- action / observation contract --------------------------------------
++    domain_name: str = ROBOTWIN_DOMAIN_NAME
++    """Default action domain name; a request may override it per call."""
++    action_dim: int = ROBOTWIN_RAW_ACTION_DIM
++    """Raw (unpadded) action width. 14 for aloha-agilex qpos."""
++    action_chunk_size: int | None = _DEFAULT_ACTION_CHUNK_SIZE
++    """Predicted action steps per chunk. Falls back to the training config's chunk_length."""
++    conditioning_fps: float | None = _DEFAULT_CONDITIONING_FPS
++    """Conditioning FPS. Cast to long downstream, so keep it an integer (16, not 16.67)."""
++    resolution: str | None = None
++    """Action transform resolution tier. Default None = take it from the training config
++    (setting it explicitly OVERRIDES training, which is a silent train/serve skew if wrong).
++    Falls back to '480' with a warning when no training config is reachable."""
++    use_state: bool = True
++    """Prepend the current absolute state as action row 0 (a conditioning row)."""
++    history_length: int = 1
++    """Leading action rows that are conditioning and must be trimmed from the reply.
++    With --use-state and no extra history this is 1."""
++    format_prompt_as_json: bool | None = None
++    """Serve prompts as structured JSON. None follows the training config."""
++    expected_image_height: int | None = _MOSAIC_H
++    """Reject observations whose mosaic height differs (frozen geometry guard). None disables."""
++    expected_image_width: int | None = _MOSAIC_W
++    """Reject observations whose mosaic width differs (frozen geometry guard). None disables."""
++
++    # ----- guardrails ---------------------------------------------------------
++    guardrails: bool = False
++    """Cosmos text/video guardrails. Default OFF: nvidia/Cosmos-Guardrail1 is a GATED repo,
++    so leaving this on kills startup. Guardrails filter text/video content and are irrelevant
++    to robot action latency and accuracy."""
++
++    # ----- timing / debug -----------------------------------------------------
++    sync_timing: bool = True
++    """torch.cuda.synchronize() at each instrumented boundary so the breakdown is truthful.
++    --no-sync-timing gives the fastest wall time but a breakdown that must not be trusted per-component."""
++    reset_peak_memory_per_request: bool = False
++    """Reset CUDA peak-memory stats at each request so max_memory_allocated is per-request
++    instead of process-lifetime."""
++    decode_video: bool = False
++    """Also decode and return the predicted rollout as base64 PNG frames (debug only, slow)."""
++    dump_dir: Path | None = None
++    """Dump observations, actions and timing under this directory for offline debugging."""
++    dump_every: int = 1
++    """Dump every N-th request (only used with --dump-dir)."""
++    output_dir: Path | None = None
++    """OmniInference output directory. Defaults to --dump-dir, else /tmp/cosmos3_action_server/robotwin."""
++
++    def build_setup_args(self) -> OmniSetupArgs:
++        if not self.checkpoint_path:
++            raise ValueError("--checkpoint-path is required")
++        setup_overrides: dict[str, Any] = {
++            "checkpoint_path": self.checkpoint_path,
++            "output_dir": self.output_dir or self.dump_dir or _DEFAULT_ROBOTWIN_OUTPUT_DIR,
++            "sampler": self.sampler,
++            "use_ema_weights": bool(self.use_ema_weights),
++            # Proper flag instead of the monkeypatch in InstinctWM/tools/serve_cosmos_policy.py:
++            # OmniSetupOverrides inherits GuardrailOverrides.guardrails (default True), and
++            # OmniInference.create only builds GuardrailRunners when it is True.
++            "guardrails": bool(self.guardrails),
++            # InstinctWM: the two knobs the shipped server dropped on the floor.
++            "use_cuda_graphs": bool(self.use_cuda_graphs),
++            "compiled_region": self.compiled_region,
++            "cudagraphs_via_options": bool(self.cudagraphs_via_options),
++            "compile_dynamic": bool(self.compile_dynamic),
++        }
++        if self.config_file is not None:
++            setup_overrides["config_file"] = self.config_file
++        if self.experiment is not None:
++            setup_overrides["experiment"] = self.experiment
++        if self.experiment_overrides:
++            setup_overrides["experiment_overrides"] = list(self.experiment_overrides)
++        if self.credential_path is not None:
++            setup_overrides["credential_path"] = self.credential_path
++        overrides = OmniSetupOverrides.model_validate(setup_overrides)
++        setup_args = overrides.build_setup()
++        init_output_dir(setup_args.output_dir)
++        return disable_runtime_ema_for_frozen_config(setup_args)
++
++
++@dataclass(frozen=True)
++class RobotwinPolicyConfig:
++    """Resolved runtime configuration snapshot."""
++
++    checkpoint_path: str
++    config_file: str
++    experiment_name: str
++    domain_name: str
++    action_dim: int
++    action_chunk_size: int
++    conditioning_fps: float
++    resolution: str | None
++    use_state: bool
++    history_length: int
++    nfe_rungs: tuple[int, ...]
++    num_steps: int
++    guidance: float
++    shift: float
++    seed: int
++    deterministic_seed: bool
++    decode_video: bool
++    dump_dir: Path | None
++    dump_every: int
++    http_400_on_error: bool
++    sync_timing: bool
++    reset_peak_memory_per_request: bool
++    guardrails: bool
++    expected_image_height: int | None
++    expected_image_width: int | None
++
++
++# ---------------------------------------------------------------------------
++# Service
++# ---------------------------------------------------------------------------
++
++
++class RobotwinPolicyService:
++    def __init__(self, args: RobotwinServerArgs) -> None:
++        if not torch.cuda.is_available():
++            raise RuntimeError("CUDA is required for OmniMoTModel inference in this repo.")
++        maybe_init_distributed()
++
++        setup_args = args.build_setup_args()
++        log.info(
++            f"[robotwin-policy-server] loading model: checkpoint_path={setup_args.checkpoint_path!r} "
++            f"config_file={setup_args.config_file!r} ({setup_args.config_file_type}) "
++            f"experiment={setup_args.experiment!r} guardrails={bool(args.guardrails)}"
++        )
++        pipe = OmniInference.create(setup_args)
++        self.pipe: OmniInference = pipe
++        self.model = pipe.model
++        self.model.eval()
++        assert isinstance(pipe.setup_args, OmniSetupArgs)
++        self.setup_args: OmniSetupArgs = pipe.setup_args
++
++        training_config = _load_training_config(self.setup_args, setup_args.checkpoint_path)
++        self._transform, inferred = self._build_transform(training_config, args)
++
++        if args.resolution is not None:
++            resolution = args.resolution
++            log.warning(
++                f"[robotwin-policy-server] --resolution={resolution!r} was given explicitly and OVERRIDES the "
++                "training config. Only do this deliberately; a mismatch with training is a silent skew."
++            )
++        elif inferred.get("resolution") is not None:
++            resolution = str(inferred["resolution"])
++            log.info(f"[robotwin-policy-server] resolution={resolution!r} taken from the training config")
++        else:
++            resolution = _DEFAULT_RESOLUTION
++            log.warning(
++                f"[robotwin-policy-server] no resolution in the training config; falling back to "
++                f"{_DEFAULT_RESOLUTION!r}. Verify this matches training or pass --resolution."
++            )
++
++        conditioning_fps = float(args.conditioning_fps or inferred.get("conditioning_fps") or _DEFAULT_CONDITIONING_FPS)
++        if conditioning_fps != float(int(conditioning_fps)):
++            log.warning(
++                f"[robotwin-policy-server] conditioning_fps={conditioning_fps} is not an integer; it is cast to "
++                f"long downstream and would silently truncate to {int(conditioning_fps)}. "
++                "The RoboTwin pilot pre-registers 16."
++            )
++        self.cfg = RobotwinPolicyConfig(
++            checkpoint_path=self.setup_args.checkpoint_path,
++            config_file=str(self.setup_args.config_file),
++            experiment_name=self.setup_args.experiment or "",
++            domain_name=args.domain_name,
++            action_dim=int(args.action_dim),
++            action_chunk_size=int(
++                args.action_chunk_size or inferred.get("action_chunk_size") or _DEFAULT_ACTION_CHUNK_SIZE
++            ),
++            conditioning_fps=conditioning_fps,
++            resolution=resolution,
++            use_state=bool(args.use_state),
++            history_length=int(args.history_length),
++            num_steps=int(args.num_steps),
++            # Always include --num-steps so the default rung is servable even if the caller
++            # passed no explicit list.
++            nfe_rungs=tuple(sorted({int(args.num_steps), *(int(n) for n in args.nfe_rungs)})),
++            guidance=float(args.guidance),
++            shift=float(args.shift),
++            seed=int(args.seed),
++            deterministic_seed=bool(args.deterministic_seed),
++            decode_video=bool(args.decode_video),
++            dump_dir=args.dump_dir,
++            dump_every=int(args.dump_every),
++            http_400_on_error=bool(args.http_400_on_error),
++            sync_timing=bool(args.sync_timing),
++            reset_peak_memory_per_request=bool(args.reset_peak_memory_per_request),
++            guardrails=bool(args.guardrails),
++            expected_image_height=args.expected_image_height,
++            expected_image_width=args.expected_image_width,
++        )
++        if self.cfg.history_length < (1 if self.cfg.use_state else 0):
++            raise ValueError("--history-length must be >= 1 when --use-state is true")
++        if self.cfg.action_dim <= 0:
++            raise ValueError("--action-dim must be positive")
++
++        # Resolve the domain id once so a missing registration fails at startup,
++        # not on the first request in the middle of an eval.
++        self._domain_id_cache: dict[str, int] = {}
++        self.domain_id = self._domain_id(self.cfg.domain_name)
++
++        self._lock = threading.Lock()
++        self._req_id_lock = threading.Lock()
++        self._req_id = 0
++        self._episode_index = 0
++        self._requests_this_episode = 0
++        self._rng = np.random.default_rng(self.cfg.seed)
++        self.probe = _ModelTimingProbe(self.model, sync=self.cfg.sync_timing)
++
++        log.info(
++            f"[robotwin-policy-server] ready domain={self.cfg.domain_name!r} domain_id={self.domain_id} "
++            f"action_dim={self.cfg.action_dim} chunk={self.cfg.action_chunk_size} "
++            f"use_state={self.cfg.use_state} history={self.cfg.history_length} "
++            f"resolution={self.cfg.resolution!r} fps={self.cfg.conditioning_fps} "
++            f"steps={self.cfg.num_steps} guidance={self.cfg.guidance} shift={self.cfg.shift} "
++            f"sampler={self.setup_args.sampler} action_normalization=None (no denormalization) "
++            f"gripper=RoboTwin-native (no 1-g flip) view_desc_source={_VIEW_DESC_SOURCE!r} "
++            f"sync_timing={self.cfg.sync_timing}"
++        )
++
++    # ------------------------------------------------------------------
++    # Setup helpers
++    # ------------------------------------------------------------------
++
++    def _domain_id(self, domain_name: str) -> int:
++        cached = self._domain_id_cache.get(domain_name)
++        if cached is None:
++            cached = _resolve_domain_id(domain_name)
++            self._domain_id_cache[domain_name] = cached
++        return cached
++
++    def _build_transform(self, training_config: Any | None, args: RobotwinServerArgs) -> tuple[Any, dict[str, Any]]:
++        """Return the *training-time* transform pipeline plus values inferred from
++        the training config.  Ported from robolab: reusing the training transform is
++        what keeps serve-time preprocessing identical to train-time preprocessing."""
++        inferred: dict[str, Any] = {}
++        model_max_action_dim = getattr(getattr(self.model, "config", None), "max_action_dim", None)
++        max_action_dim = int(model_max_action_dim) if isinstance(model_max_action_dim, int) else 64
++
++        try:
++            dataset_config = (
++                training_config.dataloader_train.dataloaders.action_data.dataloader.dataset
++                if training_config is not None
++                else None
++            )
++            dataset_entry = dataset_config.list_of_datasets[0] if dataset_config is not None else None
++            action_dataset_config = dataset_entry.dataset if dataset_entry is not None else None
++        except (AttributeError, IndexError, TypeError):
++            dataset_config = None
++            dataset_entry = None
++            action_dataset_config = None
++
++        if dataset_config is None or dataset_entry is None:
++            # Second path: the RoboTwin experiment config puts every transform knob on
++            # the dataset factory call (``...dataloader.datasets.<name>.dataset``) and
++            # has no wrapper object to instantiate, so rebuild an equivalent pipeline
++            # from the config values instead of guessing defaults.
++            return self._rebuild_transform_from_config_values(
++                training_config, args, max_action_dim=max_action_dim, inferred=inferred
++            )
++
++        if action_dataset_config is not None:
++            chunk_length = getattr(action_dataset_config, "chunk_length", None)
++            if isinstance(chunk_length, int):
++                inferred["action_chunk_size"] = chunk_length
++            fps = getattr(action_dataset_config, "fps", None)
++            if isinstance(fps, (int, float)):
++                inferred["conditioning_fps"] = float(fps)
++
++        if args.resolution is not None:
++            dataset_entry.resolution = args.resolution
++        else:
++            inferred_resolution = dataset_entry.resolution
++            if inferred_resolution is None:
++                inferred_resolution = dataset_config.resolution
++            if inferred_resolution is not None:
++                inferred["resolution"] = str(inferred_resolution)
++
++        if dataset_config.cfg_dropout_rate != 0.0:
++            dataset_config.cfg_dropout_rate = 0.0
++
++        # Swap the real dataset for a stub: we only want the wrapper's transform.
++        dataset_entry.dataset = {"_target_": f"{__name__}._DummyDataset"}
++
++        if args.format_prompt_as_json is not None:
++            dataset_config.format_prompt_as_json = bool(args.format_prompt_as_json)
++
++        wrapped_dataset = instantiate(dataset_config)
++        return wrapped_dataset.transform, inferred
++
++    def _rebuild_transform_from_config_values(
++        self,
++        training_config: Any | None,
++        args: RobotwinServerArgs,
++        *,
++        max_action_dim: int,
++        inferred: dict[str, Any],
++    ) -> tuple[Any, dict[str, Any]]:
++        """Reconstruct the training ``ActionTransformPipeline`` from config values.
++
++        Used when the training config's dataset node cannot be instantiated without
++        the data root (the RoboTwin factory builds its dataset and transform in one
++        call).  ``tokenizer_config`` is deliberately left ``None``: inference
++        tokenizes ``ai_caption`` inside the model, and skipping the in-transform
++        tokenizer also removes any chance of the training CFG caption dropout firing
++        on a served request."""
++        node = _find_action_dataset_node(training_config) if training_config is not None else None
++        if node is None:
++            log.warning(
++                "[robotwin-policy-server] no training action dataset config found; using a default "
++                f"ActionTransformPipeline (max_action_dim={max_action_dim}, "
++                f"format_prompt_as_json={bool(args.format_prompt_as_json)}). "
++                "Serve-time prompt format is only guaranteed to match training when the training "
++                "config is reachable (pass --config-file/--experiment)."
++            )
++            return (
++                ActionTransformPipeline(
++                    max_action_dim=max_action_dim,
++                    cfg_dropout_rate=0.0,
++                    format_prompt_as_json=bool(args.format_prompt_as_json),
++                ),
++                inferred,
++            )
++
++        chunk_length = _config_value(node, "chunk_length")
++        if isinstance(chunk_length, int):
++            inferred["action_chunk_size"] = chunk_length
++        fps = _config_value(node, "fps")
++        if isinstance(fps, (int, float)):
++            inferred["conditioning_fps"] = float(fps)
++        resolution = _config_value(node, "resolution")
++        if resolution is not None:
++            inferred["resolution"] = str(resolution)
++        node_max_action_dim = _config_value(node, "max_action_dim")
++        if isinstance(node_max_action_dim, int):
++            max_action_dim = node_max_action_dim
++
++        train_format_json = bool(_config_value(node, "format_prompt_as_json", True))
++        format_prompt_as_json = (
++            bool(args.format_prompt_as_json) if args.format_prompt_as_json is not None else train_format_json
++        )
++        if args.format_prompt_as_json is not None and bool(args.format_prompt_as_json) != train_format_json:
++            log.warning(
++                f"[robotwin-policy-server] --format-prompt-as-json={format_prompt_as_json} disagrees with the "
++                f"training config ({train_format_json}). The served prompt format will NOT match training."
++            )
++
++        train_use_state = _config_value(node, "use_state")
++        if isinstance(train_use_state, bool) and train_use_state != bool(args.use_state):
++            log.warning(
++                f"[robotwin-policy-server] --use-state={bool(args.use_state)} disagrees with the training config "
++                f"(use_state={train_use_state}). Action row 0 conditioning will not match training."
++            )
++
++        pipeline = ActionTransformPipeline(
++            tokenizer_config=None,
++            cfg_dropout_rate=0.0,
++            max_action_dim=max_action_dim,
++            append_viewpoint_info=bool(_config_value(node, "append_viewpoint_info", True)),
++            append_duration_fps_timestamps=bool(_config_value(node, "append_duration_fps_timestamps", True)),
++            append_resolution_info=bool(_config_value(node, "append_resolution_info", True)),
++            append_idle_frames=bool(_config_value(node, "append_idle_frames", False)),
++            format_prompt_as_json=format_prompt_as_json,
++        )
++        log.info(
++            "[robotwin-policy-server] rebuilt the training ActionTransformPipeline from config values: "
++            f"max_action_dim={max_action_dim} format_prompt_as_json={format_prompt_as_json} "
++            f"chunk_length={inferred.get('action_chunk_size')} fps={inferred.get('conditioning_fps')} "
++            f"resolution={inferred.get('resolution')} (tokenizer_config=None: the model tokenizes ai_caption)"
++        )
++        return pipeline, inferred
++
++    def _next_seed(self) -> int:
++        if self.cfg.deterministic_seed:
++            return self.cfg.seed
++        return int(self._rng.integers(0, 2**31))
++
++    def _should_dump(self, request_id: int) -> bool:
++        if self.cfg.dump_dir is None:
++            return False
++        n = int(self.cfg.dump_every)
++        if n <= 0:
++            return False
++        return request_id == 1 or (request_id % n == 0)
++
++    # ------------------------------------------------------------------
++    # /info and /notify_next_episode
++    # ------------------------------------------------------------------
++
++    def get_info(self) -> dict[str, Any]:
++        return {
++            "server": "action_policy_server_robotwin",
++            "run_name": self.cfg.experiment_name,
++            "checkpoint": self.cfg.checkpoint_path,
++            "config_file": self.cfg.config_file,
++            "config_file_type": str(self.setup_args.config_file_type),
++            "sampler": str(self.setup_args.sampler),
++            "domain_name": self.cfg.domain_name,
++            "domain_id": self.domain_id,
++            "action_dim": self.cfg.action_dim,
++            "action_chunk_size": self.cfg.action_chunk_size,
++            "action_rows_generated": self.cfg.action_chunk_size + (1 if self.cfg.use_state else 0),
++            "video_frames": self.cfg.action_chunk_size + 1,
++            "use_state": self.cfg.use_state,
++            "history_length": self.cfg.history_length,
++            "conditioning_fps": self.cfg.conditioning_fps,
++            "resolution": self.cfg.resolution,
++            # InstinctWM: the train/serve PARITY block, introspected off the LIVE transform
++            # object rather than off the requested config.
++            #
++            # This exists because a 22.7-hour eval was thrown away over exactly one of these
++            # fields. Training ran with format_prompt_as_json=True; the servers resolved False
++            # because the training config was not reachable, so the model was fed a prompt
++            # format it had never seen. The server logged a warning about it on startup and
++            # nothing read the startup log -- only /info. So every parity-relevant knob is
++            # reported here, where a pre-flight check can assert on it.
++            #
++            # Booleans are derived from whether the augmentor OBJECT exists, which is the
++            # resolved behaviour; a config field could say one thing while the pipeline does
++            # another.
++            "transform_parity": _transform_parity(self._transform),
++            # InstinctWM: read back from the RESOLVED setup args, not from the request, so
++            # /info reports what the engine is actually doing.
++            "use_cuda_graphs": bool(getattr(self.setup_args, "use_cuda_graphs", False)),
++            "cudagraphs_via_options": bool(getattr(self.setup_args, "cudagraphs_via_options", False)),
++            "compile_dynamic": bool(getattr(self.setup_args, "compile_dynamic", True)),
++            "compiled_region": str(getattr(self.setup_args, "compiled_region", "")),
++            "num_steps": self.cfg.num_steps,
++            "nfe_rungs": list(self.cfg.nfe_rungs),
++            "guidance": self.cfg.guidance,
++            "shift": self.cfg.shift,
++            "seed": self.cfg.seed,
++            "deterministic_seed": self.cfg.deterministic_seed,
++            "action_normalization": None,
++            "denormalization": "none",
++            "gripper_convention": "robotwin_native_1_is_open_no_flip",
++            "qpos14_layout": ["left_arm(6)", "left_gripper(1)", "right_arm(6)", "right_gripper(1)"],
++            "expected_image_hw": [self.cfg.expected_image_height, self.cfg.expected_image_width],
++            "view_description": ROBOTWIN_VIEW_DESC,
++            "view_description_source": _VIEW_DESC_SOURCE,
++            "guardrails": self.cfg.guardrails,
++            "sync_timing": self.cfg.sync_timing,
++            "decode_video": self.cfg.decode_video,
++            "episode_index": self._episode_index,
++            "requests_total": self._req_id,
++            "requests_this_episode": self._requests_this_episode,
++            "torch_version": torch.__version__,
++            "cuda_device": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
++        }
++
++    def notify_next_episode(self, payload: dict[str, Any] | None = None) -> dict[str, Any]:
++        """Reset per-episode state.  The policy itself is stateless across chunks
++        (no KV cache is carried between requests, action row 0 always comes from the
++        client's ``qpos14``), so this only resets the seed stream, the per-episode
++        counters and — when asked — the CUDA peak-memory watermark."""
++        with self._lock:
++            self._episode_index += 1
++            self._requests_this_episode = 0
++            self._rng = np.random.default_rng(self.cfg.seed)
++            self.probe.reset()
++            if self.cfg.reset_peak_memory_per_request and torch.cuda.is_available():
++                torch.cuda.reset_peak_memory_stats()
++        episode_index = self._episode_index
++        log.info(f"[robotwin-policy-server] notify_next_episode -> episode_index={episode_index}")
++        return {
++            "status": "ok",
++            "episode_index": episode_index,
++            "seed_stream_reset_to": self.cfg.seed,
++            "echo": payload if isinstance(payload, dict) else None,
++        }
++
++    # ------------------------------------------------------------------
++    # Request preprocessing
++    # ------------------------------------------------------------------
++
++    def _prep_item(self, req: dict[str, Any]) -> dict[str, Any]:
++        """Validate one request and build the transformed model sample.
++
++        Request contract::
++
++            {"image": "<base64 png of the 320x360 mosaic>",
++             "prompt": "<instruction>",
++             "qpos14": [14 floats],            # or [[14 floats], ...] with history
++             "domain_name": "robotwin_aloha_agilex"}
++        """
++        image_b64 = req.get("image")
++        if not isinstance(image_b64, str):
++            raise ValueError("'image' must be a base64 PNG string")
++        prompt = req.get("prompt")
++        if not isinstance(prompt, str) or not prompt:
++            raise ValueError("'prompt' must be a non-empty string")
++        domain_name = req.get("domain_name") or self.cfg.domain_name
++        if not isinstance(domain_name, str):
++            raise ValueError("'domain_name' must be a string")
++
++        qpos = req.get("qpos14")
++        if qpos is None:
++            # Tolerated aliases so a harness written against a slightly different
++            # key still fails loudly rather than silently sending zeros.
++            qpos = req.get("state", req.get("qpos"))
++        if qpos is None:
++            raise ValueError(
++                f"'qpos14' is required: {self.cfg.action_dim} absolute joint positions "
++                "[left_arm(6), left_gripper, right_arm(6), right_gripper]"
++            )
++        qpos14 = _ensure_2d_float_array(qpos, "qpos14", self.cfg.action_dim)  # [T,14]
++
++        t0 = time.perf_counter()
++        img_chw_uint8 = _decode_base64_png_to_rgb_uint8(image_b64)  # [3,H,W]
++        image_decode_ms = (time.perf_counter() - t0) * 1000.0
++        img_h, img_w = int(img_chw_uint8.shape[-2]), int(img_chw_uint8.shape[-1])
++        exp_h, exp_w = self.cfg.expected_image_height, self.cfg.expected_image_width
++        if (exp_h is not None and img_h != exp_h) or (exp_w is not None and img_w != exp_w):
++            raise ValueError(
++                f"observation mosaic is {img_h}x{img_w} (HxW) but the frozen RoboTwin geometry is "
++                f"{exp_h}x{exp_w}: head_camera 320x240 on top, left|right resized to 160x120 below. "
++                "Pass --expected-image-height/--expected-image-width to relax this guard."
++            )
++
++        # Policy mode: video frame 0 is the observation (the only conditioning
++        # frame), the remaining chunk frames are generated, so they start as zeros.
++        t_frames = self.cfg.action_chunk_size + 1
++        video = torch.zeros((3, t_frames, img_h, img_w), dtype=torch.uint8)  # [3,T,H,W]
++        video[:, 0] = img_chw_uint8
++
++        use_state_rows = 1 if self.cfg.use_state else 0
++        action = torch.zeros((self.cfg.action_chunk_size + use_state_rows, self.cfg.action_dim), dtype=torch.float32)
++        history_action: torch.Tensor | None = None
++        num_history_rows = self.cfg.history_length - use_state_rows
++
++        # NO gripper flip: RoboTwin's native convention (1.0 = open) is what the
++        # dataset writes, so the state goes in exactly as received.
++        if self.cfg.use_state:
++            action[0] = torch.from_numpy(qpos14[-1])  # [D]
++        if num_history_rows > 0:
++            if len(qpos14) < num_history_rows + 1:
++                raise ValueError(
++                    f"'qpos14' needs {num_history_rows + 1} rows for --history-length="
++                    f"{self.cfg.history_length}, got {len(qpos14)}"
++                )
++            history_action = torch.from_numpy(qpos14[-num_history_rows - 1 : -1]).float()  # [H,D]
++
++        sample: dict[str, Any] = {
++            "ai_caption": prompt,
++            "video": video,
++            "action": action,
++            "conditioning_fps": torch.tensor(self.cfg.conditioning_fps, dtype=torch.long),  # []
++            "mode": "policy",
++            "domain_id": torch.tensor(self._domain_id(domain_name), dtype=torch.long),  # []
++            "viewpoint": "concat_view",
++            "additional_view_description": ROBOTWIN_VIEW_DESC,
++            # REQUIRED for prompt parity with training. ActionPromptJsonFormatter
++            # emits actions[0]["idle_frame"] = "<idle_frames> out of <T>." whenever
++            # this key is present, and _drop_empty_fields REMOVES the field when it
++            # is absent -- so omitting it makes every served prompt structurally
++            # different from every training prompt (the RoboTwin training dataset
++            # always sets it via ActionBaseDataset._build_result). Measured over the
++            # converted RoboTwin windows, 0 is the modal value (~50%), and the
++            # server cannot know the future idle count before predicting, so 0 is
++            # also the "keep moving" prior. Same value and rationale as
++            # action_policy_server_libero._build_json_prompt.
++            "idle_frames": torch.tensor(0, dtype=torch.long),  # []
++        }
++        if history_action is not None:
++            sample["history_action"] = history_action
++
++        t0 = time.perf_counter()
++        # action_normalizer=None -> action_normalization is None end to end. There is
++        # no stats file and nothing to invert on the way out.
++        sample = self._transform(sample, self.cfg.resolution, None)
++        if isinstance(sample.get("ai_caption"), dict):
++            sample["ai_caption"] = json.dumps(sample["ai_caption"])
++        transform_ms = (time.perf_counter() - t0) * 1000.0
++
++        return {
++            "sample": sample,
++            "data_batch": _build_data_batch_from_sample(sample),
++            "obs_chw_uint8": img_chw_uint8,
++            "prompt": sample.get("ai_caption"),
++            "domain_name": domain_name,
++            "image_hw": (img_h, img_w),
++            "image_decode_ms": image_decode_ms,
++            "transform_ms": transform_ms,
++        }
++
++    # ------------------------------------------------------------------
++    # Timing payload
++    # ------------------------------------------------------------------
++
++    def _build_timing_payload(
++        self,
++        *,
++        timings: _PhaseTimings,
++        t_arrival: float | None,
++        t0: float,
++        t_pre_done: float,
++        t_gen0: float,
++        t_gen1: float,
++        t_end: float,
++        video_decode_ms: float,
++        batch_size: int,
++        action_rows: int,
++        # InstinctWM: the step count THIS request ran at, which may differ from the launch
++        # default now that a rung is selectable per request. Threading it through keeps the
++        # server's own NFE cross-check honest -- that check compares measured network forwards
++        # against the expected count, and it is one of the few assertions here that would
++        # catch a sampler silently doing something else.
++        num_steps: int | None = None,
++    ) -> dict[str, Any]:
++        steps = int(num_steps if num_steps is not None else self.cfg.num_steps)
++        """Assemble the per-request timing breakdown.
++
++        Additivity contract — these components are mutually exclusive and sum to
++        ``total_ms`` up to ``residual_ms``::
++
++            preprocess_ms                (base64 decode + transform + batch build)
++          + model_prepare_ms             (vision_encode + prompt_tokenize + pack_prepare + prepare_other)
++          + generate_entry_ms            (generate_samples_from_batch entry -> first network forward)
++          + denoise_loop_ms              (first network forward -> last network forward returns)
++          + action_decode_ms             (last forward -> generate returns: latent split + postprocess_action)
++          + postprocess_ms               (tensor -> python lists, optional video decode)
++          + residual_ms
++          = total_ms
++
++        ``residual_ms`` is bookkeeping only (request-id assignment, dict shuffling)
++        and is expected to be well under 1 ms.  ``total_ms`` does NOT include the
++        handler's JSON serialization and socket write; those show up in the client's
++        wall time and in the ``http_total_ms`` figure written to the server log.
++        ``pack_in_denoise_ms`` is reported separately under ``nested`` because it is
++        *inside* ``denoise_loop_ms`` and would double-count if added.
++        """
++        ms = lambda a, b: (b - a) * 1000.0  # noqa: E731
++        total_ms = ms(t0, t_end)
++        preprocess_ms = ms(t0, t_pre_done)
++        prepare_ms = timings.prepare_ms
++        prepare_other_ms = prepare_ms - (
++            timings.vision_encode_ms + timings.prompt_tokenize_ms + timings.pack_prepare_ms
++        )
++        first_v = timings.first_velocity_t0
++        last_v = timings.last_velocity_t1
++        if first_v is None or last_v is None:
++            # No network forward happened (should be impossible); attribute
++            # everything after prepare to the denoise loop so the sum still closes.
++            generate_entry_ms = 0.0
++            denoise_loop_ms = ms(t_gen0, t_gen1) - prepare_ms
++            action_decode_ms = 0.0
++        else:
++            generate_entry_ms = ms(t_gen0, first_v) - prepare_ms
++            denoise_loop_ms = ms(first_v, last_v)
++            action_decode_ms = ms(last_v, t_gen1)
++        postprocess_ms = ms(t_gen1, t_end)
++
++        exclusive = [
++            preprocess_ms,
++            prepare_ms,
++            generate_entry_ms,
++            denoise_loop_ms,
++            action_decode_ms,
++            postprocess_ms,
++        ]
++        breakdown_sum_ms = float(sum(exclusive))
++        nfe = timings.nfe
++        expected_nfe = steps * (2 if self.cfg.guidance != 1.0 else 1)
++        per_step = _stats(timings.velocity_ms)
++
++        payload: dict[str, Any] = {
++            "total_ms": round(total_ms, 3),
++            "preprocess_ms": round(preprocess_ms, 3),
++            "model_prepare_ms": round(prepare_ms, 3),
++            "vision_encode_ms": round(timings.vision_encode_ms, 3),
++            "prompt_tokenize_ms": round(timings.prompt_tokenize_ms, 3),
++            "pack_sequence_ms": round(timings.pack_prepare_ms, 3),
++            "prepare_other_ms": round(prepare_other_ms, 3),
++            "generate_entry_ms": round(generate_entry_ms, 3),
++            "denoise_loop_ms": round(denoise_loop_ms, 3),
++            "denoise_step_ms": round(denoise_loop_ms / max(1, steps), 3),
++            "num_steps": steps,
++            "network_forward_ms": per_step,
++            "sampler_overhead_ms": round(denoise_loop_ms - float(sum(timings.velocity_ms)), 3),
++            "action_decode_ms": round(action_decode_ms, 3),
++            "postprocess_ms": round(postprocess_ms, 3),
++            "video_decode_ms": round(video_decode_ms, 3),
++            "breakdown_sum_ms": round(breakdown_sum_ms, 3),
++            "residual_ms": round(total_ms - breakdown_sum_ms, 3),
++            "queue_wait_ms": round(ms(t_arrival, t0), 3) if t_arrival is not None else None,
++            "nested": {
++                "pack_in_denoise_ms": round(timings.pack_in_denoise_ms, 3),
++                "note": "inside denoise_loop_ms; do not add to the exclusive components",
++            },
++            "counters": {
++                "denoise_steps": steps,
++                "nfe": nfe,
++                "nfe_expected": expected_nfe,
++                "guidance": self.cfg.guidance,
++                "batch_size": batch_size,
++                "action_chunk_size": self.cfg.action_chunk_size,
++                "action_rows_returned": action_rows,
++                "packed_sequence_tokens": timings.sequence_length,
++                "sync_timing": self.cfg.sync_timing,
++            },
++            "memory": {
++                "cuda_max_memory_allocated_mb": round(torch.cuda.max_memory_allocated() / 1024**2, 1)
++                if torch.cuda.is_available()
++                else None,
++                "cuda_memory_allocated_mb": round(torch.cuda.memory_allocated() / 1024**2, 1)
++                if torch.cuda.is_available()
++                else None,
++                "cuda_memory_reserved_mb": round(torch.cuda.memory_reserved() / 1024**2, 1)
++                if torch.cuda.is_available()
++                else None,
++                "peak_scope": "per_request" if self.cfg.reset_peak_memory_per_request else "process_lifetime",
++            },
++        }
++        if nfe != expected_nfe:
++            payload["counters"]["nfe_mismatch"] = (
++                f"measured {nfe} network forwards, expected steps({steps}) x "
++                f"{'2 (guidance != 1.0)' if self.cfg.guidance != 1.0 else '1'} = {expected_nfe}"
++            )
++        return payload
++
++    # ------------------------------------------------------------------
++    # Predict
++    # ------------------------------------------------------------------
++
++    def _assign_request_id(self, req: dict[str, Any]) -> int:
++        injected = req.get("request_id")
++        if isinstance(injected, int) and injected > 0:
++            return int(injected)
++        with self._req_id_lock:
++            self._req_id += 1
++            return int(self._req_id)
++
++    def _generate(self, data_batch: dict[str, Any], seeds: list[int],
++                  num_steps: int | None = None) -> tuple[dict[str, Any], _PhaseTimings, float, float]:
++        """Run one diffusion forward under the inference lock, with timers.
++
++        Returns ``(samples, timings, t_gen0, t_gen1)``."""
++        with self._lock:
++            if self.cfg.reset_peak_memory_per_request and torch.cuda.is_available():
++                torch.cuda.reset_peak_memory_stats()
++            self.probe.reset()
++            if self.cfg.sync_timing and torch.cuda.is_available():
++                torch.cuda.synchronize()
++            t_gen0 = time.perf_counter()
++            with torch.inference_mode():
++                samples = self.model.generate_samples_from_batch(
++                    data_batch,
++                    guidance=self.cfg.guidance,
++                    seed=seeds,
++                    num_steps=int(num_steps if num_steps is not None else self.cfg.num_steps),
++                    shift=self.cfg.shift,
++                    has_negative_prompt=False,
++                )
++            if self.cfg.sync_timing and torch.cuda.is_available():
++                torch.cuda.synchronize()
++            t_gen1 = time.perf_counter()
++            timings = self.probe.current
++        return samples, timings, t_gen0, t_gen1
++
++    def _extract_action(self, samples: dict[str, Any], index: int) -> np.ndarray:
++        """Model output -> the executable action chunk.
++
++        ``samples["action"][i]`` is ``[T,D_raw]`` in *external* space already
++        (``ActionProcessor.postprocess_action`` ran inside the model with our
++        ``action_normalizer=None`` record, i.e. it was a no-op).  Row 0 is the
++        ``use_state`` conditioning row and every extra history row precedes the
++        chunk, so ``history_length`` rows are dropped.
++
++        NO denormalization and NO gripper flip happen here, by contract."""
++        action = samples["action"][index]
++        if action.dim() == 3:
++            action = action.squeeze(0)
++        action = action[:, : self.cfg.action_dim]  # [T,D]
++        action = action[self.cfg.history_length :]  # [T2,D]
++        return action.float().detach().cpu().numpy()
++
++    def _resolve_num_steps(self, req: dict[str, Any]) -> int:
++        """InstinctWM: per-request NFE, bounded by the servable rungs.
++
++        Refusing an unlisted rung rather than serving it is deliberate: with capture enabled a
++        new step count is a new shape, and capturing it on arrival costs ~33 s measured -- a
++        stall in the middle of an episode. A refused request is visible; that stall is not.
++        """
++        want = req.get("num_steps")
++        if want is None:
++            return int(self.cfg.num_steps)
++        try:
++            want = int(want)
++        except (TypeError, ValueError):
++            raise ValueError(f"'num_steps' must be an integer, got {want!r}") from None
++        if want not in self.cfg.nfe_rungs:
++            raise ValueError(
++                f"num_steps={want} is not a servable rung. This process serves "
++                f"{list(self.cfg.nfe_rungs)}; launch it with --nfe-rungs to add more so they "
++                f"are warmed at startup. Serving an unwarmed rung would pay the capture cost "
++                f"mid-episode."
++            )
++        return want
++
++    def predict(self, req: dict[str, Any]) -> dict[str, Any]:
++        t_arrival = req.pop("_t_arrival", None)
++        t0 = time.perf_counter()
++        request_id = self._assign_request_id(req)
++
++        prep = self._prep_item(req)
++        t_pre_done = time.perf_counter()
++
++        seed = self._next_seed()
++        req_steps = self._resolve_num_steps(req)
++        log.info(
++            f"[robotwin-policy-server] request_id={request_id} episode={self._episode_index} "
++            f"domain={prep['domain_name']!r} img={prep['image_hw']} seed={seed} "
++            f"steps={req_steps} guidance={self.cfg.guidance} prompt={prep['prompt']!r}"
++        )
++
++        samples, timings, t_gen0, t_gen1 = self._generate(prep["data_batch"], [seed], req_steps)
++        action_np = self._extract_action(samples, 0)
++        action_list = action_np.tolist()
++
++        video_b64: list[str] = []
++        video_decode_ms = 0.0
++        pred_video: torch.Tensor | None = None
++        if self.cfg.decode_video:
++            t_vid = time.perf_counter()
++            with self._lock, torch.inference_mode():
++                pred_video = self.model.decode(samples["vision"][0]).squeeze(0)  # [C,T,H,W]
++            for frame in _video_tensor_to_pil_images(pred_video):
++                buf = io.BytesIO()
++                frame.save(buf, format="PNG")
++                video_b64.append(base64.b64encode(buf.getvalue()).decode("ascii"))
++            video_decode_ms = (time.perf_counter() - t_vid) * 1000.0
++
++        with self._req_id_lock:
++            self._requests_this_episode += 1
++        t_end = time.perf_counter()
++        timing = self._build_timing_payload(
++            timings=timings,
++            t_arrival=t_arrival,
++            t0=t0,
++            t_pre_done=t_pre_done,
++            t_gen0=t_gen0,
++            t_gen1=t_gen1,
++            t_end=t_end,
++            video_decode_ms=video_decode_ms,
++            batch_size=1,
++            action_rows=len(action_list),
++            num_steps=req_steps,
++        )
++        timing["image_decode_ms"] = round(prep["image_decode_ms"], 3)
++        timing["transform_ms"] = round(prep["transform_ms"], 3)
++
++        out: dict[str, Any] = {
++            "action": action_list,
++            "request_id": request_id,
++            "episode_index": self._episode_index,
++            "seed": seed,
++            "domain_name": prep["domain_name"],
++            "timing": timing,
++        }
++        if self.cfg.decode_video:
++            out["video"] = video_b64
++
++        log.info(
++            f"[robotwin-policy-server] request_id={request_id} done rows={len(action_list)} "
++            f"total={timing['total_ms']:.1f}ms pre={timing['preprocess_ms']:.1f} "
++            f"prepare={timing['model_prepare_ms']:.1f} (vae={timing['vision_encode_ms']:.1f} "
++            f"tok={timing['prompt_tokenize_ms']:.1f} pack={timing['pack_sequence_ms']:.1f} "
++            f"other={timing['prepare_other_ms']:.1f}) entry={timing['generate_entry_ms']:.1f} "
++            f"denoise={timing['denoise_loop_ms']:.1f} (step={timing['denoise_step_ms']:.1f} x "
++            f"{timing['counters']['nfe']} nfe) adec={timing['action_decode_ms']:.1f} "
++            f"post={timing['postprocess_ms']:.1f} residual={timing['residual_ms']:.2f} "
++            f"tokens={timing['counters']['packed_sequence_tokens']} "
++            f"peak_mem={timing['memory']['cuda_max_memory_allocated_mb']}MB"
++        )
++
++        if self._should_dump(request_id):
++            self._dump_request(request_id, req, prep, action_list, timing, pred_video)
++        return out
++
++    def predict_batch(self, items: list[dict[str, Any]]) -> dict[str, Any]:
++        """N observations -> ONE diffusion forward -> N action chunks.
++
++        Exists for the throughput A/B in ``results/infra_baseline.csv``: it shares
++        all the fixed per-chunk overhead across N requests, which is the cheapest
++        possible stand-in for continuous batching."""
++        t_arrival = None
++        if items and isinstance(items[0], dict):
++            t_arrival = items[0].pop("_t_arrival", None)
++        t0 = time.perf_counter()
++        if not isinstance(items, list) or not items:
++            raise ValueError("'items' must be a non-empty list of policy requests")
++        for item in items:
++            if not isinstance(item, dict):
++                raise ValueError("every entry of 'items' must be a JSON object")
++            item.pop("_t_arrival", None)
++
++        preps = [self._prep_item(item) for item in items]
++        data_batch = _merge_data_batches([p["data_batch"] for p in preps])
++        n = len(preps)
++        t_pre_done = time.perf_counter()
++
++        seeds = [self._next_seed() for _ in range(n)]
++        samples, timings, t_gen0, t_gen1 = self._generate(data_batch, seeds)
++        actions = [self._extract_action(samples, i).tolist() for i in range(n)]
++
++        with self._req_id_lock:
++            self._requests_this_episode += n
++        t_end = time.perf_counter()
++        timing = self._build_timing_payload(
++            timings=timings,
++            t_arrival=t_arrival,
++            t0=t0,
++            t_pre_done=t_pre_done,
++            t_gen0=t_gen0,
++            t_gen1=t_gen1,
++            t_end=t_end,
++            video_decode_ms=0.0,
++            batch_size=n,
++            action_rows=len(actions[0]) if actions else 0,
++        )
++        timing["image_decode_ms"] = round(sum(p["image_decode_ms"] for p in preps), 3)
++        timing["transform_ms"] = round(sum(p["transform_ms"] for p in preps), 3)
++        timing["per_item_total_ms"] = round(timing["total_ms"] / max(1, n), 3)
++        log.info(
++            f"[robotwin-policy-server] predict_batch n={n} steps={self.cfg.num_steps} "
++            f"total={timing['total_ms']:.1f}ms per_item={timing['per_item_total_ms']:.1f}ms "
++            f"denoise={timing['denoise_loop_ms']:.1f}ms tokens={timing['counters']['packed_sequence_tokens']}"
++        )
++        return {"actions": actions, "seeds": seeds, "timing": timing}
++
++    # ------------------------------------------------------------------
++    # Debug dumps
++    # ------------------------------------------------------------------
++
++    def _dump_request(
++        self,
++        request_id: int,
++        req: dict[str, Any],
++        prep: dict[str, Any],
++        action: list[list[float]],
++        timing: dict[str, Any],
++        pred_video: torch.Tensor | None,
++    ) -> None:
++        if self.cfg.dump_dir is None:
++            return
++        try:
++            ts = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d_%H%M%S_%fZ")
++            out_dir = Path(self.cfg.dump_dir) / f"{ts}_req{request_id:06d}"
++            out_dir.mkdir(parents=True, exist_ok=True)
++            request_copy = {k: v for k, v in req.items() if k != "image"}
++            request_copy["image"] = "<saved as observation.png>"
++            (out_dir / "request.json").write_text(json.dumps(request_copy, indent=2), encoding="utf-8")
++            (out_dir / "action_output.json").write_text(
++                json.dumps({"action": action, "prompt": prep["prompt"]}, indent=2), encoding="utf-8"
++            )
++            (out_dir / "timing.json").write_text(json.dumps(timing, indent=2), encoding="utf-8")
++            obs_hwc = prep["obs_chw_uint8"].permute(1, 2, 0).cpu().numpy()  # [H,W,3]
++            Image.fromarray(obs_hwc).save(out_dir / "observation.png")
++            if pred_video is not None:
++                frames_dir = out_dir / "rollout_frames"
++                frames_dir.mkdir(parents=True, exist_ok=True)
++                for i, frame in enumerate(_video_tensor_to_pil_images(pred_video)):
++                    frame.save(frames_dir / f"frame_{i:03d}.png")
++            log.info(f"[robotwin-policy-server] request_id={request_id} dumped to {out_dir}")
++        except Exception as exc:  # noqa: BLE001 - never fail a request because of a dump
++            log.error(f"[robotwin-policy-server] dump failed for request_id={request_id}: {exc}")
++
++    def dump_failure(self, request_id: int, req: dict[str, Any], error: str) -> None:
++        if self.cfg.dump_dir is None:
++            return
++        try:
++            ts = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d_%H%M%S_%fZ")
++            out_dir = Path(self.cfg.dump_dir) / f"{ts}_req{request_id:06d}_ERROR"
++            out_dir.mkdir(parents=True, exist_ok=True)
++            request_copy = {k: v for k, v in req.items() if k != "image"}
++            if "image" in req:
++                request_copy["image"] = "<attempted to save as observation.png>"
++            (out_dir / "request.json").write_text(json.dumps(request_copy, indent=2), encoding="utf-8")
++            (out_dir / "error.txt").write_text(error, encoding="utf-8")
++            image_b64 = req.get("image")
++            if isinstance(image_b64, str):
++                chw = _decode_base64_png_to_rgb_uint8(image_b64)
++                Image.fromarray(chw.permute(1, 2, 0).cpu().numpy()).save(out_dir / "observation.png")
++        except Exception:  # noqa: BLE001
++            return
++
++
++# ---------------------------------------------------------------------------
++# HTTP handler
++# ---------------------------------------------------------------------------
++
++
++class _RobotwinHandler(BaseHTTPRequestHandler):
++    """ThreadingHTTPServer handler; the service is injected as ``server.service``."""
++
++    server: ThreadingHTTPServer  # type: ignore[assignment]
++    protocol_version = "HTTP/1.1"  # keep-alive: TCP setup is measurable at ~1s/chunk
++
++    def _service(self) -> RobotwinPolicyService:
++        return getattr(self.server, "service")  # type: ignore[attr-defined]
++
++    def _send_json(self, status_code: int, payload: dict[str, Any]) -> None:
++        body = json.dumps(payload).encode("utf-8")
++        self.send_response(status_code)
++        self.send_header("Content-Type", "application/json")
++        self.send_header("Cache-Control", "no-store")
++        self.send_header("Content-Length", str(len(body)))
++        self.end_headers()
++        try:
++            self.wfile.write(body)
++        except (BrokenPipeError, ConnectionResetError):
++            return
++
++    def do_GET(self) -> None:  # noqa: N802
++        if self.path == "/info":
++            self._send_json(200, self._service().get_info())
++        elif self.path in ("/", "/healthz"):
++            self._send_json(200, {"status": "ok"})
++        else:
++            self._send_json(404, {"error": "Not found"})
++
++    def do_POST(self) -> None:  # noqa: N802
++        t_arrival = time.perf_counter()
++        if self.path not in ("/", "/predict", "/predict_batch", "/notify_next_episode"):
++            self._send_json(404, {"error": "Not found"})
++            return
++
++        try:
++            length = int(self.headers.get("Content-Length") or "0")
++        except ValueError:
++            self._send_json(400, {"error": "Invalid Content-Length"})
++            return
++        body = self.rfile.read(max(0, length))
++
++        content_type = (self.headers.get("Content-Type") or "").split(";", 1)[0].strip().lower()
++        if self.path == "/notify_next_episode" and not body:
++            self._send_json(200, self._service().notify_next_episode(None))
++            return
++        if content_type != "application/json":
++            self._send_json(415, {"error": "Content-Type must be application/json"})
++            return
++
++        try:
++            req = json.loads(body.decode("utf-8"))
++        except Exception as exc:  # noqa: BLE001
++            self._send_json(400, {"error": f"Invalid JSON: {exc}"})
++            return
++
++        service = self._service()
++
++        if self.path == "/notify_next_episode":
++            self._send_json(200, service.notify_next_episode(req if isinstance(req, dict) else None))
++            return
++
++        is_batch = self.path == "/predict_batch"
++        if is_batch:
++            # Accept either a bare JSON list or {"items": [...]}.
++            items = req if isinstance(req, list) else (req.get("items") if isinstance(req, dict) else None)
++            if not isinstance(items, list):
++                self._send_json(400, {"error": "POST /predict_batch expects a JSON list or {'items': [...]}"})
++                return
++            if items and isinstance(items[0], dict):
++                items[0]["_t_arrival"] = t_arrival
++            payload_for_dump: dict[str, Any] = {"items": f"<{len(items)} items>"}
++        else:
++            if not isinstance(req, dict):
++                self._send_json(400, {"error": "POST /predict expects a JSON object"})
++                return
++            req["_t_arrival"] = t_arrival
++            payload_for_dump = req
++
++        try:
++            out = service.predict_batch(items) if is_batch else service.predict(req)
++        except Exception as exc:  # noqa: BLE001
++            err = str(exc)
++            traceback.print_exc()
++            log.error(f"[robotwin-policy-server] path={self.path} ERROR: {err}")
++            service.dump_failure(0, payload_for_dump if isinstance(payload_for_dump, dict) else {}, err)
++            status = 400 if service.cfg.http_400_on_error else 200
++            self._send_json(status, {"actions": [], "error": err} if is_batch else {"action": [], "error": err})
++            return
++
++        self._send_json(200, out)
++        log.info(
++            f"[robotwin-policy-server] http path={self.path} "
++            f"http_total_ms={(time.perf_counter() - t_arrival) * 1000.0:.1f} "
++            "(includes body read + JSON encode + socket write)"
++        )
++
++    def log_message(self, format: str, *args: Any) -> None:  # noqa: A002
++        return
++
++
++# ---------------------------------------------------------------------------
++# Entrypoint
++# ---------------------------------------------------------------------------
++
++
++def serve(args: RobotwinServerArgs) -> None:
++    if args.dump_dir is not None:
++        Path(args.dump_dir).resolve().mkdir(parents=True, exist_ok=True)
++        log.info(f"[robotwin-policy-server] dump_root={Path(args.dump_dir).resolve()} dump_every={args.dump_every}")
++    if args.guardrails:
++        log.warning(
++            "[robotwin-policy-server] --guardrails is ON: OmniInference will try to load "
++            "nvidia/Cosmos-Guardrail1, which is a GATED HuggingFace repo and will fail startup "
++            "without access. Guardrails filter text/video content only and change nothing we measure."
++        )
++
++    service = RobotwinPolicyService(args)
++    local_ip = get_local_ip()
++    log.info(f"[robotwin-policy-server] Server accessible at: http://{local_ip}:{int(args.port)}/")
++    log.info("[robotwin-policy-server] Endpoints:")
++    log.info("  - GET  /                    : health check")
++    log.info("  - GET  /info                : resolved runtime config")
++    log.info("  - POST /predict             : {image,prompt,qpos14,domain_name} -> {action[16][14],timing}")
++    log.info("  - POST /predict_batch       : [ {...}, ... ] -> {actions,timing}")
++    log.info("  - POST /notify_next_episode : reset per-episode state")
++
++    httpd = ThreadingHTTPServer((args.host, int(args.port)), _RobotwinHandler)
++    setattr(httpd, "service", service)
++    httpd.serve_forever()
++
++
++def main() -> None:
++    cascade_subcommand_args = getattr(
++        tyro.conf,
++        "CascadeSubcommandArgs",
++        tyro.conf.ConsolidateSubcommandArgs,
++    )
++    args = tyro_cli(
++        RobotwinServerArgs,
++        description=__doc__,
++        config=(
++            tyro.conf.OmitArgPrefixes,
++            cascade_subcommand_args,
++            tyro.conf.OmitSubcommandPrefixes,
++        ),
++    )
++    serve(args)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/examples/toml/sft_config/action_policy_robotwin_edge.toml b/examples/toml/sft_config/action_policy_robotwin_edge.toml
+new file mode 100644
+index 0000000..440bdd5
+--- /dev/null
++++ b/examples/toml/sft_config/action_policy_robotwin_edge.toml
+@@ -0,0 +1,103 @@
++# SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
++# SPDX-License-Identifier: OpenMDW-1.1
++
++# ============================================================================
++# RoboTwin 2.0 pilot — run config for the `action_policy_robotwin_edge`
++# experiment (base nvidia/Cosmos3-Edge, 3.86B; ONE multi-task checkpoint over
++# the 10 ManipDojo-2026-Round1 tasks).
++#
++# Pre-registered in docs/robotwin_pilot_protocol.md §3:
++#   HSDP shard 8 x replicate 1, grad_accum 2, max_samples_per_batch 128
++#     -> global batch 128 x 8 x 2 = 2048
++#   lr 5e-5, warm_up_steps 500, cycle_lengths [max_iter], bf16,
++#   selective activation checkpointing on fmha, save_iter = max_iter / 10.
++#
++# The backbone (Nano -> Edge) is NOT settable here: PATH_REMAPS["vfm"] maps
++# ("model","backbone") -> None, so it lives in the registered experiment.
++#
++# Env required:
++#   ROBOTWIN_ROOT=<one LeRobot v3.0 root covering the 10 pilot tasks>
++#   BASE_CHECKPOINT_PATH=<base Cosmos3-Edge DCP dir — NOT Cosmos3-Edge-Policy-DROID>
++#   WAN_VAE_PATH=<Wan2.2_VAE.pth>
++#   IMAGINAIRE_OUTPUT_ROOT=<output root>   # persists checkpoints
++# ============================================================================
++
++[job]
++task         = "vfm"
++experiment   = "action_policy_robotwin_edge"
++project      = "cosmos3_action_robotwin"
++group        = "action_sft"
++name         = "action_policy_robotwin_edge"
++wandb_mode   = "offline"    # log locally; `wandb sync` later (no API key on this host)
++
++[model]
++precision = "bfloat16"
++# Edge default. Headroom check: 17 frames -> latent T = 1 + 16/4 = 5; at the
++# 480 tier's 640x640 bucket the patchified side is 640/16/2 = 20, so a sample is
++# 5 x 20 x 20 = 2000 vision tokens. Well under the cap, so no uncapping needed.
++max_num_tokens_after_packing = 45056
++
++[model.parallelism]
++data_parallel_shard_degree     = 8   # one 8-GPU node, fully sharded
++data_parallel_replicate_degree = 1   # HSDP 1x8 = 8 ranks
++
++[model.activation_checkpointing]
++mode           = "selective"
++save_ops_regex = ["fmha"]
++
++[model.tokenizer]
++vae_path = "${oc.env:WAN_VAE_PATH}"
++
++[optimizer]
++lr = 5.0e-05
++
++[scheduler]
++# cycle_lengths = [max_iter]  -> the linear decay ends exactly at the last step.
++# MUST be set to the same value as [trainer].max_iter below.
++cycle_lengths = [3200]        # = max_iter (PRE-REGISTERED 2026-07-25)
++warm_up_steps = [500]
++
++[trainer]
++# ==========================================================================
++# >>> PLACEHOLDER THE OPERATOR MUST SET BEFORE LAUNCHING <<<
++#
++# max_iter is PRE-REGISTERED from the converter's measured window count so the
++# run lands in the 3-5 epoch band (protocol §3). Do not guess it here.
++#
++#   windows_per_epoch = sum over episodes of (episode_length - 16)
++#   max_iter          = round(epochs * windows_per_epoch / 2048)     # global batch 2048
++#
++# Order of operations:
++#   1. run the converter over all 5,500 episodes; read its reported window count;
++#   2. write max_iter AND [scheduler].cycle_lengths (same number) here;
++#   3. record both, the window count and the epoch count, in
++#      docs/robotwin_pilot_deviations.md BEFORE training starts;
++#   4. set [checkpoint].save_iter = max_iter / 10.
++#
++# Sanity scale only (NOT a substitute for the measured count): ~112 frames/episode
++# -> ~96 windows/episode -> ~528k windows -> ~258 iters/epoch -> ~775-1290 iters
++# for 3-5 epochs.
++# ==========================================================================
++max_iter        = 3200        # PRE-REGISTERED: 1,617,627 windows / gbs 2048 = 4.05 epochs
++grad_accum_iter = 2           # global batch = 128 x (shard 8 x replicate 1) x 2 = 2048
++logging_iter    = 10
++
++[trainer.callbacks.grad_clip]
++clip_norm    = 1.0
++force_finite = true
++
++[checkpoint]
++load_path = "${oc.env:BASE_CHECKPOINT_PATH}"
++save_iter = 320             # = max_iter / 10
++
++[dataloader_train]
++max_samples_per_batch = 128   # per rank, per micro-batch
++
++# ----------------------------------------------------------------------------
++# If 128 samples/rank OOMs at the 480 tier (2000 vision tokens/sample x 128 =
++# 256k tokens/rank, ~2.3x the per-rank vision load of the DROID reference run),
++# preserve the pre-registered global batch of 2048 by trading samples for accum
++# at launch, e.g.:
++#   --opts dataloader_train.max_samples_per_batch=64 trainer.grad_accum_iter=4
++# and record the trade in the deviations file. Never change the product.
++# ----------------------------------------------------------------------------

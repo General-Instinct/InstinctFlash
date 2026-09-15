@@ -20,13 +20,12 @@ classifiers = [
 ]
 
 # The core stays laptop-installable -- no torch, no CUDA -- because deciding which optimizations are
-# legal has to work offline. `huggingface_hub` is the one exception and it is not a compromise: it is
-# pure Python, and without it `Runtime.from_pretrained("org/model")` and `describe("org/model")`
-# cannot resolve a repo id at all. It was previously in NO dependency list, so the documented install
-# produced a runtime that could not load the thing the README opens by loading.
-dependencies = ["huggingface_hub>=0.30"]
+# legal has to work offline. Hub resolution and JSON/YAML CLI configuration are core features;
+# their dependencies do not install a model stack or initialize an accelerator.
+dependencies = ["huggingface_hub>=0.30", "PyYAML>=6.0"]
 
 [project.optional-dependencies]
+test = ["pytest>=8"]
 # Enough to APPLY a plan and run a model whose weights are plain safetensors.
 runtime = ["torch>=2.4", "safetensors>=0.4", "numpy>=1.21"]
 # Additionally required to serve a diffusers-based backbone such as LingBot-VA (`wan_va`). Exact
@@ -35,17 +34,15 @@ runtime = ["torch>=2.4", "safetensors>=0.4", "numpy>=1.21"]
 diffusion = ["diffusers>=0.36", "transformers>=4.55", "accelerate>=1.0", "einops>=0.8",
              # the upstream wan_va serving code's own undeclared imports
              "easydict", "ftfy", "imageio", "opencv-python", "websockets", "msgpack"]
-eval = ["numpy>=1.21"]
+eval = ["numpy>=1.21", "Pillow>=10"]
 # `instinctflash serve` — the openpi-wire websocket policy server. msgpack + the vendored numpy
 # shim are the wire; websockets>=13 is where the asyncio server implementation it uses landed.
 serve = ["websockets>=13", "msgpack>=1.0.5", "numpy>=1.21"]
 # `--serve.viz=true` — the live Rerun dashboard (lerobot's viewer; same entity-path conventions).
-# >=0.36 is a MEASURED floor, not a fashion statement: 0.23.1 satisfies the API this code calls
-# but fails tests/test_serve_viz.py's recording assertions (.rrd contents differ); 0.36.3 passes.
 viz = ["rerun-sdk>=0.36", "numpy>=1.21"]
 
 # THE CLI. "install the package, give it a model id, run" should not require writing a program, and
-# four of the five verbs answer questions you want answered before committing to a download or a GPU.
+# models, validation and dry-run preflight work before a weight download or GPU load.
 [project.scripts]
 instinctflash = "instinctflash.cli:main"
 
@@ -60,17 +57,25 @@ Homepage = "https://general-instinct.com/"
 Repository = "https://github.com/general-instinct/InstinctFlash"
 
 [tool.setuptools.packages.find]
-include = ["instinctflash*"]
+include = ["instinctflash*", "benchmarks", "benchmarks.vla*", "benchmarks.regression*"]
+
+[tool.setuptools.package-data]
+"benchmarks.vla" = ["config/*.json", "*.md"]
+"benchmarks.regression" = ["systemd/*.service", "systemd/*.timer", "fixtures/*.json", "fixtures/*.txt", "fixtures/*.npz", "fixtures/frameworks/*.json"]
+"instinctflash.native" = ["*.cu", "*.md", "CMakeLists.txt", "bf16/*.cu", "bf16/*.sh", "bf16/CMakeLists.txt"]
+# the distill evidence base: the campaigns' measured frontiers as data (distill/evidence/)
+"instinctflash.distill.evidence" = ["*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = [".", "tests"]
 
 # ---------------------------------------------------------------------------
 # uv -- environment management
 #
 # The environment split is not a convenience here, it enforces the invariant the
 # README states: analysis (adapters, Optimizer, every pass) must work with no
-# torch and no GPU. `dependencies = []` above means the DEFAULT environment has
+# torch and no GPU. The lightweight core dependencies above mean the DEFAULT environment has
 # no torch in it, so `./scripts/task.sh test` fails loudly the day a pass grows a
 # torch import, instead of passing because torch happened to be in the one venv
 # everybody used.

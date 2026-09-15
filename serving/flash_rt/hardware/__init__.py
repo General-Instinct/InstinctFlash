@@ -75,13 +75,18 @@ def detect_arch() -> str:
 # drag in every backend. External plugins may add entries to this dict
 # to register new models — see ``docs/plugin_model_template.md``.
 _PIPELINE_MAP: dict[tuple[str, str, str], tuple[str, str]] = {
-    # ── LingBot-VLA-V2 ──
-    # This route uses the model's upstream BF16 kernels plus static-KV CUDA Graph replay.  It is
-    # available on the GPUs on which that path has been measured; no JAX frontend is claimed.
+    # ── LingBot-VLA-V2 ── one config name, two arms keyed by arch.
+    # SM80/SM90: the upstream-BF16 datacenter graft — upstream kernels plus static-KV CUDA
+    # Graph replay, measured on the GPUs it dispatches to; no JAX frontend is claimed.
     ("lingbot_vla_v2", "torch", "cuda_sm80"):
         ("flash_rt.frontends.torch.lingbot_vla_v2", "LingBotVLAV2TorchFrontend"),
     ("lingbot_vla_v2", "torch", "cuda_sm90"):
         ("flash_rt.frontends.torch.lingbot_vla_v2", "LingBotVLAV2TorchFrontend"),
+    # SM110: the from-scratch Thor engine (models/vla2 + csrc/kernels/moe_vla2.cu) —
+    # full-engine 210.3 ms measured (3.57x vs stock), fp8 experts via cuBLASLt with the fp16
+    # prefill arm shipped (fp8 prefill failed the static-calibration parity gate).
+    ("lingbot_vla_v2", "torch", "thor"):
+        ("flash_rt.frontends.torch.vla2_thor", "Vla2TorchFrontendThor"),
 
     # ── Pi0.5 ──
     ("pi05", "torch", "thor"):

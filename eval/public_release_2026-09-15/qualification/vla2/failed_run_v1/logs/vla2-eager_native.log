@@ -1,0 +1,28 @@
+Traceback (most recent call last):
+  File "/dev/shm/ifl_public_envs_20260915_v1/vla2_v2/lib/python3.12/site-packages/benchmarks/regression/user_e2e.py", line 261, in capture
+    api = build(family, checkpoint, output_dir=output.parent)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/vla2_v2/lib/python3.12/site-packages/benchmarks/regression/native_reference.py", line 70, in build
+    from deploy.lingbot_vla_v2_policy import LingbotVLAv2Server
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/vla2/deploy/lingbot_vla_v2_policy.py", line 29, in <module>
+    from lingbotvla.models.vla.lingbot_vla.modeling_lingbot_vla_v2 import LingbotVlaV2Policy
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/vla2/lingbotvla/models/vla/lingbot_vla/modeling_lingbot_vla_v2.py", line 19, in <module>
+    from .modeling_lingbot_vla import (
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/vla2/lingbotvla/models/vla/lingbot_vla/modeling_lingbot_vla.py", line 61, in <module>
+    from lingbotvla.models.vla.lingbot_vla.qwen2_action_expert import (
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/vla2/lingbotvla/models/vla/lingbot_vla/qwen2_action_expert.py", line 79, in <module>
+    from lingbotvla.ops.robby_moe import robby_moe_forward
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/vla2/lingbotvla/ops/__init__.py", line 15, in <module>
+    from .attention import flash_attention_forward
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/vla2/lingbotvla/ops/attention.py", line 9, in <module>
+    from ..distributed.sequence_parallel import (
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/vla2/lingbotvla/distributed/sequence_parallel/__init__.py", line 40, in <module>
+    from .data import (
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/vla2/lingbotvla/distributed/sequence_parallel/data.py", line 9, in <module>
+    from ...data.constants import IGNORE_INDEX
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/vla2/lingbotvla/data/__init__.py", line 26, in <module>
+    from .data_loader import build_dataloader
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/vla2/lingbotvla/data/data_loader.py", line 21, in <module>
+    from torchdata.stateful_dataloader import StatefulDataLoader
+ModuleNotFoundError: No module named 'torchdata'
+InstinctFlash LingBot-VLA-V2: Thor MoE compiler /usr/local/cuda/bin/ptxas (TRITON_PTXAS_PATH, TRITON_PTXAS_BLACKWELL_PATH).

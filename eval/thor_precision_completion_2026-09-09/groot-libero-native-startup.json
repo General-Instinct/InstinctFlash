@@ -1,0 +1,38 @@
+{
+  "checkpoint_sha256": "2b681c26d0c3acad93957f8dd0f6c1abe79c80fa3d9ae17486372cf8427bbdc5",
+  "execution": {
+    "action_shape": [
+      16,
+      7
+    ],
+    "actions_per_inference": 8,
+    "checkpoint_subdir": "libero_10",
+    "dtype": "bfloat16",
+    "embodiment": "libero_sim",
+    "mode": "runtime_default",
+    "nfe": 4,
+    "precision": "native",
+    "runtime_explanation": "InstinctFlash runtime for 'nvidia/GR00T-N1.7-LIBERO'\n  package     : /home/guanming/ifl_eval/thor_precision_completion_20260909/groot-libero-checkpoint\n  backbone    : groot_n17\n  servable    : True\n  precision   : native\n  evidence    : no closed-loop certificate verified for this live execution; plan tiers are transformation claims\n  placement   : placement='in_process' (explicit)\n  capabilities: backbone:groot_n17, declares:backbone_fastpath, declares:base_weights, declares:embodiment_tag, declares:fast_decode, declares:param_bytes, guidance:action=none, servable\n\nInstinctFlash plan for nvidia/GR00T-N1.7-LIBERO\n  plan tier: BITEXACT\n  operating point: schedule {backbone=1 + action=4} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 5 declared forwards (no stream requests a negative branch)}\n\n  skip   graph_capture              [BITEXACT  ] Thor capture performance is unmeasured for this family/operating point; retain the eager default pending a paired device measurement.\n  skip   engine_offload             [NUMERIC   ] precision='native': FP8 engine is not authorized; legal but tier NUMERIC exceeds ceiling BITEXACT: SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation; baked denoise operating point: action=4 steps; guidance action=none@1\n  skip   fsdp_elision               [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   allocator_churn_elision    [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   debug_dump_elision         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   obs_decode_elision         [BITEXACT  ] model declares no observation-decode modules\n  skip   conditioning_prefill       [BITEXACT  ] ['backbone_features'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist\n  skip   prompt_encoder_staging     [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   ring_kv_addressing         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   action_terminal_forward_elision [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_gated_residual       [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_wan_stage2           [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   conv_layout_ndhwc          [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   cfg_branch_elision         [BITEXACT  ] no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)",
+    "startup_observation_sha256": "b192e88cb950ef2f39cbc60bfabc1f886393d6098a3125df57972192f283b964",
+    "startup_prompt": "put both the alphabet soup and the tomato sauce in the basket"
+  },
+  "model_id": "nvidia/GR00T-N1.7-LIBERO",
+  "model_revision": "2ea293aa20ba7cf5bbf3ba17a5fbcb1a01cbfe21",
+  "numeric_environment": {
+    "cudnn_benchmark": false,
+    "cudnn_tf32": true,
+    "matmul_tf32": false
+  },
+  "packages": {
+    "numpy": "1.26.4",
+    "torch": "2.11.0",
+    "transformers": "4.57.3"
+  },
+  "pipeline_sha256": "c2ebc3ba22b1f94832daf5c09588f7cf9b14a7ef4cba8ddf6ac79cc299b0fb0f",
+  "protocol": "groot-libero-paused-v1",
+  "schema_version": 1,
+  "seed_mode": "episode",
+  "server_sha256": "cffa2f6c22988b8d9b53bbd52a79480fba89a7a9ffcc51b49035ae8a5e3a4ba1",
+  "synthetic": false,
+  "upstream_sha256": "3346590551ad7059bf6d77a47a1d3e0a02d0f8fe21024b62962c88bb6cdb2838"
+}

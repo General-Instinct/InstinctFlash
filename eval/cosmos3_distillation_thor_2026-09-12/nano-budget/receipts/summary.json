@@ -1,0 +1,83 @@
+{
+  "validation_complete": true,
+  "trained_student": false,
+  "task_quality_certified": false,
+  "rows": [
+    {
+      "name": "one-cfg3",
+      "steps": 1,
+      "guidance": 3.0,
+      "p50_ms": 1496.878366000601,
+      "p95_ms": 1556.8868684073095,
+      "max_ms": 1559.0559440024663,
+      "conditional_15hz_budgets": [
+        {
+          "executed_actions": 8,
+          "budget_ms": 533.3333333333334,
+          "measured_misses": 10
+        },
+        {
+          "executed_actions": 16,
+          "budget_ms": 1066.6666666666667,
+          "measured_misses": 10
+        },
+        {
+          "executed_actions": 32,
+          "budget_ms": 2133.3333333333335,
+          "measured_misses": 0
+        }
+      ]
+    },
+    {
+      "name": "one-cfg1",
+      "steps": 1,
+      "guidance": 1.0,
+      "p50_ms": 801.9412319990806,
+      "p95_ms": 804.9851688017952,
+      "max_ms": 805.219500005478,
+      "conditional_15hz_budgets": [
+        {
+          "executed_actions": 8,
+          "budget_ms": 533.3333333333334,
+          "measured_misses": 10
+        },
+        {
+          "executed_actions": 16,
+          "budget_ms": 1066.6666666666667,
+          "measured_misses": 0
+        },
+        {
+          "executed_actions": 32,
+          "budget_ms": 2133.3333333333335,
+          "measured_misses": 0
+        }
+      ]
+    },
+    {
+      "name": "two-cfg1",
+      "steps": 2,
+      "guidance": 1.0,
+      "p50_ms": 1562.481357017532,
+      "p95_ms": 1567.4302172948956,
+      "max_ms": 1567.5465179956518,
+      "conditional_15hz_budgets": [
+        {
+          "executed_actions": 8,
+          "budget_ms": 533.3333333333334,
+          "measured_misses": 10
+        },
+        {
+          "executed_actions": 16,
+          "budget_ms": 1066.6666666666667,
+          "measured_misses": 10
+        },
+        {
+          "executed_actions": 32,
+          "budget_ms": 2133.3333333333335,
+          "measured_misses": 0
+        }
+      ]
+    }
+  ],
+  "scope": "Original Nano weights with explicitly changed UniPC step/guidance settings. Conditional chunk budgets do not establish closed-loop realtime operation."
+}

@@ -1,0 +1,35 @@
+The PI05 model is a direct port of the OpenPI implementation. 
+This implementation follows the original OpenPI structure for compatibility. 
+Original implementation: https://github.com/Physical-Intelligence/openpi
+Loading model from: lerobot/pi05_libero_finetuned_v044
+✓ Loaded state dict from model.safetensors
+WARNING:root:Vision embedding key might need handling: model.paligemma_with_expert.paligemma.model.vision_tower.vision_model.embeddings.patch_embedding.bias
+WARNING:root:Vision embedding key might need handling: model.paligemma_with_expert.paligemma.model.vision_tower.vision_model.embeddings.patch_embedding.weight
+All keys loaded successfully!
+InstinctFlash pi05: hoisted attn_implementation pre-established (was re-assigned per step)
+InstinctFlash pi05: hoisted pad_masks + att_masks cached (att_masks was an unpinned H2D copy from a Python list -- the capture blocker)
+InstinctFlash pi05: TF32 + static-KV graph installed; plan tier NUMERIC (max measured |delta action vs FP32| 8.988e-04). The first capture is gated by the bit-exact self-check (replay vs TF32 eager).
+{'i': 0, 'cycle': 0, 'phase': 'warmup', 'ms': 507.44237937033176, 'shape': [7]}
+InstinctFlash pi05: graph_capture self-check bit-exact on 6 inputs (replay == eager exactly, 3 on a refilled prefix; 0.2 s startup cost, once per process).
+{'i': 1, 'cycle': 0, 'phase': 'warmup', 'ms': 282.87889901548624, 'shape': [7]}
+{'i': 2, 'cycle': 0, 'phase': 'warmup', 'ms': 82.39527093246579, 'shape': [7]}
+{'i': 3, 'cycle': 0, 'phase': 'measured', 'ms': 80.86922904476523, 'shape': [7]}
+{'i': 4, 'cycle': 0, 'phase': 'measured', 'ms': 80.7979661040008, 'shape': [7]}
+{'i': 5, 'cycle': 0, 'phase': 'measured', 'ms': 81.09782030805945, 'shape': [7]}
+{'i': 6, 'cycle': 0, 'phase': 'measured', 'ms': 81.09161024913192, 'shape': [7]}
+{'i': 7, 'cycle': 0, 'phase': 'measured', 'ms': 80.72039391845465, 'shape': [7]}
+{'i': 8, 'cycle': 0, 'phase': 'measured', 'ms': 81.05144090950489, 'shape': [7]}
+{'i': 9, 'cycle': 0, 'phase': 'measured', 'ms': 80.90071706101298, 'shape': [7]}
+{'i': 10, 'cycle': 0, 'phase': 'measured', 'ms': 80.90356271713972, 'shape': [7]}
+{'i': 11, 'cycle': 0, 'phase': 'measured', 'ms': 81.38658478856087, 'shape': [7]}
+{'i': 12, 'cycle': 0, 'phase': 'measured', 'ms': 81.09734393656254, 'shape': [7]}
+{'i': 13, 'cycle': 0, 'phase': 'measured', 'ms': 80.95164690166712, 'shape': [7]}
+{'i': 14, 'cycle': 0, 'phase': 'measured', 'ms': 81.0454748570919, 'shape': [7]}
+{'i': 15, 'cycle': 0, 'phase': 'measured', 'ms': 81.25649625435472, 'shape': [7]}
+{'i': 16, 'cycle': 0, 'phase': 'measured', 'ms': 80.76506620272994, 'shape': [7]}
+{'i': 17, 'cycle': 0, 'phase': 'measured', 'ms': 81.32379595190287, 'shape': [7]}
+{'i': 18, 'cycle': 0, 'phase': 'measured', 'ms': 80.8148318901658, 'shape': [7]}
+{'i': 19, 'cycle': 0, 'phase': 'measured', 'ms': 80.94359701499343, 'shape': [7]}
+{'i': 20, 'cycle': 0, 'phase': 'measured', 'ms': 80.71047719568014, 'shape': [7]}
+{'i': 21, 'cycle': 0, 'phase': 'measured', 'ms': 80.77576430514455, 'shape': [7]}
+{'i': 22, 'cycle': 0, 'phase': 'measured', 'ms': 81.36590477079153, 'shape': [7]}

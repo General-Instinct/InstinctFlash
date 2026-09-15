@@ -1,0 +1,78 @@
+{
+  "status": "frozen",
+  "scope": "Additional same-Thor original native controls on reused historical development requests; no fresh confirmation or realtime quality admission",
+  "configurations": [
+    "original_unipc4",
+    "original_sde1_cfg1",
+    "original_sde1_cfg4"
+  ],
+  "checkpoint": "/home/guanming/ifl_eval/cosmos_distill_20260912/original-v11-control-v1",
+  "declaration_sha256": "2937fb4b4312184af697d74dce7b87532f8b5c5efb810df768f4a7cca449dada",
+  "sources": {
+    "run_control.py": "d1b5b9710dd60d015d9acf5090329178291c8bb3e7a3bc696ea8f4e87397518a",
+    "capture_control.py": "354984c4bec1f0418e4aea86d6e0449cba342f54187c87d3267f6488b2a0e412",
+    "producer_capture.py": "a47d4b4edd55d72feed08bf2f87ba5392b0fc89be457c4d7a0f0fe4a6b84980a",
+    "protocol.json": "6416fe48849b6fcc715ce16745a16b2b079d18344f2fb665cf37905bc1d95c5a",
+    "inventory.json": "deb07111d6162d6aec00e9bae57188bcb49500177ad2695739dcfce4858fe4ac"
+  },
+  "data": {
+    "path": "/home/guanming/ifl_eval/cosmos_distill_20260912/realtime-quality-v1/development.npz",
+    "sha256": "45c047f262d5fa7d7e7839838e2288c3d98c698aaadd39245a67a395dc8c8dbe",
+    "bytes": 39512673
+  },
+  "expected_requests": 384,
+  "expected_callbacks": 768,
+  "expected_denoiser_branches": 1408,
+  "outputs_read_before_freeze": false,
+  "historical_student_and_H100_outputs_already_seen": true,
+  "runtime_scope": "Original weights loaded through Runtime; native raw prepare/generate/decode with explicit frozen generation overrides, not Runtime.predict or a latency benchmark",
+  "execution_contract": {
+    "original_unipc4": {
+      "guidance": 4.0,
+      "shift": 1.0,
+      "steps": 4,
+      "reference_only": false,
+      "id": "original_unipc4",
+      "kind": "unipc",
+      "action_padding": "native",
+      "weight": "original",
+      "endpoint": "baseline"
+    },
+    "original_sde1_cfg1": {
+      "id": "original_sde1_cfg1",
+      "kind": "fixed",
+      "steps": 1,
+      "times": [
+        1.0,
+        0.0
+      ],
+      "guidance": 1.0,
+      "shift": 1.0,
+      "action_padding": "zero",
+      "weight": "original",
+      "reference_only": false,
+      "endpoint": "matched_untrained_control",
+      "owner": "v16"
+    },
+    "original_sde1_cfg4": {
+      "id": "original_sde1_cfg4",
+      "kind": "fixed",
+      "steps": 1,
+      "times": [
+        1.0,
+        0.0
+      ],
+      "guidance": 4.0,
+      "shift": 1.0,
+      "action_padding": "zero",
+      "weight": "original",
+      "reference_only": false,
+      "endpoint": "matched_untrained_control",
+      "owner": "v16"
+    }
+  },
+  "limitations": [
+    "Native original UniPC4 padding differs intentionally from zero-padded SDE controls/students.",
+    "Final producer completion, new data, controller deadline and closed-loop success remain pending."
+  ]
+}

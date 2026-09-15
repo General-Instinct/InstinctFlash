@@ -12,7 +12,7 @@ every way the runtime cares about, which makes it a test of whether InstinctFlas
 | K/V across control steps | carried and **grown** | prefix, **recomputed every step** |
 | K/V lifetime | `EPISODE` | `CHUNK` |
 | guidance | CFG at 5.0 on video | none — flow matching |
-| forwards per control step | 10 at the shipped schedule | 11 (1 prefix + 10 flow steps) |
+| forwards per control step | checkpoint-specific video/action schedule | 11 (1 prefix + 10 flow steps) |
 | action chunk | 32 | 50 |
 | commit phase | yes, a deferred ring advance | none |
 | language | a prompt, encoded once per episode | a prompt, **tokenized by a processor pipeline** |
@@ -71,6 +71,18 @@ re-earned **per process**:
 - **Kill-switch:** `IFL_PI05_NO_CAPTURE=1` serves eager (recorded on the plan, printed). It is
   refused on checkpoints that *declare* the TF32 static-KV operating point, because there eager
   would be a different execution semantics than the declared one.
+- **Two-graph path:** H100 and Thor default to prefix + full-loop graphs with fixed-step tables
+  after matched native qualification (H100 97 → 86 ms; Thor 324 → 309 ms). `IFL_PI05_FULL_CHUNK_GRAPH=0`
+  restores the per-step graph; `IFL_PI05_PREFIX_GRAPH=0` disables only the prefix graph.
+  Other devices can explicitly select `IFL_PI05_PREFIX_GRAPH=1` to capture both the original
+  vision/language prefix and fixed Euler loop. Dynamic NFE and RTC keep the default per-step path. This remains BITEXACT and
+  gets a whole-`sample_actions` self-check on fresh noise and changed prompt/mask/image bytes. On
+  RTX 5090 with `pi05_libero_finetuned_v044`, 21-run medians were 130.0 → 89.4 ms/chunk (1.45x),
+  with 0.091 GiB additional allocated memory and 1.38 s one-time self-check cost. Adding
+  `IFL_PI05_FULL_STEP_TABLES=1` computes the fixed schedule's exact time-MLP/AdaRMS outputs once,
+  binds each unrolled step to its own static tensor addresses during capture, then restores the
+  real modules. It measured 128.7 → 85.7 ms (1.50x; another 3.7 ms), remained bitexact after
+  switching to dynamic NFE, used 0.098 GiB additional allocated memory, and self-checked in 1.36 s.
 - **Retired opt-ins:** `IFL_PI05_STATIC_CAPTURE=1` (now the default) and `IFL_PI05_CAPTURE=1`
   (the DynamicCache experiment, measured replay-unsafe) are no-ops with a notice.
 
@@ -84,6 +96,28 @@ instinctflash run   <a-checkpoint-declaring-backbone-pi05>
 
 `plan` needs no weights and no GPU. `run` needs the patched transformers described above, plus a GPU
 with room for 14.5 GB of weights.
+
+## Choose precision on Thor
+
+The same Runtime interface supports native precision and explicit FP8:
+
+```python
+from instinctflash import Runtime
+
+runtime = Runtime.from_pretrained("lerobot/pi05_base", precision="fp8")
+```
+
+Omit `precision` for the native default. In the CLI, add `--fp8` to
+`instinctflash serve lerobot/pi05_base`. A numeric tier ceiling alone does not
+select FP8; an explicit bit-exact ceiling conflicts with FP8.
+
+The measured BASE and LIBERO v044 routes retain native processing, ten denoise
+steps, the checkpoint's 50-action queue and reset behavior. Their native dtypes
+and workloads differ, so compare speed within each checkpoint. The v044 paired
+LIBERO screen measured native 16/20 and FP8 17/20 successes; this small sample
+does not establish no loss, and does not certify BASE task quality. Current
+speed measurements, startup costs and limitations are in the
+[Thor comparison](../../eval/thor_precision_completion_2026-09-09/COMPARISON.md).
 
 ## Attribution
 

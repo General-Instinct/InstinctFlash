@@ -1,0 +1,96 @@
+{
+  "adapter_sha256": "36de6d75016eb067a6f876c07e434c31b28099b4c451fa547fa38758c8f54456",
+  "checkpoint_sha256": "3773dbcef95c0eac8dbf5261be89ac0285db8e2649368dbddbbb4059edda1aff",
+  "execution": {
+    "action_shape": [
+      50,
+      14
+    ],
+    "backend": "engine",
+    "capture_required": false,
+    "declared": {
+      "backbone": "lingbot_vla_v2",
+      "base_weights": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "checkpoint_subdir": "checkpoints/global_step_50000/hf_ckpt",
+      "guidance": {
+        "action": "none"
+      },
+      "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "nfe": {
+        "action": 10,
+        "prefix": 1
+      },
+      "param_bytes": 25503630044,
+      "robot": "robotwin",
+      "servable": true,
+      "tokenizer_repo": "Qwen/Qwen3-VL-4B-Instruct"
+    },
+    "dtype": "mixed",
+    "graph_stats": {
+      "captured": true,
+      "language_action_graph": true,
+      "replays": 8,
+      "vision_graph": false
+    },
+    "mode": "runtime_default",
+    "precision": "fp8",
+    "runtime_explanation": "InstinctFlash runtime for 'robbyant/lingbot-vla-v2-6b-robotwin'\n  package     : /home/guanming/.cache/instinctflash/declared/robbyant__lingbot-vla-v2-6b-robotwin\n  backbone    : lingbot_vla_v2\n  servable    : True\n  precision   : fp8\n  evidence    : no closed-loop certificate verified for this live execution; plan tiers are transformation claims\n  placement   : engine: SM110 + engine kernels present -> fused-fp8 pipeline; chain tier NUMERIC (live execution uncertified)\n  capabilities: backbone:lingbot_vla_v2, declares:base_weights, declares:checkpoint_subdir, declares:param_bytes, declares:robot, declares:tokenizer_repo, guidance:action=none, servable\n\nInstinctFlash plan for robbyant/lingbot-vla-v2-6b-robotwin\n  plan tier: NUMERIC\n  operating point: schedule {prefix=1 + action=10} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 11 declared forwards (no stream requests a negative branch)}\n\n  skip   graph_capture              [NUMERIC   ] engine placement: execution goes through the fused engine pipeline, which is not a torch module graph, so there is nothing for this pass to install into. It was legal here: all streams (prefix) are rebuilt within a control cycle, so shapes repeat, so one capture serves every cycle; 11 forward(s) per control step (prefix=1 + action=10) each pay full dispatch cost today; LingBot-VLA-V2 native NFE=10 on Thor: capture measured separately; see eval/edge_defaults_2026-09-06. Performance evidence is scoped to the recorded checkpoint, inputs and stack, not a quality certificate.; this adapter uses a numerical-envelope self-check, not an exact gate\n  APPLY  engine_offload             [NUMERIC   ] engine placement selected: SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation; baked denoise operating point: action=10 steps; guidance action=none@1\n         expected: Measure this checkpoint with matched views, action horizon, denoise steps and timing scope. The matched Thor study separates native capture, FP16 engine and FP8 arithmetic; it does not establish robot-facing Runtime parity.\n  skip   fsdp_elision               [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   allocator_churn_elision    [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   debug_dump_elision         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   obs_decode_elision         [BITEXACT  ] model declares no observation-decode modules\n  skip   conditioning_prefill       [BITEXACT  ] ['prefix_kv'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist\n  skip   prompt_encoder_staging     [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   ring_kv_addressing         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   action_terminal_forward_elision [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_gated_residual       [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_wan_stage2           [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   conv_layout_ndhwc          [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   cfg_branch_elision         [BITEXACT  ] no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)\n\n  NOTE: plan is NUMERIC because of ['engine_offload'].\n        Any accuracy-neutrality claim for this plan requires a paired\n        non-inferiority run.\n        `plan.bitexact_subset()` is the largest configuration that does not.",
+    "startup_observation_sha256": "f681d40e2ff4d0695807597fa6c8c80911fde97835a16540b903d834527d8de9",
+    "startup_prompt": "Pick the green bottle with indented base upright from the table",
+    "tier_ceiling": "numeric",
+    "transforms": [
+      {
+        "name": "engine_offload",
+        "params": {
+          "backend": "engine",
+          "certification": "no certificate verified for this live execution; historical paired results for a dedicated server do not certify the generic Runtime's observation and control contract",
+          "engine_operating_point": "action=10 steps; guidance action=none@1",
+          "tier_note": "NUMERIC (live execution uncertified)"
+        },
+        "tier": "NUMERIC"
+      }
+    ],
+    "verified_e4m3_weight_tensors": 72,
+    "vision_dtype": "bfloat16"
+  },
+  "gpu": "NVIDIA Thor",
+  "hardware": {
+    "capability": [
+      11,
+      0
+    ],
+    "cuda": "13.0",
+    "cudnn": 91900,
+    "gpu_name": "NVIDIA Thor"
+  },
+  "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+  "model_revision": "0451855729ec904f970600e0aec8b84661423afe",
+  "numeric_environment": {
+    "cudnn_benchmark": false,
+    "cudnn_tf32": true,
+    "deterministic_algorithms": false,
+    "matmul_tf32": false
+  },
+  "packages": {
+    "numpy": "2.2.6",
+    "torch": "2.11.0",
+    "transformers": "4.57.3"
+  },
+  "pipeline_sha256": "d55d21f5ed5956204797242fedcdf0ccc72ed0f7d3996779ece011d14adf6876",
+  "protocol": "lingbot_vla_v2-joint-robotwin-paused-v1",
+  "runtime_source_sha256": "c1927c00cc843e0a1533e0fd31fa53e58bb9dbc7d81dc1a2bed3ccba8dbc860d",
+  "schema_version": 1,
+  "seed_mode": "episode",
+  "startup": {
+    "attempt_id": "83a2e1cea8f148cd958680d33c80156e",
+    "calls": 8,
+    "fault_injection": {},
+    "protocol": "seeded-eight-call-admission-v1",
+    "scope": "Observed startup only; no task-quality or reliability-rate certificate.",
+    "seed": 0,
+    "status": "ready"
+  },
+  "startup_check": "eight seeded startup shape-probe calls; not quality evidence",
+  "synthetic": false,
+  "upstream_sha256": "ef7c891e498c720c1fb6b92a73bf1e21257989e29d57ecaf54481792bf616f97"
+}

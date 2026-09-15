@@ -1,0 +1,1678 @@
+{
+  "schema": "instinctflash.cosmos_task_screen_latency.v1",
+  "device": "Jetson Thor",
+  "completed_utc_date": "2026-09-15",
+  "weights": "original released checkpoints; no distillation",
+  "precision": "native BF16",
+  "candidate_transformation_ceiling": "numeric",
+  "sampler": "UniPC",
+  "steps": 4,
+  "guidance": 3.0,
+  "shift": 5.0,
+  "actions_per_request": 32,
+  "timing_scope": "Thor seeded_predict host timer, all SCREEN requests including cold predictions; excludes external transport, simulation/rendering, and subsequent receipt/source-hash persistence.",
+  "aggregation": "Median over actual requests within each arm; episode trajectories and request counts differ.",
+  "comparison_limit": "Not a matched framework latency comparison with the historical LeRobot/vLLM-Omni cells.",
+  "evaluation_mode": "paused_simulation",
+  "task_quality_validated": false,
+  "realtime_validated": false,
+  "quality_scope": "Two tasks x three paired seeds per family; neither family meets the selected -5 percentage-point one-sided95% bound.",
+  "independent_audit": {
+    "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/independent_audit_v1/independent_final_audit.json",
+    "sha256": "a837b53057ff996189a5b75b86b71b7025352313a93bb734f4908675ef9facf4"
+  },
+  "cells": [
+    {
+      "cell": "edge-eager_native",
+      "request_count": 109,
+      "p50_ms": 3364.2990489606746,
+      "min_ms": 3358.6028729914688,
+      "max_ms": 4482.458066020627,
+      "cold_requests_included": true,
+      "identity": {
+        "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/identity.json",
+        "sha256": "a5a7c5f42e8b8ca894bd6444be8cbbb9416295be7769b5767541803dc908ef8b"
+      },
+      "closed_ledger": {
+        "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/closed.json",
+        "sha256": "1e67b7c879d0ae831400ed65f0208c6f622e143cfc19777257f0a53cc932b535"
+      },
+      "requests": [
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000000.json",
+          "sha256": "fd80c69cf382ac396b765cf1d865b98ff4ea464f43ff6b391585824fda826996",
+          "predict_host_ms": 4482.458066020627
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000001.json",
+          "sha256": "934c34e359a0a188920a81db5f6b56e8e7bfa35d1fc46c6e913341fd440c70a4",
+          "predict_host_ms": 3366.0382000380196
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000002.json",
+          "sha256": "b8750c17d0395e09e3051205097c0202e99e51ba811bd26048d5ab1021bbe828",
+          "predict_host_ms": 3371.3853959925473
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000003.json",
+          "sha256": "2f036db5ecc2362ca000a89874f080fcd7494d10f71830a383e003a8caf3ef36",
+          "predict_host_ms": 3366.724986000918
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000004.json",
+          "sha256": "b5e39ecccf69e7122cb8357d98086bef722ff259ced49c3573534c6e0b33d038",
+          "predict_host_ms": 3364.905005961191
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000005.json",
+          "sha256": "507e5cefde385eac9811cab0747f98f6ab315745f9670302dc4b0a346fea0c3a",
+          "predict_host_ms": 3365.1523899752647
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000006.json",
+          "sha256": "696d906f804442017cb3cf98d3931fdba9b07eeee373bb79e46a3e3bc016fc7d",
+          "predict_host_ms": 3361.247243999969
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000007.json",
+          "sha256": "537b9ba75d397f455731bf36d44e00bdc9e1c8c7f841900de48e82ddfd16ab8c",
+          "predict_host_ms": 3367.261984036304
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000008.json",
+          "sha256": "190bcafbe0476ae423e9ce3a704115259f9b129510d728c3c3363231455f71ff",
+          "predict_host_ms": 3366.0950509947725
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000009.json",
+          "sha256": "5d280379def0d22b08b584464969ee8411870a03b126b6abbfec790821a33d3b",
+          "predict_host_ms": 3369.5920160389505
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000010.json",
+          "sha256": "f59ada7d8270780b45dc286612e814f4490acfc185d67f3ff7be527c1f914249",
+          "predict_host_ms": 3365.3779360465705
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000011.json",
+          "sha256": "f0dba882a0fcc04d69c00e2e9439c246aa87869d70a512e43f3fe112b657375b",
+          "predict_host_ms": 3366.5149610023946
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000012.json",
+          "sha256": "a2521acdc9cbd072748da07844a3c52e21fb988072b17614308883aecd32d1c0",
+          "predict_host_ms": 3364.7308429935947
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000013.json",
+          "sha256": "55c0bea61a3db6f5e7d4ff6ea9c66dd91ed27991bd19ea412daaab0055762a9a",
+          "predict_host_ms": 3363.337015034631
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000014.json",
+          "sha256": "18bd65874c5ac6551614427283f265ac9598dfa38db8bab670b4ee03a13d2666",
+          "predict_host_ms": 3369.5154250017367
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000015.json",
+          "sha256": "7fdfff39fab432f43910bc98956ce21c1a24af4d7c23a01d7fa81573488132a6",
+          "predict_host_ms": 3365.617346018553
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000016.json",
+          "sha256": "c3d366f630b9017a596114d69f70e85086e8b38b9c82bfb1ba9aeacd485c7930",
+          "predict_host_ms": 3364.6750319749117
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000017.json",
+          "sha256": "ff9d1b60c274878c9cdf39ccbf4ed3b45d4d0aebb6fdde9c32e14c4b59f5a54b",
+          "predict_host_ms": 3363.5537049849518
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000018.json",
+          "sha256": "d6160c24025bcd2e0c76a3032e41dcb6cfc5465abdd79f6629c939035bed3a01",
+          "predict_host_ms": 3361.9752189842984
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000019.json",
+          "sha256": "1334317edca6319f04b825a76e9a6bf6e70f8cd3bb79ca43bd90305588bdf502",
+          "predict_host_ms": 3362.8847150248475
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000020.json",
+          "sha256": "6edf22d4eadccaf4768ac01c661816f1819c34c3cefa6a3f61e5d025a2318905",
+          "predict_host_ms": 3370.5641030101106
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000021.json",
+          "sha256": "4cc78bae5a8f1fd72e29e77a2a5f87e2fee972f3e550912c3481271e9062c256",
+          "predict_host_ms": 3364.829992002342
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000022.json",
+          "sha256": "399f184cf6fc0d6ad69ebed7b4e891db42e910d9d366d3b6c251efd70b29bb85",
+          "predict_host_ms": 3367.8390529821627
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000023.json",
+          "sha256": "6eb1e1d780b1f5c373af910c2984d827089df097bd5ecd7a497cfc00bcaebd9b",
+          "predict_host_ms": 3367.7776849945076
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000024.json",
+          "sha256": "7adada421c1eedb283295e8103e8743ef122dae7ecb3df65094b2afefaddaf67",
+          "predict_host_ms": 3363.9301600051112
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000025.json",
+          "sha256": "aa591d992219cc9c7eba4ac172f8bc85c86a2f81812611e7fb3fee3273a28148",
+          "predict_host_ms": 3364.0125750098377
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000026.json",
+          "sha256": "439fc6cc3b736df5f3aa150784fbac9bb53af66d53fc55079deb31ea6323e0cf",
+          "predict_host_ms": 3362.733033951372
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000027.json",
+          "sha256": "315c4665e42511c44ef685292223689f9d2a7dce376a2913fb0c591701481646",
+          "predict_host_ms": 3363.637211965397
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000028.json",
+          "sha256": "98caf25e88809179fd326dbad27829d4a6852c772b984936fc599716728a7591",
+          "predict_host_ms": 3361.9810880045407
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000029.json",
+          "sha256": "d8ee4505a5cd3237649cd82d5d28dd190d97cde9fdb9b88de909722023f13943",
+          "predict_host_ms": 3365.1661269832402
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000030.json",
+          "sha256": "26878f07b1610e8ad9ea3bcd2d70e0ee583721c9cfcae4b60e3ddf750a6b28fa",
+          "predict_host_ms": 3363.952157960739
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000031.json",
+          "sha256": "533d60daae7f0c7b192461e8834c90bb2777b6fbd62210f09ec61390d074ab29",
+          "predict_host_ms": 3364.6198690403253
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000032.json",
+          "sha256": "141a47a03d1905134651f23461635b176a26bb674c1a43f2795a2e2ad0ea8bb4",
+          "predict_host_ms": 3361.9186009746045
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000033.json",
+          "sha256": "f056f976fa3218926d3fe3a4f344f3a799d0ec5594f7f215357a554d39c1d88d",
+          "predict_host_ms": 3361.9759069988504
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000034.json",
+          "sha256": "3f6fe89b4f9ef2e4925d568d77395514c62620fbf5dbacd925d39b6844484db8",
+          "predict_host_ms": 3364.8638229933567
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000035.json",
+          "sha256": "da11b0d39a1cd172b2d52504338d15ae776ef9e06eded8e414287f070612072c",
+          "predict_host_ms": 3362.0581059949473
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000036.json",
+          "sha256": "f25e453bbdf82eba523d4dbf01358fbfa569eb20a7f6020af313d5a626245699",
+          "predict_host_ms": 3359.2106900177896
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000037.json",
+          "sha256": "69a124d2c10bae018f86ead8fc2fb682fbd19ae555436d7c221b0fa37e023179",
+          "predict_host_ms": 3368.933001998812
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000038.json",
+          "sha256": "51d735330be924a932296234c9d32a5f0dcc1cfb5a77b9393985a1ee2e599317",
+          "predict_host_ms": 3367.505470989272
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000039.json",
+          "sha256": "c11da9e356679150554d22c363e67e4dec1767dd3ab576d1a7cd39c7fbfea1b5",
+          "predict_host_ms": 3362.3701579635963
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000040.json",
+          "sha256": "8fcad4f23d3f5ecd4fd6dc244424c7812cebe2e437f977b4b6871fd38c94a32d",
+          "predict_host_ms": 3364.5995979895815
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000041.json",
+          "sha256": "461e78812c2bf3c3fcbb7e52ded8c9cfd6d9f1f579752e71fbd27ad245346429",
+          "predict_host_ms": 3367.12388304295
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000042.json",
+          "sha256": "fe1a1c7deb996b27ba23ae97c88bd62a119d8bb9e8361693e998fec20e7a1f8b",
+          "predict_host_ms": 3362.558597000316
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000043.json",
+          "sha256": "78ffb87beb1782a0d8e43ca0e8d0a52f6a57faf0ee5b037fa723a258971f5454",
+          "predict_host_ms": 3365.3414790169336
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000044.json",
+          "sha256": "ecfe963e7898364688eaddedae0e0b55353fb95bb14e7de771be468c834b6689",
+          "predict_host_ms": 3367.872080998495
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000045.json",
+          "sha256": "825bced4d1c7d110b3acf27ed1ca793ffe77298dc97d1474877bdb7cf3b04721",
+          "predict_host_ms": 3365.8682249952108
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000046.json",
+          "sha256": "3d856b124fe006afb749726669fcc734f56d7553b3f548b5e5598b501c34c101",
+          "predict_host_ms": 3363.7477420270443
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000047.json",
+          "sha256": "5d285316b1226d01a56fafd40d2aaa414aa8d7d37a509922d077dfdca2f10078",
+          "predict_host_ms": 3363.180590036791
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000048.json",
+          "sha256": "8c3ab14311f709cc9458f746b518539992a8d8bd9090c309daf297a6e2a03e63",
+          "predict_host_ms": 3364.173994981684
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000049.json",
+          "sha256": "a23efbfc5c5619e1507e70f0618d8dc01a99f1554b37b4202eeed2176e5c0f65",
+          "predict_host_ms": 3365.6104000401683
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000050.json",
+          "sha256": "78033ba181cdb18e096b0bced4589537195acdb0a177d5e6e0371934c6862506",
+          "predict_host_ms": 3366.4650970022194
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000051.json",
+          "sha256": "07a1947428fec4175e356d070e5abc49c6a2455a158b47be92183c3809079c60",
+          "predict_host_ms": 3365.0621190317906
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000052.json",
+          "sha256": "0f1109814dcd331406cfcb62c3a721108cfa657d9162d986feb816e02bc08795",
+          "predict_host_ms": 3362.4002669821493
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000053.json",
+          "sha256": "e3244d2df94b85545d62695666b87ed15df81d2e90cf29bec121c3b6488daa3c",
+          "predict_host_ms": 3362.4651200370863
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000054.json",
+          "sha256": "027379ee32581f51451ed3382eb16bbd161f62cfccb1b8f533ca140a8a3b68e9",
+          "predict_host_ms": 3363.862967991736
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000055.json",
+          "sha256": "f44a2d1b12a6c080025b4e4f0e94242b4fe93cdfe9286a15e543010bf4515df6",
+          "predict_host_ms": 3363.4094099979848
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000056.json",
+          "sha256": "f9cbfe5b16d1ab385a6206a93373b4c11c3469c632691c9826179f5a275b112a",
+          "predict_host_ms": 3362.5758799607866
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000057.json",
+          "sha256": "3c1c5ea55d88b7bf51aacb212433f2d0d2ec09b3f2fba52f877d6685fe1c7b59",
+          "predict_host_ms": 3364.4099660450593
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000058.json",
+          "sha256": "681b3caa70085e7770a1e7f089ebf90169aa6ffadbb3761b18a44dc1880b3530",
+          "predict_host_ms": 3363.630687003024
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000059.json",
+          "sha256": "adda40e4bf798a39241795cc39b978b9c76c0d02a5bc6437733e073167f5711c",
+          "predict_host_ms": 3362.3754069558345
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000060.json",
+          "sha256": "2b3572e9acd2246b85b2c2f71ce9846b647b8b48518d6088adf942b61c0e678b",
+          "predict_host_ms": 3364.0011599636637
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000061.json",
+          "sha256": "7177331599035a20d36c99c710fb8a15038d7d810f2a4060ece23601e4a6d88a",
+          "predict_host_ms": 3364.455521979835
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000062.json",
+          "sha256": "7d01eb7e735455308a1e6d86115ba14fc4f1f0e4612765b914978eccf06d5a8b",
+          "predict_host_ms": 3362.981696962379
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000063.json",
+          "sha256": "6b4f8c0ab7d135fd2f1bd70999280e82b0a3231a9c82302145e77b524c40f3cf",
+          "predict_host_ms": 3362.5172909814864
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000064.json",
+          "sha256": "d4bceb10bf08c0af14d15453264679797a7ab76bc54ca93d3eb9a2a61bbed9d1",
+          "predict_host_ms": 3367.255382996518
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000065.json",
+          "sha256": "05f25fe0f5b880593b1cbff92e62c4f0bf436d78581800d14612618645e0ae3d",
+          "predict_host_ms": 3365.6914180028252
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000066.json",
+          "sha256": "71e2573afa83bc66ee870b85612b418f0d8660a6104f17b41e162aa9b399c8e0",
+          "predict_host_ms": 3362.7863259753212
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000067.json",
+          "sha256": "8c8c845f865d40a87b0f70895340834aeb1827655db8b2dc50c376a637da7f36",
+          "predict_host_ms": 3363.5321279871278
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000068.json",
+          "sha256": "aed0c478348f2d4bff034864a97939bc14cf9c0b51d4af0c22b6e6086883b959",
+          "predict_host_ms": 3364.1372190322727
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000069.json",
+          "sha256": "5d2f09c19947a861d79cdb98c827a744c2a4ff51172db692a84c9cc9cd052dd8",
+          "predict_host_ms": 3363.2580490084365
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000070.json",
+          "sha256": "6776d24c4f702596dcbb80f190790420adc36dab71b0f3b362a05748e48c78c2",
+          "predict_host_ms": 3364.8702380014583
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000071.json",
+          "sha256": "a1760ad4726a08435426e06c0f401f3e6416832935aa5d2345b9e02da04be641",
+          "predict_host_ms": 3363.215190998744
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000072.json",
+          "sha256": "e7837190670dd979fec3341445cd356654a6e4e9084deeb7640d6b8bebd23b5e",
+          "predict_host_ms": 3367.252964992076
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000073.json",
+          "sha256": "c7dabe9c7a0a1adf1dc566d691c5c5336b20d7ee24d39b43f3738dec79b8ea09",
+          "predict_host_ms": 3361.7580590071157
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000074.json",
+          "sha256": "95a9e6719582b692e2ba79f3acbe6737faedb6b70a602b26c0a0c653ec4ff145",
+          "predict_host_ms": 3364.098276011646
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000075.json",
+          "sha256": "075df2a9f998d3876b3d19a0f581e462e449c8fcbbaf3a9f2541e6bddfde635c",
+          "predict_host_ms": 3363.1048100069165
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000076.json",
+          "sha256": "fda126660570d9157559690dc4957abe030d7a9fc64b392c94119c873b827b98",
+          "predict_host_ms": 3363.523779960815
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000077.json",
+          "sha256": "4d87cb05dfdbdba72dc43d3264aa5de49f81b7640a5ffbb90d86f209e5bdca16",
+          "predict_host_ms": 3363.003580016084
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000078.json",
+          "sha256": "12f54dc50542e08aca8d63719d944c608c3f065feb5815fe73152e6207d87598",
+          "predict_host_ms": 3362.189106992446
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000079.json",
+          "sha256": "c8750677053005ab3c016bb2a42ebb6758c08308b2db7b9d1d3d8d22bcdb10f0",
+          "predict_host_ms": 3363.807289977558
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000080.json",
+          "sha256": "3f5a34cacdcac05a7c03dabf08a658a28557d3607e5a930d84cb5ae2ba194ecd",
+          "predict_host_ms": 3364.591413992457
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000081.json",
+          "sha256": "5ad4267a82c6b5cc9da8d5971564fce9e1c322ed71d4ef2720e82c1cdcb5d55e",
+          "predict_host_ms": 3359.434976009652
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000082.json",
+          "sha256": "d1abb27c5c2914388e59d2cb3177df1c285244e6f6d15bf51cfd496f36113ad8",
+          "predict_host_ms": 3358.6028729914688
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000083.json",
+          "sha256": "5a16c4a68f1297585f8427dfadf12fae6eca506ece769df9ed0ed393c2beaab6",
+          "predict_host_ms": 3361.5468780044466
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000084.json",
+          "sha256": "27d9b5efb4ff5af3982b49bb7027101918c7abaf17f94a4f29338e15e032a582",
+          "predict_host_ms": 3362.604383029975
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000085.json",
+          "sha256": "4c784c35ca14d6c4b1d0a9d390ebe42309e3ab98d172c4ad66d1fb2ec6fd389a",
+          "predict_host_ms": 3359.9418899975717
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000086.json",
+          "sha256": "2c2736e1060ec0cdc8b67a1e89e42dd61381ef823fe25acabcd1f94dc4ecd9dd",
+          "predict_host_ms": 3366.3423290126957
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000087.json",
+          "sha256": "07a2c13472bcf3125df858b2aab002ae37efb82a70ba2b4fe0df77b83535f24b",
+          "predict_host_ms": 3366.197871044278
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000088.json",
+          "sha256": "5be49d68eaaf15202b4fe9e45c866325638a17dd158ff2b162fd518b52287a59",
+          "predict_host_ms": 3365.5394400120713
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000089.json",
+          "sha256": "4710479b0fefe02d55a33da5f6862b5b785ee36d43b1bcb31f37a79e4bf41a47",
+          "predict_host_ms": 3366.785710968543
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000090.json",
+          "sha256": "86f6d038822ef6717de5008f57814189d846caaf8124634fdda78de96ff8eef1",
+          "predict_host_ms": 3366.8391079991125
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000091.json",
+          "sha256": "d67bedf471a161d068cec6078647de488e7f26938010524d1ef95418fe142984",
+          "predict_host_ms": 3365.199703956023
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000092.json",
+          "sha256": "ad417057fcad4298e11b62d848f6329d6c9a78650b4b7cdb1d77283f8417c83f",
+          "predict_host_ms": 3367.9735669866204
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000093.json",
+          "sha256": "fc21c97aeb9f65e44431ac03ccc27b1ada3ba5629214dc7763f9f7bc38de90fe",
+          "predict_host_ms": 3365.2094490244053
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000094.json",
+          "sha256": "c3705067ca7245a58522ca2268e3fc625614cba963fcbfbc8b0b1ffef5a4ffe8",
+          "predict_host_ms": 3366.741973964963
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000095.json",
+          "sha256": "d00696743ce242f252897ade79361a992c7a20add025272518664fe7bb6ea225",
+          "predict_host_ms": 3364.3763170111924
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000096.json",
+          "sha256": "9d89fbb0326a61d82f476f2f3828746db7a49aa4314ce036ff62b60977e2884e",
+          "predict_host_ms": 3365.3307119966485
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000097.json",
+          "sha256": "03bcf775be84841c1e496648ef7b1801bd075c00ed7eb34bc4dbe3f17dee9489",
+          "predict_host_ms": 3366.1380669800565
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000098.json",
+          "sha256": "904759a4dec467651e9b046fd71052c0ed31603883e838b0879b7e4030a3c8f0",
+          "predict_host_ms": 3366.368245042395
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000099.json",
+          "sha256": "0b1114b24b86fe166b1553c932da80dcda272d91d221e2aafac4c1a9218297b2",
+          "predict_host_ms": 3364.005248004105
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000100.json",
+          "sha256": "c8f3ba496b1ff70586037a5399f4f3901d732235411581b4aba57cad3f0e0324",
+          "predict_host_ms": 3367.236263002269
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000101.json",
+          "sha256": "1fc3fd2b664283cc21e0c2c3513369c256c136eca1ab0d3bfcdf20ee3236e938",
+          "predict_host_ms": 3363.662449992262
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000102.json",
+          "sha256": "e77783a6db12eff7c1e522991d8728ea5b69c669828cf4859274b80409f60481",
+          "predict_host_ms": 3364.2990489606746
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000103.json",
+          "sha256": "4f2140dcb0f7de42b9597e9eeea35a52be3d1b421e8ff2b62baa8408f22f59ec",
+          "predict_host_ms": 3362.3486710130237
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000104.json",
+          "sha256": "e4c6c6754508aae226692baf8cf818d02d524c1b34200f0826b8481d6f92e1ee",
+          "predict_host_ms": 3364.06968702795
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000105.json",
+          "sha256": "c8b8a3848c28b4cc883c0bb16342e8b8bb5cb608b0b941c7185097aa72d753fe",
+          "predict_host_ms": 3363.6798309744336
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000106.json",
+          "sha256": "7d542d191e1ed6dc70b4bd6946f1e181ff781ba6b98192166196720c23007d9d",
+          "predict_host_ms": 3365.761013003066
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000107.json",
+          "sha256": "6adbcdf814b08d1d39c1526993992c45a987fe44e018b59c63183c0fe6b56354",
+          "predict_host_ms": 3363.5003609815612
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-eager_native/final_server/supervisor/edge-eager_native/requests/request_000108.json",
+          "sha256": "17fe3cc5ecca8151f007dea0490ee7dbf74fb41c0e66ad260eaa183823bc6706",
+          "predict_host_ms": 3363.515595032368
+        }
+      ]
+    },
+    {
+      "cell": "edge-runtime_selected",
+      "request_count": 89,
+      "p50_ms": 1059.850906021893,
+      "min_ms": 1050.795191025827,
+      "max_ms": 6005.209007998928,
+      "cold_requests_included": true,
+      "identity": {
+        "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/identity.json",
+        "sha256": "3763553b95ee792823d9636b3fa86d8fdf47d23ff824681ea892fd830e687cee"
+      },
+      "closed_ledger": {
+        "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/closed.json",
+        "sha256": "fddfc1151c5aa950ec607945e9f4aaf5d771259fd15562f2387bd462542e53e4"
+      },
+      "requests": [
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000000.json",
+          "sha256": "62398a95e50cd11b33d55ba8def9cd5aed68485870e1faf3d31b0eb37480419a",
+          "predict_host_ms": 6005.209007998928
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000001.json",
+          "sha256": "67a8f72f281263ec541b75bf8d28519959fcf30c367e01b1e7529ec0c37fb8eb",
+          "predict_host_ms": 1069.7577460086904
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000002.json",
+          "sha256": "2f9c54a50755212296b10364c70ee2774a821b91f68eccd42e1d6aa28d8a6dc5",
+          "predict_host_ms": 1066.071430046577
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000003.json",
+          "sha256": "30fde1894a9c301a44adcb653cb51353d44ab040b02b8ee50e01afdae3d903eb",
+          "predict_host_ms": 1067.4743370036595
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000004.json",
+          "sha256": "aa4f8c07d9cc325b1a370dbab583db784074181fd3f26fc1d7f8d6f79256547b",
+          "predict_host_ms": 1068.3203499647789
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000005.json",
+          "sha256": "82e20b083bf34e9016ba027a355590efc25a891b47f783d42d89b5e9cc5bae76",
+          "predict_host_ms": 1067.0944349840283
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000006.json",
+          "sha256": "39fc83c2abca3feea1b140faf5b921c746cde2a714d10f8fc60f77d905bdf556",
+          "predict_host_ms": 1062.6955150510184
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000007.json",
+          "sha256": "4d24b0db5072b73ae83d3b4fe1ab3a1a639c049b0de88ccf9569ce80f0e01097",
+          "predict_host_ms": 1074.003387009725
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000008.json",
+          "sha256": "8eebfbef3405f9767f4c7e0cdd1e5fa46e8cfe8a07f80badc57697c831da91ba",
+          "predict_host_ms": 1064.505296992138
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000009.json",
+          "sha256": "ac73f7932c6b9e17c17bb84b3e192e4cb183f5783f7b950288535cbb54f9103d",
+          "predict_host_ms": 1060.0402189884335
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000010.json",
+          "sha256": "b5734a486f53e3e39c35ab2d74f08376e5b072d2ba1754a0badbeb8303fa5620",
+          "predict_host_ms": 1060.9992330428213
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000011.json",
+          "sha256": "b98078a016501c8bdaa60190302aeb924b8128c0e0659d49ffa51c1d68a94261",
+          "predict_host_ms": 1067.155186960008
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000012.json",
+          "sha256": "6db044b233dd816b881cec60def79b2d2f8f4ce57033f3e883ae43b30488e53d",
+          "predict_host_ms": 1066.3060789811425
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000013.json",
+          "sha256": "6906915af8042dc97529fdca7354cf45159eacc32f94eeae4e6caf04227d268d",
+          "predict_host_ms": 1063.832375977654
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000014.json",
+          "sha256": "09e1be1babfd0ff081f6749fce6fe8d5db0ed8debbdd67d52982594cbe4d9c8b",
+          "predict_host_ms": 1062.2194079915062
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000015.json",
+          "sha256": "5f9cc1114da09db0587a4dfd759a6b1433f3402ff5a774de884e24ab0e226634",
+          "predict_host_ms": 1058.316526003182
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000016.json",
+          "sha256": "d8b3c36a031f2b1f12c83f1fa3d3b36eef3b94d8d9775006ae2be8f5822978c6",
+          "predict_host_ms": 1068.5452260077
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000017.json",
+          "sha256": "4fb8549eb02cace920e98690f420cf5c4f9448805728a02acababbd91a7847f0",
+          "predict_host_ms": 1066.2796120159328
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000018.json",
+          "sha256": "275844997db64ea5505265cdb107fa496357dee76a1831427e816233c25c5d1d",
+          "predict_host_ms": 1062.1881160186604
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000019.json",
+          "sha256": "1eb27fe15eba76fffc706c61f5a53222b66af84eba1840ebd332c6e1cceb63f0",
+          "predict_host_ms": 1068.6763629782945
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000020.json",
+          "sha256": "558d63c653378afb34754daea0e779b682aa4349f00698cad4b7fb2cbf3f8333",
+          "predict_host_ms": 1066.9772339751944
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000021.json",
+          "sha256": "ef42d9f9ee7426e218f70b736dd53899209217bbe0b662cb4424f1919131d335",
+          "predict_host_ms": 1061.4471710287035
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000022.json",
+          "sha256": "73ccc5efb7d8c76e9b6e6994b4744df230bf47a0c4594303c76a2f44f6f4e250",
+          "predict_host_ms": 1067.096033017151
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000023.json",
+          "sha256": "e24c21f41f049bd291092cacb45af7cd00b7cf6dcaca019a774dcadb5c6b7db6",
+          "predict_host_ms": 1063.9375749742612
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000024.json",
+          "sha256": "83dfda11fab93baa41149d8b401e6f377f5c9a0df8003b94e6499b40dd254f42",
+          "predict_host_ms": 1063.0222469917499
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000025.json",
+          "sha256": "2256138dc208cd414819e6bb12216860febf9da62a9f46caf7e80051f6e2322e",
+          "predict_host_ms": 2896.7954679974355
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000026.json",
+          "sha256": "64ad0d23b40515f1624bb80b1199d47a6be3a989f72b83dafc944ee5fa02e690",
+          "predict_host_ms": 1057.808596000541
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000027.json",
+          "sha256": "0ceda0ff0d37067db9337cd25bdb830cd22b76cae26fb6a722cdb61fa3a1a255",
+          "predict_host_ms": 1055.2708850009367
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000028.json",
+          "sha256": "3eca6bdd0e97443ca4c5e4560836741169c86e6b53d65148492ffd953bc347d6",
+          "predict_host_ms": 1057.4093890027143
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000029.json",
+          "sha256": "c0c0708453652d30791e225a219fa7a210fc20e7a7d23e0c53cea6d0ca7960f5",
+          "predict_host_ms": 1050.795191025827
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000030.json",
+          "sha256": "18ba87b03e07736e8d3c78725a59f76b58219198e2633829a496b3e1801cbb20",
+          "predict_host_ms": 1054.2632889701054
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000031.json",
+          "sha256": "04f13e4176cee113aebae965e9afd613b6cb5a1ba61f9ec4c95b140aa283b4e0",
+          "predict_host_ms": 1060.7646349817514
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000032.json",
+          "sha256": "144a3fab54ae70f9966e12a0c9a4b88bd6254c93af008f8d2fd51347b6b4a09a",
+          "predict_host_ms": 1059.3974600196816
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000033.json",
+          "sha256": "6ac812c1e55ea7e421f942d2fc71e282eb828b80d4cc1f977f4f0c32b7501562",
+          "predict_host_ms": 1069.8104749899358
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000034.json",
+          "sha256": "8940810fbe3ad3fd5c5cee262004fcdc65d0c1c951cc4f21ccdb44160b97bd33",
+          "predict_host_ms": 1064.8058330407366
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000035.json",
+          "sha256": "649f17df1cb05ef983dbcd3b16705723b76d9b98265704d729418520edd37a93",
+          "predict_host_ms": 1054.566294013057
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000036.json",
+          "sha256": "fe3320213c76f930c1af851fa2ebc6c55ad45874145cd7104c22191f1a8e834e",
+          "predict_host_ms": 1053.2183969626203
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000037.json",
+          "sha256": "3954092052b908efdbe9e478aed158b7576da5b355674dde7d4a6e47751e5c84",
+          "predict_host_ms": 1055.0062870024703
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000038.json",
+          "sha256": "56f7aab51a6448fb2df59634cea802db442bccb75d593f1af6d893eb8916d51d",
+          "predict_host_ms": 1056.6308349953033
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000039.json",
+          "sha256": "3b41796dd480a019036f6325f1571b7628e1b85fcd47f5234eadfc1481ff4f97",
+          "predict_host_ms": 1052.8154579806142
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000040.json",
+          "sha256": "487c9c1f761e790b400851873ef72704e6f9cb56558d4e49b47b81e0b39138b2",
+          "predict_host_ms": 1056.786449975334
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000041.json",
+          "sha256": "8382e03411fa1de37163c44502404dd7152079116b904dcd1e1be1dcc63dd3f2",
+          "predict_host_ms": 1060.4597399942577
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000042.json",
+          "sha256": "6b64b1c6a21ef1e2c9df414db41e20b59b32bc7e74a5549e0f049e87284c86e0",
+          "predict_host_ms": 1053.7744280300103
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000043.json",
+          "sha256": "e52c6143b3db98f42246a8358c4f94ccce6eb5cf6a5aa0a601f9783a44c3e21b",
+          "predict_host_ms": 1064.014409959782
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000044.json",
+          "sha256": "e77dae037cd1050d936e6db1a0fa6d9badfe575d25a39d596af202115c6dde24",
+          "predict_host_ms": 1062.5787079916336
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000045.json",
+          "sha256": "63e7272dc32aa27e8cb54ec19a96f735dc441618ce931db82eef774b648e7ac0",
+          "predict_host_ms": 1066.0576020018198
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000046.json",
+          "sha256": "996410480e1e95cf7926c52fbd14d82b01b1c965b983ec3db6e20bd12c1a2cc8",
+          "predict_host_ms": 1062.4439070234075
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000047.json",
+          "sha256": "32f0269c4c3823c6dc6e9b231d469ed4698817b0c6f34912b5f36520b9f368c3",
+          "predict_host_ms": 1054.100759967696
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000048.json",
+          "sha256": "42251d6803f0425275f9633fb5c6cf47e79cf378c28077e05588ee7c564a2b43",
+          "predict_host_ms": 1054.917210014537
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000049.json",
+          "sha256": "b17218528f7db04f4320037067edddf2d05936abe88ed20c1140b9e5ab3a2d53",
+          "predict_host_ms": 1055.8481979533099
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000050.json",
+          "sha256": "dfac352012f9aecff5051e8727366d26234bd6524b8414c09cab6ea35f86307c",
+          "predict_host_ms": 1057.5802650419064
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000051.json",
+          "sha256": "9878e547bb423f0c78d8ff85f4d1cb89192f84ae7fc6f8596becc6e096f6e821",
+          "predict_host_ms": 1057.214897009544
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000052.json",
+          "sha256": "fd17d92f8b76b274ea06222ffb5b59da6a1d3d215c9c6adceb9a3877db92f704",
+          "predict_host_ms": 1059.850906021893
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000053.json",
+          "sha256": "8026e5c4e722eff01357698da95835c341d9083c88f8003da2cb73b7e70bb866",
+          "predict_host_ms": 1056.8926550331526
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000054.json",
+          "sha256": "454389863e5ff40b396cdc386f9060ba943d278862072a7f512bd0c4c8841a79",
+          "predict_host_ms": 1058.2225170219317
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000055.json",
+          "sha256": "f0c0debd05684b81185b4b6e543866e21b19b10e72d26dbbae25f067cc9cae91",
+          "predict_host_ms": 1057.4068350251764
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000056.json",
+          "sha256": "f002b5a06048db617c68dda641f48aa6568850e0097af9d58c54a624ab3239ba",
+          "predict_host_ms": 1055.1578640006483
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000057.json",
+          "sha256": "d296213716f25759403bbd123115f41a839fda31accdc7cdd1e534484207421d",
+          "predict_host_ms": 1058.516982011497
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000058.json",
+          "sha256": "aed533d3763e2b17de0013f3494a91594771ddf57d03f322d5413d9bba26dad9",
+          "predict_host_ms": 1053.2065390143543
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000059.json",
+          "sha256": "5c25683aeae9560025bcbba3772f6aa3ede222edaf8808404d1fd19b80a7202c",
+          "predict_host_ms": 1057.1392609854229
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000060.json",
+          "sha256": "34a1b26a9a0fa86ddbf57037093c08a517cb914140d82f660e7e3a92e6f4f4ac",
+          "predict_host_ms": 1055.8625319972634
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000061.json",
+          "sha256": "8339835e306f45141997178d0c5a3c675b596de5d4e7db0c2cb0ccc3f64e897e",
+          "predict_host_ms": 1059.2393939732574
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000062.json",
+          "sha256": "e490e6c7c21709fd9edaa9e70da2a3f13a8895115ebfe84b97ecc6f6391fff8a",
+          "predict_host_ms": 1062.9301650333218
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000063.json",
+          "sha256": "999f9bb243638686bf4a0862e6aa1ec614f9d00c5a7fea5c9e16859d4845a47f",
+          "predict_host_ms": 1058.7586860056035
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000064.json",
+          "sha256": "5e985bb2fdc637ea7fddbc28022b0c4c3440cc3298249790824e1bbf554cf797",
+          "predict_host_ms": 1055.9864880051464
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000065.json",
+          "sha256": "36f9eaeb7b1e3ffb083be05580f585b1342df0bef772649b6fe4544d32ab7fe3",
+          "predict_host_ms": 1051.131307031028
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000066.json",
+          "sha256": "15dcd59ab39ac86df450dc306b8649805b3329590a3ca26f5925b0057e0ba843",
+          "predict_host_ms": 1053.025997010991
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000067.json",
+          "sha256": "359c9326e3f9699006291b07015a8b0d2bbc037d9639bee6d260fc628a706724",
+          "predict_host_ms": 1065.0897989980876
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000068.json",
+          "sha256": "4d23de9406be7918c322cc82e9953d39c03f7db75c6e5911a37e75638b1ed4fc",
+          "predict_host_ms": 1056.1428329674527
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000069.json",
+          "sha256": "ea08267bf98ee373fbb47d271508fd527e6af8e6d51311372e87b8c06a426b8e",
+          "predict_host_ms": 1062.971196952276
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000070.json",
+          "sha256": "e5da75a4805cb978f0580bfabcd36ee9ef4eea4fb2b14b28fbde656385b8c6a0",
+          "predict_host_ms": 1058.3441909984685
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000071.json",
+          "sha256": "2a94e9e597aa243b7553f989e5de568fa3475cc7928e86ca57cf04e98bbba710",
+          "predict_host_ms": 1060.5049160076305
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000072.json",
+          "sha256": "00bdf70d266356394b9202886096b7b58f9958896f73cc37d172545630e67d87",
+          "predict_host_ms": 1056.3651230186224
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000073.json",
+          "sha256": "94b31853640df2b61545b3bc5816659722cc68dfcf7bb65b219ab8fe254d0dd1",
+          "predict_host_ms": 1053.5529830376618
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000074.json",
+          "sha256": "f5dec3c0382eb4ff8ba25a09298630b119c4db29170500890f419b574a38c444",
+          "predict_host_ms": 1065.1953190099448
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000075.json",
+          "sha256": "199a0ef09a948f71fbdaeed5651fbfbac88c569b9d5ac0fc21fd0e7f8c601636",
+          "predict_host_ms": 1060.5130659532733
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000076.json",
+          "sha256": "1b9bb0b1bc071b4f86f1199724f679a19b8144ac042308998bef1fd80022686f",
+          "predict_host_ms": 1057.0038139703684
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000077.json",
+          "sha256": "b65564c354b27721d4f8c8754572d08bc65235355fa198cbe57237887b676cfa",
+          "predict_host_ms": 1059.2113370075822
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000078.json",
+          "sha256": "6056edc3aba439e4e3a5a6415fa4c6edd8ceb718f1e9f39f8797d32860ff25a6",
+          "predict_host_ms": 1056.1092059942894
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000079.json",
+          "sha256": "be60c9ac7124a562d6f0f06ade6f1ab4f1ac279060cee6a96d1cf695794aef67",
+          "predict_host_ms": 1060.0662700016983
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000080.json",
+          "sha256": "b7bda104cad2a5e9d56412c29d354c9a6a7126f9177465b70beb02b2649d7545",
+          "predict_host_ms": 1056.8902030354366
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000081.json",
+          "sha256": "1656744c4a7789cd43e5b91d1102f60efb2b9f8f8e7351678e8032a732b5a157",
+          "predict_host_ms": 1059.5740730059333
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000082.json",
+          "sha256": "d9009906fe3b898f7864fb92c158973f3b92e2fcaca837e756e2ad3918f5bc41",
+          "predict_host_ms": 1061.4405630039982
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000083.json",
+          "sha256": "8ab2b65d2f76f273166dfa5d4248e075c633840b07c6c51c21e9ec44a2120e59",
+          "predict_host_ms": 1061.1618989496492
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000084.json",
+          "sha256": "43b5e1c4dd9b7347f4e8fef9770b97e4beb1862ccaf80f72214140cce341fccf",
+          "predict_host_ms": 1061.646515969187
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000085.json",
+          "sha256": "e43c1ef7f087076696af35a689adb822c71f5a6dfbeca65b29c674c2d4ac409b",
+          "predict_host_ms": 1057.308919960633
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000086.json",
+          "sha256": "6cdd93327634fc2d8029c9ef74785ecb19a6fc23bfb2d84a42379ef7f256f9ee",
+          "predict_host_ms": 1062.1175050036982
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000087.json",
+          "sha256": "c0bc6c39785e14afcb4810a5dffdbe8b539f9f7037453ab1c777b8705ffd05e7",
+          "predict_host_ms": 1056.5983730484731
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/edge-runtime_selected/final_server/supervisor/edge-runtime_selected/requests/request_000088.json",
+          "sha256": "e7a32c59c99d3e4917c38b4efd631bd5f402fda68e094f09a5ed1dad7db17577",
+          "predict_host_ms": 1056.0931399813853
+        }
+      ]
+    },
+    {
+      "cell": "nano-eager_native",
+      "request_count": 56,
+      "p50_ms": 9715.905110002495,
+      "min_ms": 9706.240005034488,
+      "max_ms": 10862.744463956915,
+      "cold_requests_included": true,
+      "identity": {
+        "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/identity.json",
+        "sha256": "4f5cb34f48a0fc2d6f967126cb6ac559e1eb1a5f5d2ef7f7083eb1a9ad067636"
+      },
+      "closed_ledger": {
+        "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/closed.json",
+        "sha256": "49f7fa2a0cb16a4c09f9ee2a4fa695b492dfe33b4bdead9b68ec7f1586cbe6c0"
+      },
+      "requests": [
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000000.json",
+          "sha256": "fca1199e24601aedff85bea63fbc8e871f61df0737961d28c7e6e9385f88efbe",
+          "predict_host_ms": 10862.744463956915
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000001.json",
+          "sha256": "a30917bdc7d090e235caa51a1c6d22c955705de7f976c4e357523cdc4ebf56c8",
+          "predict_host_ms": 9718.60215603374
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000002.json",
+          "sha256": "724206d2480b8868bf73d19e77ba466b166365599b8fecf4d4b0e091ba9d8016",
+          "predict_host_ms": 9712.937447009608
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000003.json",
+          "sha256": "6e66677dcca7b8a0f0cbe5ce30042a1eb0cd37954df2b19ea6b8c00331afdd8f",
+          "predict_host_ms": 9722.241689974908
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000004.json",
+          "sha256": "de720ded34991df135e3928ddbc77e3b0326c141c44c813f79565e7f48bb4c8d",
+          "predict_host_ms": 9716.101539030205
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000005.json",
+          "sha256": "cd438dbe39a982163e72d6e0fcbcfd85bbaea0b4d5fe6020cf134024a3e9ce1b",
+          "predict_host_ms": 9715.448637027293
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000006.json",
+          "sha256": "410b901bd5c05dd92d67d7d919cf26ad40ee603bb8ff044a40ff58c6a47265ae",
+          "predict_host_ms": 9706.240005034488
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000007.json",
+          "sha256": "4c8dc8f4c9079959e2948973274fadc4e9f3b7453e3965ab16cca815b3a63f0e",
+          "predict_host_ms": 9713.7907849974
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000008.json",
+          "sha256": "36e20d34d682412626f1e1eaabd00af6466effd364146218246f8fcfab1baf9c",
+          "predict_host_ms": 9714.019105012994
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000009.json",
+          "sha256": "1e9cc694d28e3f69ffe0e1b9cfb819fe73390591bfec9c6d693faa3b838cbd6c",
+          "predict_host_ms": 9719.622632022947
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000010.json",
+          "sha256": "8f102528454ec967adda4b37b191e66df26fe2aa32aaf0939e72861962d97fe0",
+          "predict_host_ms": 9714.148889994249
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000011.json",
+          "sha256": "2aa8b6cd9a5ef75d07e3f70a284ba93b85866250a4223e5298651b0e69be8992",
+          "predict_host_ms": 9713.924006966408
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000012.json",
+          "sha256": "4c42751ace46959d0ebfba42e5311b57209073a5d52f0b0d90163487f4ff1357",
+          "predict_host_ms": 9713.500373996794
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000013.json",
+          "sha256": "eb3ceda271743d0ee93dd7b955268b20cebb34d5c44579272530d392f738fb12",
+          "predict_host_ms": 9719.832445960492
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000014.json",
+          "sha256": "c7b5ab6f77c46915540a68d710abede4c1684ebabaed98ed77c2b48adbf42d9c",
+          "predict_host_ms": 9711.624546034727
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000015.json",
+          "sha256": "e0526d57a77e9e8f9aceb38d12dd752de7415ce3f7ae358993a95997ffcdec93",
+          "predict_host_ms": 9709.101066051517
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000016.json",
+          "sha256": "b7a3babc5e778a50b95ce4c8655300cf85412ac5eece5393469107055c0127bd",
+          "predict_host_ms": 9708.397871989291
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000017.json",
+          "sha256": "88f2e2fa7591a6e0efb4796091ab1b4f2936d4196789c58948c649e622feedac",
+          "predict_host_ms": 9713.420997955836
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000018.json",
+          "sha256": "89c4d1bccdd3ab5d4470df522ae3772fb5cef7e7263b042e3eb3a71f88a0a686",
+          "predict_host_ms": 9713.941896974575
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000019.json",
+          "sha256": "667ae147d245018aec68a3895041a001a463157a1672c769b9252e6c5ca55d75",
+          "predict_host_ms": 9718.552971025929
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000020.json",
+          "sha256": "d336900f8ea3db4af74cb9ac3e7dc5f7960027eb1f1dcfb1869ab4127f5e1094",
+          "predict_host_ms": 9715.504572028294
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000021.json",
+          "sha256": "6b0e94b3f0b65a68f1bfd261a859ba559a1e8a0729ab0264b9ca4848faec61a9",
+          "predict_host_ms": 9706.629883963615
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000022.json",
+          "sha256": "bb827af33e782bf6eeb5477de298fa622e846d9e7dc42b79d0fefe9d47d463f5",
+          "predict_host_ms": 9717.138445994351
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000023.json",
+          "sha256": "b9afaf3995691d0089b47869cdade992f7c7fce4911083a54d941b8de21fb1f3",
+          "predict_host_ms": 9716.581686050631
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000024.json",
+          "sha256": "a0b86caf3629a14e907d2d716bfcb3947a7820f34fd357f7376023c8837a9da9",
+          "predict_host_ms": 9715.026610007044
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000025.json",
+          "sha256": "bcd4f2ae29f7cf8e11670221805c918d1710c92dfcd2093b0ef9468e621f2992",
+          "predict_host_ms": 9721.956682973541
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000026.json",
+          "sha256": "778870a367d39fd9927796a05ff82433cac33a10397d5a514d69bfda40316b9e",
+          "predict_host_ms": 9710.711342981085
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000027.json",
+          "sha256": "0faa2ff4e0ecfc7aa0752396228640f28903e49533a1336abaeed180be99d3cd",
+          "predict_host_ms": 9713.12970801955
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000028.json",
+          "sha256": "cbcffd70ee16d8ecd0d1a309fe52c1653eb80f481607ded9e163972154ad69b9",
+          "predict_host_ms": 9713.400515029207
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000029.json",
+          "sha256": "87d355bf7da147b46e69384c7b285d82cf68630fee16215cb1ac9a406d56c332",
+          "predict_host_ms": 9715.44784703292
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000030.json",
+          "sha256": "8aa9bc8a1cc2924bb63d649fa7dcf3e5d179493492c505fb810de14a50cfd08c",
+          "predict_host_ms": 9714.324806001969
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000031.json",
+          "sha256": "b583012ddb388c558c9e8e47320ae48ac54bc1f7d2f1f475e2858500657b9379",
+          "predict_host_ms": 9719.970231992193
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000032.json",
+          "sha256": "89f6746d08c1b394cd84fb52485cdbfe599b5681f30696d89ba84e41b72483ad",
+          "predict_host_ms": 9717.838653014041
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000033.json",
+          "sha256": "a77e33e015545a828125cd304c361cdef103f8e014c18d8749558e88177fdc16",
+          "predict_host_ms": 9719.251106027514
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000034.json",
+          "sha256": "f59ddf8fc4bc7c4e6e8af743c6fe41fd30407687c0a69d1b4919930ddd2fdbc8",
+          "predict_host_ms": 9710.84203402279
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000035.json",
+          "sha256": "6e1d652f49abbd8a8523644bfbc2d0d8915487442dbd870da079ced0f898ab76",
+          "predict_host_ms": 9713.693119003437
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000036.json",
+          "sha256": "bbe2363b044538bed225bfb2c6658e5e361be374bdc181fce8fc7dc0ad2cb248",
+          "predict_host_ms": 9719.593278947286
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000037.json",
+          "sha256": "afc07cd72d469e6dcfa06cbb87a042de4cdefb99feca3eea1a2ab72b109efd7f",
+          "predict_host_ms": 9715.229702007491
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000038.json",
+          "sha256": "657d34d44ef1d5dcfbd522da2b5bd4991d369c5b91e1545bba0357956e6f1cd6",
+          "predict_host_ms": 9716.08277701307
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000039.json",
+          "sha256": "b7e6bd3bdc1efe08a2272ef16c48c1101b4663ebdf499ac1907f3534f62a45b9",
+          "predict_host_ms": 9717.93040499324
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000040.json",
+          "sha256": "e9ec9d23f5d8af43dbf8a76606c2a766ee22578ceb6a148e6880b99d0aacff8e",
+          "predict_host_ms": 9714.779622969218
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000041.json",
+          "sha256": "a86aaed8b78911b185cd66de5809fdc525a15f03af12bddb424f2aed802b2131",
+          "predict_host_ms": 9716.65578597458
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000042.json",
+          "sha256": "96bbbd142ee2e12659605fc647b7f2ebcf1f3931d130f814dff7fa8583e71bd4",
+          "predict_host_ms": 9717.650349019095
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000043.json",
+          "sha256": "6ec4dc38c8f410148cf4a7423558ca7f0f4b6e7314add7fde2bfc5893c5bd02a",
+          "predict_host_ms": 9718.87878398411
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000044.json",
+          "sha256": "ed5734112d3fee63c9872e19d02f366b70e65fb70c7adbd394187b8c8004fefe",
+          "predict_host_ms": 9720.931319054216
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000045.json",
+          "sha256": "4a0c70b5eb255abc6cfcf4b4576aa9156c5ecc09607a11bc6e2be52d049bef79",
+          "predict_host_ms": 9720.55826196447
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000046.json",
+          "sha256": "98187f7705406ae1222ab6670bf14140ca28a532168437a278a6ad0a3f7eec60",
+          "predict_host_ms": 9717.033399967477
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000047.json",
+          "sha256": "ace68690a032d119dd65d4c41cdd612f9d9da51a8dc558277c9666e65e155691",
+          "predict_host_ms": 9709.148820955306
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000048.json",
+          "sha256": "8c674a7f17a7693895473971e0d7635d378f5e645b063a2563808876f69946c6",
+          "predict_host_ms": 9717.609373037703
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000049.json",
+          "sha256": "f9b1fd5ef8595e18b86f4d6fd340197daf93cdb5abf5919e6d8c025dc32b26fa",
+          "predict_host_ms": 9724.813634995371
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000050.json",
+          "sha256": "c49c0c069462ff329efb1f47edcf727dd6904539045b546daae67e69bedfe966",
+          "predict_host_ms": 9715.72744299192
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000051.json",
+          "sha256": "f4406f8dcbd746120a2f2cd6d26a6cb22a48462308ceb66953773f0179c52503",
+          "predict_host_ms": 9713.10498798266
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000052.json",
+          "sha256": "905814400e4eb6639db4f41507360c9d9f8353b5cb52c886c8c67fc45f1d7b95",
+          "predict_host_ms": 9719.348946993705
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000053.json",
+          "sha256": "d84597bc3567189ed5ad3ec16ac54580dd81fca3794d4da47b69590caf272ae0",
+          "predict_host_ms": 9718.47403497668
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000054.json",
+          "sha256": "71ef7f00eeda7c656d207244c1e4400e9b5ca40eb8792aaabbcced82ca4c68d4",
+          "predict_host_ms": 9725.116209010594
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-eager_native/final_server/supervisor/nano-eager_native/requests/request_000055.json",
+          "sha256": "6910063783ce6b0d257941308c44d0c2f34d0900dc6e70c7e74e444a9beb1dc4",
+          "predict_host_ms": 9718.748290033545
+        }
+      ]
+    },
+    {
+      "cell": "nano-runtime_selected",
+      "request_count": 62,
+      "p50_ms": 4116.48515748675,
+      "min_ms": 4093.5475479927845,
+      "max_ms": 10963.37728499202,
+      "cold_requests_included": true,
+      "identity": {
+        "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/identity.json",
+        "sha256": "c63bb6cbc23b0904d80131cbde44e0923fab3fc77b3955219c5db05d48206c63"
+      },
+      "closed_ledger": {
+        "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/closed.json",
+        "sha256": "5a13b4659fbd7100d4746f5d22781f9ff854dff465979623ea960cf093a81d7e"
+      },
+      "requests": [
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000000.json",
+          "sha256": "ab0e511e3a28146b8029e9e30b74a08931ddfc795d72593af2fec5286ba9d2a5",
+          "predict_host_ms": 10963.37728499202
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000001.json",
+          "sha256": "c57bf70225eaeea91c68817be57e041cff0e979bf05a7a450d133bb9ea243b43",
+          "predict_host_ms": 4105.482197017409
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000002.json",
+          "sha256": "d01429a0109e9f3d7087da5e002d6c1a4ac8182006e92929d195743bbb31ae2f",
+          "predict_host_ms": 4108.919418009464
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000003.json",
+          "sha256": "25bcf2a563179a7e600020417c286f751fd56aefb61f5a5ba2e54f9030e64557",
+          "predict_host_ms": 4101.333550002892
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000004.json",
+          "sha256": "9cb28fc954636d6301f2a10e60997729478fb4002134c7cea40abd06402a5302",
+          "predict_host_ms": 4124.489487963729
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000005.json",
+          "sha256": "38c0f925f04e1ad6ffd950084fe0b8b08283e1d1d3dcbfda0f321d575a4fa9e2",
+          "predict_host_ms": 4121.0600169724785
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000006.json",
+          "sha256": "c0d8fe418f9c178524a81a96017d30ae6da817412532f7fc4f14fcf38eca45ac",
+          "predict_host_ms": 4120.5483980011195
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000007.json",
+          "sha256": "294b0105b218d1c27d3fba26d7f04706116a1be8114d3dc003c7f43b6497cd55",
+          "predict_host_ms": 4129.288794996683
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000008.json",
+          "sha256": "10900f793b3e33b0383241c4bc6af1ba34c6026e83141638446bd31d437ab214",
+          "predict_host_ms": 4113.467448973097
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000009.json",
+          "sha256": "c31b3fbd33e784ba4f61cacb523de9cc7f4d8008e5ad556860b00637595e6fc1",
+          "predict_host_ms": 4113.3422999992035
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000010.json",
+          "sha256": "1ed27bdf174a7d6b9accb7324900a1642e56fd636f5cfa0091bea08a63461599",
+          "predict_host_ms": 4108.576536993496
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000011.json",
+          "sha256": "297ace614355532b481be7a070e7dee986beb5e8b51274eccf2210194e5d2121",
+          "predict_host_ms": 4121.116062044166
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000012.json",
+          "sha256": "d5b4eaeec01443200fa668fe11e3e498b6a08bba38a8d51ebe683caa5ad99570",
+          "predict_host_ms": 4115.305445971899
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000013.json",
+          "sha256": "cce972501a85d16126fe3a1c88e3e19b43d9de3f965200a13179a89dcaca2b41",
+          "predict_host_ms": 4131.111249036621
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000014.json",
+          "sha256": "c0dffb222ff9fc05b5852344cd7bc97ab08b2303dfb24bc3d34cfef4150bed24",
+          "predict_host_ms": 4102.184051997028
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000015.json",
+          "sha256": "c012c2d62bb04e144adbef3b5824f7c4a00f06eae510c1ae6578f2de6af28524",
+          "predict_host_ms": 4113.393485022243
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000016.json",
+          "sha256": "43429b0398bf678aa9396d3c9085fe60417d7c8fbe9ba73db07449b739b06ce4",
+          "predict_host_ms": 4107.069521036465
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000017.json",
+          "sha256": "f5c2f9a0f3101dcaf62458640ba4c21858fe9bff9a2161d6376f7119f4a6c2c4",
+          "predict_host_ms": 4110.900548985228
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000018.json",
+          "sha256": "a1141e3f4306a09e38be3868853919853ec1473c4e61e4145c7653d19af33233",
+          "predict_host_ms": 4105.953232967295
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000019.json",
+          "sha256": "8a47a7911bc7559a02882b7a0cfb46590792591b0a8fcb69ad738514264c21a8",
+          "predict_host_ms": 4116.402690997347
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000020.json",
+          "sha256": "6715e4faf7c870b4b957a5cad2cd6f79fa47e9979842648d5327c8771f2f6c4e",
+          "predict_host_ms": 4109.829443972558
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000021.json",
+          "sha256": "1b06a2a19f47f5d91e3f0db806b13fb137b09a2dea6e2942b24c2e87b2a9433a",
+          "predict_host_ms": 4105.416262988001
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000022.json",
+          "sha256": "0ee924950fd33ebe5a30716cdecabea3c4234b28716d39ff2e853177b3812e9d",
+          "predict_host_ms": 4104.982522025239
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000023.json",
+          "sha256": "0bb3ad425dbc68b639156dfab4429241f265baef7bf7740ade26a36535609ee0",
+          "predict_host_ms": 4116.873787017539
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000024.json",
+          "sha256": "ae0052d536de039e69b6ff8c82eb99ddae5c77ac70d6ba4b5ded2f2cd8066e6f",
+          "predict_host_ms": 4119.668992003426
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000025.json",
+          "sha256": "5ca54c960078f503f41053e95cad85be2cb1ca98eda08070d012ab9e05534fb0",
+          "predict_host_ms": 4116.803470009472
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000026.json",
+          "sha256": "65fc1e49d5e7a8e790713831f3ac782cd77bec598062ff299ec99445134301c8",
+          "predict_host_ms": 6854.4207899831235
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000027.json",
+          "sha256": "be47b6b20d47b52798c6d73726d60796a8b5f1598e0c8f62994759394147d501",
+          "predict_host_ms": 4117.875618976541
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000028.json",
+          "sha256": "7d3b0c2374fe8b2c27290c9c1d157d7734803202ae07b4caca8adbc139722b02",
+          "predict_host_ms": 4110.243912960868
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000029.json",
+          "sha256": "1c339432f5a5dbeb5801708abafa37adfa4660d56903e735ba830e6ca648aa88",
+          "predict_host_ms": 4112.1332490001805
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000030.json",
+          "sha256": "6ef5e34856e4f9f24406ca5fb4fa1c96f4843e326668ef80421c29a36fb345f2",
+          "predict_host_ms": 4120.94347999664
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000031.json",
+          "sha256": "2d4312c58fb749a2dafe864e021641847c7a75f498fc5dde6be4d254b66d9312",
+          "predict_host_ms": 4108.937170007266
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000032.json",
+          "sha256": "b3911ee3d67e5ba71ff0615b0689493b6f1f54847d8b6e5c646bdece3ef2f780",
+          "predict_host_ms": 4130.557769036386
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000033.json",
+          "sha256": "0e3d6cc7ef41c585ece6afb31859af32af32b88443847b57919c50859370628a",
+          "predict_host_ms": 4115.548364003189
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000034.json",
+          "sha256": "2db5833d608f5aa140732bdaa1d329598a56989b3d2d41da97c79385993d8e76",
+          "predict_host_ms": 4119.485311966855
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000035.json",
+          "sha256": "e4881eb4a92c5c1d1b83fa5911eec1f912743e23ae3564dd6b398a92f1461f6c",
+          "predict_host_ms": 4101.378553023096
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000036.json",
+          "sha256": "64103c2fe09a66afc66ff6dc6d01a52070adf535b7c56c5cbdf40aeff19c7b3e",
+          "predict_host_ms": 4106.3054149854
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000037.json",
+          "sha256": "e34cf8931259c9e364d9e4bbcc645e5cc334fb295b5fda2bdb22fb870dbd3681",
+          "predict_host_ms": 4093.5475479927845
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000038.json",
+          "sha256": "f2cbd687e8ca2a8a1818261ab6387d7c48fa10cfc82a345b767abe9d8fa9ecd2",
+          "predict_host_ms": 4121.12468900159
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000039.json",
+          "sha256": "aa541582b00efd0992d34604a35ade876adcac8a476863db9970ddb36e0c5814",
+          "predict_host_ms": 4102.291624003556
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000040.json",
+          "sha256": "0fa08a23cfe603f087bf3a97db414191d82d06a2dc79050421adf9178e28a0b2",
+          "predict_host_ms": 4101.662645000033
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000041.json",
+          "sha256": "b15b4e16a8ca240352ee494e7232052cf79d062c03c0bc661b6d20efe6d58715",
+          "predict_host_ms": 4129.63205302367
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000042.json",
+          "sha256": "8470d59d3405e394e022b1424a785615fc60bd3b5d4742b6b5aaa47cd68e8aa7",
+          "predict_host_ms": 4114.482323988341
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000043.json",
+          "sha256": "bf3304d677b36e4c7a8c32b100ade984533cfa21a7d8f63f115d85ff5f5dafac",
+          "predict_host_ms": 4123.807911993936
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000044.json",
+          "sha256": "db689e34cb0e0442d506ef14ee6de64193c2789c0401a93ef62d41dab61bdb7c",
+          "predict_host_ms": 4122.838962008245
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000045.json",
+          "sha256": "be44c03bfec0742efc5b19f74fd362ef7fab3649b728e4a8ba03a44c96f60e2b",
+          "predict_host_ms": 4132.82195298234
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000046.json",
+          "sha256": "965adbdb6a0c9bb385e69155eb74236561c624bf4354075b8ad6f66c0b09e894",
+          "predict_host_ms": 4115.5860220314935
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000047.json",
+          "sha256": "98828eaf5cfda8da6c6fbd2ef481b558047bcd04eba11749093b600ffd994114",
+          "predict_host_ms": 4130.036287009716
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000048.json",
+          "sha256": "d4b56162499f8206653eec200bdba5754f71d88426084948bdfc41ef589fb8a2",
+          "predict_host_ms": 4106.812289042864
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000049.json",
+          "sha256": "bfd9a578e5d4ae1d0abae39809c11aadbb23e302a5ff3111d834816a61f788b7",
+          "predict_host_ms": 4119.500661967322
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000050.json",
+          "sha256": "39180b42931c091aba01fb1fd7ba95159294601294f62269d55b553caca4fe75",
+          "predict_host_ms": 4117.6973229739815
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000051.json",
+          "sha256": "b9ed94621562616f514525dfc56a0016d404e22b43f81efea95c0a45f2b3ecee",
+          "predict_host_ms": 4111.942859948613
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000052.json",
+          "sha256": "fba1d9a0626b5445dd7d5cb0dd0dbc5222b80c88c8950e3ae1ab7ded859cf8d2",
+          "predict_host_ms": 4105.47139699338
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000053.json",
+          "sha256": "09f5054e91ff992b28571f4e434e7046f833c4293229468f75726867e5c05424",
+          "predict_host_ms": 4119.692296022549
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000054.json",
+          "sha256": "aa6a575c629b91743d2740989768dcb6570cfbc13bd0050c3beac8cfa2863718",
+          "predict_host_ms": 4124.334113963414
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000055.json",
+          "sha256": "725c962419b17d9e0e2dcc59c78d34cc2e851516e1d3c4024e378ba2b33f9ecc",
+          "predict_host_ms": 4116.567623976152
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000056.json",
+          "sha256": "bfcd5a996d33b9e39c2d5ffc47e42e12a44768b7da1fff0879f9cc85e13d928a",
+          "predict_host_ms": 4272.781138017308
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000057.json",
+          "sha256": "80c42d4eda9ee40289fc131df43553e060d195db9a62c01100dea843cf485345",
+          "predict_host_ms": 4120.984673965722
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000058.json",
+          "sha256": "9f1d8ad425472d0e992b0bc44760c3f9ac5e34c24b01cf080978dd4953e98a95",
+          "predict_host_ms": 4118.4641139698215
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000059.json",
+          "sha256": "27681c63807df13be55d569279c1151583db66fb4e6cde63332dbdf4237397a2",
+          "predict_host_ms": 4113.6866440065205
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000060.json",
+          "sha256": "889a37ed6afadbeb431f3eab27da4441818f62dd9b48169b8db4c37798ea8496",
+          "predict_host_ms": 4119.414782966487
+        },
+        {
+          "path": "eval/cosmos3_task_quality_2026-09-14/timed_screen_v1/batches/0000/servers/nano-runtime_selected/final_server/supervisor/nano-runtime_selected/requests/request_000061.json",
+          "sha256": "0b025c6f749c1063b4453039ca589f45acf237c15ab39dd887189c02c411f569",
+          "predict_host_ms": 4127.484093012754
+        }
+      ]
+    }
+  ]
+}

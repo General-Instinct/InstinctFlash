@@ -1,0 +1,36 @@
+{
+  "baseline_semantics": "Matches recorded Thor vendor source; not a new comparison to untouched upstream arithmetic.",
+  "checkout_instructions": [
+    "Clone the public repository into a NEW destination with GIT_LFS_SKIP_SMUDGE=1.",
+    "Check out source.revision detached; verify exact git rev-parse HEAD before applying anything.",
+    "If patch is present, verify its SHA256 and use git apply --check followed by git apply.",
+    "Verify every expected_patched_files SHA256. Existing vendor directories must remain untouched."
+  ],
+  "expected_patched_files": {
+    "lingbotvla/models/vla/pi0/modeling_lingbot_vla.py": {
+      "bytes": 87422,
+      "sha256": "a7967472faa594c1acd594dd2daa77d902d0112e89587dc3c2fd00d6c406ebd3"
+    },
+    "lingbotvla/models/vla/pi0/qwenvl_in_vla.py": {
+      "bytes": 91959,
+      "sha256": "4911e3f4d98e208331d303761fcd4e73b713be337f9990d22054fd189f77804a"
+    }
+  },
+  "fresh_environment_inference_qualified": false,
+  "patch": {
+    "path": "recorded_thor.patch",
+    "sha256": "40b964dc7333ee0eab260e2af1af84c3d1ce783722f828f34c8034a1348562a3"
+  },
+  "patch_summary": "Thor attention compatibility: eager Qwen2.5 vision/language, SDPA action expert, and missing rotate_half helper. Arithmetic implementation differs from stock flash-attention.",
+  "schema": "instinctflash.vendor_source.v1",
+  "source": {
+    "commit_url": "https://github.com/robbyant/lingbot-vla/commit/4eb34b7693a0565c67433f8fac9c59a2e67eb60b",
+    "public_commit_verified": true,
+    "repository": "https://github.com/robbyant/lingbot-vla",
+    "revision": "4eb34b7693a0565c67433f8fac9c59a2e67eb60b"
+  },
+  "source_bootstrap_qualified_CPU": true,
+  "upstream_notices": {
+    "LICENSE": "63b052b2e017d82d657a9cbcb6289fb61f830a61efe366eaa0bca9a9ca8875cd"
+  }
+}

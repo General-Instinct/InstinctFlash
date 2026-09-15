@@ -1,0 +1,149 @@
+{
+  "status": "planned_only",
+  "commands": [
+    {
+      "id": "base-view",
+      "family": "edge",
+      "argv": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/prepare_experimental_thor_base_view_v1.py",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/edge_base"
+      ],
+      "output": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/edge_base",
+      "timeout": 1800
+    },
+    {
+      "id": "edge-seed12031-prepare",
+      "family": "edge",
+      "recipe": "edge-seed12031",
+      "argv": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "cosmos3_sde1",
+        "prepare",
+        "edge-seed12031",
+        "--base",
+        "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/edge_base",
+        "--output",
+        "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12031",
+        "--overlay",
+        "/dev/shm/ifl_public_sde1_assets_v1/cosmos3-edge-sde1-cfg1-seed12031.safetensors"
+      ],
+      "output": "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12031",
+      "timeout": 1800
+    },
+    {
+      "id": "edge-seed12031-run",
+      "family": "edge",
+      "recipe": "edge-seed12031",
+      "argv": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "cosmos3_sde1",
+        "run",
+        "edge-seed12031",
+        "--checkpoint",
+        "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12031",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12031"
+      ],
+      "output": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12031",
+      "prepared": "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12031",
+      "timeout": 3900
+    },
+    {
+      "id": "edge-seed12032-prepare",
+      "family": "edge",
+      "recipe": "edge-seed12032",
+      "argv": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "cosmos3_sde1",
+        "prepare",
+        "edge-seed12032",
+        "--base",
+        "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/edge_base",
+        "--output",
+        "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12032",
+        "--overlay",
+        "/dev/shm/ifl_public_sde1_assets_v1/cosmos3-edge-sde1-cfg1-seed12032.safetensors"
+      ],
+      "output": "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12032",
+      "timeout": 1800
+    },
+    {
+      "id": "edge-seed12032-run",
+      "family": "edge",
+      "recipe": "edge-seed12032",
+      "argv": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "cosmos3_sde1",
+        "run",
+        "edge-seed12032",
+        "--checkpoint",
+        "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12032",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12032"
+      ],
+      "output": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/edge-seed12032",
+      "prepared": "/dev/shm/ifl_public_sde1_execution_20260915_v1/edge-seed12032",
+      "timeout": 3900
+    },
+    {
+      "id": "nano-original-prepare",
+      "family": "nano",
+      "recipe": "nano-original",
+      "argv": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "cosmos3_sde1",
+        "prepare",
+        "nano-original",
+        "--base",
+        "/home/guanming/ifl_eval/cosmos_distill_20260912/nano-original-native-v1",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/prepared/nano-original",
+        "--link-unmodified"
+      ],
+      "output": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/prepared/nano-original",
+      "timeout": 1800
+    },
+    {
+      "id": "nano-original-run",
+      "family": "nano",
+      "recipe": "nano-original",
+      "argv": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "cosmos3_sde1",
+        "run",
+        "nano-original",
+        "--checkpoint",
+        "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/prepared/nano-original",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/nano-original"
+      ],
+      "output": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/runs/nano-original",
+      "prepared": "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_execution_v1/prepared/nano-original",
+      "timeout": 3900
+    }
+  ],
+  "GPU_calls": 0,
+  "remote_actions": 0
+}

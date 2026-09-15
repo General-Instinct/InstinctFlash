@@ -1,0 +1,78 @@
+{
+  "status": "success",
+  "valid": true,
+  "evaluation_protocol": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/evaluation_protocol_v2.json",
+    "bytes": 429506,
+    "sha256": "6416fe48849b6fcc715ce16745a16b2b079d18344f2fb665cf37905bc1d95c5a"
+  },
+  "analysis_report": {
+    "path": "/home/ubuntu/ifl_cosmos_quality_preflight/producer_cpu_replay_v1/analysis.json",
+    "bytes": 2765377,
+    "sha256": "449ac8319443c5fedbbdc68d1c4e97cdcb1d512d991f53fa900075d98669ad95"
+  },
+  "numerical_tolerance": {
+    "relative": 2e-10,
+    "absolute": 2e-12
+  },
+  "coverage": {
+    "configurations": 10,
+    "new_configurations": 6,
+    "reused_configurations": 4,
+    "raw_requests": 1280,
+    "raw_action_and_target_arrays": 5120,
+    "candidate_metric_vectors": 1152,
+    "teacher_recorded_metric_vectors": 56,
+    "episodes_per_vector": 16,
+    "comparison_groups": 22,
+    "comparison_metric_bootstraps": 2112,
+    "bootstrap_replicates_each": 5000,
+    "primary_command_metric_names": [
+      "raw/joint/h1/energy_u",
+      "raw/gripper/h1/energy_u",
+      "raw/joint/h32/energy_u",
+      "raw/gripper/h32/energy_u"
+    ]
+  },
+  "files_verified": 3547,
+  "audit_report": {
+    "path": "/home/ubuntu/ifl_cosmos_quality_preflight/producer_cpu_replay_v1/independent_audit.json",
+    "sha256": "7b63b5c11e5e9d1560d8bd68aec8ce98fed591869777ddfd4107f3da998a87d6"
+  },
+  "quality_certified": false,
+  "scope": "Independent CPU replay of frozen producer analysis and audit; original producer completion inventory and Thor quality review remain pending",
+  "commands": {
+    "analysis": [
+      "/home/ubuntu/cosmos-framework/.venv/bin/python",
+      "/home/ubuntu/InstinctCompress/examples/evaluate_cosmos3_realtime_v16_v2.py",
+      "analyze",
+      "--protocol",
+      "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/evaluation_protocol_v2.json",
+      "--admission",
+      "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/evaluation_admission_v2.json",
+      "--captures",
+      "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/evaluation_capture_v2",
+      "--output",
+      "/home/ubuntu/ifl_cosmos_quality_preflight/producer_cpu_replay_v1/analysis.json"
+    ],
+    "audit": [
+      "/home/ubuntu/cosmos-framework/.venv/bin/python",
+      "/home/ubuntu/InstinctCompress/examples/audit_cosmos3_realtime_evaluation_v16_v2.py",
+      "audit",
+      "--admission",
+      "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/evaluation_independent_admission_v2.json",
+      "--capture-admission",
+      "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/evaluation_admission_v2.json",
+      "--captures",
+      "/home/ubuntu/InstinctCompress/results/cosmos3_droid/realtime_v16/evaluation_capture_v2",
+      "--analysis",
+      "/home/ubuntu/ifl_cosmos_quality_preflight/producer_cpu_replay_v1/analysis.json",
+      "--output",
+      "/home/ubuntu/ifl_cosmos_quality_preflight/producer_cpu_replay_v1/independent_audit.json"
+    ]
+  },
+  "exit_codes": {
+    "analysis": 0,
+    "audit": 0
+  }
+}

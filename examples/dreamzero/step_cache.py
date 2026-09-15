@@ -1,25 +1,21 @@
-"""Step-caching for DreamZero serving: the row's real lever, absorbed as an opt-in.
+"""Environment overlay for upstream DreamZero's optional dynamic step cache.
 
-WHERE THE MECHANISM COMES FROM. DreamZero's own action head ships a velocity-cosine dynamic
-step-skipper (`should_run_model`, groot/vla/model/dreamzero/action_head/
-wan_flow_matching_action_tf.py:943-970): after 2 history steps, if successive CFG-combined
-velocity predictions have cosine similarity > 0.95 the next 4 DiT forwards are skipped (> 0.93
-skips 2), reusing the last velocity for both the video and action streams. vLLM-Omni's
-`stepcache` backend (vllm_omni/diffusion/cache/stepcache/) is this exact algorithm with the same
-thresholds — it is where their 2.77x on this row comes from, together with compiled kernels.
+The pinned native and vLLM-Omni implementations share the decision rule: compare
+the last two COMPUTED CFG video velocities in FP32; cosine > 0.95 skips four
+slots, > 0.93 skips two, including the decision slot. Both the video velocity and
+the conditional action velocity are reused, although action is not part of the
+similarity test. Every solver slot and the observation KV updates still run.
 
-Upstream gates it behind `DYNAMIC_CACHE_SCHEDULE` (env, default off, read at model __init__:207)
-and otherwise uses a FIXED 16-slot mask selected by `NUM_DIT_STEPS` (default 8 computed steps —
-the stock baseline already skips half the schedule; the dynamic path skips more, adaptively).
+Dynamic scheduling replaces the shipped fixed eight-of-sixteen mask. It can
+compute MORE than eight steps on unstable signals; realized counts need tracing.
+Existing cross-framework timings do not isolate this mechanism's speedup.
 
-WHAT THIS MODULE ADDS. Nothing algorithmic — the value is operational: a declared serving
-configuration with a measured latency/delta trade-off instead of an undocumented env var.
-`serving_env()` returns the environment overlay for the official server; the measurement
-protocol and deltas live in /home/ubuntu/iwm_distill/bench_dreamzero_h100/ours_stepcache.json.
-
-TIER: SCREEN, not a certificate. Step-caching skips compute, so outputs differ from stock by
-construction; the action-delta statistics quantify by how much, and a closed-loop success-rate
-gate would be required before shipping this as a default.
+This helper changes no algorithm. Runtime now supports step_cache="dynamic" with
+native or explicitly selected FP8 precision; both require tier_ceiling="behavioral".
+The option changes computation and has SCREEN evidence, not a quality certificate.
+See INSTALL.rst for the API and
+eval/dynamic_step_cache_integration_2026-09-14/audit.json for the bounded
+CPU/GPU integration evidence; no task-quality certificate.
 """
 
 from __future__ import annotations

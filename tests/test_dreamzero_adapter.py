@@ -34,6 +34,7 @@ def test_example_surface_stays_product_shaped():
     # README row. Pinned so a cleanup can never silently delete or replace them.
     root_files = {path.name for path in PLUGIN_ROOT.iterdir() if path.is_file()}
     assert root_files == {
+        "LICENSE",
         "README.md",
         "cfg_batch.py",
         "diag_batch.py",
@@ -103,21 +104,17 @@ def test_nfe_override_is_refused_with_the_screen_tier_explanation():
         path="x",
         execution=SimpleNamespace(model_id=MODEL_ID, nfe={"video_action": 16}, extra={}),
     )
+    from unittest.mock import patch
+
     try:
-        adapter.build_in_process(ckpt, plan=SimpleNamespace(results=[]),
-                                 nfe={"video_action": 8})
+        # Reach declaration validation on CPU CI; this invalid grid must fail
+        # before loading a model or touching a CUDA device.
+        with patch("torch.cuda.is_available", return_value=True):
+            adapter.build_in_process(ckpt, plan=SimpleNamespace(results=[]),
+                                     nfe={"video_action": 8})
     except RuntimeError as e:
         message = str(e)
-        if "SCREEN" not in message:
-            # The adapter's CUDA gate fires before the nfe refusal, and it raises RuntimeError
-            # too — so the CUDA-less fallback must live HERE, not in a later except clause a
-            # RuntimeError can never reach (the bug this branch replaces: on a box with CUDA
-            # masked, the gate's message failed the SCREEN assertion instead of skipping).
-            assert "CUDA" in message, message
-        else:
-            assert "SCREEN" in message and "DYNAMIC_CACHE_SCHEDULE" in message
-    except Exception as e:  # noqa: BLE001 - only acceptable on a CUDA-less test box
-        assert "CUDA" in str(e)
+        assert "SCREEN" in message and "DYNAMIC_CACHE_SCHEDULE" in message
     else:
         raise AssertionError("a reduced NFE must be refused as SCREEN-tier, not served")
 

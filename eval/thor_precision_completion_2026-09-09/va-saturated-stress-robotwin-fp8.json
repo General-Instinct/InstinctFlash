@@ -1,0 +1,1556 @@
+{
+  "precision": "fp8",
+  "family": "robotwin",
+  "scope": "Paired checkpoint-native Runtime with 48-cycle synthetic history sequences, original schedule; first episode warmup, second measured. Initial recorded history then repeated full recorded observation/action window. This is saturation stress, not a continuous real robot episode, sustained-tail or closed-loop quality certificate.",
+  "setup_seconds": 23.77822356699835,
+  "fp8_declaration": {
+    "backbone": "wan_va",
+    "frontend": "serving/flash_rt/frontends/torch/wan_va_thor.py",
+    "steps": {
+      "video": 25,
+      "action": 50
+    },
+    "shifts": {
+      "video": 5.0,
+      "action": 1.0
+    },
+    "guidance": {
+      "video": [
+        "cfg",
+        5.0
+      ],
+      "action": [
+        "positive_only",
+        1.0
+      ]
+    },
+    "cfg_batch": 2,
+    "forwards_per_cycle": 79,
+    "forwards_per_cycle_served_p010": 78,
+    "evidence": "the build sizes its AdaLN step tables from the declared grids (video t=[1000.0, 991.7354736328125, 982.9059448242188, 973.4513549804688, 963.3027954101562, 952.3810424804688, 940.5940551757812, 927.8350219726562, 913.978515625, 898.8763427734375, 882.3529052734375, 864.197509765625, 844.1558227539062, 821.917724609375, 797.1015014648438, 769.230712890625, 737.7048950195312, 701.7543334960938, 660.3773803710938, 612.244873046875, 555.5555419921875, 487.80487060546875, 405.4053649902344, 303.0303039550781, 172.41378784179688, 0.0], action t=[1000.0, 980.0, 960.0, 940.0, 920.0, 900.0, 880.0, 860.0, 840.0000610351562, 820.0, 800.0, 780.0000610351562, 760.0, 740.0, 720.0, 700.0, 680.0, 660.0, 640.0, 620.0, 600.0, 580.0, 560.0, 540.0, 520.0, 500.0, 480.0, 459.9999694824219, 440.0, 420.0, 399.9999694824219, 380.0, 359.9999694824219, 340.0, 320.0, 299.9999694824219, 280.0, 260.0, 240.0, 220.0, 199.99998474121094, 179.99998474121094, 160.0, 140.0, 120.0, 99.99999237060547, 80.0, 60.0, 40.0, 20.0, 0.0]), allocates a 2-stream KV slab, and runs 79 DiT forwards per cycle; WanVaTorchFrontendThor.assert_point refuses any other request",
+    "geometry": {
+      "frame_chunk": 2,
+      "latent_h": 24,
+      "latent_w": 20,
+      "action_per_frame": 16
+    },
+    "pool_slots": 9792,
+    "precision": "fp8",
+    "fp16_families": [],
+    "action_terminal_elision": true,
+    "forwards_per_cycle_served": 78,
+    "slab_rows": 15360,
+    "gate_kernel": "kernel"
+  },
+  "nfe": {
+    "video": 25,
+    "action": 50
+  },
+  "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+  "torch": "2.11.0+cu130",
+  "source_sha256": {
+    "instinctflash.adapters.lingbot_va": "dbb0c54404dd84b04f78383c9ad983ded476694b76390ee7595aeeb44c1c3ce4",
+    "instinctflash.runtime.wan_va_engine": "b4b254da55986c2d30c706714d5ae50c6314ef02985b405bf18b446aa50424df"
+  },
+  "ok": true,
+  "calls": [
+    {
+      "label": "episode_0_cycle_0",
+      "ms": 8270.977639997,
+      "cache": {
+        "frame": 0,
+        "capacity": 9792,
+        "live": 272,
+        "head": 0,
+        "tail": 272
+      },
+      "frame": 0,
+      "episode": 0,
+      "cycle": 0,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_1",
+      "ms": 4722.824321997905,
+      "cache": {
+        "frame": 2,
+        "capacity": 9792,
+        "live": 544,
+        "head": 0,
+        "tail": 544
+      },
+      "frame": 2,
+      "episode": 0,
+      "cycle": 1,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_2",
+      "ms": 4926.659092998307,
+      "cache": {
+        "frame": 4,
+        "capacity": 9792,
+        "live": 816,
+        "head": 0,
+        "tail": 816
+      },
+      "frame": 4,
+      "episode": 0,
+      "cycle": 2,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_3",
+      "ms": 4998.911929000315,
+      "cache": {
+        "frame": 6,
+        "capacity": 9792,
+        "live": 1088,
+        "head": 0,
+        "tail": 1088
+      },
+      "frame": 6,
+      "episode": 0,
+      "cycle": 3,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_4",
+      "ms": 5074.6199610002805,
+      "cache": {
+        "frame": 8,
+        "capacity": 9792,
+        "live": 1360,
+        "head": 0,
+        "tail": 1360
+      },
+      "frame": 8,
+      "episode": 0,
+      "cycle": 4,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_5",
+      "ms": 5187.09224900158,
+      "cache": {
+        "frame": 10,
+        "capacity": 9792,
+        "live": 1632,
+        "head": 0,
+        "tail": 1632
+      },
+      "frame": 10,
+      "episode": 0,
+      "cycle": 5,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_6",
+      "ms": 5306.046156998491,
+      "cache": {
+        "frame": 12,
+        "capacity": 9792,
+        "live": 1904,
+        "head": 0,
+        "tail": 1904
+      },
+      "frame": 12,
+      "episode": 0,
+      "cycle": 6,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_7",
+      "ms": 5399.242592000519,
+      "cache": {
+        "frame": 14,
+        "capacity": 9792,
+        "live": 2176,
+        "head": 0,
+        "tail": 2176
+      },
+      "frame": 14,
+      "episode": 0,
+      "cycle": 7,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_8",
+      "ms": 5514.697988000989,
+      "cache": {
+        "frame": 16,
+        "capacity": 9792,
+        "live": 2448,
+        "head": 0,
+        "tail": 2448
+      },
+      "frame": 16,
+      "episode": 0,
+      "cycle": 8,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_9",
+      "ms": 5618.311362002714,
+      "cache": {
+        "frame": 18,
+        "capacity": 9792,
+        "live": 2720,
+        "head": 0,
+        "tail": 2720
+      },
+      "frame": 18,
+      "episode": 0,
+      "cycle": 9,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_10",
+      "ms": 5721.53690399864,
+      "cache": {
+        "frame": 20,
+        "capacity": 9792,
+        "live": 2992,
+        "head": 0,
+        "tail": 2992
+      },
+      "frame": 20,
+      "episode": 0,
+      "cycle": 10,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_11",
+      "ms": 5818.037034001463,
+      "cache": {
+        "frame": 22,
+        "capacity": 9792,
+        "live": 3264,
+        "head": 0,
+        "tail": 3264
+      },
+      "frame": 22,
+      "episode": 0,
+      "cycle": 11,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_12",
+      "ms": 5927.8173969978525,
+      "cache": {
+        "frame": 24,
+        "capacity": 9792,
+        "live": 3536,
+        "head": 0,
+        "tail": 3536
+      },
+      "frame": 24,
+      "episode": 0,
+      "cycle": 12,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_13",
+      "ms": 6020.738644998346,
+      "cache": {
+        "frame": 26,
+        "capacity": 9792,
+        "live": 3808,
+        "head": 0,
+        "tail": 3808
+      },
+      "frame": 26,
+      "episode": 0,
+      "cycle": 13,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_14",
+      "ms": 6119.490016000782,
+      "cache": {
+        "frame": 28,
+        "capacity": 9792,
+        "live": 4080,
+        "head": 0,
+        "tail": 4080
+      },
+      "frame": 28,
+      "episode": 0,
+      "cycle": 14,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_15",
+      "ms": 6205.7423279984505,
+      "cache": {
+        "frame": 30,
+        "capacity": 9792,
+        "live": 4352,
+        "head": 0,
+        "tail": 4352
+      },
+      "frame": 30,
+      "episode": 0,
+      "cycle": 15,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_16",
+      "ms": 6301.49820600127,
+      "cache": {
+        "frame": 32,
+        "capacity": 9792,
+        "live": 4624,
+        "head": 0,
+        "tail": 4624
+      },
+      "frame": 32,
+      "episode": 0,
+      "cycle": 16,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_17",
+      "ms": 6391.093678001198,
+      "cache": {
+        "frame": 34,
+        "capacity": 9792,
+        "live": 4896,
+        "head": 0,
+        "tail": 4896
+      },
+      "frame": 34,
+      "episode": 0,
+      "cycle": 17,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_18",
+      "ms": 6476.011885002663,
+      "cache": {
+        "frame": 36,
+        "capacity": 9792,
+        "live": 5168,
+        "head": 0,
+        "tail": 5168
+      },
+      "frame": 36,
+      "episode": 0,
+      "cycle": 18,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_19",
+      "ms": 6536.6765430007945,
+      "cache": {
+        "frame": 38,
+        "capacity": 9792,
+        "live": 5440,
+        "head": 0,
+        "tail": 5440
+      },
+      "frame": 38,
+      "episode": 0,
+      "cycle": 19,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_20",
+      "ms": 6658.425518999138,
+      "cache": {
+        "frame": 40,
+        "capacity": 9792,
+        "live": 5712,
+        "head": 0,
+        "tail": 5712
+      },
+      "frame": 40,
+      "episode": 0,
+      "cycle": 20,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_21",
+      "ms": 6756.752485998732,
+      "cache": {
+        "frame": 42,
+        "capacity": 9792,
+        "live": 5984,
+        "head": 0,
+        "tail": 5984
+      },
+      "frame": 42,
+      "episode": 0,
+      "cycle": 21,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_22",
+      "ms": 6839.80467800211,
+      "cache": {
+        "frame": 44,
+        "capacity": 9792,
+        "live": 6256,
+        "head": 0,
+        "tail": 6256
+      },
+      "frame": 44,
+      "episode": 0,
+      "cycle": 22,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_23",
+      "ms": 6931.437993000145,
+      "cache": {
+        "frame": 46,
+        "capacity": 9792,
+        "live": 6528,
+        "head": 0,
+        "tail": 6528
+      },
+      "frame": 46,
+      "episode": 0,
+      "cycle": 23,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_24",
+      "ms": 7050.217648000398,
+      "cache": {
+        "frame": 48,
+        "capacity": 9792,
+        "live": 6800,
+        "head": 0,
+        "tail": 6800
+      },
+      "frame": 48,
+      "episode": 0,
+      "cycle": 24,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_25",
+      "ms": 7138.776036001218,
+      "cache": {
+        "frame": 50,
+        "capacity": 9792,
+        "live": 7072,
+        "head": 0,
+        "tail": 7072
+      },
+      "frame": 50,
+      "episode": 0,
+      "cycle": 25,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_26",
+      "ms": 7225.574258998677,
+      "cache": {
+        "frame": 52,
+        "capacity": 9792,
+        "live": 7344,
+        "head": 0,
+        "tail": 7344
+      },
+      "frame": 52,
+      "episode": 0,
+      "cycle": 26,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_27",
+      "ms": 7327.407119999407,
+      "cache": {
+        "frame": 54,
+        "capacity": 9792,
+        "live": 7616,
+        "head": 0,
+        "tail": 7616
+      },
+      "frame": 54,
+      "episode": 0,
+      "cycle": 27,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_28",
+      "ms": 7421.364650999749,
+      "cache": {
+        "frame": 56,
+        "capacity": 9792,
+        "live": 7888,
+        "head": 0,
+        "tail": 7888
+      },
+      "frame": 56,
+      "episode": 0,
+      "cycle": 28,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_29",
+      "ms": 7494.440615999338,
+      "cache": {
+        "frame": 58,
+        "capacity": 9792,
+        "live": 8160,
+        "head": 0,
+        "tail": 8160
+      },
+      "frame": 58,
+      "episode": 0,
+      "cycle": 29,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_30",
+      "ms": 7573.555848000979,
+      "cache": {
+        "frame": 60,
+        "capacity": 9792,
+        "live": 8432,
+        "head": 0,
+        "tail": 8432
+      },
+      "frame": 60,
+      "episode": 0,
+      "cycle": 30,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_31",
+      "ms": 7688.62806299876,
+      "cache": {
+        "frame": 62,
+        "capacity": 9792,
+        "live": 8704,
+        "head": 0,
+        "tail": 8704
+      },
+      "frame": 62,
+      "episode": 0,
+      "cycle": 31,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_32",
+      "ms": 7775.230838000425,
+      "cache": {
+        "frame": 64,
+        "capacity": 9792,
+        "live": 8976,
+        "head": 0,
+        "tail": 8976
+      },
+      "frame": 64,
+      "episode": 0,
+      "cycle": 32,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_33",
+      "ms": 7866.015953997703,
+      "cache": {
+        "frame": 66,
+        "capacity": 9792,
+        "live": 9248,
+        "head": 0,
+        "tail": 9248
+      },
+      "frame": 66,
+      "episode": 0,
+      "cycle": 33,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_34",
+      "ms": 7968.919323000591,
+      "cache": {
+        "frame": 68,
+        "capacity": 9792,
+        "live": 9520,
+        "head": 0,
+        "tail": 9520
+      },
+      "frame": 68,
+      "episode": 0,
+      "cycle": 34,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_35",
+      "ms": 8047.259462000511,
+      "cache": {
+        "frame": 70,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 0,
+        "tail": 9792
+      },
+      "frame": 70,
+      "episode": 0,
+      "cycle": 35,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_36",
+      "ms": 8091.0680209999555,
+      "cache": {
+        "frame": 72,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 272,
+        "tail": 10064
+      },
+      "frame": 72,
+      "episode": 0,
+      "cycle": 36,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_37",
+      "ms": 8148.083076001058,
+      "cache": {
+        "frame": 74,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 544,
+        "tail": 10336
+      },
+      "frame": 74,
+      "episode": 0,
+      "cycle": 37,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_38",
+      "ms": 8112.791887997446,
+      "cache": {
+        "frame": 76,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 816,
+        "tail": 10608
+      },
+      "frame": 76,
+      "episode": 0,
+      "cycle": 38,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_39",
+      "ms": 8148.8377200003015,
+      "cache": {
+        "frame": 78,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 1088,
+        "tail": 10880
+      },
+      "frame": 78,
+      "episode": 0,
+      "cycle": 39,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_40",
+      "ms": 8160.396320003201,
+      "cache": {
+        "frame": 80,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 1360,
+        "tail": 11152
+      },
+      "frame": 80,
+      "episode": 0,
+      "cycle": 40,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_41",
+      "ms": 8172.534256998915,
+      "cache": {
+        "frame": 82,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 1632,
+        "tail": 11424
+      },
+      "frame": 82,
+      "episode": 0,
+      "cycle": 41,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_42",
+      "ms": 8165.915179000876,
+      "cache": {
+        "frame": 84,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 1904,
+        "tail": 11696
+      },
+      "frame": 84,
+      "episode": 0,
+      "cycle": 42,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_43",
+      "ms": 8115.554913998494,
+      "cache": {
+        "frame": 86,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 2176,
+        "tail": 11968
+      },
+      "frame": 86,
+      "episode": 0,
+      "cycle": 43,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_44",
+      "ms": 8162.130374999833,
+      "cache": {
+        "frame": 88,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 2448,
+        "tail": 12240
+      },
+      "frame": 88,
+      "episode": 0,
+      "cycle": 44,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_45",
+      "ms": 8127.841351000825,
+      "cache": {
+        "frame": 90,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 2720,
+        "tail": 12512
+      },
+      "frame": 90,
+      "episode": 0,
+      "cycle": 45,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_46",
+      "ms": 8219.310921002034,
+      "cache": {
+        "frame": 92,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 2992,
+        "tail": 12784
+      },
+      "frame": 92,
+      "episode": 0,
+      "cycle": 46,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_0_cycle_47",
+      "ms": 8151.644887999282,
+      "cache": {
+        "frame": 94,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 3264,
+        "tail": 13056
+      },
+      "frame": 94,
+      "episode": 0,
+      "cycle": 47,
+      "phase": "warmup"
+    },
+    {
+      "label": "episode_1_cycle_0",
+      "ms": 2785.3690039992216,
+      "cache": {
+        "frame": 0,
+        "capacity": 9792,
+        "live": 272,
+        "head": 0,
+        "tail": 272
+      },
+      "frame": 0,
+      "episode": 1,
+      "cycle": 0,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_1",
+      "ms": 2833.119749000616,
+      "cache": {
+        "frame": 2,
+        "capacity": 9792,
+        "live": 544,
+        "head": 0,
+        "tail": 544
+      },
+      "frame": 2,
+      "episode": 1,
+      "cycle": 1,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_2",
+      "ms": 2971.3482659972215,
+      "cache": {
+        "frame": 4,
+        "capacity": 9792,
+        "live": 816,
+        "head": 0,
+        "tail": 816
+      },
+      "frame": 4,
+      "episode": 1,
+      "cycle": 2,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_3",
+      "ms": 3044.1654159985774,
+      "cache": {
+        "frame": 6,
+        "capacity": 9792,
+        "live": 1088,
+        "head": 0,
+        "tail": 1088
+      },
+      "frame": 6,
+      "episode": 1,
+      "cycle": 3,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_4",
+      "ms": 3119.701220999559,
+      "cache": {
+        "frame": 8,
+        "capacity": 9792,
+        "live": 1360,
+        "head": 0,
+        "tail": 1360
+      },
+      "frame": 8,
+      "episode": 1,
+      "cycle": 4,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_5",
+      "ms": 3198.943045001215,
+      "cache": {
+        "frame": 10,
+        "capacity": 9792,
+        "live": 1632,
+        "head": 0,
+        "tail": 1632
+      },
+      "frame": 10,
+      "episode": 1,
+      "cycle": 5,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_6",
+      "ms": 3284.391315999528,
+      "cache": {
+        "frame": 12,
+        "capacity": 9792,
+        "live": 1904,
+        "head": 0,
+        "tail": 1904
+      },
+      "frame": 12,
+      "episode": 1,
+      "cycle": 6,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_7",
+      "ms": 3512.4061860005895,
+      "cache": {
+        "frame": 14,
+        "capacity": 9792,
+        "live": 2176,
+        "head": 0,
+        "tail": 2176
+      },
+      "frame": 14,
+      "episode": 1,
+      "cycle": 7,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_8",
+      "ms": 3434.4128700031433,
+      "cache": {
+        "frame": 16,
+        "capacity": 9792,
+        "live": 2448,
+        "head": 0,
+        "tail": 2448
+      },
+      "frame": 16,
+      "episode": 1,
+      "cycle": 8,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_9",
+      "ms": 3674.9998300001607,
+      "cache": {
+        "frame": 18,
+        "capacity": 9792,
+        "live": 2720,
+        "head": 0,
+        "tail": 2720
+      },
+      "frame": 18,
+      "episode": 1,
+      "cycle": 9,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_10",
+      "ms": 3600.0446639991424,
+      "cache": {
+        "frame": 20,
+        "capacity": 9792,
+        "live": 2992,
+        "head": 0,
+        "tail": 2992
+      },
+      "frame": 20,
+      "episode": 1,
+      "cycle": 10,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_11",
+      "ms": 3678.8868149997143,
+      "cache": {
+        "frame": 22,
+        "capacity": 9792,
+        "live": 3264,
+        "head": 0,
+        "tail": 3264
+      },
+      "frame": 22,
+      "episode": 1,
+      "cycle": 11,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_12",
+      "ms": 3921.5931309990992,
+      "cache": {
+        "frame": 24,
+        "capacity": 9792,
+        "live": 3536,
+        "head": 0,
+        "tail": 3536
+      },
+      "frame": 24,
+      "episode": 1,
+      "cycle": 12,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_13",
+      "ms": 3823.785038999631,
+      "cache": {
+        "frame": 26,
+        "capacity": 9792,
+        "live": 3808,
+        "head": 0,
+        "tail": 3808
+      },
+      "frame": 26,
+      "episode": 1,
+      "cycle": 13,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_14",
+      "ms": 3918.4352009979193,
+      "cache": {
+        "frame": 28,
+        "capacity": 9792,
+        "live": 4080,
+        "head": 0,
+        "tail": 4080
+      },
+      "frame": 28,
+      "episode": 1,
+      "cycle": 14,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_15",
+      "ms": 3998.874226002954,
+      "cache": {
+        "frame": 30,
+        "capacity": 9792,
+        "live": 4352,
+        "head": 0,
+        "tail": 4352
+      },
+      "frame": 30,
+      "episode": 1,
+      "cycle": 15,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_16",
+      "ms": 4064.8812430008547,
+      "cache": {
+        "frame": 32,
+        "capacity": 9792,
+        "live": 4624,
+        "head": 0,
+        "tail": 4624
+      },
+      "frame": 32,
+      "episode": 1,
+      "cycle": 16,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_17",
+      "ms": 4140.962912999385,
+      "cache": {
+        "frame": 34,
+        "capacity": 9792,
+        "live": 4896,
+        "head": 0,
+        "tail": 4896
+      },
+      "frame": 34,
+      "episode": 1,
+      "cycle": 17,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_18",
+      "ms": 4400.890261000313,
+      "cache": {
+        "frame": 36,
+        "capacity": 9792,
+        "live": 5168,
+        "head": 0,
+        "tail": 5168
+      },
+      "frame": 36,
+      "episode": 1,
+      "cycle": 18,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_19",
+      "ms": 4321.744089000276,
+      "cache": {
+        "frame": 38,
+        "capacity": 9792,
+        "live": 5440,
+        "head": 0,
+        "tail": 5440
+      },
+      "frame": 38,
+      "episode": 1,
+      "cycle": 19,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_20",
+      "ms": 4375.114290000056,
+      "cache": {
+        "frame": 40,
+        "capacity": 9792,
+        "live": 5712,
+        "head": 0,
+        "tail": 5712
+      },
+      "frame": 40,
+      "episode": 1,
+      "cycle": 20,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_21",
+      "ms": 4460.319623998657,
+      "cache": {
+        "frame": 42,
+        "capacity": 9792,
+        "live": 5984,
+        "head": 0,
+        "tail": 5984
+      },
+      "frame": 42,
+      "episode": 1,
+      "cycle": 21,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_22",
+      "ms": 4561.5002650010865,
+      "cache": {
+        "frame": 44,
+        "capacity": 9792,
+        "live": 6256,
+        "head": 0,
+        "tail": 6256
+      },
+      "frame": 44,
+      "episode": 1,
+      "cycle": 22,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_23",
+      "ms": 4644.810018999124,
+      "cache": {
+        "frame": 46,
+        "capacity": 9792,
+        "live": 6528,
+        "head": 0,
+        "tail": 6528
+      },
+      "frame": 46,
+      "episode": 1,
+      "cycle": 23,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_24",
+      "ms": 4698.524389998056,
+      "cache": {
+        "frame": 48,
+        "capacity": 9792,
+        "live": 6800,
+        "head": 0,
+        "tail": 6800
+      },
+      "frame": 48,
+      "episode": 1,
+      "cycle": 24,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_25",
+      "ms": 4781.295092001528,
+      "cache": {
+        "frame": 50,
+        "capacity": 9792,
+        "live": 7072,
+        "head": 0,
+        "tail": 7072
+      },
+      "frame": 50,
+      "episode": 1,
+      "cycle": 25,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_26",
+      "ms": 4890.459371999896,
+      "cache": {
+        "frame": 52,
+        "capacity": 9792,
+        "live": 7344,
+        "head": 0,
+        "tail": 7344
+      },
+      "frame": 52,
+      "episode": 1,
+      "cycle": 26,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_27",
+      "ms": 4964.209996996942,
+      "cache": {
+        "frame": 54,
+        "capacity": 9792,
+        "live": 7616,
+        "head": 0,
+        "tail": 7616
+      },
+      "frame": 54,
+      "episode": 1,
+      "cycle": 27,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_28",
+      "ms": 5018.868283001211,
+      "cache": {
+        "frame": 56,
+        "capacity": 9792,
+        "live": 7888,
+        "head": 0,
+        "tail": 7888
+      },
+      "frame": 56,
+      "episode": 1,
+      "cycle": 28,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_29",
+      "ms": 5091.843190999498,
+      "cache": {
+        "frame": 58,
+        "capacity": 9792,
+        "live": 8160,
+        "head": 0,
+        "tail": 8160
+      },
+      "frame": 58,
+      "episode": 1,
+      "cycle": 29,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_30",
+      "ms": 5187.6885409983515,
+      "cache": {
+        "frame": 60,
+        "capacity": 9792,
+        "live": 8432,
+        "head": 0,
+        "tail": 8432
+      },
+      "frame": 60,
+      "episode": 1,
+      "cycle": 30,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_31",
+      "ms": 5261.5873499999,
+      "cache": {
+        "frame": 62,
+        "capacity": 9792,
+        "live": 8704,
+        "head": 0,
+        "tail": 8704
+      },
+      "frame": 62,
+      "episode": 1,
+      "cycle": 31,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_32",
+      "ms": 5319.762104001711,
+      "cache": {
+        "frame": 64,
+        "capacity": 9792,
+        "live": 8976,
+        "head": 0,
+        "tail": 8976
+      },
+      "frame": 64,
+      "episode": 1,
+      "cycle": 32,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_33",
+      "ms": 5401.526890000241,
+      "cache": {
+        "frame": 66,
+        "capacity": 9792,
+        "live": 9248,
+        "head": 0,
+        "tail": 9248
+      },
+      "frame": 66,
+      "episode": 1,
+      "cycle": 33,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_34",
+      "ms": 5495.791531000577,
+      "cache": {
+        "frame": 68,
+        "capacity": 9792,
+        "live": 9520,
+        "head": 0,
+        "tail": 9520
+      },
+      "frame": 68,
+      "episode": 1,
+      "cycle": 34,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_35",
+      "ms": 5582.005002001097,
+      "cache": {
+        "frame": 70,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 0,
+        "tail": 9792
+      },
+      "frame": 70,
+      "episode": 1,
+      "cycle": 35,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_36",
+      "ms": 5614.721309997549,
+      "cache": {
+        "frame": 72,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 272,
+        "tail": 10064
+      },
+      "frame": 72,
+      "episode": 1,
+      "cycle": 36,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_37",
+      "ms": 5605.335068001295,
+      "cache": {
+        "frame": 74,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 544,
+        "tail": 10336
+      },
+      "frame": 74,
+      "episode": 1,
+      "cycle": 37,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_38",
+      "ms": 5613.970221002091,
+      "cache": {
+        "frame": 76,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 816,
+        "tail": 10608
+      },
+      "frame": 76,
+      "episode": 1,
+      "cycle": 38,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_39",
+      "ms": 5587.937440999667,
+      "cache": {
+        "frame": 78,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 1088,
+        "tail": 10880
+      },
+      "frame": 78,
+      "episode": 1,
+      "cycle": 39,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_40",
+      "ms": 5615.151977999631,
+      "cache": {
+        "frame": 80,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 1360,
+        "tail": 11152
+      },
+      "frame": 80,
+      "episode": 1,
+      "cycle": 40,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_41",
+      "ms": 5761.371757998859,
+      "cache": {
+        "frame": 82,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 1632,
+        "tail": 11424
+      },
+      "frame": 82,
+      "episode": 1,
+      "cycle": 41,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_42",
+      "ms": 5614.672192001308,
+      "cache": {
+        "frame": 84,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 1904,
+        "tail": 11696
+      },
+      "frame": 84,
+      "episode": 1,
+      "cycle": 42,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_43",
+      "ms": 5580.599498000083,
+      "cache": {
+        "frame": 86,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 2176,
+        "tail": 11968
+      },
+      "frame": 86,
+      "episode": 1,
+      "cycle": 43,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_44",
+      "ms": 5782.498780998139,
+      "cache": {
+        "frame": 88,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 2448,
+        "tail": 12240
+      },
+      "frame": 88,
+      "episode": 1,
+      "cycle": 44,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_45",
+      "ms": 5596.804441000131,
+      "cache": {
+        "frame": 90,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 2720,
+        "tail": 12512
+      },
+      "frame": 90,
+      "episode": 1,
+      "cycle": 45,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_46",
+      "ms": 5619.747738001024,
+      "cache": {
+        "frame": 92,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 2992,
+        "tail": 12784
+      },
+      "frame": 92,
+      "episode": 1,
+      "cycle": 46,
+      "phase": "measured"
+    },
+    {
+      "label": "episode_1_cycle_47",
+      "ms": 5760.89913299802,
+      "cache": {
+        "frame": 94,
+        "capacity": 9792,
+        "live": 9792,
+        "head": 3264,
+        "tail": 13056
+      },
+      "frame": 94,
+      "episode": 1,
+      "cycle": 47,
+      "phase": "measured"
+    }
+  ],
+  "reset_ms": [
+    390.57409500310314,
+    394.3591600000218
+  ],
+  "repeated_episode_byte_equal": true,
+  "p50_ms": 4671.66720449859,
+  "p99_ms": 5772.5690801884775,
+  "per_cycle_p50_ms": {
+    "0": 2785.3690039992216,
+    "1": 2833.119749000616,
+    "2": 2971.3482659972215,
+    "3": 3044.1654159985774,
+    "4": 3119.701220999559,
+    "5": 3198.943045001215,
+    "6": 3284.391315999528,
+    "7": 3512.4061860005895,
+    "8": 3434.4128700031433,
+    "9": 3674.9998300001607,
+    "10": 3600.0446639991424,
+    "11": 3678.8868149997143,
+    "12": 3921.5931309990992,
+    "13": 3823.785038999631,
+    "14": 3918.4352009979193,
+    "15": 3998.874226002954,
+    "16": 4064.8812430008547,
+    "17": 4140.962912999385,
+    "18": 4400.890261000313,
+    "19": 4321.744089000276,
+    "20": 4375.114290000056,
+    "21": 4460.319623998657,
+    "22": 4561.5002650010865,
+    "23": 4644.810018999124,
+    "24": 4698.524389998056,
+    "25": 4781.295092001528,
+    "26": 4890.459371999896,
+    "27": 4964.209996996942,
+    "28": 5018.868283001211,
+    "29": 5091.843190999498,
+    "30": 5187.6885409983515,
+    "31": 5261.5873499999,
+    "32": 5319.762104001711,
+    "33": 5401.526890000241,
+    "34": 5495.791531000577,
+    "35": 5582.005002001097,
+    "36": 5614.721309997549,
+    "37": 5605.335068001295,
+    "38": 5613.970221002091,
+    "39": 5587.937440999667,
+    "40": 5615.151977999631,
+    "41": 5761.371757998859,
+    "42": 5614.672192001308,
+    "43": 5580.599498000083,
+    "44": 5782.498780998139,
+    "45": 5596.804441000131,
+    "46": 5619.747738001024,
+    "47": 5760.89913299802
+  },
+  "actions_sha256": "8fb90fdc63d68b3d495531c757562d3457981ff9ffcb3b3edba7b7b46b7746a1"
+}

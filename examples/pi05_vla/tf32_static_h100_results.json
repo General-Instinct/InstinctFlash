@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "tier": "NUMERIC",
+  "device": "NVIDIA H100 80GB HBM3",
+  "checkpoint": "lerobot/pi05_base@b211f3d44c36b6acfcf7ae94a64e8e96f75a64ba",
+  "closed_loop": "NOT RUN - see tf32_closed_loop_preregistration.json",
+  "max_allowed_delta": 0.002482,
+  "max_observed_delta": 0.002481512725353241,
+  "cases": {
+    "A_mask48": {
+      "max_abs_vs_fp32": 0.0005129575729370117,
+      "static_vs_tf32_eager": 0.0,
+      "tf32_eager_repeat": 0.0,
+      "static_repeat": 0.0
+    },
+    "B_new_image_tokens_mask31": {
+      "max_abs_vs_fp32": 0.002481512725353241,
+      "static_vs_tf32_eager": 0.0,
+      "tf32_eager_repeat": 0.0,
+      "static_repeat": 0.0
+    },
+    "A_after_B": {
+      "max_abs_vs_fp32": 0.0005129575729370117,
+      "static_vs_tf32_eager": 0.0,
+      "tf32_eager_repeat": 0.0,
+      "static_repeat": 0.0
+    },
+    "C_new_image_tokens_mask19": {
+      "max_abs_vs_fp32": 0.0005099177360534668,
+      "static_vs_tf32_eager": 0.0,
+      "tf32_eager_repeat": 0.0,
+      "static_repeat": 0.0
+    }
+  },
+  "timing_ms": {
+    "fp32_eager_chunk": 261.3705829862738,
+    "tf32_eager_chunk": 165.96374099026434,
+    "tf32_static_chunk": 66.47504199645482,
+    "tf32_prefill": 36.29097100929357,
+    "speedup_vs_fp32_eager": 3.9318603664848073
+  }
+}

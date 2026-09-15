@@ -1,0 +1,1688 @@
+[
+  {
+    "family": "vla2",
+    "device": "NVIDIA H100 80GB HBM3",
+    "status": "BASELINE_VARIABLE",
+    "baseline_p50_ms": 908.1302429549396,
+    "current_p50_ms": 902.7758580632508,
+    "repeated_baseline_p50_ms": 823.6202858388424,
+    "speedup_range": [
+      0.9123197950882039,
+      1.0059310235689907
+    ],
+    "applied_passes": [],
+    "baseline_applied_passes": [],
+    "unchanged_transform_plan": true,
+    "execution_policy": {
+      "category": "BITEXACT",
+      "precision": "native",
+      "tier_ceiling": "bitexact",
+      "transform_tier": "BITEXACT",
+      "nfe": {
+        "prefix": 1,
+        "action": 10
+      },
+      "changed_schedule": {},
+      "schedule_options": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+    },
+    "source_drift": {
+      "current": [],
+      "baseline_b": []
+    },
+    "backend_stats": {},
+    "reference_scope": "Runtime with transformation passes excluded; native adapter, checkpoint and processors unchanged",
+    "comparisons": {
+      "baseline_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-5/vla2-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-5/vla2-current.json",
+        "baseline_sha256": "64104101a429587d1afa903e3f99fbf7c0af2cc193b415e3c49e799d5f2d74b7",
+        "candidate_sha256": "4a4bcf85bd388081b07f608309a0f3c55c0f8e7d3849cbfa36d5427f14bc7baf",
+        "protocol_differences": {},
+        "bitexact": false,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              50,
+              14
+            ],
+            "finite": true,
+            "bitexact": false,
+            "max_abs_delta": 0.037101998925209045
+          }
+        ],
+        "candidate_stats": {
+          "captured": false,
+          "replays": 0,
+          "cuda_kernels": false,
+          "moe_layers": 0,
+          "rmsnorm_modules": 0,
+          "gpu_image_preprocess": false,
+          "vision_graph": false,
+          "vision_replays": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "ptxas": {}
+        },
+        "baseline_p50_ms": 908.1302429549396,
+        "candidate_p50_ms": 902.7758580632508,
+        "speedup": 1.0059310235689907,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 3,
+        "total_calls": 15
+      },
+      "baseline_repeat": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-5/vla2-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-5/vla2-baseline_b.json",
+        "baseline_sha256": "64104101a429587d1afa903e3f99fbf7c0af2cc193b415e3c49e799d5f2d74b7",
+        "candidate_sha256": "31dbb98ccb9fa47a67779e2db61c1316517fc3dd7b952cf4395774c6829769dc",
+        "protocol_differences": {},
+        "bitexact": false,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              50,
+              14
+            ],
+            "finite": true,
+            "bitexact": false,
+            "max_abs_delta": 0.035149261355400085
+          }
+        ],
+        "candidate_stats": {
+          "captured": false,
+          "replays": 0,
+          "cuda_kernels": false,
+          "moe_layers": 0,
+          "rmsnorm_modules": 0,
+          "gpu_image_preprocess": false,
+          "vision_graph": false,
+          "vision_replays": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "ptxas": {}
+        },
+        "baseline_p50_ms": 908.1302429549396,
+        "candidate_p50_ms": 823.6202858388424,
+        "speedup": 1.1026079111565656,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 1,
+        "total_calls": 15
+      },
+      "repeat_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-5/vla2-baseline_b.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-5/vla2-current.json",
+        "baseline_sha256": "31dbb98ccb9fa47a67779e2db61c1316517fc3dd7b952cf4395774c6829769dc",
+        "candidate_sha256": "4a4bcf85bd388081b07f608309a0f3c55c0f8e7d3849cbfa36d5427f14bc7baf",
+        "protocol_differences": {},
+        "bitexact": false,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              50,
+              14
+            ],
+            "finite": true,
+            "bitexact": false,
+            "max_abs_delta": 0.03905472159385681
+          }
+        ],
+        "candidate_stats": {
+          "captured": false,
+          "replays": 0,
+          "cuda_kernels": false,
+          "moe_layers": 0,
+          "rmsnorm_modules": 0,
+          "gpu_image_preprocess": false,
+          "vision_graph": false,
+          "vision_replays": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "ptxas": {}
+        },
+        "baseline_p50_ms": 823.6202858388424,
+        "candidate_p50_ms": 902.7758580632508,
+        "speedup": 0.9123197950882039,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 1,
+        "total_calls": 15
+      }
+    },
+    "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+  },
+  {
+    "family": "va",
+    "device": "NVIDIA H100 80GB HBM3",
+    "status": "BITEXACT",
+    "baseline_p50_ms": 2655.6114880368114,
+    "current_p50_ms": 2496.0076971910894,
+    "repeated_baseline_p50_ms": 2558.559638913721,
+    "speedup_range": [
+      1.0250607968048435,
+      1.0639436292705884
+    ],
+    "applied_passes": [
+      "fsdp_elision",
+      "allocator_churn_elision",
+      "debug_dump_elision",
+      "obs_decode_elision",
+      "conditioning_prefill",
+      "ring_kv_addressing",
+      "action_terminal_forward_elision"
+    ],
+    "baseline_applied_passes": [
+      "fsdp_elision",
+      "allocator_churn_elision",
+      "debug_dump_elision",
+      "obs_decode_elision",
+      "conditioning_prefill",
+      "ring_kv_addressing"
+    ],
+    "unchanged_transform_plan": false,
+    "execution_policy": {
+      "category": "BITEXACT",
+      "precision": "native",
+      "tier_ceiling": "bitexact",
+      "transform_tier": "BITEXACT",
+      "nfe": {
+        "video": 25,
+        "action": 50
+      },
+      "changed_schedule": {},
+      "schedule_options": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+    },
+    "source_drift": {
+      "current": [],
+      "baseline_b": []
+    },
+    "backend_stats": {},
+    "reference_scope": "Native Runtime without action terminal forward elision",
+    "comparisons": {
+      "baseline_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-5/va-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-5/va-current.json",
+        "baseline_sha256": "052938127cb5b9e202102c69ccbbd9211506cd401dfa10af9287ca08d7901a4e",
+        "candidate_sha256": "01168ce957f103b4534002dcaafe7dd1f443bb0ab8083b58b9c3de29fb3f1f98",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              12,
+              16,
+              2,
+              16
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {},
+        "baseline_p50_ms": 2655.6114880368114,
+        "candidate_p50_ms": 2496.0076971910894,
+        "speedup": 1.0639436292705884,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 12,
+        "total_calls": 12
+      },
+      "baseline_repeat": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-5/va-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-5/va-baseline_b.json",
+        "baseline_sha256": "052938127cb5b9e202102c69ccbbd9211506cd401dfa10af9287ca08d7901a4e",
+        "candidate_sha256": "1ad1bd4f6a23e1136161d919200a5fa9a666c6b8b131767c5c9671f55a5f8b2c",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              12,
+              16,
+              2,
+              16
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {},
+        "baseline_p50_ms": 2655.6114880368114,
+        "candidate_p50_ms": 2558.559638913721,
+        "speedup": 1.037932220788215,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 12,
+        "total_calls": 12
+      },
+      "repeat_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-5/va-baseline_b.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-5/va-current.json",
+        "baseline_sha256": "1ad1bd4f6a23e1136161d919200a5fa9a666c6b8b131767c5c9671f55a5f8b2c",
+        "candidate_sha256": "01168ce957f103b4534002dcaafe7dd1f443bb0ab8083b58b9c3de29fb3f1f98",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              12,
+              16,
+              2,
+              16
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {},
+        "baseline_p50_ms": 2558.559638913721,
+        "candidate_p50_ms": 2496.0076971910894,
+        "speedup": 1.0250607968048435,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 12,
+        "total_calls": 12
+      }
+    },
+    "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+  },
+  {
+    "family": "edge",
+    "device": "NVIDIA H100 80GB HBM3",
+    "status": "BITEXACT",
+    "baseline_p50_ms": 630.951372673735,
+    "current_p50_ms": 661.8912992998958,
+    "repeated_baseline_p50_ms": 660.1075597573072,
+    "speedup_range": [
+      0.9532552752107681,
+      0.9973050868859051
+    ],
+    "applied_passes": [
+      "graph_capture"
+    ],
+    "baseline_applied_passes": [],
+    "unchanged_transform_plan": false,
+    "execution_policy": {
+      "category": "BITEXACT",
+      "precision": "native",
+      "tier_ceiling": "bitexact",
+      "transform_tier": "BITEXACT",
+      "nfe": {
+        "prefix": 1,
+        "action": 4
+      },
+      "changed_schedule": {},
+      "schedule_options": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+    },
+    "source_drift": {
+      "current": [],
+      "baseline_b": []
+    },
+    "backend_stats": {
+      "precision": "native",
+      "fp8_recipe": null,
+      "action_chunk_size": 32,
+      "action_steps": 4,
+      "guidance": 3.0,
+      "conditioning_fps": 15.0,
+      "captured": false
+    },
+    "reference_scope": "Runtime with transformation passes excluded; native adapter, checkpoint and processors unchanged",
+    "comparisons": {
+      "baseline_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-6/edge-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-6/edge-current.json",
+        "baseline_sha256": "3126ad92bc93e148e867fa8a4f04869cbeb80a0683275f06591312f44fc6f7c6",
+        "candidate_sha256": "b7eaa65277f0274de1a709378bc297d2b1473bf01ba69212e0c0d051f5043ee4",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              32,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "precision": "native",
+          "fp8_recipe": null,
+          "action_chunk_size": 32,
+          "action_steps": 4,
+          "guidance": 3.0,
+          "conditioning_fps": 15.0,
+          "captured": false
+        },
+        "baseline_p50_ms": 630.951372673735,
+        "candidate_p50_ms": 661.8912992998958,
+        "speedup": 0.9532552752107681,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      },
+      "baseline_repeat": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-6/edge-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-6/edge-baseline_b.json",
+        "baseline_sha256": "3126ad92bc93e148e867fa8a4f04869cbeb80a0683275f06591312f44fc6f7c6",
+        "candidate_sha256": "8f19a07688f89e8bac1ced27b344c787b9f1d1fe2ab2993f05f59d1eaa79afad",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              32,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "precision": "native",
+          "fp8_recipe": null,
+          "action_chunk_size": 32,
+          "action_steps": 4,
+          "guidance": 3.0,
+          "conditioning_fps": 15.0,
+          "captured": false
+        },
+        "baseline_p50_ms": 630.951372673735,
+        "candidate_p50_ms": 660.1075597573072,
+        "speedup": 0.9558311571309809,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      },
+      "repeat_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-6/edge-baseline_b.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-6/edge-current.json",
+        "baseline_sha256": "8f19a07688f89e8bac1ced27b344c787b9f1d1fe2ab2993f05f59d1eaa79afad",
+        "candidate_sha256": "b7eaa65277f0274de1a709378bc297d2b1473bf01ba69212e0c0d051f5043ee4",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              32,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "precision": "native",
+          "fp8_recipe": null,
+          "action_chunk_size": 32,
+          "action_steps": 4,
+          "guidance": 3.0,
+          "conditioning_fps": 15.0,
+          "captured": false
+        },
+        "baseline_p50_ms": 660.1075597573072,
+        "candidate_p50_ms": 661.8912992998958,
+        "speedup": 0.9973050868859051,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      }
+    },
+    "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+  },
+  {
+    "family": "nano",
+    "device": "NVIDIA H100 80GB HBM3",
+    "status": "BITEXACT",
+    "baseline_p50_ms": 1171.6088471002877,
+    "current_p50_ms": 1177.809159271419,
+    "repeated_baseline_p50_ms": 1172.9738879948854,
+    "speedup_range": [
+      0.9947357242705034,
+      0.9958946903762197
+    ],
+    "applied_passes": [
+      "graph_capture"
+    ],
+    "baseline_applied_passes": [],
+    "unchanged_transform_plan": false,
+    "execution_policy": {
+      "category": "BITEXACT",
+      "precision": "native",
+      "tier_ceiling": "bitexact",
+      "transform_tier": "BITEXACT",
+      "nfe": {
+        "prefix": 1,
+        "action": 4
+      },
+      "changed_schedule": {},
+      "schedule_options": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+    },
+    "source_drift": {
+      "current": [],
+      "baseline_b": []
+    },
+    "backend_stats": {
+      "precision": "native",
+      "fp8_recipe": null,
+      "action_chunk_size": 32,
+      "action_steps": 4,
+      "guidance": 3.0,
+      "conditioning_fps": 15.0,
+      "captured": false
+    },
+    "reference_scope": "Runtime with transformation passes excluded; native adapter, checkpoint and processors unchanged",
+    "comparisons": {
+      "baseline_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-6/nano-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-6/nano-current.json",
+        "baseline_sha256": "687e4701789e931b3bb801bc4dbd20c494aeb056719dd276c02612be13a0a3bb",
+        "candidate_sha256": "f0784ce5608f81a66be3a16427e3448918b7fcb3ad35eee75a2631c717223f49",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              32,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "precision": "native",
+          "fp8_recipe": null,
+          "action_chunk_size": 32,
+          "action_steps": 4,
+          "guidance": 3.0,
+          "conditioning_fps": 15.0,
+          "captured": false
+        },
+        "baseline_p50_ms": 1171.6088471002877,
+        "candidate_p50_ms": 1177.809159271419,
+        "speedup": 0.9947357242705034,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      },
+      "baseline_repeat": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-6/nano-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-6/nano-baseline_b.json",
+        "baseline_sha256": "687e4701789e931b3bb801bc4dbd20c494aeb056719dd276c02612be13a0a3bb",
+        "candidate_sha256": "10c717a8dab65a9980b7881e0ef917b2bd9423f57a2398877d49db51d8596bf8",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              32,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "precision": "native",
+          "fp8_recipe": null,
+          "action_chunk_size": 32,
+          "action_steps": 4,
+          "guidance": 3.0,
+          "conditioning_fps": 15.0,
+          "captured": false
+        },
+        "baseline_p50_ms": 1171.6088471002877,
+        "candidate_p50_ms": 1172.9738879948854,
+        "speedup": 0.9988362563663449,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      },
+      "repeat_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-6/nano-baseline_b.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-6/nano-current.json",
+        "baseline_sha256": "10c717a8dab65a9980b7881e0ef917b2bd9423f57a2398877d49db51d8596bf8",
+        "candidate_sha256": "f0784ce5608f81a66be3a16427e3448918b7fcb3ad35eee75a2631c717223f49",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              32,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "precision": "native",
+          "fp8_recipe": null,
+          "action_chunk_size": 32,
+          "action_steps": 4,
+          "guidance": 3.0,
+          "conditioning_fps": 15.0,
+          "captured": false
+        },
+        "baseline_p50_ms": 1172.9738879948854,
+        "candidate_p50_ms": 1177.809159271419,
+        "speedup": 0.9958946903762197,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      }
+    },
+    "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+  },
+  {
+    "family": "dreamzero",
+    "device": "NVIDIA H100 80GB HBM3",
+    "status": "BITEXACT",
+    "baseline_p50_ms": 3001.876202877611,
+    "current_p50_ms": 3016.3822639733553,
+    "repeated_baseline_p50_ms": 3018.4078039601445,
+    "speedup_range": [
+      0.9951909075752766,
+      1.0006715130277026
+    ],
+    "applied_passes": [],
+    "baseline_applied_passes": [],
+    "unchanged_transform_plan": true,
+    "execution_policy": {
+      "category": "BITEXACT",
+      "precision": "native",
+      "tier_ceiling": "bitexact",
+      "transform_tier": "BITEXACT",
+      "nfe": {
+        "video_action": 16
+      },
+      "changed_schedule": {},
+      "schedule_options": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+    },
+    "source_drift": {
+      "current": [],
+      "baseline_b": []
+    },
+    "backend_stats": {
+      "dynamic_cache_schedule": false,
+      "tier": "upstream shipped mask",
+      "precision": "native",
+      "fp8_recipe": null,
+      "build": {
+        "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+        "steps": {
+          "video_action": 16,
+          "kv_commit": 1
+        },
+        "guidance": {
+          "video_action": [
+            "cfg",
+            5.0
+          ]
+        },
+        "dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "dynamic_cache_schedule": false,
+        "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+      },
+      "loading": {
+        "verified_dit_tensors": 1317,
+        "original_checkpoint": "/home/ubuntu/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+        "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+        "direct_bf16_dit": true,
+        "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+        "initialization_rng_equivalent": false
+      }
+    },
+    "reference_scope": "Runtime with transformation passes excluded; native adapter, checkpoint and processors unchanged",
+    "comparisons": {
+      "baseline_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-7/dreamzero-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-7/dreamzero-current.json",
+        "baseline_sha256": "a87601dd94508d9025781b0835170e9163681189452420f32ac0f525da14bbf9",
+        "candidate_sha256": "65a1182a9ea64f09c8f164e9d0e3cf3fe8edac6127f0a5887b216deccbc52faa",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              12,
+              24,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "dynamic_cache_schedule": false,
+          "tier": "upstream shipped mask",
+          "precision": "native",
+          "fp8_recipe": null,
+          "build": {
+            "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+            "steps": {
+              "video_action": 16,
+              "kv_commit": 1
+            },
+            "guidance": {
+              "video_action": [
+                "cfg",
+                5.0
+              ]
+            },
+            "dit_step_mask": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true,
+              true,
+              true
+            ],
+            "dynamic_cache_schedule": false,
+            "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+          },
+          "loading": {
+            "verified_dit_tensors": 1317,
+            "original_checkpoint": "/home/ubuntu/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+            "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+            "direct_bf16_dit": true,
+            "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+            "initialization_rng_equivalent": false
+          }
+        },
+        "baseline_p50_ms": 3001.876202877611,
+        "candidate_p50_ms": 3016.3822639733553,
+        "speedup": 0.9951909075752766,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 12,
+        "total_calls": 12
+      },
+      "baseline_repeat": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-7/dreamzero-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-7/dreamzero-baseline_b.json",
+        "baseline_sha256": "a87601dd94508d9025781b0835170e9163681189452420f32ac0f525da14bbf9",
+        "candidate_sha256": "ce3249db7cb2a7724fabb479bddfac5615e1ef5e73e149a1f118245a90e0ad6f",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              12,
+              24,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "dynamic_cache_schedule": false,
+          "tier": "upstream shipped mask",
+          "precision": "native",
+          "fp8_recipe": null,
+          "build": {
+            "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+            "steps": {
+              "video_action": 16,
+              "kv_commit": 1
+            },
+            "guidance": {
+              "video_action": [
+                "cfg",
+                5.0
+              ]
+            },
+            "dit_step_mask": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true,
+              true,
+              true
+            ],
+            "dynamic_cache_schedule": false,
+            "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+          },
+          "loading": {
+            "verified_dit_tensors": 1317,
+            "original_checkpoint": "/home/ubuntu/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+            "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+            "direct_bf16_dit": true,
+            "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+            "initialization_rng_equivalent": false
+          }
+        },
+        "baseline_p50_ms": 3001.876202877611,
+        "candidate_p50_ms": 3018.4078039601445,
+        "speedup": 0.9945230723758254,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 12,
+        "total_calls": 12
+      },
+      "repeat_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/h100-7/dreamzero-baseline_b.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/h100-7/dreamzero-current.json",
+        "baseline_sha256": "ce3249db7cb2a7724fabb479bddfac5615e1ef5e73e149a1f118245a90e0ad6f",
+        "candidate_sha256": "65a1182a9ea64f09c8f164e9d0e3cf3fe8edac6127f0a5887b216deccbc52faa",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              12,
+              24,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "dynamic_cache_schedule": false,
+          "tier": "upstream shipped mask",
+          "precision": "native",
+          "fp8_recipe": null,
+          "build": {
+            "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+            "steps": {
+              "video_action": 16,
+              "kv_commit": 1
+            },
+            "guidance": {
+              "video_action": [
+                "cfg",
+                5.0
+              ]
+            },
+            "dit_step_mask": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true,
+              true,
+              true
+            ],
+            "dynamic_cache_schedule": false,
+            "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+          },
+          "loading": {
+            "verified_dit_tensors": 1317,
+            "original_checkpoint": "/home/ubuntu/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+            "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+            "direct_bf16_dit": true,
+            "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+            "initialization_rng_equivalent": false
+          }
+        },
+        "baseline_p50_ms": 3018.4078039601445,
+        "candidate_p50_ms": 3016.3822639733553,
+        "speedup": 1.0006715130277026,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 12,
+        "total_calls": 12
+      }
+    },
+    "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+  },
+  {
+    "family": "vla2",
+    "device": "NVIDIA Thor",
+    "status": "BITEXACT",
+    "baseline_p50_ms": 752.2518484984175,
+    "current_p50_ms": 738.7556829999085,
+    "repeated_baseline_p50_ms": 730.0089880081941,
+    "speedup_range": [
+      0.9881602332232544,
+      1.0182687806118857
+    ],
+    "applied_passes": [],
+    "baseline_applied_passes": [],
+    "unchanged_transform_plan": true,
+    "execution_policy": {
+      "category": "BITEXACT",
+      "precision": "native",
+      "tier_ceiling": "bitexact",
+      "transform_tier": "BITEXACT",
+      "nfe": {
+        "prefix": 1,
+        "action": 10
+      },
+      "changed_schedule": {},
+      "schedule_options": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+    },
+    "source_drift": {
+      "current": [],
+      "baseline_b": []
+    },
+    "backend_stats": {},
+    "reference_scope": "Runtime with transformation passes excluded; native adapter, checkpoint and processors unchanged",
+    "comparisons": {
+      "baseline_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/thor-0/vla2-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/thor-0/vla2-current.json",
+        "baseline_sha256": "9d51204dd7bd6915e4570b089231a1784b0757d56b4db05a25577e0e358a21b8",
+        "candidate_sha256": "82c01a6c2f14a616925b7853b98fed2cb9954d9ed19d550acd890e44fac071c1",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              50,
+              14
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "captured": false,
+          "replays": 0,
+          "cuda_kernels": false,
+          "moe_layers": 0,
+          "rmsnorm_modules": 0,
+          "gpu_image_preprocess": false,
+          "vision_graph": false,
+          "vision_replays": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "ptxas": {
+            "TRITON_PTXAS_PATH": "/usr/local/cuda/bin/ptxas",
+            "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda/bin/ptxas"
+          }
+        },
+        "baseline_p50_ms": 752.2518484984175,
+        "candidate_p50_ms": 738.7556829999085,
+        "speedup": 1.0182687806118857,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      },
+      "baseline_repeat": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/thor-0/vla2-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/thor-0/vla2-baseline_b.json",
+        "baseline_sha256": "9d51204dd7bd6915e4570b089231a1784b0757d56b4db05a25577e0e358a21b8",
+        "candidate_sha256": "c9c26d4ca18117c57e41a4c18a91b9ce966c645b462824c0d7ecd6731fdf2594",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              50,
+              14
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "captured": false,
+          "replays": 0,
+          "cuda_kernels": false,
+          "moe_layers": 0,
+          "rmsnorm_modules": 0,
+          "gpu_image_preprocess": false,
+          "vision_graph": false,
+          "vision_replays": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "ptxas": {
+            "TRITON_PTXAS_PATH": "/usr/local/cuda/bin/ptxas",
+            "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda/bin/ptxas"
+          }
+        },
+        "baseline_p50_ms": 752.2518484984175,
+        "candidate_p50_ms": 730.0089880081941,
+        "speedup": 1.0304692967560747,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      },
+      "repeat_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/thor-0/vla2-baseline_b.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/thor-0/vla2-current.json",
+        "baseline_sha256": "c9c26d4ca18117c57e41a4c18a91b9ce966c645b462824c0d7ecd6731fdf2594",
+        "candidate_sha256": "82c01a6c2f14a616925b7853b98fed2cb9954d9ed19d550acd890e44fac071c1",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              50,
+              14
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "captured": false,
+          "replays": 0,
+          "cuda_kernels": false,
+          "moe_layers": 0,
+          "rmsnorm_modules": 0,
+          "gpu_image_preprocess": false,
+          "vision_graph": false,
+          "vision_replays": 0,
+          "prefill_graph": false,
+          "prefill_replays": 0,
+          "ptxas": {
+            "TRITON_PTXAS_PATH": "/usr/local/cuda/bin/ptxas",
+            "TRITON_PTXAS_BLACKWELL_PATH": "/usr/local/cuda/bin/ptxas"
+          }
+        },
+        "baseline_p50_ms": 730.0089880081941,
+        "candidate_p50_ms": 738.7556829999085,
+        "speedup": 0.9881602332232544,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      }
+    },
+    "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+  },
+  {
+    "family": "dreamzero",
+    "device": "NVIDIA Thor",
+    "status": "BITEXACT",
+    "baseline_p50_ms": 22894.639154998004,
+    "current_p50_ms": 23046.03463600506,
+    "repeated_baseline_p50_ms": 22968.34575200046,
+    "speedup_range": [
+      0.9934307362026381,
+      0.9966289695719182
+    ],
+    "applied_passes": [],
+    "baseline_applied_passes": [],
+    "unchanged_transform_plan": true,
+    "execution_policy": {
+      "category": "BITEXACT",
+      "precision": "native",
+      "tier_ceiling": "bitexact",
+      "transform_tier": "BITEXACT",
+      "nfe": {
+        "video_action": 16
+      },
+      "changed_schedule": {},
+      "schedule_options": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+    },
+    "source_drift": {
+      "current": [],
+      "baseline_b": []
+    },
+    "backend_stats": {
+      "dynamic_cache_schedule": false,
+      "tier": "upstream shipped mask",
+      "precision": "native",
+      "fp8_recipe": null,
+      "build": {
+        "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+        "steps": {
+          "video_action": 16,
+          "kv_commit": 1
+        },
+        "guidance": {
+          "video_action": [
+            "cfg",
+            5.0
+          ]
+        },
+        "dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "dynamic_cache_schedule": false,
+        "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+      },
+      "loading": {
+        "verified_dit_tensors": 1317,
+        "original_checkpoint": "/home/guanming/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+        "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+        "direct_bf16_dit": true,
+        "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+        "initialization_rng_equivalent": false
+      }
+    },
+    "reference_scope": "Runtime with transformation passes excluded; native adapter, checkpoint and processors unchanged",
+    "comparisons": {
+      "baseline_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/thor-0/dreamzero-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/thor-0/dreamzero-current.json",
+        "baseline_sha256": "a83c4cde30982e2df08e3552deeb439d8c3a5a2c40359a08c724ea0d1f7d9943",
+        "candidate_sha256": "6723e1a3bb3445ea9193be56e7128df7995623e87d975a0015b1fcc521dca635",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              12,
+              24,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "dynamic_cache_schedule": false,
+          "tier": "upstream shipped mask",
+          "precision": "native",
+          "fp8_recipe": null,
+          "build": {
+            "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+            "steps": {
+              "video_action": 16,
+              "kv_commit": 1
+            },
+            "guidance": {
+              "video_action": [
+                "cfg",
+                5.0
+              ]
+            },
+            "dit_step_mask": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true,
+              true,
+              true
+            ],
+            "dynamic_cache_schedule": false,
+            "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+          },
+          "loading": {
+            "verified_dit_tensors": 1317,
+            "original_checkpoint": "/home/guanming/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+            "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+            "direct_bf16_dit": true,
+            "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+            "initialization_rng_equivalent": false
+          }
+        },
+        "baseline_p50_ms": 22894.639154998004,
+        "candidate_p50_ms": 23046.03463600506,
+        "speedup": 0.9934307362026381,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 12,
+        "total_calls": 12
+      },
+      "baseline_repeat": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/thor-0/dreamzero-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/thor-0/dreamzero-baseline_b.json",
+        "baseline_sha256": "a83c4cde30982e2df08e3552deeb439d8c3a5a2c40359a08c724ea0d1f7d9943",
+        "candidate_sha256": "fda89d416d3fc983199586b1e41d84d5f2057e032ce1fcbaf00d5e932116be0d",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              12,
+              24,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "dynamic_cache_schedule": false,
+          "tier": "upstream shipped mask",
+          "precision": "native",
+          "fp8_recipe": null,
+          "build": {
+            "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+            "steps": {
+              "video_action": 16,
+              "kv_commit": 1
+            },
+            "guidance": {
+              "video_action": [
+                "cfg",
+                5.0
+              ]
+            },
+            "dit_step_mask": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true,
+              true,
+              true
+            ],
+            "dynamic_cache_schedule": false,
+            "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+          },
+          "loading": {
+            "verified_dit_tensors": 1317,
+            "original_checkpoint": "/home/guanming/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+            "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+            "direct_bf16_dit": true,
+            "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+            "initialization_rng_equivalent": false
+          }
+        },
+        "baseline_p50_ms": 22894.639154998004,
+        "candidate_p50_ms": 22968.34575200046,
+        "speedup": 0.9967909488215521,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 12,
+        "total_calls": 12
+      },
+      "repeat_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/thor-0/dreamzero-baseline_b.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/thor-0/dreamzero-current.json",
+        "baseline_sha256": "fda89d416d3fc983199586b1e41d84d5f2057e032ce1fcbaf00d5e932116be0d",
+        "candidate_sha256": "6723e1a3bb3445ea9193be56e7128df7995623e87d975a0015b1fcc521dca635",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              12,
+              24,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "dynamic_cache_schedule": false,
+          "tier": "upstream shipped mask",
+          "precision": "native",
+          "fp8_recipe": null,
+          "build": {
+            "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+            "steps": {
+              "video_action": 16,
+              "kv_commit": 1
+            },
+            "guidance": {
+              "video_action": [
+                "cfg",
+                5.0
+              ]
+            },
+            "dit_step_mask": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true,
+              true,
+              true
+            ],
+            "dynamic_cache_schedule": false,
+            "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+          },
+          "loading": {
+            "verified_dit_tensors": 1317,
+            "original_checkpoint": "/home/guanming/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+            "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+            "direct_bf16_dit": true,
+            "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+            "initialization_rng_equivalent": false
+          }
+        },
+        "baseline_p50_ms": 22968.34575200046,
+        "candidate_p50_ms": 23046.03463600506,
+        "speedup": 0.9966289695719182,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 12,
+        "total_calls": 12
+      }
+    },
+    "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+  },
+  {
+    "family": "edge",
+    "device": "NVIDIA Thor",
+    "status": "BITEXACT",
+    "baseline_p50_ms": 3439.2806165051297,
+    "current_p50_ms": 3454.49127649772,
+    "repeated_baseline_p50_ms": 3442.928138501884,
+    "speedup_range": [
+      0.9955968451574696,
+      0.9966527233475724
+    ],
+    "applied_passes": [],
+    "baseline_applied_passes": [],
+    "unchanged_transform_plan": true,
+    "execution_policy": {
+      "category": "BITEXACT",
+      "precision": "native",
+      "tier_ceiling": "bitexact",
+      "transform_tier": "BITEXACT",
+      "nfe": {
+        "prefix": 1,
+        "action": 4
+      },
+      "changed_schedule": {},
+      "schedule_options": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+    },
+    "source_drift": {
+      "current": [],
+      "baseline_b": []
+    },
+    "backend_stats": {
+      "precision": "native",
+      "fp8_recipe": null,
+      "action_chunk_size": 32,
+      "action_steps": 4,
+      "guidance": 3.0,
+      "conditioning_fps": 15.0,
+      "captured": false
+    },
+    "reference_scope": "Runtime with transformation passes excluded; native adapter, checkpoint and processors unchanged",
+    "comparisons": {
+      "baseline_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/thor-recovery/edge-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/thor-recovery/edge-current.json",
+        "baseline_sha256": "7575d897c77b821e8a1c2fa6460fc98c03931c586e99aa1ee877c2444ca928d7",
+        "candidate_sha256": "614e1892daeec8e69e57f95ecf4424d16b3c76c0ec99e766a4bb2318e5dd7e00",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              32,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "precision": "native",
+          "fp8_recipe": null,
+          "action_chunk_size": 32,
+          "action_steps": 4,
+          "guidance": 3.0,
+          "conditioning_fps": 15.0,
+          "captured": false
+        },
+        "baseline_p50_ms": 3439.2806165051297,
+        "candidate_p50_ms": 3454.49127649772,
+        "speedup": 0.9955968451574696,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      },
+      "baseline_repeat": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/thor-recovery/edge-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/thor-recovery/edge-baseline_b.json",
+        "baseline_sha256": "7575d897c77b821e8a1c2fa6460fc98c03931c586e99aa1ee877c2444ca928d7",
+        "candidate_sha256": "09fd3cbc904c069a7dee1c6710954defc4abdceddb443322ce97aaa273af5edc",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              32,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "precision": "native",
+          "fp8_recipe": null,
+          "action_chunk_size": 32,
+          "action_steps": 4,
+          "guidance": 3.0,
+          "conditioning_fps": 15.0,
+          "captured": false
+        },
+        "baseline_p50_ms": 3439.2806165051297,
+        "candidate_p50_ms": 3442.928138501884,
+        "speedup": 0.9989405756234164,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      },
+      "repeat_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/thor-recovery/edge-baseline_b.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/thor-recovery/edge-current.json",
+        "baseline_sha256": "09fd3cbc904c069a7dee1c6710954defc4abdceddb443322ce97aaa273af5edc",
+        "candidate_sha256": "614e1892daeec8e69e57f95ecf4424d16b3c76c0ec99e766a4bb2318e5dd7e00",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              32,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "precision": "native",
+          "fp8_recipe": null,
+          "action_chunk_size": 32,
+          "action_steps": 4,
+          "guidance": 3.0,
+          "conditioning_fps": 15.0,
+          "captured": false
+        },
+        "baseline_p50_ms": 3442.928138501884,
+        "candidate_p50_ms": 3454.49127649772,
+        "speedup": 0.9966527233475724,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      }
+    },
+    "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+  },
+  {
+    "family": "nano",
+    "device": "NVIDIA Thor",
+    "status": "BITEXACT",
+    "baseline_p50_ms": 10324.487688500085,
+    "current_p50_ms": 10287.378801018349,
+    "repeated_baseline_p50_ms": 10336.43475099234,
+    "speedup_range": [
+      1.0036072247556456,
+      1.0047685567842737
+    ],
+    "applied_passes": [],
+    "baseline_applied_passes": [],
+    "unchanged_transform_plan": true,
+    "execution_policy": {
+      "category": "BITEXACT",
+      "precision": "native",
+      "tier_ceiling": "bitexact",
+      "transform_tier": "BITEXACT",
+      "nfe": {
+        "prefix": 1,
+        "action": 4
+      },
+      "changed_schedule": {},
+      "schedule_options": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+    },
+    "source_drift": {
+      "current": [],
+      "baseline_b": []
+    },
+    "backend_stats": {
+      "precision": "native",
+      "fp8_recipe": null,
+      "action_chunk_size": 32,
+      "action_steps": 4,
+      "guidance": 3.0,
+      "conditioning_fps": 15.0,
+      "captured": false
+    },
+    "reference_scope": "Runtime with transformation passes excluded; native adapter, checkpoint and processors unchanged",
+    "comparisons": {
+      "baseline_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/thor-recovery/nano-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/thor-recovery/nano-current.json",
+        "baseline_sha256": "77902cb47c23143a7d37f1ca1f6c06c7fb059ea93619f8d9e8aaacc74ab61813",
+        "candidate_sha256": "4bf3cb2dddebc4ae462c95fd69f992a554fdbd531d3719e6349ce3cbd1225271",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              32,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "precision": "native",
+          "fp8_recipe": null,
+          "action_chunk_size": 32,
+          "action_steps": 4,
+          "guidance": 3.0,
+          "conditioning_fps": 15.0,
+          "captured": false
+        },
+        "baseline_p50_ms": 10324.487688500085,
+        "candidate_p50_ms": 10287.378801018349,
+        "speedup": 1.0036072247556456,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      },
+      "baseline_repeat": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/thor-recovery/nano-baseline_a.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/thor-recovery/nano-baseline_b.json",
+        "baseline_sha256": "77902cb47c23143a7d37f1ca1f6c06c7fb059ea93619f8d9e8aaacc74ab61813",
+        "candidate_sha256": "c78b8dde80686526f4471938c1d67d96555f81b64b861a67a6ddfc6075b21bcf",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              32,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "precision": "native",
+          "fp8_recipe": null,
+          "action_chunk_size": 32,
+          "action_steps": 4,
+          "guidance": 3.0,
+          "conditioning_fps": 15.0,
+          "captured": false
+        },
+        "baseline_p50_ms": 10324.487688500085,
+        "candidate_p50_ms": 10336.43475099234,
+        "speedup": 0.9988441795667401,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      },
+      "repeat_current": {
+        "baseline": "eval/native_coverage_2026-09-10/receipts/thor-recovery/nano-baseline_b.json",
+        "candidate": "eval/native_coverage_2026-09-10/receipts/thor-recovery/nano-current.json",
+        "baseline_sha256": "c78b8dde80686526f4471938c1d67d96555f81b64b861a67a6ddfc6075b21bcf",
+        "candidate_sha256": "4bf3cb2dddebc4ae462c95fd69f992a554fdbd531d3719e6349ce3cbd1225271",
+        "protocol_differences": {},
+        "bitexact": true,
+        "arrays": [
+          {
+            "name": "actions",
+            "shape": [
+              15,
+              32,
+              8
+            ],
+            "finite": true,
+            "bitexact": true,
+            "max_abs_delta": 0.0
+          }
+        ],
+        "candidate_stats": {
+          "precision": "native",
+          "fp8_recipe": null,
+          "action_chunk_size": 32,
+          "action_steps": 4,
+          "guidance": 3.0,
+          "conditioning_fps": 15.0,
+          "captured": false
+        },
+        "baseline_p50_ms": 10336.43475099234,
+        "candidate_p50_ms": 10287.378801018349,
+        "speedup": 1.0047685567842737,
+        "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+        "matching_calls": 15,
+        "total_calls": 15
+      }
+    },
+    "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+  }
+]

@@ -1,0 +1,54 @@
+name: Runtime regression gates
+on:
+  push:
+    branches: [main]
+    paths: ['instinctflash/**', 'examples/**', 'serving/**', 'benchmarks/**', 'scripts/**', 'tests/**', 'release/**', 'eval/user_e2e_2026-09-14/*.py', 'pyproject.toml', 'uv.lock', '.github/workflows/runtime-regression.yml']
+  pull_request:
+    paths: ['instinctflash/**', 'examples/**', 'serving/**', 'benchmarks/**', 'scripts/**', 'tests/**', 'release/**', 'eval/user_e2e_2026-09-14/*.py', 'pyproject.toml', 'uv.lock', '.github/workflows/runtime-regression.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gate-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install '.[test,eval]'
+      - run: >-
+          python -m pytest -q tests/test_runtime_regression.py
+          tests/test_cosmos_numeric_regression.py tests/test_user_report.py
+          tests/test_user_provenance.py tests/test_assemble_user_provenance.py
+          tests/test_prompt_update_gate.py tests/test_render_user_summary.py
+          tests/test_checkpoint_revision_views.py tests/test_test_runner.py
+          tests/test_public_deploy.py tests/test_bootstrap_vendor.py
+          tests/test_repair_vendor_wheel.py tests/test_public_release_builder.py
+          tests/test_public_reproduce.py tests/test_public_reproduction_inputs.py
+          tests/test_public_serving_smoke.py tests/test_thor_fa2_builder.py
+          tests/test_thor_native_builder.py tests/test_public_schedule_ranking.py
+          tests/test_prepare_auxiliary_assets.py tests/test_framework_compare.py
+          tests/test_public_cosmos_sde1.py tests/test_public_screen_replay.py
+  installed-user-flow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install core and all adapter wheels in a Torch-free environment
+        run: |
+          python -m venv "$RUNNER_TEMP/ifl-core"
+          "$RUNNER_TEMP/ifl-core/bin/python" -m pip install '.[test]' \
+            ./examples/pi05_vla ./examples/lingbot_vla ./examples/lingbot_vla_v2 \
+            ./examples/groot_n17 ./examples/cosmos3_policy ./examples/dreamzero
+      - name: Exercise the installed CLI and checkpoint metadata outside the checkout
+        working-directory: /tmp
+        run: >-
+          "$RUNNER_TEMP/ifl-core/bin/python" -I
+          "$GITHUB_WORKSPACE/scripts/check_installed_package.py"
+          --require-all-adapters --require-torch-free
+          --output "$RUNNER_TEMP/installed-user-flow.json"
+      - name: Run core tests with explicit optional dependency skips
+        run: '"$RUNNER_TEMP/ifl-core/bin/python" tests/run_tests.py'

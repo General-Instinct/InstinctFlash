@@ -1,0 +1,10 @@
+{
+  "lerobot-pi05-nfe1-compiled-v1.json": {
+    "reason": "The upstream constructor read the checkpoint ten-step default instead of Runtime requested NFE1; this is not a one-step measurement. The v2 driver merges the explicit override before constructing the model and asserts both concrete policy/model step counts.",
+    "retain": true
+  },
+  "omni-dreamzero-eager-v5.json": {
+    "reason": "The prompt switched at call 8 inside an episode; the native history protocol changes prompt only at reset (call 9). Latency remains an exploratory result but is excluded from the aligned primary workload. v4 driver keeps the prompt fixed for all three calls in each episode.",
+    "retain": true
+  }
+}

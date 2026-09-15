@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "adapter_id": "lingbot_vla_v2-robotwin-v1",
+  "driver_python": "/path/to/simulator-env/bin/python",
+  "environment": {
+    "ROBOTWIN_ROOT": "/path/to/RoboTwin",
+    "LINGBOT_ROOT": "/path/to/lingbot-va"
+  },
+  "tasks": 10,
+  "seeds": 2,
+  "candidate_tier": "NUMERIC",
+  "control": {
+    "endpoint": "ws://127.0.0.1:29471",
+    "receipt": "/path/to/stock.receipt.json"
+  },
+  "candidate": {
+    "endpoint": "ws://127.0.0.1:29472",
+    "receipt": "/path/to/runtime.receipt.json"
+  },
+  "suites": [
+    "robotwin50_easy",
+    "robotwin50_hard"
+  ]
+}

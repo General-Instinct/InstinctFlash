@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "scope": "Eight exact InstinctCompress source files plus explicit InstinctFlash experimental helper/benchmark closure. No training implementation or customer artifacts.",
+  "helper_license": "AGPL-3.0-or-later",
+  "files": [
+    {
+      "repository": "InstinctCompress",
+      "source": "instinct_compress/__init__.py",
+      "destination": "instinct_compress/__init__.py",
+      "sha256": "9e6a5e03c13d23d1885841d717c586d318b4e82d34350ea79de7288b23342aea",
+      "bytes": 260,
+      "transform": "none"
+    },
+    {
+      "repository": "InstinctCompress",
+      "source": "instinct_compress/flash/__init__.py",
+      "destination": "instinct_compress/flash/__init__.py",
+      "sha256": "04dceac031202782844d503f5298cbe230b41c3ba347bc726d3342f3d2cd2337",
+      "bytes": 83,
+      "transform": "none"
+    },
+    {
+      "repository": "InstinctCompress",
+      "source": "instinct_compress/flash/cosmos3.py",
+      "destination": "instinct_compress/flash/cosmos3.py",
+      "sha256": "0a9b26fc0de02cab788de09d943a786e8c57d75b05bfee6e77715cbc3279eeb7",
+      "bytes": 7293,
+      "transform": "none"
+    },
+    {
+      "repository": "InstinctCompress",
+      "source": "instinct_compress/flash/cosmos3_action_padding.py",
+      "destination": "instinct_compress/flash/cosmos3_action_padding.py",
+      "sha256": "bf96e731942c6aa338952a595f0277323d202a0232ee8b15dd405afa496a4a27",
+      "bytes": 6908,
+      "transform": "none"
+    },
+    {
+      "repository": "InstinctCompress",
+      "source": "instinct_compress/artifacts.py",
+      "destination": "instinct_compress/artifacts.py",
+      "sha256": "b8e57adc22b1f183403a2354f1f729238029eff5c78bccaef7a474c8054d9f89",
+      "bytes": 10059,
+      "transform": "none"
+    },
+    {
+      "repository": "InstinctCompress",
+      "source": "instinct_compress/models/__init__.py",
+      "destination": "instinct_compress/models/__init__.py",
+      "sha256": "6bdda9f3336ce8e0cb718f77aa1ca226915282943cca246c89b227879d50b334",
+      "bytes": 80,
+      "transform": "none"
+    },
+    {
+      "repository": "InstinctCompress",
+      "source": "instinct_compress/models/cosmos3_action_padding.py",
+      "destination": "instinct_compress/models/cosmos3_action_padding.py",
+      "sha256": "084fcf2fb2b2c9b52f18f01a90eb057797df65781f6bd3a2ebae84fad576eeee",
+      "bytes": 17886,
+      "transform": "none"
+    },
+    {
+      "repository": "InstinctCompress",
+      "source": "instinct_compress/models/cosmos3_distill_rollout.py",
+      "destination": "instinct_compress/models/cosmos3_distill_rollout.py",
+      "sha256": "b4920fbde4cd530fe7d305918045a434a3277d95252adb011a362be0a17e27c0",
+      "bytes": 8795,
+      "transform": "none"
+    },
+    {
+      "repository": "InstinctFlash",
+      "source": "eval/cosmos3_distillation_thor_2026-09-12/realtime-deployment/realtime_adapter.py",
+      "destination": "cosmos3_sde1/realtime_adapter.py",
+      "sha256": "dc82a0eedf8360aa91aa94153828a6e0f7b1721f82055994039f194e32ac2c48",
+      "bytes": 5149,
+      "transform": "none; symlink materialized where applicable"
+    },
+    {
+      "repository": "InstinctFlash",
+      "source": "eval/cosmos3_distillation_thor_2026-09-12/realtime-deployment/runtime_assets.py",
+      "destination": "cosmos3_sde1/runtime_assets.py",
+      "sha256": "21156d06cd13d44dae64f6081a542b7f25c92c02aba72eeb8591d69793d10b92",
+      "bytes": 1982,
+      "transform": "none; symlink materialized where applicable"
+    },
+    {
+      "repository": "InstinctFlash",
+      "source": "eval/cosmos3_distillation_thor_2026-09-12/nano-cache-swiglu/persistent_cache.py",
+      "destination": "cosmos3_sde1/persistent_cache.py",
+      "sha256": "bfe1881c3e2b89185646c833c6ddf8d7815541e5dda14654fa691e3f9b444275",
+      "bytes": 5710,
+      "transform": "none; symlink materialized where applicable"
+    },
+    {
+      "repository": "InstinctFlash",
+      "source": "eval/cosmos3_distillation_thor_2026-09-12/nano-cache-swiglu/prompt_contract.py",
+      "destination": "cosmos3_sde1/prompt_contract.py",
+      "sha256": "6908d6851c771b2765e536c6c82590f61f0b0e9c1539579e6f9e1b6da0138238",
+      "bytes": 1156,
+      "transform": "none; symlink materialized where applicable"
+    },
+    {
+      "repository": "InstinctFlash",
+      "source": "eval/cosmos3_distillation_thor_2026-09-12/realtime-deployment/benchmark_candidate.py",
+      "source_sha256": "568032c2274a6b8751cff073811ec63c01dafc5773d8c2ca954bf8093ccbdc03",
+      "destination": "cosmos3_sde1/benchmark_edge.py",
+      "sha256": "b760e2b28bdf11a3544629d67683f63c2102b2a12d50402ab6c099a8781f0c94",
+      "transform": "Qualified helper imports; exact safe decoded frame loader replaces trusted legacy pickle/JPEG decode. Request math, seeds, warmup, measured calls, timers and checks unchanged. Loaded-source inventory also includes the new cosmos3_sde1 package namespace."
+    },
+    {
+      "repository": "InstinctFlash",
+      "source": "eval/cosmos3_distillation_thor_2026-09-12/nano-cache-swiglu/benchmark.py",
+      "source_sha256": "b98b93cc4ed425b7c806a45cf4aa67c9bc1c14b49bcae67af49460bafb59b9c4",
+      "destination": "cosmos3_sde1/benchmark_nano.py",
+      "sha256": "a6821451b1a93ef920ca7dcc0a05938fa140b0dc1a8a9c238ab6010f1bbcbcdf",
+      "transform": "Qualified helper imports; exact safe decoded frame loader replaces trusted legacy pickle/JPEG decode. Request math, seeds, warmup, measured calls, timers and checks unchanged. Loaded-source inventory also includes the new cosmos3_sde1 package namespace."
+    }
+  ],
+  "helper_license_sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0",
+  "base_model_license": {
+    "name": "OpenMDW-1.1",
+    "source_url": "https://raw.githubusercontent.com/OpenMDW/OpenMDW/9067ba54b2f84bc9e15a05734f570ec88e9f445d/1.1/LICENSE.OpenMDW-1.1",
+    "official_commit": "9067ba54b2f84bc9e15a05734f570ec88e9f445d",
+    "sha256": "2ab44b68365473c112f5092211a38f231cb23e50de68b75a13369adbd76a74df",
+    "assessment": "Official license permits modification/distribution subject to retaining agreement and applicable copyright/origin notices. The original pinned NVIDIA model card declares OpenMDW1.1. Artifacts retain both; source helper remains separately AGPL. No publication is performed by these tools."
+  },
+  "publication_ready": false,
+  "task_quality_certified": false
+}

@@ -1344,8 +1344,23 @@ class Pi05Pipeline:
         assert lang_embeds_np.shape[1] == ENC_D
 
         # Store a persistent device copy of the (prompt_len, ENC_D) embeds.
+        #
+        # IN-PLACE, never reallocate-when-sized-right: the D2D memcpy that feeds these embeds
+        # into encoder_x runs inside run_pipeline(), which record_infer_graph() CAPTURES — the
+        # source pointer is baked into the graph. Allocating a fresh CudaBuffer here on a
+        # same-length prompt swap (the frontend's fast path skips rebuild when prompt_len is
+        # unchanged) frees the old buffer while the captured graph still reads it: replay then
+        # sources freed memory. Reusing the existing allocation keeps the baked pointer alive
+        # and pointing at the CURRENT prompt. A size change invalidates any recorded graph
+        # (shapes changed anyway), so drop it rather than let a stale capture replay.
         arr = np.ascontiguousarray(lang_embeds_np)
-        self._lang_embeds_buf = CudaBuffer.from_numpy(arr)
+        buf = getattr(self, "_lang_embeds_buf", None)
+        if buf is not None and buf.nbytes == arr.nbytes:
+            buf.upload(arr)
+        else:
+            if buf is not None and getattr(self, "_graph", None) is not None:
+                self._graph = None                 # captured with the old pointer/size: dead
+            self._lang_embeds_buf = CudaBuffer.from_numpy(arr)
         self._current_prompt_len = prompt_len
 
         # Update decoder RoPE slice for this prompt length

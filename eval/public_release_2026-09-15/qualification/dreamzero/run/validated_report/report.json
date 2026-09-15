@@ -1,0 +1,1146 @@
+{
+  "bindings": [
+    {
+      "path": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v6/inputs/recorded_inputs_v1.npz",
+      "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+      "status": "passed"
+    }
+  ],
+  "cells": [
+    {
+      "action_shape": [
+        24,
+        8
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "abaefa7e21c6ec5e4433b69541497fbbabeaf680d144b3b2e7e3e66f0e3a8cf6",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v6/cells/dreamzero-eager_native/receipt.npz",
+        "sha256": "749e398262f15366dd2683be0bc1b1ff7a44e90e23b422908d4e15fe8d083726",
+        "shape": [
+          21,
+          24,
+          8
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "eager_native",
+      "comparison_group": "dreamzero-checkpoint",
+      "default_schedule": {
+        "video_action": 16
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint"
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "experimental": false,
+      "family": "dreamzero",
+      "first_predict_ms": 227030.3266409901,
+      "guidance": "{'video_action': 'cfg'}",
+      "id": "dreamzero-eager_native",
+      "input_contract": {
+        "action_shape": [
+          24,
+          8
+        ],
+        "family": "dreamzero",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 18,
+        "max_ms": 24195.50353399245,
+        "mean_ms": 22637.63928210958,
+        "min_ms": 20222.02432801714,
+        "p50_ms": 23052.6033519709
+      },
+      "model_id": "GEAR-Dreams/DreamZero-DROID",
+      "new_episode": {
+        "count": 6,
+        "max_ms": 20979.623379011173,
+        "mean_ms": 20700.891909664886,
+        "min_ms": 20222.02432801714,
+        "p50_ms": 20897.265165491262
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "video_action": 16
+        },
+        "nfe_before": {
+          "video_action": 16
+        },
+        "schedule_after": {
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate",
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "steps": {
+            "kv_commit": 1,
+            "video_action": 16
+          }
+        },
+        "schedule_before": {
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate",
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "steps": {
+            "kv_commit": 1,
+            "video_action": 16
+          }
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 12,
+        "max_ms": 24195.50353399245,
+        "mean_ms": 23606.012968331925,
+        "min_ms": 23024.567265005317,
+        "p50_ms": 23563.08018002892
+      },
+      "primary_metric": "continuation_p50_ms",
+      "receipt": {
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v6/cells/dreamzero-eager_native/receipt.json",
+        "sha256": "b967e960aa43d950cc2e8b70523a9e961137beb312d2f41b74982df6928dcca8"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "4a8717a69485be7cf38b7aea95f6f2a3eeecbe0585a4cd269a0ecce6c20368c7",
+      "revision": "96ad344138c66e82536422432ad742f015784942",
+      "runtime_kwargs": {},
+      "setup_plus_first_predict_ms": 445887.98154197866,
+      "setup_plus_timed_calls_mean_ms": 48646.37320862052,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 218.85765490098856,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 38224.580118097256,
+      "timed_session_ms": 802716.1824800423,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.11.0+cu130",
+      "total_calls": 21,
+      "usability": "succeeded on recorded requests",
+      "warmup_calls": 3
+    },
+    {
+      "action_shape": [
+        24,
+        8
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "abaefa7e21c6ec5e4433b69541497fbbabeaf680d144b3b2e7e3e66f0e3a8cf6",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v6/cells/dreamzero-runtime_default/receipt.npz",
+        "sha256": "749e398262f15366dd2683be0bc1b1ff7a44e90e23b422908d4e15fe8d083726",
+        "shape": [
+          21,
+          24,
+          8
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "runtime_default",
+      "comparison_group": "dreamzero-checkpoint",
+      "default_schedule": {
+        "video_action": 16
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint"
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "changed_schedule": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+        "nfe": {
+          "video_action": 16
+        },
+        "precision": "native",
+        "schedule_options": {
+          "dreamzero_schedule": {
+            "computed_steps": 8,
+            "dynamic_cache_schedule": false,
+            "fixed_mask_steps": 8,
+            "grid_steps": 16,
+            "profile": null,
+            "source": "checkpoint"
+          }
+        },
+        "step_cache": {
+          "dynamic": false,
+          "fixed_steps": 8,
+          "profile": null,
+          "source": "checkpoint"
+        },
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT"
+      },
+      "experimental": false,
+      "family": "dreamzero",
+      "first_predict_ms": 40207.087969989516,
+      "guidance": "{'video_action': 'cfg'}",
+      "id": "dreamzero-runtime_default",
+      "input_contract": {
+        "action_shape": [
+          24,
+          8
+        ],
+        "family": "dreamzero",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 18,
+        "max_ms": 24560.417146014515,
+        "mean_ms": 22953.768896663354,
+        "min_ms": 20167.37334005302,
+        "p50_ms": 23344.577723473776
+      },
+      "model_id": "GEAR-Dreams/DreamZero-DROID",
+      "new_episode": {
+        "count": 6,
+        "max_ms": 21194.869943952654,
+        "mean_ms": 21005.19571516391,
+        "min_ms": 20167.37334005302,
+        "p50_ms": 21166.651528998045
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "video_action": 16
+        },
+        "nfe_before": {
+          "video_action": 16
+        },
+        "schedule_after": {
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate",
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "steps": {
+            "kv_commit": 1,
+            "video_action": 16
+          }
+        },
+        "schedule_before": {
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate",
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "steps": {
+            "kv_commit": 1,
+            "video_action": 16
+          }
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 12,
+        "max_ms": 24560.417146014515,
+        "mean_ms": 23928.055487413076,
+        "min_ms": 23298.07381698629,
+        "p50_ms": 23876.198655518238
+      },
+      "primary_metric": "continuation_p50_ms",
+      "receipt": {
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v6/cells/dreamzero-runtime_default/receipt.json",
+        "sha256": "db145251f5687ed8efadca52932645d1881580083aec7ee5a00c1154ed380df7"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "4a8717a69485be7cf38b7aea95f6f2a3eeecbe0585a4cd269a0ecce6c20368c7",
+      "revision": "96ad344138c66e82536422432ad742f015784942",
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "setup_plus_first_predict_ms": 185245.15368201537,
+      "setup_plus_timed_calls_mean_ms": 31081.104666044535,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 145.03806571202585,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 24174.530108329018,
+      "timed_session_ms": 507665.1322749094,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.11.0+cu130",
+      "total_calls": 21,
+      "usability": "public default succeeded on recorded requests",
+      "warmup_calls": 3
+    },
+    {
+      "action_shape": [
+        24,
+        8
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "abaefa7e21c6ec5e4433b69541497fbbabeaf680d144b3b2e7e3e66f0e3a8cf6",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v6/cells/dreamzero-runtime_selected/receipt.npz",
+        "sha256": "749e398262f15366dd2683be0bc1b1ff7a44e90e23b422908d4e15fe8d083726",
+        "shape": [
+          21,
+          24,
+          8
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "runtime_selected",
+      "comparison_group": "dreamzero-checkpoint",
+      "default_schedule": {
+        "video_action": 16
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint"
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "changed_schedule": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+        "nfe": {
+          "video_action": 16
+        },
+        "precision": "native",
+        "schedule_options": {
+          "dreamzero_schedule": {
+            "computed_steps": 8,
+            "dynamic_cache_schedule": false,
+            "fixed_mask_steps": 8,
+            "grid_steps": 16,
+            "profile": null,
+            "source": "runtime.step_cache=checkpoint"
+          }
+        },
+        "step_cache": {
+          "dynamic": false,
+          "fixed_steps": 8,
+          "profile": null,
+          "source": "runtime.step_cache=checkpoint"
+        },
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT"
+      },
+      "experimental": false,
+      "family": "dreamzero",
+      "first_predict_ms": 43049.547484959476,
+      "guidance": "{'video_action': 'cfg'}",
+      "id": "dreamzero-runtime_selected",
+      "input_contract": {
+        "action_shape": [
+          24,
+          8
+        ],
+        "family": "dreamzero",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 18,
+        "max_ms": 24367.36772803124,
+        "mean_ms": 22557.276412721774,
+        "min_ms": 20300.56575400522,
+        "p50_ms": 22716.423253528774
+      },
+      "model_id": "GEAR-Dreams/DreamZero-DROID",
+      "new_episode": {
+        "count": 6,
+        "max_ms": 20998.545326001476,
+        "mean_ms": 20747.552936159384,
+        "min_ms": 20300.56575400522,
+        "p50_ms": 20941.835037461715
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "video_action": 16
+        },
+        "nfe_before": {
+          "video_action": 16
+        },
+        "schedule_after": {
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate",
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "steps": {
+            "kv_commit": 1,
+            "video_action": 16
+          }
+        },
+        "schedule_before": {
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate",
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "steps": {
+            "kv_commit": 1,
+            "video_action": 16
+          }
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 12,
+        "max_ms": 24367.36772803124,
+        "mean_ms": 23462.13815100297,
+        "min_ms": 22620.839249982964,
+        "p50_ms": 23285.73152649915
+      },
+      "primary_metric": "continuation_p50_ms",
+      "receipt": {
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v6/cells/dreamzero-runtime_selected/receipt.json",
+        "sha256": "d50c0eecb1a74a1837f90c808887be58173b71a287530471c446b3a2b8a90876"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "4a8717a69485be7cf38b7aea95f6f2a3eeecbe0585a4cd269a0ecce6c20368c7",
+      "revision": "96ad344138c66e82536422432ad742f015784942",
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "native",
+        "step_cache": "checkpoint",
+        "tier_ceiling": "bitexact"
+      },
+      "setup_plus_first_predict_ms": 232001.26457598526,
+      "setup_plus_timed_calls_mean_ms": 34169.88984790597,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 188.95171709102578,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 25172.189034047602,
+      "timed_session_ms": 528615.9697149997,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.11.0+cu130",
+      "total_calls": 21,
+      "usability": "succeeded on recorded requests",
+      "warmup_calls": 3
+    },
+    {
+      "action_shape": [
+        24,
+        8
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "73d4d8ba32be879fad191405de7103847d77f26ff882eb5029b61dbeab3ab39d",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v6/cells/dreamzero-dynamic-fp8/receipt.npz",
+        "sha256": "408419ad84ec399950833f1a86204dd9dd59c3b37a65e45e9691714aace2255a",
+        "shape": [
+          21,
+          24,
+          8
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "operating_point",
+      "comparison_group": "dreamzero-dynamic-fp8",
+      "default_schedule": {
+        "video_action": 16
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "profile": "dreamzero_velocity_v1",
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "dynamic"
+      },
+      "execution_policy": {
+        "category": "OPERATING-POINT",
+        "changed_schedule": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+        "nfe": {
+          "video_action": 16
+        },
+        "precision": "fp8",
+        "schedule_options": {
+          "dreamzero_schedule": {
+            "computed_steps": null,
+            "config": {
+              "max_bytes": 67108864,
+              "profile": "dreamzero_velocity_v1",
+              "skip_counts": [
+                4,
+                2
+              ],
+              "thresholds": [
+                0.95,
+                0.93
+              ]
+            },
+            "dynamic_cache_schedule": true,
+            "fixed_mask_steps": 8,
+            "grid_steps": 16,
+            "profile": "dreamzero_velocity_v1",
+            "source": "runtime.step_cache=dynamic"
+          }
+        },
+        "step_cache": {
+          "dynamic": true,
+          "fixed_steps": 8,
+          "profile": "dreamzero_velocity_v1",
+          "source": "runtime.step_cache=dynamic"
+        },
+        "tier_ceiling": "behavioral",
+        "transform_tier": "BEHAVIORAL"
+      },
+      "experimental": true,
+      "family": "dreamzero",
+      "first_predict_ms": 30294.468390988186,
+      "guidance": "{'video_action': 'cfg'}",
+      "id": "dreamzero-dynamic-fp8",
+      "input_contract": {
+        "action_shape": [
+          24,
+          8
+        ],
+        "family": "dreamzero",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 18,
+        "max_ms": 12347.3459330271,
+        "mean_ms": 11391.919477842748,
+        "min_ms": 10281.431521987543,
+        "p50_ms": 11463.77852052683
+      },
+      "model_id": "GEAR-Dreams/DreamZero-DROID",
+      "new_episode": {
+        "count": 6,
+        "max_ms": 10410.762322018854,
+        "mean_ms": 10378.864364669425,
+        "min_ms": 10281.431521987543,
+        "p50_ms": 10392.89254002506
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "video_action": 16
+        },
+        "nfe_before": {
+          "video_action": 16
+        },
+        "schedule_after": {
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": true,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate",
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "steps": {
+            "kv_commit": 1,
+            "video_action": 16
+          }
+        },
+        "schedule_before": {
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": true,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate",
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "steps": {
+            "kv_commit": 1,
+            "video_action": 16
+          }
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "fp8",
+      "primary": {
+        "count": 12,
+        "max_ms": 12347.3459330271,
+        "mean_ms": 11898.44703442941,
+        "min_ms": 11456.440883048344,
+        "p50_ms": 11899.423940485576
+      },
+      "primary_metric": "continuation_p50_ms",
+      "receipt": {
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v6/cells/dreamzero-dynamic-fp8/receipt.json",
+        "sha256": "29040cb145ec671cf4be6c95f133ea0db34f3c63a550ad308004b4fe633a085f"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "4a8717a69485be7cf38b7aea95f6f2a3eeecbe0585a4cd269a0ecce6c20368c7",
+      "revision": "96ad344138c66e82536422432ad742f015784942",
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8",
+        "step_cache": "dynamic",
+        "tier_ceiling": "behavioral"
+      },
+      "setup_plus_first_predict_ms": 179086.9140010327,
+      "setup_plus_timed_calls_mean_ms": 19653.01007796301,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 148.79244561004452,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 12567.655525103744,
+      "timed_session_ms": 263920.7660271786,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.11.0+cu130",
+      "total_calls": 21,
+      "usability": "experimental operating point",
+      "warmup_calls": 3
+    }
+  ],
+  "comparisons": [
+    {
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "metric_overflow": false,
+        "rmse": 0.0,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "baseline": "dreamzero-eager_native",
+      "baseline_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint"
+      },
+      "candidate": "dreamzero-runtime_default",
+      "candidate_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint"
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "kind": "matched_policy_latency_ratio",
+      "median_paired_ratio": 0.9858624276142764,
+      "paired_samples": 12,
+      "ratio_of_p50": 0.9868857484389815,
+      "recommended": false,
+      "same_sampling_policy": true,
+      "status": "passed",
+      "task_quality_validated": false
+    },
+    {
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "metric_overflow": false,
+        "rmse": 0.0,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "baseline": "dreamzero-eager_native",
+      "baseline_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint"
+      },
+      "candidate": "dreamzero-runtime_selected",
+      "candidate_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint"
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "kind": "matched_policy_latency_ratio",
+      "median_paired_ratio": 1.0071065183584875,
+      "paired_samples": 12,
+      "ratio_of_p50": 1.011910669553763,
+      "recommended": false,
+      "same_sampling_policy": true,
+      "status": "passed",
+      "task_quality_validated": false
+    },
+    {
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.1953125,
+        "metric_overflow": false,
+        "rmse": 0.05674211485687118,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "baseline": "dreamzero-eager_native",
+      "baseline_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "checkpoint"
+      },
+      "candidate": "dreamzero-dynamic-fp8",
+      "candidate_schedule": {
+        "checkpoint_dit_step_mask": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          true,
+          true,
+          true
+        ],
+        "checkpoint_num_dit_steps": 8,
+        "guidance": 5.0,
+        "nfe": {
+          "video_action": 16
+        },
+        "profile": "dreamzero_velocity_v1",
+        "sampler": "checkpoint",
+        "solver_updates": 16,
+        "step_cache": "dynamic"
+      },
+      "interpretation": "changes sampling policy; latency ratio is not an architecture-only speedup or quality evidence",
+      "kind": "changed_policy_latency_ratio",
+      "median_paired_ratio": 1.9846389613784807,
+      "paired_samples": 12,
+      "ratio_of_p50": 1.9801866290232693,
+      "recommended": false,
+      "same_sampling_policy": false,
+      "status": "passed",
+      "task_quality_validated": false
+    }
+  ],
+  "counts": {
+    "expected_cells": 4,
+    "failed_cells": 0,
+    "failed_comparisons": 0,
+    "finite_public_actions": 84,
+    "finite_queue_actions": 0,
+    "incomplete_cells": 0,
+    "main_cells": 3,
+    "operating_point_cells": 1,
+    "passed_cells": 4,
+    "runtime_update_cells": 0
+  },
+  "errors": [],
+  "matrix": {
+    "path": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v6/matrix.json",
+    "sha256": "b660ddc3377cfb0518be4eda572faea02e2e9259b447351ec9ea4ae514a64a52"
+  },
+  "pending": [],
+  "recommended": false,
+  "reproduction_plan": {
+    "execution_mode": "dynamic-fp8",
+    "sha256": "dd05cff0bde6cf7dbd4ee944332f91c7c825ded127defdd3c319c11ef09b2904"
+  },
+  "require_observed_schedule": true,
+  "schema": "instinctflash.user_report.v1",
+  "scope": "CPU artifact/protocol validation on recorded requests; no simulator or task-quality admission",
+  "status": "passed",
+  "task_quality_validated": false,
+  "validator": {
+    "path": "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/benchmarks/regression/user_report.py",
+    "sha256": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+  }
+}

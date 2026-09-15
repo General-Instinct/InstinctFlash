@@ -1,0 +1,995 @@
+{
+  "status": "success",
+  "quality_certified": false,
+  "trained_student": false,
+  "scope": "Original SDE2 CFG1 cuDNN historical diagnostic; no two-step training or fresh confirmation",
+  "native_numeric_pair": {
+    "requests": 128,
+    "input_bytes_identical": true,
+    "action_maxabs": 0.0537109375,
+    "action_meanabs": 0.001823618687524231
+  },
+  "script_sha256": "590381b0992c058b0ae68270cc7d69fdd2108454f592957f5a731f6c83b2ed7c",
+  "protocol_sha256": "13e660f76bd71d17739d373ca4e5095c0fb855b71218f41c259223934fec544b",
+  "inputs": [
+    {
+      "path": "/home/ubuntu/ifl_cosmos_quality_preflight/control-compact-original_sde2_cfg1-cudnn-v2/report.json",
+      "sha256": "8b11aeda8eccf8acbb92222804fc0e0469b132393ef6d99014ba5519afdb704a"
+    },
+    {
+      "path": "/home/ubuntu/ifl_cosmos_quality_preflight/control-compact-original_sde2_cfg1-cudnn-v2/actions.npz",
+      "sha256": "c1f26be2af519c71f90137fef8b0329be2cf6c9ead1496dbef076b36e53912d5"
+    },
+    {
+      "path": "/home/ubuntu/ifl_cosmos_quality_preflight/same_thor_scores_v2.json",
+      "sha256": "33290524fdf5c5e4e9de99fbfdbd1dce44cf65c27971e2a8dd63f866d307dccb"
+    },
+    {
+      "path": "/home/ubuntu/ifl_cosmos_quality_preflight/deployed_scores_v1.json",
+      "sha256": "4ca973c3ddb54a07bf5557344de6376255fcdf4d032712f8dcad8d5f93f2d419"
+    },
+    {
+      "path": "/home/ubuntu/ifl_cosmos_quality_preflight/original_sde2_scores_v1.json",
+      "sha256": "3a1f8e0dc881098bc723428924ab2df196a3de949a2e09030542b31383df49c9"
+    }
+  ],
+  "primary_metrics": [
+    "raw/joint/h1/energy_u",
+    "raw/gripper/h1/energy_u",
+    "raw/joint/h32/energy_u",
+    "raw/gripper/h32/energy_u"
+  ],
+  "independent_numerical_crosscheck": {
+    "status": "success",
+    "metric_vectors": 96,
+    "comparison_metric_bootstraps": 1536,
+    "tolerance": {
+      "relative": 2e-10,
+      "absolute": 2e-12
+    }
+  },
+  "limitations": [
+    "Reused 16 development episodes, not fresh confirmation.",
+    "Original UniPC4 native padding intentionally differs from zero-padded SDE; matched SDE controls have identical inputs.",
+    "Teacher32 remains the independently sampled H100 reference, not command ground truth.",
+    "No selected checkpoint, aggregate winner metric, multiple-testing correction, or noninferiority margin.",
+    "Actual controller deadline, fresh-observation age and closed-loop task success remain unqualified.",
+    "Actual cuDNN BF16 outputs scored separately and paired to native outputs; no task quality certificate.",
+    "Both training seeds and both native/cuDNN one-step baselines retained; no winner selection.",
+    "Original SDE2 outcomes were not read before freezing the request plan; prior development outcomes were seen."
+  ],
+  "report": {
+    "path": "/home/ubuntu/ifl_cosmos_quality_preflight/original_sde2_cudnn_scores_v2.json",
+    "sha256": "41794b8dc24641bee483234d01800300beca1b30f341629faa7e699d265305fc"
+  },
+  "comparisons": [
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "original_unipc4",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.019126589701258287,
+          "difference": 0.002565047578349248,
+          "difference_percent_of_baseline": 13.410898745741903,
+          "paired_episode_bootstrap_95pct": [
+            0.0008175010995246424,
+            0.0042251586854994425
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.11150457330846361,
+          "difference": 0.015512011745678529,
+          "difference_percent_of_baseline": 13.911547558472304,
+          "paired_episode_bootstrap_95pct": [
+            0.0024688634821879046,
+            0.027927097067835607
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.07701541464346576,
+          "difference": 0.002330757126218756,
+          "difference_percent_of_baseline": 3.0263514609493893,
+          "paired_episode_bootstrap_95pct": [
+            -0.005773793327039773,
+            0.00928227038366322
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.17437354930561433,
+          "difference": -0.012729709288444241,
+          "difference_percent_of_baseline": -7.300252440313424,
+          "paired_episode_bootstrap_95pct": [
+            -0.05338184081406756,
+            0.015916638322738597
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "original_sde1_cfg1",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.02179411450595718,
+          "difference": -0.00010247722634964325,
+          "difference_percent_of_baseline": -0.4702059646499161,
+          "paired_episode_bootstrap_95pct": [
+            -0.00227945190674184,
+            0.001891851325695567
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.15990178426727653,
+          "difference": -0.03288519921313439,
+          "difference_percent_of_baseline": -20.565873835508075,
+          "paired_episode_bootstrap_95pct": [
+            -0.06252322980102949,
+            -0.007224703899451679
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.07617940912275936,
+          "difference": 0.0031667626469251402,
+          "difference_percent_of_baseline": 4.156979797286244,
+          "paired_episode_bootstrap_95pct": [
+            -0.0014946816926523212,
+            0.008212220868320021
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.20943423703435515,
+          "difference": -0.04779039701718507,
+          "difference_percent_of_baseline": -22.818808277915725,
+          "paired_episode_bootstrap_95pct": [
+            -0.09661453242605576,
+            -0.0028771532978968104
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "original_sde1_cfg4",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.018623929835922783,
+          "difference": 0.0030677074436847524,
+          "difference_percent_of_baseline": 16.471858897189367,
+          "paired_episode_bootstrap_95pct": [
+            0.000498104760613317,
+            0.005802532955564192
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.1454741497790175,
+          "difference": -0.01845756472487535,
+          "difference_percent_of_baseline": -12.687865681231555,
+          "paired_episode_bootstrap_95pct": [
+            -0.04386842353934688,
+            0.007643383486928143
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.07597404064270014,
+          "difference": 0.0033721311269843787,
+          "difference_percent_of_baseline": 4.438530711882554,
+          "paired_episode_bootstrap_95pct": [
+            -0.006190004423277479,
+            0.012325152166649997
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.22108334323259596,
+          "difference": -0.05943950321542586,
+          "difference_percent_of_baseline": -26.885563763567266,
+          "paired_episode_bootstrap_95pct": [
+            -0.12622044308922317,
+            -0.0019490949715846072
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "edge_sde1_cfg1_seed12031_update0064/native",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.0224385637454191,
+          "difference": -0.0007469264658115636,
+          "difference_percent_of_baseline": -3.3287623677074736,
+          "paired_episode_bootstrap_95pct": [
+            -0.0029577651342818424,
+            0.0014764826552713232
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.1152096578319158,
+          "difference": 0.011806927222226347,
+          "difference_percent_of_baseline": 10.248209607090379,
+          "paired_episode_bootstrap_95pct": [
+            -0.019838847176704023,
+            0.041787530658101354
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.0767600593909932,
+          "difference": 0.0025861123786913116,
+          "difference_percent_of_baseline": 3.3690859533060213,
+          "paired_episode_bootstrap_95pct": [
+            -0.0022597111046971756,
+            0.007718331549670386
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.18265530770615263,
+          "difference": -0.021011467688982557,
+          "difference_percent_of_baseline": -11.503343621848005,
+          "paired_episode_bootstrap_95pct": [
+            -0.06136892236662747,
+            0.016123484308229952
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "edge_sde1_cfg1_seed12031_update0064/cudnn",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.022604744451762027,
+          "difference": -0.0009131071721544903,
+          "difference_percent_of_baseline": -4.03944921431445,
+          "paired_episode_bootstrap_95pct": [
+            -0.0031151622302973522,
+            0.0013449891908395666
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.11477287499500172,
+          "difference": 0.01224371005914041,
+          "difference_percent_of_baseline": 10.667773251888667,
+          "paired_episode_bootstrap_95pct": [
+            -0.019468300420391767,
+            0.042488890972786714
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.0767111612109748,
+          "difference": 0.002635010558709715,
+          "difference_percent_of_baseline": 3.4349767584182174,
+          "paired_episode_bootstrap_95pct": [
+            -0.002228259117915755,
+            0.0077871040894550835
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.18268484398686446,
+          "difference": -0.021041003969694383,
+          "difference_percent_of_baseline": -11.5176516620105,
+          "paired_episode_bootstrap_95pct": [
+            -0.06154597808859738,
+            0.01611554219546617
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "edge_sde1_cfg1_seed12032_update0064/native",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.02192323093761607,
+          "difference": -0.00023159365800853513,
+          "difference_percent_of_baseline": -1.0563847029096642,
+          "paired_episode_bootstrap_95pct": [
+            -0.002271275308727366,
+            0.0018877088993000453
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.11369059088506869,
+          "difference": 0.013325994169073447,
+          "difference_percent_of_baseline": 11.721281475742236,
+          "paired_episode_bootstrap_95pct": [
+            -0.01817898566036352,
+            0.04285111557027058
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.07632453914114806,
+          "difference": 0.003021632628536456,
+          "difference_percent_of_baseline": 3.9589267914851187,
+          "paired_episode_bootstrap_95pct": [
+            -0.0012287194960879386,
+            0.007424981980160561
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.18161992635333163,
+          "difference": -0.019976086336161568,
+          "difference_percent_of_baseline": -10.998840676379961,
+          "paired_episode_bootstrap_95pct": [
+            -0.05958834342614766,
+            0.01635854460384934
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "edge_sde1_cfg1_seed12032_update0064/cudnn",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.021991630468531684,
+          "difference": -0.0002999931889241478,
+          "difference_percent_of_baseline": -1.3641243624633232,
+          "paired_episode_bootstrap_95pct": [
+            -0.0023465771708742235,
+            0.001795069977770093
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.1136993101931044,
+          "difference": 0.013317274861037731,
+          "difference_percent_of_baseline": 11.71271385764783,
+          "paired_episode_bootstrap_95pct": [
+            -0.018113924592866436,
+            0.04283289868118506
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.07624000368638131,
+          "difference": 0.0031061680833031863,
+          "difference_percent_of_baseline": 4.074197184040848,
+          "paired_episode_bootstrap_95pct": [
+            -0.0011423345409700286,
+            0.007509459906904411
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.1816410459802822,
+          "difference": -0.019997205963112125,
+          "difference_percent_of_baseline": -11.00918895021277,
+          "paired_episode_bootstrap_95pct": [
+            -0.059806455356898054,
+            0.016538903166996057
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "edge_sde1_cfg4_seed12031_update0064/native",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.02042953465217085,
+          "difference": 0.0012621026274366857,
+          "difference_percent_of_baseline": 6.177833459865783,
+          "paired_episode_bootstrap_95pct": [
+            -0.0013676284033086732,
+            0.004258737479981063
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.10745485752288783,
+          "difference": 0.01956172753125429,
+          "difference_percent_of_baseline": 18.204600501273433,
+          "paired_episode_bootstrap_95pct": [
+            -0.005716514324636327,
+            0.04782639175453888
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.07798882389724852,
+          "difference": 0.0013573478724359885,
+          "difference_percent_of_baseline": 1.740438956002613,
+          "paired_episode_bootstrap_95pct": [
+            -0.007221326059463647,
+            0.010114566530015238
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.2060002863272913,
+          "difference": -0.04435644631012124,
+          "difference_percent_of_baseline": -21.532225561884967,
+          "paired_episode_bootstrap_95pct": [
+            -0.10228470574258247,
+            0.006868929515421476
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "edge_sde1_cfg4_seed12031_update0064/cudnn",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.02093072557099753,
+          "difference": 0.0007609117086100057,
+          "difference_percent_of_baseline": 3.6353814206247876,
+          "paired_episode_bootstrap_95pct": [
+            -0.002338079390711464,
+            0.003855234326781608
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.10743196341874343,
+          "difference": 0.019584621635398695,
+          "difference_percent_of_baseline": 18.229790289750774,
+          "paired_episode_bootstrap_95pct": [
+            -0.004433235898613928,
+            0.04680040389066561
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.07782070774374275,
+          "difference": 0.0015254640259417622,
+          "difference_percent_of_baseline": 1.9602289289953403,
+          "paired_episode_bootstrap_95pct": [
+            -0.0070636340389836445,
+            0.010137251937507112
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.20615348249828674,
+          "difference": -0.04450964248111668,
+          "difference_percent_of_baseline": -21.590536304176467,
+          "paired_episode_bootstrap_95pct": [
+            -0.10136692798180645,
+            0.005757637020983299
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "edge_sde1_cfg4_seed12032_update0064/native",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.02082353724345421,
+          "difference": 0.0008681000361533249,
+          "difference_percent_of_baseline": 4.168840413634376,
+          "paired_episode_bootstrap_95pct": [
+            -0.0022147105933715,
+            0.004295853028174842
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.09980086237192154,
+          "difference": 0.027215722682220597,
+          "difference_percent_of_baseline": 27.270027568296445,
+          "paired_episode_bootstrap_95pct": [
+            -0.0017695168033242167,
+            0.05906396016611576
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.07825579707325894,
+          "difference": 0.0010903746964255636,
+          "difference_percent_of_baseline": 1.3933468665648021,
+          "paired_episode_bootstrap_95pct": [
+            -0.007631461703295472,
+            0.010063454554728653
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.20431042111409115,
+          "difference": -0.042666581096921063,
+          "difference_percent_of_baseline": -20.88321333011945,
+          "paired_episode_bootstrap_95pct": [
+            -0.09880390156399924,
+            0.00770092200532752
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "edge_sde1_cfg4_seed12032_update0064/cudnn",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.02107316434990306,
+          "difference": 0.0006184729297044759,
+          "difference_percent_of_baseline": 2.934884004296777,
+          "paired_episode_bootstrap_95pct": [
+            -0.002419155255977514,
+            0.004068932515980686
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.1032892021882747,
+          "difference": 0.023727382865867442,
+          "difference_percent_of_baseline": 22.971794111273475,
+          "paired_episode_bootstrap_95pct": [
+            -0.005833574728707653,
+            0.05616293796504446
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.07850921316550652,
+          "difference": 0.0008369586041779896,
+          "difference_percent_of_baseline": 1.0660641858855264,
+          "paired_episode_bootstrap_95pct": [
+            -0.007823247554983849,
+            0.009704718977383906
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.20530824897295435,
+          "difference": -0.04366440895578426,
+          "difference_percent_of_baseline": -21.267732384944868,
+          "paired_episode_bootstrap_95pct": [
+            -0.10071711074129987,
+            0.007049848978333493
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "edge_sde1_cfg1_paired_seed_mean_update0064/native",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.022180897341517583,
+          "difference": -0.0004892600619100491,
+          "difference_percent_of_baseline": -2.205772175836483,
+          "paired_episode_bootstrap_95pct": [
+            -0.0025790286766384117,
+            0.001589275611164335
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.11445012435849225,
+          "difference": 0.012566460695649893,
+          "difference_percent_of_baseline": 10.979857615783757,
+          "paired_episode_bootstrap_95pct": [
+            -0.019076849437052654,
+            0.04250650418855781
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.07654229926607063,
+          "difference": 0.0028038725036138835,
+          "difference_percent_of_baseline": 3.6631673342699975,
+          "paired_episode_bootstrap_95pct": [
+            -0.0016621032923189833,
+            0.007571897088051568
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.18213761702974215,
+          "difference": -0.02049377701257207,
+          "difference_percent_of_baseline": -11.251809124759514,
+          "paired_episode_bootstrap_95pct": [
+            -0.06053950032373056,
+            0.016252653121381445
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "edge_sde1_cfg1_paired_seed_mean_update0064/cudnn",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.022298187460146855,
+          "difference": -0.0006065501805393189,
+          "difference_percent_of_baseline": -2.720177062029795,
+          "paired_episode_bootstrap_95pct": [
+            -0.002679498610471655,
+            0.0014614801028083166
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.11423609259405307,
+          "difference": 0.012780492460089068,
+          "difference_percent_of_baseline": 11.18778852626337,
+          "paired_episode_bootstrap_95pct": [
+            -0.018907108906257363,
+            0.04273211835617465
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.07647558244867805,
+          "difference": 0.0028705893210064504,
+          "difference_percent_of_baseline": 3.753602429811989,
+          "paired_episode_bootstrap_95pct": [
+            -0.0015861891299521935,
+            0.007625436721688978
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.18216294498357333,
+          "difference": -0.02051910496640325,
+          "difference_percent_of_baseline": -11.264148681969086,
+          "paired_episode_bootstrap_95pct": [
+            -0.06078781089039747,
+            0.016335897426940135
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "edge_sde1_cfg4_paired_seed_mean_update0064/native",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.02062653594781253,
+          "difference": 0.0010651013317950053,
+          "difference_percent_of_baseline": 5.163743124341538,
+          "paired_episode_bootstrap_95pct": [
+            -0.00169837276767798,
+            0.004224345704704793
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.1036278599474047,
+          "difference": 0.02338872510673744,
+          "difference_percent_of_baseline": 22.56992001823463,
+          "paired_episode_bootstrap_95pct": [
+            -0.0035591175472031223,
+            0.05338593675655177
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.07812231048525373,
+          "difference": 0.0012238612844307775,
+          "difference_percent_of_baseline": 1.5665963753872745,
+          "paired_episode_bootstrap_95pct": [
+            -0.0074135348048838525,
+            0.010059636872521387
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.2051553537206912,
+          "difference": -0.043511513703521146,
+          "difference_percent_of_baseline": -21.209055924887004,
+          "paired_episode_bootstrap_95pct": [
+            -0.10015731936378462,
+            0.00730572611779844
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "edge_sde1_cfg4_paired_seed_mean_update0064/cudnn",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.021001944960450297,
+          "difference": 0.0006896923191572402,
+          "difference_percent_of_baseline": 3.2839449891713874,
+          "paired_episode_bootstrap_95pct": [
+            -0.0022172868548644615,
+            0.0038336628928417383
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.10536058280350907,
+          "difference": 0.02165600225063307,
+          "difference_percent_of_baseline": 20.55417849293807,
+          "paired_episode_bootstrap_95pct": [
+            -0.004826254173115427,
+            0.051487003514609685
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.07816496045462464,
+          "difference": 0.0011812113150598753,
+          "difference_percent_of_baseline": 1.511177525312736,
+          "paired_episode_bootstrap_95pct": [
+            -0.007442539920729079,
+            0.009964817630302375
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.20573086573562055,
+          "difference": -0.04408702571845048,
+          "difference_percent_of_baseline": -21.429465899932385,
+          "paired_episode_bootstrap_95pct": [
+            -0.10078642462141336,
+            0.00639675234468974
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    },
+    {
+      "candidate": "original_sde2_cfg1/cudnn",
+      "baseline": "original_sde2_cfg1/native",
+      "metrics": {
+        "raw/joint/h1/energy_u": {
+          "candidate": 0.021691637279607538,
+          "baseline": 0.021627874094412018,
+          "difference": 6.376318519551701e-05,
+          "difference_percent_of_baseline": 0.2948194765568358,
+          "paired_episode_bootstrap_95pct": [
+            -6.0522300651055525e-05,
+            0.00018529147955759787
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h1/energy_u": {
+          "candidate": 0.12701658505414212,
+          "baseline": 0.1269119954002755,
+          "difference": 0.00010458965386663335,
+          "difference_percent_of_baseline": 0.08241116494682921,
+          "paired_episode_bootstrap_95pct": [
+            -0.00048737697902002177,
+            0.0006311591980712707
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/joint/h32/energy_u": {
+          "candidate": 0.0793461717696845,
+          "baseline": 0.0793463961988268,
+          "difference": -2.2442914229424057e-07,
+          "difference_percent_of_baseline": -0.0002828473037790706,
+          "paired_episode_bootstrap_95pct": [
+            -0.00017358507092917405,
+            0.00016394338954786873
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        },
+        "raw/gripper/h32/energy_u": {
+          "candidate": 0.16164384001717008,
+          "baseline": 0.1615928540112127,
+          "difference": 5.098600595735943e-05,
+          "difference_percent_of_baseline": 0.03155214150362217,
+          "paired_episode_bootstrap_95pct": [
+            -0.0005940259923326872,
+            0.000694237239379876
+          ],
+          "episodes": 16,
+          "bootstrap_replicates": 5000,
+          "scope": "Conditional on these two training runs, fixed sampled banks, and reused development episodes; no correction across exploratory metrics"
+        }
+      }
+    }
+  ]
+}

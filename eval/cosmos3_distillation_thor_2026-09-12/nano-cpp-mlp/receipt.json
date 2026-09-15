@@ -1,0 +1,195 @@
+{
+  "category": "SCREEN",
+  "synthetic_inputs": true,
+  "task_quality_certified": false,
+  "end_to_end_benchmark": false,
+  "source_sha256": "a1be117241abebe2efdfff4429e71c905590d3f90c046cdb966ec845a7d05aef",
+  "results": [
+    {
+      "layer": 0,
+      "input_shape": [
+        3093,
+        4096
+      ],
+      "weights": {
+        "layers.0.mlp_moe_gen.gate_proj.weight": {
+          "shape": [
+            12288,
+            4096
+          ],
+          "sha256": "f187fff3fb07409f80a164a43c06dec139a2df38c9de60f52270a7ef988b6ae7",
+          "shard": "diffusion_pytorch_model-00001-of-00007.safetensors"
+        },
+        "layers.0.mlp_moe_gen.up_proj.weight": {
+          "shape": [
+            12288,
+            4096
+          ],
+          "sha256": "89b0b0cca6a7ed84db65172764fbcc6d8f9648d2f11d8fe063043dfa9d25c924",
+          "shard": "diffusion_pytorch_model-00001-of-00007.safetensors"
+        },
+        "layers.0.mlp_moe_gen.down_proj.weight": {
+          "shape": [
+            4096,
+            12288
+          ],
+          "sha256": "04a924a1b50a1ddb9c947828d972a4195923638e2f8a404efb0e4026a7506084",
+          "shard": "diffusion_pytorch_model-00001-of-00007.safetensors"
+        }
+      },
+      "variants": {
+        "separate": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            9.051398468017577,
+            9.042632293701171,
+            9.11990737915039,
+            9.110681915283203,
+            9.239775848388671
+          ],
+          "median_ms": 9.110681915283203
+        },
+        "separate_shared": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            8.616033935546875,
+            8.635470581054687,
+            8.677227020263672,
+            8.644989013671875,
+            8.670177459716797
+          ],
+          "median_ms": 8.644989013671875
+        },
+        "cpp_default": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            9.167276763916016,
+            9.5406494140625,
+            9.341363525390625,
+            9.312876892089843,
+            9.27508316040039
+          ],
+          "median_ms": 9.312876892089843
+        },
+        "cpp_tuned": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            9.107259368896484,
+            9.064075469970703,
+            9.066083526611328,
+            9.178952026367188,
+            9.205652618408203
+          ],
+          "median_ms": 9.107259368896484
+        }
+      }
+    },
+    {
+      "layer": 35,
+      "input_shape": [
+        3093,
+        4096
+      ],
+      "weights": {
+        "layers.35.mlp_moe_gen.gate_proj.weight": {
+          "shape": [
+            12288,
+            4096
+          ],
+          "sha256": "80a272573cf6b250bfd83f937f9ba893fd52ab2945ef425e262393ec83b1ef4f",
+          "shard": "diffusion_pytorch_model-00006-of-00007.safetensors"
+        },
+        "layers.35.mlp_moe_gen.up_proj.weight": {
+          "shape": [
+            12288,
+            4096
+          ],
+          "sha256": "22bbc63b35c773e77453dc38417e8bbe3f86d69c709ad3e341ec8c0e6ecdd1cd",
+          "shard": "diffusion_pytorch_model-00006-of-00007.safetensors"
+        },
+        "layers.35.mlp_moe_gen.down_proj.weight": {
+          "shape": [
+            4096,
+            12288
+          ],
+          "sha256": "bba18652ef499031f1f4384977364b1ea816293738d6311a359ae32700a29b5b",
+          "shard": "diffusion_pytorch_model-00006-of-00007.safetensors"
+        }
+      },
+      "variants": {
+        "separate": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            10.312862396240234,
+            10.393208312988282,
+            10.333432006835938,
+            10.438889312744141,
+            10.352184295654297
+          ],
+          "median_ms": 10.352184295654297
+        },
+        "separate_shared": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            9.915764617919923,
+            9.952088165283204,
+            9.892430114746094,
+            9.97416000366211,
+            9.940972900390625
+          ],
+          "median_ms": 9.940972900390625
+        },
+        "cpp_default": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            10.225907135009766,
+            10.184008026123047,
+            10.264073944091797,
+            10.20806427001953,
+            10.215172576904298
+          ],
+          "median_ms": 10.215172576904298
+        },
+        "cpp_tuned": {
+          "maxabs": 0.0,
+          "meanabs": 0.0,
+          "byte_identical": true,
+          "trials_ms": [
+            10.027011108398437,
+            10.033856201171876,
+            10.026367950439454,
+            10.019489288330078,
+            10.021562957763672
+          ],
+          "median_ms": 10.026367950439454
+        }
+      }
+    }
+  ],
+  "torch": "2.10.0+cu130",
+  "cuda": "13.0",
+  "device": "NVIDIA Thor",
+  "cpp_sources": {
+    "cpp_mlp.py": "9dceb6e68289caf3526041f39b3b43e87d8ced40144de64668fb3c198d6ffeec",
+    "shim.cu": "efd5510c936784bea60a3245d55cdc63a3a761c50571e3229a0252ddd1508c5e",
+    "gemm_runner.cu": "b7acd609980a927c755f047d8b19cca074f4b19ea81fae2676fac8581ccd1feb",
+    "gemm_runner.h": "a79fe8438300078ac4dca9b99e9bb14794938c5300fc36fc0895fb10f55e305e"
+  },
+  "library_sha256": "12df02d6045461bf2bd7e0baa9c242034cf884b63a8d4699ba83df59685e2410",
+  "index_sha256": "4c8226c48a4c3acdd4766ec329db5523dc2a3e3807e3e2682556a21a043a7539",
+  "ok": true
+}

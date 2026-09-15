@@ -1,0 +1,41 @@
+{
+  "family": "nano",
+  "rows": [
+    {
+      "variant": "baseline_a",
+      "p50_ms": 8692.50174050103,
+      "p95_ms": 8702.554900212272,
+      "byte_equal_to_baseline_a": true,
+      "max_abs_delta": 0.0,
+      "mean_abs_delta": 0.0
+    },
+    {
+      "variant": "cached",
+      "p50_ms": 8304.784514504718,
+      "p95_ms": 8310.723673447501,
+      "byte_equal_to_baseline_a": true,
+      "max_abs_delta": 0.0,
+      "mean_abs_delta": 0.0
+    },
+    {
+      "variant": "baseline_b",
+      "p50_ms": 8687.978522502817,
+      "p95_ms": 8695.564825746987,
+      "byte_equal_to_baseline_a": true,
+      "max_abs_delta": 0.0,
+      "mean_abs_delta": 0.0
+    }
+  ],
+  "speedup_vs_a": 1.046686006761421,
+  "speedup_vs_b": 1.0461413547008753,
+  "qualification": "Public native Runtime comparison with real-input cache admission; no general checkpoint or task-quality certificate",
+  "reference_drift": 0.0005206295096720215,
+  "action_bytes_passed": true,
+  "performance_passed": true,
+  "thresholds": {
+    "minimum_speedup": 1.02,
+    "maximum_reference_drift": 0.05,
+    "maximum_p95_regression": 0.1
+  },
+  "passed": true
+}

@@ -1,0 +1,84 @@
+InstinctFlash serve preflight for 'nvidia/GR00T-N1.7-3B' (declaration-only; no weights fetched)
+  device      : NVIDIA Thor  sm110  132 GB
+  features    : cublas, cuda, cuda_graphs, cudnn, fp8, nvfp4, tma, triton, wgmma
+  class       : bandwidth-bound-edge — Thor (sm110): capture benefit depends on the model and execution scope; the matched 2026-09-09 study supersedes the older pi05-only timing. Capture defaults require family/operating-point evidence
+  precision   : native
+  declaration : /home/guanming/.cache/instinctflash/declared/nvidia__GR00T-N1.7-3B/0dd1e1d11804fa65931c0c6a548ed02eebff4f32e41ac9794832b93a996e6876
+  backbone    : groot_n17
+  servable    : True
+  capabilities: backbone:groot_n17, declares:backbone_fastpath, declares:base_weights, declares:embodiment_tag, declares:fast_decode, declares:param_bytes, guidance:action=none, servable
+
+InstinctFlash plan for nvidia/GR00T-N1.7-3B
+  plan tier: BITEXACT
+  operating point: schedule {backbone=1 + action=4} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 5 declared forwards (no stream requests a negative branch)}
+
+  APPLY  graph_capture              [BITEXACT  ] no stream persists, so every cycle presents identical shapes, so one capture serves every cycle; 5 forward(s) per control step (backbone=1 + action=4) each pay full dispatch cost today; GR00T N1.7 native NFE=4 on Thor: paired and repeated 2026-09-11 DiT graph measurements preserved finite action bytes on the tested checkpoint and inputs, with modest latency gains; see eval/groot_native_graphs_2026-09-11. Only the existing DiT graph is admitted here, not experimental text-block fusions. The family startup exact self-check still decides admission for this process.
+         expected: removes per-forward dispatch cost where the region is replay-safe. Measured ON pi05 (H100, pi05_base, 50-step chunk): a denoise step is 2187 kernel launches, 17.25 ms of CPU submit against 9.48 ms of GPU work -- 99.9% submit-bound, the GPU idle ~45% of the step. The naive region (per-step DynamicCache clone+append) replays fast and WRONG and stays discarded; the static-KV region (pi05_iwm/static_capture.py) is replay-safe by construction and collected the prize: denoise step 16.25 -> 4.57 ms (3.55x), chunk 298.7 -> 181.3 ms (1.65x), bitexact on unseen inputs and prompts. Both halves are this model's -- a backbone whose forwards are already compute-bound has nothing here to win either way, so measure the submit-vs-busy split, then measure replay against eager on a SECOND input
+  skip   engine_offload             [NUMERIC   ] precision='native': FP8 engine is not authorized; legal but tier NUMERIC exceeds ceiling BITEXACT: SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation; baked denoise operating point: action=4 steps; guidance action=none@1
+  skip   fsdp_elision               [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   allocator_churn_elision    [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   debug_dump_elision         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   obs_decode_elision         [BITEXACT  ] model declares no observation-decode modules
+  skip   conditioning_prefill       [BITEXACT  ] ['backbone_features'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist
+  skip   prompt_encoder_staging     [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   ring_kv_addressing         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   action_terminal_forward_elision [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   sm120_gated_residual       [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   sm120_wan_stage2           [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   conv_layout_ndhwc          [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.
+  skip   cfg_branch_elision         [BITEXACT  ] no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)
+
+loaded 'nvidia/GR00T-N1.7-3B'; binding ws://127.0.0.1:52911 (clients: openpi_client.WebsocketClientPolicy, or GET /healthz)
+2026-09-14 19:53:13,162 websockets.server server listening on 127.0.0.1:52911
+2026-09-14 19:53:13,162 instinctflash.serving.ws_server serving 'nvidia/GR00T-N1.7-3B' on ws://127.0.0.1:52911
+2026-09-14 19:53:13,281 websockets.server connection open
+2026-09-14 19:53:13,284 instinctflash.serving.ws_server connection from ('127.0.0.1', 38228) opened
+/dev/shm/ifl_public_envs_20260915_v1/groot_v2/lib/python3.12/site-packages/albumentations/__init__.py:13: UserWarning: A new version of Albumentations is available: 2.0.8 (you have 1.4.18). Upgrade using: pip install -U albumentations. To disable automatic update checks, set the environment variable NO_ALBUMENTATIONS_UPDATE to 1.
+  check_for_updates()
+2026-09-14 19:53:16,652 gr00t.model.modules.qwen3_backbone flash_attn is not installed. Falling back to sdpa attention. Install flash-attn for better performance: pip install flash-attn
+`torch_dtype` is deprecated! Use `dtype` instead!
+/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/groot/gr00t/model/modules/dit.py:255: FutureWarning: Accessing config attribute `compute_dtype` directly via 'AlternateVLDiT' object attribute is deprecated. Please access 'compute_dtype' over 'AlternateVLDiT's config object instead, e.g. 'unet.config.compute_dtype'.
+  embedding_dim=self.inner_dim, compute_dtype=self.compute_dtype
+/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/groot/gr00t/model/modules/dit.py:286: FutureWarning: Accessing config attribute `output_dim` directly via 'AlternateVLDiT' object attribute is deprecated. Please access 'output_dim' over 'AlternateVLDiT's config object instead, e.g. 'unet.config.output_dim'.
+  self.proj_out_2 = nn.Linear(self.inner_dim, self.output_dim)
+2026-09-14 19:53:16,775 gr00t.model.gr00t_n1d7.gr00t_n1d7 Using AlternateVLDiT for diffusion model
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:05<00:05,  5.85s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:06<00:00,  2.72s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:06<00:00,  3.19s/it]
+2026-09-14 19:53:29,548 instinctflash.serving.ws_server new episode: conditioning keys ['prompt']
+InstinctFlash GR00T N1.7: graph_capture self-check bit-exact on 6 inputs (replay == eager exactly; staged 6 fresh-inputs (all float tensors redrawn); 0.2 s startup cost, once per process).
+2026-09-14 19:53:30,591 instinctflash.serving.ws_server new episode: conditioning keys ['prompt']
+2026-09-14 19:53:30,996 websockets.server connection closed
+2026-09-14 19:53:30,996 instinctflash.serving.ws_server connection from ('127.0.0.1', 38228) closed
+2026-09-14 19:53:30,997 websockets.server server closing
+2026-09-14 19:53:30,997 websockets.server server closed
+Total number of DiT parameters:  1091722240
+Total number of SelfAttentionTransformer parameters:  201433088
+InstinctFlash GR00T N1.7: DiT CUDA Graph installed — the family default for this device, superseding the retired IFL_GROOT_STATIC_CAPTURE opt-in. Each captured signature is gated by a bit-exact self-check (replay vs eager on staged unseen inputs, exact equality); a mismatch releases the affected graphs and falls back loudly. Kill-switch: IFL_GROOT_NO_CAPTURE=1.
+[GR00T N1.7 GPU collate] bit-exact on 6 live batches; uint8 H2D + GPU normalize enabled.
+{
+  "instinctflash_cli_schema": 1,
+  "command": "serve",
+  "version": "0.1.0",
+  "ok": true,
+  "result": {
+    "model_id": "nvidia/GR00T-N1.7-3B",
+    "backbone": "groot_n17",
+    "servable": true,
+    "device": "NVIDIA Thor  sm110  132 GB",
+    "device_class": "bandwidth-bound-edge — Thor (sm110): capture benefit depends on the model and execution scope; the matched 2026-09-09 study supersedes the older pi05-only timing. Capture defaults require family/operating-point evidence",
+    "precision": "native",
+    "capabilities": [
+      "backbone:groot_n17",
+      "declares:backbone_fastpath",
+      "declares:base_weights",
+      "declares:embodiment_tag",
+      "declares:fast_decode",
+      "declares:param_bytes",
+      "guidance:action=none",
+      "servable"
+    ],
+    "operating_point": "schedule {backbone=1 + action=4} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 5 declared forwards (no stream requests a negative branch)}",
+    "plan": "InstinctFlash plan for nvidia/GR00T-N1.7-3B\n  plan tier: BITEXACT\n  operating point: schedule {backbone=1 + action=4} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 5 declared forwards (no stream requests a negative branch)}\n\n  APPLY  graph_capture              [BITEXACT  ] no stream persists, so every cycle presents identical shapes, so one capture serves every cycle; 5 forward(s) per control step (backbone=1 + action=4) each pay full dispatch cost today; GR00T N1.7 native NFE=4 on Thor: paired and repeated 2026-09-11 DiT graph measurements preserved finite action bytes on the tested checkpoint and inputs, with modest latency gains; see eval/groot_native_graphs_2026-09-11. Only the existing DiT graph is admitted here, not experimental text-block fusions. The family startup exact self-check still decides admission for this process.\n         expected: removes per-forward dispatch cost where the region is replay-safe. Measured ON pi05 (H100, pi05_base, 50-step chunk): a denoise step is 2187 kernel launches, 17.25 ms of CPU submit against 9.48 ms of GPU work -- 99.9% submit-bound, the GPU idle ~45% of the step. The naive region (per-step DynamicCache clone+append) replays fast and WRONG and stays discarded; the static-KV region (pi05_iwm/static_capture.py) is replay-safe by construction and collected the prize: denoise step 16.25 -> 4.57 ms (3.55x), chunk 298.7 -> 181.3 ms (1.65x), bitexact on unseen inputs and prompts. Both halves are this model's -- a backbone whose forwards are already compute-bound has nothing here to win either way, so measure the submit-vs-busy split, then measure replay against eager on a SECOND input\n  skip   engine_offload             [NUMERIC   ] precision='native': FP8 engine is not authorized; legal but tier NUMERIC exceeds ceiling BITEXACT: SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation; baked denoise operating point: action=4 steps; guidance action=none@1\n  skip   fsdp_elision               [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   allocator_churn_elision    [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   debug_dump_elision         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   obs_decode_elision         [BITEXACT  ] model declares no observation-decode modules\n  skip   conditioning_prefill       [BITEXACT  ] ['backbone_features'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist\n  skip   prompt_encoder_staging     [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   ring_kv_addressing         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   action_terminal_forward_elision [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_gated_residual       [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_wan_stage2           [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   conv_layout_ndhwc          [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   cfg_branch_elision         [BITEXACT  ] no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)",
+    "host": "127.0.0.1",
+    "port": 52911
+  }
+}

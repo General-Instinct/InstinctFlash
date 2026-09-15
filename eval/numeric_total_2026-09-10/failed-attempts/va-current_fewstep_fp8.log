@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/guanming/ifl_eval/numeric_total_20260910/source/eval/numeric_total_2026-09-10/benchmark.py", line 47, in <module>
+    start=time.perf_counter();api=Runtime.from_pretrained(model_ref,revision=revision if model_ref==model else None,precision=a.precision,device='cuda:0',tier_ceiling='numeric' if a.arm.startswith('current') else 'bitexact',**options)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/ifl_eval/numeric_total_20260910/source/instinctflash/runtime/facade.py", line 114, in from_pretrained
+    backend, why = choose_backend(
+                   ^^^^^^^^^^^^^^^
+  File "/home/guanming/ifl_eval/numeric_total_20260910/source/instinctflash/runtime/execution.py", line 441, in choose_backend
+    raise RuntimeError(f"precision='fp8' unavailable: {eng_why}")
+RuntimeError: precision='fp8' unavailable: flash_rt compiled kernels cannot load (No module named 'flash_rt.flash_rt_kernels'); build serving/ for this Thor interpreter and its CUDA environment

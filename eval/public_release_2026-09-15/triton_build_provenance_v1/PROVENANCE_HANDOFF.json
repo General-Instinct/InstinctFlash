@@ -1,0 +1,153 @@
+{
+  "actual_current_python_source_comparison": {
+    "bytes_read_total": 2228904,
+    "different_files": [],
+    "files_per_environment": 110,
+    "includes_compiler_backend_python": true
+  },
+  "created_at": "2026-09-15T04:53:32.610616+00:00",
+  "current_fresh_build": {
+    "bytes": 176133521,
+    "filename": "triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl",
+    "sha256": "448e02fe6dc898e9e5aa89cf0ee5c371e99df5aa5e8ad976a80b93334f3494fd",
+    "url": "https://files.pythonhosted.org/packages/3c/12/34d71b350e89a204c2c7777a9bba0dcf2f19a5bfdd70b57c4dbc5ffd7154/triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl"
+  },
+  "finding": "The current historical environment package matches the official PyTorch-index Triton3.6.0 cp313 aarch64 wheel; the fresh environment matches the distinct PyPI3.6.0 wheel. Python version and distribution version alone do not select an identical compiler binary.",
+  "historical_binding_limit": {
+    "finding": "Earlier collected version metadata records Triton3.6.0 and its directory only; earlier RECORD audit explicitly enumerates torch/transformers/lerobot, excludingTriton. No frozen historical Triton RECORD found in bounded local eval JSON/text search. Current old RECORD is not evidence of loaded libraries at the earlier inference timestamp.",
+    "prior_artifacts_checked": [
+      {
+        "bytes": 6312,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/vendor_provenance_sources/collect_remote_readiness.py",
+        "sha256": "d146b7d4e5ecffbbbcef739c895a8b05073e522858c8a5a06dbe3ed56b0816b3"
+      },
+      {
+        "bytes": 371747,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/vendor_provenance_sources/remote_readiness_v1.json",
+        "sha256": "d5b3b6cb166679fa4e292a12f5eb1bf9c0168887df3845194aaa2a13b552c53d"
+      },
+      {
+        "bytes": 8120,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/vendor_provenance_sources/collect_remote_metadata.py",
+        "sha256": "7d770f2c723c7b3214e06537cfbf6a03ae62c49b4e15ef319324085a0a3cdbb7"
+      },
+      {
+        "bytes": 73938,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/vendor_provenance_sources/remote_metadata_v1.json",
+        "sha256": "f980f8c01bf30454fd9e41074a5b9d989de376cc81faf33a83894999e4f4b226"
+      }
+    ]
+  },
+  "installed_metadata": {
+    "WHEEL_and_METADATA_byte_identical_between_builds": true,
+    "difference_from_public_raw_RECORD": "Only installer/REQUESTED and generated proton/proton-viewer entrypoint rows differ; all348 package-payload rows match corresponding official wheel.",
+    "direct_url_present": false,
+    "fresh_current_RECORD_sha256": "f184f37e96e005c533a4e8f0cd656cd0cb40a21f3a723232b2a0c5ad6cac5b0e",
+    "installer": "uv",
+    "old_current_RECORD_declares_libtriton_sha256": "183795fbe79c0db4070f74b2d0996690f09e3e08fa5307ccd1d7c4644eef1275",
+    "old_current_RECORD_sha256": "645273478d3778eff30fda6335f8ca9be62b80a6a6a837dea231333345060bbe"
+  },
+  "local_artifact_paths": {
+    "pypi": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/pypi.whl",
+    "pytorch": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/pytorch.whl"
+  },
+  "native_actual_comparison": {
+    "bytes": 46404,
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/nano_native_binary_compare_v1/comparison.json",
+    "sha256": "c5e4254bc55ba5c4adb89a3ba6c269e9e5e6dbbd076ac0733537a9acd45666fd"
+  },
+  "no_Thor_bulk_binary_read_this_stage": true,
+  "no_Torch_or_model_import": true,
+  "no_remote_writes": true,
+  "official_wheel_payload_comparison": {
+    "all_members_actual_SHA256_checked": true,
+    "different_members": [
+      "triton/_C/libproton.so",
+      "triton/_C/libtriton.so"
+    ],
+    "members_per_wheel": 348,
+    "native_hashes": {
+      "pypi": {
+        "triton/_C/libproton.so": "b746eb4b7ef3c074dd6d9084f1a9dd9066b7eb8093ea3b93f36cfe05e92f341e",
+        "triton/_C/libtriton.so": "3df9e52e4fa71048ff7082f67d187f4bd52b2d2e95b2fb771067fee4e540ce7c"
+      },
+      "pytorch": {
+        "triton/_C/libproton.so": "d9eaaada1f0ee063e0d62271aaf9099bce957a020f7a84996200154e44a49d13",
+        "triton/_C/libtriton.so": "183795fbe79c0db4070f74b2d0996690f09e3e08fa5307ccd1d7c4644eef1275"
+      }
+    }
+  },
+  "recommended_reproducible_build": {
+    "bytes": 176135525,
+    "filename": "triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl",
+    "index_expected_sha256": "58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09",
+    "original_index_r2_url_status": 403,
+    "sha256": "58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09",
+    "url": "https://download.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl"
+  },
+  "runtime_impact": "Not determined. A complete pinned-wheel diagnostic with fixed requests and explicit compiler-cache provenance is needed before attributing numeric drift. No library swap, environment mutation, inference or new quality claim was performed.",
+  "schema_version": 1,
+  "source_bindings": {
+    "metadata_python_sources.json": {
+      "bytes": 273565,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/metadata_python_sources.json",
+      "sha256": "26c6fa1a6f06ded3a8642480532afc1511abe5033a9cd54f20bbdced042cbd41"
+    },
+    "public_wheel_payload_comparison.json": {
+      "bytes": 1641,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/public_wheel_payload_comparison.json",
+      "sha256": "682bb95134fb8cb3885eb35d63ed49391f2af46886df98d462c1661cf96b52d7"
+    },
+    "pypi.request.json": {
+      "bytes": 144,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/pypi.request.json",
+      "sha256": "cae1454b53a807f961e8abab6f09b97025ef94bb0a17559732e61c752a458956"
+    },
+    "pypi.response": {
+      "bytes": 14855,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/pypi.response",
+      "sha256": "96f54a64c70aac15c0797ead52182e0c70eb870b1d1d86215aad8c4107a3be2d"
+    },
+    "pypi_wheel_download.json": {
+      "bytes": 391,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/pypi_wheel_download.json",
+      "sha256": "716c40f967ebdeee9ecbbcc57760e60a668d3d8cf2e3f4ad7b9ea85296210c5b"
+    },
+    "pytorch_index.request.json": {
+      "bytes": 145,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/pytorch_index.request.json",
+      "sha256": "36f787f31aede8eadde3de9cb25e302e67f25e849dee9bc375375ca90597faa7"
+    },
+    "pytorch_index.response": {
+      "bytes": 82279,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/pytorch_index.response",
+      "sha256": "aeabe48481ce52fe77dcb38da388254b8b8ad47a56958fb1cf118f03342e4470"
+    },
+    "pytorch_response_headers.json": {
+      "bytes": 891,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/pytorch_response_headers.json",
+      "sha256": "f3b1fc7e2bdbec283bd0559dcb8ad3f1aeb2971dff22b0af0bbac80c28375d4e"
+    },
+    "pytorch_wheel_download.json": {
+      "bytes": 451,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/pytorch_wheel_download.json",
+      "sha256": "ec37c1c4a7e20d81dfc3d36dce58f3d4ae2d24ccb318b2410bd7b25b19a8fd5c"
+    },
+    "read_metadata_sources_v1.py": {
+      "bytes": 2799,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/read_metadata_sources_v1.py",
+      "sha256": "0a34ca86dbcaefe3f8a60cc77e92e4a7f745ec8a898d10ae93ea5b6971280dbe"
+    },
+    "wheel_metadata_comparison.json": {
+      "bytes": 1536,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/wheel_metadata_comparison.json",
+      "sha256": "57374311614c02d09a8ec321cc4242c0b5dc574667e908c5d80152556e120084"
+    },
+    "whole_wheel_payload_sha256_audit.json": {
+      "bytes": 86626,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/triton_build_provenance_v1/whole_wheel_payload_sha256_audit.json",
+      "sha256": "6ab5d1b857c2f4a24f038217e438de0ac83c69f92ed57442fbddbcc6917ecc79"
+    }
+  },
+  "status": "public_complete_build_provenance_resolved"
+}

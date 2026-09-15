@@ -1,0 +1,297 @@
+{
+  "family": "dreamzero",
+  "device": "NVIDIA H100 80GB HBM3",
+  "status": "BITEXACT",
+  "baseline_p50_ms": 3005.1734279841185,
+  "current_p50_ms": 3007.23645882681,
+  "repeated_baseline_p50_ms": 2995.250021107495,
+  "speedup_range": [
+    0.9960141352755508,
+    0.9993139778428011
+  ],
+  "applied_passes": [],
+  "baseline_applied_passes": [],
+  "unchanged_transform_plan": true,
+  "execution_policy": {
+    "category": "BITEXACT",
+    "precision": "native",
+    "tier_ceiling": "bitexact",
+    "transform_tier": "BITEXACT",
+    "nfe": {
+      "video_action": 16
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "source_drift": {
+    "current": [],
+    "baseline_b": []
+  },
+  "backend_stats": {
+    "dynamic_cache_schedule": false,
+    "tier": "upstream shipped mask",
+    "precision": "native",
+    "fp8_recipe": null,
+    "build": {
+      "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+      "steps": {
+        "video_action": 16,
+        "kv_commit": 1
+      },
+      "guidance": {
+        "video_action": [
+          "cfg",
+          5.0
+        ]
+      },
+      "dit_step_mask": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        true,
+        true
+      ],
+      "dynamic_cache_schedule": false,
+      "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+    },
+    "loading": {
+      "verified_dit_tensors": 1317,
+      "original_checkpoint": "/home/ubuntu/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+      "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+      "direct_bf16_dit": true,
+      "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+      "initialization_rng_equivalent": false
+    }
+  },
+  "reference_scope": "Direct upstream eager policy versus full default native Runtime; same I/O wrappers, weights, dtype and steps",
+  "comparisons": {
+    "baseline_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/dreamzero-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/dreamzero-current.json",
+      "baseline_sha256": "00f3cf0b5ec571337c262572c23b65f67143660e0683b61e15f17c205e8f563a",
+      "candidate_sha256": "8358003b08a785bef6c5354fe1dd7be62ab0e638eb1fda08081363d98c22d4b2",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            12,
+            24,
+            8
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "dynamic_cache_schedule": false,
+        "tier": "upstream shipped mask",
+        "precision": "native",
+        "fp8_recipe": null,
+        "build": {
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "steps": {
+            "video_action": 16,
+            "kv_commit": 1
+          },
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+        },
+        "loading": {
+          "verified_dit_tensors": 1317,
+          "original_checkpoint": "/home/ubuntu/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+          "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+          "direct_bf16_dit": true,
+          "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+          "initialization_rng_equivalent": false
+        }
+      },
+      "baseline_p50_ms": 3005.1734279841185,
+      "candidate_p50_ms": 3007.23645882681,
+      "speedup": 0.9993139778428011,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 12,
+      "total_calls": 12
+    },
+    "baseline_repeat": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/dreamzero-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/dreamzero-baseline_b.json",
+      "baseline_sha256": "00f3cf0b5ec571337c262572c23b65f67143660e0683b61e15f17c205e8f563a",
+      "candidate_sha256": "50e22df8cbfa76e4d165c22968222f845b4537ef1b15a93db34a5219e709f9af",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            12,
+            24,
+            8
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "dynamic_cache_schedule": false,
+        "tier": "upstream shipped mask",
+        "precision": "native",
+        "fp8_recipe": null,
+        "build": {
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "steps": {
+            "video_action": 16,
+            "kv_commit": 1
+          },
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+        },
+        "loading": null
+      },
+      "baseline_p50_ms": 3005.1734279841185,
+      "candidate_p50_ms": 2995.250021107495,
+      "speedup": 1.0033130479281174,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 12,
+      "total_calls": 12
+    },
+    "repeat_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/dreamzero-baseline_b.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/dreamzero-current.json",
+      "baseline_sha256": "50e22df8cbfa76e4d165c22968222f845b4537ef1b15a93db34a5219e709f9af",
+      "candidate_sha256": "8358003b08a785bef6c5354fe1dd7be62ab0e638eb1fda08081363d98c22d4b2",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            12,
+            24,
+            8
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "dynamic_cache_schedule": false,
+        "tier": "upstream shipped mask",
+        "precision": "native",
+        "fp8_recipe": null,
+        "build": {
+          "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+          "steps": {
+            "video_action": 16,
+            "kv_commit": 1
+          },
+          "guidance": {
+            "video_action": [
+              "cfg",
+              5.0
+            ]
+          },
+          "dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "dynamic_cache_schedule": false,
+          "evidence": "Loaded native DreamZero action head; not a task-quality certificate"
+        },
+        "loading": {
+          "verified_dit_tensors": 1317,
+          "original_checkpoint": "/home/ubuntu/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+          "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+          "direct_bf16_dit": true,
+          "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+          "initialization_rng_equivalent": false
+        }
+      },
+      "baseline_p50_ms": 2995.250021107495,
+      "candidate_p50_ms": 3007.23645882681,
+      "speedup": 0.9960141352755508,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 12,
+      "total_calls": 12
+    }
+  },
+  "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+}

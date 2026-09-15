@@ -195,3 +195,21 @@ assert-only product it feeds (`:245`) are still there.
 
 Both of the passes written specifically for Cosmos3-Edge are dead, and the one that generalized
 from LingBot-VA is the one that paid. That is the opposite of what the manifest predicted.
+
+
+## Real structure and checkpoint profiling
+
+The historical structural probe defaults to the Qwen proxy for comparability. To select the
+released Edge Nemotron ReLU² structure explicitly:
+
+```bash
+python eval/cosmos3_edge/profile_stack.py --backbone nemotron_dense
+python eval/cosmos3_edge/probe_real_weights.py --ckpt /path/to/transformer
+```
+
+Use the Cosmos environment and set `COSMOS_ROOT` if its source checkout is elsewhere.
+The real-weight probe requires a compatible pinned diffusers build. For a Hub checkpoint,
+pass `--revision` with an immutable commit; record the environment alongside the output.
+Missing, unexpected or mismatched weights cause an error before timing. The optional
+`--bandwidth-gbps` uses an explicitly supplied device specification for a theoretical floor.
+These are synthetic trunk diagnostics, not full-policy latency or simulator accuracy results.

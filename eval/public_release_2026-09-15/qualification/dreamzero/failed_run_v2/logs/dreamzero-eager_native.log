@@ -1,0 +1,108 @@
+/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/peft/tuners/lora.py:297: SyntaxWarning: invalid escape sequence '\.'
+  re.match(f".*\.{target_key}$", key) for target_key in lora_config.target_modules
+/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/peft/tuners/lora.py:307: SyntaxWarning: invalid escape sequence '\.'
+  layer_index = re.match(f".*.{pattern}\.(\d+)\.*", key)
+/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1550, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1467, in get_hf_file_metadata
+    r = _request_wrapper(
+        ^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 283, in _request_wrapper
+    response = _request_wrapper(
+               ^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 306, in _request_wrapper
+    response = http_backoff(method=method, url=url, **params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 307, in http_backoff
+    response = session.request(method=method, url=url, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/requests/sessions.py", line 784, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 107, in send
+    raise OfflineModeIsEnabled(
+huggingface_hub.errors.OfflineModeIsEnabled: Cannot reach https://huggingface.co/Wan-AI/Wan2.1-I2V-14B-480P/resolve/main/models_t5_umt5-xxl-enc-bf16.pth: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/hydra/_internal/instantiate/_instantiate2.py", line 182, in _call_target
+    return _target_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/dreamzero/groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py", line 242, in __init__
+    text_enc_path = ensure_file(
+                    ^^^^^^^^^^^^
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/dreamzero/groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py", line 37, in ensure_file
+    return hf_download(hf_filename, repo_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/dreamzero/groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py", line 29, in hf_download
+    path = hf_hub_download(repo_id=repo_id, filename=filename)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1014, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1121, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1665, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: An error happened while trying to locate the file on the Hub and we cannot find the requested files in the local cache. Please check your connection and try again or make sure your Internet connection is on.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/benchmarks/regression/user_e2e.py", line 261, in capture
+    api = build(family, checkpoint, output_dir=output.parent)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/benchmarks/regression/native_reference.py", line 145, in build
+    policy = GrootSimPolicy(embodiment_tag=EmbodimentTag(tag),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/dreamzero/groot/vla/model/n1_5/sim_policy.py", line 320, in __init__
+    model = from_pretrained(model_path)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/dreamzero/groot/vla/model/dreamzero/base_vla.py", line 553, in from_pretrained
+    model = cls(config)
+            ^^^^^^^^^^^
+  File "/home/guanming/ifl_public_qualification_20260915_v1/vendors_v2/dreamzero/groot/vla/model/dreamzero/base_vla.py", line 62, in __init__
+    self.action_head = instantiate(config.action_head_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/hydra/_internal/instantiate/_instantiate2.py", line 331, in instantiate
+    return instantiate_node(
+           ^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/hydra/_internal/instantiate/_instantiate2.py", line 452, in instantiate_node
+    return _call_target(_target_, partial, args, kwargs, full_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/hydra/_internal/instantiate/_instantiate2.py", line 187, in _call_target
+    raise InstantiationException(msg) from e
+hydra.errors.InstantiationException: Error in call to target 'groot.vla.model.dreamzero.action_head.wan_flow_matching_action_tf.WANPolicyHead':
+LocalEntryNotFoundError('An error happened while trying to locate the file on the Hub and we cannot find the requested files in the local cache. Please check your connection and try again or make sure your Internet connection is on.')
+No model config overrides provided
+Loading model from pretrained directly
+loading pretrained@@@@@
+Loading sharded safetensors using index: /tmp/instinctflash-dreamzero-full-0nzewyaf/model.safetensors.index.json
+Loading shard: /tmp/instinctflash-dreamzero-full-0nzewyaf/model-00007-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-0nzewyaf/model-00002-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-0nzewyaf/model-00010-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-0nzewyaf/model-00005-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-0nzewyaf/model-00004-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-0nzewyaf/model-00001-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-0nzewyaf/model-00008-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-0nzewyaf/model-00003-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-0nzewyaf/model-00006-of-00010.safetensors
+Loading shard: /tmp/instinctflash-dreamzero-full-0nzewyaf/model-00009-of-00010.safetensors
+loading config@@
+loading model
+config.action_head_cfg {'_convert_': 'object', '_target_': 'groot.vla.model.dreamzero.action_head.wan_flow_matching_action_tf.WANPolicyHead', 'config': {'_recursive_': False, '_target_': 'groot.vla.model.dreamzero.action_head.wan_flow_matching_action_tf.WANPolicyHeadConfig', 'action_dim': 32, 'action_horizon': 24, 'action_loss_embodiment_ids': [26, 17], 'add_pos_embed': True, 'backbone_embedding_dim': 0, 'backbone_features_projector_cfg': None, 'decouple_inference_noise': False, 'decouple_video_action_noise': False, 'diffusion_model_cfg': {'_convert_': 'object', '_target_': 'instinctflash.runtime.dreamzero_checkpoint.load_full_dit_for_native', 'diffusion_model_pretrained_path': None, 'dim': 5120, 'eps': 1e-06, 'ffn_dim': 13824, 'frame_seqlen': 880, 'freq_dim': 256, 'in_dim': 36, 'max_chunk_size': 4, 'model_type': 'i2v', 'num_action_per_block': 24, 'num_frame_per_block': 2, 'num_heads': 40, 'num_layers': 40, 'num_state_per_block': 1, 'out_dim': 16, 'checkpoint_path': '/home/guanming/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID/d95a4a23a9969ea5fdb9bc3aa0c463109cc5dd2301324fdd34ebd15d2870a89e'}, 'expand_batch': None, 'freeze_decode_layer': False, 'hidden_size': 64, 'high_noise_beta_alpha': 3.0, 'image_encoder_cfg': {'_convert_': 'object', '_target_': 'groot.vla.model.dreamzero.modules.wan_video_image_encoder.WanImageEncoder', 'image_encoder_pretrained_path': None}, 'init_lora_weights': 'kaiming', 'input_embedding_dim': 1536, 'load_pretrained_det_decode_layer_path': '/mnt/aws-lfs-02/shared/ckpts/eagle_sim_real_gr1_localization_finetuned_decode_layer.pt', 'lora_alpha': 4, 'lora_rank': 4, 'lora_target_modules': 'q,k,v,o,ffn.0,ffn.2', 'max_action_dim': 32, 'max_state_dim': 64, 'model_dtype': 'float32', 'noise_beta_alpha': 1.5, 'noise_beta_beta': 1.0, 'noise_s': 0.999, 'num_frame_per_block': 2, 'num_frames': 33, 'num_inference_timesteps': 4, 'num_timestep_buckets': 1000, 'repa_coeff': 1.0, 'repa_layer': 8, 'text_encoder_cfg': {'_convert_': 'object', '_target_': 'groot.vla.model.dreamzero.modules.wan_video_text_encoder.WanTextEncoder', 'text_encoder_pretrained_path': None}, 'tile_size_height': 34, 'tile_size_width': 34, 'tile_stride_height': 18, 'tile_stride_width': 16, 'tiled': False, 'train_architecture': 'full', 'tune_diffusion_model': True, 'tune_projector': True, 'use_gradient_checkpointing': True, 'use_high_noise_emphasis': False, 'use_vlln': True, 'vae_cfg': {'_convert_': 'object', '_target_': 'groot.vla.model.dreamzero.modules.wan_video_vae.WanVideoVAE', 'vae_pretrained_path': None}, 'video_inference_final_noise': 0.8, 'video_noise_beta_alpha': 3.0, 'video_noise_beta_beta': 1.0, 'vl_self_attention_cfg': {'_target_': 'groot.vla.model.n1_5.modules.cross_attention_dit.SelfAttentionTransformer', 'attention_head_dim': 64, 'dropout': 0.2, 'final_dropout': True, 'num_attention_heads': 24, 'num_layers': 4, 'positional_embeddings': None}, 'skip_component_loading': True}}
+[rank0]:[W914 21:29:43.374470145 ProcessGroupNCCL.cpp:1575] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())

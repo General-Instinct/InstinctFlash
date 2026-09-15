@@ -50,9 +50,12 @@ class ModelConfig:
 @dataclass
 class RuntimeConfig:
     device: str | None = None
-    placement: Literal["auto", "in_process", "worker"] = "auto"
+    placement: Literal["auto", "in_process", "worker", "engine"] = "auto"
+    precision: Literal["native", "fp8"] = "native"
+    step_cache: Literal["dynamic", "checkpoint"] | None = None
     nfe: dict[str, int] = field(default_factory=dict)
-    tier_ceiling: Literal["bitexact", "numeric", "behavioral"] = "bitexact"
+    # Native defaults to BITEXACT; checkpoint declarations cannot widen this permission.
+    tier_ceiling: Literal["bitexact", "numeric", "behavioral"] | None = None
     exclude_passes: list[str] = field(default_factory=list)
 
 
@@ -319,11 +322,25 @@ def _build(cls: type, doc: Mapping[str, Any], prefix: str = ""):
 
 def parse_config(cls: type, argv: list[str]):
     """Build ``cls`` from defaults, config file, then dotted CLI overrides."""
+    schema = _schema_paths(cls)
+    if "runtime.precision" in schema:
+        argv = ["--fp8=true" if arg == "--fp8" else arg for arg in argv]
     config_path, overrides = _split_cli(argv)
     doc = _default_mapping(cls)
     if config_path:
         _merge_known(doc, _config_file(config_path), cls)
-    schema = _schema_paths(cls)
+    # Keep the alias in the shared runtime-config parser, with the same
+    # config-file precedence as the explicit dotted precision option.
+    fp8 = [raw for path, raw in overrides if path == "fp8"]
+    if fp8 and "runtime.precision" in schema:
+        choices = {"fp8" if _parse_scalar(raw, bool, "fp8") else "native" for raw in fp8}
+        explicit = {_parse_scalar(raw, schema["runtime.precision"], "runtime.precision")
+                    for path, raw in overrides if path == "runtime.precision"}
+        if len(choices | explicit) != 1:
+            raise ConfigError("--fp8 conflicts with another command-line precision choice")
+        selected = choices.pop()
+        overrides = [(path, raw) for path, raw in overrides if path != "fp8"]
+        overrides.append(("runtime.precision", selected))
     for path, raw in overrides:
         _set_path(doc, path, raw, schema)
     return _build(cls, doc)
@@ -333,13 +350,31 @@ def help_text(prog: str, description: str, cls: type) -> str:
     instance = _default_mapping(cls)
     lines = [f"usage: {prog} [--config_path=FILE] [--section.field=value ...]", "", description,
              "", "options:", "  --config_path=FILE"]
+    if "runtime.precision" in _schema_paths(cls):
+        lines.append("  --fp8[=true|false]  (alias for --runtime.precision=fp8|native)")
     for path, tp in _schema_paths(cls).items():
         value: Any = instance
         for bit in path.split("."):
             value = value[bit]
         default = json.dumps(value, default=str, ensure_ascii=False)
-        lines.append(f"  --{path}=VALUE  (default: {default})")
+        choices = _help_choices(tp)
+        value_hint = "|".join(choices) if choices else "VALUE"
+        lines.append(f"  --{path}={value_hint}  (default: {default})")
     return "\n".join(lines)
+
+
+def _help_choices(tp: Any) -> list[str]:
+    """Expose finite choices, including optional literals, in generated CLI help."""
+    origin, args = get_origin(tp), get_args(tp)
+    if origin is Literal:
+        return [str(value) for value in args]
+    if origin in (Union, UnionType):
+        parts = [_help_choices(arg) for arg in args if arg is not type(None)]
+        if parts and all(parts):
+            return [value for part in parts for value in part] + (["null"] if type(None) in args else [])
+    if tp is bool:
+        return ["true", "false"]
+    return []
 
 
 def _jsonable(value: Any) -> Any:

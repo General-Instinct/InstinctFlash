@@ -1,0 +1,100 @@
+{
+  "candidate_only": false,
+  "all_bf16_scale_values_exact": true,
+  "reference_fp8_output_exact": true,
+  "ok": true,
+  "torch_version": "2.10.0+cu130",
+  "device": "NVIDIA Thor",
+  "recipe": "e4m3fn_weights_dynamic_per_tensor_activations_fp32_accum_bf16_output",
+  "cases": [
+    {
+      "bias": false,
+      "shape": [
+        1,
+        2048
+      ],
+      "relative_rmse": 0.03870707005262375
+    },
+    {
+      "bias": false,
+      "shape": [
+        128,
+        2048
+      ],
+      "relative_rmse": 0.036810413002967834
+    },
+    {
+      "bias": false,
+      "shape": [
+        2,
+        3,
+        2048
+      ],
+      "relative_rmse": 0.036214977502822876
+    },
+    {
+      "bias": false,
+      "shape": [
+        0,
+        2048
+      ],
+      "relative_rmse": null
+    },
+    {
+      "bias": false,
+      "shape": [
+        2048
+      ],
+      "relative_rmse": 0.034985825419425964
+    },
+    {
+      "bias": true,
+      "shape": [
+        1,
+        2048
+      ],
+      "relative_rmse": 0.03624570369720459
+    },
+    {
+      "bias": true,
+      "shape": [
+        128,
+        2048
+      ],
+      "relative_rmse": 0.03679174929857254
+    },
+    {
+      "bias": true,
+      "shape": [
+        2,
+        3,
+        2048
+      ],
+      "relative_rmse": 0.03732134401798248
+    },
+    {
+      "bias": true,
+      "shape": [
+        0,
+        2048
+      ],
+      "relative_rmse": null
+    },
+    {
+      "bias": true,
+      "shape": [
+        2048
+      ],
+      "relative_rmse": 0.037084825336933136
+    }
+  ],
+  "graph_changed_and_restored": true,
+  "noncontiguous": true,
+  "zero_input_and_weight": true,
+  "packed_cast_refused": true,
+  "scope": "Thor operator execution only; no Cosmos model speed or task quality certificate",
+  "source_sha256": {
+    "ThorFP8Linear": "710cab8daa08a3e9e9f37ff77328c2aec207e7eb3c9101534f6384c74ab629b8",
+    "fp8_pack": "5148c35adbe53c592aa431b69f8fabbbcf45f6dd7ec466aaa3f7ce2c855f37f1"
+  }
+}

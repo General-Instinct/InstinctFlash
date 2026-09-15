@@ -11,6 +11,21 @@ the tag was trained with.
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
+
+def checkpoint_embodiment_slot(checkpoint_path: str, tag: str) -> int:
+    """Read the model's own mapping; fine-tunes may assign different slots."""
+    path = Path(checkpoint_path) / "embodiment_id.json"
+    mapping = json.loads(path.read_text())
+    if not isinstance(mapping, dict) or tag not in mapping:
+        raise ValueError(f"checkpoint {path} does not declare embodiment {tag!r}")
+    slot = mapping[tag]
+    if type(slot) is not int or slot < 0:
+        raise ValueError(f"invalid embodiment slot for {tag!r}: {slot!r}")
+    return slot
+
 
 EMBODIMENT_TAG_TO_INDEX: dict[str, int] = {
     "simpler_env_google": 0,

@@ -40,24 +40,37 @@ captured input, three unseen noise/observation cases and two cases on a differen
 prefix refill; end-to-end **672.7 → 184.0 ms in-process (3.66x)**, 54.7 → 11.9 ms/step. The
 README table's stock arm is the official websocket server (670.9 ms — the ws hop costs ~2 ms).
 
+### RTX 5090 full path
+
+On SM120 the adapter upgrades the per-step backend with a vision/prefix graph, one graph for the
+complete fixed ten-step Euler schedule, and bitexact GPU image normalization. Fixed-timestep
+AdaRMS gamma/beta projections are evaluated once during capture and their original output tensors
+are read by the corresponding unrolled step; the live modules are restored after capture.
+
+The committed 5090 harness measures **220.5 → 97.3 ms p50 (2.27x)** with all six
+stock-vs-candidate cases exactly equal. Independent repeats measured 97.4 and 98.74 ms. The prior per-step graph
+measured 113.0–113.3 ms, so the new full path removes another 13–14%. Full profile and ablations
+are committed in `evidence/reproduce_5090_full_path_results.json`.
+
 ## Graph capture is the default, and the self-check is the reason it can be
 
 The backend installs when the plan applies `graph_capture` — for every 4B-class checkpoint,
-fresh fine-tunes included. What makes that safe is not the gate table above (evidence measured
-on *other* checkpoints): it is the runtime **self-check**. Immediately after the first capture,
-replay is compared against upstream eager `predict_velocity` (run through the stock
-concat-per-step KV path) on staged inputs the capture never saw — fresh `x_t` draws from a
-dedicated generator, up to three warmed schedule timesteps, and a synthetically *refilled*
-prefix so a graph that baked K/V values instead of reading the live buffers cannot pass. Exact
-equality (`atol=0`; this family's capture tier is BITEXACT). PASS → replay serves and the plan's
-`graph_capture` entry gains the verdict line. FAIL → the graph is released, `predict_velocity`
-is rebound to upstream, the observed delta is printed and recorded on the plan, and serving
-continues on eager arithmetic. The check costs seconds, once per process, at first capture.
+fresh fine-tunes included. H100, Thor and SM120 default to the full path;
+other CUDA devices retain the per-step static-KV graph. What makes either default safe is the runtime **self-check**,
+not evidence measured on other checkpoints.
+
+The per-step path compares replay against upstream eager `predict_velocity` on fresh actions,
+timesteps and a synthetically refilled prefix. The full path instead compares six complete
+`sample_actions` calls, including changed image, token, state and noise tensors, against the
+true upstream concat-per-step path. GPU preprocessing separately compares six live BF16 image
+tensors field-for-field. Exact equality is required everywhere. A mismatch releases only the
+affected full graphs and returns to the already-gated per-step backend; serving continues.
 
 Kill-switch: `IFL_VLA4B_NO_CAPTURE=1` serves eager (recorded on the plan, printed).
-`IFL_VLA4B_BACKEND=eager` keeps the stock loop for A/B runs — the same eager arm.
-`IFL_VLA4B_SELFCHECK_FAULT=1` is the drill switch: it rebinds the x buffer between capture and
-check so the loud-fallback path stays demonstrable on demand.
+`IFL_VLA4B_BACKEND=eager` keeps the stock loop for A/B runs.
+`IFL_VLA4B_FULL_GRAPH=0` returns to the per-step graph and
+`IFL_VLA4B_GPU_PREPROCESS=0` retains upstream CPU preprocessing.
+`IFL_VLA4B_SELFCHECK_FAULT=1` drills the loud full-graph fallback.
 
 ## Reproduce the README H100 row
 
@@ -66,8 +79,38 @@ IFL_VLA4B_PY=<venv-with-upstream-stack>/bin/python CUDA_VISIBLE_DEVICES=<idle-gp
   examples/lingbot_vla/reproduce_h100.sh
 ```
 
+## Native and FP8 on Thor
+
+Use the same Runtime API with `precision="native"` (the default) or explicit
+`precision="fp8"`. In `instinctflash serve`, add `--fp8` to opt in. Precision
+selection preserves the checkpoint's ten denoise steps and native action
+processing; it does not select a shorter schedule.
+
+The corrected FP8 route keeps vision in BF16. The old FP16-vision speed result
+is invalid for deployment because real images exposed overflow and
+image-insensitive actions. Current short Runtime measurements are 355.00 ms
+for native capture and 217.97 ms for FP8 per 25-action chunk (1.63×).
+The 40-pair RoboTwin screen measured clean 15/20 → 14/20 and randomized
+15/20 → 16/20 successes; all four `handover_block` scenes succeeded only
+with native. These samples do not establish non-inferiority or sustained
+real-time performance. [Current evidence](../../eval/thor_precision_completion_2026-09-09/COMPARISON.md).
+
+The same six-case harness reproduces the SM120 full arm with an explicit full-path selection:
+
+```bash
+IFL_VLA4B_VERIFY_FULL=1 \
+LINGBOT_VLA_CHECKPOINT=/path/to/checkpoint \
+LINGBOT_VLA_NORM=/path/to/robotwin_50.json \
+IFL_VLA4B_PY=<venv>/bin/python CUDA_VISIBLE_DEVICES=0 \
+  examples/lingbot_vla/reproduce_h100.sh
+```
+
 ## Attribution
 
 LingBot-VLA and its RoboTwin post-train checkpoint are Apache-2.0 (© their authors). Nothing is
 vendored here — the adapter imports the upstream checkout and patches one instance-level method
 at runtime, gated on bitexactness.
+
+The 2026-09-10 native Runtime pairs measured H100 184 → 99 ms and Thor 364 → 262 ms, with identical finite action bytes. Thor retains upstream eager vision attention. [Protocol and receipts](../../eval/native_optimization_2026-09-10/README.md).
+
+The same checked image preprocessor also defaults on inside the explicitly selected Thor FP8 engine (161.5 → 155.3 ms; identical FP8 action bytes). `IFL_VLA4B_GPU_PREPROCESS=0` disables it in either precision mode. This is not native/FP8 quality equivalence.

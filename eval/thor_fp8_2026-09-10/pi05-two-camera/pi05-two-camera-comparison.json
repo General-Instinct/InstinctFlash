@@ -1,0 +1,34 @@
+{
+  "family": "pi05",
+  "model_id": "lerobot/pi05_libero_finetuned_v044",
+  "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+  "native_p50_ms": 321.68014100170694,
+  "fp8_p50_ms": 54.26255249767564,
+  "speedup": 5.928216167410964,
+  "measured_calls_per_arm": 12,
+  "e4m3_tensors": 180,
+  "native_numeric_environment": {
+    "matmul_tf32": false,
+    "cudnn_tf32": false,
+    "cudnn_benchmark": false
+  },
+  "fp8_numeric_environment": {
+    "matmul_tf32": false,
+    "cudnn_tf32": false,
+    "cudnn_benchmark": false
+  },
+  "native_receipt_sha256": "d07edb09ee5ad302d0abb4484e0e836e8c6b7af2e74b5e1f5db16edc4af63ce0",
+  "fp8_receipt_sha256": "4b31febcc75ad16eaeb963b7ebed6378689a19a1688cdb59ece530249d42c5e3",
+  "benchmark_sha256": "9c1e138a03654b29aadbd8826983414a523602e5639240e54cbd44803c84a7aa",
+  "observation_camera_keys": [
+    "observation.images.image",
+    "observation.images.image2"
+  ],
+  "active_fp8_cameras": [
+    2
+  ],
+  "returned_action_mae": 0.03348222011755708,
+  "quality_scope": "Two-camera latency correction, not task quality",
+  "input_camera_format": "float32_CHW_0_1",
+  "correction": "Restore image2 second camera and supply the float32 [0,1] image range required by native preprocessing"
+}

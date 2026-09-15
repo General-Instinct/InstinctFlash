@@ -1,0 +1,118 @@
+{
+  "adapter_directory": "examples/lingbot_vla",
+  "audited_pure_python_sdists": {
+    "antlr4-python3-runtime": {
+      "bytes": 117034,
+      "scope": "Official PyPI source inspected: setuptools packages/bin pygrun only; no extensions, compiler calls, CUDA source or runtime imports in setup.py.",
+      "url": "https://files.pythonhosted.org/packages/3e/38/7859ff46355f76f8d19459005ca000b6e7012f2f1ca597746cbcd1fbfe5e/antlr4-python3-runtime-4.9.3.tar.gz#sha256=f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b",
+      "version": "4.9.3"
+    }
+  },
+  "constraints": {
+    "path": "vla4/bootstrap_constraints.txt",
+    "sha256": "9ae49b0e047f34eb4f91959ac8503476f7f4c10a61ee2762333a97566c34a7c6"
+  },
+  "explicit_exclusions": [
+    "Training, hardware robot drivers, visualization UI, vendor TensorRT builders, CUDA source compilation are not installed by this inference-only bootstrap.",
+    "FlashAttention/native acceleration remains a separately built and qualified dependency where selected."
+  ],
+  "family": "vla4",
+  "historical_constraint_deviations": [
+    {
+      "bootstrap": "0.35.3",
+      "historical": "0.33.5",
+      "package": "huggingface-hub",
+      "reason": "Resolve actual public Diffusers0.36 requirement>=0.34 while preserving model/processor package versions. Fresh native action validation remains required."
+    },
+    {
+      "bootstrap": "5.2.3",
+      "historical": "6.2.5",
+      "package": "cachebox",
+      "reason": "Satisfy unchanged public DeepDiff9.1 dependency>=5.2,<6; historical environment metadata was inconsistent. Fresh actions remain a separate gate."
+    }
+  ],
+  "mandatory_native_host_imports": {
+    "ipdb": "0.13.13",
+    "pydantic": "2.13.4",
+    "torchdata": "0.11.0"
+  },
+  "packaging_patch": {
+    "after": {
+      "pyproject.toml": "77b53a16c3916f89e23fae24080d438549b5c52bba3da798a07bad1d82ed1d8e",
+      "setup.py": "843ac26c38a41abae578250bc0f9419194b320a0f67327d941037a4268f6cfe7"
+    },
+    "before": {
+      "pyproject.toml": "7f7148ec04ecc612cee75bba59b1c06fe92e9f3a1f6bbc07a8b4d11b3b5e49fc",
+      "setup.py": "57f191230cde728ab31a346a986c4511470d765962dce1f95b5a8a532d77a49f"
+    },
+    "path": "vla4/inference_packaging.patch",
+    "scope": "Packaging metadata only. Explicit inference dependencies replace training/UI/native-build requirements and incompatible historical Torch pins. Runtime source files are unchanged; actual inference remains an independent gate.",
+    "sha256": "0512b4429a27bd80425aa77e538a7958893402b3d82b127d4ff0ac36fac9d7e7"
+  },
+  "public_wheel_overrides": {
+    "ipdb": "https://files.pythonhosted.org/packages/0c/4c/b075da0092003d9a55cf2ecc1cae9384a1ca4f650d51b00fc59875fe76f6/ipdb-0.13.13-py3-none-any.whl#sha256=45529994741c4ab6d2388bfa5d7b725c2cf7fe9deffabdb8a6113aa5ed449ed4",
+    "torchdata": "https://files.pythonhosted.org/packages/95/d4/af694ef718aedbe95a72760ab9ff7a6a7a44ace2d7f70c27bfeb67c5c503/torchdata-0.11.0-py3-none-any.whl#sha256=52b940fbbe0e00fb21cabddf528449d1bec5bfb0d0823b7487b15f951658ee33"
+  },
+  "python_metadata_overlays": [
+    {
+      "path": "vla4/lerobot_inference.json",
+      "sha256": "40c38453be0d4815023779523e784f3ca28f22a1c905c9edb1a4538e48c736ec"
+    }
+  ],
+  "qualification": {
+    "GPU_verified": false,
+    "evidence": "release/vendor/qualification.json",
+    "status": "fresh_package_checks_passed",
+    "task_quality_certified": false
+  },
+  "requirements": {
+    "path": "vla4/inference_requirements.txt",
+    "sha256": "4cb58e6a108160dc5e168c64115aeb3ad7db8171145741c44751477504fea8e6",
+    "unconstrained_direct_packages": []
+  },
+  "root_env": "LINGBOT_VLA_ROOT",
+  "schema": "instinctflash.vendor_bootstrap.v1",
+  "source": {
+    "baseline_semantics": "Matches recorded Thor vendor source; not a new comparison to untouched upstream arithmetic.",
+    "checkout_instructions": [
+      "Clone the public repository into a NEW destination with GIT_LFS_SKIP_SMUDGE=1.",
+      "Check out source.revision detached; verify exact git rev-parse HEAD before applying anything.",
+      "If patch is present, verify its SHA256 and use git apply --check followed by git apply.",
+      "Verify every expected_patched_files SHA256. Existing vendor directories must remain untouched."
+    ],
+    "expected_patched_files": {
+      "lingbotvla/models/vla/pi0/modeling_lingbot_vla.py": {
+        "bytes": 87422,
+        "sha256": "a7967472faa594c1acd594dd2daa77d902d0112e89587dc3c2fd00d6c406ebd3"
+      },
+      "lingbotvla/models/vla/pi0/qwenvl_in_vla.py": {
+        "bytes": 91959,
+        "sha256": "4911e3f4d98e208331d303761fcd4e73b713be337f9990d22054fd189f77804a"
+      }
+    },
+    "fresh_environment_inference_qualified": false,
+    "patch": {
+      "path": "recorded_thor.patch",
+      "sha256": "40b964dc7333ee0eab260e2af1af84c3d1ce783722f828f34c8034a1348562a3"
+    },
+    "patch_summary": "Thor attention compatibility: eager Qwen2.5 vision/language, SDPA action expert, and missing rotate_half helper. Arithmetic implementation differs from stock flash-attention.",
+    "schema": "instinctflash.vendor_source.v1",
+    "source": {
+      "commit_url": "https://github.com/robbyant/lingbot-vla/commit/4eb34b7693a0565c67433f8fac9c59a2e67eb60b",
+      "public_commit_verified": true,
+      "repository": "https://github.com/robbyant/lingbot-vla",
+      "revision": "4eb34b7693a0565c67433f8fac9c59a2e67eb60b"
+    },
+    "source_bootstrap_qualified_CPU": true,
+    "upstream_notices": {
+      "LICENSE": "63b052b2e017d82d657a9cbcb6289fb61f830a61efe366eaa0bca9a9ca8875cd"
+    }
+  },
+  "source_manifest": "vla4/source.json",
+  "target": {
+    "machine": "aarch64",
+    "python_minor": "3.12",
+    "system": "Linux"
+  },
+  "wheel_metadata_repair": "nvidia-cusparselt-cu13-0.8.0-aarch64"
+}

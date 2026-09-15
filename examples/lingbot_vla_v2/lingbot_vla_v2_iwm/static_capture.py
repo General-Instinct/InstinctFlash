@@ -15,12 +15,13 @@ path) on staged inputs the capture never saw — fresh ``x_t`` draws from a dedi
 up to three distinct schedule timesteps, and a synthetically REFILLED prefix so a graph that
 baked K/V values instead of reading the live buffers cannot pass.
 
-THE GATE IS NOT atol=0 FOR THIS FAMILY, and that is a statement about upstream, not about the
-graph: V2's fused-MoE kernel is nondeterministic — two STOCK runs on identical seeds disagree by
-up to 5.08e-02 (``moe_kernel_results.json`` null_control_deltas, H100 6-case protocol) — so exact
-equality is unattainable for ANY serving of this model, including upstream's own. The self-check
-therefore gates on that recorded stock-vs-stock envelope (``NULL_ENVELOPE``), the same standard
-the family's published row was verified under. PASS → replay serves; FAIL → the graph is
+THE GATE IS NOT atol=0 FOR THIS FAMILY. Stock action repeats have shown nonzero differences,
+so this path makes no BITEXACT claim. The legacy 5.08e-02 limit was taken from final controller
+actions (``moe_kernel_results.json``), while this check compares denoise velocities. It is NOT
+a calibrated same-domain noise envelope, and a pass is not evidence of accuracy neutrality.
+The limit is retained, without expansion, as an experimental implementation guard pending
+separate velocity-domain calibration and target-device quality evidence.
+PASS → replay serves; FAIL → the graph is
 released (the vision/prefill graphs with it, via the adapter's recorder), ``predict_velocity`` is
 rebound to upstream, and the fallback is announced loudly — serving continues on eager
 arithmetic.
@@ -41,14 +42,14 @@ WARMUP_STEPS = 12
 FAMILY = "LingBot-VLA-V2"
 #: the drill switch — see the module docstring.
 SELF_CHECK_FAULT_ENV = "IFL_VLA2_SELFCHECK_FAULT"
-#: The family's recorded nondeterminism envelope: the largest stock-vs-stock action delta on
+#: Legacy constant name, retained for compatibility. Largest stock-vs-stock action delta on
 #: identical seeds (3 paired stock runs, H100 6-case protocol —
 #: examples/lingbot_vla_v2/moe_kernel_results.json null_control_deltas, max 5.08e-02). The
-#: self-check gates on it because upstream's fused-MoE kernel makes atol=0 unattainable even
-#: for upstream against itself.
+#: This action-domain value is not a calibrated denoise-velocity envelope.
 NULL_ENVELOPE = 5.083918571472168e-02
-NULL_ENVELOPE_PROVENANCE = ("the stock-vs-stock null control on identical seeds, "
-                            "moe_kernel_results.json (H100, 6-case protocol)")
+NULL_ENVELOPE_PROVENANCE = ("legacy implementation guard derived from controller actions, "
+                            "moe_kernel_results.json (H100, 6-case protocol); "
+                            "not calibrated for denoise velocity or target-device quality")
 
 
 class _StaticKV:
@@ -239,7 +240,7 @@ class StaticVelocity:
 
         # THE GATE. The graph serves only if replay agrees with upstream eager on staged
         # inputs it was not captured from, within the family's recorded stock-vs-stock
-        # envelope (this family's capture tier is NUMERIC — see the module docstring).
+        # implementation guard (NUMERIC; its cross-domain provenance is explicit above).
         if self._self_check_enabled and self._self_check_n > 0:
             if not self._self_check(state, prefix_pad_masks, past_key_values,
                                     x_t, timestep, prefix_position_ids):
@@ -278,7 +279,7 @@ class StaticVelocity:
 
     def _self_check(self, state, prefix_pad_masks, past_key_values, x_t, timestep,
                     prefix_position_ids) -> bool:
-        """Replay vs upstream eager on staged inputs, gated by the recorded null envelope.
+        """Replay vs upstream eager on staged inputs, gated by the unchanged legacy implementation limit.
 
         Startup-only: runs once, at capture time, and restores every buffer it touched — the
         model's own RNG stream never moves (staged draws come from a dedicated generator,
@@ -321,7 +322,8 @@ class StaticVelocity:
             # case i-1's runs and case i's, not while a case list is being built
             verdict = run_capture_self_check(
                 family=FAMILY, cases=(one_case(i) for i in range(n)),
-                tolerance=NULL_ENVELOPE, tolerance_provenance=NULL_ENVELOPE_PROVENANCE)
+                tolerance=NULL_ENVELOPE, tolerance_provenance=NULL_ENVELOPE_PROVENANCE,
+                comparison_domain="denoise_velocity", tolerance_domain="controller_action", repeats=3)
         finally:
             # restore the real chunk state whatever the verdict
             if staged_prefill is not None:
@@ -331,6 +333,8 @@ class StaticVelocity:
             torch.cuda.synchronize()
 
         self.self_check = verdict
+        verdict.update(comparison_domain="denoise_velocity", tolerance_domain="controller_action",
+                       calibration_status="legacy_cross_domain_guard")
         if not verdict["passed"]:
             self._release_and_fall_back()
         if self._on_self_check is not None:
@@ -366,7 +370,7 @@ class StaticVelocity:
 def install_static_capture(fm, on_self_check=None, self_check: bool = True) -> StaticVelocity:
     """Install the executor on one model instance and return its counters/cleanup handle.
 
-    ``self_check`` (default on) gates the first capture on the envelope-gated replay-vs-eager
+    ``self_check`` (default on) gates the first capture on the repeated, guard-limited replay-vs-eager
     check — see the module docstring. ``on_self_check`` receives the verdict dict so an
     installer can put it on the plan.
     """

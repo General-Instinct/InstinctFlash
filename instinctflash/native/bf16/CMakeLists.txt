@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.24)
+project(instinctflash_bf16 LANGUAGES CUDA)
+set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+set(CMAKE_CUDA_ARCHITECTURES OFF)
+set(CUTLASS_ROOT "" CACHE PATH "CUTLASS checkout (tested da5e086dab31d63815acafdac9a9c5893b1c69e2)")
+if(NOT EXISTS "${CUTLASS_ROOT}/include/cutlass/epilogue/fusion/operations.hpp")
+  message(FATAL_ERROR "Set CUTLASS_ROOT to a CUTLASS checkout with SM100 collectives")
+endif()
+add_library(instinctflash_bf16 SHARED linear_relu2_sm110.cu)
+target_include_directories(instinctflash_bf16 PRIVATE
+  "${CUTLASS_ROOT}/include" "${CUTLASS_ROOT}/tools/util/include")
+target_compile_options(instinctflash_bf16 PRIVATE
+  --expt-relaxed-constexpr -O3 -arch=sm_110a)
+set_target_properties(instinctflash_bf16 PROPERTIES POSITION_INDEPENDENT_CODE ON)
+install(TARGETS instinctflash_bf16 LIBRARY DESTINATION instinctflash/native)

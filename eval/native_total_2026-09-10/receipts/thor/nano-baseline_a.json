@@ -1,0 +1,333 @@
+{
+  "family": "nano",
+  "precision": "native",
+  "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+  "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e",
+  "device": "NVIDIA Thor",
+  "torch": "2.10.0+cu130",
+  "scope": "Matched public Runtime generation latency, synchronized wall time; recorded cameras and synthetic state, no network or simulator. No task-quality certificate.",
+  "calls": [
+    {
+      "i": 0,
+      "cycle": 0,
+      "phase": "warmup",
+      "ms": 11680.43916899478,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 1,
+      "cycle": 0,
+      "phase": "warmup",
+      "ms": 10376.600260991836,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 2,
+      "cycle": 0,
+      "phase": "warmup",
+      "ms": 10364.1212869843,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 3,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10360.241590999067,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 4,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10369.029792986112,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 5,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10357.047931989655,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 6,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10365.7296730089,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 7,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10355.15373700764,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 8,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10358.769312006189,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 9,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10347.230437007966,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 10,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10359.829141001683,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 11,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10361.384313000599,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 12,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10372.491895977873,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 13,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10371.794997976394,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 14,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10364.9755740189,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 15,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10363.541759987129,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 16,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10369.962630007649,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 17,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10367.709471000126,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 18,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10371.977415983565,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 19,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10380.682463990524,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 20,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10364.772830012953,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 21,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10362.33494899352,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 22,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 10373.524254973745,
+      "shape": [
+        32,
+        8
+      ]
+    }
+  ],
+  "variant": "baseline_a",
+  "options": {
+    "IFL_BENCH_TIER": "bitexact"
+  },
+  "competing_gpu_processes": [],
+  "arm": "baseline_a",
+  "reference_scope": "Direct upstream eager policy versus full default native Runtime; same I/O wrappers, weights, dtype and steps",
+  "applied_passes_before_load": [],
+  "setup_seconds": 33.69020096998429,
+  "backend_stats": {
+    "precision": "native",
+    "fp8_recipe": null,
+    "action_chunk_size": 32,
+    "action_steps": 4,
+    "guidance": 3.0,
+    "conditioning_fps": 15.0,
+    "captured": false
+  },
+  "graph_stats": {},
+  "physical_gpu": "0",
+  "schedule_override": null,
+  "default_schedule": {
+    "prefix": 1,
+    "action": 4
+  },
+  "guidance": "{'action': 'cfg'}",
+  "history_feedback": "native policy",
+  "plan": "InstinctFlash plan for nvidia/Cosmos3-Nano-Policy-DROID\n  plan tier: BITEXACT\n  operating point: schedule {prefix=1 + action=4} | guidance {action=cfg@3 [inherited from the family default]} | cfg batching {separate-branch on 0 of 5 declared forwards (negative branch requested by action); batch-1 on 5}\n\n  skip   graph_capture              [BITEXACT  ] dropped by caller via Plan.without(): The DROID adapter runs eager and does not install CUDA graphs\n  skip   engine_offload             [NUMERIC   ] dropped by caller via Plan.without(): precision='native': FP8 engine is not authorized; legal but tier NUMERIC exceeds ceiling BITEXACT: SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation\n  skip   fsdp_elision               [BITEXACT  ] dropped by caller via Plan.without(): checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   allocator_churn_elision    [BITEXACT  ] dropped by caller via Plan.without(): checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   debug_dump_elision         [BITEXACT  ] dropped by caller via Plan.without(): checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   obs_decode_elision         [BITEXACT  ] dropped by caller via Plan.without(): model declares no observation-decode modules\n  skip   conditioning_prefill       [BITEXACT  ] dropped by caller via Plan.without(): model declares no episode- or chunk-constant conditioning\n  skip   prompt_encoder_staging     [BITEXACT  ] dropped by caller via Plan.without(): checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   ring_kv_addressing         [BITEXACT  ] dropped by caller via Plan.without(): checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   action_terminal_forward_elision [BITEXACT  ] dropped by caller via Plan.without(): checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_gated_residual       [BITEXACT  ] dropped by caller via Plan.without(): checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_wan_stage2           [BITEXACT  ] dropped by caller via Plan.without(): checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   conv_layout_ndhwc          [BITEXACT  ] dropped by caller via Plan.without(): checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   cfg_branch_elision         [BITEXACT  ] dropped by caller via Plan.without(): every stream consumes both guidance branches",
+  "execution_policy": {
+    "reference": "upstream eager native policy; shared I/O translation only"
+  },
+  "applied_passes": [],
+  "interpreter": "/home/guanming/thorcol/cosmos-framework/.venv/bin/python",
+  "benchmark_sha256": "3794224d10f7a051789f07e0496d8dcd83b4a54074839ecc59f7d597d83eaf9f",
+  "input_archive_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+  "ok": true,
+  "p50_ms": 10364.874202015926,
+  "min_ms": 10347.230437007966,
+  "max_ms": 10380.682463990524,
+  "measured_count": 20,
+  "peak_allocated_bytes": 32432458240,
+  "numeric_environment": {
+    "matmul_tf32": false,
+    "cudnn_tf32": false,
+    "cudnn_benchmark": false
+  },
+  "actions_sha256": "c605228bd774f021847689eb281d3147bd4fded83a388ec731dd931539c862dd",
+  "sources": {
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/adapters/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/adapters/base.py": "faddf49c84fe9d087365b3cf566bb68bbe4b2bf08eb7a426006c936b27ef047d",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/descriptors/deployment.py": "75b9e6ca18b3ad6492f2b9ae22bf11390938a4322361c1188cf4841c44216b42",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/runtime/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/runtime/state/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/runtime/state/types.py": "9d1e43574a1929b73c892cccff56453d2bc71bd02df85a83850208da2e69fc0b",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/descriptors/model.py": "93c26dcc782b69705e0e84babaf195740f6990e9413e27722e4eb4170400ffc5",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/descriptors/__init__.py": "6c32d9902026f776decf7bd32e13498b67b78e589051d1b5f7454b0129e16c75",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/adapters/lingbot_va.py": "969220bbf18a56b301bcd3b801eecc4ffa863e518501b82cb4872d857693e846",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/runtime/loader.py": "a2bce76e99f4443089d21bbc12b3bed53afc1fb2df5e796b225c5b94e4688aea",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/planners/planner.py": "bc31c3c764fa6c98acbd7b5aa0f46b1030d341b823c0bc01ffb59ebb700d4a80",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/planners/__init__.py": "f4e300ea720721cc0ffbc3ddbf5172d67b3d9f9ba00b64900b3ed071cdf879e8",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/contract.py": "eb1a3dcdaafefd2a49bca96d17784526fef9f3299fd26dcf800d394046e4f7f1",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/lingbot/action_terminal_elision.py": "92a28ff193f10bf19541f0e0a253b31b5b7ae7f4a8b743212debf675d0daf632",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/lingbot/cfg_elision.py": "41f7b8370bc1b8928b17048dabf54520537ef431ef4d98013ead4efeab9f96d8",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/lingbot/conditioning_prefill.py": "3cbc5e5f2ace0b2d061383698cfd85a0a5190f2a4e8e02fa2c3e6e0b9fc56468",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/lingbot/conv_layout_ndhwc.py": "10926b28cd68d773d773ec5b884672db9d8cdfac64d9758ae934860c37c204ae",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/lingbot/ring_kv.py": "264c0addbbfcff2ba0e8f445af6fe2d7e85f799124749a2a2c6ff3992412e2af",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/lingbot/sm120_gated_residual.py": "ba5addcbabf82d76194aa98c20b738dd3dfba4d267f4e62a747fb6dc91fa5d12",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/lingbot/sm120_wan_stage2.py": "3a151b5f00b5144874436cf7570b9a635fbba73e30d724722d5dc7a6e2128b1a",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/lingbot/substrate.py": "7f6162ba2d175db9ad56425a3aa8cb68b90f1778c343ba37f381ea02618d3abf",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/lingbot/__init__.py": "cc153c3e272cd18b7510dec81e625168124e7db3f06909bf6cdb49cfd9e8fd52",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/descriptors/checkpoint.py": "a2949d1fa9ae40fe27c9d4e981616327406604118af72f547f78f00426e387ba",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/descriptors/package.py": "0766dc55a35d7d2fab55de5aa931699bbcaece7fda78de3d91ee39424087c8d7",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/runtime/execution.py": "c6aa42720d799f4a2f2b8c50bd10dc113c89e07493e341db0050ca090f008471",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/runtime/facade.py": "24f9521b02ea55c830af7e01102bb887a20153eeb0e7b394d5669eb14e52fa7b",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/__init__.py": "50071567526aab898205d92b382b3ca392aabaf33584379bf436fb48bb488b8f",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/runtime/precision.py": "3296d47dd912c7aa66295b4a835c44dcd13b323b98b0005823b29d43057b47cf",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/descriptors/known.py": "05f6d5587a3c8ef543e2560ac0c91d1def49caec3d89851b50c9a190edab6834",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/descriptors/guidance.py": "3455608a231758fb2a146409f04c6d2253b7f3859cccf22f6dea9dcd93b32d9d",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/runtime/cosmos_droid.py": "27fb93e443e91210c65b7d10b367648c660b006ad319068370ebdab8fcfcf196",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/examples/cosmos3_policy/cosmos3_iwm/adapter.py": "821c018c31b78890cd263c71aca7eabf606a2f1e325b8b67b9303a7b9064fc82",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/examples/cosmos3_policy/cosmos3_iwm/__init__.py": "90fd9157f1287cd6ae095e13bc57549ce92125d21484d8ea588213a7007a15a6",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/backends/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/backends/sm120_residual.py": "1509fc2143e21a9513ee11c4389d68b1a31db221d4ddbd9e148cdb81e225e717",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/backends/sm120_wan_stage2.py": "0ede242abc15ae802b762f187c5932f0e81bb0617687ebc3f8185882f7745f4d",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/registry.py": "cff56c57748cb40212a2072d8dcfd1b0bd395a8446492f8a71682a31e8afe2a8",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/generic/engine_offload.py": "d686eef806c88bc559212ad23a5af42ee4a11e6eb3099629d8dfcf14279dcdd1",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/generic/graph_capture.py": "898ef8861ebad68068b90d0b7ce0d6dc6e4d662662b07d96dde375dbaa1b1e50",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/passes/generic/__init__.py": "f04a5033aab0d0ace4d3bdd460011049cef662f8aecf7856b0d35c9e45c24113",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/instinctflash/runtime/engine_backend.py": "25f81836f1c649ff3dc007dc54bbd1918a8eb8121ac7d574e0dfe147a90bc1b1",
+    "/home/guanming/ifl_eval/native_total_20260910_remaining/source/eval/native_total_2026-09-10/upstream.py": "28f060cc4b976e21c543c4b5792ae350eb4589e84bde4234cb9cb4b6e63840c6"
+  }
+}

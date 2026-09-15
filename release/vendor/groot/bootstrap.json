@@ -1,0 +1,52 @@
+{
+  "adapter_directory": "examples/groot_n17",
+  "audited_pure_python_sdists": {
+    "antlr4-python3-runtime": {
+      "bytes": 117034,
+      "scope": "Official PyPI source inspected: setuptools packages/bin pygrun only; no extensions, compiler calls, CUDA source or runtime imports in setup.py.",
+      "url": "https://files.pythonhosted.org/packages/3e/38/7859ff46355f76f8d19459005ca000b6e7012f2f1ca597746cbcd1fbfe5e/antlr4-python3-runtime-4.9.3.tar.gz#sha256=f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b",
+      "version": "4.9.3"
+    }
+  },
+  "constraints": {
+    "path": "groot/constraints.txt",
+    "sha256": "14606111390b2995c4bfb9e3bcf8463bf221aa7c26b113b210810f8e0ad65b08"
+  },
+  "explicit_exclusions": [
+    "Training, hardware robot drivers, visualization UI, vendor TensorRT builders, CUDA source compilation are not installed by this inference-only bootstrap.",
+    "FlashAttention/native acceleration remains a separately built and qualified dependency where selected."
+  ],
+  "family": "groot",
+  "packaging_patch": {
+    "after": {
+      "pyproject.toml": "58db6c82b426418e00767f6f8d4ee4c95d53a26c92a773be6ac2f2345120961c"
+    },
+    "before": {
+      "pyproject.toml": "a451af4cf723cc58b710a2f6f3a12a8d7f03850a39cc5ba420a18fcc20e2a3d0"
+    },
+    "path": "groot/inference_packaging.patch",
+    "scope": "Packaging metadata only. Explicit inference dependencies replace training/UI/native-build requirements and incompatible historical Torch pins. Runtime source files are unchanged; actual inference remains an independent gate.",
+    "sha256": "26b41d18c6a48e0ba0647f769f845b406f398a0743358381ae3fcdb3cb52dbfb"
+  },
+  "public_wheel_overrides": {},
+  "qualification": {
+    "GPU_verified": false,
+    "evidence": "release/vendor/qualification.json",
+    "status": "fresh_package_checks_passed",
+    "task_quality_certified": false
+  },
+  "requirements": {
+    "path": "groot/inference_requirements.txt",
+    "sha256": "26e532621126044dfb603dd47eabe93f7b89d4e0ff5bf85580b95706c59f6473",
+    "unconstrained_direct_packages": []
+  },
+  "root_env": "GR00T_ROOT",
+  "schema": "instinctflash.vendor_bootstrap.v1",
+  "source_manifest": "groot/source.json",
+  "target": {
+    "machine": "aarch64",
+    "python_minor": "3.12",
+    "system": "Linux"
+  },
+  "wheel_metadata_repair": "nvidia-cusparselt-cu13-0.8.0-aarch64"
+}

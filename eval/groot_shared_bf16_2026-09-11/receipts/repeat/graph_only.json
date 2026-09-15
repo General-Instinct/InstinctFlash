@@ -1,0 +1,718 @@
+{
+  "family": "groot",
+  "precision": "native",
+  "model_id": "nvidia/GR00T-N1.7-3B",
+  "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495",
+  "device": "NVIDIA Thor",
+  "torch": "2.11.0+cu130",
+  "scope": "Matched public Runtime generation latency, synchronized wall time; recorded cameras and synthetic state, no network or simulator. No task-quality certificate.",
+  "calls": [
+    {
+      "i": 0,
+      "cycle": 0,
+      "phase": "warmup",
+      "ms": 703.2582639949396,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 1,
+      "cycle": 0,
+      "phase": "warmup",
+      "ms": 123.40132301324047,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 2,
+      "cycle": 0,
+      "phase": "warmup",
+      "ms": 121.74494698410854,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 3,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 121.7386600037571,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 4,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 122.04738898435608,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 5,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 121.11718201776966,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 6,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 113.90165099874139,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 7,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 113.99016197538003,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 8,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 119.11873100325465,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 9,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 114.0545420057606,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 10,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 114.26208398188464,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 11,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 114.2364080005791,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 12,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 113.8209119962994,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 13,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 114.18882900034077,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 14,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 114.22038401360624,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 15,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 114.40820401185192,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 16,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 114.8018800013233,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 17,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 114.24466301104985,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 18,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 120.28810201445594,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 19,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 122.95266101136804,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 20,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 119.07343499478884,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 21,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 119.39436601824127,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 22,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 119.3173400242813,
+      "shape": [
+        40,
+        17
+      ]
+    }
+  ],
+  "variant": "graph_only",
+  "options": {
+    "IFL_BENCH_VARIANT": "graph_only"
+  },
+  "competing_gpu_processes": [],
+  "setup_seconds": 9.99230634199921,
+  "norm_graphs": [
+    {
+      "name": "backbone.model.model.language_model.layers.0.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.0.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.1.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.1.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.2.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.2.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.3.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.3.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.4.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.4.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.5.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.5.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.6.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.6.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.7.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.7.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.8.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.8.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.9.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.9.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.10.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.10.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.11.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.11.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.12.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.12.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.13.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.13.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.14.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.14.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.15.input_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.layers.15.post_attention_layernorm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    },
+    {
+      "name": "backbone.model.model.language_model.norm",
+      "captured": true,
+      "replays": 23,
+      "self_check": {
+        "passed": true,
+        "comparisons": 3,
+        "max_abs_delta": 0.0
+      },
+      "disabled": false
+    }
+  ],
+  "candidate_sha256": "2dc24f876f483bd642726b4ee46eaaeda0d6154228153d485d3e7f67ca613d00",
+  "backend_stats": {
+    "backend": "upstream_bf16_eager",
+    "precision": "bfloat16",
+    "captured": false,
+    "graph_captures": 0,
+    "graph_replays": 0,
+    "action_nfe": 4,
+    "cpu_threads": null,
+    "fast_decode": true,
+    "backbone_fastpath": true,
+    "gpu_collate": true,
+    "gpu_collate_self_check_passed": true,
+    "gpu_collate_self_check_inputs": 6,
+    "gpu_collate_max_abs_delta": 0.0,
+    "full_backbone_graph": false,
+    "full_flow_graph": false,
+    "backbone_cache_hits": 65,
+    "backbone_cache_misses": 4
+  },
+  "graph_stats": {},
+  "physical_gpu": "0",
+  "schedule_override": null,
+  "default_schedule": {
+    "backbone": 1,
+    "action": 4
+  },
+  "guidance": "{'action': 'none'}",
+  "history_feedback": "native policy",
+  "plan": "InstinctFlash plan for nvidia/GR00T-N1.7-3B\n  plan tier: BITEXACT\n  operating point: schedule {backbone=1 + action=4} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 5 declared forwards (no stream requests a negative branch)}\n\n  skip   graph_capture              [BITEXACT  ] Thor capture performance is unmeasured for this family/operating point; retain the eager default pending a paired device measurement.\n  skip   engine_offload             [NUMERIC   ] precision='native': FP8 engine is not authorized; legal but tier NUMERIC exceeds ceiling BITEXACT: SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation; baked denoise operating point: action=4 steps; guidance action=none@1\n  skip   fsdp_elision               [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   allocator_churn_elision    [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   debug_dump_elision         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   obs_decode_elision         [BITEXACT  ] model declares no observation-decode modules\n  skip   conditioning_prefill       [BITEXACT  ] ['backbone_features'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist\n  skip   prompt_encoder_staging     [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   ring_kv_addressing         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   action_terminal_forward_elision [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_gated_residual       [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_wan_stage2           [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   conv_layout_ndhwc          [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   cfg_branch_elision         [BITEXACT  ] no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)",
+  "execution_policy": {
+    "category": "BITEXACT",
+    "precision": "native",
+    "tier_ceiling": "bitexact",
+    "transform_tier": "BITEXACT",
+    "nfe": {
+      "backbone": 1,
+      "action": 4
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "benchmark_sha256": "e61003ead4a20638c02c5e8d00e6df0a655fcb52492a22b3f68415a97d938bc8",
+  "input_archive_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+  "ok": true,
+  "p50_ms": 114.60504200658761,
+  "min_ms": 113.8209119962994,
+  "max_ms": 122.95266101136804,
+  "measured_count": 20,
+  "peak_allocated_bytes": 6514401792,
+  "numeric_environment": {
+    "matmul_tf32": false,
+    "cudnn_tf32": false,
+    "cudnn_benchmark": false
+  },
+  "actions_sha256": "67f035c8b50f0d0333e245426d859b994a6fa27e58efc9a08b3a9f53cc023736",
+  "sources": {
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/adapters/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/adapters/base.py": "faddf49c84fe9d087365b3cf566bb68bbe4b2bf08eb7a426006c936b27ef047d",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/descriptors/deployment.py": "75b9e6ca18b3ad6492f2b9ae22bf11390938a4322361c1188cf4841c44216b42",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/runtime/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/runtime/state/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/runtime/state/types.py": "9d1e43574a1929b73c892cccff56453d2bc71bd02df85a83850208da2e69fc0b",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/descriptors/model.py": "93c26dcc782b69705e0e84babaf195740f6990e9413e27722e4eb4170400ffc5",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/descriptors/__init__.py": "6c32d9902026f776decf7bd32e13498b67b78e589051d1b5f7454b0129e16c75",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/adapters/lingbot_va.py": "969220bbf18a56b301bcd3b801eecc4ffa863e518501b82cb4872d857693e846",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/runtime/loader.py": "a2bce76e99f4443089d21bbc12b3bed53afc1fb2df5e796b225c5b94e4688aea",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/planners/planner.py": "bc31c3c764fa6c98acbd7b5aa0f46b1030d341b823c0bc01ffb59ebb700d4a80",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/planners/__init__.py": "f4e300ea720721cc0ffbc3ddbf5172d67b3d9f9ba00b64900b3ed071cdf879e8",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/contract.py": "eb1a3dcdaafefd2a49bca96d17784526fef9f3299fd26dcf800d394046e4f7f1",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/lingbot/action_terminal_elision.py": "92a28ff193f10bf19541f0e0a253b31b5b7ae7f4a8b743212debf675d0daf632",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/lingbot/cfg_elision.py": "41f7b8370bc1b8928b17048dabf54520537ef431ef4d98013ead4efeab9f96d8",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/lingbot/conditioning_prefill.py": "3cbc5e5f2ace0b2d061383698cfd85a0a5190f2a4e8e02fa2c3e6e0b9fc56468",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/lingbot/conv_layout_ndhwc.py": "10926b28cd68d773d773ec5b884672db9d8cdfac64d9758ae934860c37c204ae",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/lingbot/ring_kv.py": "264c0addbbfcff2ba0e8f445af6fe2d7e85f799124749a2a2c6ff3992412e2af",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/lingbot/sm120_gated_residual.py": "ba5addcbabf82d76194aa98c20b738dd3dfba4d267f4e62a747fb6dc91fa5d12",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/lingbot/sm120_wan_stage2.py": "3a151b5f00b5144874436cf7570b9a635fbba73e30d724722d5dc7a6e2128b1a",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/lingbot/substrate.py": "7f6162ba2d175db9ad56425a3aa8cb68b90f1778c343ba37f381ea02618d3abf",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/lingbot/__init__.py": "cc153c3e272cd18b7510dec81e625168124e7db3f06909bf6cdb49cfd9e8fd52",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/descriptors/checkpoint.py": "a2949d1fa9ae40fe27c9d4e981616327406604118af72f547f78f00426e387ba",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/descriptors/package.py": "0766dc55a35d7d2fab55de5aa931699bbcaece7fda78de3d91ee39424087c8d7",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/runtime/execution.py": "ff862105f5150cbe4aa2692eda43ce447348a5006b851d62f37586a06d392d4b",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/runtime/facade.py": "24f9521b02ea55c830af7e01102bb887a20153eeb0e7b394d5669eb14e52fa7b",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/__init__.py": "50071567526aab898205d92b382b3ca392aabaf33584379bf436fb48bb488b8f",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/runtime/precision.py": "3296d47dd912c7aa66295b4a835c44dcd13b323b98b0005823b29d43057b47cf",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/descriptors/known.py": "05f6d5587a3c8ef543e2560ac0c91d1def49caec3d89851b50c9a190edab6834",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/descriptors/guidance.py": "3455608a231758fb2a146409f04c6d2253b7f3859cccf22f6dea9dcd93b32d9d",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/examples/groot_n17/groot_n17_iwm/__init__.py": "c0d29d9213151babde72db1784ef133a42a0570a569f0277aec3e87ec3c813fc",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/examples/groot_n17/groot_n17_iwm/adapter.py": "214cb6be8aeeca456a7ede7464a41e713a9ad228b4a8d24b2a158629c91741a4",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/backends/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/backends/sm120_residual.py": "1509fc2143e21a9513ee11c4389d68b1a31db221d4ddbd9e148cdb81e225e717",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/backends/sm120_wan_stage2.py": "0ede242abc15ae802b762f187c5932f0e81bb0617687ebc3f8185882f7745f4d",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/registry.py": "cff56c57748cb40212a2072d8dcfd1b0bd395a8446492f8a71682a31e8afe2a8",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/generic/engine_offload.py": "d686eef806c88bc559212ad23a5af42ee4a11e6eb3099629d8dfcf14279dcdd1",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/generic/graph_capture.py": "898ef8861ebad68068b90d0b7ce0d6dc6e4d662662b07d96dde375dbaa1b1e50",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/passes/generic/__init__.py": "f04a5033aab0d0ace4d3bdd460011049cef662f8aecf7856b0d35c9e45c24113",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/runtime/engine_backend.py": "25f81836f1c649ff3dc007dc54bbd1918a8eb8121ac7d574e0dfe147a90bc1b1",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/examples/groot_n17/groot_n17_iwm/fast_decode.py": "bea222c3bd54e9b57836c5c07e80b9b87c3b3a825f0ccb90784bd4577c5c6b6b",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/examples/groot_n17/groot_n17_iwm/backbone_fastpath.py": "80130e56a5fc2193276a2469cfa2e7d870a67eb9272c5e5449b24c724d8154ae",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/examples/groot_n17/groot_n17_iwm/gpu_collate.py": "eaf9b5e70ee722e1f0b782fe953e857ff7f291155e80bbc470c5c7009466d57c",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/backends/bf16_pointwise.py": "3646004890495286f679a9081caac01a27e97a8cb074d274df7b4d47257ba71d",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/runtime/static_tensor_graph.py": "e371589688f843ad1f49d78586896ac3da734ca7f3c2787ca5c7a87d0875285c",
+    "/home/guanming/ifl_eval/groot_shared_bf16_20260911/instinctflash/runtime/capture_self_check.py": "3d3c2497712d8ec5338408559fc5a4b2e0e52bd4e08afea6af753fec010d355b"
+  }
+}

@@ -239,9 +239,9 @@ def encoder_forward_calibrate(ctx, fvk, bufs, weights, dims, act_scales, stream=
     ...
 
 
-def decoder_forward_calibrate(...):
+def decoder_forward_calibrate(*args, **kwargs):
     """Same shape as encoder_forward_calibrate, applied to decoder."""
-    ...
+    raise NotImplementedError("Implement the model-specific decoder calibration before use")
 
 
 # ──────────────────────────────────────────────────────────────────

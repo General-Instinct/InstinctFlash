@@ -1,0 +1,22 @@
+{
+  "instinctflash_schema": 1,
+  "execution": {
+    "model_id": "instinctflash/benchmark-va-2v2a-w1",
+    "backbone": "wan_va",
+    "servable": true,
+    "base_weights": "robbyant/lingbot-va-posttrain-robotwin",
+    "nfe": {
+      "video": 2,
+      "action": 2
+    },
+    "guidance": {
+      "video": "positive_only",
+      "action": "positive_only"
+    }
+  },
+  "provenance": {
+    "base_revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+    "historical_candidate": "/home/ubuntu/iwm_distill/fewstep/cert_2v2a_w1_certificate.json",
+    "note": "Benchmark candidate; historical comparison is against 2V/4A, not original 25V/50A. No inherited FP8 quality certificate."
+  }
+}

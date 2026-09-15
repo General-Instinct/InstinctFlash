@@ -1,0 +1,52 @@
+{
+  "pid": 187951,
+  "status": "complete",
+  "jobs": [
+    {
+      "name": "lerobot-va-default-v1",
+      "status": "complete",
+      "started": 1789324682.6165388,
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/benchmark_lerobot_va.py",
+        "--checkpoint",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/lerobot-va-checkpoint",
+        "--fixture",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/lerobot-va-default-v1.json",
+        "--video-steps",
+        "25",
+        "--action-steps",
+        "50"
+      ],
+      "exit_code": 0,
+      "p50_ms": 7874.289107508957,
+      "error": null,
+      "ended": 1789324982.892041
+    },
+    {
+      "name": "lerobot-va-2v4a-v1",
+      "status": "complete",
+      "started": 1789324982.8925138,
+      "command": [
+        "/home/guanming/frt_env/bin/python",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/benchmark_lerobot_va.py",
+        "--checkpoint",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/lerobot-va-checkpoint",
+        "--fixture",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz",
+        "--output",
+        "/home/guanming/ifl_eval/framework_comparison_20260913/lerobot-va-2v4a-v1.json",
+        "--video-steps",
+        "2",
+        "--action-steps",
+        "4"
+      ],
+      "exit_code": 0,
+      "p50_ms": 1077.8548560047057,
+      "error": null,
+      "ended": 1789325067.7125776
+    }
+  ]
+}

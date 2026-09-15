@@ -1,0 +1,54 @@
+{
+  "phase": "post-frozen-v1 CPU-only admission guards",
+  "verified_utc": "2026-09-14T02:15:02.413627+00:00",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "OMP_NUM_THREADS": "1",
+    "PYTHONPATH": "/home/ubuntu/InstinctFlash:/home/ubuntu/InstinctFlash/tests"
+  },
+  "elapsed_seconds": 7.329,
+  "results": [
+    {
+      "verdict": "PASS",
+      "file": "test_dreamzero_fp8_builder.py",
+      "detail": "29 tests passed",
+      "exit_code": 0
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_dreamzero_fp8_install.py",
+      "detail": "4 tests passed",
+      "exit_code": 0
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_step_cache_policy.py",
+      "detail": "19 tests passed",
+      "exit_code": 0
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_runtime_precision.py",
+      "detail": "15 tests passed",
+      "exit_code": 0
+    },
+    {
+      "verdict": "PASS",
+      "file": "test_dreamzero_adapter.py",
+      "detail": "8 tests passed",
+      "exit_code": 0
+    }
+  ],
+  "inputs_sha256": {
+    "tests/test_dreamzero_fp8_builder.py": "2f8ad2d339c6695459239245e06a7e40f095cf0b12dfe5f027d200eae384720d",
+    "tests/test_dreamzero_fp8_install.py": "772c7a2c35f6029eaafa16c1bc3bc93d7d98855449a80faba21170ea10955925",
+    "tests/test_step_cache_policy.py": "2ba0d2c13cdb1840da1a8208227053260b92e1f69fa0f77a2c6dc04fe2046f7a",
+    "tests/test_runtime_precision.py": "227cf6773098247be9e34308f85882904caa64dc95c7893bac20d14b84e25e39",
+    "tests/test_dreamzero_adapter.py": "33ed9bc8476f4445c2e99e151c82061010c394fc5e171f372cce56271f1726fc",
+    "instinctflash/runtime/dreamzero_fp8.py": "b3f2584a7c251ed4954e2fae12c38b5ddbc632dff80c43fb1902d25e35326b2c",
+    "instinctflash/runtime/precision.py": "6d7714c41045e83c5fd82d3f0d523429e7c8098c746112eef516d57e8dcacbfe",
+    "examples/dreamzero/dreamzero_iwm/adapter.py": "45454ffeafa920a1be7e9890136ae7389da9d9c4df4270e8bb5d30b4e78b66c3"
+  },
+  "inputs_changed_during_run": [],
+  "log": "eval/user_e2e_2026-09-14/validation/cpu_admission_guard_recheck.log"
+}

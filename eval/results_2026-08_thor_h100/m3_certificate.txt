@@ -1,0 +1,22 @@
+==============================================================================
+PAIRED NON-INFERIORITY CERTIFICATE  --  M3: Thor FULL engine (fp16 prefill + captured fp8 loop) vs stock V2, RoboTwin 50x10 paired
+==============================================================================
+  control   m3_vla2_stock            0.9060
+  treat     m3_vla2_engine           0.8860
+  paired episodes 500   tasks 50
+  delta -0.0200   discordant 15 for / 25 against (8.0%)
+
+  exact McNemar two-sided p      0.1539   (no detectable difference)
+  McNemar-SE normal 95% CI       [-0.0448, +0.0048]
+  bootstrap 95% CI, iid episodes [-0.0440, +0.0040]
+  bootstrap 95% CI, TASK cluster [-0.0460, +0.0040]  <-- primary (most conservative)
+  one-sided normal p vs margin   0.00885
+
+  NOISE FLOOR from two runs of the CONTROL configuration (100 pairs):
+    discordance 0+0 = 0.0%, delta +0.0000
+    observed treat discordance is 8.0%; ABOVE the floor
+
+  margin declared -0.050   primary lower bound -0.0460 (bootstrap_task_cluster)   slack +0.0040
+  VERDICT: NON-INFERIOR  (FRAGILE: under 0.005 of slack)
+
+  wrote /home/ubuntu/iwm_distill/thor_t2v2/m3_certificate.json

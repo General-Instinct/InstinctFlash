@@ -1,4 +1,7 @@
-"""Runtime adapter for ``GEAR-Dreams/DreamZero-DROID`` (Wan2.2-TI2V-5B causal video-action WAM).
+"""Runtime adapter for ``GEAR-Dreams/DreamZero-DROID`` causal video-action WAM.
+
+The serving wrapper's Wan225B name does not determine checkpoint architecture;
+the released DROID checkpoint and historical 5B variant have different geometry.
 
 Wraps the official serving wrapper in-process — ``DreamZeroWan225BPolicy`` over
 ``GrootSimPolicy`` from the GEAR-Dreams checkout (``eval_utils/serve_dreamzero_wan22.py``) —
@@ -8,11 +11,14 @@ frame per camera, later calls append four; ``reset()`` clears the buffers and th
 ``current_start_frame``. That is why this family declares a WINDOW-lifetime stream and why
 whole-cycle graph capture correctly does not apply.
 
-DYNAMIC_CACHE_SCHEDULE — upstream's own velocity-cosine step skipper (the exact algorithm
-vLLM-Omni's "stepcache" vendored file-for-file) — is surfaced as a DECLARED option and is
-SCREEN-tier: it changes outputs by construction (measured max |Δaction| 0.288 on identical
-request streams), so it is never default-on and a closed-loop success-rate gate is mandatory
-before anyone ships it. H100 pair with it ON: 3226.7 -> 1843.1 ms (1.75x).
+DYNAMIC_CACHE_SCHEDULE exposes upstream's velocity-cosine step skipper with explicit
+BEHAVIORAL permission. The pinned vLLM-Omni backend implements the same decision rule:
+video similarity controls reuse of both video and conditional action predictions.
+This changes computation, is off by default and carries no task-quality certificate.
+Native and FP8 share the explicitly selected controller. See
+INSTALL.rst for the API and
+eval/dynamic_step_cache_integration_2026-09-14/audit.json for the bounded
+integration screen; historical H100 timing is not a Thor claim.
 """
 
 from __future__ import annotations
@@ -33,11 +39,26 @@ SOURCE_ROOT_CANDIDATES = (
 )
 #: Upstream's own env var, read by the action head at construction. SCREEN-tier: see module doc.
 DYNAMIC_CACHE_ENV = "DYNAMIC_CACHE_SCHEDULE"
+SHIPPED_DIT_MASK = (True, True, True, False, False, False, True, False,
+                    False, False, True, False, False, True, True, True)
+_FIXED_DIT_MASKS = {
+    5: (True, True, True, False, False, False, False, True,
+        False, False, False, False, True, False, False, False),
+    6: (True, True, False, False, False, True, False, False,
+        False, False, True, False, False, False, True, True),
+    7: (True, True, True, False, False, False, True, False,
+        False, False, True, False, False, False, True, True),
+    8: SHIPPED_DIT_MASK,
+}
 
 
 class DreamZeroAdapter:
     """Causal video-action WAM: 16-step CFG diffusion per chunk (the shipped mask computes 8),
     KV committed and carried across chunks within an episode."""
+
+    # The declaration fixes the schedule; the checkpoint config fixes actual DiT geometry.
+    # Hub preflight downloads only these metadata files, pinned to the declaration revision.
+    PLANNING_FILES = ("config.json",)
 
     def spec(self) -> AdapterSpec:
         return AdapterSpec(
@@ -75,17 +96,46 @@ class DreamZeroAdapter:
                 conditioning=("prompt",),
             ),
             notes={
+                "backbone": "dreamzero",
                 "family": "wam",
                 "action_reply": "(24, 8): 7 joints + 1 gripper",
                 "computed_dit_steps": "8 of 16 (upstream's shipped fixed mask)",
                 "first_call": "one frame per camera warms the causal cache; later calls take 4",
                 "dynamic_cache_schedule": (
-                    "SCREEN-tier option, default OFF. Upstream's velocity-cosine step skipper "
+                    "SCREEN evidence, default OFF; requires BEHAVIORAL permission. "
+                    "Upstream's video-velocity-cosine step skipper "
                     "(DYNAMIC_CACHE_SCHEDULE=true or execution.dynamic_cache_schedule); "
-                    "changes outputs by construction (measured max |dA| 0.288) — a closed-loop "
-                    "gate is mandatory before it ships as anyone's default."),
+                    "reuses video and action predictions; no task-quality certificate."),
             },
         )
+
+    def spec_for_checkpoint(self, checkpoint) -> AdapterSpec:
+        """Read causal token geometry from the actual model, not wrapper naming.
+
+        The released DROID snapshot has a 40-layer, width-5120 DiT with 880
+        tokens/frame; the Wan2.2 5B variant used by older examples has 50/55.
+        The native service supports these through its own checkpoint processors.
+        """
+        import dataclasses
+        import json
+
+        config_path = Path(checkpoint.path) / "config.json"
+        config = json.loads(config_path.read_text())
+        head = config.get("action_head_cfg", {}).get("config", {})
+        dit = head.get("diffusion_model_cfg", {})
+        tokens = dit.get("frame_seqlen")
+        if isinstance(tokens, bool) or not isinstance(tokens, int) or tokens <= 0:
+            raise ValueError("DreamZero checkpoint must declare a positive diffusion_model_cfg.frame_seqlen")
+        spec = self.spec()
+        notes = dict(spec.notes)
+        notes.update({"tokens_per_frame": tokens,
+                      "dit_width": dit.get("dim"), "dit_layers": dit.get("num_layers"),
+                      "geometry_source": str(config_path),
+                      "image_processing": "Native checkpoint eval transforms and service resizing"})
+        return dataclasses.replace(spec,
+            streams=tuple(dataclasses.replace(stream, tokens_per_frame=tokens)
+                          if stream.name == "video" else stream for stream in spec.streams),
+            notes=notes)
 
     def can_host_in_process(self):
         from instinctflash.runtime.execution import imports_available
@@ -102,11 +152,12 @@ class DreamZeroAdapter:
             sys.path.insert(0, str(root))
         try:
             from groot.vla.data.schema import EmbodimentTag  # noqa: F401
+            from groot.vla.data.dataset import ModalityConfig  # noqa: F401
         except Exception as error:  # noqa: BLE001 - import compatibility IS the host check
             return False, f"GEAR-Dreams cannot import from {root}: {type(error).__name__}: {error}"
         return True, f"the model stack imports and the GEAR-Dreams source is at {root}"
 
-    def build_in_process(self, checkpoint, plan, *, device=None, nfe=None):
+    def build_in_process(self, checkpoint, plan, *, device=None, nfe=None, step_cache=None):
         import torch
 
         if not torch.cuda.is_available():
@@ -119,6 +170,8 @@ class DreamZeroAdapter:
                 f"Select the GPU with CUDA_VISIBLE_DEVICES instead.")
 
         schedule = {**dict(checkpoint.execution.nfe or {}), **dict(nfe or {})}
+        if int(schedule.get("kv_commit", 1)) != 1:
+            raise RuntimeError("DreamZero's native KV commit schedule is fixed at one step")
         declared_steps = int(schedule.get("video_action", 16))
         if declared_steps != 16:
             raise RuntimeError(
@@ -128,20 +181,24 @@ class DreamZeroAdapter:
                 f"masks for 5-8) or DYNAMIC_CACHE_SCHEDULE — and BOTH change outputs, so they "
                 f"are SCREEN-tier: closed-loop gate before serving, never a latency flag.")
 
+        from instinctflash.runtime.step_cache_policy import (
+            ResolvedStepCache, annotate_step_cache_plan, resolve_step_cache,
+        )
+        if step_cache is None:
+            ceiling = getattr(getattr(plan, "tier_ceiling", None), "name", "BITEXACT").lower()
+            step_cache = resolve_step_cache(checkpoint, tier_ceiling=ceiling, family="dreamzero")
+        if not isinstance(step_cache, ResolvedStepCache):
+            raise TypeError("DreamZero build requires a resolved step-cache selection")
+        if plan is not None:
+            annotate_step_cache_plan(plan, step_cache)
+        elif step_cache.dynamic or step_cache.fixed_steps != 8:
+            raise ValueError("DreamZero altered step schedule requires an explicit behavioral plan")
         extra = dict(checkpoint.execution.extra or {})
-        dynamic = _env_flag(DYNAMIC_CACHE_ENV,
-                            default=bool(extra.get("dynamic_cache_schedule", False)))
-        # Upstream reads the env var at action-head construction, so it must be set BEFORE the
-        # policy is built, and it must be set explicitly either way — an inherited stale value
-        # from the parent shell would silently change tiers.
-        os.environ[DYNAMIC_CACHE_ENV] = "true" if dynamic else "false"
-        if dynamic:
+        if step_cache.dynamic:
             print(
-                "InstinctFlash DreamZero: DYNAMIC_CACHE_SCHEDULE is ON — SCREEN TIER. This is "
-                "upstream's velocity-cosine step skipper; it changes actions by construction "
-                "(measured max |dA| 0.288 vs the shipped mask) and carries no closed-loop "
-                "certificate. Do not report benchmark numbers from this arm as the default "
-                "configuration. (H100 latency reference: 3226.7 -> 1843.1 ms, 1.75x.)")
+                "InstinctFlash DreamZero: dynamic step cache enabled — OPERATING-POINT, "
+                "SCREEN evidence. Video similarity controls video/action prediction reuse; "
+                "realized DiT counts vary. No task-quality certificate.")
 
         root = _source_root()
         if str(root) not in sys.path:
@@ -152,44 +209,105 @@ class DreamZeroAdapter:
         )
         from groot.vla.data.schema import EmbodimentTag
         from groot.vla.model.n1_5.sim_policy import GrootSimPolicy
+        # Native policy construction resolves this after loading its weights.
+        # Check it first: missing video/data dependencies must fail before a
+        # multi-gigabyte model is constructed.
+        from groot.vla.data.dataset import ModalityConfig  # noqa: F401
         from torch.distributed.device_mesh import init_device_mesh
 
         _maybe_init_distributed()
         mesh = init_device_mesh("cuda", mesh_shape=(1,), mesh_dim_names=("ip",))
         tag = str(extra.get("embodiment_tag") or "oxe_droid")
         model_path = _resolve_model_path(checkpoint)
-        policy = GrootSimPolicy(
-            embodiment_tag=EmbodimentTag(tag),
-            model_path=str(model_path),
-            tokenizer_path_override=None,
-            device="cuda",
-            device_mesh=mesh,
+        return _build_owned_native_loop(
+            model_path,
+            lambda path: GrootSimPolicy(
+                embodiment_tag=EmbodimentTag(tag), model_path=str(path),
+                tokenizer_path_override=None, device="cuda", device_mesh=mesh),
+            lambda policy: DreamZeroWan225BPolicy(
+                groot_policy=policy,
+                image_height=_get_expected_video_resolution(policy)[0],
+                image_width=_get_expected_video_resolution(policy)[1], embodiment_tag=tag),
+            step_cache=step_cache,
         )
-        height, width = _get_expected_video_resolution(policy)
-        wrapper = DreamZeroWan225BPolicy(
-            groot_policy=policy, image_height=height, image_width=width, embodiment_tag=tag,
+
+    def build_fp8(self, checkpoint, *, device=None, nfe=None, plan=None, step_cache=None):
+        """Build the native policy, then install the audited causal Q/K/V recipe.
+
+        Arithmetic and dynamic prediction reuse require independent permission.
+        The native loop and shared cache remain outside projection installation.
+        """
+        # The native loader honors LOAD_TRT_ENGINE independently of the enable
+        # flag, including an empty value. Refuse before loading model weights.
+        from instinctflash.runtime.precision import (
+            require_dreamzero_fp8_environment, require_dreamzero_fp8_schedule,
         )
-        return _DreamZeroLoop(wrapper, dynamic_cache=dynamic)
+        require_dreamzero_fp8_environment()
+        from instinctflash.runtime.step_cache_policy import resolve_step_cache, ResolvedStepCache
+        if step_cache is None:
+            ceiling = getattr(getattr(plan, "tier_ceiling", None), "name", "BITEXACT").lower()
+            step_cache = resolve_step_cache(checkpoint, tier_ceiling=ceiling, family="dreamzero")
+        if not isinstance(step_cache, ResolvedStepCache):
+            raise TypeError("DreamZero build requires a resolved step-cache selection")
+        require_dreamzero_fp8_schedule(step_cache)
+        from instinctflash.runtime.dreamzero_fp8 import install_dreamzero_fp8
+
+        loop = self.build_in_process(checkpoint, plan, device=device, nfe=nfe,
+                                     step_cache=step_cache)
+        try:
+            head = loop._wrapper._policy.trained_model.action_head
+            if head.num_inference_steps != 16 or tuple(head.dit_step_mask) != SHIPPED_DIT_MASK:
+                raise ValueError("DreamZero FP8 requires the native fixed 8-of-16 mask or its dynamic profile")
+            if loop._dynamic_cache:
+                from instinctflash.runtime.precision import require_transform_permission
+                from instinctflash.planners.planner import Tier
+                require_transform_permission(plan, Tier.BEHAVIORAL, "DreamZero FP8 dynamic step cache")
+                if loop._step_cache_hook is None:
+                    raise ValueError("DreamZero FP8 dynamic cache requires the installed shared controller")
+            import torch
+            loop._fp8_recipe = install_dreamzero_fp8(
+                head, include_ffn=torch.cuda.get_device_capability() == (11, 0))
+        except Exception:
+            loop.close()
+            raise
+        return loop
 
 
 class _DreamZeroLoop:
     """One control cycle = one causal chunk. The KV cache lives ACROSS cycles, so episode
     boundaries matter: reset() clears the upstream buffers and starts a new session id."""
 
-    def __init__(self, wrapper, *, dynamic_cache: bool):
+    def __init__(self, wrapper, *, dynamic_cache: bool, build_declaration=None,
+                 checkpoint_view=None, loading_receipt=None, step_cache_hook=None):
         self._wrapper = wrapper
         self._dynamic_cache = bool(dynamic_cache)
         self._prompt = ""
         self._session = 0
+        self._fp8_recipe = None
+        self._build_declaration = build_declaration
+        self._checkpoint_view = checkpoint_view
+        self._loading_receipt = loading_receipt
+        self._step_cache_hook = step_cache_hook
 
     def reset(self, **conditioning) -> None:
+        if self._wrapper is None:
+            raise RuntimeError("DreamZero loop is closed")
+        if self._step_cache_hook is not None:
+            self._step_cache_hook.reset()
         self._prompt = str(conditioning.get("prompt") or "")
         self._session += 1
         self._wrapper.reset({})
 
-    def predict(self, observation):
+    def validate_executed_action(self, executed_action):
+        if executed_action is not None:
+            raise ValueError("DreamZero's native wrapper does not accept executed-action overrides")
+
+    def predict(self, observation, *, executed_action=None):
         import numpy as np
 
+        if self._wrapper is None:
+            raise RuntimeError("DreamZero loop is closed")
+        self.validate_executed_action(executed_action)
         obs = dict(observation)
         prompt = str(obs.get("prompt") or obs.get("task") or self._prompt)
         if not prompt:
@@ -202,13 +320,123 @@ class _DreamZeroLoop:
 
     @property
     def backend_stats(self) -> dict:
+        import copy
+        declared = copy.deepcopy(self._build_declaration or {})
+        mask = declared.get("dit_step_mask")
+        changed_mask = mask is not None and tuple(mask) != SHIPPED_DIT_MASK
         return {
             "dynamic_cache_schedule": self._dynamic_cache,
-            "tier": "SCREEN" if self._dynamic_cache else "upstream shipped mask",
+            "tier": "SCREEN" if self._dynamic_cache or changed_mask else "upstream shipped mask",
+            "precision": "fp8" if self._fp8_recipe else "native",
+            "fp8_recipe": self._fp8_recipe,
+            "build": declared,
+            "loading": copy.deepcopy(self._loading_receipt),
+            "step_cache": self._step_cache_hook.report() if self._step_cache_hook else None,
         }
 
+    def declaration(self):
+        if self._build_declaration is None:
+            raise RuntimeError("DreamZero build has no verified native-head declaration")
+        import copy
+        result = copy.deepcopy(self._build_declaration)
+        result["precision"] = "fp8" if self._fp8_recipe else "native"
+        return result
+
     def close(self) -> None:
-        self._wrapper = None
+        hook = self._step_cache_hook
+        released = hook is None
+        try:
+            if hook is not None:
+                hook.close()
+                released = True
+        finally:
+            # A foreign wrapper conflict is reported after owned hooks/storage
+            # are released. Active-generation refusal must retain the model.
+            if released or getattr(hook, "closed", False) is True:
+                self._step_cache_hook = None
+                self._wrapper = None
+                if self._checkpoint_view is not None:
+                    self._checkpoint_view.cleanup()
+                    self._checkpoint_view = None
+
+
+def _build_owned_native_loop(model_path, policy_factory, wrapper_factory, *, step_cache=None):
+    """Keep the checkpoint view alive for the policy, releasing it on all failures.
+
+    Full native DiT values load directly as BF16, avoiding the discarded FP32
+    allocation on Thor. Other architectures retain their original native loader.
+    This preserves checkpoint values, not random-initialization RNG consumption.
+    """
+    import json
+    from instinctflash.runtime.dreamzero_checkpoint import DIT_TARGET, prepare_full_checkpoint
+
+    config = json.loads((Path(model_path) / "config.json").read_text())
+    head_config = config.get("action_head_cfg", {}).get("config", {})
+    dit_config = head_config.get("diffusion_model_cfg", {})
+    view, receipt, hook = None, None, None
+    try:
+        if (head_config.get("train_architecture") == "full"
+                and dit_config.get("_target_") == DIT_TARGET):
+            from groot.vla.model.dreamzero.modules.wan_video_dit_action_casual_chunk import CausalWanModel
+            view, receipt = prepare_full_checkpoint(model_path, CausalWanModel, direct_bf16=True)
+            receipt = {key: value for key, value in receipt.items() if key != "expected_shapes"}
+            receipt["initialization_rng_equivalent"] = False
+        if step_cache is not None:
+            # Native __init__ parses NUM_DIT_STEPS before the owned-field check.
+            # An instance-local factory freezes these reads without global env
+            # mutation, including when the ambient value changed or is invalid.
+            import tempfile
+            if view is None:
+                view = tempfile.TemporaryDirectory(prefix="instinctflash-dreamzero-schedule-")
+                for item in Path(model_path).iterdir():
+                    if item.name != "config.json":
+                        (Path(view.name) / item.name).symlink_to(item.resolve(), target_is_directory=item.is_dir())
+                (Path(view.name) / "config.json").write_text(json.dumps(config))
+            config_path = Path(view.name) / "config.json"
+            owned_config = json.loads(config_path.read_text())
+            native_target = "groot.vla.model.dreamzero.action_head.wan_flow_matching_action_tf.WANPolicyHead"
+            if owned_config["action_head_cfg"].get("_target_") != native_target:
+                raise ValueError("DreamZero native head target changed; re-audit schedule construction")
+            owned_config["action_head_cfg"].update(
+                _target_="dreamzero_iwm.schedule.build_head",
+                ifl_dynamic_cache_schedule=step_cache.dynamic,
+                ifl_fixed_dit_steps=step_cache.fixed_steps)
+            config_path.write_text(json.dumps(owned_config, indent=2) + "\n")
+        policy = policy_factory(Path(view.name) if view is not None else Path(model_path))
+        head = policy.trained_model.action_head
+        if step_cache is not None:
+            # Resolve once in preflight and bind to this owned instance. Native
+            # construction's legacy environment reads cannot select serving math.
+            head.dynamic_cache_schedule = step_cache.dynamic
+            head.dit_step_mask = list(_FIXED_DIT_MASKS[step_cache.fixed_steps])
+        wrapper = wrapper_factory(policy)
+        if step_cache is not None and step_cache.dynamic:
+            from .dynamic_cache import install
+            hook = install(head)
+        declaration = _head_declaration(head)
+        if step_cache is not None:
+            declaration["step_cache_selection"] = step_cache.to_dict()
+        return _DreamZeroLoop(wrapper, dynamic_cache=bool(head.dynamic_cache_schedule),
+                              build_declaration=declaration,
+                              checkpoint_view=view, loading_receipt=receipt, step_cache_hook=hook)
+    except Exception:
+        if hook is not None:
+            hook.close()
+        if view is not None:
+            view.cleanup()
+        raise
+
+
+def _head_declaration(head):
+    """Record the loaded native head, including mask changes from upstream knobs."""
+    return {
+        "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+        "steps": {"video_action": int(head.num_inference_steps), "kv_commit": 1},
+        "guidance": {"video_action": ("cfg", float(head.cfg_scale))},
+        "dit_step_mask": [bool(step) for step in head.dit_step_mask],
+        "dynamic_cache_schedule": bool(head.dynamic_cache_schedule),
+        "evidence": "Loaded native DreamZero action head; not a task-quality certificate",
+    }
 
 
 def _source_root(*, required: bool = True) -> "Path | None":

@@ -1,0 +1,1514 @@
+{
+  "adapter_contracts_sha256": "e980c1de7ada2fe75b8cc4268bf26537ba67d4e39bc350ad95d0d51c98a80161",
+  "checkpoints": [
+    {
+      "adapters": [],
+      "backbone": "cosmos3_policy",
+      "bound_executions": [],
+      "checkpoint": "nvidia/Cosmos3-Edge-Policy-DROID",
+      "checkpoint_subdir": null,
+      "historical_screening": [],
+      "next_stage": "implement_native_simulator_contract",
+      "revision": "68b17b3c959ccd0999de9a972c5f7c8b57112f86"
+    },
+    {
+      "adapters": [],
+      "backbone": "cosmos3_policy",
+      "bound_executions": [],
+      "checkpoint": "nvidia/Cosmos3-Nano-Policy-DROID",
+      "checkpoint_subdir": null,
+      "historical_screening": [],
+      "next_stage": "implement_native_simulator_contract",
+      "revision": "2b9f9517efcfbf26e222945b386ae9b65c0930ac"
+    },
+    {
+      "adapters": [],
+      "backbone": "dreamzero",
+      "bound_executions": [],
+      "checkpoint": "GEAR-Dreams/DreamZero-DROID",
+      "checkpoint_subdir": null,
+      "historical_screening": [],
+      "next_stage": "implement_native_simulator_contract",
+      "revision": "96ad344138c66e82536422432ad742f015784942"
+    },
+    {
+      "adapters": [],
+      "backbone": "groot_n17",
+      "bound_executions": [],
+      "checkpoint": "nvidia/GR00T-N1.7-3B",
+      "checkpoint_subdir": null,
+      "historical_screening": [],
+      "next_stage": "implement_native_simulator_contract",
+      "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495"
+    },
+    {
+      "adapters": [],
+      "backbone": "groot_n17",
+      "bound_executions": [],
+      "checkpoint": "nvidia/GR00T-N1.7-LIBERO",
+      "checkpoint_subdir": null,
+      "historical_screening": [
+        {
+          "arms": {
+            "runtime_default": {
+              "episodes": 20,
+              "successes": 17
+            },
+            "stock": {
+              "episodes": 20,
+              "successes": 17
+            }
+          },
+          "backbone": "groot_n17",
+          "checkpoint": "nvidia/GR00T-N1.7-LIBERO",
+          "episodes": 40,
+          "plan_id": "70e1f53d9d9465903f8147caabc19b1f07205b834da4d3a089541421519b4c20",
+          "quality_reportable": false,
+          "revision": "2ea293aa20ba7cf5bbf3ba17a5fbcb1a01cbfe21",
+          "run": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/groot",
+          "screening": true,
+          "suite": "groot_libero_10",
+          "transferred_to_target_execution": false
+        }
+      ],
+      "next_stage": "implement_native_simulator_contract",
+      "revision": "2ea293aa20ba7cf5bbf3ba17a5fbcb1a01cbfe21"
+    },
+    {
+      "adapters": [
+        {
+          "id": "groot-libero-v1",
+          "simulator": "libero",
+          "suites": [
+            "groot_libero_10"
+          ]
+        }
+      ],
+      "backbone": "groot_n17",
+      "bound_executions": [
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "15210b9ff02439ce9240192d856dd61bb2b45fd0e254df6fde66d644bb7812f1",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "2bb99bc30162a4f7f88e0c4e01d4a3ae0943d8acdfa433b906c13a0b37b8215c",
+          "startup_attempts": 3,
+          "startup_rejections": 0
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "18cab27b7bdf29b37dcd12fed3927e76c19603baeb6bee7ada34f31a181a99f3",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "663828a646d85f17b56118707a5326edd59f27527e361125969a7551cc7f6e51",
+          "startup_attempts": 1,
+          "startup_rejections": 0
+        }
+      ],
+      "checkpoint": "nvidia/GR00T-N1.7-LIBERO",
+      "checkpoint_subdir": "libero_10",
+      "historical_screening": [],
+      "next_stage": "inspect_execution_stages",
+      "revision": "2ea293aa20ba7cf5bbf3ba17a5fbcb1a01cbfe21"
+    },
+    {
+      "adapters": [
+        {
+          "id": "groot-libero-v1",
+          "simulator": "libero",
+          "suites": [
+            "groot_libero_goal"
+          ]
+        }
+      ],
+      "backbone": "groot_n17",
+      "bound_executions": [
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "3b89bb40af847fb138eaca54215f831c9691bb3d847662debe8f9280a410f403",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "ca619b33bba03c65b724cc951e7135e51cd9e1641eb6d8fb08191ce52c68f5e4",
+          "startup_attempts": 3,
+          "startup_rejections": 0
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "601137066ae2faf3b378e815d997c8ca7806da94fdbdd2f6db81f8895c77e49f",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "5c5d09eff27faeb586f775f2009ce4495b4ccc2d2feef9e8fe015b26c25b0272",
+          "startup_attempts": 1,
+          "startup_rejections": 0
+        }
+      ],
+      "checkpoint": "nvidia/GR00T-N1.7-LIBERO",
+      "checkpoint_subdir": "libero_goal",
+      "historical_screening": [],
+      "next_stage": "inspect_execution_stages",
+      "revision": "2ea293aa20ba7cf5bbf3ba17a5fbcb1a01cbfe21"
+    },
+    {
+      "adapters": [
+        {
+          "id": "groot-libero-v1",
+          "simulator": "libero",
+          "suites": [
+            "groot_libero_object"
+          ]
+        }
+      ],
+      "backbone": "groot_n17",
+      "bound_executions": [
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "6f554c26ffcf0a8dc5a9fdeba2187cd5a20d5e6e287c14e2471aeecffe367cfb",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "299b84fdadd197cc88be35f639ae886fc17d6d7d2aaeb1bf84908a9ee5e869aa",
+          "startup_attempts": 3,
+          "startup_rejections": 0
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "447ecd7a0ac3d420cf0494b586ae05f4a517c429b68cf57043a04622efb1d1d5",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "c299317f442ba88731053805e0384647149e1e03f7b5e2f6ff11d5335fbea568",
+          "startup_attempts": 1,
+          "startup_rejections": 0
+        }
+      ],
+      "checkpoint": "nvidia/GR00T-N1.7-LIBERO",
+      "checkpoint_subdir": "libero_object",
+      "historical_screening": [],
+      "next_stage": "inspect_execution_stages",
+      "revision": "2ea293aa20ba7cf5bbf3ba17a5fbcb1a01cbfe21"
+    },
+    {
+      "adapters": [
+        {
+          "id": "groot-libero-v1",
+          "simulator": "libero",
+          "suites": [
+            "groot_libero_spatial"
+          ]
+        }
+      ],
+      "backbone": "groot_n17",
+      "bound_executions": [
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "f2cad924df0e12ae8792d44ceb40f6445ccf28ad59d1ef705c8234462fb3badf",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "9f72f28c3ae5f1b8dab6f6ca30a814474302d83bec54cdbd6c8285883b0d0c84",
+          "startup_attempts": 3,
+          "startup_rejections": 0
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "0b263e48073a30a927a02db113983cfe12eca0a4908de77dd0c349333d0f4a25",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "40bcac8cf2ef93f4f4bb11b3cf69f615297006a64c0f32cb822db1105a1dcf00",
+          "startup_attempts": 1,
+          "startup_rejections": 0
+        }
+      ],
+      "checkpoint": "nvidia/GR00T-N1.7-LIBERO",
+      "checkpoint_subdir": "libero_spatial",
+      "historical_screening": [
+        {
+          "arms": {
+            "candidate": {
+              "episodes": 20,
+              "successes": 20
+            },
+            "stock": {
+              "episodes": 20,
+              "successes": 20
+            }
+          },
+          "backbone": "groot_n17",
+          "checkpoint": "nvidia/GR00T-N1.7-LIBERO",
+          "checkpoint_subdir": "libero_spatial",
+          "episodes": 40,
+          "plan_id": "83d20a12ee6cc9294de5ffb1fdb23952a8463bd611542a773107ef46dc49de24",
+          "quality_reportable": false,
+          "revision": "2ea293aa20ba7cf5bbf3ba17a5fbcb1a01cbfe21",
+          "run": "/home/ubuntu/ifl_eval/next_steps_20260906/new-checkpoint/evidence",
+          "screening": true,
+          "suite": "groot_libero_spatial",
+          "transferred_to_target_execution": false
+        }
+      ],
+      "next_stage": "inspect_execution_stages",
+      "revision": "2ea293aa20ba7cf5bbf3ba17a5fbcb1a01cbfe21"
+    },
+    {
+      "adapters": [
+        {
+          "id": "lingbot_vla-robotwin-v1",
+          "simulator": "robotwin",
+          "suites": [
+            "robotwin50_easy",
+            "robotwin50_hard"
+          ]
+        }
+      ],
+      "backbone": "lingbot_vla",
+      "bound_executions": [
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "d3f1ef31dc1b739e53f4adc589fd54b6f0fc1511cd0851252c04a87ff4140c31",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "e7d0382818f9bf61db93d9315aa88f631b477ad14464b774d30d22b1c7c38585",
+          "startup_attempts": 4,
+          "startup_rejections": 0
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "55fc79fd1de3a396afe82fe617e48552f3132c226703d8c7ea7318210f194bdb",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "9ac847970a494713941496c89f7bba330f3795805be8795a22474d619ada5faa",
+          "startup_attempts": 2,
+          "startup_rejections": 0
+        }
+      ],
+      "checkpoint": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+      "checkpoint_subdir": null,
+      "historical_screening": [
+        {
+          "arms": {
+            "runtime_default": {
+              "episodes": 20,
+              "successes": 15
+            },
+            "stock": {
+              "episodes": 20,
+              "successes": 15
+            }
+          },
+          "backbone": "lingbot_vla",
+          "checkpoint": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+          "episodes": 40,
+          "plan_id": "fe4dd4395d5460f56924debbaedb4acf566e65d51a85dea5e16e8cf5dca0148d",
+          "quality_reportable": false,
+          "revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e",
+          "run": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/vla4",
+          "screening": true,
+          "suite": "robotwin50_easy",
+          "transferred_to_target_execution": false
+        },
+        {
+          "arms": {
+            "runtime_default": {
+              "episodes": 20,
+              "successes": 15
+            },
+            "stock": {
+              "episodes": 20,
+              "successes": 15
+            }
+          },
+          "backbone": "lingbot_vla",
+          "checkpoint": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+          "episodes": 40,
+          "plan_id": "fe4dd4395d5460f56924debbaedb4acf566e65d51a85dea5e16e8cf5dca0148d",
+          "quality_reportable": false,
+          "revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e",
+          "run": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/vla4",
+          "screening": true,
+          "suite": "robotwin50_hard",
+          "transferred_to_target_execution": false
+        }
+      ],
+      "next_stage": "inspect_execution_stages",
+      "revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e"
+    },
+    {
+      "adapters": [
+        {
+          "id": "lingbot_vla_v2-robotwin-v1",
+          "simulator": "robotwin",
+          "suites": [
+            "robotwin50_easy",
+            "robotwin50_hard"
+          ]
+        }
+      ],
+      "backbone": "lingbot_vla_v2",
+      "bound_executions": [
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "9fe39608e7be50d2e3794e8828f5be97421a45fbb1c92f48cc4b5466ebeb7e09",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "581b17b81b531dc432f3bea34e5020a4146f624dc0bfe9a0c2310c67da758a0c",
+          "startup_attempts": 8,
+          "startup_rejections": 6
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "e518796a2e18e8afb19dbfc80f78771100249d27bbe86ce09807296df214b680",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "581b17b81b531dc432f3bea34e5020a4146f624dc0bfe9a0c2310c67da758a0c",
+          "startup_attempts": 8,
+          "startup_rejections": 6
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "fb883cc907462918a1bcd37345aae8402c719072fcd379e5c231e2dd2eaec6e2",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "9a4d06ab660d9d8592fb56ea22817793c1fef0771a75e68dc1e402a7d307a836",
+          "startup_attempts": 2,
+          "startup_rejections": 0
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "8dda9239ac2db5b4b2b0c0aaf8380be814bc5b9bf1e8cccbc21f2333be1a93d7",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "d61c98f2e5dca647c6b24b5558252e98632d4baa442762f413987f6441b1a6d4",
+          "startup_attempts": 3,
+          "startup_rejections": 0
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": true,
+          "latency_measured": true,
+          "next_stage": "investigate_startup_rejections",
+          "precision": "native",
+          "profile_id": "1078decc005563f00888e2d6e6d61944f8f74944490ac3fb972343c2062482fa",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "516eb601f689aeeaac618af3f771e3c55c7f4dff0c6c3781ea69028ddc5311bf",
+          "startup_attempts": 5,
+          "startup_rejections": 4
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": true,
+          "latency_measured": true,
+          "next_stage": "evaluate_budget_then_collect_needed_paired_quality",
+          "precision": "native",
+          "profile_id": "3b97e465f669ac8885773fbc2fd10ecc431d225db4de6b0cc5ad8e93edcc55f6",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "d3318e7600972456bcf7eb5d551bd6135cde59b600f8b16356c88b61b4a84d61",
+          "startup_attempts": 3,
+          "startup_rejections": 0
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": true,
+          "latency_measured": false,
+          "next_stage": "investigate_startup_rejections",
+          "precision": "native",
+          "profile_id": "404d1389185d28927d5b590219da858c536a8b5657d0bccd681b19b6282d9dd1",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "516eb601f689aeeaac618af3f771e3c55c7f4dff0c6c3781ea69028ddc5311bf",
+          "startup_attempts": 5,
+          "startup_rejections": 4
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": true,
+          "latency_measured": true,
+          "next_stage": "evaluate_budget_then_collect_needed_paired_quality",
+          "precision": "native",
+          "profile_id": "ad2aee418e2e660ce329de4cab3cca4f2e4a827b8d5f64094fff2d47f8546e82",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "c63fabab8f9326f0db9715140fce4cbbdf10c5d852991ee04d7b789e0254c224",
+          "startup_attempts": 3,
+          "startup_rejections": 0
+        }
+      ],
+      "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "checkpoint_subdir": null,
+      "historical_screening": [
+        {
+          "arms": {
+            "runtime_default": {
+              "episodes": 20,
+              "successes": 18
+            },
+            "stock": {
+              "episodes": 20,
+              "successes": 18
+            }
+          },
+          "backbone": "lingbot_vla_v2",
+          "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "episodes": 40,
+          "plan_id": "813c37eb05c9069d624b9f740c2e767074cd8f71af3000b0760c11d2a8d0a413",
+          "quality_reportable": false,
+          "revision": "0451855729ec904f970600e0aec8b84661423afe",
+          "run": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/vla2",
+          "screening": true,
+          "suite": "robotwin50_easy",
+          "transferred_to_target_execution": false
+        },
+        {
+          "arms": {
+            "runtime_default": {
+              "episodes": 20,
+              "successes": 17
+            },
+            "stock": {
+              "episodes": 20,
+              "successes": 17
+            }
+          },
+          "backbone": "lingbot_vla_v2",
+          "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "episodes": 40,
+          "plan_id": "813c37eb05c9069d624b9f740c2e767074cd8f71af3000b0760c11d2a8d0a413",
+          "quality_reportable": false,
+          "revision": "0451855729ec904f970600e0aec8b84661423afe",
+          "run": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/vla2",
+          "screening": true,
+          "suite": "robotwin50_hard",
+          "transferred_to_target_execution": false
+        },
+        {
+          "arms": {
+            "candidate": {
+              "episodes": 2,
+              "successes": 2
+            },
+            "stock": {
+              "episodes": 2,
+              "successes": 2
+            }
+          },
+          "backbone": "lingbot_vla_v2",
+          "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "episodes": 4,
+          "plan_id": "3461d26d72aa989a399655b28de1cfcc5608ebbf4ff5de60cd0b114a67a8a4a9",
+          "quality_reportable": false,
+          "revision": "0451855729ec904f970600e0aec8b84661423afe",
+          "run": "/home/ubuntu/ifl_eval/next_steps_20260906/aa/evidence",
+          "screening": true,
+          "suite": "robotwin50_easy",
+          "transferred_to_target_execution": false
+        },
+        {
+          "arms": {
+            "candidate": {
+              "episodes": 2,
+              "successes": 2
+            },
+            "stock": {
+              "episodes": 2,
+              "successes": 2
+            }
+          },
+          "backbone": "lingbot_vla_v2",
+          "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "episodes": 4,
+          "plan_id": "3461d26d72aa989a399655b28de1cfcc5608ebbf4ff5de60cd0b114a67a8a4a9",
+          "quality_reportable": false,
+          "revision": "0451855729ec904f970600e0aec8b84661423afe",
+          "run": "/home/ubuntu/ifl_eval/next_steps_20260906/aa/evidence",
+          "screening": true,
+          "suite": "robotwin50_hard",
+          "transferred_to_target_execution": false
+        },
+        {
+          "arms": {
+            "candidate": {
+              "episodes": 2,
+              "successes": 2
+            },
+            "stock": {
+              "episodes": 2,
+              "successes": 2
+            }
+          },
+          "backbone": "lingbot_vla_v2",
+          "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "episodes": 4,
+          "plan_id": "d9769ec4158e5d942b5b9fcfd387bb84439729e5e2b2eedc4b30204d55c50b9b",
+          "quality_reportable": false,
+          "revision": "0451855729ec904f970600e0aec8b84661423afe",
+          "run": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/evidence",
+          "screening": true,
+          "suite": "robotwin50_easy",
+          "transferred_to_target_execution": false
+        },
+        {
+          "arms": {
+            "candidate": {
+              "episodes": 2,
+              "successes": 2
+            },
+            "stock": {
+              "episodes": 2,
+              "successes": 2
+            }
+          },
+          "backbone": "lingbot_vla_v2",
+          "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "episodes": 4,
+          "plan_id": "d9769ec4158e5d942b5b9fcfd387bb84439729e5e2b2eedc4b30204d55c50b9b",
+          "quality_reportable": false,
+          "revision": "0451855729ec904f970600e0aec8b84661423afe",
+          "run": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/evidence",
+          "screening": true,
+          "suite": "robotwin50_hard",
+          "transferred_to_target_execution": false
+        },
+        {
+          "arms": {
+            "candidate": {
+              "episodes": 2,
+              "successes": 2
+            },
+            "stock": {
+              "episodes": 2,
+              "successes": 2
+            }
+          },
+          "backbone": "lingbot_vla_v2",
+          "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "episodes": 4,
+          "plan_id": "2ff9ef26c5a1f9df11bf3a21150adf4cc09e7fff21b235613aafff27d898dc46",
+          "quality_reportable": false,
+          "revision": "0451855729ec904f970600e0aec8b84661423afe",
+          "run": "/home/ubuntu/ifl_eval/next_steps_20260906/bb/evidence",
+          "screening": true,
+          "suite": "robotwin50_easy",
+          "transferred_to_target_execution": false
+        },
+        {
+          "arms": {
+            "candidate": {
+              "episodes": 2,
+              "successes": 2
+            },
+            "stock": {
+              "episodes": 2,
+              "successes": 2
+            }
+          },
+          "backbone": "lingbot_vla_v2",
+          "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "episodes": 4,
+          "plan_id": "2ff9ef26c5a1f9df11bf3a21150adf4cc09e7fff21b235613aafff27d898dc46",
+          "quality_reportable": false,
+          "revision": "0451855729ec904f970600e0aec8b84661423afe",
+          "run": "/home/ubuntu/ifl_eval/next_steps_20260906/bb/evidence",
+          "screening": true,
+          "suite": "robotwin50_hard",
+          "transferred_to_target_execution": false
+        },
+        {
+          "arms": {
+            "candidate": {
+              "episodes": 20,
+              "successes": 18
+            },
+            "stock": {
+              "episodes": 20,
+              "successes": 18
+            }
+          },
+          "backbone": "lingbot_vla_v2",
+          "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "episodes": 40,
+          "plan_id": "e762890179a0685c5a9fd204cb5e4fe13c61805318fb67c571860af86ff60709",
+          "quality_reportable": false,
+          "revision": "0451855729ec904f970600e0aec8b84661423afe",
+          "run": "/home/ubuntu/ifl_eval/precision_evidence_20260906_v2/repeat1/evidence",
+          "screening": true,
+          "suite": "robotwin50_easy",
+          "transferred_to_target_execution": false
+        },
+        {
+          "arms": {
+            "candidate": {
+              "episodes": 20,
+              "successes": 17
+            },
+            "stock": {
+              "episodes": 20,
+              "successes": 16
+            }
+          },
+          "backbone": "lingbot_vla_v2",
+          "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "episodes": 40,
+          "plan_id": "e762890179a0685c5a9fd204cb5e4fe13c61805318fb67c571860af86ff60709",
+          "quality_reportable": false,
+          "revision": "0451855729ec904f970600e0aec8b84661423afe",
+          "run": "/home/ubuntu/ifl_eval/precision_evidence_20260906_v2/repeat1/evidence",
+          "screening": true,
+          "suite": "robotwin50_hard",
+          "transferred_to_target_execution": false
+        },
+        {
+          "arms": {
+            "candidate": {
+              "episodes": 20,
+              "successes": 17
+            },
+            "stock": {
+              "episodes": 20,
+              "successes": 16
+            }
+          },
+          "backbone": "lingbot_vla_v2",
+          "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "episodes": 40,
+          "plan_id": "04af80265076b4a54c44da5991b9142b7851db9f1f79cf8aa05e821d098d6d44",
+          "quality_reportable": false,
+          "revision": "0451855729ec904f970600e0aec8b84661423afe",
+          "run": "/home/ubuntu/ifl_eval/precision_evidence_20260906_v2/repeat2/evidence",
+          "screening": true,
+          "suite": "robotwin50_easy",
+          "transferred_to_target_execution": false
+        },
+        {
+          "arms": {
+            "candidate": {
+              "episodes": 20,
+              "successes": 17
+            },
+            "stock": {
+              "episodes": 20,
+              "successes": 17
+            }
+          },
+          "backbone": "lingbot_vla_v2",
+          "checkpoint": "robbyant/lingbot-vla-v2-6b-robotwin",
+          "episodes": 40,
+          "plan_id": "04af80265076b4a54c44da5991b9142b7851db9f1f79cf8aa05e821d098d6d44",
+          "quality_reportable": false,
+          "revision": "0451855729ec904f970600e0aec8b84661423afe",
+          "run": "/home/ubuntu/ifl_eval/precision_evidence_20260906_v2/repeat2/evidence",
+          "screening": true,
+          "suite": "robotwin50_hard",
+          "transferred_to_target_execution": false
+        }
+      ],
+      "next_stage": "inspect_execution_stages",
+      "revision": "0451855729ec904f970600e0aec8b84661423afe"
+    },
+    {
+      "adapters": [],
+      "backbone": "pi05",
+      "bound_executions": [],
+      "checkpoint": "SidneyXie/pi05_robotwin",
+      "checkpoint_subdir": null,
+      "historical_screening": [],
+      "next_stage": "implement_native_simulator_contract",
+      "revision": "e49e2ab6c11f07511573b67261bd129e88d0a416"
+    },
+    {
+      "adapters": [],
+      "backbone": "pi05",
+      "bound_executions": [
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "implement_native_simulator_contract",
+          "precision": "native",
+          "profile_id": "3af08f6cf24ba9982538a6784170a67a172f45b16094185c77808957c9754e41",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "d7249e0921a96e19a6a23a5a8ce5fc876cefd791dfeaf4d3a5111a506f3b581e",
+          "startup_attempts": 3,
+          "startup_rejections": 0
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "implement_native_simulator_contract",
+          "precision": "native",
+          "profile_id": "0f99a56a5a288b256b5472fb2024caebeb364d4b5f461d654979ed30d795bb14",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "45da54009511618e9c62e2070af7534553cecdd54b3f31f033c035c505b98478",
+          "startup_attempts": 1,
+          "startup_rejections": 0
+        }
+      ],
+      "checkpoint": "lerobot/pi05_base",
+      "checkpoint_subdir": null,
+      "historical_screening": [],
+      "next_stage": "implement_native_simulator_contract",
+      "revision": "b211f3d44c36b6acfcf7ae94a64e8e96f75a64ba"
+    },
+    {
+      "adapters": [
+        {
+          "id": "pi05-libero-schedule-v1",
+          "simulator": "libero",
+          "suites": [
+            "libero_spatial",
+            "libero_object",
+            "libero_goal",
+            "libero_10"
+          ]
+        }
+      ],
+      "backbone": "pi05",
+      "bound_executions": [
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "4b857c6f335d338674315c1a2f4bab933aa324319557205594b553829eb579f1",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "c9306f8bbd6612852838e213f9b73ed6c3bb4226caacd438dd983a0bf7930847",
+          "startup_attempts": 3,
+          "startup_rejections": 0
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "650fe1e36f1a4f65a57c4f1bf145bc861206369ea8f290e029c591904c8a75dd",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "e2dc608ebe4de876fcbebece3c6cef17622f698895c8d9fcaba24d185f393f6e",
+          "startup_attempts": 1,
+          "startup_rejections": 0
+        }
+      ],
+      "checkpoint": "lerobot/pi05_libero_finetuned_v044",
+      "checkpoint_subdir": null,
+      "historical_screening": [
+        {
+          "arms": {
+            "instinctflash_capture": {
+              "episodes": 20,
+              "successes": 19
+            },
+            "stock": {
+              "episodes": 20,
+              "successes": 19
+            }
+          },
+          "backbone": "pi05",
+          "checkpoint": "lerobot/pi05_libero_finetuned_v044",
+          "episodes": 40,
+          "plan_id": "69fbf37cb0ff3ac2d705eaccf0d8ab045423ed90cf55f0039256c64f11a2eef6",
+          "quality_reportable": false,
+          "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+          "run": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/pi05",
+          "screening": true,
+          "suite": "libero_10",
+          "transferred_to_target_execution": false
+        }
+      ],
+      "next_stage": "inspect_execution_stages",
+      "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1"
+    },
+    {
+      "adapters": [
+        {
+          "id": "wan-va-libero-v1",
+          "simulator": "libero",
+          "suites": [
+            "wan_va_libero_long"
+          ]
+        }
+      ],
+      "backbone": "wan_va",
+      "bound_executions": [
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "15d42af79ef5338409824db3fc080a366a41894bd1d83df2cec7e0df63435b12",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "32c520b4abc94c917f1a8c54fc2d9d18e6223bc273e7fa48df6e50245c9b8f98",
+          "startup_attempts": 3,
+          "startup_rejections": 0
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "3e0419b01fb56064277d4fdf9789374712a8e25cb5611053bd48a64814fb2a7c",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "285530be63829989d929cbf3c9aa1ea05a8b85dff5fdfa52b6d6e77fd152cfb1",
+          "startup_attempts": 1,
+          "startup_rejections": 0
+        }
+      ],
+      "checkpoint": "robbyant/lingbot-va-posttrain-libero-long",
+      "checkpoint_subdir": null,
+      "historical_screening": [
+        {
+          "arms": {
+            "exact": {
+              "episodes": 20,
+              "successes": 19
+            },
+            "stock": {
+              "episodes": 20,
+              "successes": 19
+            }
+          },
+          "backbone": "wan_va",
+          "checkpoint": "robbyant/lingbot-va-posttrain-libero-long",
+          "episodes": 40,
+          "plan_id": "75387032670d352b41016ad7c2ec664fe3beac9021f1c446aab035ae1844e4d4",
+          "quality_reportable": false,
+          "revision": "0e89d1e753019988aba484e8da2dc0810e264d9f",
+          "run": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/va_libero",
+          "screening": true,
+          "suite": "wan_va_libero_long",
+          "transferred_to_target_execution": false
+        }
+      ],
+      "next_stage": "inspect_execution_stages",
+      "revision": "0e89d1e753019988aba484e8da2dc0810e264d9f"
+    },
+    {
+      "adapters": [
+        {
+          "id": "wan-va-robotwin-v1",
+          "simulator": "robotwin",
+          "suites": [
+            "robotwin50_easy",
+            "robotwin50_hard"
+          ]
+        }
+      ],
+      "backbone": "wan_va",
+      "bound_executions": [
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "64cb99f4cc0a849d06767531bdd4cc8e8e3a11271ca98fdc7622042828f98107",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "66e874c5d401fd8762f9a5af68b0065418499e0b545effe8f18eceab840cf5d9",
+          "startup_attempts": 3,
+          "startup_rejections": 0
+        },
+        {
+          "deployment_certified": false,
+          "hardware_matches_target": false,
+          "latency_measured": false,
+          "next_stage": "measure_target_device_execution",
+          "precision": "native",
+          "profile_id": "99e1c96ee88f54b503061c7542c5af645a5d3d2e83a3e6153eddf53537d50b0e",
+          "quality_status": "unmeasured",
+          "requested_profile_id": "d16e43e80b2722a84ab7e0cc537a144adac29cc6a64db907328fcaac2b93d407",
+          "startup_attempts": 1,
+          "startup_rejections": 0
+        }
+      ],
+      "checkpoint": "robbyant/lingbot-va-posttrain-robotwin",
+      "checkpoint_subdir": null,
+      "historical_screening": [
+        {
+          "arms": {
+            "2v4a": {
+              "episodes": 1,
+              "successes": 1
+            },
+            "stock": {
+              "episodes": 1,
+              "successes": 1
+            }
+          },
+          "backbone": "wan_va",
+          "checkpoint": "robbyant/lingbot-va-posttrain-robotwin",
+          "episodes": 2,
+          "plan_id": "184f54011b3e541e2347f235589b8d369be0fc5e4a3d833240eb01ce543ec05a",
+          "quality_reportable": false,
+          "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+          "run": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/va_2v4a_smoke",
+          "screening": true,
+          "suite": "robotwin50_easy",
+          "transferred_to_target_execution": false
+        },
+        {
+          "arms": {
+            "2v4a": {
+              "episodes": 1,
+              "successes": 1
+            },
+            "stock": {
+              "episodes": 1,
+              "successes": 1
+            }
+          },
+          "backbone": "wan_va",
+          "checkpoint": "robbyant/lingbot-va-posttrain-robotwin",
+          "episodes": 2,
+          "plan_id": "184f54011b3e541e2347f235589b8d369be0fc5e4a3d833240eb01ce543ec05a",
+          "quality_reportable": false,
+          "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+          "run": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/va_2v4a_smoke",
+          "screening": true,
+          "suite": "robotwin50_hard",
+          "transferred_to_target_execution": false
+        }
+      ],
+      "next_stage": "inspect_execution_stages",
+      "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70"
+    }
+  ],
+  "deployment_certified": false,
+  "minimum_startups": 3,
+  "protocol": [
+    "pin checkpoint, source, artifacts, schedule and numeric settings",
+    "fresh-process startup admission; retain rejected attempts and test fallback",
+    "same real observations and actual noise: AA, AB, BB; compare like tensor domains",
+    "separate target-device latency and explicit control/reaction budget",
+    "preserve baseline when sufficient; paired quality for permitted numerical/behavioral changes",
+    "bind exact task/scene/seed protocol and execution before selection"
+  ],
+  "registry_sha256": "2e6ae61ffff993f60b191fe40ae059b78e28d656b76bc83eb4f5aaf75ca97e57",
+  "report_sha256": "4450f03b3b9ae9b01e912becd5fe92ab5ad44537820a4b349820956d0df5ba5a",
+  "schema_version": 1,
+  "scope": "Qualification work inventory, not automatic execution or a release certificate. A finite startup sample is not a reliability-rate guarantee. Historical screening, another fine-tune/variant, or H100 evidence never grants Thor readiness. Renderer requirements remain those of each simulator adapter.",
+  "source_bundles": [
+    {
+      "bundle_sha256": "14eb88f5f447bae26fed11866b41cb4f2f409ce3b5a8961932a59d9939389dda",
+      "path": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/va_libero"
+    },
+    {
+      "bundle_sha256": "0a1e6ef0780a76f43dd56478336e35082f445753fda0d68fb4c665dbc1afa8db",
+      "path": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/pi05"
+    },
+    {
+      "bundle_sha256": "6e0b1a38c6b4b2959e32a23f17919a79db52d4bfa3a0bafe77a70b8b2987413c",
+      "path": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/groot"
+    },
+    {
+      "bundle_sha256": "cb8ed3edc0aeab62242a82124337261c6d04a0519b62c8113e3d945b996ca5ba",
+      "path": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/vla4"
+    },
+    {
+      "bundle_sha256": "d3605de17e46234354d7fd57ef280d02b48359d985e357544d69c789f008273a",
+      "path": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/vla2"
+    },
+    {
+      "bundle_sha256": "58195dc4a9b9386324514c3bb6676459fd13c01d370a2455004f44b9fdceb3d7",
+      "path": "/home/ubuntu/ifl_eval/screen10_20260906/evidence-final/va_2v4a_smoke"
+    },
+    {
+      "bundle_sha256": "d1cf0e9330c926c9844c184d24ebb8d599f75a8f865fe8998cd75c6965a386c1",
+      "path": "/home/ubuntu/ifl_eval/next_steps_20260906/aa/evidence"
+    },
+    {
+      "bundle_sha256": "a99b27a989ddfc4ed2b6a395f14f5104ab343285bf0d6a69113fce6a89deda24",
+      "path": "/home/ubuntu/ifl_eval/next_steps_20260906/ab/evidence"
+    },
+    {
+      "bundle_sha256": "eb4654916160d32263a13d51e57a0b2966806ae3aba727919d789f801d59b35a",
+      "path": "/home/ubuntu/ifl_eval/next_steps_20260906/bb/evidence"
+    },
+    {
+      "bundle_sha256": "570c51e66a150013b334ef35cf0455fb5147d20b23eed637994f79b22cf9303d",
+      "path": "/home/ubuntu/ifl_eval/next_steps_20260906/new-checkpoint/evidence"
+    },
+    {
+      "bundle_sha256": "abdc6211ac015580567d0494c65a503ce8220b7b315bc0e3aff810379317dfd0",
+      "path": "/home/ubuntu/ifl_eval/precision_evidence_20260906_v2/repeat1/evidence"
+    },
+    {
+      "bundle_sha256": "5c7744cd644c8522fac76abc695e2642b628bc70d3c20f404c42f636ca555e6e",
+      "path": "/home/ubuntu/ifl_eval/precision_evidence_20260906_v2/repeat2/evidence"
+    }
+  ],
+  "startup_sources": [
+    {
+      "attempt_id": "324fe9e4fcde4d418a7d1cfc8a07fb41",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/corrected-env.h100.pi05_base.default.normal.0.receipt.json",
+      "requested_profile_id": "d7249e0921a96e19a6a23a5a8ce5fc876cefd791dfeaf4d3a5111a506f3b581e",
+      "sha256": "e4dc7106040778447e01ae80980728d54c98fc9055aa37234797b1ab03c4aca6",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "6d6c27f97c654388956f1a172a0f7779",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/corrected-env.h100.pi05_base.default.normal.1.receipt.json",
+      "requested_profile_id": "d7249e0921a96e19a6a23a5a8ce5fc876cefd791dfeaf4d3a5111a506f3b581e",
+      "sha256": "2dba89c6859b055c53acbe481a231ba17cdc8043aacda56e1fe3f56785d85fdd",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "ae9c34e9a5214a7dbe1907651b2e037e",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/corrected-env.h100.pi05_base.default.normal.2.receipt.json",
+      "requested_profile_id": "d7249e0921a96e19a6a23a5a8ce5fc876cefd791dfeaf4d3a5111a506f3b581e",
+      "sha256": "5beb61f5d86a5e127991a15b94a10e7630131982f167df336a6344627035d82a",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "d7b018ec0e6048039b702948cbe94b05",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/corrected-env.h100.pi05_base.default.stock.0.receipt.json",
+      "requested_profile_id": "45da54009511618e9c62e2070af7534553cecdd54b3f31f033c035c505b98478",
+      "sha256": "0d9fdf5cffe1606f12a417e9031a606f10181ef2bd9a166e690b17f610373fcb",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "c2e0629faeeb40239090b06542dd402f",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/corrected-env.h100.pi05_libero.default.normal.0.receipt.json",
+      "requested_profile_id": "c9306f8bbd6612852838e213f9b73ed6c3bb4226caacd438dd983a0bf7930847",
+      "sha256": "8cb63a402ffa3b707c8393035746fa0ee32ad0ea307727b749fe3b3714271b17",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "f9ba716e75854a708c3ac8f15859851b",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/corrected-env.h100.pi05_libero.default.normal.1.receipt.json",
+      "requested_profile_id": "c9306f8bbd6612852838e213f9b73ed6c3bb4226caacd438dd983a0bf7930847",
+      "sha256": "4f0d1d887a240f22354f6574953f30871cd9926d4e59ae6f2503b249d67e59f1",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "6970e16b320b418dab1caa183e87e972",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/corrected-env.h100.pi05_libero.default.normal.2.receipt.json",
+      "requested_profile_id": "c9306f8bbd6612852838e213f9b73ed6c3bb4226caacd438dd983a0bf7930847",
+      "sha256": "7453d154c5aa95ceac793f90da3a9742dcff678dc66b9a8aab7ab89ad38a58d1",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "08baa3ce31ae42af8b0d5cb7a02dd694",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/corrected-env.h100.pi05_libero.default.stock.0.receipt.json",
+      "requested_profile_id": "e2dc608ebe4de876fcbebece3c6cef17622f698895c8d9fcaba24d185f393f6e",
+      "sha256": "1a56c597a26aec5d4c2027aafff0e155282cb624d2b89c274750cb31ffe391dc",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "439ac1366f5542b3b71559ec2e08fbe4",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_10.normal.0.receipt.json",
+      "requested_profile_id": "2bb99bc30162a4f7f88e0c4e01d4a3ae0943d8acdfa433b906c13a0b37b8215c",
+      "sha256": "32ed997695c03cd42c262f7f2f650956890f7ab4aaaa3592c5c0eed0652f717e",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "83f6d6550adc4d979ffa4bd0e8b9e738",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_10.normal.1.receipt.json",
+      "requested_profile_id": "2bb99bc30162a4f7f88e0c4e01d4a3ae0943d8acdfa433b906c13a0b37b8215c",
+      "sha256": "8754aef8ea4d545c617812de80b8f295df7fde4f38fd4ad8d5d5994875208a73",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "a3d049cd8efa4b5284349a86f650b5d7",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_10.normal.2.receipt.json",
+      "requested_profile_id": "2bb99bc30162a4f7f88e0c4e01d4a3ae0943d8acdfa433b906c13a0b37b8215c",
+      "sha256": "c19124b5267bbd39394c245e920202f5d6a1cc910797562b371ca4f949f27003",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "9e2e5f9dbf044b35b70cba151862ae84",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_10.stock.0.receipt.json",
+      "requested_profile_id": "663828a646d85f17b56118707a5326edd59f27527e361125969a7551cc7f6e51",
+      "sha256": "028539f4aff3e43e6fbe4580e155030e74be78e1ebd615e7f2111163d7ae5e7f",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "eaf714a08c2f40268a41cdcd4f79eefd",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_goal.normal.0.receipt.json",
+      "requested_profile_id": "ca619b33bba03c65b724cc951e7135e51cd9e1641eb6d8fb08191ce52c68f5e4",
+      "sha256": "822cb27cd8a2ec42c86ce1396ccf1b38b0f1f4daf35ca341763105fdf3ba27f6",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "ead5170f04b244f7889d32987cf1b8c5",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_goal.normal.1.receipt.json",
+      "requested_profile_id": "ca619b33bba03c65b724cc951e7135e51cd9e1641eb6d8fb08191ce52c68f5e4",
+      "sha256": "2165a7252179a27c5baaba86666c97f0903f1ed14fa8592a8110a795db7372e2",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "002ceb89cd344e88aae496be308cd4f7",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_goal.normal.2.receipt.json",
+      "requested_profile_id": "ca619b33bba03c65b724cc951e7135e51cd9e1641eb6d8fb08191ce52c68f5e4",
+      "sha256": "e6c3112f417e2912e95c1ee86b68d4affd13db007bdffa8d582c61ef90bfb715",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "10ac3176571741b3a1e31a854875d384",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_goal.stock.0.receipt.json",
+      "requested_profile_id": "5c5d09eff27faeb586f775f2009ce4495b4ccc2d2feef9e8fe015b26c25b0272",
+      "sha256": "49a0a3d4d438ec4673f164bb7ad829ea70a6b094472aaeca0d6d36708bc6dd8b",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "3b67cac7854342e7acfa6c1ef6b0a0c9",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_object.normal.0.receipt.json",
+      "requested_profile_id": "299b84fdadd197cc88be35f639ae886fc17d6d7d2aaeb1bf84908a9ee5e869aa",
+      "sha256": "df61f4c46215978761b09e43b854e26b12ca40b081d12dfc988287ec3e69e972",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "234d5ce509544f9cb4aafb590fe0a3e7",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_object.normal.1.receipt.json",
+      "requested_profile_id": "299b84fdadd197cc88be35f639ae886fc17d6d7d2aaeb1bf84908a9ee5e869aa",
+      "sha256": "348fbe602d91b887462c4450bbf19fc2c5dfcd0d1262ec463fb7023159c40b8f",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "edb3840ccf0e4c10a99b17a0fe775514",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_object.normal.2.receipt.json",
+      "requested_profile_id": "299b84fdadd197cc88be35f639ae886fc17d6d7d2aaeb1bf84908a9ee5e869aa",
+      "sha256": "9ff883af344e7c2ef67b27f892738d1df024941dc412489d0a59db0f915786d6",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "eb5575400ecf4dedad35f4d8b7ea9852",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_object.stock.0.receipt.json",
+      "requested_profile_id": "c299317f442ba88731053805e0384647149e1e03f7b5e2f6ff11d5335fbea568",
+      "sha256": "56166f85e56ca9b11a44bb46926d81d160bf733846acaaad22870a6d4b95b0cb",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "4831e0f615c041b0a4680e6f4ece46f2",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_spatial.normal.0.receipt.json",
+      "requested_profile_id": "9f72f28c3ae5f1b8dab6f6ca30a814474302d83bec54cdbd6c8285883b0d0c84",
+      "sha256": "804f0fef33833024b96c831e751aee687cc2c4b7a00efb956387f5751c80a623",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "9e5e606cb270433b9e7e9a5cc4c3470a",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_spatial.normal.1.receipt.json",
+      "requested_profile_id": "9f72f28c3ae5f1b8dab6f6ca30a814474302d83bec54cdbd6c8285883b0d0c84",
+      "sha256": "0eb9b1c0189c67150f582570c79618b5c23eb875588d378290e88889042d0593",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "cba0256d56d34630a19b3809292cda0f",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_spatial.normal.2.receipt.json",
+      "requested_profile_id": "9f72f28c3ae5f1b8dab6f6ca30a814474302d83bec54cdbd6c8285883b0d0c84",
+      "sha256": "bdc7a4172a4dd0eaabf74d2793925b87fe0b14839a10abb9b7087593cc1c0c9c",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "1d01d705cfd143f2b22631aecad0d480",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.groot.libero_spatial.stock.0.receipt.json",
+      "requested_profile_id": "40bcac8cf2ef93f4f4bb11b3cf69f615297006a64c0f32cb822db1105a1dcf00",
+      "sha256": "8b94bc234be530747d3d84f5b8be98b10941331990435c7be404f69962762084",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "b4cd09bc61e84e3c9d836cbaef66f9ab",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.v2.default.normal.0.receipt.json",
+      "requested_profile_id": "581b17b81b531dc432f3bea34e5020a4146f624dc0bfe9a0c2310c67da758a0c",
+      "sha256": "252c01a711bb10ad129809d783549e21eeda68ad135e82edc55ed291b7e75dd1",
+      "status": "rejected"
+    },
+    {
+      "attempt_id": "8ec007eb319143babb9d513f32da4428",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.v2.default.normal.1.receipt.json",
+      "requested_profile_id": "581b17b81b531dc432f3bea34e5020a4146f624dc0bfe9a0c2310c67da758a0c",
+      "sha256": "48b6e78a3d1f10b6f3c0772ffa3b41d4aba318c348aa5146516b48bd2397ae41",
+      "status": "rejected"
+    },
+    {
+      "attempt_id": "c67ecdbfa0624ecf8dd4a4bd0df71fd6",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.v2.default.normal.2.receipt.json",
+      "requested_profile_id": "581b17b81b531dc432f3bea34e5020a4146f624dc0bfe9a0c2310c67da758a0c",
+      "sha256": "25314299a82bb594b04b1d9b1dc37cb05c130aa09643196b2c7e65ace0ef8d8f",
+      "status": "rejected"
+    },
+    {
+      "attempt_id": "1df3f3b3174f4a47ac5553fa9ae91c6e",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.v2.default.normal.3.receipt.json",
+      "requested_profile_id": "581b17b81b531dc432f3bea34e5020a4146f624dc0bfe9a0c2310c67da758a0c",
+      "sha256": "89d7e1d5b1ff928e0d9f8cf6eefdd5b90e4f8d276a66b7ff42683dc80d5935e0",
+      "status": "rejected"
+    },
+    {
+      "attempt_id": "3b803eff89c94e24979b77379a31e40d",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.v2.default.normal.4.receipt.json",
+      "requested_profile_id": "581b17b81b531dc432f3bea34e5020a4146f624dc0bfe9a0c2310c67da758a0c",
+      "sha256": "b71b0d6216d213949621487cdf85112c0f98a43164feb6b886ac48f859308c40",
+      "status": "rejected"
+    },
+    {
+      "attempt_id": "24afd3aadb6e41989407e5806270b835",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.v2.default.normal.5.receipt.json",
+      "requested_profile_id": "581b17b81b531dc432f3bea34e5020a4146f624dc0bfe9a0c2310c67da758a0c",
+      "sha256": "aba3eb448f07b16abe5fa136529591d534ed32e25b86eaec52d94771a30d5673",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "12e466c883e9447089701f9acdbd2a7f",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.v2.default.normal.6.receipt.json",
+      "requested_profile_id": "581b17b81b531dc432f3bea34e5020a4146f624dc0bfe9a0c2310c67da758a0c",
+      "sha256": "5676421e672348986a150eb28301b8a3202dec5c78589c9fef78b59f1c1f0382",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "eed50c27d27b4a4397ae89cdbe0e12d3",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.v2.default.normal.7.receipt.json",
+      "requested_profile_id": "581b17b81b531dc432f3bea34e5020a4146f624dc0bfe9a0c2310c67da758a0c",
+      "sha256": "63a1a7f8eb9bded89b751314e98e64908f681ad68ef2972ee356cd4102489d07",
+      "status": "rejected"
+    },
+    {
+      "attempt_id": "1a4bce586da64dc2919f0f2bee9e228c",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.v2.default.stock.0.receipt.json",
+      "requested_profile_id": "9a4d06ab660d9d8592fb56ea22817793c1fef0771a75e68dc1e402a7d307a836",
+      "sha256": "98780011906769e024892c0f052fcc2870c573361cffadd3fe4c2fdeb6c456a0",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "1cba6aade9694c56875e1da42f3ff065",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.v2.default.stock.1.receipt.json",
+      "requested_profile_id": "9a4d06ab660d9d8592fb56ea22817793c1fef0771a75e68dc1e402a7d307a836",
+      "sha256": "12556f99c1077589453695dc3cb9806b9dce5d7739d348b9f7cae1d8e9a429d1",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "a9561ea23798406593d9883459b54225",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.vla4.default.normal.0.receipt.json",
+      "requested_profile_id": "e7d0382818f9bf61db93d9315aa88f631b477ad14464b774d30d22b1c7c38585",
+      "sha256": "b8e1daaaa5a28535151dde50e46d2ce4cc56e15e2279ad9ac45a0da6f62852df",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "2a86e56975c6443282c95ea9e15d330c",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.vla4.default.normal.1.receipt.json",
+      "requested_profile_id": "e7d0382818f9bf61db93d9315aa88f631b477ad14464b774d30d22b1c7c38585",
+      "sha256": "d86c73dba55473afc9769bacccb0e6f485941042b83e74e64b494f9ae689af7a",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "b6a2acec9fa04f9ca0a0934ab53ffd57",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.vla4.default.normal.2.receipt.json",
+      "requested_profile_id": "e7d0382818f9bf61db93d9315aa88f631b477ad14464b774d30d22b1c7c38585",
+      "sha256": "83e53ae9929eb9b978c246354c87bf4b0a98364bab4959dec423fd49f20dd23f",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "ad8de89228c94c7bbdb41a336e9c9140",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.vla4.default.normal.3.receipt.json",
+      "requested_profile_id": "e7d0382818f9bf61db93d9315aa88f631b477ad14464b774d30d22b1c7c38585",
+      "sha256": "d0b163300d4e621cbffa3ff520e2959a56f4432f456e8bc387e5f9ffc729f4f3",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "5160c5286d7e499e99a35da098b43821",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.vla4.default.stock.0.receipt.json",
+      "requested_profile_id": "9ac847970a494713941496c89f7bba330f3795805be8795a22474d619ada5faa",
+      "sha256": "2da19fc76de78b858aa38bceeca07a6eb2eda06e2011bf4a9ef2699914b51f97",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "7689aad27442459c9214d0a0b8dd9aff",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/final.h100.vla4.default.stock.1.receipt.json",
+      "requested_profile_id": "9ac847970a494713941496c89f7bba330f3795805be8795a22474d619ada5faa",
+      "sha256": "ef29339ff80b29a376af2fe0ec7552664963c10ab476c361efbeefda0af5fa1c",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "c0fa57e5f1db4b6a9f14e14a38e1d574",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/strict.h100.v2.default.strict.0.receipt.json",
+      "requested_profile_id": "d61c98f2e5dca647c6b24b5558252e98632d4baa442762f413987f6441b1a6d4",
+      "sha256": "7e8f6fe485448574e1c180a5537c30ea29692cbe0c4a076652efe9c62691f1c7",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "519aff2dfdcc478eba52e8ed0a63df33",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/strict.h100.v2.default.strict.1.receipt.json",
+      "requested_profile_id": "d61c98f2e5dca647c6b24b5558252e98632d4baa442762f413987f6441b1a6d4",
+      "sha256": "50d117877324a6820f82b91cac82453efccc647a95611884b7db1036260c2d60",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "b930d0e5369247e7bbd866fcf7061c1d",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/strict.h100.v2.default.strict.2.receipt.json",
+      "requested_profile_id": "d61c98f2e5dca647c6b24b5558252e98632d4baa442762f413987f6441b1a6d4",
+      "sha256": "ff8cf0724a59b22c7b6b2fe24e65aef5bfefc8163a12fa67d2557c62517e3f57",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "ee8a77208ef24fc1b45f66abc14969a3",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/va-final.h100.libero.normal.0.receipt.json",
+      "requested_profile_id": "32c520b4abc94c917f1a8c54fc2d9d18e6223bc273e7fa48df6e50245c9b8f98",
+      "sha256": "7d3e05fe4a06d255e24be784e2b56d0bfad36c998b37a9e70e7abe744aace5de",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "ef1585ec17bc4660982c8f3fa4514408",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/va-final.h100.libero.normal.1.receipt.json",
+      "requested_profile_id": "32c520b4abc94c917f1a8c54fc2d9d18e6223bc273e7fa48df6e50245c9b8f98",
+      "sha256": "85c5ea222163b741654d91e387ee438b839f4f8bb75ed5908054cdf6bf78693e",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "fe4b0ba921ea41b1b9130fbaea214838",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/va-final.h100.libero.normal.2.receipt.json",
+      "requested_profile_id": "32c520b4abc94c917f1a8c54fc2d9d18e6223bc273e7fa48df6e50245c9b8f98",
+      "sha256": "53c8c00e26a4188b33c06d218891d44761160513eeb73e6b3464515c5386edd8",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "a286c0dd44c44e9290c4d45895054021",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/va-final.h100.libero.stock.0.receipt.json",
+      "requested_profile_id": "285530be63829989d929cbf3c9aa1ea05a8b85dff5fdfa52b6d6e77fd152cfb1",
+      "sha256": "adfde9b1dac33c25527458036b672126c13b749f138d9b48f57917cfe5c405fc",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "c5aa179e381a44a28587cfe75d1a1b97",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/va-final.h100.robotwin.normal.0.receipt.json",
+      "requested_profile_id": "66e874c5d401fd8762f9a5af68b0065418499e0b545effe8f18eceab840cf5d9",
+      "sha256": "b5e7bc102137df2baa3a55839a8ade213a3bd04a9d66842328a57e60d7160552",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "67239d59677a47d493fba9be6140d0ac",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/va-final.h100.robotwin.normal.1.receipt.json",
+      "requested_profile_id": "66e874c5d401fd8762f9a5af68b0065418499e0b545effe8f18eceab840cf5d9",
+      "sha256": "c80e5cc19362fa6541a5759a52af5cb729daf328e42cac341bef31796095b6a6",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "5d0b6c90e2e245ba87f81d4b8a7197bf",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/va-final.h100.robotwin.normal.2.receipt.json",
+      "requested_profile_id": "66e874c5d401fd8762f9a5af68b0065418499e0b545effe8f18eceab840cf5d9",
+      "sha256": "6e03f9a97f547532aafa9441791267bbe92311b70dd0e40e6d2f1f33d0899c08",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "155bb0c2f25147e1a12a77ddd441e93e",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/va-final.h100.robotwin.stock.0.receipt.json",
+      "requested_profile_id": "d16e43e80b2722a84ab7e0cc537a144adac29cc6a64db907328fcaac2b93d407",
+      "sha256": "9e66f17dad81689acbb15beae90609034b8ce8e88e0736ac70718955f74eaa5e",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "f17e0bff331f4ff3b0805d780893ff49",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/thor-results/final.thor.server.runtime_default.receipt.json",
+      "requested_profile_id": "516eb601f689aeeaac618af3f771e3c55c7f4dff0c6c3781ea69028ddc5311bf",
+      "sha256": "9adbb2799759dafa1632c8a02fd0f23fd26704190cf2a6b8ed7382221f9eb974",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "90f916ec3525414c8b023e028c215289",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/thor-results/final.thor.server.stock.receipt.json",
+      "requested_profile_id": "d3318e7600972456bcf7eb5d551bd6135cde59b600f8b16356c88b61b4a84d61",
+      "sha256": "31695359ec1b74835d925d2a4051d78537e3b26aacb1e424e91069e6f3077dc1",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "cd0b47980c9543c5868eaab22d442422",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/thor-results/final.thor.v2.normal.0.receipt.json",
+      "requested_profile_id": "516eb601f689aeeaac618af3f771e3c55c7f4dff0c6c3781ea69028ddc5311bf",
+      "sha256": "3190b2fe7202a5bb741d392611f32526adc9590e74bbb2fbe05e1377d16466f1",
+      "status": "rejected"
+    },
+    {
+      "attempt_id": "974d28e8713d442fb3be2f5c1c74e12d",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/thor-results/final.thor.v2.normal.1.receipt.json",
+      "requested_profile_id": "516eb601f689aeeaac618af3f771e3c55c7f4dff0c6c3781ea69028ddc5311bf",
+      "sha256": "370d19d62c8a88912e21ec0fe4b962921bb11515fe2e3c4288624b55e35f8ea6",
+      "status": "rejected"
+    },
+    {
+      "attempt_id": "3c9c63935bdd47b8b16f6c55fb021831",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/thor-results/final.thor.v2.normal.2.receipt.json",
+      "requested_profile_id": "516eb601f689aeeaac618af3f771e3c55c7f4dff0c6c3781ea69028ddc5311bf",
+      "sha256": "780d3f2023755a24023eda16d6180e83ae7f4118a8acbc6cbfe9fb15c92d0ccb",
+      "status": "rejected"
+    },
+    {
+      "attempt_id": "a654db37999f4128a81c4a29a6877d06",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/thor-results/final.thor.v2.normal.3.receipt.json",
+      "requested_profile_id": "516eb601f689aeeaac618af3f771e3c55c7f4dff0c6c3781ea69028ddc5311bf",
+      "sha256": "e91e116f5785ddaf5800bba7dffd6fe23b49368b483aac4ef5cd49fb93055dbf",
+      "status": "rejected"
+    },
+    {
+      "attempt_id": "3e88ca13a386435abdb80d4d50dc9b00",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/thor-results/final.thor.v2.stock.0.receipt.json",
+      "requested_profile_id": "d3318e7600972456bcf7eb5d551bd6135cde59b600f8b16356c88b61b4a84d61",
+      "sha256": "04f97c05290d6a421a4d9d26351813b7fc5789b66eb13e12e0ba7d0dc9962fc5",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "d03e476724234f42a0c312210e2c679a",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/thor-results/final.thor.v2.stock.1.receipt.json",
+      "requested_profile_id": "d3318e7600972456bcf7eb5d551bd6135cde59b600f8b16356c88b61b4a84d61",
+      "sha256": "d6aebcc591007cdbda83914c4b0a3681b923828971879660763a5fbd9ab3ff94",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "adf812955eca4560a1db1a099fdff971",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/thor-results/strict.thor.server.runtime_default.receipt.json",
+      "requested_profile_id": "c63fabab8f9326f0db9715140fce4cbbdf10c5d852991ee04d7b789e0254c224",
+      "sha256": "ecefdb506287a6b8c77fa6291e84158795774ece8218513c164e5a6bf3e7ba1f",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "090db271b0ae45808c301a62474e44ce",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/thor-results/strict.thor.v2.strict.0.receipt.json",
+      "requested_profile_id": "c63fabab8f9326f0db9715140fce4cbbdf10c5d852991ee04d7b789e0254c224",
+      "sha256": "1261a5f12424db3cd70693faf9d10c08839a8d53b2e90b404243e536a7036aa7",
+      "status": "ready"
+    },
+    {
+      "attempt_id": "499749258c0243ae90df9d1faaaecd2d",
+      "path": "/home/ubuntu/ifl_eval/native_qualification_20260906/thor-results/strict.thor.v2.strict.1.receipt.json",
+      "requested_profile_id": "c63fabab8f9326f0db9715140fce4cbbdf10c5d852991ee04d7b789e0254c224",
+      "sha256": "19c44e12b8f2421a80fc8be13766625f3de7f1e3c932549e724686dc3e24fbe9",
+      "status": "ready"
+    }
+  ],
+  "target_device": "Thor"
+}

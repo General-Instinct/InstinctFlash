@@ -1,0 +1,54 @@
+{
+  "base": "/home/guanming/ifl_public_qualification_20260915_v1",
+  "output": "dreamzero_paired_serving_queue_v5",
+  "jobs": [
+    {
+      "id": "dreamzero-dynamic-fp8-paired",
+      "python": "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/bin/python",
+      "activation": [
+        "bootstrap_dreamzero_v2/run.env",
+        "auxiliary_assets_v4/dreamzero/run.env",
+        "dreamzero_ptxas_v1/compiler/run.env"
+      ],
+      "environment": {
+        "NO_ALBUMENTATIONS_UPDATE": "1",
+        "TORCHINDUCTOR_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_compiler_cache_v5/inductor",
+        "TRITON_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_compiler_cache_v5/triton"
+      },
+      "module": "benchmarks.regression.reproduce",
+      "arguments": [
+        "run",
+        "--prepared",
+        "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_prepared_v1",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v5"
+      ],
+      "receipt": "dreamzero_dynamic-fp8_run_v5/run.json",
+      "timeout": 7200
+    },
+    {
+      "id": "dreamzero-dynamic-fp8-serving",
+      "python": "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/bin/python",
+      "activation": [
+        "bootstrap_dreamzero_v2/run.env",
+        "auxiliary_assets_v4/dreamzero/run.env",
+        "dreamzero_ptxas_v1/compiler/run.env"
+      ],
+      "environment": {
+        "NO_ALBUMENTATIONS_UPDATE": "1",
+        "TORCHINDUCTOR_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_compiler_cache_v5/inductor",
+        "TRITON_CACHE_DIR": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_compiler_cache_v5/triton"
+      },
+      "module": "benchmarks.regression.serve_smoke",
+      "arguments": [
+        "--prepared",
+        "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_prepared_v1",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_serving_v1"
+      ],
+      "receipt": "dreamzero_dynamic-fp8_serving_v1/receipt.json",
+      "timeout": 5400
+    }
+  ],
+  "parent_queue_sha256": "396f4695e8b6022b74bcecd944360e79726ac3998978785c177e59bfbc1e5f0d"
+}

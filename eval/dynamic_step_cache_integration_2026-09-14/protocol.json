@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "frozen_before_gpu_outputs": true,
+  "model": "GEAR-Dreams/DreamZero-DROID",
+  "revision": "96ad344138c66e82536422432ad742f015784942",
+  "device": "Jetson Thor SM110, exclusive /tmp/thor_gpu.lock",
+  "precision": ["native", "fp8"],
+  "schedule": ["checkpoint", "dynamic"],
+  "grid_steps": 16,
+  "cfg": 5.0,
+  "checkpoint_fixed_computed_steps": 8,
+  "dynamic_profile": "dreamzero_velocity_v1",
+  "job_order": ["native-dynamic", "native-checkpoint", "fp8-dynamic", "fp8-checkpoint"],
+  "requests_per_timing_job": 9,
+  "timing": {
+    "episodes": 3,
+    "cycles_per_episode": 3,
+    "warmup_episodes": [0],
+    "measured_episodes": [1, 2],
+    "primary_statistic": "Median of four continuation full-public-predict wall times (cycles 1/2)",
+    "scope": "Bounded latency SCREEN, insufficient sample size for stable tail latency or main table replacement"
+  },
+  "same_precision_dynamic_integration_parity": {
+    "roles": ["shared", "native_oracle", "shared_restored"],
+    "requests_per_role": 6,
+    "same_loaded_weights": true,
+    "same_inputs_seeds": true,
+    "checks": ["finite full actions", "raw video and action endpoints", "all retained native KV arrays", "actual compute masks", "two CFG branches per computed call", "observation KV branches", "all sixteen updates of both original solvers", "post-call RNG states"]
+  },
+  "expected_requests": 72,
+  "quality_certified": false,
+  "nonclaims": ["Dynamic outputs equal fixed-mask outputs", "Native outputs equal FP8 outputs", "Task accuracy acceptable", "All models support this profile", "Cross-process repeatability resolved"],
+  "failure_policy": "Stop queue, preserve failed evidence; no automatic retries",
+  "validation_before_launch": {"cpu_tests_passed": 170, "cuda_visible_devices": "", "pytest_seconds": 2.85}
+}

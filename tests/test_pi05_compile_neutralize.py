@@ -1,12 +1,13 @@
 """A published ``compile_model: true`` yields to the plan's own graph_capture, and only to it.
 
-The rule under test lives in pi05_iwm/adapter.py: when the plan's graph_capture pass APPLIES,
-the runtime's static-KV capture serves the same denoise loop bit-exactly at 72.8 ms/chunk vs
-torch.compile's 173.3 (measured, H100/v044) with seconds of warmup instead of 171 s+ of
-first-start autotune — so the checkpoint's compile flag is neutralized, printed, and recorded
-on the plan for explain(). Everywhere capture has no case (plan declines, no capture in the
-plan, CPU build), the publisher's key must stand untouched: a checkpoint author's deployment
-choice is only overridden by something measured to be strictly better, never by silence.
+The rule under test is the SECOND neutralization rule in pi05_iwm/adapter.py (the first is the
+sm_110a triton-crash one): when the plan's graph_capture pass APPLIES, the runtime's static-KV
+capture serves the same denoise loop bit-exactly at 72.8 ms/chunk vs torch.compile's 173.3
+(measured, H100/v044) with seconds of warmup instead of 171 s+ of first-start autotune — so the
+checkpoint's compile flag is neutralized, printed, and recorded on the plan for explain().
+Everywhere capture has no case (plan declines, no capture in the plan, CPU build), the
+publisher's key must stand untouched: a checkpoint author's deployment choice is only
+overridden by something measured to be strictly better, never by silence.
 """
 from __future__ import annotations
 
@@ -29,6 +30,7 @@ from pi05_iwm.adapter import (
     COMPILE_SUPERSEDED_REASON,
     Pi05Adapter,
     _neutralize_compile_model_for_planned_capture,
+    _neutralize_compile_model_on_sm110a,
 )
 
 
@@ -110,6 +112,20 @@ def test_an_absent_or_false_flag_is_never_touched_or_narrated():
     assert "compile_model_superseded" not in plan.results[0].params
 
 
+def test_the_sm110a_rule_is_independent_and_unchanged():
+    # capture declines at plan time on Thor (the measured bandwidth-bound-edge class), and the
+    # sm_110a rule still fires — a DIFFERENT reason on a device where compile simply crashes
+    cfg = SimpleNamespace(compile_model=True)
+    fired, _ = _fire(cfg, _plan(False), device="cuda:0")
+    assert fired is False and cfg.compile_model is True
+    assert _neutralize_compile_model_on_sm110a(cfg, (11, 0)) is True
+    assert cfg.compile_model is False
+    # and once the capture rule has fired there is nothing left for sm_110a to neutralize
+    cfg = SimpleNamespace(compile_model=True)
+    _fire(cfg, _plan(True), device="cuda:0")
+    assert _neutralize_compile_model_on_sm110a(cfg, (11, 0)) is False
+
+
 # ── the whole ordering claim, through the real build path with a stubbed lerobot ─────────────
 
 
@@ -124,9 +140,18 @@ def _fake_cuda_torch():
     torch = ModuleType("torch")
     torch.float32 = "torch.float32"
     torch.uint8 = "torch.uint8"
+    torch.precision = "medium"
+    torch.backends = SimpleNamespace(
+        cuda=SimpleNamespace(matmul=SimpleNamespace(allow_tf32=False)))
     torch.cuda = SimpleNamespace(is_available=lambda: True,
                                  get_device_capability=lambda _dev=None: (9, 0))
     torch.device = lambda spec: spec
+    torch.get_float32_matmul_precision = lambda: torch.precision
+
+    def set_precision(value):
+        torch.precision = value
+
+    torch.set_float32_matmul_precision = set_precision
     return torch
 
 

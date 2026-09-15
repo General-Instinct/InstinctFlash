@@ -1,0 +1,3227 @@
+{
+  "family": "groot",
+  "precision": "fp8",
+  "model_id": "nvidia/GR00T-N1.7-3B",
+  "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495",
+  "device": "NVIDIA Thor",
+  "torch": "2.11.0+cu130",
+  "scope": "Matched public Runtime generation latency, synchronized wall time; recorded cameras and synthetic state, no network or simulator. No task-quality certificate.",
+  "calls": [
+    {
+      "i": 0,
+      "cycle": 0,
+      "phase": "warmup",
+      "ms": 2072.858403000282,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 1,
+      "cycle": 0,
+      "phase": "warmup",
+      "ms": 160.64612301124725,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 2,
+      "cycle": 0,
+      "phase": "warmup",
+      "ms": 157.12215899839066,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 3,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 157.0797550084535,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 4,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 155.38103099970613,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 5,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 164.28686599829234,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 6,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 135.53598801081534,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 7,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 128.77918299636804,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 8,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 141.5955260017654,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 9,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 131.53779300046153,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 10,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 129.35477099381387,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 11,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 131.85388498823158,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 12,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 135.47397300135344,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 13,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 129.31631499668583,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 14,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 131.59042299957946,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 15,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 136.48145701154135,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 16,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 129.0763870056253,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 17,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 132.67225000890903,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 18,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 135.39085000229534,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 19,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 128.68430999515112,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 20,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 132.51734599180054,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 21,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 137.14219999383204,
+      "shape": [
+        40,
+        17
+      ]
+    },
+    {
+      "i": 22,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 129.14443599584047,
+      "shape": [
+        40,
+        17
+      ]
+    }
+  ],
+  "variant": "fp8_collate",
+  "options": {
+    "IFL_BENCH_VARIANT": "fp8_collate",
+    "IFL_BENCH_TIER": "numeric",
+    "IFL_GROOT_FULL_GRAPH": "0",
+    "IFL_GROOT_GPU_COLLATE": "1"
+  },
+  "competing_gpu_processes": [],
+  "setup_seconds": 15.026173795995419,
+  "e4m3_tensors": [
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.0._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.0._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.0._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.0._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.0._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.0._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.0._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.1._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.1._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.1._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.1._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.1._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.1._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.1._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.2._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.2._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.2._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.2._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.2._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.2._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.2._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.3._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.3._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.3._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.3._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.3._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.3._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.3._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.4._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.4._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.4._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.4._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.4._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.4._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.4._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.5._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.5._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.5._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.5._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.5._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.5._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.5._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.6._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.6._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.6._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.6._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.6._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.6._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.6._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.7._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.7._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.7._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.7._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.7._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.7._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.7._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.8._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.8._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.8._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.8._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.8._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.8._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.8._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.9._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.9._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.9._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.9._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.9._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.9._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.9._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.10._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.10._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.10._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.10._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.10._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.10._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.10._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.11._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.11._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.11._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.11._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.11._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.11._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.11._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.12._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.12._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.12._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.12._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.12._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.12._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.12._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.13._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.13._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.13._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.13._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.13._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.13._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.13._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.14._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.14._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.14._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.14._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.14._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.14._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.14._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.15._modules.self_attn._modules.q_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.15._modules.self_attn._modules.k_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.15._modules.self_attn._modules.v_proj._buffers.weight_fp8",
+      "shape": [
+        1024,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.15._modules.self_attn._modules.o_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.15._modules.mlp._modules.gate_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.15._modules.mlp._modules.up_proj._buffers.weight_fp8",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._native_loop._backbone_fastpath._backbone._modules.model._modules.model._modules.language_model._modules.layers._modules.15._modules.mlp._modules.down_proj._buffers.weight_fp8",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._dsm0_fc1_w",
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._dsm0_fc2_w",
+      "shape": [
+        4096,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._dsm1_fc1_w",
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._dsm1_fc2_w",
+      "shape": [
+        4096,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._dsm2_fc1_w",
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._dsm2_fc2_w",
+      "shape": [
+        4096,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._merger_fc1_w",
+      "shape": [
+        4096,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._merger_fc2_w",
+      "shape": [
+        4096,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._ts_lin1_w",
+      "shape": [
+        256,
+        1536
+      ]
+    },
+    {
+      "path": "loop._frontend._ts_lin2_w",
+      "shape": [
+        1536,
+        1536
+      ]
+    },
+    {
+      "path": "loop._frontend._proj_out_1_w",
+      "shape": [
+        1536,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._proj_out_2_w",
+      "shape": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[0]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[1]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[2]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[3]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[4]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[5]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[6]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[7]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[8]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[9]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[10]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[11]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[12]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[13]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[14]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[15]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[16]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[17]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[18]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[19]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[20]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[21]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[22]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_qkv_w[23]",
+      "shape": [
+        1024,
+        3072
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[0]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[1]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[2]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[3]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[4]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[5]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[6]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[7]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[8]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[9]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[10]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[11]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[12]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[13]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[14]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[15]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[16]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[17]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[18]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[19]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[20]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[21]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[22]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_o_w[23]",
+      "shape": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[0]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[1]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[2]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[3]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[4]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[5]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[6]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[7]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[8]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[9]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[10]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[11]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[12]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[13]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[14]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[15]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[16]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[17]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[18]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[19]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[20]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[21]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[22]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc1_w[23]",
+      "shape": [
+        1024,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[0]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[1]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[2]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[3]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[4]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[5]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[6]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[7]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[8]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[9]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[10]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[11]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[12]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[13]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[14]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[15]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[16]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[17]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[18]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[19]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[20]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[21]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[22]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._vit_fc2_w[23]",
+      "shape": [
+        4096,
+        1024
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[0]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[1]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[2]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[3]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[4]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[5]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[6]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[7]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[8]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[9]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[10]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[11]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[12]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[13]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[14]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_qkv_w[15]",
+      "shape": [
+        2048,
+        4096
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[0]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[1]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[2]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[3]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[4]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[5]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[6]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[7]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[8]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[9]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[10]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[11]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[12]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[13]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[14]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_o_w[15]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[0]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[1]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[2]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[3]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[4]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[5]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[6]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[7]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[8]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[9]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[10]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[11]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[12]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[13]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[14]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_gate_w[15]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[0]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[1]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[2]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[3]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[4]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[5]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[6]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[7]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[8]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[9]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[10]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[11]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[12]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[13]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[14]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_up_w[15]",
+      "shape": [
+        2048,
+        6144
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[0]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[1]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[2]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[3]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[4]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[5]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[6]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[7]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[8]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[9]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[10]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[11]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[12]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[13]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[14]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._llm_down_w[15]",
+      "shape": [
+        6144,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_q_w[0]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_q_w[1]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_q_w[2]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_q_w[3]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_k_w[0]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_k_w[1]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_k_w[2]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_k_w[3]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_v_w[0]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_v_w[1]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_v_w[2]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_v_w[3]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_o_w[0]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_o_w[1]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_o_w[2]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_o_w[3]",
+      "shape": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_fc1_w[0]",
+      "shape": [
+        2048,
+        8192
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_fc1_w[1]",
+      "shape": [
+        2048,
+        8192
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_fc1_w[2]",
+      "shape": [
+        2048,
+        8192
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_fc1_w[3]",
+      "shape": [
+        2048,
+        8192
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_fc2_w[0]",
+      "shape": [
+        8192,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_fc2_w[1]",
+      "shape": [
+        8192,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_fc2_w[2]",
+      "shape": [
+        8192,
+        2048
+      ]
+    },
+    {
+      "path": "loop._frontend._vlsa_fc2_w[3]",
+      "shape": [
+        8192,
+        2048
+      ]
+    },
+    {
+      "path": "loop._runner.buffers.xn_fp8",
+      "shape": [
+        369,
+        2048
+      ]
+    },
+    {
+      "path": "loop._runner.buffers.fc1_fp8",
+      "shape": [
+        369,
+        8192
+      ]
+    }
+  ],
+  "backend_stats": {
+    "backend": "fp8_text_vlsa_native_vision_bf16_dit",
+    "precision": "fp8",
+    "captured": true,
+    "action_nfe": 4,
+    "cpu_threads": null,
+    "fast_decode": true,
+    "backbone_fastpath": true,
+    "gpu_collate": true,
+    "gpu_collate_self_check_passed": true,
+    "gpu_collate_self_check_inputs": 6,
+    "gpu_collate_max_abs_delta": 0.0,
+    "full_backbone_graph": false,
+    "full_flow_graph": false,
+    "backbone_cache_hits": 65,
+    "backbone_cache_misses": 4,
+    "text_graphs": 80,
+    "text_graph_rejections": [],
+    "vlsa_graph": true,
+    "vlsa_replays": 23,
+    "dit_graph": true,
+    "fp8_recipe": {
+      "recipe": "groot_qwen3_text_e4m3fn_weights_dynamic_per_tensor_activations_fp32_accum_bf16_output",
+      "projections": [
+        {
+          "path": "model.model.language_model.layers.0.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.0.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.0.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.0.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.0.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.0.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.0.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.1.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.1.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.1.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.1.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.1.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.1.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.1.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.2.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.2.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.2.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.2.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.2.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.2.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.2.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.3.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.3.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.3.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.3.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.3.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.3.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.3.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.4.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.4.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.4.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.4.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.4.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.4.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.4.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.5.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.5.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.5.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.5.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.5.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.5.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.5.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.6.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.6.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.6.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.6.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.6.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.6.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.6.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.7.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.7.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.7.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.7.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.7.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.7.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.7.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.8.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.8.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.8.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.8.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.8.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.8.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.8.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.9.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.9.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.9.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.9.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.9.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.9.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.9.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.10.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.10.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.10.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.10.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.10.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.10.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.10.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.11.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.11.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.11.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.11.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.11.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.11.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.11.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.12.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.12.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.12.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.12.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.12.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.12.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.12.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.13.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.13.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.13.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.13.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.13.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.13.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.13.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.14.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.14.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.14.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.14.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.14.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.14.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.14.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.15.self_attn.q_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.15.self_attn.k_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.15.self_attn.v_proj",
+          "in_features": 2048,
+          "out_features": 1024
+        },
+        {
+          "path": "model.model.language_model.layers.15.self_attn.o_proj",
+          "in_features": 2048,
+          "out_features": 2048
+        },
+        {
+          "path": "model.model.language_model.layers.15.mlp.gate_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.15.mlp.up_proj",
+          "in_features": 2048,
+          "out_features": 6144
+        },
+        {
+          "path": "model.model.language_model.layers.15.mlp.down_proj",
+          "in_features": 6144,
+          "out_features": 2048
+        }
+      ],
+      "scope": "Qwen3 text attention and MLP, plus existing FP8 VLSA; native vision and BF16 DiT",
+      "quality_certificate": null,
+      "graph_boundaries": 80,
+      "graph_admission": "component eager/graph action-independent byte checks; owned output copies"
+    }
+  },
+  "graph_stats": {},
+  "physical_gpu": "0",
+  "schedule_override": null,
+  "default_schedule": {
+    "backbone": 1,
+    "action": 4
+  },
+  "guidance": "{'action': 'none'}",
+  "history_feedback": "native policy",
+  "plan": "InstinctFlash plan for nvidia/GR00T-N1.7-3B\n  plan tier: NUMERIC\n  operating point: schedule {backbone=1 + action=4} | guidance {action=none@1 [implied by mode]} | cfg batching {batch-1 on all 5 declared forwards (no stream requests a negative branch)}\n\n  skip   graph_capture              [BITEXACT  ] Thor capture performance is unmeasured for this family/operating point; retain the eager default pending a paired device measurement.\n  APPLY  engine_offload             [NUMERIC   ] engine placement selected: SM110: FP8 engine passes the declared dimension and denoise checks; action-horizon and observation/control compatibility still require validation; baked denoise operating point: action=4 steps; guidance action=none@1\n         expected: Measure this checkpoint with matched views, action horizon, denoise steps and timing scope. The matched Thor study separates native capture, FP16 engine and FP8 arithmetic; it does not establish robot-facing Runtime parity.\n  skip   pi05_tf32_numeric          [BITEXACT  ] checkpoint does not declare ['backbone:pi05', 'declares:pi05_tf32_numeric']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   fsdp_elision               [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   allocator_churn_elision    [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   debug_dump_elision         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   obs_decode_elision         [BITEXACT  ] model declares no observation-decode modules\n  skip   conditioning_prefill       [BITEXACT  ] ['backbone_features'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist\n  skip   prompt_encoder_staging     [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   ring_kv_addressing         [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   action_terminal_forward_elision [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_gated_residual       [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   sm120_wan_stage2           [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   conv_layout_ndhwc          [BITEXACT  ] checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one.\n  skip   cfg_branch_elision         [BITEXACT  ] no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)\n\n  NOTE: plan is NUMERIC because of ['engine_offload'].\n        Any accuracy-neutrality claim for this plan requires a paired\n        non-inferiority run.\n        `plan.bitexact_subset()` is the largest configuration that does not.",
+  "execution_policy": {
+    "category": "FP8",
+    "precision": "fp8",
+    "tier_ceiling": "numeric",
+    "transform_tier": "NUMERIC",
+    "nfe": {
+      "backbone": 1,
+      "action": 4
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "benchmark_sha256": "86401b57ec349a482e3e0d2863c3b11ef8f166e1cd7f955affd3fb10d12be97e",
+  "input_archive_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+  "engine_type": "instinctflash.runtime.groot_engine._GrootEngineLoop",
+  "ok": true,
+  "p50_ms": 132.59479800035479,
+  "min_ms": 128.68430999515112,
+  "max_ms": 164.28686599829234,
+  "measured_count": 20,
+  "peak_allocated_bytes": 14870685696,
+  "numeric_environment": {
+    "matmul_tf32": false,
+    "cudnn_tf32": false,
+    "cudnn_benchmark": false
+  },
+  "actions_sha256": "df84c4107f55fe7f1c5d5efc95b09d5bf5459984e25001ea1a389c4fb86fc86e",
+  "sources": {
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/adapters/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/adapters/base.py": "faddf49c84fe9d087365b3cf566bb68bbe4b2bf08eb7a426006c936b27ef047d",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/descriptors/deployment.py": "75b9e6ca18b3ad6492f2b9ae22bf11390938a4322361c1188cf4841c44216b42",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/state/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/state/types.py": "9d1e43574a1929b73c892cccff56453d2bc71bd02df85a83850208da2e69fc0b",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/descriptors/model.py": "93c26dcc782b69705e0e84babaf195740f6990e9413e27722e4eb4170400ffc5",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/descriptors/__init__.py": "6c32d9902026f776decf7bd32e13498b67b78e589051d1b5f7454b0129e16c75",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/adapters/lingbot_va.py": "969220bbf18a56b301bcd3b801eecc4ffa863e518501b82cb4872d857693e846",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/loader.py": "a2bce76e99f4443089d21bbc12b3bed53afc1fb2df5e796b225c5b94e4688aea",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/planners/planner.py": "bc31c3c764fa6c98acbd7b5aa0f46b1030d341b823c0bc01ffb59ebb700d4a80",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/planners/__init__.py": "f4e300ea720721cc0ffbc3ddbf5172d67b3d9f9ba00b64900b3ed071cdf879e8",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/contract.py": "eb1a3dcdaafefd2a49bca96d17784526fef9f3299fd26dcf800d394046e4f7f1",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/lingbot/action_terminal_elision.py": "92a28ff193f10bf19541f0e0a253b31b5b7ae7f4a8b743212debf675d0daf632",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/lingbot/cfg_elision.py": "41f7b8370bc1b8928b17048dabf54520537ef431ef4d98013ead4efeab9f96d8",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/lingbot/conditioning_prefill.py": "3cbc5e5f2ace0b2d061383698cfd85a0a5190f2a4e8e02fa2c3e6e0b9fc56468",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/lingbot/conv_layout_ndhwc.py": "10926b28cd68d773d773ec5b884672db9d8cdfac64d9758ae934860c37c204ae",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/lingbot/ring_kv.py": "264c0addbbfcff2ba0e8f445af6fe2d7e85f799124749a2a2c6ff3992412e2af",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/lingbot/sm120_gated_residual.py": "ba5addcbabf82d76194aa98c20b738dd3dfba4d267f4e62a747fb6dc91fa5d12",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/lingbot/sm120_wan_stage2.py": "3a151b5f00b5144874436cf7570b9a635fbba73e30d724722d5dc7a6e2128b1a",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/lingbot/substrate.py": "7f6162ba2d175db9ad56425a3aa8cb68b90f1778c343ba37f381ea02618d3abf",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/lingbot/__init__.py": "cc153c3e272cd18b7510dec81e625168124e7db3f06909bf6cdb49cfd9e8fd52",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/descriptors/checkpoint.py": "a2949d1fa9ae40fe27c9d4e981616327406604118af72f547f78f00426e387ba",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/descriptors/package.py": "0766dc55a35d7d2fab55de5aa931699bbcaece7fda78de3d91ee39424087c8d7",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/execution.py": "c6aa42720d799f4a2f2b8c50bd10dc113c89e07493e341db0050ca090f008471",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/facade.py": "24f9521b02ea55c830af7e01102bb887a20153eeb0e7b394d5669eb14e52fa7b",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/__init__.py": "50071567526aab898205d92b382b3ca392aabaf33584379bf436fb48bb488b8f",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/precision.py": "3296d47dd912c7aa66295b4a835c44dcd13b323b98b0005823b29d43057b47cf",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/descriptors/known.py": "05f6d5587a3c8ef543e2560ac0c91d1def49caec3d89851b50c9a190edab6834",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/descriptors/guidance.py": "3455608a231758fb2a146409f04c6d2253b7f3859cccf22f6dea9dcd93b32d9d",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/pi05_vla/pi05_iwm/adapter.py": "39883a3b0e44aff07172b4957e3e01caeb639648927da71aeeac873e33cf2a98",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/pi05_vla/pi05_iwm/__init__.py": "86ca6cef657df3d849f0cce4987c09f992a798009bc18e7f74799d522fca0f0e",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/groot_n17/groot_n17_iwm/__init__.py": "c0d29d9213151babde72db1784ef133a42a0570a569f0277aec3e87ec3c813fc",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/groot_n17/groot_n17_iwm/adapter.py": "2b19d5bf09af159f981880d9c4e3ff1d543f4d8f355cfc3f6f0e700e4d58577c",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/dreamzero/dreamzero_iwm/adapter.py": "5f2df6f4cd5850f9715494f20876a653d4318e5ed767861618d8602c80883a4e",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/dreamzero/dreamzero_iwm/__init__.py": "d50fa5b5bcb904b43caf6b4f843f56c8b4188d01f7e269b16ba54f2afffb9435",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/cosmos_droid.py": "27fb93e443e91210c65b7d10b367648c660b006ad319068370ebdab8fcfcf196",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/cosmos3_policy/cosmos3_iwm/adapter.py": "66330cf55ec675512d3e750105f83d2cb56cff27f56f968347233c1e59e10e77",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/cosmos3_policy/cosmos3_iwm/__init__.py": "90fd9157f1287cd6ae095e13bc57549ce92125d21484d8ea588213a7007a15a6",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/lingbot_vla_v2/lingbot_vla_v2_iwm/__init__.py": "0e9d00744a8d7daba348ef8830d8d998056f1d79d169bf12621cc17039e86e0a",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/lingbot_vla_v2/lingbot_vla_v2_iwm/adapter.py": "6be005dcd182b6f61fdeae3b90a9aaa9a2ef4ae5f527c67d7415cc60c9df8ad4",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/lingbot_vla/lingbot_vla_iwm/adapter.py": "9e46b25a2af27e989835e1e98a8045395fdb5beb43ca9dea7e0412d36dc56878",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/lingbot_vla/lingbot_vla_iwm/__init__.py": "ff7fac538977048f77d1da7a5c0aeaccd13745eb659c6c568d07adfde6059f0b",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/backends/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/backends/sm120_residual.py": "1509fc2143e21a9513ee11c4389d68b1a31db221d4ddbd9e148cdb81e225e717",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/backends/sm120_wan_stage2.py": "0ede242abc15ae802b762f187c5932f0e81bb0617687ebc3f8185882f7745f4d",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/registry.py": "cff56c57748cb40212a2072d8dcfd1b0bd395a8446492f8a71682a31e8afe2a8",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/pi05_vla/pi05_iwm/passes.py": "764154b933fab0d28b9d23db2966b138d81eb8e385d27fa96e811443d9a33a58",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/generic/engine_offload.py": "d686eef806c88bc559212ad23a5af42ee4a11e6eb3099629d8dfcf14279dcdd1",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/generic/graph_capture.py": "9fa3d672f2e9dbe91e223fc96c5f7303c3f60d787c841c9509590df6fc3298a3",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/passes/generic/__init__.py": "f04a5033aab0d0ace4d3bdd460011049cef662f8aecf7856b0d35c9e45c24113",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/engine_backend.py": "25f81836f1c649ff3dc007dc54bbd1918a8eb8121ac7d574e0dfe147a90bc1b1",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/groot_engine.py": "f3b24a5a71cb98625305fba7fc42a2c384c431fb18d02a77b846e9ba34107aee",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/groot_n17/groot_n17_iwm/fast_decode.py": "bea222c3bd54e9b57836c5c07e80b9b87c3b3a825f0ccb90784bd4577c5c6b6b",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/groot_n17/groot_n17_iwm/backbone_fastpath.py": "80130e56a5fc2193276a2469cfa2e7d870a67eb9272c5e5449b24c724d8154ae",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/examples/groot_n17/groot_n17_iwm/gpu_collate.py": "eaf9b5e70ee722e1f0b782fe953e857ff7f291155e80bbc470c5c7009466d57c",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/torch_fp8_linear.py": "9bfd50ba1b4c9893d03d5952e8fcf3878408984c06cfa02befd33920092c8b53",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/groot_fp8.py": "0a044f6433979d320d25d733e36f9997ac9e77caa5b93af81a626167ea4940e9",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/static_tensor_graph.py": "e371589688f843ad1f49d78586896ac3da734ca7f3c2787ca5c7a87d0875285c",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/capture_self_check.py": "3d3c2497712d8ec5338408559fc5a4b2e0e52bd4e08afea6af753fec010d355b",
+    "/home/guanming/ifl_eval/native_optimization_20260910/thor-final/source-final/instinctflash/runtime/fp8_pack.py": "649174d8262611cacb6f012de4c103839fab9b11d42a7c969f31cf9c851c13b5"
+  }
+}

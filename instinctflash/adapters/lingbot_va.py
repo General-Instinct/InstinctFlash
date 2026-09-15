@@ -124,6 +124,7 @@ def lingbot_va_spec() -> AdapterSpec:
             history=8, batched=False, frames_key="obs", conditioning=("prompt",)),
 
         notes={
+            "backbone": "wan_va",
             "attn_mode": "torch (custom_sdpa); forced by the server and by transformer/config.json",
             "kv_pool": "9792 slots, grows 272 tokens/cycle, saturates ~cycle 36, 6.72 GiB",
             "measured_stock_cycle_ms": "8881 on idle H100 = 32 actions = 3.6 Hz",
@@ -243,7 +244,7 @@ def resolve_observation_geometry(execution, *, va_configs: Mapping | None = None
         src = str(getattr(execution, "source", "") or "instinctflash.json")
         return _normalized_geometry(declared), f"declaration ({src})"
 
-    cfg_name = environ.get("IFL_CFG")
+    cfg_name = extra.get("va_config") or environ.get("IFL_CFG")
     if cfg_name:
         cfgs = _upstream_va_configs() if va_configs is None else va_configs
         if cfg_name not in cfgs:
@@ -257,7 +258,7 @@ def resolve_observation_geometry(execution, *, va_configs: Mapping | None = None
                 raise RuntimeError(f"upstream config {cfg_name!r} carries no {k!r}; it cannot "
                                    f"supply this checkpoint's observation geometry")
             merged[k] = getattr(cfg, k)
-        source = f"IFL_CFG={cfg_name}"
+        source = f"declaration va_config={cfg_name}" if extra.get("va_config") else f"IFL_CFG={cfg_name}"
         if declared:
             source += f", with the declaration overriding {sorted(declared)}"
         return _normalized_geometry(merged), source
@@ -305,15 +306,20 @@ class _ControlLoop:
     and never learns that a KV ring exists.
     """
 
-    #: Frames the ring consumes per cycle. `FIRST` is halved because cycle 0 prepends `init_latent`,
-    #: which every profiling harness in `eval/` also does. Adapter knowledge, deliberately not in the
-    #: checkpoint declaration: it describes how this backbone consumes observations, not an
-    #: execution fact a planner could act on.
+    #: RoboTwin defaults; instances derive these from the native temporal chunk. The first
+    #: commit needs one fewer latent because cycle 0 already has init_latent.
     FRAMES_PER_CYCLE = 8
     FRAMES_FIRST_CYCLE = 4
 
-    def __init__(self, server, cameras: tuple[str, ...]):
+    def __init__(self, server, cameras: tuple[str, ...], *, frame_chunk_size: int = 2):
+        if type(frame_chunk_size) is not int or frame_chunk_size < 2:
+            raise ValueError("LingBot-VA requires a declared frame_chunk_size >= 2")
         self._server, self._cameras = server, cameras
+        # Native Wan VAE compresses four observed frames into each temporal latent.
+        # The first commit already has init_latent. RoboTwin's 2 latents need 4/8
+        # frames; LIBERO's 4 latents need 12/16. Never trim LIBERO to RoboTwin history.
+        self.FRAMES_PER_CYCLE = frame_chunk_size * 4
+        self.FRAMES_FIRST_CYCLE = (frame_chunk_size - 1) * 4
         self._pending_action = None
         self._cycles = 0
 
@@ -408,7 +414,17 @@ class LingBotVA:
             ObservationField(key=k, shape=(geometry["height"], geometry["width"], 3),
                              dtype="uint8")
             for k in geometry["obs_cam_keys"])
-        return dataclasses.replace(lingbot_va_spec().observation, fields=fields), source
+        # Match build_in_process's native structural config, including LIBERO's longer
+        # VAE history. Camera geometry alone cannot determine the temporal chunk.
+        extra = dict(checkpoint.execution.extra or {})
+        config_name = extra.get("va_config") or os.environ.get("IFL_CFG")
+        frame_chunk = extra.get("frame_chunk_size")
+        if frame_chunk is None:
+            frame_chunk = (_upstream_va_configs()[config_name].frame_chunk_size if config_name else 2)
+        if type(frame_chunk) is not int or frame_chunk < 2:
+            raise ValueError("LingBot-VA requires a declared frame_chunk_size >= 2")
+        return dataclasses.replace(lingbot_va_spec().observation, fields=fields,
+                                   history=int(frame_chunk) * 4), source
 
     def install(self, server_module: object, plan) -> Sequence[str]:
         # Imported here, not at module scope: the runtime layer needs torch, and reading a
@@ -487,7 +503,16 @@ class LingBotVA:
                 f"{checkpoint.model_id}: execution.base_weights is not declared and LINGBOT_CKPT is "
                 f"unset, so the frozen stack cannot be resolved. This backbone needs "
                 f"{', '.join(cls.FROZEN_COMPONENTS)} in addition to the packaged transformer.")
-        basep = Path(base)
+        # A native Hub snapshot already contains its frozen stack at the pinned revision.
+        # Resolving its own id again without revision would silently use refs/main (or fail
+        # offline when only the pinned snapshot was cached).
+        if not os.environ.get("LINGBOT_CKPT") and base == checkpoint.execution.model_id:
+            missing = [c for c in cls.FROZEN_COMPONENTS if not (pkg / c).is_dir()]
+            if missing:
+                raise RuntimeError(f"pinned native checkpoint lacks frozen components {missing}; complete that revision before serving")
+            basep = pkg
+        else:
+            basep = Path(base)
         if not basep.exists():
             from huggingface_hub import snapshot_download
             # ONLY the frozen components. The base repo also carries its own `transformer/`, which
@@ -569,13 +594,19 @@ class LingBotVA:
         os.environ["LINGBOT_CKPT"] = composed
         S = import_lingbot_server(self.lingbot_root)
         # Observation geometry: declaration > IFL_CFG > fail loud, never a silent robotwin
-        # default. The named config (IFL_CFG, else robotwin) stays the structural base for the
+        # default. The named config (declared va_config, IFL_CFG, else robotwin) is the base for
         # NON-geometry serving facts (normalization stats, action channel map, schedules), which
         # the declaration cannot express yet; the resolved geometry overrides what it looks at.
         geometry, geo_source = resolve_observation_geometry(checkpoint.execution,
                                                             va_configs=S.VA_CONFIGS)
-        base_name = os.environ.get("IFL_CFG") or "robotwin"
+        extra = dict(checkpoint.execution.extra or {})
+        base_name = extra.get("va_config") or os.environ.get("IFL_CFG") or "robotwin"
         cfg = S.VA_CONFIGS[base_name]
+        if "frame_chunk_size" in extra:
+            if type(extra["frame_chunk_size"]) is not int or extra["frame_chunk_size"] < 2:
+                raise ValueError("LingBot-VA requires a declared frame_chunk_size >= 2")
+            if cfg.frame_chunk_size != extra["frame_chunk_size"]:
+                raise ValueError("declared frame_chunk_size disagrees with the native va_config")
         for key, value in geometry.items():
             setattr(cfg, key, value)
         print(f"InstinctFlash observation geometry: {geo_source} — cameras "
@@ -617,21 +648,31 @@ class LingBotVA:
 
         # the plan must be installed BEFORE the model is built: fsdp_elision replaces the bound
         # _configure_model that the build calls through.
-        applied = list(self.install(S, plan))
+        # FP8 placement is installed by the caller after model loading.
+        applied = list(self.install(S, plan.without("engine_offload")))
         if seed is not None:
             from instinctflash.runtime.lingbot_install import install_deterministic_seed
             applied += install_deterministic_seed(S, int(seed))
         server = S.VA_Server(cfg)
+        from instinctflash.runtime.precision import install_requested_fp8
+        install_requested_fp8(server.transformer, plan, "wan_va")
         print(f"InstinctFlash in-process: applied {applied or ['STOCK BASELINE']}", flush=True)
-        return _ControlLoop(server, tuple(cfg.obs_cam_keys))
+        return _ControlLoop(server, tuple(cfg.obs_cam_keys), frame_chunk_size=cfg.frame_chunk_size)
+
+    def wrap_worker_client(self, client, checkpoint):
+        """Use the same deferred-commit protocol across in-process and worker placement."""
+        observation, _ = self.observation_contract(checkpoint)
+        return _ControlLoop(client, tuple(f.key for f in observation.fields),
+                            frame_chunk_size=observation.history // 4)
 
     def worker_command(self, checkpoint, plan, *, port, python, device=None, nfe=None,
                        seed=None):
         """How to start this model as a managed worker. Returns (argv, env-overrides).
 
         Reuses `serve_variant.py` -- the entry point the project already gates and measures -- rather
-        than adding a second serving path that would need its own bit-exactness evidence. The flags
-        come from `shipped_configuration()`, so the worker runs exactly what the registry says ships.
+        than adding a second serving path that would need its own bit-exactness evidence. Flags start
+        from `shipped_configuration()` and are filtered by the compiled plan, so worker and in-process
+        placements honor the same device gates, tier ceiling and caller exclusions.
         """
         import os
         from pathlib import Path
@@ -649,17 +690,41 @@ class LingBotVA:
         # the same FILL_ME-is-undeclared rule as resolve_observation_geometry
         declared = {k: extra[k] for k in GEOMETRY_KEYS
                     if extra.get(k) is not None and extra.get(k) != "FILL_ME"}
-        cfg_name = os.environ.get("IFL_CFG")
+        cfg_name = extra.get("va_config") or os.environ.get("IFL_CFG")
         if len(declared) < len(GEOMETRY_KEYS) and not cfg_name:
             # raises the loud declare-or-IFL_CFG error before a worker is ever spawned
             resolve_observation_geometry(checkpoint.execution, va_configs={})
 
-        iwm_root = Path(__file__).resolve().parents[2]
-        serve = iwm_root / "eval" / "lingbot_va_robotwin" / "serve_variant.py"
-        argv = [python, "-u", str(serve), "--config-name", cfg_name or "robotwin",
-                "--port", str(port), *shipped_configuration()]
+        serve_flags = shipped_configuration()
+        if plan is not None:
+            applied = {result.name for result in plan.applied}
+            owner = {
+                "--no-fsdp": "fsdp_elision",
+                "--no-empty-cache": "allocator_churn_elision",
+                "--no-debug-dump": "debug_dump_elision",
+                "--conditioning-prefill": "conditioning_prefill",
+                "--ring-kv": "ring_kv_addressing",
+                "--conv-layout": "conv_layout_ndhwc",
+            }
+            serve_flags = [flag for flag in serve_flags if flag not in owner or owner[flag] in applied]
+            if "obs_decode_elision" in applied:
+                # Placement parity: in-process install physically strips both VAE decoders, so a
+                # worker serving the same plan must do the same or the two placements diverge in
+                # residency while claiming one plan.
+                serve_flags.append("--obs-decode-elision")
+            if "sm120_gated_residual" in applied:
+                serve_flags.append("--sm120-gated-residual")
+            if "sm120_wan_stage2" in applied:
+                serve_flags.append("--sm120-wan-stage2")
+        argv = [python, "-u", "-m", "instinctflash.runtime.lingbot_worker",
+                "--config-name", cfg_name or "robotwin",
+                "--port", str(port), *serve_flags]
         if declared:
             argv += ["--geometry", _json.dumps(declared)]
+        if "frame_chunk_size" in extra:
+            if type(extra["frame_chunk_size"]) is not int or extra["frame_chunk_size"] < 2:
+                raise ValueError("LingBot-VA requires a declared frame_chunk_size >= 2")
+            argv += ["--expected-frame-chunk-size", str(extra["frame_chunk_size"])]
 
         # The DECLARED schedule, with `nfe=` overriding it -- the same resolution order as
         # build_in_process. This used to read the override only, so a checkpoint declaring
@@ -668,7 +733,9 @@ class LingBotVA:
         # declaration: exactly what `placement` is supposed to be invisible to.
         n = {**dict(checkpoint.execution.nfe or {}), **dict(nfe or {})}
         if n:
-            argv += ["--degrade-nfe", f"{n.get('video', 2)},{n.get('action', 4)}"]
+            if not {'video', 'action'} <= n.keys():
+                raise ValueError("VA worker requires both video and action step counts; no implicit few-step default")
+            argv += ["--degrade-nfe", f"{n['video']},{n['action']}"]
 
         g = dict(checkpoint.execution.guidance or {})
         if g:
@@ -695,6 +762,12 @@ class LingBotVA:
         # placement. `materialize()` is what composes the packaged transformer with the frozen stack,
         # and it is what the in-process path has always used.
         env["LINGBOT_CKPT"] = self.materialize(checkpoint)
+        native = os.environ.get("IFL_SM120_KERNEL_LIBRARY")
+        if native:
+            env["IFL_SM120_KERNEL_LIBRARY"] = native
+        stage2_native = os.environ.get("IFL_SM120_STAGE2_LIBRARY")
+        if stage2_native:
+            env["IFL_SM120_STAGE2_LIBRARY"] = stage2_native
         if device:
             env["CUDA_VISIBLE_DEVICES"] = device.split(":")[-1] if ":" in device else device
         return argv, env

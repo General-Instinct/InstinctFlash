@@ -1,0 +1,177 @@
+{
+  "started_utc": "2026-09-14T02:39:45.536393+00:00",
+  "finished_utc": "2026-09-14T02:39:52.930609+00:00",
+  "elapsed_seconds": 7.394,
+  "interpreter": "/home/ubuntu/cosmos-framework/.venv/bin/python",
+  "command": "CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 PYTHONPATH=/home/ubuntu/InstinctFlash:/home/ubuntu/InstinctFlash/tests /home/ubuntu/cosmos-framework/.venv/bin/python -B; tests.run_tests.run_test for each listed file",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "OMP_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "results": [
+    {
+      "file": "test_user_report.py",
+      "verdict": "PASS",
+      "detail": "86 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 0.924,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-p7qz8tn9/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_user_report.py"
+      ]
+    },
+    {
+      "file": "test_user_provenance.py",
+      "verdict": "PASS",
+      "detail": "46 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 0.735,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-bi3cvu33/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_user_provenance.py"
+      ]
+    },
+    {
+      "file": "test_vla2_prompt_reuse.py",
+      "verdict": "PASS",
+      "detail": "13 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 1.982,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-sypejmux/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_vla2_prompt_reuse.py"
+      ]
+    },
+    {
+      "file": "test_vla2_scale_accumulator.py",
+      "verdict": "PASS",
+      "detail": "3 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 1.714,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-5wn6s3er/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_vla2_scale_accumulator.py"
+      ]
+    },
+    {
+      "file": "test_vla2_checkpoint_moe.py",
+      "verdict": "PASS",
+      "detail": "2 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 0.295,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-hvdili4d/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_vla2_checkpoint_moe.py"
+      ]
+    },
+    {
+      "file": "test_lingbot_vla_v2_adapter.py",
+      "verdict": "PASS",
+      "detail": "11 tests passed",
+      "exit_code": 0,
+      "mode": "pytest",
+      "elapsed_seconds": 1.704,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml",
+        "/tmp/instinctflash-tests-px272h3o/result.xml",
+        "/home/ubuntu/InstinctFlash/tests/test_lingbot_vla_v2_adapter.py"
+      ]
+    },
+    {
+      "file": "test_repo_surface.py",
+      "verdict": "PASS",
+      "detail": "",
+      "exit_code": 0,
+      "mode": "script",
+      "elapsed_seconds": 0.039,
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/python",
+        "-B",
+        "/home/ubuntu/InstinctFlash/tests/test_repo_surface.py"
+      ]
+    }
+  ],
+  "counts": {
+    "PASS": 7,
+    "SKIP": 0,
+    "FAIL": 0
+  },
+  "inputs_sha256": {
+    "tests/test_user_report.py": "4a37a4ad335abf8dc0065a67eca49ca2cf050fe564f48b42ffd872b5b9175e06",
+    "tests/test_user_provenance.py": "496d5cc54abcd65cc5569a754a7006501bb211ea4a1ee07d3bbd7488bf64db80",
+    "tests/test_vla2_prompt_reuse.py": "a968387e5692f81cf6a581f1017e2d7bc42d5cbd1de60709f05d43a06da080e6",
+    "tests/test_vla2_scale_accumulator.py": "042b6626f149ee9eb70a4656663f2ab34c3f7e00ff84e46080d6f0c7f87de0d3",
+    "tests/test_vla2_checkpoint_moe.py": "8fe0fd0854180794ea07b90d9413a9cdef492ac9fe34f9957f697b79863b8e76",
+    "tests/test_lingbot_vla_v2_adapter.py": "54a7e0a25ba9ebd95321621b009829dc7f6c1ce09dfeda38506f1c9963a185ec",
+    "tests/test_repo_surface.py": "6b3ae0520a24573ee8df13702cf74b156777d3b3c0a943b6234f2a1b01bdc4df",
+    "benchmarks/regression/user_report.py": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac",
+    "benchmarks/regression/user_provenance.py": "bc09321cf1a15bafa6cbc1f722fecc6aca1254a1ec9a294543cf6d79b592ff18",
+    "benchmarks/regression/user_e2e.py": "1c427d5e1fb63835492e3b613c01d4a1fada65fd6c6b790138a19a92b2deb59d",
+    "serving/flash_rt/frontends/torch/vla2_thor.py": "e6a4dfd9e96449237028c838b471eec0ac536367065c540ea6e3079c035ec1db",
+    "instinctflash/runtime/vla2_engine.py": "c6d12a7f09a302e26188526843c4eab16b679685bb2fe86839ae38131dd7f057",
+    "tests/run_tests.py": "b1d4b0dce4aac951e0f6ebc929b06f541ee23011cb8bb5ba6f2b7ac180e4507e",
+    "tests/__init__.py": "e5dfa1f4ef7fe8dc45766eacb4999111c10f5a17acbf2a7dcd684949b3517d98",
+    "pyproject.toml": "51eeb11f36e46fa16a04d28fac0cc43e58cfaab1d4470c0dd26bcbff0497d2ab",
+    "benchmarks/vla/config/registry.json": "8cf867e4d3ed78792ab8bfb8c46d5c083c511ae3d9091260476f821ca5ab5945",
+    "README.md": "97f47b4450e531fa7540f90eb0ea8065e06c7ebdfc7e0302a07c87b008713954"
+  },
+  "inputs_changed_during_run": [
+    "tests/test_user_provenance.py",
+    "benchmarks/regression/user_provenance.py"
+  ],
+  "log": "eval/user_e2e_2026-09-14/validation/cpu_final_changed_tests.log",
+  "exit_code": 1
+}

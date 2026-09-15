@@ -1,0 +1,498 @@
+{
+  "bindings": [
+    {
+      "path": "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/inputs/recorded_inputs_v1.npz",
+      "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+      "status": "passed"
+    }
+  ],
+  "cells": [
+    {
+      "action_shape": [
+        32,
+        8
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "d7284d8be2a13065fb88dc8a41f0217be61e3a2ffa4a982f00967e7547a85edb",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/cells/nano-eager_native/receipt.npz",
+        "sha256": "b5339d0905dbcb415af12e49eb6c9ff7886bcbeb2ef52d530b1c1eaa40fddf32",
+        "shape": [
+          25,
+          32,
+          8
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "eager_native",
+      "comparison_group": "nano-checkpoint",
+      "default_schedule": {
+        "action": 4,
+        "prefix": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "experimental": false,
+      "family": "nano",
+      "first_predict_ms": 10682.415577990469,
+      "guidance": "{'action': 'cfg'}",
+      "id": "nano-eager_native",
+      "input_contract": {
+        "action_shape": [
+          32,
+          8
+        ],
+        "family": "nano",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 10193.916432035621,
+        "mean_ms": 10184.982894000132,
+        "min_ms": 10176.360977988224,
+        "p50_ms": 10184.677023993572
+      },
+      "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 10193.916432035621,
+        "mean_ms": 10184.982894000132,
+        "min_ms": 10176.360977988224,
+        "p50_ms": 10184.677023993572
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 4,
+          "prefix": 1
+        },
+        "nfe_before": {
+          "action": 4,
+          "prefix": 1
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 20,
+        "max_ms": 10193.916432035621,
+        "mean_ms": 10184.982894000132,
+        "min_ms": 10176.360977988224,
+        "p50_ms": 10184.677023993572
+      },
+      "primary_metric": "generation_p50_ms",
+      "receipt": {
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/cells/nano-eager_native/receipt.json",
+        "sha256": "1702a597b487b681e1c898970032c7b75f978715bde6819b80a13dc6c9c7b4ec"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "0a3d79bdc9bbfe21ea1bd9006a74281373bec87cae0a0748a17bd51ac1983490",
+      "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e",
+      "runtime_kwargs": {},
+      "setup_plus_first_predict_ms": 39798.671513970476,
+      "setup_plus_timed_calls_mean_ms": 11370.574408920947,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 29.116255935980007,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 10205.924171481747,
+      "timed_session_ms": 255148.10428704368,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.10.0+cu130",
+      "total_calls": 25,
+      "usability": "succeeded on recorded requests",
+      "warmup_calls": 5
+    },
+    {
+      "action_shape": [
+        32,
+        8
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "d7284d8be2a13065fb88dc8a41f0217be61e3a2ffa4a982f00967e7547a85edb",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/cells/nano-runtime_default/receipt.npz",
+        "sha256": "b5339d0905dbcb415af12e49eb6c9ff7886bcbeb2ef52d530b1c1eaa40fddf32",
+        "shape": [
+          25,
+          32,
+          8
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "runtime_default",
+      "comparison_group": "nano-checkpoint",
+      "default_schedule": {
+        "action": 4,
+        "prefix": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "changed_schedule": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "precision": "native",
+        "schedule_options": {},
+        "step_cache": null,
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT"
+      },
+      "experimental": false,
+      "family": "nano",
+      "first_predict_ms": 10546.820882998873,
+      "guidance": "{'action': 'cfg'}",
+      "id": "nano-runtime_default",
+      "input_contract": {
+        "action_shape": [
+          32,
+          8
+        ],
+        "family": "nano",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 8567.362261004746,
+        "mean_ms": 8558.751882551587,
+        "min_ms": 8547.248900984414,
+        "p50_ms": 8557.831917016301
+      },
+      "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 8567.362261004746,
+        "mean_ms": 8558.751882551587,
+        "min_ms": 8547.248900984414,
+        "p50_ms": 8557.831917016301
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 4,
+          "prefix": 1
+        },
+        "nfe_before": {
+          "action": 4,
+          "prefix": 1
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 20,
+        "max_ms": 8567.362261004746,
+        "mean_ms": 8558.751882551587,
+        "min_ms": 8547.248900984414,
+        "p50_ms": 8557.831917016301
+      },
+      "primary_metric": "generation_p50_ms",
+      "receipt": {
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/cells/nano-runtime_default/receipt.json",
+        "sha256": "265e68fddd41be5d924ab924e214f26e5c2e3ab8553f0bc33c57b50bb21def3f"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "0a3d79bdc9bbfe21ea1bd9006a74281373bec87cae0a0748a17bd51ac1983490",
+      "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e",
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "setup_plus_first_predict_ms": 33657.58902399102,
+      "setup_plus_timed_calls_mean_ms": 9563.338440600783,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 23.11076814099215,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 8638.907714961097,
+      "timed_session_ms": 215972.69287402742,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.10.0+cu130",
+      "total_calls": 25,
+      "usability": "public default succeeded on recorded requests",
+      "warmup_calls": 5
+    },
+    {
+      "action_shape": [
+        32,
+        8
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "fdda920e220b6b329ee894e5a9483e1f5cfaf2bdf9022696af4e8f8f39902dfa",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/cells/nano-runtime_selected/receipt.npz",
+        "sha256": "c3d85891daced8d6a96a7c2cc34ea4a2b5f5fc32a1636cc15a3d5c96f9a38a01",
+        "shape": [
+          25,
+          32,
+          8
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "runtime_selected",
+      "comparison_group": "nano-checkpoint",
+      "default_schedule": {
+        "action": 4,
+        "prefix": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "execution_policy": {
+        "category": "NUMERIC",
+        "changed_schedule": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "precision": "native",
+        "schedule_options": {},
+        "step_cache": null,
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC"
+      },
+      "experimental": false,
+      "family": "nano",
+      "first_predict_ms": 11866.627484036144,
+      "guidance": "{'action': 'cfg'}",
+      "id": "nano-runtime_selected",
+      "input_contract": {
+        "action_shape": [
+          32,
+          8
+        ],
+        "family": "nano",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 4785.074480983894,
+        "mean_ms": 4770.279518992174,
+        "min_ms": 4755.041296011768,
+        "p50_ms": 4772.384611977031
+      },
+      "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 4785.074480983894,
+        "mean_ms": 4770.279518992174,
+        "min_ms": 4755.041296011768,
+        "p50_ms": 4772.384611977031
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 4,
+          "prefix": 1
+        },
+        "nfe_before": {
+          "action": 4,
+          "prefix": 1
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {
+        "IFL_BF16_LINEAR_RELU2": "0",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+        "IFL_COSMOS3_GEN_REGIONS": "1",
+        "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1"
+      },
+      "precision": "native",
+      "primary": {
+        "count": 20,
+        "max_ms": 4785.074480983894,
+        "mean_ms": 4770.279518992174,
+        "min_ms": 4755.041296011768,
+        "p50_ms": 4772.384611977031
+      },
+      "primary_metric": "generation_p50_ms",
+      "receipt": {
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/cells/nano-runtime_selected/receipt.json",
+        "sha256": "27f3e93ba1af9d8f25bb97897a9e05bad4b5246508493b49eda1cee59bb7224c"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "0a3d79bdc9bbfe21ea1bd9006a74281373bec87cae0a0748a17bd51ac1983490",
+      "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e",
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "native",
+        "step_cache": "checkpoint",
+        "tier_ceiling": "numeric"
+      },
+      "setup_plus_first_predict_ms": 33796.244626049884,
+      "setup_plus_timed_calls_mean_ms": 5987.565597274806,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 21.92961714201374,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 5110.380911594257,
+      "timed_session_ms": 127759.52278985642,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.10.0+cu130",
+      "total_calls": 25,
+      "usability": "explicit numerical candidate on recorded requests",
+      "warmup_calls": 5
+    }
+  ],
+  "comparisons": [
+    {
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "metric_overflow": false,
+        "rmse": 0.0,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "baseline": "nano-eager_native",
+      "baseline_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "candidate": "nano-runtime_default",
+      "candidate_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "kind": "matched_policy_latency_ratio",
+      "median_paired_ratio": 1.1898409227576168,
+      "paired_samples": 20,
+      "ratio_of_p50": 1.1901001471812584,
+      "recommended": false,
+      "same_sampling_policy": true,
+      "status": "passed",
+      "task_quality_validated": false
+    },
+    {
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.9997949600219727,
+        "metric_overflow": false,
+        "rmse": 0.15466817023254822,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "baseline": "nano-eager_native",
+      "baseline_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "candidate": "nano-runtime_selected",
+      "candidate_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "kind": "matched_policy_latency_ratio",
+      "median_paired_ratio": 2.1345553975570843,
+      "paired_samples": 20,
+      "ratio_of_p50": 2.13408554675865,
+      "recommended": false,
+      "same_sampling_policy": true,
+      "status": "passed",
+      "task_quality_validated": false
+    }
+  ],
+  "counts": {
+    "expected_cells": 3,
+    "failed_cells": 0,
+    "failed_comparisons": 0,
+    "finite_public_actions": 75,
+    "finite_queue_actions": 0,
+    "incomplete_cells": 0,
+    "main_cells": 3,
+    "operating_point_cells": 0,
+    "passed_cells": 3,
+    "runtime_update_cells": 0
+  },
+  "errors": [],
+  "matrix": {
+    "path": "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/matrix.json",
+    "sha256": "fb808b7b720b0616d23f672baaa843276baa0b17788d202b34a15bcfddce6452"
+  },
+  "pending": [],
+  "recommended": false,
+  "reproduction_plan": {
+    "execution_mode": "numeric",
+    "sha256": "51ed54d80f9069db4b9f119905a4cc7deecd2f2718e2a79c9f63190da2bac8a9"
+  },
+  "require_observed_schedule": true,
+  "schema": "instinctflash.user_report.v1",
+  "scope": "CPU artifact/protocol validation on recorded requests; no simulator or task-quality admission",
+  "status": "passed",
+  "task_quality_validated": false,
+  "validator": {
+    "path": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/lib/python3.13/site-packages/benchmarks/regression/user_report.py",
+    "sha256": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+  }
+}

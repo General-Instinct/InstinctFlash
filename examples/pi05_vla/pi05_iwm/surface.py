@@ -112,13 +112,19 @@ class Pi05CacheBinder:
     def flatten(self, value):
         if not self._is_cache(value):
             return self._tree.flatten(value)
+        layers = list(value)
+        if layers and all(len(layer) == 2 for layer in layers):
+            return [tensor for layer in layers for tensor in layer], (self.TAG + ".legacy", len(layers))
         leaves, windows = [], []
-        for keys, values, sliding_window in value:
+        for keys, values, sliding_window in layers:
             leaves.extend((keys, values))
             windows.append(sliding_window)
         return leaves, (self.TAG, tuple(windows))
 
     def unflatten(self, leaves, spec):
+        if isinstance(spec, tuple) and len(spec) == 2 and spec[0] == self.TAG + ".legacy":
+            from transformers.cache_utils import DynamicCache
+            return DynamicCache(tuple((leaves[2*i], leaves[2*i+1]) for i in range(spec[1])))
         if not (isinstance(spec, tuple) and len(spec) == 2 and spec[0] == self.TAG):
             return self._tree.unflatten(leaves, spec)
         from transformers.cache_utils import DynamicCache
@@ -134,11 +140,10 @@ class Pi05Surface:
 
     def __init__(self, flow_model):
         self._m = flow_model
-        # THE ORIGINAL, bound now. `install()` replaces `type(model).denoise_step`, so a `_raw_denoise`
-        # that went through the attribute would call the wrapper that calls it -- and it did: capture
-        # recursed 164 frames into a RecursionError inside the purity gate, because the gate runs the
-        # raw callable to check it, and the raw callable was no longer raw.
-        self._orig_denoise = type(flow_model).denoise_step
+        # THE ORIGINAL, bound now. The raw gate must not resolve the subsequently installed instance
+        # wrapper or it recurses back into itself. Instance scope matters: two pi runtimes may share
+        # a process, while class monkeypatches make the later install rewrite the earlier model.
+        self._orig_denoise = flow_model.denoise_step
         self._wrapped = None
         self.hoisted: list[str] = []
         self._const: dict = {}
@@ -160,7 +165,7 @@ class Pi05Surface:
         const = self._const
 
         def embed_suffix(self_m, noisy_actions, timestep):
-            from lerobot.policies.common.vla_utils import create_sinusoidal_pos_embedding
+            from lerobot.policies.pi05.modeling_pi05 import create_sinusoidal_pos_embedding
             time_emb = create_sinusoidal_pos_embedding(
                 timestep, self_m.action_in_proj.out_features,
                 min_period=self_m.config.min_period, max_period=self_m.config.max_period,
@@ -183,7 +188,8 @@ class Pi05Surface:
             pad_masks, att_masks = const[key]
             return action_emb, pad_masks, att_masks, time_emb
 
-        type(self._m).embed_suffix = embed_suffix
+        import types
+        self._m.embed_suffix = types.MethodType(embed_suffix, self._m)
         self.hoisted.append("pad_masks + att_masks cached (att_masks was an unpinned H2D copy from "
                             "a Python list -- the capture blocker)")
         return list(self.hoisted)
@@ -231,7 +237,7 @@ class Pi05Surface:
 
     # -- the unit itself -------------------------------------------------------------------------
     def _raw_denoise(self, prefix_pad_masks, past_key_values, x_t, timestep):
-        return self._orig_denoise(self._m, prefix_pad_masks=prefix_pad_masks,
+        return self._orig_denoise(prefix_pad_masks=prefix_pad_masks,
                                   past_key_values=past_key_values, x_t=x_t, timestep=timestep)
 
     def install(self) -> bool:
@@ -243,5 +249,6 @@ class Pi05Surface:
         def denoise_step(self_m, prefix_pad_masks, past_key_values, x_t, timestep):
             return surface._wrapped(prefix_pad_masks, past_key_values, x_t, timestep)
 
-        type(self._m).denoise_step = denoise_step
+        import types
+        self._m.denoise_step = types.MethodType(denoise_step, self._m)
         return True

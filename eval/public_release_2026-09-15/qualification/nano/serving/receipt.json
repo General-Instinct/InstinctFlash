@@ -1,0 +1,173 @@
+{
+  "action_archive_sha256": "af9a83bcb74c6a20c18efb373e6f410d249094b90543ea117cf7e65452cb1045",
+  "calls": [
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        32,
+        8
+      ],
+      "cycle": 0,
+      "episode": 0,
+      "request_sha256": "e88c404c5843a5e8f6014afa05973cf96bf71f034938f41fe9a1ee5ab8164877",
+      "roundtrip_ms": 12280.73542198399,
+      "server_timing": {
+        "infer_ms": 12278.24708604021,
+        "prev_total_ms": 23270.133266982157
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        32,
+        8
+      ],
+      "cycle": 1,
+      "episode": 0,
+      "request_sha256": "f00c330f8613b1ffbc34bbdb873a0287459832cf63cf8cbf113d60da83c23a16",
+      "roundtrip_ms": 4801.035258977208,
+      "server_timing": {
+        "infer_ms": 4799.215588020161,
+        "prev_total_ms": 12286.178954003844
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        32,
+        8
+      ],
+      "cycle": 2,
+      "episode": 0,
+      "request_sha256": "9096cc0a8e7d11c2dc9af1fa4b0899dfa83eef3099c23be199022c1e49c948d1",
+      "roundtrip_ms": 4788.587357965298,
+      "server_timing": {
+        "infer_ms": 4787.276129005477,
+        "prev_total_ms": 4805.970199988224
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        32,
+        8
+      ],
+      "cycle": 0,
+      "episode": 1,
+      "request_sha256": "42041aac26fd24419a64bd7b314039b8d39091412c2ef7b8dcefddd18b9b75bf",
+      "roundtrip_ms": 7057.3083070339635,
+      "server_timing": {
+        "infer_ms": 7056.098364992067,
+        "prev_total_ms": 1.3517179759219289
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        32,
+        8
+      ],
+      "cycle": 1,
+      "episode": 1,
+      "request_sha256": "708484f128a7fd3465b3b2554e7a327eea2c73a1e2dfdda536010eb3fb74f420",
+      "roundtrip_ms": 4794.383311003912,
+      "server_timing": {
+        "infer_ms": 4792.767714010552,
+        "prev_total_ms": 7060.997880995274
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        32,
+        8
+      ],
+      "cycle": 2,
+      "episode": 1,
+      "request_sha256": "6b40405a2c8e9cb1dabb1d59e8cdfa59259211d02b5197d7ecde70cc2c6d0736",
+      "roundtrip_ms": 4775.735287985299,
+      "server_timing": {
+        "infer_ms": 4774.059700022917,
+        "prev_total_ms": 4798.3035880024545
+      }
+    }
+  ],
+  "cell_id": "nano-runtime_selected",
+  "checkpoint": {
+    "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+    "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e"
+  },
+  "checkpoint_path": "/home/guanming/.cache/instinctflash/declared/nvidia__Cosmos3-Nano-Policy-DROID/6e5f3a23cb928dec260b07f1a3cf8b37b620809c86ccd4747dedad67521d733e",
+  "command": [
+    "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+    "-I",
+    "-m",
+    "instinctflash.cli",
+    "serve",
+    "--config_path=/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_serving_v1/serve.json"
+  ],
+  "config_sha256": "ae0965b4664e193eb61511db4d57d442670a924725585c33d524dc36d3265749",
+  "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+  "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/edge_v3/bin/python",
+  "latency_benchmark": false,
+  "metadata": {
+    "backbone": "cosmos3_policy",
+    "checkpoint_nfe": {
+      "action": 4,
+      "prefix": 1
+    },
+    "execution_policy": {
+      "category": "BITEXACT",
+      "changed_schedule": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+      "nfe": {
+        "action": 4,
+        "prefix": 1
+      },
+      "precision": "native",
+      "schedule_options": {},
+      "step_cache": null,
+      "tier_ceiling": "numeric",
+      "transform_tier": "BITEXACT"
+    },
+    "extra": {
+      "action_chunk_size": 32,
+      "action_dim": 8,
+      "base_weights": "nvidia/Cosmos3-Nano-Policy-DROID",
+      "conditioning_fps": 15.0,
+      "domain_name": "droid_lerobot",
+      "format_prompt_as_json": false,
+      "image_height": 540,
+      "image_width": 640,
+      "param_bytes": 31499049824
+    },
+    "guidance": {
+      "action": "cfg"
+    },
+    "instinctflash_version": "0.1.0",
+    "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+    "nfe": {
+      "action": 4,
+      "prefix": 1
+    },
+    "observation": "flat keys: image (540, 640, 3) uint8; state (8,) float32; plus prompt",
+    "observation_source": "the checkpoint's declared serving config (image_height/width, action_dim)",
+    "precision": "native",
+    "protocol": {
+      "prompt_rotation": true,
+      "reset_extension": true,
+      "wire": "openpi-websocket-msgpack-numpy"
+    }
+  },
+  "plan_sha256": "51ed54d80f9069db4b9f119905a4cc7deecd2f2718e2a79c9f63190da2bac8a9",
+  "request_timeout_s": 600,
+  "rng_scope": "native serving constructor seed",
+  "schema": "instinctflash.serving_smoke.v1",
+  "scope": "Installed CLI and loopback WebSocket; two episodes, three calls each",
+  "seed": 9173,
+  "server_exit_code": 0,
+  "server_pid": 278507,
+  "startup_timeout_s": 1200,
+  "status": "passed",
+  "task_quality_validated": false
+}

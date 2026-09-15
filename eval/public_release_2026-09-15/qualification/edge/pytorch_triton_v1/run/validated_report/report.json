@@ -1,0 +1,499 @@
+{
+  "bindings": [
+    {
+      "path": "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/inputs/recorded_inputs_v1.npz",
+      "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+      "status": "passed"
+    }
+  ],
+  "cells": [
+    {
+      "action_shape": [
+        32,
+        8
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "3718858ae037df877c724f5e9e43086babbf5c3a49f4789f1a9a741469b6d0e9",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/cells/edge-eager_native/receipt.npz",
+        "sha256": "b2c3f3c325ad048183d659f102eed53fc315b631d64e3a1a2e07c653f1254a89",
+        "shape": [
+          25,
+          32,
+          8
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "eager_native",
+      "comparison_group": "edge-checkpoint",
+      "default_schedule": {
+        "action": 4,
+        "prefix": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "execution_policy": {
+        "reference": "upstream eager native policy; shared I/O translation only"
+      },
+      "experimental": false,
+      "family": "edge",
+      "first_predict_ms": 4374.126086011529,
+      "guidance": "{'action': 'cfg'}",
+      "id": "edge-eager_native",
+      "input_contract": {
+        "action_shape": [
+          32,
+          8
+        ],
+        "family": "edge",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 3400.542879011482,
+        "mean_ms": 3393.3772382471943,
+        "min_ms": 3386.1683499999344,
+        "p50_ms": 3393.7791274802294
+      },
+      "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 3400.542879011482,
+        "mean_ms": 3393.3772382471943,
+        "min_ms": 3386.1683499999344,
+        "p50_ms": 3393.7791274802294
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 4,
+          "prefix": 1
+        },
+        "nfe_before": {
+          "action": 4,
+          "prefix": 1
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 20,
+        "max_ms": 3400.542879011482,
+        "mean_ms": 3393.3772382471943,
+        "min_ms": 3386.1683499999344,
+        "p50_ms": 3393.7791274802294
+      },
+      "primary_metric": "generation_p50_ms",
+      "receipt": {
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/cells/edge-eager_native/receipt.json",
+        "sha256": "5f424699a8af4b42a1474b4a390517cea3d1e31252bdf0fba609593aa13d6507"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "0a3d79bdc9bbfe21ea1bd9006a74281373bec87cae0a0748a17bd51ac1983490",
+      "revision": "f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+      "runtime_kwargs": {},
+      "setup_plus_first_predict_ms": 15761.455012019724,
+      "setup_plus_timed_calls_mean_ms": 3888.8421294791624,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 11.387328926008195,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 3433.3489724388346,
+      "timed_session_ms": 85833.72431097087,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.10.0+cu130",
+      "total_calls": 25,
+      "usability": "succeeded on recorded requests",
+      "warmup_calls": 5
+    },
+    {
+      "action_shape": [
+        32,
+        8
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "3718858ae037df877c724f5e9e43086babbf5c3a49f4789f1a9a741469b6d0e9",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/cells/edge-runtime_default/receipt.npz",
+        "sha256": "b2c3f3c325ad048183d659f102eed53fc315b631d64e3a1a2e07c653f1254a89",
+        "shape": [
+          25,
+          32,
+          8
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "runtime_default",
+      "comparison_group": "edge-checkpoint",
+      "default_schedule": {
+        "action": 4,
+        "prefix": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "execution_policy": {
+        "category": "BITEXACT",
+        "changed_schedule": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "precision": "native",
+        "schedule_options": {},
+        "step_cache": null,
+        "tier_ceiling": "bitexact",
+        "transform_tier": "BITEXACT"
+      },
+      "experimental": false,
+      "family": "edge",
+      "first_predict_ms": 6863.168751006015,
+      "guidance": "{'action': 'cfg'}",
+      "id": "edge-runtime_default",
+      "input_contract": {
+        "action_shape": [
+          32,
+          8
+        ],
+        "family": "edge",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 2553.9100900059566,
+        "mean_ms": 2549.0601372992387,
+        "min_ms": 2544.346164970193,
+        "p50_ms": 2549.0313799818978
+      },
+      "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 2553.9100900059566,
+        "mean_ms": 2549.0601372992387,
+        "min_ms": 2544.346164970193,
+        "p50_ms": 2549.0313799818978
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 4,
+          "prefix": 1
+        },
+        "nfe_before": {
+          "action": 4,
+          "prefix": 1
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {},
+      "precision": "native",
+      "primary": {
+        "count": 20,
+        "max_ms": 2553.9100900059566,
+        "mean_ms": 2549.0601372992387,
+        "min_ms": 2544.346164970193,
+        "p50_ms": 2549.0313799818978
+      },
+      "primary_metric": "generation_p50_ms",
+      "receipt": {
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/cells/edge-runtime_default/receipt.json",
+        "sha256": "d76c136c965a2b8f30716b62195a3b351226005cf94f37ad53448a66416318f0"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "0a3d79bdc9bbfe21ea1bd9006a74281373bec87cae0a0748a17bd51ac1983490",
+      "revision": "f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+      "runtime_kwargs": {
+        "device": "cuda:0"
+      },
+      "setup_plus_first_predict_ms": 16074.526112002786,
+      "setup_plus_timed_calls_mean_ms": 3090.7572963973507,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 9.211357360996772,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 2722.30300195748,
+      "timed_session_ms": 68057.575048937,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.10.0+cu130",
+      "total_calls": 25,
+      "usability": "public default succeeded on recorded requests",
+      "warmup_calls": 5
+    },
+    {
+      "action_shape": [
+        32,
+        8
+      ],
+      "actions": {
+        "actions_key": "actions",
+        "additional_unverified_arrays": [],
+        "array_bytes_sha256": "7e86192059d40704f87e5b02969fe377696c1c37eb9d31708d6dfddf9afeb496",
+        "dtype": "float32",
+        "finite": true,
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/cells/edge-runtime_selected/receipt.npz",
+        "sha256": "adff00483c22a5f392347c03187d85c3ef5269658d27da1d5a2f7dd40a4d43d3",
+        "shape": [
+          25,
+          32,
+          8
+        ]
+      },
+      "amortization_scope": "setup plus recorded predict calls; excludes unreported work between calls",
+      "arm": "runtime_selected",
+      "comparison_group": "edge-checkpoint",
+      "default_schedule": {
+        "action": 4,
+        "prefix": 1
+      },
+      "device": "NVIDIA Thor",
+      "effective_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "execution_policy": {
+        "category": "NUMERIC",
+        "changed_schedule": {},
+        "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "precision": "native",
+        "schedule_options": {},
+        "step_cache": null,
+        "tier_ceiling": "numeric",
+        "transform_tier": "NUMERIC"
+      },
+      "experimental": false,
+      "family": "edge",
+      "first_predict_ms": 8044.550513033755,
+      "guidance": "{'action': 'cfg'}",
+      "id": "edge-runtime_selected",
+      "input_contract": {
+        "action_shape": [
+          32,
+          8
+        ],
+        "family": "edge",
+        "fixture_protocol": "recorded_cameras_synthetic_states_v1",
+        "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "measured": {
+        "count": 20,
+        "max_ms": 1060.1820179726928,
+        "mean_ms": 1048.4510495472932,
+        "min_ms": 1041.493454016745,
+        "p50_ms": 1048.0067335010972
+      },
+      "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+      "new_episode": {
+        "count": 20,
+        "max_ms": 1060.1820179726928,
+        "mean_ms": 1048.4510495472932,
+        "min_ms": 1041.493454016745,
+        "p50_ms": 1048.0067335010972
+      },
+      "observed_schedule": {
+        "nfe_after": {
+          "action": 4,
+          "prefix": 1
+        },
+        "nfe_before": {
+          "action": 4,
+          "prefix": 1
+        },
+        "status": "passed"
+      },
+      "optimizer_environment": {
+        "IFL_BF16_KERNEL_LIBRARY": "/home/guanming/ifl_public_qualification_20260915_v1/native_v1/native/libinstinctflash_bf16.so",
+        "IFL_BF16_LINEAR_RELU2": "1",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+        "IFL_COSMOS3_GEN_REGIONS": "1",
+        "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1"
+      },
+      "precision": "native",
+      "primary": {
+        "count": 20,
+        "max_ms": 1060.1820179726928,
+        "mean_ms": 1048.4510495472932,
+        "min_ms": 1041.493454016745,
+        "p50_ms": 1048.0067335010972
+      },
+      "primary_metric": "generation_p50_ms",
+      "receipt": {
+        "path": "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/cells/edge-runtime_selected/receipt.json",
+        "sha256": "d625e2f476d4d8a5e57ce3da2b2c6dd1e819e03008b6f45a7faee88532493553"
+      },
+      "recommended": false,
+      "request_sequence_sha256": "0a3d79bdc9bbfe21ea1bd9006a74281373bec87cae0a0748a17bd51ac1983490",
+      "revision": "f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "native",
+        "step_cache": "checkpoint",
+        "tier_ceiling": "numeric"
+      },
+      "setup_plus_first_predict_ms": 17173.76516800141,
+      "setup_plus_timed_calls_mean_ms": 1743.304388395045,
+      "setup_scope": "Checkpoint resolution, construction and initial reset; first predict reported separately",
+      "setup_seconds": 9.129214654967654,
+      "status": "passed",
+      "task_quality_validated": false,
+      "timed_session_mean_ms": 1378.1358021963388,
+      "timed_session_ms": 34453.39505490847,
+      "timing_scope": "Public predict including input processing, generation, output CPU transfer and feedback commit; prepared cameras, synthetic states; no network or simulator",
+      "torch": "2.10.0+cu130",
+      "total_calls": 25,
+      "usability": "explicit numerical candidate on recorded requests",
+      "warmup_calls": 5
+    }
+  ],
+  "comparisons": [
+    {
+      "actions": {
+        "exact_bytes": true,
+        "exact_values": true,
+        "max_abs": 0.0,
+        "metric_overflow": false,
+        "rmse": 0.0,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "baseline": "edge-eager_native",
+      "baseline_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "candidate": "edge-runtime_default",
+      "candidate_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "kind": "matched_policy_latency_ratio",
+      "median_paired_ratio": 1.3317123437554215,
+      "paired_samples": 20,
+      "ratio_of_p50": 1.3313995089006438,
+      "recommended": false,
+      "same_sampling_policy": true,
+      "status": "passed",
+      "task_quality_validated": false
+    },
+    {
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 0.35493433475494385,
+        "metric_overflow": false,
+        "rmse": 0.032459680213897,
+        "scope": "all archived public actions including warmup; descriptive, no quality threshold"
+      },
+      "baseline": "edge-eager_native",
+      "baseline_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "candidate": "edge-runtime_selected",
+      "candidate_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "interpretation": "matched declared sampling policy; numerical implementations may differ; no task-quality evidence",
+      "kind": "matched_policy_latency_ratio",
+      "median_paired_ratio": 3.240100690595937,
+      "paired_samples": 20,
+      "ratio_of_p50": 3.2383180555935582,
+      "recommended": false,
+      "same_sampling_policy": true,
+      "status": "passed",
+      "task_quality_validated": false
+    }
+  ],
+  "counts": {
+    "expected_cells": 3,
+    "failed_cells": 0,
+    "failed_comparisons": 0,
+    "finite_public_actions": 75,
+    "finite_queue_actions": 0,
+    "incomplete_cells": 0,
+    "main_cells": 3,
+    "operating_point_cells": 0,
+    "passed_cells": 3,
+    "runtime_update_cells": 0
+  },
+  "errors": [],
+  "matrix": {
+    "path": "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1/matrix.json",
+    "sha256": "56b8acfa1e1adac4c2a5aa84f01af7af9ab6e45bf2104b6ab5f891fe33a38fcd"
+  },
+  "pending": [],
+  "recommended": false,
+  "reproduction_plan": {
+    "execution_mode": "numeric",
+    "sha256": "17bbc7c257e29948968bb473b12bc79419bbc9dd1e5595246aa1b1fa5f820306"
+  },
+  "require_observed_schedule": true,
+  "schema": "instinctflash.user_report.v1",
+  "scope": "CPU artifact/protocol validation on recorded requests; no simulator or task-quality admission",
+  "status": "passed",
+  "task_quality_validated": false,
+  "validator": {
+    "path": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/lib/python3.13/site-packages/benchmarks/regression/user_report.py",
+    "sha256": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+  }
+}

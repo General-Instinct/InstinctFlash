@@ -1,0 +1,97 @@
+{
+  "status": "passed",
+  "started_unix": 1789450454.9038005,
+  "jobs": [
+    {
+      "id": "edge-numeric-paired",
+      "started_unix": 1789450454.9215305,
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.reproduce",
+        "run",
+        "--prepared",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_prepared_v1",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_run_v1"
+      ],
+      "activation": [
+        "bootstrap_edge_v3/run.env",
+        "native_hf_tool_v1/prepared/run.env",
+        "auxiliary_assets_v2/edge/run.env"
+      ],
+      "returncode": 0,
+      "completed_unix": 1789450686.5692165,
+      "receipt_status": "passed"
+    },
+    {
+      "id": "edge-numeric-serving",
+      "started_unix": 1789450686.5851774,
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.serve_smoke",
+        "--prepared",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_prepared_v1",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/edge_numeric_pytorch_triton_serving_v1"
+      ],
+      "activation": [
+        "bootstrap_edge_v3/run.env",
+        "native_hf_tool_v1/prepared/run.env",
+        "auxiliary_assets_v2/edge/run.env"
+      ],
+      "returncode": 0,
+      "completed_unix": 1789450714.2015343,
+      "receipt_status": "passed"
+    },
+    {
+      "id": "nano-numeric-paired",
+      "started_unix": 1789450714.2185023,
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.reproduce",
+        "run",
+        "--prepared",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_prepared_v1",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1"
+      ],
+      "activation": [
+        "bootstrap_edge_v3/run.env",
+        "native_hf_tool_v1/prepared/run.env",
+        "auxiliary_assets_v2/nano/run.env"
+      ],
+      "returncode": 0,
+      "completed_unix": 1789451401.373216,
+      "receipt_status": "passed"
+    },
+    {
+      "id": "nano-numeric-serving",
+      "started_unix": 1789451401.3904135,
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.serve_smoke",
+        "--prepared",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_prepared_v1",
+        "--output",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_serving_v1"
+      ],
+      "activation": [
+        "bootstrap_edge_v3/run.env",
+        "native_hf_tool_v1/prepared/run.env",
+        "auxiliary_assets_v2/nano/run.env"
+      ],
+      "returncode": 0,
+      "completed_unix": 1789451467.610234,
+      "receipt_status": "passed"
+    }
+  ],
+  "completed_unix": 1789451467.6104996
+}

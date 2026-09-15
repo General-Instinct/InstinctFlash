@@ -17,6 +17,10 @@
 #include "quantize/nvfp4_sf_reshape_sm120.cuh"
 #endif
 #include "kernels/kernels.h"
+// ── T2-V2 token-MoE kernels (additive; see kernels/moe_vla2.cuh) ──
+#include "kernels/moe_vla2.cuh"
+// ── wan_va (LingBot-VA) fused kernels (additive; see kernels/wan_va_fused.cuh) ──
+#include "kernels/wan_va_fused.cuh"
 #include "kernels/causal_conv1d_qwen36.cuh"
 #include "kernels/gated_deltanet_qwen36.cuh"
 #include "kernels/rms_norm_gated_silu_qwen36.cuh"
@@ -2248,4 +2252,170 @@ PYBIND11_MODULE(flash_rt_kernels, m) {
         py::arg("rows"), py::arg("cols"), py::arg("stream") = 0);
 
 #endif
+
+    // ═══════════════════════════════════════════════════════════
+    // T2-V2 token-MoE kernels (ADDITIVE SECTION — LingBot-VLA-V2-6B
+    // action expert; csrc/kernels/moe_vla2.cu). Torch parity
+    // baseline: flash_rt/models/vla2/moe_ref.py.
+    // ═══════════════════════════════════════════════════════════
+
+    // Router core: fp32 logits [T,E] → sigmoid + e_score bias top-K
+    // + norm(+1e-20) + ×routed_scale → ids [T,K] i32, weights [T,K] f32.
+    m.def("moe_router_topk", [](uintptr_t logits, uintptr_t e_bias,
+            uintptr_t ids, uintptr_t weights,
+            int T, int E, int K, float routed_scale, uintptr_t stream) {
+        if (E > 32 || K > 8)
+            throw std::runtime_error("moe_router_topk: E<=32, K<=8");
+        moe_router_topk(reinterpret_cast<const float*>(logits),
+                        reinterpret_cast<const float*>(e_bias),
+                        reinterpret_cast<int*>(ids),
+                        reinterpret_cast<float*>(weights),
+                        T, E, K, routed_scale, to_stream(stream));
+    }, py::arg("logits"), py::arg("e_bias"), py::arg("ids"),
+       py::arg("weights"), py::arg("T"), py::arg("E"), py::arg("K"),
+       py::arg("routed_scale") = 4.0f, py::arg("stream") = 0);
+
+    // Fused fp32 gate GEMM (x fp16 [T,D] × gate_w fp32 [E,D]) + router.
+    // logits_out optional (0 = skip).
+    m.def("moe_router_gemm_topk_fp16x", [](uintptr_t x, uintptr_t gate_w,
+            uintptr_t e_bias, uintptr_t ids, uintptr_t weights,
+            uintptr_t logits_out, int T, int D, int E, int K,
+            float routed_scale, uintptr_t stream) {
+        if (E > 32 || K > 8)
+            throw std::runtime_error("moe_router_gemm_topk: E<=32, K<=8");
+        moe_router_gemm_topk_fp16x(reinterpret_cast<const __half*>(x),
+                                   reinterpret_cast<const float*>(gate_w),
+                                   reinterpret_cast<const float*>(e_bias),
+                                   reinterpret_cast<int*>(ids),
+                                   reinterpret_cast<float*>(weights),
+                                   reinterpret_cast<float*>(logits_out),
+                                   T, D, E, K, routed_scale,
+                                   to_stream(stream));
+    }, py::arg("x"), py::arg("gate_w"), py::arg("e_bias"), py::arg("ids"),
+       py::arg("weights"), py::arg("logits_out") = 0,
+       py::arg("T") = 51, py::arg("D") = 768, py::arg("E") = 32,
+       py::arg("K") = 4, py::arg("routed_scale") = 4.0f,
+       py::arg("stream") = 0);
+
+    // Same, consuming the post-AdaRMS fp8 activation + device descale
+    // (the engine static path; precision gated at M2d).
+    m.def("moe_router_gemm_topk_fp8x", [](uintptr_t x_fp8, uintptr_t gate_w,
+            uintptr_t e_bias, uintptr_t ids, uintptr_t weights,
+            uintptr_t logits_out, int T, int D, int E, int K,
+            float routed_scale, uintptr_t act_descale, uintptr_t stream) {
+        if (E > 32 || K > 8)
+            throw std::runtime_error("moe_router_gemm_topk: E<=32, K<=8");
+        moe_router_gemm_topk_fp8x(to_ptr(x_fp8),
+                                  reinterpret_cast<const float*>(gate_w),
+                                  reinterpret_cast<const float*>(e_bias),
+                                  reinterpret_cast<int*>(ids),
+                                  reinterpret_cast<float*>(weights),
+                                  reinterpret_cast<float*>(logits_out),
+                                  T, D, E, K, routed_scale,
+                                  reinterpret_cast<const float*>(act_descale),
+                                  to_stream(stream));
+    }, py::arg("x_fp8"), py::arg("gate_w"), py::arg("e_bias"),
+       py::arg("ids"), py::arg("weights"), py::arg("logits_out") = 0,
+       py::arg("T") = 51, py::arg("D") = 768, py::arg("E") = 32,
+       py::arg("K") = 4, py::arg("routed_scale") = 4.0f,
+       py::arg("act_descale") = 0, py::arg("stream") = 0);
+
+    // Combine: out[t] = Σ_k w[t,k]·slab[ids[t,k], t] (+ shared[t] if
+    // shared != 0; pass 0 for the routed-only pipeline contract).
+    m.def("moe_combine_fp16", [](uintptr_t slab, uintptr_t ids,
+            uintptr_t weights, uintptr_t out, uintptr_t shared,
+            int T, int D, int K, uintptr_t stream) {
+        moe_combine_fp16(reinterpret_cast<const __half*>(slab),
+                         reinterpret_cast<const int*>(ids),
+                         reinterpret_cast<const float*>(weights),
+                         reinterpret_cast<const __half*>(shared),
+                         reinterpret_cast<__half*>(out),
+                         T, D, K, to_stream(stream));
+    }, py::arg("slab"), py::arg("ids"), py::arg("weights"),
+       py::arg("out"), py::arg("shared") = 0, py::arg("T") = 51,
+       py::arg("D") = 768, py::arg("K") = 4, py::arg("stream") = 0);
+
+    m.def("moe_combine_fp32", [](uintptr_t slab, uintptr_t ids,
+            uintptr_t weights, uintptr_t out, uintptr_t shared,
+            int T, int D, int K, uintptr_t stream) {
+        moe_combine_fp32(reinterpret_cast<const float*>(slab),
+                         reinterpret_cast<const int*>(ids),
+                         reinterpret_cast<const float*>(weights),
+                         reinterpret_cast<const float*>(shared),
+                         reinterpret_cast<float*>(out),
+                         T, D, K, to_stream(stream));
+    }, py::arg("slab"), py::arg("ids"), py::arg("weights"),
+       py::arg("out"), py::arg("shared") = 0, py::arg("T") = 51,
+       py::arg("D") = 768, py::arg("K") = 4, py::arg("stream") = 0);
+
+    // True-SiLU merged gate|up (V2 experts use exact SiLU, not the
+    // GELU-tanh of the pi05-lineage merged kernels).
+    m.def("silu_mul_merged_fp8_fp16", [](uintptr_t merged, uintptr_t out,
+            int S, int H, uintptr_t descale, uintptr_t stream) {
+        silu_mul_merged_fp8_fp16(reinterpret_cast<const __half*>(merged),
+                                 typed_ptr<__nv_fp8_e4m3>(out), S, H,
+                                 reinterpret_cast<const float*>(descale),
+                                 to_stream(stream));
+    }, py::arg("merged"), py::arg("out"), py::arg("S"), py::arg("H"),
+       py::arg("descale"), py::arg("stream") = 0);
+
+    m.def("silu_mul_merged_fp16", [](uintptr_t merged, uintptr_t out,
+            int S, int H, uintptr_t stream) {
+        silu_mul_merged_fp16(reinterpret_cast<const __half*>(merged),
+                             reinterpret_cast<__half*>(out), S, H,
+                             to_stream(stream));
+    }, py::arg("merged"), py::arg("out"), py::arg("S"), py::arg("H"),
+       py::arg("stream") = 0);
+
+    // cuBLASLt strided-batched FP8 GEMM → FP16 with device descale
+    // pointers (ONE per-tensor scale per operand — the R3 shared-scale
+    // batched mode). Strides in ELEMENTS; strideA=0 broadcasts one
+    // activation matrix to every expert.
+    m.def("fp8_gemm_batched_descale_fp16", [](uintptr_t A, uintptr_t B,
+            uintptr_t C, int M, int N, int K, int batch,
+            long long strideA, long long strideB, long long strideC,
+            uintptr_t act_descale, uintptr_t w_descale, uintptr_t stream) {
+        fp8_gemm_batched_descale_fp16(to_ptr(A), to_ptr(B), to_ptr(C),
+            M, N, K, batch, strideA, strideB, strideC,
+            reinterpret_cast<const float*>(act_descale),
+            reinterpret_cast<const float*>(w_descale), to_stream(stream));
+    }, py::arg("A"), py::arg("B"), py::arg("C"),
+       py::arg("M"), py::arg("N"), py::arg("K"), py::arg("batch"),
+       py::arg("strideA"), py::arg("strideB"), py::arg("strideC"),
+       py::arg("act_descale"), py::arg("w_descale"), py::arg("stream") = 0);
+
+    // TN variant: B stored [N,K] row-major per expert (HF [out,in]
+    // orientation). Supported on sm_90/cu12.8 AND sm_110/cu13 —
+    // measured: the NN entry above is NOT_SUPPORTED by cuBLASLt 12.8
+    // on sm_90 (Thor/cu13 only), so this is the vla2 MoE default.
+    m.def("fp8_gemm_batched_descale_nt_fp16", [](uintptr_t A, uintptr_t B,
+            uintptr_t C, int M, int N, int K, int batch,
+            long long strideA, long long strideB, long long strideC,
+            uintptr_t act_descale, uintptr_t w_descale, uintptr_t stream) {
+        fp8_gemm_batched_descale_nt_fp16(to_ptr(A), to_ptr(B), to_ptr(C),
+            M, N, K, batch, strideA, strideB, strideC,
+            reinterpret_cast<const float*>(act_descale),
+            reinterpret_cast<const float*>(w_descale), to_stream(stream));
+    }, py::arg("A"), py::arg("B"), py::arg("C"),
+       py::arg("M"), py::arg("N"), py::arg("K"), py::arg("batch"),
+       py::arg("strideA"), py::arg("strideB"), py::arg("strideC"),
+       py::arg("act_descale"), py::arg("w_descale"), py::arg("stream") = 0);
+    // ═══════════════ end T2-V2 token-MoE section ═══════════════
+
+    // ═══════════════════════════════════════════════════════════
+    // wan_va (LingBot-VA) fused kernels (ADDITIVE SECTION —
+    // csrc/kernels/wan_va_fused.cu). The DiT's AdaLN gated residual with a
+    // per-CHANNEL gate row from the step tables; torch parity baseline:
+    // flash_rt/models/wan_va/wan_ref.py (engine_block_forward).
+    // ═══════════════════════════════════════════════════════════
+    // res[s, c] += x[s, c] * gate_row[c]; res/x [S, D] fp16, gate_row [D] fp16.
+    m.def("gate_row_mul_residual_fp16", [](uintptr_t res, uintptr_t x, uintptr_t gate_row,
+                                            int S, int D, uintptr_t stream) {
+        gate_row_mul_residual_fp16(reinterpret_cast<__half*>(res),
+                                   reinterpret_cast<const __half*>(x),
+                                   reinterpret_cast<const __half*>(gate_row),
+                                   S, D, to_stream(stream));
+    }, py::arg("res"), py::arg("x"), py::arg("gate_row"), py::arg("S"), py::arg("D"),
+       py::arg("stream") = 0);
+    // ═══════════════ end wan_va section ═══════════════
 }

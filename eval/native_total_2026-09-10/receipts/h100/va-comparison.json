@@ -1,0 +1,132 @@
+{
+  "family": "va",
+  "device": "NVIDIA H100 80GB HBM3",
+  "status": "BITEXACT",
+  "baseline_p50_ms": 7821.411325130612,
+  "current_p50_ms": 3161.6295147687197,
+  "repeated_baseline_p50_ms": 8003.9433762431145,
+  "speedup_range": [
+    2.4738544755465335,
+    2.5315880114525755
+  ],
+  "applied_passes": [
+    "fsdp_elision",
+    "allocator_churn_elision",
+    "debug_dump_elision",
+    "obs_decode_elision",
+    "conditioning_prefill",
+    "ring_kv_addressing",
+    "action_terminal_forward_elision"
+  ],
+  "baseline_applied_passes": [],
+  "unchanged_transform_plan": false,
+  "execution_policy": {
+    "category": "BITEXACT",
+    "precision": "native",
+    "tier_ceiling": "bitexact",
+    "transform_tier": "BITEXACT",
+    "nfe": {
+      "video": 25,
+      "action": 50
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "source_drift": {
+    "current": [],
+    "baseline_b": []
+  },
+  "backend_stats": {},
+  "reference_scope": "Direct upstream eager policy versus full default native Runtime; same I/O wrappers, weights, dtype and steps",
+  "comparisons": {
+    "baseline_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/va-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/va-current.json",
+      "baseline_sha256": "475265733703bebf81c0b84cde77a0902d32fa03e54254f0470c56dd28bce5bd",
+      "candidate_sha256": "ae27336b0a2da618b23f5713a804505e8ff022e2caa34a859ee7640993a48fb5",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            12,
+            16,
+            2,
+            16
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {},
+      "baseline_p50_ms": 7821.411325130612,
+      "candidate_p50_ms": 3161.6295147687197,
+      "speedup": 2.4738544755465335,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 12,
+      "total_calls": 12
+    },
+    "baseline_repeat": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/va-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/va-baseline_b.json",
+      "baseline_sha256": "475265733703bebf81c0b84cde77a0902d32fa03e54254f0470c56dd28bce5bd",
+      "candidate_sha256": "bfd84fca66de911026b170eda25e5111c6528993d867f4ea1e6cb07a6c9f06e0",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            12,
+            16,
+            2,
+            16
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {},
+      "baseline_p50_ms": 7821.411325130612,
+      "candidate_p50_ms": 8003.9433762431145,
+      "speedup": 0.977194734828549,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 12,
+      "total_calls": 12
+    },
+    "repeat_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/va-baseline_b.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910_remaining/h100-6/va-current.json",
+      "baseline_sha256": "bfd84fca66de911026b170eda25e5111c6528993d867f4ea1e6cb07a6c9f06e0",
+      "candidate_sha256": "ae27336b0a2da618b23f5713a804505e8ff022e2caa34a859ee7640993a48fb5",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            12,
+            16,
+            2,
+            16
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {},
+      "baseline_p50_ms": 8003.9433762431145,
+      "candidate_p50_ms": 3161.6295147687197,
+      "speedup": 2.5315880114525755,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 12,
+      "total_calls": 12
+    }
+  },
+  "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+}

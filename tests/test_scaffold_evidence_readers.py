@@ -127,9 +127,9 @@ def test_wan_va_conflicting_or_nonliteral_evidence_stays_fill_me():
         check(ex["env_type"] == "FILL_ME", "a wrong-typed literal is not evidence")
         check(ex["obs_cam_keys"] == "FILL_ME", "an empty camera list is not evidence")
     with tempfile.TemporaryDirectory() as td:
-        d = wan_va_dir(Path(td), cfg_py="cfg.num_inference_steps = 25\n")
+        d = wan_va_dir(Path(td), cfg_py="cfg.num_inference_steps = 3\n")
         _, text, ex = scaffold(d)
-        check(ex["nfe"] == {"video": 2, "action": 4},
+        check(ex["nfe"] == {"video": 25, "action": 50},
               "one step count alone does not rewrite the schedule (both or neither)")
 
 
@@ -154,10 +154,17 @@ def test_cosmos3_checkpoint_json_policy_block_is_read():
         check(ex["domain_name"] == "droid_lerobot", "domain_name inferred from the policy block")
         check(ex["action_chunk_size"] == 32, "action_chunk_size inferred from the policy block")
         check("checkpoint.json policy.domain_name" in text, "with the citation")
-        check("differs from the DROID base declaration's measured 16" in text,
-              "a value that disagrees with the base's measured protocol says so")
+        check("differs from the DROID base declaration's measured" not in text,
+              "32 actions agrees with the current DROID base declaration")
         for key in ("action_dim", "image_height", "image_width"):
             check(ex[key] == "FILL_ME", f"{key} is not in the artifact, stays FILL_ME")
+    with tempfile.TemporaryDirectory() as td:
+        d = cosmos3_dir(Path(td), {"policy": {"action_chunk_size": 16}})
+        _, text, ex = scaffold(d)
+        check(ex["action_chunk_size"] == 16,
+              "a checkpoint's explicit action horizon is preserved")
+        check("differs from the DROID base declaration's measured 32" in text,
+              "an explicitly different horizon is identified as a different operating point")
     with tempfile.TemporaryDirectory() as td:
         d = cosmos3_dir(Path(td), {})    # the Nano release ships an empty checkpoint.json
         _, text, ex = scaffold(d)

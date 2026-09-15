@@ -1,0 +1,315 @@
+{
+  "scope": "Full 25V/50A RoboTwin public API, same recorded observations/executed history; 1 warmup and 3 measured three-cycle episodes per arm. Early history only; no saturated-ring, sustained tail or task-quality certificate.",
+  "arms": {
+    "native": {
+      "precision": "native",
+      "family": "robotwin",
+      "scope": "Paired checkpoint-native public Runtime, fixed recorded observations/executed history, original schedule; one warmup episode and three measured three-cycle episodes. Early history only, not saturated ring latency, sustained tail or closed-loop task quality.",
+      "setup_seconds": 25.107583586000146,
+      "nfe": {
+        "video": 25,
+        "action": 50
+      },
+      "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+      "torch": "2.11.0+cu130",
+      "source_sha256": {
+        "instinctflash.adapters.lingbot_va": "dbb0c54404dd84b04f78383c9ad983ded476694b76390ee7595aeeb44c1c3ce4",
+        "instinctflash.runtime.wan_va_engine": "b4b254da55986c2d30c706714d5ae50c6314ef02985b405bf18b446aa50424df"
+      },
+      "ok": true,
+      "calls": [
+        {
+          "label": "episode_0_cycle_0",
+          "ms": 5868.078210999556,
+          "frame": 0,
+          "episode": 0,
+          "cycle": 0,
+          "phase": "warmup"
+        },
+        {
+          "label": "episode_0_cycle_1",
+          "ms": 5638.166226000067,
+          "frame": 2,
+          "episode": 0,
+          "cycle": 1,
+          "phase": "warmup"
+        },
+        {
+          "label": "episode_0_cycle_2",
+          "ms": 5745.653453000159,
+          "frame": 4,
+          "episode": 0,
+          "cycle": 2,
+          "phase": "warmup"
+        },
+        {
+          "label": "episode_1_cycle_0",
+          "ms": 5340.226311999686,
+          "frame": 0,
+          "episode": 1,
+          "cycle": 0,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_1_cycle_1",
+          "ms": 5564.10961399979,
+          "frame": 2,
+          "episode": 1,
+          "cycle": 1,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_1_cycle_2",
+          "ms": 5744.918340999902,
+          "frame": 4,
+          "episode": 1,
+          "cycle": 2,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_2_cycle_0",
+          "ms": 5341.215598999952,
+          "frame": 0,
+          "episode": 2,
+          "cycle": 0,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_2_cycle_1",
+          "ms": 5564.588924999953,
+          "frame": 2,
+          "episode": 2,
+          "cycle": 1,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_2_cycle_2",
+          "ms": 5732.034090000525,
+          "frame": 4,
+          "episode": 2,
+          "cycle": 2,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_3_cycle_0",
+          "ms": 5320.266245000312,
+          "frame": 0,
+          "episode": 3,
+          "cycle": 0,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_3_cycle_1",
+          "ms": 5604.341430000204,
+          "frame": 2,
+          "episode": 3,
+          "cycle": 1,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_3_cycle_2",
+          "ms": 5754.5700059999945,
+          "frame": 4,
+          "episode": 3,
+          "cycle": 2,
+          "phase": "measured"
+        }
+      ],
+      "reset_ms": [
+        393.84985600008804,
+        395.3735860004599,
+        393.5030590000679,
+        391.15193499947054
+      ],
+      "repeated_episode_byte_equal": true,
+      "p50_ms": 5564.588924999953,
+      "p99_ms": 5753.797872799987,
+      "per_cycle_p50_ms": {
+        "0": 5340.226311999686,
+        "1": 5564.588924999953,
+        "2": 5744.918340999902
+      },
+      "actions_sha256": "7897d45d0bc8cfcfa0ce0fa33e1f2a5cbb77ed489adc45e2f0c0c016c67e95df",
+      "raw_sha256": {
+        "va-public-latency-robotwin-native.json": "82e2b38ecb426a362d53967f7070bce37756bc64653140c38827de5c0d67c15c",
+        "va-public-latency-robotwin-native.npz": "7897d45d0bc8cfcfa0ce0fa33e1f2a5cbb77ed489adc45e2f0c0c016c67e95df"
+      }
+    },
+    "fp8": {
+      "precision": "fp8",
+      "family": "robotwin",
+      "scope": "Paired checkpoint-native public Runtime, fixed recorded observations/executed history, original schedule; one warmup episode and three measured three-cycle episodes. Early history only, not saturated ring latency, sustained tail or closed-loop task quality.",
+      "setup_seconds": 22.29068879100032,
+      "fp8_declaration": {
+        "backbone": "wan_va",
+        "frontend": "serving/flash_rt/frontends/torch/wan_va_thor.py",
+        "steps": {
+          "video": 25,
+          "action": 50
+        },
+        "shifts": {
+          "video": 5.0,
+          "action": 1.0
+        },
+        "guidance": {
+          "video": [
+            "cfg",
+            5.0
+          ],
+          "action": [
+            "positive_only",
+            1.0
+          ]
+        },
+        "cfg_batch": 2,
+        "forwards_per_cycle": 79,
+        "forwards_per_cycle_served_p010": 78,
+        "evidence": "the build sizes its AdaLN step tables from the declared grids (video t=[1000.0, 991.7354736328125, 982.9059448242188, 973.4513549804688, 963.3027954101562, 952.3810424804688, 940.5940551757812, 927.8350219726562, 913.978515625, 898.8763427734375, 882.3529052734375, 864.197509765625, 844.1558227539062, 821.917724609375, 797.1015014648438, 769.230712890625, 737.7048950195312, 701.7543334960938, 660.3773803710938, 612.244873046875, 555.5555419921875, 487.80487060546875, 405.4053649902344, 303.0303039550781, 172.41378784179688, 0.0], action t=[1000.0, 980.0, 960.0, 940.0, 920.0, 900.0, 880.0, 860.0, 840.0000610351562, 820.0, 800.0, 780.0000610351562, 760.0, 740.0, 720.0, 700.0, 680.0, 660.0, 640.0, 620.0, 600.0, 580.0, 560.0, 540.0, 520.0, 500.0, 480.0, 459.9999694824219, 440.0, 420.0, 399.9999694824219, 380.0, 359.9999694824219, 340.0, 320.0, 299.9999694824219, 280.0, 260.0, 240.0, 220.0, 199.99998474121094, 179.99998474121094, 160.0, 140.0, 120.0, 99.99999237060547, 80.0, 60.0, 40.0, 20.0, 0.0]), allocates a 2-stream KV slab, and runs 79 DiT forwards per cycle; WanVaTorchFrontendThor.assert_point refuses any other request",
+        "geometry": {
+          "frame_chunk": 2,
+          "latent_h": 24,
+          "latent_w": 20,
+          "action_per_frame": 16
+        },
+        "pool_slots": 9792,
+        "precision": "fp8",
+        "fp16_families": [],
+        "action_terminal_elision": true,
+        "forwards_per_cycle_served": 78,
+        "slab_rows": 15360,
+        "gate_kernel": "kernel"
+      },
+      "nfe": {
+        "video": 25,
+        "action": 50
+      },
+      "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+      "torch": "2.11.0+cu130",
+      "source_sha256": {
+        "instinctflash.adapters.lingbot_va": "dbb0c54404dd84b04f78383c9ad983ded476694b76390ee7595aeeb44c1c3ce4",
+        "instinctflash.runtime.wan_va_engine": "b4b254da55986c2d30c706714d5ae50c6314ef02985b405bf18b446aa50424df"
+      },
+      "ok": true,
+      "calls": [
+        {
+          "label": "episode_0_cycle_0",
+          "ms": 8203.738455999883,
+          "frame": 0,
+          "episode": 0,
+          "cycle": 0,
+          "phase": "warmup"
+        },
+        {
+          "label": "episode_0_cycle_1",
+          "ms": 4661.724073999721,
+          "frame": 2,
+          "episode": 0,
+          "cycle": 1,
+          "phase": "warmup"
+        },
+        {
+          "label": "episode_0_cycle_2",
+          "ms": 4840.368594000211,
+          "frame": 4,
+          "episode": 0,
+          "cycle": 2,
+          "phase": "warmup"
+        },
+        {
+          "label": "episode_1_cycle_0",
+          "ms": 2767.8210670001135,
+          "frame": 0,
+          "episode": 1,
+          "cycle": 0,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_1_cycle_1",
+          "ms": 2821.196444000634,
+          "frame": 2,
+          "episode": 1,
+          "cycle": 1,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_1_cycle_2",
+          "ms": 2962.3588699996617,
+          "frame": 4,
+          "episode": 1,
+          "cycle": 2,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_2_cycle_0",
+          "ms": 2676.537573999667,
+          "frame": 0,
+          "episode": 2,
+          "cycle": 0,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_2_cycle_1",
+          "ms": 2815.1691509992816,
+          "frame": 2,
+          "episode": 2,
+          "cycle": 1,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_2_cycle_2",
+          "ms": 2964.392025000052,
+          "frame": 4,
+          "episode": 2,
+          "cycle": 2,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_3_cycle_0",
+          "ms": 2677.69994199989,
+          "frame": 0,
+          "episode": 3,
+          "cycle": 0,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_3_cycle_1",
+          "ms": 2812.446739999359,
+          "frame": 2,
+          "episode": 3,
+          "cycle": 1,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_3_cycle_2",
+          "ms": 2960.217034999914,
+          "frame": 4,
+          "episode": 3,
+          "cycle": 2,
+          "phase": "measured"
+        }
+      ],
+      "reset_ms": [
+        388.74345800013543,
+        384.9843810003222,
+        418.93729499952315,
+        416.4026259995808
+      ],
+      "repeated_episode_byte_equal": true,
+      "p50_ms": 2815.1691509992816,
+      "p99_ms": 2964.2293726000207,
+      "per_cycle_p50_ms": {
+        "0": 2677.69994199989,
+        "1": 2815.1691509992816,
+        "2": 2962.3588699996617
+      },
+      "actions_sha256": "51237fb007caf9a033f84ee34639d8f6980946872b5945e4ef28e5dacf4991f6",
+      "raw_sha256": {
+        "va-public-latency-robotwin-fp8.json": "4cd2cdbb95eab89d0ff0b5f5f31c8077a0d3dce3f34e2f16c8ac2e801a769f98",
+        "va-public-latency-robotwin-fp8.npz": "51237fb007caf9a033f84ee34639d8f6980946872b5945e4ef28e5dacf4991f6"
+      }
+    }
+  },
+  "fp8_speedup": 1.9766446087350482,
+  "native_fp8_mae": 0.0025812808889895678,
+  "native_fp8_max_abs": 0.0234375
+}

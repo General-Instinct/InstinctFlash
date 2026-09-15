@@ -1,0 +1,176 @@
+{
+  "CPU_tests": {
+    "Ruff": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/ruff_v4.log",
+      "sha256": "f4b96616150f7770e1a202643cb0e4332ae2c6cfa49ee8129757a7757f8576c4"
+    },
+    "curation_tests_passed": 34,
+    "existing_new_allowlist_source_guard_checks": 35,
+    "scientific_native_replay": false,
+    "synthetic_only": true,
+    "test_log": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/tests_v4.log",
+      "sha256": "324fe7903b220d7c6d22e8059e7a2f438c9b2c62c0b9955c56a30d6b5f348df6"
+    }
+  },
+  "SDE1_policy": {
+    "always_SCREEN": true,
+    "belongs_to_main_8_plus_6": false,
+    "candidate_paths": 65,
+    "complete_claim_requires_three_fixed_recipe_chains": true,
+    "completion_required_paths": 30,
+    "controls_bound": [
+      "handle_inspector",
+      "protected_service_manifest"
+    ],
+    "frozen_queue_sha256": "a08c6839757337eb325cc2de594393ec572332b8cfdefbc5fb1dc31cc653d384",
+    "frozen_template_sha256": "292b7df6ff19595623259ff49cee7c298dc6d18b4a5690223f3f40d9d7f5325f",
+    "independent_scientific_replay_performed": false,
+    "only_actual_existing_named_files_selected": true,
+    "root": "experimental_public_execution_v1/native_evidence_v1",
+    "task_quality_certified": false
+  },
+  "SDE1_source_handoff": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/protected_process_HANDOFF_v2.json",
+    "sha256": "3d8b932bb8b10182777292ffa8ce4c1ccbddcdffa74819bf1bbab90783abf1cb"
+  },
+  "bounds_unchanged": {
+    "max_file_bytes": 25000000,
+    "max_files": 2000,
+    "max_total_bytes": 100000000,
+    "same_V3_path_symlink_credential_and_array_guards": true
+  },
+  "commands_after_inputs_exist": {
+    "all_results_plan": [
+      "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+      "-I",
+      "-B",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/curate_v4.py",
+      "plan",
+      "--checkout",
+      "/home/ubuntu/InstinctFlash-public-release-20260915",
+      "--summary",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v4/summary.json",
+      "--summary-sha256",
+      "ACTUAL_COMPLETED_SUMMARY_SHA256",
+      "--require-completed-sde1",
+      "--output",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/final_plan_v4"
+    ],
+    "approved_pathlist_for_root": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/final_plan_v4/approved_force_add_paths.txt",
+    "copy_only_after_plan_review": [
+      "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+      "-I",
+      "-B",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/curate_v4.py",
+      "copy",
+      "--checkout",
+      "/home/ubuntu/InstinctFlash-public-release-20260915",
+      "--manifest",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/final_plan_v4/manifest.json",
+      "--manifest-sha256",
+      "ACTUAL_PLAN_SHA256",
+      "--output",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/copy_v4.json"
+    ],
+    "render_README_candidate": [
+      "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+      "-I",
+      "-B",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/render_readme_v1.py",
+      "--summary",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v4/summary.json",
+      "--summary-sha256",
+      "ACTUAL_COMPLETED_SUMMARY_SHA256",
+      "--output",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/readme_candidate_v1"
+    ],
+    "render_results_candidate": [
+      "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+      "-I",
+      "-B",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/render_results_v2.py",
+      "--summary",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v4/summary.json",
+      "--summary-sha256",
+      "ACTUAL_COMPLETED_SUMMARY_SHA256",
+      "--output",
+      "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/results_candidate_v2"
+    ],
+    "root_review_step": "Review generated prose and create eval/public_release_2026-09-15/results.rst; root may edit it. Both generated candidate and final entry hashes remain separately bound."
+  },
+  "created_utc": "2026-09-15T06:59:38.774282+00:00",
+  "current_assembler_handoff": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/HANDOFF_v4.json",
+    "sha256": "ffb1aa010b5e37ebff713cfc515b364670be4b120b41e8bf1043ae1ec23ea115"
+  },
+  "final_source_stage_plan": {
+    "allowed_docs": [
+      "README.md",
+      "INSTALL.rst",
+      "REPRODUCE.rst"
+    ],
+    "core_delta_only_METADATA_RECORD": true,
+    "eight_noncore_payloads_exact_to_qualified_baseline": true,
+    "finalizer_source": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/finalize_release_v3.py",
+      "sha256": "8fa9dc44764ad38453fb49fac0d794cc9224f6906fa5a4e858a02833860bb7f3"
+    },
+    "manifest_sha256": "a316bd918ae4426460f0779f90f34985b31a8639f3b6be7f9dd20e86c9cbdbc4",
+    "qualified_baseline": "/home/ubuntu/ifl-public-full-stage-20260915-v9-docfix1",
+    "root_owns_Git_commit_release_and_final_README": true
+  },
+  "future_inputs_not_bound_now": [
+    "Completed snapshot_v4/summary.json and exact selection",
+    "README candidate binding from that same summary",
+    "Results candidate/binding from that same summary and root-reviewed results.rst",
+    "Actual SDE1 final config/completion, source_guard and three recipe archives"
+  ],
+  "independent_review": {
+    "reviewer": "/root/thor_quality_worker",
+    "scope": "Read-only producer-field review: seven command/process records, three recipe validation chains, Edge16/Nano36 actions, source-only pure commands constructor, exact archive filenames. No actual data or test replay by reviewer. Final V2 inspector/snapshot bindings additionally covered by two local negative regressions."
+  },
+  "limitations": [
+    "No actual evidence plan, copy, renderer output, native worker, SSH, Git or release API action was performed for V4.",
+    "The final command explicitly requires completed SDE1. Without that optional flag, incomplete/absent/failed SDE1 evidence may be retained only with a noncomplete status, independently of main qualification.",
+    "No model weights, tokenizer/vocabulary/model-card/media files, whole preparation tree, compiler cache or RoboLab pixels are selected.",
+    "Curator binds native validation references and copied bytes; it never imports native validators or replays a model. Only frozen queue.commands is called.",
+    "Old failure receipts, historical inequalities and source versions remain unchanged. No task SCREEN or historical equivalence is transferred.",
+    "Original absolute administrative provenance paths are preserved and indexed as bundled, already-public or local-only; portable public reproduction commands do not depend on those private paths.",
+    "Bounded credential patterns and create-only file copying are review aids, never publication authorization."
+  ],
+  "prior_V1_queue_draft_preserved": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/draft_before_queue_v2/receipt.json",
+    "sha256": "f26008f68a4f275da55ca05509bc2f182c13c5e91dd613ae0d60bb3b8cc0d6ae"
+  },
+  "renderer_handoffs": {
+    "README": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/README_RENDERER_HANDOFF_v1.json",
+      "sha256": "7db7eef0f857bc226683029c6df679399974ada66c83d94b256e6e69d0d19fa7"
+    },
+    "results": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/RESULTS_RENDERER_HANDOFF_v2.json",
+      "sha256": "164e2eec9479c93baed7ea88f243b354e0e977bd81417bb3fa28969c7ee4001a"
+    }
+  },
+  "schema": "instinctflash.public_evidence_curation_handoff.v4",
+  "sources": {
+    "curate_v4.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/curate_v4.py",
+      "sha256": "f7f4a300150bcc399010034613f24637510ee58b7c3a9181aad042a344f4cce0"
+    },
+    "policy_v4.json": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/policy_v4.json",
+      "sha256": "a039d80541c3a13c0cad7be9e45e1874970ec2634339c3118d13e9df7dd1bba9"
+    },
+    "test_curate_v4.py": {
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/test_curate_v4.py",
+      "sha256": "194af7f4b45765478ccd6a4e95032f6fce0784eee73e917573cf65c3cb0bcd2a"
+    }
+  },
+  "status": "CPU_qualified_prospective_only_no_actual_plan_or_copy",
+  "supersedes": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/public_evidence_curation_v1/HANDOFF_v3.json",
+    "sha256": "88434207527db3816f1165722b5a70011bf6f61226a98bfbe562757f2811e06b"
+  }
+}

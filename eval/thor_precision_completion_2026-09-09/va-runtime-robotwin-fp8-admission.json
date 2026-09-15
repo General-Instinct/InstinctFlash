@@ -1,0 +1,57 @@
+{
+  "ok": true,
+  "paired_identity_equal": true,
+  "live_identity_equal": true,
+  "startup_shape": [
+    6,
+    16,
+    2,
+    16
+  ],
+  "repeat_byte_equal": true,
+  "actions_sha256": "9d1877fb8febbeb1acacce44f4f2f15887537666fe3855ff7d753304dadce3fc",
+  "fp8": {
+    "declaration": {
+      "action_terminal_elision": true,
+      "backbone": "wan_va",
+      "cfg_batch": 2,
+      "evidence": "the build sizes its AdaLN step tables from the declared grids (video t=[1000.0, 991.7354736328125, 982.9059448242188, 973.4513549804688, 963.3027954101562, 952.3810424804688, 940.5940551757812, 927.8350219726562, 913.978515625, 898.8763427734375, 882.3529052734375, 864.197509765625, 844.1558227539062, 821.917724609375, 797.1015014648438, 769.230712890625, 737.7048950195312, 701.7543334960938, 660.3773803710938, 612.244873046875, 555.5555419921875, 487.80487060546875, 405.4053649902344, 303.0303039550781, 172.41378784179688, 0.0], action t=[1000.0, 980.0, 960.0, 940.0, 920.0, 900.0, 880.0, 860.0, 840.0000610351562, 820.0, 800.0, 780.0000610351562, 760.0, 740.0, 720.0, 700.0, 680.0, 660.0, 640.0, 620.0, 600.0, 580.0, 560.0, 540.0, 520.0, 500.0, 480.0, 459.9999694824219, 440.0, 420.0, 399.9999694824219, 380.0, 359.9999694824219, 340.0, 320.0, 299.9999694824219, 280.0, 260.0, 240.0, 220.0, 199.99998474121094, 179.99998474121094, 160.0, 140.0, 120.0, 99.99999237060547, 80.0, 60.0, 40.0, 20.0, 0.0]), allocates a 2-stream KV slab, and runs 79 DiT forwards per cycle; WanVaTorchFrontendThor.assert_point refuses any other request",
+      "forwards_per_cycle": 79,
+      "forwards_per_cycle_served": 78,
+      "forwards_per_cycle_served_p010": 78,
+      "fp16_families": [],
+      "frontend": "serving/flash_rt/frontends/torch/wan_va_thor.py",
+      "gate_kernel": "kernel",
+      "geometry": {
+        "action_per_frame": 16,
+        "frame_chunk": 2,
+        "latent_h": 24,
+        "latent_w": 20
+      },
+      "guidance": {
+        "action": [
+          "positive_only",
+          1.0
+        ],
+        "video": [
+          "cfg",
+          5.0
+        ]
+      },
+      "pool_slots": 9792,
+      "precision": "fp8",
+      "shifts": {
+        "action": 1.0,
+        "video": 5.0
+      },
+      "slab_rows": 15360,
+      "steps": {
+        "action": 50,
+        "video": 25
+      }
+    },
+    "graphs": 231,
+    "packed_e4m3_tensors": 180
+  },
+  "scope": "Startup admission only; no closed-loop FP8 episodes yet"
+}

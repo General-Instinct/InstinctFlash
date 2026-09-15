@@ -268,6 +268,7 @@ def _encoder_forward_fp16(gemm, fvk, bufs, weights, dims, stream=0, *, attn=None
     structure with FP8 cast/descale dropped.
     """
     Se = dims['Se']; D = dims['D']; H = dims['H']
+    valid_Se = dims.get('valid_Se', Se)
     NH = dims['NH']; HD = dims['HD']; L = dims['L']
     total_keys = dims['total_keys']
     Q_dim = NH * HD
@@ -304,13 +305,13 @@ def _encoder_forward_fp16(gemm, fvk, bufs, weights, dims, stream=0, *, attn=None
         if not last:
             # 5. Attention
             if attn is not None:
-                attn.run("encoder", l, q_seq=Se, stream=stream)
+                attn.run("encoder", l, q_seq=Se, kv_seq=valid_Se, stream=stream)
             else:
                 K_ptr = weights['Kc'] + kv_elem_off * 2
                 V_ptr = weights['Vc'] + kv_elem_off * 2
-                fvk.attention_qkv_fp16(bufs['ctx'], attn_out, K_ptr, V_ptr,
+                (fvk.attention_qkv_fp16_padded if valid_Se % 2 else fvk.attention_qkv_fp16)(bufs['ctx'], attn_out, K_ptr, V_ptr,
                                         logits, attn_out,
-                                        Se, Se, NH, HD, attn_scale, stream)
+                                        Se, valid_Se, NH, HD, attn_scale, stream)
 
             # 6. O proj
             gemm.fp16_nn(attn_out, weights['o_w'][l], fg, Se, D, D, stream)
@@ -360,6 +361,7 @@ def encoder_forward(gemm, fvk, bufs, weights, dims, stream=0, *, attn=None,
         return _encoder_forward_fp16(gemm, fvk, bufs, weights, dims, stream,
                                       attn=attn)
     Se = dims['Se']
+    valid_Se = dims.get('valid_Se', Se)
     D = dims['D']
     H = dims['H']
     NH = dims['NH']
@@ -410,13 +412,13 @@ def encoder_forward(gemm, fvk, bufs, weights, dims, stream=0, *, attn=None,
         if not last:
             # ── 5. Attention (cuBLAS) ──
             if attn is not None:
-                attn.run("encoder", l, q_seq=Se, stream=stream)
+                attn.run("encoder", l, q_seq=Se, kv_seq=valid_Se, stream=stream)
             else:
                 K_ptr = weights['Kc'] + kv_elem_off * 2  # byte offset (fp16)
                 V_ptr = weights['Vc'] + kv_elem_off * 2
-                fvk.attention_qkv_fp16(bufs['ctx'], attn_out, K_ptr, V_ptr,
+                (fvk.attention_qkv_fp16_padded if valid_Se % 2 else fvk.attention_qkv_fp16)(bufs['ctx'], attn_out, K_ptr, V_ptr,
                                         logits, attn_out,
-                                        Se, Se, NH, HD, attn_scale, stream)
+                                        Se, valid_Se, NH, HD, attn_scale, stream)
 
             # ── 6. Quantize attn→FP8 with act_scale + O proj GEMM ──
             fvk.quantize_fp8_static_fp16(attn_out, o_fp8, as_o, Se * D, stream)
@@ -524,6 +526,7 @@ def encoder_forward_calibrate(gemm, fvk_mod, bufs, weights, dims,
       2. FP8 kernel with that scale (identical to inference)
     """
     Se = dims['Se']; D = dims['D']; H = dims['H']
+    valid_Se = dims.get('valid_Se', Se)
     NH = dims['NH']; HD = dims['HD']; L = dims['L']
     total_keys = dims['total_keys']
     Q_dim = NH * HD; K_dim = HD
@@ -578,9 +581,9 @@ def encoder_forward_calibrate(gemm, fvk_mod, bufs, weights, dims,
             # 5. Attention
             K_ptr = weights['Kc'] + kv_off * 2
             V_ptr = weights['Vc'] + kv_off * 2
-            fvk_mod.attention_qkv_fp16(bufs['ctx'], attn_out, K_ptr, V_ptr,
+            (fvk_mod.attention_qkv_fp16_padded if valid_Se % 2 else fvk_mod.attention_qkv_fp16)(bufs['ctx'], attn_out, K_ptr, V_ptr,
                                         logits, attn_out,
-                                        Se, Se, NH, HD, attn_scale, stream)
+                                        Se, valid_Se, NH, HD, attn_scale, stream)
 
             # 6. O proj: measure attn amax → quantize → GEMM
             _measure_scale_gpu(fvk_mod, attn_out, Se * Q_dim, d_scale, fp8_scratch, stream)

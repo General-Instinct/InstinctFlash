@@ -66,7 +66,9 @@ class ThorFlashAttnBackend(AttentionBackendBase):
             encoder_slots / decoder_slots: dict with keys:
                 Q_O          (int) — attn_out; Q input AND O output
                 Kc, Vc       (int) — layered KV cache base pointers
-                logits       (int) — scratch for P = QK^T
+                logits       (int) — scratch for P = QK^T; standard attention
+                                    needs q_seq * num_q_heads * round_up(kv_seq, 2)
+                                    fp16 elements, including an odd-key padding column
                 layer_stride (int) — bytes between successive layers in Kc/Vc
                 scale        (float) — 1/sqrt(head_dim)
 
@@ -200,17 +202,18 @@ class ThorFlashAttnBackend(AttentionBackendBase):
 
         Kernel selection (encoder/decoder sites) is driven by
         ``SiteSpec.extra["kernel"]``:
-          * absent / ``"standard"`` → ``fvk.attention_qkv_fp16``
+          * absent / ``"standard"`` → ``fvk.attention_qkv_fp16`` for even
+                                      key counts, its padded variant for odd counts
           * ``"state_masked"``      → ``fvk.attention_qkv_fp16_state_masked``
                                       (Pi0 decoder; requires ``state_nk``).
         """
         if site not in self._slots:
             raise KeyError(f"unknown site {site!r}")
 
-        fvk = self._fvk_mod()
         site_spec = self._spec.site(site)
 
         if site == "siglip":
+            fvk = self._fvk_mod()
             s = self._slots[site]
             D = int(s["D"])
             nv = site_spec.batch_axis
@@ -248,6 +251,7 @@ class ThorFlashAttnBackend(AttentionBackendBase):
             if not (0 < int(state_nk) <= kv_seq):
                 raise ValueError(
                     f"state_nk={state_nk} out of range (kv_seq={kv_seq})")
+            fvk = self._fvk_mod()
             fvk.attention_qkv_fp16_state_masked(
                 self._ctx_cpp,
                 int(s["Q_O"]), K_ptr, V_ptr,
@@ -258,7 +262,9 @@ class ThorFlashAttnBackend(AttentionBackendBase):
                 float(s["scale"]), stream,
             )
         elif kernel == "standard":
-            fvk.attention_qkv_fp16(
+            fvk = self._fvk_mod()
+            attention = fvk.attention_qkv_fp16_padded if kv_seq % 2 else fvk.attention_qkv_fp16
+            attention(
                 self._ctx_cpp,
                 int(s["Q_O"]), K_ptr, V_ptr,
                 int(s["logits"]), int(s["Q_O"]),

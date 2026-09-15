@@ -1,0 +1,169 @@
+{
+  "action_archive_sha256": "0a4e8fe02c548fe418c283782b3b4d48a9768dee0b227fae6bdd131fed6db061",
+  "calls": [
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        50,
+        14
+      ],
+      "cycle": 0,
+      "episode": 0,
+      "request_sha256": "0a0498f0cff7c8b83e04494c2b61f47c83a8310a1bd74f64316f54a1513d9d5c",
+      "roundtrip_ms": 1568.725999968592,
+      "server_timing": {
+        "infer_ms": 1567.2149179736152,
+        "prev_total_ms": 78.93032499123365
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        50,
+        14
+      ],
+      "cycle": 1,
+      "episode": 0,
+      "request_sha256": "13137705e19f8ff81bcd97f66cad54caf4078d5908c2a7e8e7a31876831d3147",
+      "roundtrip_ms": 193.02450201939791,
+      "server_timing": {
+        "infer_ms": 191.49194995407015,
+        "prev_total_ms": 1569.196381024085
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        50,
+        14
+      ],
+      "cycle": 2,
+      "episode": 0,
+      "request_sha256": "a5695d64d7ccfa0cb81304cf45545778863d0524d9f19d18ad10fec2a3d4a26f",
+      "roundtrip_ms": 194.66801400994882,
+      "server_timing": {
+        "infer_ms": 193.62156599527225,
+        "prev_total_ms": 193.74906999291852
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        50,
+        14
+      ],
+      "cycle": 0,
+      "episode": 1,
+      "request_sha256": "54bae1e0c16f4faa3ab015a14311f19169960fe7447ffd956c40aad41716234e",
+      "roundtrip_ms": 406.5789339947514,
+      "server_timing": {
+        "infer_ms": 405.77021799981594,
+        "prev_total_ms": 5.443449015729129
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        50,
+        14
+      ],
+      "cycle": 1,
+      "episode": 1,
+      "request_sha256": "d0e36a9a804c9b79e590bcbe1d62fa1e015c34a5e780cba39edbd8b4eb96ef37",
+      "roundtrip_ms": 194.5353540359065,
+      "server_timing": {
+        "infer_ms": 193.7133980100043,
+        "prev_total_ms": 407.0766019867733
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        50,
+        14
+      ],
+      "cycle": 2,
+      "episode": 1,
+      "request_sha256": "8d96e49b4be233b8a1f2f9ed498db55dc716d10e4108f8b394226cd9c036889a",
+      "roundtrip_ms": 195.23229397600517,
+      "server_timing": {
+        "infer_ms": 194.49631799943745,
+        "prev_total_ms": 195.26926503749564
+      }
+    }
+  ],
+  "cell_id": "vla2-runtime_selected",
+  "checkpoint": {
+    "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+    "revision": "0451855729ec904f970600e0aec8b84661423afe"
+  },
+  "checkpoint_path": "/home/guanming/.cache/instinctflash/declared/robbyant__lingbot-vla-v2-6b-robotwin/96bfb578edf426f46cfe1d6546eb0057324120116335d46fc617f429d020f303",
+  "command": [
+    "/dev/shm/ifl_public_envs_20260915_v1/vla2_v2/bin/python",
+    "-I",
+    "-m",
+    "instinctflash.cli",
+    "serve",
+    "--config_path=/home/guanming/ifl_public_qualification_20260915_v1/vla2_fp8_serving_v1/serve.json"
+  ],
+  "config_sha256": "9b1a0b0b67a55d85394177f956f93d340f55a1fc8cd5e1c69c2739d045faa485",
+  "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+  "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/vla2_v2/bin/python",
+  "latency_benchmark": false,
+  "metadata": {
+    "backbone": "lingbot_vla_v2",
+    "checkpoint_nfe": {
+      "action": 10,
+      "prefix": 1
+    },
+    "execution_policy": {
+      "category": "FP8",
+      "changed_schedule": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+      "nfe": {
+        "action": 10,
+        "prefix": 1
+      },
+      "precision": "fp8",
+      "schedule_options": {},
+      "step_cache": null,
+      "tier_ceiling": "numeric",
+      "transform_tier": "NUMERIC"
+    },
+    "extra": {
+      "base_weights": "robbyant/lingbot-vla-v2-6b-robotwin",
+      "checkpoint_subdir": "checkpoints/global_step_50000/hf_ckpt",
+      "param_bytes": 25503630044,
+      "robot": "robotwin",
+      "tokenizer_repo": "Qwen/Qwen3-VL-4B-Instruct"
+    },
+    "guidance": {
+      "action": "none"
+    },
+    "instinctflash_version": "0.1.0",
+    "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+    "nfe": {
+      "action": 10,
+      "prefix": 1
+    },
+    "observation": "flat keys: observation.images.cam_high (480, 640, 3) uint8; observation.images.cam_left_wrist (480, 640, 3) uint8; observation.images.cam_right_wrist (480, 640, 3) uint8; observation.state (14,) float32; plus prompt",
+    "observation_source": "the adapter's static declaration",
+    "precision": "fp8",
+    "protocol": {
+      "prompt_rotation": true,
+      "reset_extension": true,
+      "wire": "openpi-websocket-msgpack-numpy"
+    }
+  },
+  "plan_sha256": "c108c60bb4697252c4041278e2224ee0c17ec9cf440f9e523007ac4f8e7f8639",
+  "request_timeout_s": 600,
+  "rng_scope": "unseeded FP8 transport check",
+  "schema": "instinctflash.serving_smoke.v1",
+  "scope": "Installed CLI and loopback WebSocket; two episodes, three calls each",
+  "seed": null,
+  "server_exit_code": 0,
+  "server_pid": 273990,
+  "startup_timeout_s": 1200,
+  "status": "passed",
+  "task_quality_validated": false
+}

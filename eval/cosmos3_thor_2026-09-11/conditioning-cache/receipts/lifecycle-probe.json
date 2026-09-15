@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "checks": [
+    "changed conditioning between requests",
+    "CFG branch order",
+    "LRU eviction",
+    "retained output ownership",
+    "in-place weight update",
+    "parameter replacement",
+    "invariance violation detected",
+    "partial prefill failure",
+    "successful retry after failure"
+  ],
+  "torch": "2.10.0+cu130",
+  "graphs": {
+    "requests": 6,
+    "prefills": 12,
+    "decodes": 36,
+    "module_hits": 288,
+    "verified_tensors": 0,
+    "evictions": 4,
+    "modules": 9,
+    "slots": 2,
+    "verify": false,
+    "graph_stats": [
+      {
+        "captures": 2,
+        "checks": 4,
+        "replays": 5,
+        "rejected": []
+      },
+      {
+        "captures": 2,
+        "checks": 4,
+        "replays": 5,
+        "rejected": []
+      }
+    ]
+  },
+  "verification": {
+    "requests": 2,
+    "prefills": 6,
+    "decodes": 18,
+    "module_hits": 162,
+    "verified_tensors": 162,
+    "evictions": 0,
+    "modules": 9,
+    "slots": 2,
+    "verify": true,
+    "graph_stats": []
+  },
+  "sources": {
+    "probe.py": "e523a2e65bae4a81856ae2074d8c3ab2021e1edeae1ea14bc1ea4cd695a32597",
+    "cache.py": "4421e349613697c1354d1ac543f869260c658bbef237cfb45042796e649324b1"
+  }
+}

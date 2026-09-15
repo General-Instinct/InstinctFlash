@@ -16,7 +16,7 @@ ckpt:
                     frontend-side calibration / forward time).
 
 Spec authoring rules (per ``docs/extension/weight_spec.md``):
-  * Op order MUST match the legacy / reference loader byte-for-byte.
+  * Op order defines the arithmetic recipe; changes need fresh validation.
   * scale_into list order matters — FP8 alphas are addressed positionally
     when graphs capture, so item ordering inside a LayerBlock is fixed.
   * No imperative weight handling here; the frontend's `_load_weights` is
@@ -27,7 +27,6 @@ Per-layer scale-list layout (so the pipeline can index correctly):
   ``_vit_alpha[i]``       — [qkv, o, fc1, fc2]                           (per ViT block)
   ``_llm_alpha[i]``       — [qkv, o, gate, up, down]                     (per LLM block)
   ``_vlsa_alpha[i]``      — [q, k, v, o, fc1, fc2]                       (per vl_self_attn)
-  ``_dit_alpha[i]``       — [q, k, v, o, ada, ff_proj, ff_down]          (per DiT)
   ``_dsm_alpha[i]``       — [fc1, fc2]                                   (per deepstack merger, i ∈ {0,1,2})
 """
 
@@ -41,6 +40,7 @@ from flash_rt.executors.torch_weights import (
     T,
     TensorList,
     ToFp16,
+    ToBf16,
 )
 
 
@@ -208,7 +208,7 @@ def _dit_block() -> LayerBlock:
     The spec loads each per-layer K/V tensor as-is; the pipeline forward
     knows the layer-index → (self|cross) parity from the config and
     dispatches to the right attention call. Both shapes go through the
-    same FP8 quant + transpose path.
+    same BF16 cast + transpose path, without an FP8 round-trip.
 
     AdaLN: norm1.linear projects (1536) → 6× shift/scale modulators
     packed as (3072) — i.e. 2 groups of (shift, scale) in 1536-dim each.
@@ -216,52 +216,52 @@ def _dit_block() -> LayerBlock:
     items = [
         # Q always 1536→1536
         Item("q_w", f"{_DIT}.attn1.to_q.weight",
-             [ToFp16(), T(), Quant()],
-             TensorList("_dit_q_w"), scale_into="_dit_alpha"),
+             [ToBf16(), T()],
+             TensorList("_dit_q_w")),
         Item("q_b", f"{_DIT}.attn1.to_q.bias",
-             [ToFp16()], TensorList("_dit_q_b")),
+             [ToBf16()], TensorList("_dit_q_b")),
 
         # K/V: per-layer shape variance handled implicitly. Resulting tensor
         # shape after T() is (in_dim, 1536); pipeline reads .shape to decide.
         Item("k_w", f"{_DIT}.attn1.to_k.weight",
-             [ToFp16(), T(), Quant()],
-             TensorList("_dit_k_w"), scale_into="_dit_alpha"),
+             [ToBf16(), T()],
+             TensorList("_dit_k_w")),
         Item("k_b", f"{_DIT}.attn1.to_k.bias",
-             [ToFp16()], TensorList("_dit_k_b")),
+             [ToBf16()], TensorList("_dit_k_b")),
         Item("v_w", f"{_DIT}.attn1.to_v.weight",
-             [ToFp16(), T(), Quant()],
-             TensorList("_dit_v_w"), scale_into="_dit_alpha"),
+             [ToBf16(), T()],
+             TensorList("_dit_v_w")),
         Item("v_b", f"{_DIT}.attn1.to_v.bias",
-             [ToFp16()], TensorList("_dit_v_b")),
+             [ToBf16()], TensorList("_dit_v_b")),
 
         Item("o_w", f"{_DIT}.attn1.to_out.0.weight",
-             [ToFp16(), T(), Quant()],
-             TensorList("_dit_o_w"), scale_into="_dit_alpha"),
+             [ToBf16(), T()],
+             TensorList("_dit_o_w")),
         Item("o_b", f"{_DIT}.attn1.to_out.0.bias",
-             [ToFp16()], TensorList("_dit_o_b")),
+             [ToBf16()], TensorList("_dit_o_b")),
 
         # AdaLN: produces (3072) modulators from a (1536) timestep embedding.
         Item("ada_w", f"{_DIT}.norm1.linear.weight",
-             [ToFp16(), T(), Quant()],
-             TensorList("_dit_ada_w"), scale_into="_dit_alpha"),
+             [ToBf16(), T()],
+             TensorList("_dit_ada_w")),
         Item("ada_b", f"{_DIT}.norm1.linear.bias",
-             [ToFp16()], TensorList("_dit_ada_b")),
+             [ToBf16()], TensorList("_dit_ada_b")),
 
         # FF.net.0.proj: GeGLU-style projection 1536→6144 (=2×3072 internally).
         Item("ff_proj_w", f"{_DIT}.ff.net.0.proj.weight",
-             [ToFp16(), T(), Quant()],
-             TensorList("_dit_ff_proj_w"), scale_into="_dit_alpha"),
+             [ToBf16(), T()],
+             TensorList("_dit_ff_proj_w")),
         Item("ff_proj_b", f"{_DIT}.ff.net.0.proj.bias",
-             [ToFp16()], TensorList("_dit_ff_proj_b")),
+             [ToBf16()], TensorList("_dit_ff_proj_b")),
 
         # FF.net.2: down 6144→1536 ... wait, the safetensors enumeration
         # showed `ff.net.{i}.weight (1536, 6144)` — so it's a single Linear
         # layer at index N (typically 2 in diffusers GeGLU). Read at index 2.
         Item("ff_down_w", f"{_DIT}.ff.net.2.weight",
-             [ToFp16(), T(), Quant()],
-             TensorList("_dit_ff_down_w"), scale_into="_dit_alpha"),
+             [ToBf16(), T()],
+             TensorList("_dit_ff_down_w")),
         Item("ff_down_b", f"{_DIT}.ff.net.2.bias",
-             [ToFp16()], TensorList("_dit_ff_down_b")),
+             [ToBf16()], TensorList("_dit_ff_down_b")),
     ]
     return LayerBlock(prefix_fmt="", num_layers=32, items=items, name="dit")
 

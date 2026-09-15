@@ -1,0 +1,77 @@
+diff --git a/lingbotvla/models/vla/lingbot_vla/modeling_lingbot_vla_v2.py b/lingbotvla/models/vla/lingbot_vla/modeling_lingbot_vla_v2.py
+index 44ccf04..f59e73f 100644
+--- a/lingbotvla/models/vla/lingbot_vla/modeling_lingbot_vla_v2.py
++++ b/lingbotvla/models/vla/lingbot_vla/modeling_lingbot_vla_v2.py
+@@ -127,14 +127,14 @@ class QwenvlWithExpertV2Model(PreTrainedModel):
+         vlm_config = AutoConfig.from_pretrained(self.config.tokenizer_path)
+         if self.config.vocab_size not in (0, 257152):
+             vlm_config.text_config.vocab_size = self.config.vocab_size
+-        vlm_config._attn_implementation = "flash_attention_2"
+-        vlm_config.text_config._attn_implementation = "flash_attention_2"
+-        vlm_config.vision_config._attn_implementation = self.config.vit_attn_implementation
++        vlm_config._attn_implementation = "sdpa"
++        vlm_config.text_config._attn_implementation = "sdpa"
++        vlm_config.vision_config._attn_implementation = "sdpa"
+         self.qwenvl = Qwen3VLForConditionalGeneration._from_config(vlm_config)
+         if self.config.use_lm_head:
+             self.qwenvl.tie_weights()
+ 
+-        self.config.qwen_expert_config._attn_implementation = "flash_attention_2"
++        self.config.qwen_expert_config._attn_implementation = "sdpa"
+         self.qwen_expert = Qwen2ForCausalLM._from_config(self.config.qwen_expert_config, eval=eval)
+ 
+         if getattr(self.config, "adanorm_time", False):
+diff --git a/lingbotvla/models/vla/lingbot_vla/qwen2_action_expert.py b/lingbotvla/models/vla/lingbot_vla/qwen2_action_expert.py
+index 045d7f6..8947a1d 100644
+--- a/lingbotvla/models/vla/lingbot_vla/qwen2_action_expert.py
++++ b/lingbotvla/models/vla/lingbot_vla/qwen2_action_expert.py
+@@ -182,17 +182,20 @@ class Qwen2FusedExperts(nn.Module):
+         
+         Must be called via self.experts(...) so FSDP2 unshards params first.
+         """
+-        from lingbotvla.ops.fused_moe import fused_moe_forward
+-        return fused_moe_forward(
+-            module=module,
+-            num_experts=num_experts,
+-            routing_weights=routing_weights,
+-            selected_experts=selected_experts,
+-            hidden_states=hidden_states,
+-            fc1_1_weight=self.gate_proj,
+-            fc1_2_weight=self.up_proj,
+-            fc2_weight=self.down_proj,
+-        )
++        # THOR PATCH: pure-torch dense equivalent of fused_moe. Upstream's
++        # fused_moe_forward and robby_moe_forward are both Triton kernels and ptxas
++        # fails with an internal codegen error for sm_110a. This computes the identical
++        # math the upstream eager branch defines (every expert processes all tokens,
++        # one_hot-combined with routing weights), over the fused stacked weights so the
++        # checkpoint loads unchanged. Shape-static, device-resident -> graph capturable.
++        x = hidden_states                                                    # (N, D)
++        g = torch.einsum("nd,eid->eni", x, self.gate_proj)                   # (E, N, I)
++        u = torch.einsum("nd,eid->eni", x, self.up_proj)
++        h = F.silu(g) * u
++        o = torch.einsum("eni,edi->end", h, self.down_proj)                  # (E, N, D)
++        mask = F.one_hot(selected_experts, num_classes=num_experts).float()  # (N, K, E)
++        w = (mask * routing_weights.unsqueeze(-1).float()).sum(dim=1).to(x.dtype)
++        return torch.einsum("end,ne->nd", o, w)
+ 
+ 
+ class FixQwen2RMSNorm(nn.Module):
+@@ -302,7 +305,7 @@ class Qwen2TokenMoeBlock(nn.Module):
+ 
+         # Expert computation: fused (group_gemm) or eager (per-expert loop)
+         if self._moe_implementation == 'fused':
+-            use_robby_moe = (
++            use_robby_moe = False and (  # DISABLED on Thor: triton ptxas sm_110a codegen error; retry-per-call would poison latency
+                 robby_moe_forward is not None
+                 and hidden_flat.is_cuda
+                 and not self.training
+@@ -323,7 +326,7 @@ class Qwen2TokenMoeBlock(nn.Module):
+                         ),
+                     )
+                 except Exception as exc:
+-                    logger.warning_once(f"robby_moe_forward failed, falling back to fused_moe_forward: {exc}")
++                    print(f"robby_moe_forward failed, falling back to fused_moe_forward: {exc}", flush=True)
+                     final_hidden_states = self.experts(
+                         module=self,
+                         num_experts=self.num_experts,

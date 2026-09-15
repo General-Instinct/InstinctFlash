@@ -1,0 +1,1531 @@
+{
+  "ok": true,
+  "precision": "fp8",
+  "checkpoint": "/home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Nano-Policy-DROID/snapshots/6706d7680581c255ff61e0f3bb49d90eac55c79e",
+  "torch_version": "2.10.0+cu130",
+  "recipe": {
+    "recipe": "cosmos_mot_qkv_e4m3fn_weights_dynamic_per_tensor_activations_fp32_accum_bf16_output",
+    "attention_layers": 36,
+    "projections": [
+      {
+        "path": "net.language_model.model.layers.0.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.0.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.0.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.0.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.0.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.0.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.1.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.1.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.1.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.1.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.1.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.1.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.2.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.2.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.2.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.2.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.2.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.2.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.3.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.3.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.3.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.3.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.3.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.3.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.4.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.4.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.4.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.4.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.4.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.4.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.5.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.5.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.5.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.5.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.5.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.5.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.6.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.6.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.6.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.6.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.6.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.6.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.7.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.7.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.7.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.7.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.7.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.7.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.8.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.8.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.8.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.8.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.8.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.8.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.9.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.9.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.9.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.9.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.9.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.9.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.10.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.10.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.10.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.10.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.10.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.10.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.11.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.11.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.11.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.11.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.11.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.11.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.12.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.12.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.12.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.12.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.12.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.12.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.13.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.13.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.13.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.13.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.13.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.13.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.14.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.14.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.14.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.14.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.14.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.14.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.15.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.15.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.15.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.15.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.15.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.15.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.16.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.16.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.16.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.16.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.16.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.16.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.17.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.17.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.17.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.17.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.17.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.17.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.18.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.18.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.18.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.18.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.18.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.18.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.19.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.19.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.19.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.19.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.19.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.19.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.20.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.20.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.20.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.20.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.20.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.20.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.21.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.21.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.21.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.21.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.21.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.21.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.22.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.22.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.22.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.22.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.22.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.22.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.23.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.23.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.23.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.23.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.23.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.23.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.24.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.24.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.24.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.24.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.24.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.24.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.25.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.25.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.25.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.25.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.25.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.25.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.26.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.26.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.26.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.26.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.26.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.26.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.27.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.27.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.27.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.27.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.27.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.27.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.28.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.28.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.28.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.28.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.28.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.28.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.29.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.29.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.29.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.29.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.29.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.29.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.30.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.30.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.30.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.30.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.30.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.30.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.31.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.31.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.31.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.31.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.31.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.31.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.32.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.32.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.32.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.32.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.32.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.32.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.33.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.33.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.33.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.33.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.33.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.33.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.34.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.34.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.34.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.34.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.34.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.34.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.35.self_attn.q_proj",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.35.self_attn.k_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.35.self_attn.v_proj",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.35.self_attn.q_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 4096,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.35.self_attn.k_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      },
+      {
+        "path": "net.language_model.model.layers.35.self_attn.v_proj_moe_gen",
+        "in_features": 4096,
+        "out_features": 1024,
+        "bias": false
+      }
+    ],
+    "scope": "Q/K/V in both MoT towers only; native attention, output projections and MLP"
+  },
+  "nonempty_projection_calls": {
+    "net.language_model.model.layers.0.self_attn.q_proj": 32,
+    "net.language_model.model.layers.0.self_attn.k_proj": 32,
+    "net.language_model.model.layers.0.self_attn.v_proj": 32,
+    "net.language_model.model.layers.0.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.0.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.0.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.1.self_attn.q_proj": 32,
+    "net.language_model.model.layers.1.self_attn.k_proj": 32,
+    "net.language_model.model.layers.1.self_attn.v_proj": 32,
+    "net.language_model.model.layers.1.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.1.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.1.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.2.self_attn.q_proj": 32,
+    "net.language_model.model.layers.2.self_attn.k_proj": 32,
+    "net.language_model.model.layers.2.self_attn.v_proj": 32,
+    "net.language_model.model.layers.2.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.2.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.2.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.3.self_attn.q_proj": 32,
+    "net.language_model.model.layers.3.self_attn.k_proj": 32,
+    "net.language_model.model.layers.3.self_attn.v_proj": 32,
+    "net.language_model.model.layers.3.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.3.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.3.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.4.self_attn.q_proj": 32,
+    "net.language_model.model.layers.4.self_attn.k_proj": 32,
+    "net.language_model.model.layers.4.self_attn.v_proj": 32,
+    "net.language_model.model.layers.4.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.4.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.4.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.5.self_attn.q_proj": 32,
+    "net.language_model.model.layers.5.self_attn.k_proj": 32,
+    "net.language_model.model.layers.5.self_attn.v_proj": 32,
+    "net.language_model.model.layers.5.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.5.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.5.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.6.self_attn.q_proj": 32,
+    "net.language_model.model.layers.6.self_attn.k_proj": 32,
+    "net.language_model.model.layers.6.self_attn.v_proj": 32,
+    "net.language_model.model.layers.6.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.6.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.6.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.7.self_attn.q_proj": 32,
+    "net.language_model.model.layers.7.self_attn.k_proj": 32,
+    "net.language_model.model.layers.7.self_attn.v_proj": 32,
+    "net.language_model.model.layers.7.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.7.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.7.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.8.self_attn.q_proj": 32,
+    "net.language_model.model.layers.8.self_attn.k_proj": 32,
+    "net.language_model.model.layers.8.self_attn.v_proj": 32,
+    "net.language_model.model.layers.8.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.8.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.8.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.9.self_attn.q_proj": 32,
+    "net.language_model.model.layers.9.self_attn.k_proj": 32,
+    "net.language_model.model.layers.9.self_attn.v_proj": 32,
+    "net.language_model.model.layers.9.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.9.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.9.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.10.self_attn.q_proj": 32,
+    "net.language_model.model.layers.10.self_attn.k_proj": 32,
+    "net.language_model.model.layers.10.self_attn.v_proj": 32,
+    "net.language_model.model.layers.10.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.10.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.10.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.11.self_attn.q_proj": 32,
+    "net.language_model.model.layers.11.self_attn.k_proj": 32,
+    "net.language_model.model.layers.11.self_attn.v_proj": 32,
+    "net.language_model.model.layers.11.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.11.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.11.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.12.self_attn.q_proj": 32,
+    "net.language_model.model.layers.12.self_attn.k_proj": 32,
+    "net.language_model.model.layers.12.self_attn.v_proj": 32,
+    "net.language_model.model.layers.12.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.12.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.12.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.13.self_attn.q_proj": 32,
+    "net.language_model.model.layers.13.self_attn.k_proj": 32,
+    "net.language_model.model.layers.13.self_attn.v_proj": 32,
+    "net.language_model.model.layers.13.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.13.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.13.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.14.self_attn.q_proj": 32,
+    "net.language_model.model.layers.14.self_attn.k_proj": 32,
+    "net.language_model.model.layers.14.self_attn.v_proj": 32,
+    "net.language_model.model.layers.14.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.14.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.14.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.15.self_attn.q_proj": 32,
+    "net.language_model.model.layers.15.self_attn.k_proj": 32,
+    "net.language_model.model.layers.15.self_attn.v_proj": 32,
+    "net.language_model.model.layers.15.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.15.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.15.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.16.self_attn.q_proj": 32,
+    "net.language_model.model.layers.16.self_attn.k_proj": 32,
+    "net.language_model.model.layers.16.self_attn.v_proj": 32,
+    "net.language_model.model.layers.16.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.16.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.16.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.17.self_attn.q_proj": 32,
+    "net.language_model.model.layers.17.self_attn.k_proj": 32,
+    "net.language_model.model.layers.17.self_attn.v_proj": 32,
+    "net.language_model.model.layers.17.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.17.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.17.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.18.self_attn.q_proj": 32,
+    "net.language_model.model.layers.18.self_attn.k_proj": 32,
+    "net.language_model.model.layers.18.self_attn.v_proj": 32,
+    "net.language_model.model.layers.18.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.18.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.18.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.19.self_attn.q_proj": 32,
+    "net.language_model.model.layers.19.self_attn.k_proj": 32,
+    "net.language_model.model.layers.19.self_attn.v_proj": 32,
+    "net.language_model.model.layers.19.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.19.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.19.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.20.self_attn.q_proj": 32,
+    "net.language_model.model.layers.20.self_attn.k_proj": 32,
+    "net.language_model.model.layers.20.self_attn.v_proj": 32,
+    "net.language_model.model.layers.20.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.20.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.20.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.21.self_attn.q_proj": 32,
+    "net.language_model.model.layers.21.self_attn.k_proj": 32,
+    "net.language_model.model.layers.21.self_attn.v_proj": 32,
+    "net.language_model.model.layers.21.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.21.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.21.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.22.self_attn.q_proj": 32,
+    "net.language_model.model.layers.22.self_attn.k_proj": 32,
+    "net.language_model.model.layers.22.self_attn.v_proj": 32,
+    "net.language_model.model.layers.22.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.22.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.22.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.23.self_attn.q_proj": 32,
+    "net.language_model.model.layers.23.self_attn.k_proj": 32,
+    "net.language_model.model.layers.23.self_attn.v_proj": 32,
+    "net.language_model.model.layers.23.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.23.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.23.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.24.self_attn.q_proj": 32,
+    "net.language_model.model.layers.24.self_attn.k_proj": 32,
+    "net.language_model.model.layers.24.self_attn.v_proj": 32,
+    "net.language_model.model.layers.24.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.24.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.24.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.25.self_attn.q_proj": 32,
+    "net.language_model.model.layers.25.self_attn.k_proj": 32,
+    "net.language_model.model.layers.25.self_attn.v_proj": 32,
+    "net.language_model.model.layers.25.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.25.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.25.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.26.self_attn.q_proj": 32,
+    "net.language_model.model.layers.26.self_attn.k_proj": 32,
+    "net.language_model.model.layers.26.self_attn.v_proj": 32,
+    "net.language_model.model.layers.26.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.26.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.26.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.27.self_attn.q_proj": 32,
+    "net.language_model.model.layers.27.self_attn.k_proj": 32,
+    "net.language_model.model.layers.27.self_attn.v_proj": 32,
+    "net.language_model.model.layers.27.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.27.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.27.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.28.self_attn.q_proj": 32,
+    "net.language_model.model.layers.28.self_attn.k_proj": 32,
+    "net.language_model.model.layers.28.self_attn.v_proj": 32,
+    "net.language_model.model.layers.28.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.28.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.28.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.29.self_attn.q_proj": 32,
+    "net.language_model.model.layers.29.self_attn.k_proj": 32,
+    "net.language_model.model.layers.29.self_attn.v_proj": 32,
+    "net.language_model.model.layers.29.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.29.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.29.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.30.self_attn.q_proj": 32,
+    "net.language_model.model.layers.30.self_attn.k_proj": 32,
+    "net.language_model.model.layers.30.self_attn.v_proj": 32,
+    "net.language_model.model.layers.30.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.30.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.30.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.31.self_attn.q_proj": 32,
+    "net.language_model.model.layers.31.self_attn.k_proj": 32,
+    "net.language_model.model.layers.31.self_attn.v_proj": 32,
+    "net.language_model.model.layers.31.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.31.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.31.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.32.self_attn.q_proj": 32,
+    "net.language_model.model.layers.32.self_attn.k_proj": 32,
+    "net.language_model.model.layers.32.self_attn.v_proj": 32,
+    "net.language_model.model.layers.32.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.32.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.32.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.33.self_attn.q_proj": 32,
+    "net.language_model.model.layers.33.self_attn.k_proj": 32,
+    "net.language_model.model.layers.33.self_attn.v_proj": 32,
+    "net.language_model.model.layers.33.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.33.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.33.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.34.self_attn.q_proj": 32,
+    "net.language_model.model.layers.34.self_attn.k_proj": 32,
+    "net.language_model.model.layers.34.self_attn.v_proj": 32,
+    "net.language_model.model.layers.34.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.34.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.34.self_attn.v_proj_moe_gen": 32,
+    "net.language_model.model.layers.35.self_attn.q_proj": 32,
+    "net.language_model.model.layers.35.self_attn.k_proj": 32,
+    "net.language_model.model.layers.35.self_attn.v_proj": 32,
+    "net.language_model.model.layers.35.self_attn.q_proj_moe_gen": 32,
+    "net.language_model.model.layers.35.self_attn.k_proj_moe_gen": 32,
+    "net.language_model.model.layers.35.self_attn.v_proj_moe_gen": 32
+  },
+  "repeated_and_restored_equal": true,
+  "changed_inputs_change_actions": true,
+  "scope": "Native RoboLab DROID policy service, checkpoint 32-action chunk and FPS15, CFG3, Nano plain prompt, recorded resized image and synthetic state; no public Runtime, speed or task-quality certificate",
+  "action_sha256": "76112cdae5cb2c81bb78cbc71775228d640ff015a95974a6a4ce6c19f51e9468"
+}

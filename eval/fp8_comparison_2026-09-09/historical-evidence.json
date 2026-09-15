@@ -1,0 +1,265 @@
+{
+  "status": "historical reports; no automatic certification of current runtime or new calibration",
+  "latency": {
+    "pi05": {
+      "path": "/home/ubuntu/InstinctFlash/eval/results_2026-08_thor_h100/pi05.json",
+      "sha256": "fbdf0512208be9a3b4e197c4ee3b06f5d2ef72b8b257dcca49bd51a7ecbb4f91",
+      "data": {
+        "model": "pi05 (lerobot/pi05_libero_finetuned_v044, snapshot 8e174154)",
+        "hardware": "Jetson Thor (SM110), single GPU, measured under /tmp/thor_gpu.lock",
+        "torch_ms": 254.9,
+        "ours_ms": 56.72,
+        "speedup": 4.49,
+        "notes": {
+          "torch_arm": "lerobot 0.6.1 eager in frt_env (torch 2.11 cu130), bf16 params (v044 ships bf16), 3 views 224x224, chunk_size 10, 10 denoise steps, prefill + denoise loop (same bench pattern as the earlier three-arm bench), p50 of 15 chunks (min 253.3 / max 259.0)",
+          "ours_arm": "InstinctFlash engine via Runtime, fp8 W+A, state-in-prompt length-bucket CUDA graphs; REUSED from T3 REAL certificate latency_stats.server_ms.p50 = 56.72 ms over n=6241 chunks (engine time on Thor, same v044 weights, chunk 10) \u2014 not re-measured",
+          "consistency": "the certified pair: same weights both arms; engine arm carries the T3 paired non-inferiority certificate"
+        },
+        "walls": []
+      }
+    },
+    "vla4b": {
+      "path": "/home/ubuntu/InstinctFlash/eval/results_2026-08_thor_h100/vla4b.json",
+      "sha256": "16c04c29ccee5e4092f872294da3de4d9a742acd96541da6fee97bfe7c0071a3",
+      "data": {
+        "model": "LingBot-VLA-4B (robbyant/lingbot-vla-4b-posttrain-robotwin, snapshot fb71a2c9)",
+        "hardware": "Jetson Thor (SM110, aarch64), torch 2.11.0+cu130",
+        "date": "2026-08-25",
+        "torch_ms": 695.6,
+        "ours_ms": 97.5,
+        "speedup": 7.13,
+        "arm_notes": {
+          "torch": "In-process official pipeline (LingbotVLAServer.infer), 12 calls p50 + 3 warmup, robotwin trio obs (3x480x640x3 + 14-dim state + prompt), num_denoising_step=10, use_length=25, bf16 \u2014 same protocol as the H100 in-process round. mean 692.8, p90 708.4, load 39.7 s. Loader patched away hardcoded flash_attention_2 (no flash-attn wheel exists for SM110/aarch64): vendored VLM/vision constructed with 'eager' (the vendored class dicts have no sdpa entry; expert config set sdpa but is construction-only). The attention that actually executes in prefill+denoise is upstream's own our_eager_attention_forward einsum (deploy sets attention_implementation='eager'), identical to what the H100 baseline ran; only the vision tower kernel differs (eager vs fa2 on H100). Two latent upstream bugs surfaced because the never-exercised eager-vision path ran: rotate_half() undefined in qwenvl_in_vla.py \u2014 fixed with the canonical transformers definition.",
+          "ours": "InstinctFlash T2-V1 engine frontend, REUSED from /home/ubuntu/iwm_distill/thor_t2/gate_p4_thor_e2e.json (p50 97.50 ms, p90 99.70, PASS: action_cos 0.995 agg, 12 samples) \u2014 not re-run per instruction."
+        },
+        "walls": [
+          "flash-attn wheel absent for SM110/aarch64 -> baseline cannot run the as-shipped fa2 vision kernel; eager vision is the honest best-available torch arm on this device (vision is a small share of the cycle: prefill was 44.7 of 659.8 ms on H100).",
+          "venv build: frt_env lerobot 0.6.1 requires transformers>=4.53; mirrored the H100 substrate instead (transformers 4.51.3 + lerobot 0.4.4 + datasets in venv_vla4b, torch shared from frt_env via .pth)."
+        ],
+        "raw": {
+          "torch_json": "thor:~/thorcol/vla4b_torch.json",
+          "ours_json": "/home/ubuntu/iwm_distill/thor_t2/gate_p4_thor_e2e.json",
+          "h100_reference": {
+            "inprocess_stock_ms": 672.7,
+            "ws_stock_ms": 704.8,
+            "capture_ms": 184.0
+          }
+        }
+      }
+    },
+    "vla2": {
+      "path": "/home/ubuntu/InstinctFlash/eval/results_2026-08_thor_h100/vla2.json",
+      "sha256": "1df91b64d6f20a62bcc1f0bc4c2c530d5302225be70bacb9bb92a0e72a80f73e",
+      "data": {
+        "model": "LingBot-VLA-V2 6B MoE (robbyant/lingbot-vla-v2-6b-robotwin, snapshot 04518557, global_step_50000/hf_ckpt, Qwen3-VL-4B backbone)",
+        "hardware": "Jetson Thor (SM110, aarch64), torch 2.11.0+cu130, transformers 4.57.3 (mirrors H100 substrate)",
+        "date": "2026-08-25",
+        "torch_ms": 751.7,
+        "ours_ms": 477.1,
+        "speedup": 1.58,
+        "arm_notes": {
+          "protocol": "In-process official pipeline (LingbotVLAv2Server.infer, use_length=50, chunk_ret, bf16), reset('robotwin'), 12 calls p50 + 3 warmup, robotwin trio obs \u2014 same harness as the H100 round; both arms measured in ONE process (24G checkpoint loads once, 49.5 s).",
+          "torch": "eager sdpa in-process p50 751.7 ms (mean 755.6, p90 756.1). Loader patched flash_attention_2 -> sdpa (no flash-attn wheel for SM110/aarch64). MoE: BOTH upstream kernels (robby_moe and ops/fused_moe) are Triton and fail with 'PTXAS error: Internal Triton PTX codegen error' for sm_110a, so Qwen2FusedExperts.forward was replaced with a pure-torch dense equivalent of the upstream eager branch (every expert over all tokens, one_hot-combined; identical math, fused weights load unchanged). Both arms run this same MoE, so the ratio is apples-to-apples; absolute torch_ms is somewhat inflated vs a working sparse kernel (32 experts, top-4).",
+          "ours": "H100 static-capture module (examples/lingbot_vla_v2/static_capture.py, synced unmodified) on Thor torch: p50 477.1 ms (mean 474.2), 138 graph replays across the 15 calls. Gain 1.58x vs 4.45x on H100 \u2014 the slow-GPU law: Thor per-kernel time dominates launch overhead, so capture recovers less; the uncaptured prefill (~vision+VLM fill) is also a larger share here. Quality tier from H100: NUMERIC within the model's own run-to-run nondeterminism envelope (fused-MoE atomics; null-control framed); not re-certified on Thor.",
+          "compile_arm": "As-shipped default (torch.compile) NOT measured on Thor: inductor lowers pointwise fusions through the same Triton backend that fails ptxas for sm_110a, so the as-shipped compile path is not runnable on this device."
+        },
+        "walls": [
+          "Triton-on-sm_110a: ptxas-blackwell internal codegen error kills robby_moe, fused_moe, and (by the same backend) torch.compile. Baseline uses upstream's own eager-branch math over the fused weights (pure torch).",
+          "Two latent upstream bugs only reachable on this fallback path: logger undefined in qwen2_action_expert.py except-handler (crashes instead of falling back); _moe_implementation='eager' cannot load the fused checkpoint layout (strict state_dict mismatch).",
+          "24G checkpoint over shared WiFi (~7 MB/s aggregate): multi-hour download, required hf_transfer.",
+          "Tailnet SSH policy flipped mid-run (guanming refused, root-only); on-box detached jobs were unaffected \u2014 results harvested via root+runuser."
+        ],
+        "raw": {
+          "bench_json": "thor:~/thorcol/vla2_main.json",
+          "h100_reference": {
+            "inprocess_eager_ms": 840.5,
+            "as_shipped_compile_ms": 270.5,
+            "capture_ms": 184.0,
+            "capture_speedup_vs_eager": 4.45
+          }
+        },
+        "engine_ms": 289.3,
+        "engine_arm": {
+          "date": "2026-08-25",
+          "config": "FlashRT vla2 frontend LIVE on Thor, Stage-A: stock torch bf16 prefill + fp16-KV handoff (load_prefix_kv_from_torch) + captured fvk denoise loop \u2014 fp8 W+A (calib static scales, n=8 real-frame p99.9), batched v0.5 MoE (shared per-(layer,matrix) scales incl. L13), fp16-source fp32-math router (F2), stock_bf16 step tables + inv_freq rope (M1 fixes)",
+          "e2e_ms_p50": 289.3,
+          "e2e_ms_p90": 296.0,
+          "split_p50_ms": {
+            "prefill_incl_preproc": 150.9,
+            "kv_handoff": 8.0,
+            "engine_loop_replay": 130.2,
+            "readout": 0.2,
+            "per_denoise_step": 13.0
+          },
+          "fp16_experts_fallback": {
+            "e2e_ms_p50": 398.4,
+            "engine_loop_replay_ms": 237.7
+          },
+          "speedup_vs_torch_eager_751p7": 2.6,
+          "speedup_vs_torch_capture_477p1": 1.65,
+          "denoise_loop_speedup_vs_stock_share": "~5.1x (130.2 ms vs ~670 ms stock denoise share)",
+          "protocol": "same 12-call p50 + 3 warmup robotwin-trio protocol as the torch/ours arms (bench_vla2.py parity); measured in-process with the stock model (same-process stock e2e 732-783 ms)",
+          "quality": "M2 gate ladder (iwm_distill/thor_t2v2/m2_gate.json): engine deterministic, CUDA-graph replay BIT-EXACT vs eager (fp16 and fp8 configs), re-prefilled new-frame same-graph case passes; on 9 REAL RoboTwin frames max action delta vs the (deterministic) Thor stock = 0.056-0.078 (2-2.5 bf16-ulp of the action grid; p99 0.026-0.031, inside the stock's own H100-measured 16-draw null on the same inputs = 0.047; cross-hardware stock-vs-stock = 0.031). Strict max-abs gate vs that envelope NOT met \u2014 the binding term is the fp16 engine substrate (identical across fp16/fp8 arms), not quantization. Closed-loop non-inferiority = M3.",
+          "trap_note": "numeric parity must NEVER be read from this protocol's random-pixel obs: they are OOD for the real-frame static fp8 scales (probe 0.5-2.7 there; dynamic-scale control recovers 0.094; real frames 0.074). Latency is unaffected."
+        },
+        "engine_full_ms": 210.3,
+        "engine_full_arm": {
+          "date": "2026-08-26",
+          "config": "FULL-ENGINE FlashRT vla2 on Thor: engine ViT (fp16, fmha_strided_full) + engine LM prefill (fp16 GEMMs, fwd_bf16_causal attention) + captured fp8 engine denoise loop (batched v0.5 MoE + fp16-source router) \u2014 the torch prefill and the 8 ms KV handoff are GONE",
+          "prefill_mode": "prefill_captured",
+          "e2e_ms_p50": 210.3,
+          "e2e_ms_p90": 220.6,
+          "split_p50_ms": {
+            "preproc": 29.8,
+            "engine_prefill": 59.0,
+            "engine_loop_replay": 121.0,
+            "readout": 0.3,
+            "per_denoise_step": 12.1
+          },
+          "all_prefill_modes_ms_p50": {
+            "prefill_captured": 210.3,
+            "prefill_eager": 215.0
+          },
+          "prefill_capture_bitexact": true,
+          "stock_e2e_ms_sameprocess": [
+            754.2,
+            766.6,
+            772.6,
+            779.2,
+            779.4
+          ],
+          "speedup_vs_torch_eager_751p7": 3.57,
+          "speedup_vs_stageA_289p3": 1.38,
+          "fp8_prefill_reference": {
+            "e2e_ms_p50_if_recalibrated": 191.2,
+            "status": "PARITY-FAILED on real frames (KV V-deltas compound to 469, actions 2.21 vs stock) \u2014 probe shows pure static-scale clipping (dynamic per-call scales recover KV to the fp8-noise floor); needs a better calibration tier before it can ship"
+          },
+          "quality": {
+            "gate_file": "iwm_distill/thor_t2v2/m2_backbone_gate.json",
+            "thor_fp16_prefill_arm": {
+              "fullengine_maxdelta": 0.07421875,
+              "fullengine_p99": 0.03198730945587158,
+              "stageA_maxdelta": 0.07421875,
+              "fullengine_vs_stageA": 0.01904296875
+            },
+            "thor_fp8_prefill_arm_FAILED": {
+              "fullengine_maxdelta": 2.2109375,
+              "fullengine_p99": 1.6177637577056885,
+              "stageA_maxdelta": 0.07421875,
+              "fullengine_vs_stageA": 2.20849609375
+            },
+            "note": "full-engine actions vs the deterministic Thor stock on the 9 real RoboTwin frames: max 0.0586-0.0742 == the M2 Stage-A band exactly (p99 0.032 inside the H100 null 0.047); engine-prefill-vs-torch-prefill adds only 0.009-0.019 at action level"
+          },
+          "protocol": "same 12-call p50 + 3 warmup robotwin-trio protocol as the torch/ours/engine arms; e2e = _prepare_model_input + engine ViT+prefill (captured) + captured loop replay + readout"
+        },
+        "engine_closed_loop_certificate": {
+          "verdict": "NON-INFERIOR (FRAGILE: under 0.005 of slack)",
+          "n_pairs": 500,
+          "tasks": 50,
+          "control_stock": 0.906,
+          "treat_engine": 0.886,
+          "delta": -0.02,
+          "primary_ci_lower": -0.046,
+          "margin": -0.05,
+          "slack": 0.004,
+          "noise_floor": "0.0% discordance over 100 control-repeat pairs (deterministic stock)",
+          "artifact": "/home/ubuntu/iwm_distill/thor_t2v2/m3_certificate.json",
+          "note": "pre-registered analysis run verbatim (m3_prereg.md \u00a710) after G2/G3/G6 parity gates passed 500/500; verdict reported exactly as the tool printed it"
+        }
+      }
+    },
+    "groot": {
+      "path": "/home/ubuntu/InstinctFlash/eval/results_2026-08_thor_h100/groot.json",
+      "sha256": "9368f39760cbf8cb7ac6109f36c22f1ca9d81c5e71c990239ab79c0ac651a4a7",
+      "data": {
+        "model": "nvidia/GR00T-N1.7-3B (real weights, oxe_droid_relative_eef_relative_joint)",
+        "hardware": "Jetson Thor (SM110), single GPU, measured under /tmp/thor_gpu.lock",
+        "official_eager_ms": 121.9,
+        "flashrt_native_ms": 40.6,
+        "ours_ms": 42.4,
+        "notes": {
+          "official_eager": "Isaac-GR00T Gr00tPolicy.get_action, synth_obs from checkpoint modality config (2 cams 256x256 uint8 + eef_9d/gripper/joint state + language), full per-observation pipeline (vision + LLM + DiT + decode every call), sdpa attention (flash-attn not in env), p50 of 15 calls after 3 warmup = 121.9 ms (mean 128.6). H100 reference: 117 -> 70 ms (1.67x)",
+          "flashrt_native": "the fork's own GrootN17TorchFrontendThor driven directly (tests/test_groot_n17_latency.py pattern): set_prompt(aux) once, then infer(state, fixed noise); CUDA-event p50 of 30 runs = 40.6 ms (mean 40.6), action (1,40,132) finite",
+          "ours_engine": "InstinctFlash Runtime placement=engine via groot_n17_view + adapter register; same aux bundle and state geometry as the native arm; wall-clock p50 of 20 predicts = 42.4 ms (mean 44.3), action (1,40,132) finite; rt.explain: fused fp8 W+A pipeline, chain tier NUMERIC (uncertified - cosine-level only); Runtime wrapper costs ~1.8 ms vs driving the frontend directly",
+          "comparability_caveat": "native and engine arms exclude per-request vision BY FRONTEND DESIGN: the vision/LLM prefix is computed once at set_prompt (prompt-scope backbone cache, Phase 3c.b2 aux contract) and per-call infer = state-encode + 4-step DiT + decode. The eager arm reprocesses the full observation every call. 121.9 vs 40.6/42.4 is therefore NOT a like-for-like e2e comparison; the honest engine-vs-fork comparison is 42.4 vs 40.6",
+          "aux_bundle": "captured fixture-free from the HF policy with forward hooks (S=273 tokens, S_vit=1024, grid_thw 4 entries); MISSING_KEYS=['input_ids'] - the Qwen3VL path passes inputs_embeds without input_ids, and set_prompt does not consume input_ids, so both downstream arms ran and produced finite actions",
+          "gated_backbone": "gr00t loads the full Qwen3VLForConditionalGeneration from gated nvidia/Cosmos-Reason2-2B at policy init; pre-seeded into the HF cache with the box token (access verified) after the first eager attempt failed for lack of HF_TOKEN in the chain env"
+        },
+        "walls": []
+      }
+    }
+  },
+  "pi05_500_pairs": {
+    "path": "/home/ubuntu/iwm_distill/thor_t3/cert/ext_pairing.json",
+    "sha256": "4ed99276861d685e4e36c03df8e396062dba33a538e3edbba157fed1920743bb",
+    "data": {
+      "reference": "lerobot/pi05_libero_finetuned_v044 [local bf16, H100]",
+      "candidate": "lerobot/pi05_libero_finetuned_v044 [thor engine fp8, remote ws, state-in-prompt]",
+      "ref_nfe": null,
+      "cand_nfe": null,
+      "overall": {
+        "n_pairs": 500,
+        "ref_pc": 85.6,
+        "cand_pc": 84.4,
+        "diff_pp": -1.2,
+        "n01_cand_wins": 27,
+        "n10_cand_loses": 33,
+        "mcnemar_p": 0.51896,
+        "ni_margin_pp": 5.0,
+        "ni_one_sided_p": 0.00706,
+        "non_inferior": true
+      },
+      "per_suite": {
+        "libero_spatial": {
+          "n_pairs": 500,
+          "ref_pc": 85.6,
+          "cand_pc": 84.4,
+          "diff_pp": -1.2,
+          "n01_cand_wins": 27,
+          "n10_cand_loses": 33,
+          "mcnemar_p": 0.51896,
+          "ni_margin_pp": 5.0,
+          "ni_one_sided_p": 0.00706,
+          "non_inferior": true
+        }
+      }
+    }
+  },
+  "v2_1100_pairs": {
+    "path": "/home/ubuntu/InstinctFlash/eval/results_2026-08_thor_h100/m3_certificate_pooled.json",
+    "sha256": "723e562da768e58ff86fd67a72f348bdbdb99d72f864402b7917c9f4eb4662c5",
+    "data": {
+      "label": "M3-EXT: Thor FULL engine vs stock V2, RoboTwin paired, pooled n~1100 (pre-registered extension of the FRAGILE n=500)",
+      "control": "m3_vla2_pool_stock",
+      "treat": "m3_vla2_pool_engine",
+      "n_pairs": 1100,
+      "tasks": 50,
+      "control_success": 0.8936363636363637,
+      "treat_success": 0.8763636363636363,
+      "delta": -0.01727272727272733,
+      "discordant_for": 41,
+      "discordant_against": 60,
+      "mcnemar_exact_two_sided_p": 0.07275700687752419,
+      "ci95_mcnemar_se": [
+        -0.035179778379451826,
+        0.0006343238339971656
+      ],
+      "ci95_bootstrap_iid": [
+        -0.035454545454545454,
+        0.0009090909090909091
+      ],
+      "ci95_bootstrap_task_cluster": [
+        -0.04,
+        0.0036363636363636364
+      ],
+      "one_sided_p_vs_margin": 0.00017039952270558615,
+      "margin_declared": -0.05,
+      "noise_floor_discordance": 0.0,
+      "verdict": "NON-INFERIOR",
+      "slack": 0.010000000000000002,
+      "primary_interval": "bootstrap_task_cluster",
+      "primary_lower_bound": -0.04,
+      "dropped_unpaired": 0
+    }
+  }
+}

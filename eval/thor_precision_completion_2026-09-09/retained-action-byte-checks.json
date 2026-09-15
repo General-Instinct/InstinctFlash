@@ -1,0 +1,45 @@
+{
+  "scope": "Strict retained-array byte comparisons, including signed zero. These samples do not prove all-input bit-exactness or task quality.",
+  "comparisons": [
+    {
+      "comparison": "V2 native/capture",
+      "shape": [
+        37,
+        50,
+        14
+      ],
+      "dtype": "float32",
+      "byte_equal": true,
+      "sha256": {
+        "public-latency-sdpa-hostmeta-vla2-native.npz": "80a0842fdc1a0b0180cb13c1b7ba8c331e1efff533610a84b7feb6371916d97c",
+        "public-latency-sdpa-hostmeta-vla2-native_numeric.npz": "80a0842fdc1a0b0180cb13c1b7ba8c331e1efff533610a84b7feb6371916d97c"
+      }
+    },
+    {
+      "comparison": "DreamZero native episode repeats",
+      "shape": [
+        3,
+        24,
+        8
+      ],
+      "dtype": "float32",
+      "byte_equal": true,
+      "sha256": {
+        "dreamzero-native-directbf16_av15-actions.npz": "cbdc438e9802c7999601326b5be0a38cc6b5a23f2721ccb6f6a1dc65bd795a6c"
+      }
+    },
+    {
+      "comparison": "DreamZero fp8 episode repeats",
+      "shape": [
+        3,
+        24,
+        8
+      ],
+      "dtype": "float32",
+      "byte_equal": true,
+      "sha256": {
+        "dreamzero-fp8-directbf16_av15-actions.npz": "bae63f2a284abb5d1168d43d39ddda43ff3200c58dfb293d376916ceface02ff"
+      }
+    }
+  ]
+}

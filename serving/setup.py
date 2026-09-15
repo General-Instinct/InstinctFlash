@@ -32,7 +32,15 @@ need it — environments without a prebuilt flash-attn wheel (Modal,
 older CUDA images) can still install and run.
 """
 
-from setuptools import setup
+from pathlib import Path
+from setuptools import Distribution, setup
+
+
+class KernelDistribution(Distribution):
+    """Prebuilt CPython/CUDA extensions require a platform-specific wheel tag."""
+
+    def has_ext_modules(self):
+        return any((Path(__file__).parent / "flash_rt").glob("*.so"))
 
 if __name__ == "__main__":
-    setup()
+    setup(distclass=KernelDistribution)

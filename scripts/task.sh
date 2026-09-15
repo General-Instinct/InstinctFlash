@@ -8,8 +8,8 @@
 # being a real check the moment torch was left behind in the shared venv. Separate
 # directories keep `test` honest and keep the switches instant.
 #
-#   .venv          no extras -- the one that must stay torch-free
-#   .venv-dev      runtime + eval, from uv.lock
+#   .venv          test extra only -- the one that must stay torch-free
+#   .venv-dev      test + runtime + eval, from uv.lock
 #   .venv-server   from eval/lingbot_va_robotwin/server-requirements.txt, a
 #                  SEPARATE lock on purpose (see that file's header)
 set -euo pipefail
@@ -66,11 +66,11 @@ sync_server() {
 
 case "${1:-}" in
   test)
-    UV_PROJECT_ENVIRONMENT="$CORE_VENV" exec uv run python tests/run_tests.py
+    UV_PROJECT_ENVIRONMENT="$CORE_VENV" exec uv run --extra test python tests/run_tests.py
     ;;
 
   test-all)
-    UV_PROJECT_ENVIRONMENT="$DEV_VENV" exec uv run --extra runtime --extra eval \
+    UV_PROJECT_ENVIRONMENT="$DEV_VENV" exec uv run --extra test --extra runtime --extra eval \
       python tests/run_tests.py
     ;;
 

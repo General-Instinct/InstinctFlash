@@ -1,0 +1,92 @@
+{
+  "started_utc": "2026-09-14T02:30:18.235878+00:00",
+  "finished_utc": "2026-09-14T02:30:30.152916+00:00",
+  "elapsed_seconds": 11.917,
+  "interpreter": "/home/ubuntu/cosmos-framework/.venv/bin/python",
+  "command": "CUDA_VISIBLE_DEVICES=\"\" OMP_NUM_THREADS=1 /home/ubuntu/cosmos-framework/.venv/bin/python -B (tests.run_tests.run_test for listed files)",
+  "results": [
+    {
+      "file": "test_user_report.py",
+      "verdict": "PASS",
+      "detail": "85 tests passed",
+      "exit_code": 0
+    },
+    {
+      "file": "test_vla4_prompt_reuse.py",
+      "verdict": "PASS",
+      "detail": "8 tests passed",
+      "exit_code": 0
+    },
+    {
+      "file": "test_vla4_engine.py",
+      "verdict": "PASS",
+      "detail": "2 tests passed",
+      "exit_code": 0
+    },
+    {
+      "file": "test_runtime_telemetry.py",
+      "verdict": "PASS",
+      "detail": "10 tests passed",
+      "exit_code": 0
+    },
+    {
+      "file": "test_dreamzero_fp8_builder.py",
+      "verdict": "PASS",
+      "detail": "29 tests passed",
+      "exit_code": 0
+    },
+    {
+      "file": "test_dreamzero_fp8_install.py",
+      "verdict": "PASS",
+      "detail": "4 tests passed",
+      "exit_code": 0
+    },
+    {
+      "file": "test_step_cache_policy.py",
+      "verdict": "PASS",
+      "detail": "19 tests passed",
+      "exit_code": 0
+    },
+    {
+      "file": "test_runtime_precision.py",
+      "verdict": "PASS",
+      "detail": "15 tests passed",
+      "exit_code": 0
+    },
+    {
+      "file": "test_dreamzero_adapter.py",
+      "verdict": "PASS",
+      "detail": "8 tests passed",
+      "exit_code": 0
+    }
+  ],
+  "counts": {
+    "PASS": 9,
+    "SKIP": 0,
+    "FAIL": 0
+  },
+  "inputs_sha256": {
+    "tests/test_user_report.py": "7cc6d65c763ba3f4710efb64b9c53741cd83345b02e8d88651d8d7549241a045",
+    "tests/test_vla4_prompt_reuse.py": "d4f274bfd7900e8622de21bbcbfe3bd49284fe8a866d9fb7b7632770e3cb8204",
+    "tests/test_vla4_engine.py": "d942ddb34089a4f0651c94935f69771c1a598e3d23a7c2ffac5756cf37c14dc2",
+    "tests/test_runtime_telemetry.py": "b971efd2cd0d98813713ae462c592e4266a509170f97104ca807fa26f76a0348",
+    "tests/test_dreamzero_fp8_builder.py": "2f8ad2d339c6695459239245e06a7e40f095cf0b12dfe5f027d200eae384720d",
+    "tests/test_dreamzero_fp8_install.py": "772c7a2c35f6029eaafa16c1bc3bc93d7d98855449a80faba21170ea10955925",
+    "tests/test_step_cache_policy.py": "2ba0d2c13cdb1840da1a8208227053260b92e1f69fa0f77a2c6dc04fe2046f7a",
+    "tests/test_runtime_precision.py": "227cf6773098247be9e34308f85882904caa64dc95c7893bac20d14b84e25e39",
+    "tests/test_dreamzero_adapter.py": "33ed9bc8476f4445c2e99e151c82061010c394fc5e171f372cce56271f1726fc",
+    "benchmarks/regression/user_report.py": "5de4057e2cee2e26ade1828f6df650874ecb42bc562d7b73a50cb004d58e9e6f",
+    "benchmarks/regression/user_e2e.py": "1c427d5e1fb63835492e3b613c01d4a1fada65fd6c6b790138a19a92b2deb59d",
+    "serving/flash_rt/frontends/torch/vla4b_thor.py": "80b3754702892878075e646c9712c62da14c5a9055c124cf29fa6c279e2ee574",
+    "instinctflash/runtime/vla4_engine.py": "9fa3d9c3c54f742c40d39a7784d1373dec3d04830e5321a0820842ab0472faab",
+    "instinctflash/runtime/engine_backend.py": "99c5346ebe437f4d3d26bc8dcd10755e8a2180fe1b4573b45e905ca9597f7a4e",
+    "instinctflash/runtime/facade.py": "be2d16d6d4a6df7283223b50d88cf5defebec21d54d4711687d6788584b44f41",
+    "instinctflash/runtime/dreamzero_fp8.py": "b3f2584a7c251ed4954e2fae12c38b5ddbc632dff80c43fb1902d25e35326b2c",
+    "instinctflash/runtime/precision.py": "6d7714c41045e83c5fd82d3f0d523429e7c8098c746112eef516d57e8dcacbfe",
+    "examples/dreamzero/dreamzero_iwm/adapter.py": "45454ffeafa920a1be7e9890136ae7389da9d9c4df4270e8bb5d30b4e78b66c3",
+    "tests/run_tests.py": "b1d4b0dce4aac951e0f6ebc929b06f541ee23011cb8bb5ba6f2b7ac180e4507e",
+    "pyproject.toml": "51eeb11f36e46fa16a04d28fac0cc43e58cfaab1d4470c0dd26bcbff0497d2ab"
+  },
+  "inputs_changed_during_run": [],
+  "log": "eval/user_e2e_2026-09-14/validation/cpu_current_targeted.log"
+}

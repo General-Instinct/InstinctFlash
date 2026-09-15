@@ -47,11 +47,10 @@ POST_ATTENTION = FusibleRegion(
     name="post_attention_gated_residual",
     ops=(
         OpSpec("upcast", OpKind.ELEMENTWISE, materializes_as=None, computes_in="fp32"),
-        # CORRECTED. I first declared this materializes_as=None. It is wrong: `attn_out * gate`
-        # is bf16 x bf16 and lands in bf16 BEFORE the fp32 add, so it carries a rounding of its
-        # own. The framework's tier/measurement consistency check caught it -- a kernel derived
-        # BITEXACT measured max|d| = 6.25e-02.
-        OpSpec("gate", OpKind.ELEMENTWISE, materializes_as="bf16", computes_in="bf16"),
+        # gate_msa is FP32 (a view of the FP32 modulation table), so the product stays FP32. Eager
+        # materialises it as its own CUDA kernel and rounds to FP32 before the add; a fused kernel
+        # must prevent FMA contraction even though there is no BF16 storage boundary here.
+        OpSpec("gate", OpKind.ELEMENTWISE, materializes_as=None, computes_in="fp32"),
         OpSpec("residual_add", OpKind.ELEMENTWISE, materializes_as="bf16", computes_in="fp32"),
     ),
     boundary_in=("hidden_states", "attn_output", "gate_msa"),

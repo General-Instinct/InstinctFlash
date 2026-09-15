@@ -1,0 +1,32 @@
+{
+  "model": "LingBot-VA 5B-DiT (11.5B package incl. text encoder+VAE) (robbyant/lingbot-va-posttrain-robotwin, repo@7c6ffa9)",
+  "hardware": "Jetson Thor (SM110, aarch64), torch 2.11.0+cu130, server env mirrors H100 substrate (transformers 4.55.2, diffusers 0.36.0)",
+  "date": "2026-08-25",
+  "torch_ms": 18027.4,
+  "ours_ms": 5611.3,
+  "speedup": 3.21,
+  "arm_notes": {
+    "protocol": "probe_latency.py real episode message order (reset -> infer -> compute_kv_cache -> ...), keyframes first-4-then-8, 8 cycles x 3 runs per arm, run 0 discarded (warm-up), cycle = 32 control steps. torch_ms/ours_ms = mean of the two kept runs' steady-state full-cycle p50.",
+    "torch": "Stock upstream server (wan_va/wan_va_server.py, torchrun nproc=1, attn_mode='torch' custom sdpa per checkpoint config, flash_attn import-only shim never called). Kept-run p50: 18014.0 / 18040.8 ms (means 17983.1 / 18014.1, spread 0.2%). KV ramp +11% first->second half, as on H100. 1.8 Hz effective.",
+    "ours": "InstinctFlash shipped chain via serve_variant.py: --no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout (fsdp_elision, allocator_churn_elision, debug_dump_elision, conditioning_prefill, conv-layout=ndhwc, ring-kv, generic-passes(default)) — identical to the H100 shipped configuration. Kept-run p50: 5598.7 / 5623.9 ms (means 5619.0 / 5623.3, spread 0.1%). 5.7 Hz effective. Accuracy tier: NUMERIC (conv-layout), certified non-inferior on H100 (555 paired episodes, p=0.00031); numerics not re-certified on Thor.",
+    "cross_check": "H100 column: stock 8308 ms, shipped 2580.5 ms (3.22x). Thor reproduces the ratio (3.21x) at ~2.2x the absolute cycle time — the chain's win is not H100-specific."
+  },
+  "walls": [
+    "Checkpoint download: repo is ~24 GB (not ~9.5), Thor is on WiFi (~7 MB/s) shared with another agent's downloads; plain-http single-stream starved at 0.3 MB/s. Fixed by hf_transfer (parallel chunked); hf_xet on hub 0.34.4 was tried and REJECTED (discarded http partials, 0.05 MB/s). Total download wall ~3.5 h.",
+    "va_arm.sh v1 kill-by-pgid killed its own process group after the stock probes (data unaffected); replaced with anchored pgrep (^argv[0] + port) per the pkill footgun note.",
+    "Server load on Thor is fast (~40 s to listening) — the 11.5B-package load is not a wall."
+  ],
+  "declared_config_2v4a": {
+    "cycle_ms": 892.9,
+    "hz": 35.8,
+    "note": "changed-computation declared configuration — NOT comparable to the pytorch column; quality: untrained 2V/4A certified non-inferior on RoboTwin (90.8 vs 91.6 teacher, inside declared margin) on H100; device-numerics transfer to Thor not separately certified",
+    "protocol": "identical to the other arms: shipped chain + --degrade-nfe 2,4 (serve_variant flags: degrade-nfe=2,4 + fsdp_elision, allocator_churn_elision, debug_dump_elision, conditioning_prefill, conv-layout=ndhwc, ring-kv, generic-passes(default)); probe_latency real message order, keyframes 4-then-8, 8 cycles x 3 runs, run 0 discarded; kept-run p50 888.0 / 897.8 ms (means 893.4 / 894.7, spread 0.1%)"
+  },
+  "raw": {
+    "stock_runs_p50_ms": [18139.2, 18014.0, 18040.8],
+    "ours_runs_p50_ms": [5623.3, 5598.7, 5623.9],
+    "ours2v4a_runs_p50_ms": [908.4, 888.0, 897.8],
+    "run0_discarded": true,
+    "logs": "thor:~/thorcol/va_logs/{server,probe}_{stock,ours,ours2v4a}*.log"
+  }
+}

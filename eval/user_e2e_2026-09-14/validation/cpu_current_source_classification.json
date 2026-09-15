@@ -1,0 +1,421 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-09-14T02:42:20.690378+00:00",
+  "scope": "Available source snapshots and declared installed wheel versions; this CPU audit does not attest GPU execution, complete imported-module coverage or task quality.",
+  "source_execution_attested": false,
+  "all_gpu_cells_share_one_source_snapshot": false,
+  "snapshots": {
+    "a": {
+      "path": "eval/user_e2e_2026-09-14/source_manifest_a.json",
+      "sha256": "d89b812a366d478ada314652b797d16bf0deeabb3683d5ffa26b435e736dca91",
+      "head": "c07925f578c7c4af604d87debc7767ec773bd4fb",
+      "files": 1806
+    },
+    "b": {
+      "path": "eval/user_e2e_2026-09-14/source_manifest_b.json",
+      "sha256": "76823b05e508801b36b6aee09972e9f7639d8cc9967a013f808310622ac99a0e",
+      "head": "c07925f578c7c4af604d87debc7767ec773bd4fb",
+      "files": 1807
+    },
+    "c": {
+      "path": "eval/user_e2e_2026-09-14/source_manifest_c.json",
+      "sha256": "edb4cd0e6e33f1199aff7f78020c7265b0e2f322ecb68c11004310da95f906ec",
+      "head": "c07925f578c7c4af604d87debc7767ec773bd4fb",
+      "files": 1811
+    }
+  },
+  "snapshot_differences": {
+    "a_to_b": [
+      {
+        "path": ".gitignore",
+        "change": "changed",
+        "category": "release or CI configuration",
+        "before_sha256": "f1dd032f8770509f7bcc40e4949f87956692cc84610fd3c481608c8ea4ea41b1",
+        "after_sha256": "1a23e46b57b857d622d1bb173802e897f52e686841b4b393289193660502f301"
+      },
+      {
+        "path": "benchmarks/regression/user_report.py",
+        "change": "changed",
+        "category": "CPU study reporting and provenance checks",
+        "before_sha256": "52ec80ecd70bae3db75df8341cd77722f7c091cb7b3beb75b5f714cabbe85265",
+        "after_sha256": "5de4057e2cee2e26ade1828f6df650874ecb42bc562d7b73a50cb004d58e9e6f"
+      },
+      {
+        "path": "benchmarks/vla/config/registry.json",
+        "change": "changed",
+        "category": "benchmark catalog metadata",
+        "before_sha256": "301595a9d774d12092fdd26dc5009e601d473de9581e52fe97ed117917e79801",
+        "after_sha256": "8cf867e4d3ed78792ab8bfb8c46d5c083c511ae3d9091260476f821ca5ab5945"
+      },
+      {
+        "path": "examples/dreamzero/dreamzero_iwm/adapter.py",
+        "change": "changed",
+        "category": "DreamZero admission guards; current guard changes have CPU evidence only",
+        "before_sha256": "b394b30ae7645e196f641784e64326b8f6111a4335c91c001b32d1983392149c",
+        "after_sha256": "45454ffeafa920a1be7e9890136ae7389da9d9c4df4270e8bb5d30b4e78b66c3"
+      },
+      {
+        "path": "instinctflash/runtime/dreamzero_fp8.py",
+        "change": "changed",
+        "category": "DreamZero admission guards; current guard changes have CPU evidence only",
+        "before_sha256": "6942c7f487495978a67c1853ac3f3739abaaf72b24c3b9aabbb92af95011ccbf",
+        "after_sha256": "b3f2584a7c251ed4954e2fae12c38b5ddbc632dff80c43fb1902d25e35326b2c"
+      },
+      {
+        "path": "instinctflash/runtime/precision.py",
+        "change": "changed",
+        "category": "DreamZero admission guards; current guard changes have CPU evidence only",
+        "before_sha256": "3296d47dd912c7aa66295b4a835c44dcd13b323b98b0005823b29d43057b47cf",
+        "after_sha256": "6d7714c41045e83c5fd82d3f0d523429e7c8098c746112eef516d57e8dcacbfe"
+      },
+      {
+        "path": "instinctflash/runtime/vla4_engine.py",
+        "change": "changed",
+        "category": "VLA4 prompt graph reuse and counters",
+        "before_sha256": "8e37833d1b203aa42aa7bb7b9342b263dccab6f18c97697c7fe8449d36a153e9",
+        "after_sha256": "9fa3d9c3c54f742c40d39a7784d1373dec3d04830e5321a0820842ab0472faab"
+      },
+      {
+        "path": "serving/flash_rt/frontends/torch/vla4b_thor.py",
+        "change": "changed",
+        "category": "VLA4 prompt graph reuse and counters",
+        "before_sha256": "3fe23c85e54cda4e51c743f71c90e9e272006aa5c8fef05850823c9346980518",
+        "after_sha256": "80b3754702892878075e646c9712c62da14c5a9055c124cf29fa6c279e2ee574"
+      },
+      {
+        "path": "tests/run_tests.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "a8815d346e76c8ffb6bf359b555e35782b2cdb43109599bce25981703339f286",
+        "after_sha256": "b1d4b0dce4aac951e0f6ebc929b06f541ee23011cb8bb5ba6f2b7ac180e4507e"
+      },
+      {
+        "path": "tests/test_checkpoint_platform.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "e9af811371f1d066ab594f26b9beb9c7aec9b122e81882850143b86c6df8b669",
+        "after_sha256": "899c12c0964ea262383b09fa28c51f21b66897c83ce8a7ef7ca3015b91c3a5e8"
+      },
+      {
+        "path": "tests/test_dreamzero_fp8_builder.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "7c8ffe67589a107f417abc94bf1158d1c90cf23f91fac40193639bf690966ed8",
+        "after_sha256": "2f8ad2d339c6695459239245e06a7e40f095cf0b12dfe5f027d200eae384720d"
+      },
+      {
+        "path": "tests/test_guidance_schema.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "7a2d8c7ad5642fa1a4f29231cddc0a070170d94b42b37b4cff7237232fcc8331",
+        "after_sha256": "5f0c254a7a8d98803e1c5db5bbf413a15c2e685a6dbeb9b6c88f857acf006287"
+      },
+      {
+        "path": "tests/test_kernel_framework.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "e58a65dd6c5f07e47753d30f30e76bde878bd3b091d6cbedb8854a7c1c55c2a3",
+        "after_sha256": "7e01e963133d70748a2ffcf3c8923908f9fde98a41ff8d23729c13b16775352f"
+      },
+      {
+        "path": "tests/test_moe_schedule_site.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "1a382cf7fd6f3b627dba5b5b9a48cea385c4a5b1fe127a0348c06bf015eca299",
+        "after_sha256": "ad9c441073617d59cc242151fcc9f8c16c4838454ded2c6745e41a79978933f1"
+      },
+      {
+        "path": "tests/test_repo_surface.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "5af2748bfe34c024dac2ce32745554adc43419ac63fa9c954485aa1efdf770e2",
+        "after_sha256": "6b3ae0520a24573ee8df13702cf74b156777d3b3c0a943b6234f2a1b01bdc4df"
+      },
+      {
+        "path": "tests/test_runtime_boundary.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "924715e88ebc6b39e6f52a579786e40353bf53238f3a8964bb6f4394e4272235",
+        "after_sha256": "9847fa926e7c62df7d361b2b4920893d405674b517c69fa1341fa202438488a8"
+      },
+      {
+        "path": "tests/test_scaffold_evidence_readers.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "e48744a504f31e7d86ec7c2544bbd5459eab2158e94ffa780ddfc3b5e368c99d",
+        "after_sha256": "3bc7de8746fbd757af827d5dfe74a7ddba3db1ee3f037c4502121efc4a80db39"
+      },
+      {
+        "path": "tests/test_step_cache_policy.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "52b1f67822881995d68507ed3ba25c07b76ca275d3b5b5b7e894e2669f8c64f8",
+        "after_sha256": "2ba0d2c13cdb1840da1a8208227053260b92e1f69fa0f77a2c6dc04fe2046f7a"
+      },
+      {
+        "path": "tests/test_test_runner.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "7451bb66a67da7425919473b4e77a9553fad72ff8014a476da5dc88127ae34fb",
+        "after_sha256": "2371076abc3580f200eaa28214d3f316c37af90a1ade7ca97c4ce319a2ec662c"
+      },
+      {
+        "path": "tests/test_user_report.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "36e8b89f2bcdfcd406b251e7c0d310b16679757135f4d7844bf3babb10c61c8d",
+        "after_sha256": "7cc6d65c763ba3f4710efb64b9c53741cd83345b02e8d88651d8d7549241a045"
+      },
+      {
+        "path": "tests/test_vla4_prompt_reuse.py",
+        "change": "added",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": null,
+        "after_sha256": "d4f274bfd7900e8622de21bbcbfe3bd49284fe8a866d9fb7b7632770e3cb8204"
+      },
+      {
+        "path": "tests/test_vla_benchmark_pipeline.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "6874e183be38875610e6d88a2df5bdbc6fd86d4a506fc226dac97acab4881314",
+        "after_sha256": "ecb751f4b1fffcf5b0bebc2cdb0c39b5cbddde6fd088a2e68b0b25ff9f43d058"
+      }
+    ],
+    "b_to_c": [
+      {
+        "path": "INSTALL.rst",
+        "change": "changed",
+        "category": "non-Markdown documentation",
+        "before_sha256": "883a16b9cdb2f048487928707e41d6d62a82036dddc5d29f9da3f30cd11bdf89",
+        "after_sha256": "fd79046fba48a771363612b7c3925dec3d70217f8d667003d1294b81778c409c"
+      },
+      {
+        "path": "benchmarks/regression/user_provenance.py",
+        "change": "added",
+        "category": "CPU study reporting and provenance checks",
+        "before_sha256": null,
+        "after_sha256": "bc09321cf1a15bafa6cbc1f722fecc6aca1254a1ec9a294543cf6d79b592ff18"
+      },
+      {
+        "path": "benchmarks/regression/user_report.py",
+        "change": "changed",
+        "category": "CPU study reporting and provenance checks",
+        "before_sha256": "5de4057e2cee2e26ade1828f6df650874ecb42bc562d7b73a50cb004d58e9e6f",
+        "after_sha256": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+      },
+      {
+        "path": "instinctflash/runtime/vla2_engine.py",
+        "change": "changed",
+        "category": "VLA2 prompt graph reuse and counters",
+        "before_sha256": "f241e2df885cd7957f4fcc15fcaf39af06fc0c8f4cb5cb8648b94048bd731616",
+        "after_sha256": "c6d12a7f09a302e26188526843c4eab16b679685bb2fe86839ae38131dd7f057"
+      },
+      {
+        "path": "serving/flash_rt/frontends/torch/vla2_thor.py",
+        "change": "changed",
+        "category": "VLA2 prompt graph reuse and counters",
+        "before_sha256": "477b08efb6480374da6f76e95ba42c8394d04b480c1243d4e82538929cd4c7bf",
+        "after_sha256": "e6a4dfd9e96449237028c838b471eec0ac536367065c540ea6e3079c035ec1db"
+      },
+      {
+        "path": "tests/test_assemble_user_provenance.py",
+        "change": "added",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": null,
+        "after_sha256": "142b070d7b7e6617fe7d6987c0c74675b59daa953dcd25db8e87a27643e8a393"
+      },
+      {
+        "path": "tests/test_user_provenance.py",
+        "change": "added",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": null,
+        "after_sha256": "496d5cc54abcd65cc5569a754a7006501bb211ea4a1ee07d3bbd7488bf64db80"
+      },
+      {
+        "path": "tests/test_user_report.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "7cc6d65c763ba3f4710efb64b9c53741cd83345b02e8d88651d8d7549241a045",
+        "after_sha256": "4a37a4ad335abf8dc0065a67eca49ca2cf050fe564f48b42ffd872b5b9175e06"
+      },
+      {
+        "path": "tests/test_vla2_prompt_reuse.py",
+        "change": "added",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": null,
+        "after_sha256": "a968387e5692f81cf6a581f1017e2d7bc42d5cbd1de60709f05d43a06da080e6"
+      }
+    ],
+    "c_to_current_observed_inputs": [
+      {
+        "path": ".github/workflows/runtime-regression.yml",
+        "change": "added",
+        "category": "release or CI configuration",
+        "before_sha256": null,
+        "after_sha256": "c59625eb3a0eac020d1ce5f883d435c6a1d7e705320be553a9fb136fad05733e"
+      },
+      {
+        "path": "README.md",
+        "change": "changed",
+        "category": "existing local Markdown; excluded from publication",
+        "before_sha256": "1334e4bb5613a8dd7fa074370e0e11eb6a299dd8f4c8d6242b43449d8fba607a",
+        "after_sha256": "97f47b4450e531fa7540f90eb0ea8065e06c7ebdfc7e0302a07c87b008713954"
+      },
+      {
+        "path": "benchmarks/regression/README.md",
+        "change": "changed",
+        "category": "CPU study reporting and provenance checks",
+        "before_sha256": "d962c834a8b285045d71c0165120e83ef0a440ced4b07d561369ed653f640973",
+        "after_sha256": "ef3aea5ba958be77edaa012d69d346c4aa82da177445403b53c84bc2465fd30d"
+      },
+      {
+        "path": "benchmarks/regression/user_provenance.py",
+        "change": "changed",
+        "category": "CPU study reporting and provenance checks",
+        "before_sha256": "bc09321cf1a15bafa6cbc1f722fecc6aca1254a1ec9a294543cf6d79b592ff18",
+        "after_sha256": "bf8aa2cf07861605134fb3d6897798972d1db8a30fc8f9d5276fe3a62303eea0"
+      },
+      {
+        "path": "eval/user_e2e_2026-09-14/assemble_provenance.py",
+        "change": "added",
+        "category": "CPU study reporting and provenance checks",
+        "before_sha256": null,
+        "after_sha256": "fc3073fc958a7f8f7d94c2a669f07370a7017679ffed58427e91967629a365a4"
+      },
+      {
+        "path": "examples/dreamzero/README.md",
+        "change": "changed",
+        "category": "existing local Markdown; excluded from publication",
+        "before_sha256": "bde20b00efeec934828aebdf270f23708e720b758ee2e8e3caf6473cc91eed2f",
+        "after_sha256": "e7de121ccbae7325f9f6a136408a62a2244021ae2394bb2bc0d5c3ef9c7700f2"
+      },
+      {
+        "path": "tests/test_user_provenance.py",
+        "change": "changed",
+        "category": "CPU regression tests or test runner",
+        "before_sha256": "496d5cc54abcd65cc5569a754a7006501bb211ea4a1ee07d3bbd7488bf64db80",
+        "after_sha256": "c36ddb3a2c9babad9f8b1025e06518acc65d92be8d4c6b637399b49be1b04f1a"
+      }
+    ]
+  },
+  "installation_records": {
+    "a": {
+      "path": "eval/user_e2e_2026-09-14/installation.json",
+      "sha256": "22912c0908dc835598ff9b10953cc95dae6e6a793c62207aa49a78e817eaed72"
+    },
+    "b": {
+      "path": "eval/user_e2e_2026-09-14/installation_update.json",
+      "sha256": "bdf7f3cce0dc24afcbb6d8e4cfaab129f02c3af67a5b2a2afc45eaad88082585"
+    },
+    "c": {
+      "path": "eval/user_e2e_2026-09-14/installation_vla2_update.json",
+      "sha256": "37058a489d1058c6bd7ec3942d53bc264c1e4447f62672bf3bffdf9dbaaf21d3"
+    }
+  },
+  "wheel_changes_relative_to_a": {
+    "b": {
+      "changed_wheels": [
+        "flash_rt-0.1.0-cp312-cp312-linux_aarch64.whl",
+        "instinctflash-0.1.0-py3-none-any.whl"
+      ],
+      "unchanged_original_wheels": [
+        "cosmos3_iwm-0.1.0-py3-none-any.whl",
+        "dreamzero_iwm-0.1.0-py3-none-any.whl",
+        "groot_n17_iwm-0.1.0-py3-none-any.whl",
+        "lingbot_vla_iwm-0.1.0-py3-none-any.whl",
+        "lingbot_vla_v2_iwm-0.1.0-py3-none-any.whl",
+        "pi05_iwm-0.1.0-py3-none-any.whl"
+      ],
+      "candidate_manifest_sha256": "76823b05e508801b36b6aee09972e9f7639d8cc9967a013f808310622ac99a0e",
+      "candidate_manifest_matches": true
+    },
+    "c": {
+      "changed_wheels": [
+        "flash_rt-0.1.0-cp312-cp312-linux_aarch64.whl",
+        "instinctflash-0.1.0-py3-none-any.whl"
+      ],
+      "unchanged_original_wheels": [
+        "cosmos3_iwm-0.1.0-py3-none-any.whl",
+        "dreamzero_iwm-0.1.0-py3-none-any.whl",
+        "groot_n17_iwm-0.1.0-py3-none-any.whl",
+        "lingbot_vla_iwm-0.1.0-py3-none-any.whl",
+        "lingbot_vla_v2_iwm-0.1.0-py3-none-any.whl",
+        "pi05_iwm-0.1.0-py3-none-any.whl"
+      ],
+      "candidate_manifest_sha256": "edb4cd0e6e33f1199aff7f78020c7265b0e2f322ecb68c11004310da95f906ec",
+      "candidate_manifest_matches": true
+    }
+  },
+  "declared_cell_source_groups": [
+    {
+      "cells": "Original 24 main and four operating-point cells",
+      "count": 28,
+      "source": "A",
+      "producer_matrices": [
+        {
+          "path": "eval/user_e2e_2026-09-14/matrix.json",
+          "sha256": "c37e3dde0d2332eb69dc37ace38e948f42e173e2615d2f094bc99569507c78b9"
+        },
+        {
+          "path": "eval/user_e2e_2026-09-14/matrix_v2.json",
+          "sha256": "f07a5a038579165943852fe2750e043f2a4838673a07ea7d5a98f12a7978fdee"
+        }
+      ],
+      "inventory_refs": [
+        {
+          "path": "eval/user_e2e_2026-09-14/installed_files.json",
+          "sha256": "abfa1fe55ace9164d761f70c2c07a848c8c628ed19381a8c76dd7d0ec45dfaaa"
+        },
+        {
+          "path": "eval/user_e2e_2026-09-14/installed_files_v2.json",
+          "sha256": "c6c45b15758d39929a7f32522c2581139d750c655a131fbe02a7f4656c23759a"
+        }
+      ]
+    },
+    {
+      "cells": [
+        "vla4-runtime_update"
+      ],
+      "count": 1,
+      "source": "B core and serving; all six adapter wheels retained from A",
+      "producer_matrices": [
+        {
+          "path": "eval/user_e2e_2026-09-14/matrix_update.json",
+          "sha256": "fe56044f1718abbf32cd8d4c758ba0df98173d13766539029670d8706e2d7e20"
+        }
+      ],
+      "inventory_refs": [
+        {
+          "path": "eval/user_e2e_2026-09-14/installed_files_update.json",
+          "sha256": "3551ce6aecdb642f0cb5fdee1ba236e101cf5e7539bd4f35a21969dbb9c0d632"
+        }
+      ]
+    },
+    {
+      "cells": [
+        "vla2-runtime_update",
+        "vla2-runtime_numeric"
+      ],
+      "count": 2,
+      "source": "C core and serving; all six adapter wheels retained from A",
+      "producer_matrices": [
+        {
+          "path": "eval/user_e2e_2026-09-14/matrix_update_vla2.json",
+          "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+        }
+      ],
+      "inventory_refs": [
+        {
+          "path": "eval/user_e2e_2026-09-14/installed_files_vla2_update.json",
+          "sha256": "dab605294bfbdd873b95d3599da31c1ccdc9d952999de183f67b6981100ad807"
+        }
+      ]
+    }
+  ],
+  "final_matrix": {
+    "path": "eval/user_e2e_2026-09-14/matrix_final.json",
+    "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+  },
+  "dreamzero_guard_scope": "The current adapter/FP8/precision admission guards have CPU test evidence. All original DreamZero GPU cells belong to A. B/C source snapshots include the changed adapter file, but B/C installations retained the A DreamZero adapter wheel.",
+  "markdown_policy": "No Markdown files changed by this audit. Existing local Markdown differences are not release additions."
+}

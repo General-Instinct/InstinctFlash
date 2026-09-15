@@ -1,0 +1,52 @@
+{
+  "framework": "vllm-omni",
+  "model": "GEAR-Dreams/DreamZero-DROID",
+  "checkpoint": "/home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942",
+  "scope": "local Omni request to CPU actions, including worker IPC; no network",
+  "packages": {
+    "vllm": "0.29.0",
+    "vllm-omni": "0.29.0.dev0+gf7d9deb45",
+    "torch": "2.13.0",
+    "transformers": "5.14.1"
+  },
+  "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+  "script_sha256": "40b013400d9b9e897c43f6b0396160ba0008a2cb1a417483cb48fec8f40c43c2",
+  "protocol": {
+    "schedule": "upstream DreamZero deploy defaults",
+    "horizon": 24,
+    "format_prompt_as_json": false,
+    "precision": "bfloat16"
+  },
+  "calls": [
+    {
+      "i": 0,
+      "phase": "warmup",
+      "ms": 71770.4009100562,
+      "shape": [
+        24,
+        8
+      ]
+    },
+    {
+      "i": 1,
+      "phase": "warmup",
+      "ms": 11209.768071013968,
+      "shape": [
+        24,
+        8
+      ]
+    },
+    {
+      "i": 2,
+      "phase": "warmup",
+      "ms": 11678.8538749679,
+      "shape": [
+        24,
+        8
+      ]
+    }
+  ],
+  "setup_seconds": 55.91385813098168,
+  "ok": true,
+  "smoke_only": true
+}

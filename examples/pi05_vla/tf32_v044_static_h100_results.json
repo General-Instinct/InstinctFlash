@@ -1,0 +1,58 @@
+{
+  "status": "PASS",
+  "tier": "NUMERIC",
+  "device": "NVIDIA H100 80GB HBM3",
+  "checkpoint": "lerobot/pi05_libero_finetuned_v044",
+  "checkpoint_revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+  "closed_loop": "NOT RUN - this is a one-observation compatibility and latency gate",
+  "input": {
+    "kind": "deterministic schema-valid synthetic LIBERO-like observation",
+    "pairing": "same observation, processor, weights, explicit FP32 noise; independent processes",
+    "processed_images": [
+      [1, 3, 256, 256],
+      [1, 3, 256, 256]
+    ],
+    "processed_state": [1, 8],
+    "processed_language_tokens": [1, 200],
+    "model_image_resolution": [224, 224],
+    "static_prefix_tokens": 968,
+    "static_kv_tokens_with_action_suffix": 1018,
+    "action_shape": [1, 50, 7]
+  },
+  "load_contract": {
+    "published_dtype": "bfloat16",
+    "published_compile_model": true,
+    "effective_dtype": "float32",
+    "effective_compile_model": false,
+    "floating_parameter_count": 4143404816,
+    "floating_parameter_dtype": "torch.float32",
+    "all_keys_loaded": true
+  },
+  "numeric": {
+    "max_abs_postprocessed_action_delta": 0.0008987784385681152,
+    "mean_abs_postprocessed_action_delta": 0.00011155936559329608,
+    "p99_abs_postprocessed_action_delta": 0.0006573930382728576,
+    "rmse_postprocessed_action_delta": 0.0001982339165059081,
+    "fp32_repeat_max_abs_delta": 0.0,
+    "tf32_repeat_max_abs_delta": 0.0
+  },
+  "timing_ms": {
+    "fp32_highest_static_kv_median": 185.9600780007895,
+    "tf32_high_static_kv_median": 72.40684800490271,
+    "speedup": 2.568266443364556,
+    "fp32_preprocess": 4.127033011172898,
+    "tf32_preprocess": 3.809702000580728,
+    "fp32_parallel_load": 84044.18453799735,
+    "tf32_parallel_load": 86336.8082740053
+  },
+  "static_shape_gate": {
+    "supported": true,
+    "second_case": "different image values, state values, and prompt at the same fixed extents",
+    "fp32_static_replays": 78,
+    "tf32_static_replays": 78
+  },
+  "source_logs": [
+    "/tmp/pi05_v044_fp32.json",
+    "/tmp/pi05_v044_tf32.json"
+  ]
+}

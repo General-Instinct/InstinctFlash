@@ -13,18 +13,21 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import torch  # noqa: E402  (module under test imports it; a torch-less env skips this file)
 
 from instinctflash.autotune import Decision, SITES, record_decision  # noqa: E402
+import instinctflash.backends.conv.apply as conv_apply  # noqa: E402
 from instinctflash.backends.conv.apply import (  # noqa: E402
     CONV_LAYOUT_SITE, autotune_conv_layout, conv_plan_from_decision,
 )
 from instinctflash.backends.conv.semantics import MemoryLayout  # noqa: E402
 from instinctflash.passes.contract import Tier  # noqa: E402
 from instinctflash.planners.planner import Plan  # noqa: E402
+from instinctflash.runtime.lingbot_install import install_conv_layout_autotune  # noqa: E402
 
 
 def test_site_declaration():
@@ -72,6 +75,71 @@ def test_plan_surfacing_prices_the_swap():
     assert "autotune:va_conv_layout" in text and "equivalence NUMERIC" in text
     # and the explain NOTE machinery fires, telling the reader what a claim now costs
     assert "paired" in text and "non-inferiority" in text.lower()
+
+
+def test_installer_activation_is_plan_scoped():
+    calls = []
+    old = conv_apply.install_conv_layout
+    try:
+        conv_apply.install_conv_layout = (
+            lambda server, **kwargs: calls.append(server) or ["synthetic decision"]
+        )
+
+        class VA:
+            pass
+
+        assert install_conv_layout_autotune(object(), VA) == ["conv_layout_ndhwc"]
+        enabled = VA()
+        assert calls == [enabled]
+
+        # This later plan excluded P007 and therefore never calls its installer.
+        excluded = VA()
+        assert calls == [enabled]
+
+        assert install_conv_layout_autotune(object(), VA) == ["conv_layout_ndhwc"]
+        reenabled = VA()
+        assert calls == [enabled, reenabled]
+    finally:
+        conv_apply.install_conv_layout = old
+
+
+def test_missing_vae_is_a_loud_install_failure():
+    old = conv_apply.autotune_conv_layout
+    conv_apply.autotune_conv_layout = lambda **kwargs: Decision(
+        "va_conv_layout", "stock", "", 1.0, Tier.BITEXACT, "disabled", reason="test"
+    )
+    try:
+        try:
+            conv_apply.install_conv_layout(SimpleNamespace())
+        except RuntimeError as exc:
+            assert "neither streaming_vae nor streaming_vae_half" in str(exc)
+        else:
+            raise AssertionError("an applied P007 plan must not silently miss every VAE")
+    finally:
+        conv_apply.autotune_conv_layout = old
+
+
+def test_foreign_device_profile_is_refused_and_cache_identity_is_versioned():
+    if not torch.cuda.is_available():
+        print("skip: device/cache identity guard needs a visible CUDA device")
+        return
+    from instinctflash.passes.contract import DeviceProfile
+
+    actual = DeviceProfile.probe()
+    foreign = DeviceProfile(
+        name=actual.name + "-other", capability=actual.capability,
+        total_memory=actual.total_memory, features=actual.features,
+    )
+    try:
+        autotune_conv_layout(model_id="foreign-profile-test", device=foreign)
+    except RuntimeError as exc:
+        assert "measuring one GPU under another GPU's cache key is refused" in str(exc)
+    else:
+        raise AssertionError("P007 measured the current GPU under a foreign cache key")
+
+    ident = conv_apply._p007_runtime_identity(torch.cuda.current_device())
+    for needle in ("p007abi=", "gpu=", "driver=", "torch=", "cuda=", "cudnn="):
+        assert needle in ident
 
 
 if __name__ == "__main__":

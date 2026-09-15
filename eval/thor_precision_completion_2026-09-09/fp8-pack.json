@@ -1,0 +1,53 @@
+{
+  "ok": true,
+  "torch": "2.10.0+cu130",
+  "checks": [
+    {
+      "scale": 1e-15,
+      "values": 65280,
+      "byte_mismatches": 0
+    },
+    {
+      "scale": 1e-08,
+      "values": 65280,
+      "byte_mismatches": 0
+    },
+    {
+      "scale": 0.0034,
+      "values": 65280,
+      "byte_mismatches": 0
+    },
+    {
+      "scale": 0.1,
+      "values": 65280,
+      "byte_mismatches": 0
+    },
+    {
+      "scale": 1.0,
+      "values": 65280,
+      "byte_mismatches": 0
+    },
+    {
+      "scale": 3.14159,
+      "values": 65280,
+      "byte_mismatches": 0
+    },
+    {
+      "scale": 100000000.0,
+      "values": 65280,
+      "byte_mismatches": 0
+    },
+    {
+      "scale": 1e+20,
+      "values": 65280,
+      "byte_mismatches": 0
+    }
+  ],
+  "graph_changed_input_and_scale_match": true,
+  "graph_restored_byte_equal": true,
+  "timings": {
+    "torch_pack_ms": 0.06039072036743164,
+    "fused_pack_ms": 0.042427201271057126
+  },
+  "scope": "Packing operator only; not full-model speed or quality evidence"
+}

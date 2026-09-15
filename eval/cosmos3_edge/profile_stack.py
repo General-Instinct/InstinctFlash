@@ -13,12 +13,13 @@ from __future__ import annotations
 import argparse
 import collections
 import os
+from pathlib import Path
 import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, "/home/ubuntu/cosmos-framework")
-sys.path.insert(0, "/home/ubuntu/Code/InstinctFlash")
+sys.path.insert(0, os.environ.get("COSMOS_ROOT", "/home/ubuntu/cosmos-framework"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import torch
 from torch.profiler import ProfilerActivity, profile
@@ -68,6 +69,10 @@ def main() -> int:
     ap.add_argument("--layers", type=int, default=P.EDGE["num_hidden_layers"])
     ap.add_argument("--iters", type=int, default=10)
     ap.add_argument("--top", type=int, default=18)
+    ap.add_argument("--backbone", default="qwen3_vl_dense", choices=P.BACKBONES,
+                    help="qwen3_vl_dense is what sections 3 and 6 were measured with; "
+                         "nemotron_dense is the backbone the shipped checkpoint declares "
+                         "(relu2 MLP, no SwiGLU gate, 12 GEMM/layer instead of 15).")
     args = ap.parse_args()
 
     if not torch.cuda.is_available():
@@ -87,8 +92,10 @@ def main() -> int:
           f"{torch.cuda.get_device_name(0)}")
     print(f"  {args.layers} layers, hidden {P.EDGE['hidden_size']}, pack {und} und + {gen} gen "
           f"= {tot} tokens, NFE {P.NFE}")
+    print(f"  backbone {args.backbone}"
+          f"{'   <-- shipped structure' if args.backbone == 'nemotron_dense' else ''}")
 
-    cfg, layers = P.build_stack(args.layers, dev, dt)
+    cfg, layers = P.build_stack(args.layers, dev, dt, backbone=args.backbone)
     pack = P.build_pack(dev, cfg.hidden_size, dt)
 
     from cosmos_framework.data.generator.sequence_packing.runtime import zeros_like

@@ -1,0 +1,9 @@
+{
+  "reason": "The original verifier reused scene key variable in artifact hash loop; verification itself used the correct scene before that loop, but returned scene_key=trace_sha256. Preserve original verifier and all running inference; corrected verifier independently revalidates raw scene/result/trace and reports the real key.",
+  "original_sha256": "454d4e26d46a32f28ddf259d0f1657bdc67de1ebbe2765c28551735f129594f2",
+  "corrected_sha256": "841fb9f7027a981dc9498267d8021943f9c9532bd4fd02fe7ecffb1241a16c7d",
+  "runner_sha256": "7652944c30980e9b4168425cd3bdaa38d6dc65b6e7c69527dd95ce60f019812d",
+  "affected_returned_scene_key": "trace_sha256",
+  "model_source_unchanged": true,
+  "rerun_episodes": false
+}

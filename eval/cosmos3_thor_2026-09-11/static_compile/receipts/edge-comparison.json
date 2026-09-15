@@ -1,0 +1,47 @@
+{
+  "family": "edge",
+  "qualification": "Comparison within the experimental BF16 numeric attention lane; no upstream BITEXACT or task-quality certificate",
+  "rows": [
+    {
+      "variant": "dynamic_a",
+      "p50_ms": 1310.4844629997388,
+      "byte_equal_to_dynamic_a": true,
+      "max_abs_delta": 0.0,
+      "mean_abs_delta": 0.0,
+      "shape": [
+        16,
+        32,
+        8
+      ],
+      "attention_calls": 3584
+    },
+    {
+      "variant": "static",
+      "p50_ms": 1314.000559024862,
+      "byte_equal_to_dynamic_a": false,
+      "max_abs_delta": 0.1277531385421753,
+      "mean_abs_delta": 0.013872614095021163,
+      "shape": [
+        16,
+        32,
+        8
+      ],
+      "attention_calls": 3584
+    },
+    {
+      "variant": "dynamic_b",
+      "p50_ms": 1301.0433059971547,
+      "byte_equal_to_dynamic_a": true,
+      "max_abs_delta": 0.0,
+      "mean_abs_delta": 0.0,
+      "shape": [
+        16,
+        32,
+        8
+      ],
+      "attention_calls": 3584
+    }
+  ],
+  "speedup_vs_a": 0.9973241289731775,
+  "speedup_vs_b": 0.9901390810386541
+}

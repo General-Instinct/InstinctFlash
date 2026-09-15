@@ -1,0 +1,41 @@
+{
+  "trace_sha256": "e4670118f2551d6e7c97fbb07ee27a831b36fefe08b746d106df54995c57bcc4",
+  "events": [
+    {
+      "name": "aten::item",
+      "count": 124,
+      "total_ms": 6076.973837999998
+    },
+    {
+      "name": "aten::_local_scalar_dense",
+      "count": 124,
+      "total_ms": 6076.7429059999995
+    },
+    {
+      "name": "aten::nonzero",
+      "count": 1,
+      "total_ms": 0.0985
+    },
+    {
+      "name": "cudaStreamSynchronize",
+      "count": 276,
+      "total_ms": 6301.762035999999
+    },
+    {
+      "name": "Memcpy DtoH (Device -> Pinned)",
+      "count": 38,
+      "total_ms": 0.068672
+    },
+    {
+      "name": "Memcpy DtoH (Device -> Pageable)",
+      "count": 17,
+      "total_ms": 0.041344000000000006
+    },
+    {
+      "name": "cudaDeviceSynchronize",
+      "count": 2,
+      "total_ms": 0.042101
+    }
+  ],
+  "note": "Nested CPU ATen events and synchronization waits overlap GPU execution. Do not sum these rows or interpret wait time as removable overhead."
+}

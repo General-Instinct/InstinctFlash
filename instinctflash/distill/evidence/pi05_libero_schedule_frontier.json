@@ -1,0 +1,497 @@
+{
+ "kind": "fewstep_evidence_frontier",
+ "schema_version": 1,
+ "family": "pi05",
+ "model": "lerobot/pi05_libero_finetuned_v044 (stock weights; every row UNTRAINED)",
+ "harness": "LIBERO, 4 suites (spatial/object/goal/10) x 10 tasks x 4 seeds = 160 pairs/point; per-episode seeding; init states tied to episode index; the locked eval protocol (n_action_steps=10, compile_model=false); run THROUGH benchmarks.vla sweep-plan/run/sweep-report, pooled by iwm_results/pi05_sweep_2026-08-31/pool_frontier.py",
+ "screening": true,
+ "margin_declared_confers_nothing": -0.05,
+ "interval_method": "wald_central95",
+ "shard_plans": {
+  "spatial": "96091c81f0c52270b3d3f562e5872a254e3ffba6fc4600ebd6717d9ecf5a5fac",
+  "object": "bad3c754e68f6ff2be00b2e53d8ea7458d8521aaf568db30d5140b189b8bc19c",
+  "goal": "f8fdb62d58fcfb4cef6b2442cd424c32acd1b6967d40cd35385307e5f6eb6758",
+  "10": "94b053c21b2fb542dd87283cb7a6bf1e4d5fea11a43cb45f329b62cd5fcb83c9"
+ },
+ "campaigns": {
+  "schedule sweep": "iwm_results/pi05_sweep_2026-08-31/ (pooled_frontier.{json,md}); iwm_distill/fewstep/pi05_sweep_dogfood.md; research log 2026-09-01"
+ },
+ "sweep": {
+  "baseline": {
+   "id": "nfe10",
+   "nfe": {
+    "action": 10
+   },
+   "guidance": {
+    "action": "none"
+   },
+   "forwards_per_cycle": 11,
+   "batch2_forwards_per_cycle": 0
+  },
+  "screening": {
+   "margin": -0.05,
+   "interval": "wald_central95",
+   "min_pairs": 10
+  },
+  "control_steps_per_cycle": 10
+ },
+ "baseline": {
+  "id": "nfe10",
+  "success": 0.95625,
+  "n": 160,
+  "per_suite": {
+   "spatial": {
+    "success": 0.925,
+    "n": 40
+   },
+   "object": {
+    "success": 1.0,
+    "n": 40
+   },
+   "goal": {
+    "success": 0.975,
+    "n": 40
+   },
+   "10": {
+    "success": 0.925,
+    "n": 40
+   }
+  },
+  "guidance": {
+   "action": {
+    "mode": "none",
+    "scale": 1.0
+   }
+  },
+  "forwards_per_cycle": 11,
+  "forwards_batch1": 11,
+  "forwards_batch2": 0,
+  "cycle_p50_ms": 174.115554895252,
+  "cycle_p50_ms_per_suite": {
+   "spatial": 171.13957274705172,
+   "object": 178.0649470165372,
+   "goal": 174.71040692180395,
+   "10": 173.52070286870003
+  },
+  "effective_hz": 57.43312253759295
+ },
+ "noise_floor": {
+  "arm": "nfe10__repeat",
+  "n_pairs": 160,
+  "delta": 0.0,
+  "discordance": 0.0,
+  "interval": [
+   0.0,
+   0.0
+  ],
+  "interval_method": "wald_central95"
+ },
+ "rows": [
+  {
+   "point": "nfe5",
+   "nfe": {
+    "action": 5
+   },
+   "guidance": {
+    "action": {
+     "mode": "none",
+     "scale": 1.0
+    }
+   },
+   "forwards_per_cycle": 6,
+   "forwards_batch1": 6,
+   "forwards_batch2": 0,
+   "cycle_p50_ms": 104.55082007683814,
+   "cycle_p50_ms_per_suite": {
+    "spatial": 105.27806961908937,
+    "object": 104.41046394407749,
+    "goal": 104.69117620959878,
+    "10": 104.29358622059226
+   },
+   "effective_hz": 95.64726505875939,
+   "per_suite_success": {
+    "spatial": {
+     "success": 0.925,
+     "n": 40,
+     "delta": 0.0
+    },
+    "object": {
+     "success": 1.0,
+     "n": 40,
+     "delta": 0.0
+    },
+    "goal": {
+     "success": 1.0,
+     "n": 40,
+     "delta": 0.025
+    },
+    "10": {
+     "success": 0.975,
+     "n": 40,
+     "delta": 0.05
+    }
+   },
+   "t_grid": {
+    "grid": [
+     1.0,
+     0.8,
+     0.6,
+     0.4,
+     0.2
+    ],
+    "dt": 0.2,
+    "visits_half": false,
+    "min_t": 0.2,
+    "training_density_at_grid": [
+     1.5015,
+     1.3428,
+     1.1627,
+     0.9489,
+     0.6701
+    ]
+   },
+   "status": "SCREENED",
+   "n_pairs": 160,
+   "baseline_success": 0.95625,
+   "point_success": 0.975,
+   "delta": 0.018749999999999933,
+   "interval_method": "wald_central95",
+   "interval": [
+    -0.008572835555031535,
+    0.046072835555031534
+   ],
+   "discordant": [
+    1,
+    4
+   ],
+   "discordance": 0.03125,
+   "mcnemar_exact_two_sided_p": 0.375,
+   "certify_verdict_recorded_not_quoted": "PASS non-inferiority at margin -0.0500 (CI lower bound -0.0086)",
+   "deciding_lower_bound": -0.008572835555031535,
+   "source": "/home/ubuntu/iwm_results/pi05_sweep_2026-08-31/pooled_frontier.json points[nfe5]",
+   "campaign": "pi05 schedule sweep 2026-08-31/09-01 through benchmarks.vla (pi05_sweep_dogfood.md)"
+  },
+  {
+   "point": "nfe4",
+   "nfe": {
+    "action": 4
+   },
+   "guidance": {
+    "action": {
+     "mode": "none",
+     "scale": 1.0
+    }
+   },
+   "forwards_per_cycle": 5,
+   "forwards_batch1": 5,
+   "forwards_batch2": 0,
+   "cycle_p50_ms": 90.72389360517263,
+   "cycle_p50_ms_per_suite": {
+    "spatial": 90.63575556501746,
+    "object": 90.50896810367703,
+    "goal": 91.69089887291193,
+    "10": 90.8120316453278
+   },
+   "effective_hz": 110.22454617655264,
+   "per_suite_success": {
+    "spatial": {
+     "success": 0.95,
+     "n": 40,
+     "delta": 0.025
+    },
+    "object": {
+     "success": 1.0,
+     "n": 40,
+     "delta": 0.0
+    },
+    "goal": {
+     "success": 0.975,
+     "n": 40,
+     "delta": 0.0
+    },
+    "10": {
+     "success": 0.925,
+     "n": 40,
+     "delta": 0.0
+    }
+   },
+   "t_grid": {
+    "grid": [
+     1.0,
+     0.75,
+     0.5,
+     0.25
+    ],
+    "dt": 0.25,
+    "visits_half": true,
+    "min_t": 0.25,
+    "training_density_at_grid": [
+     1.5015,
+     1.3001,
+     1.0612,
+     0.7496
+    ]
+   },
+   "status": "SCREENED",
+   "n_pairs": 160,
+   "baseline_success": 0.95625,
+   "point_success": 0.9625,
+   "delta": 0.006249999999999978,
+   "interval_method": "wald_central95",
+   "interval": [
+    -0.01501205725268259,
+    0.02751205725268259
+   ],
+   "discordant": [
+    1,
+    2
+   ],
+   "discordance": 0.01875,
+   "mcnemar_exact_two_sided_p": 1.0,
+   "certify_verdict_recorded_not_quoted": "PASS non-inferiority at margin -0.0500 (CI lower bound -0.0150)",
+   "deciding_lower_bound": -0.01501205725268259,
+   "source": "/home/ubuntu/iwm_results/pi05_sweep_2026-08-31/pooled_frontier.json points[nfe4]",
+   "campaign": "pi05 schedule sweep 2026-08-31/09-01 through benchmarks.vla (pi05_sweep_dogfood.md)"
+  },
+  {
+   "point": "nfe3",
+   "nfe": {
+    "action": 3
+   },
+   "guidance": {
+    "action": {
+     "mode": "none",
+     "scale": 1.0
+    }
+   },
+   "forwards_per_cycle": 4,
+   "forwards_batch1": 4,
+   "forwards_batch2": 0,
+   "cycle_p50_ms": 76.99722074903548,
+   "cycle_p50_ms_per_suite": {
+    "spatial": 77.16148672625422,
+    "object": 76.24785508960485,
+    "goal": 76.83295477181673,
+    "10": 77.79563032090664
+   },
+   "effective_hz": 129.87481759366318,
+   "per_suite_success": {
+    "spatial": {
+     "success": 0.95,
+     "n": 40,
+     "delta": 0.025
+    },
+    "object": {
+     "success": 1.0,
+     "n": 40,
+     "delta": 0.0
+    },
+    "goal": {
+     "success": 0.975,
+     "n": 40,
+     "delta": 0.0
+    },
+    "10": {
+     "success": 0.925,
+     "n": 40,
+     "delta": 0.0
+    }
+   },
+   "t_grid": {
+    "grid": [
+     1.0,
+     0.6667,
+     0.3333
+    ],
+    "dt": 0.3333,
+    "visits_half": false,
+    "min_t": 0.3333,
+    "training_density_at_grid": [
+     1.5015,
+     1.2257,
+     0.866
+    ]
+   },
+   "status": "SCREENED",
+   "n_pairs": 160,
+   "baseline_success": 0.95625,
+   "point_success": 0.9625,
+   "delta": 0.006249999999999978,
+   "interval_method": "wald_central95",
+   "interval": [
+    -0.01501205725268259,
+    0.02751205725268259
+   ],
+   "discordant": [
+    1,
+    2
+   ],
+   "discordance": 0.01875,
+   "mcnemar_exact_two_sided_p": 1.0,
+   "certify_verdict_recorded_not_quoted": "PASS non-inferiority at margin -0.0500 (CI lower bound -0.0150)",
+   "deciding_lower_bound": -0.01501205725268259,
+   "source": "/home/ubuntu/iwm_results/pi05_sweep_2026-08-31/pooled_frontier.json points[nfe3]",
+   "campaign": "pi05 schedule sweep 2026-08-31/09-01 through benchmarks.vla (pi05_sweep_dogfood.md)"
+  },
+  {
+   "point": "nfe2",
+   "nfe": {
+    "action": 2
+   },
+   "guidance": {
+    "action": {
+     "mode": "none",
+     "scale": 1.0
+    }
+   },
+   "forwards_per_cycle": 3,
+   "forwards_batch1": 3,
+   "forwards_batch2": 0,
+   "cycle_p50_ms": 64.28890815004706,
+   "cycle_p50_ms_per_suite": {
+    "spatial": 64.81400597840548,
+    "object": 63.70280031114817,
+    "goal": 64.89557074382901,
+    "10": 63.76381032168865
+   },
+   "effective_hz": 155.54782757642275,
+   "per_suite_success": {
+    "spatial": {
+     "success": 0.95,
+     "n": 40,
+     "delta": 0.025
+    },
+    "object": {
+     "success": 1.0,
+     "n": 40,
+     "delta": 0.0
+    },
+    "goal": {
+     "success": 0.95,
+     "n": 40,
+     "delta": -0.025
+    },
+    "10": {
+     "success": 0.95,
+     "n": 40,
+     "delta": 0.025
+    }
+   },
+   "t_grid": {
+    "grid": [
+     1.0,
+     0.5
+    ],
+    "dt": 0.5,
+    "visits_half": true,
+    "min_t": 0.5,
+    "training_density_at_grid": [
+     1.5015,
+     1.0612
+    ]
+   },
+   "status": "SCREENED",
+   "n_pairs": 160,
+   "baseline_success": 0.95625,
+   "point_success": 0.9625,
+   "delta": 0.006249999999999978,
+   "interval_method": "wald_central95",
+   "interval": [
+    -0.02624769585446108,
+    0.03874769585446108
+   ],
+   "discordant": [
+    3,
+    4
+   ],
+   "discordance": 0.04375,
+   "mcnemar_exact_two_sided_p": 1.0,
+   "certify_verdict_recorded_not_quoted": "PASS non-inferiority at margin -0.0500 (CI lower bound -0.0262)",
+   "deciding_lower_bound": -0.02624769585446108,
+   "source": "/home/ubuntu/iwm_results/pi05_sweep_2026-08-31/pooled_frontier.json points[nfe2]",
+   "campaign": "pi05 schedule sweep 2026-08-31/09-01 through benchmarks.vla (pi05_sweep_dogfood.md)"
+  },
+  {
+   "point": "nfe1",
+   "nfe": {
+    "action": 1
+   },
+   "guidance": {
+    "action": {
+     "mode": "none",
+     "scale": 1.0
+    }
+   },
+   "forwards_per_cycle": 2,
+   "forwards_batch1": 2,
+   "forwards_batch2": 0,
+   "cycle_p50_ms": 50.508615327998996,
+   "cycle_p50_ms_per_suite": {
+    "spatial": 51.15451151505113,
+    "object": 49.862719140946865,
+    "goal": 51.22070061042905,
+    "10": 49.09898806363344
+   },
+   "effective_hz": 197.986025454485,
+   "per_suite_success": {
+    "spatial": {
+     "success": 0.925,
+     "n": 40,
+     "delta": 0.0
+    },
+    "object": {
+     "success": 1.0,
+     "n": 40,
+     "delta": 0.0
+    },
+    "goal": {
+     "success": 0.975,
+     "n": 40,
+     "delta": 0.0
+    },
+    "10": {
+     "success": 0.975,
+     "n": 40,
+     "delta": 0.05
+    }
+   },
+   "t_grid": {
+    "grid": [
+     1.0
+    ],
+    "dt": 1.0,
+    "visits_half": false,
+    "min_t": 1.0,
+    "training_density_at_grid": [
+     1.5015
+    ]
+   },
+   "status": "SCREENED",
+   "n_pairs": 160,
+   "baseline_success": 0.95625,
+   "point_success": 0.96875,
+   "delta": 0.012499999999999956,
+   "interval_method": "wald_central95",
+   "interval": [
+    -0.022202667869094795,
+    0.0472026678690948
+   ],
+   "discordant": [
+    3,
+    5
+   ],
+   "discordance": 0.05,
+   "mcnemar_exact_two_sided_p": 0.7265625,
+   "certify_verdict_recorded_not_quoted": "PASS non-inferiority at margin -0.0500 (CI lower bound -0.0222)",
+   "deciding_lower_bound": -0.022202667869094795,
+   "source": "/home/ubuntu/iwm_results/pi05_sweep_2026-08-31/pooled_frontier.json points[nfe1]",
+   "campaign": "pi05 schedule sweep 2026-08-31/09-01 through benchmarks.vla (pi05_sweep_dogfood.md)"
+  }
+ ],
+ "table_markdown": "## pi05 v044 LIBERO untrained step-schedule frontier (SCREENING, paired, pooled over 4 suites x 10 tasks x 4 seeds)\n\n| point | forwards/cycle | cycle p50 ms | eff. Hz | success | Δ vs nfe10 (paired) | 95% interval (wald_central95) | paired n | discordance |\n|---|---|---|---|---|---|---|---|---|\n| **nfe10 (baseline arm)** | 11 | 174 | 57.4 | 0.9563 | (control) | repeat Δ+0.0000, floor 0.0% | 160 | — |\n| nfe5 | 6 | 105 | 95.6 | 0.9750 | +0.0187 | [-0.0086, +0.0461] | 160 | 3.1% |\n| nfe4 | 5 | 91 | 110.2 | 0.9625 | +0.0062 | [-0.0150, +0.0275] | 160 | 1.9% |\n| nfe3 | 4 | 77 | 129.9 | 0.9625 | +0.0062 | [-0.0150, +0.0275] | 160 | 1.9% |\n| nfe2 | 3 | 64 | 155.5 | 0.9625 | +0.0062 | [-0.0262, +0.0387] | 160 | 4.4% |\n| nfe1 | 2 | 51 | 198.0 | 0.9688 | +0.0125 | [-0.0222, +0.0472] | 160 | 5.0% |\n\nNoise floor (baseline repeat, 160 pairs): delta +0.0000, discordance 0.0%, interval [+0.0000, +0.0000].\nScreening sweep, explicitly not certification: intervals are the result; no ship verdicts are issued from this table (frontier prereg §0). Each row is the standing matched-NFE control for any future pi05 few-step distillation at that schedule.\n\n### t-grid: which flow-matching grid points each NFE visits\n\n| nfe | grid t (euler_integrate, t_k = 1 - k/N) | min t | visits t=0.5 | dt |\n|---|---|---|---|---|\n| 10 | 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1 | 0.1 | YES | 0.1 |\n| 5 | 1, 0.8, 0.6, 0.4, 0.2 | 0.2 | no | 0.2 |\n| 4 | 1, 0.75, 0.5, 0.25 | 0.25 | YES | 0.25 |\n| 3 | 1, 0.6667, 0.3333 | 0.3333 | no | 0.333333 |\n| 2 | 1, 0.5 | 0.5 | YES | 0.5 |\n| 1 | 1 | 1 | no | 1 |\n\n### per-suite success (paired n=40/suite/point)\n\n| point | libero_spatial | libero_object | libero_goal | libero_10 |\n|---|---|---|---|---|\n| nfe10 (baseline) | 0.925 | 1.000 | 0.975 | 0.925 |\n| nfe5 | 0.925 (+0.000) | 1.000 (+0.000) | 1.000 (+0.025) | 0.975 (+0.050) |\n| nfe4 | 0.950 (+0.025) | 1.000 (+0.000) | 0.975 (+0.000) | 0.925 (+0.000) |\n| nfe3 | 0.950 (+0.025) | 1.000 (+0.000) | 0.975 (+0.000) | 0.925 (+0.000) |\n| nfe2 | 0.950 (+0.025) | 1.000 (+0.000) | 0.950 (-0.025) | 0.950 (+0.025) |\n| nfe1 | 0.925 (+0.000) | 1.000 (+0.000) | 0.975 (+0.000) | 0.975 (+0.050) |\n| nfe10__repeat | 0.925 (+0.000) | 1.000 (+0.000) | 0.975 (+0.000) | 0.925 (+0.000) |\n\nPer-shard cycle p50 ms (one GPU per suite): {\"nfe5\": {\"spatial\": 105.3, \"object\": 104.4, \"goal\": 104.7, \"10\": 104.3}, \"nfe4\": {\"spatial\": 90.6, \"object\": 90.5, \"goal\": 91.7, \"10\": 90.8}, \"nfe3\": {\"spatial\": 77.2, \"object\": 76.2, \"goal\": 76.8, \"10\": 77.8}, \"nfe2\": {\"spatial\": 64.8, \"object\": 63.7, \"goal\": 64.9, \"10\": 63.8}, \"nfe1\": {\"spatial\": 51.2, \"object\": 49.9, \"goal\": 51.2, \"10\": 49.1}}\n",
+ "reading": [
+  "The untrained frontier is FLAT to nfe1: every point within +3.5/-0 pp of the 10-step teacher at 160 pairs/point with a zero-discordance noise floor; cycle 174 -> 51 ms (3.4x) at nfe1.",
+  "The earlier nfe2 cliff (-10 pp, R1: spatial n=100, batched-RNG protocol) does not replicate here, including on spatial itself (+2.5 pp): schedule quality is protocol-coupled; evaluate per (NFE, protocol).",
+  "Verdict at every nfe: no distillation needed; certify the untrained point (nfe1 cert prereg: iwm_distill/fewstep/cert_pi05_nfe1_prereg.md)."
+ ]
+}

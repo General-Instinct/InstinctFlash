@@ -1,0 +1,65 @@
+{
+  "cells": [
+    {
+      "bytes": 80560621,
+      "cell": "edge-eager_native",
+      "historical_p50_ms": 3364.2990489606746,
+      "requests": 109,
+      "sha256": "b00371deaf6b6c6e2a7a016a6619decc17ee0918247e1e50cbea59ac5d2a202d"
+    },
+    {
+      "bytes": 66610772,
+      "cell": "edge-runtime_selected",
+      "historical_p50_ms": 1059.850906021893,
+      "requests": 89,
+      "sha256": "1080be222c90abac51afa06866cbe7bd772502a3fb444aec748154b1e7ec90b0"
+    },
+    {
+      "bytes": 40905648,
+      "cell": "nano-eager_native",
+      "historical_p50_ms": 9715.905110002495,
+      "requests": 56,
+      "sha256": "74e00fd6e29e10829a01aad22026dd52ab44d0f08dcf53bf0aef0f448f0ddc7d"
+    },
+    {
+      "bytes": 45630849,
+      "cell": "nano-runtime_selected",
+      "historical_p50_ms": 4116.48515748675,
+      "requests": 62,
+      "sha256": "33025b2e16603cf26775c06bc407da4bd6b524f1e6d790ccfa6c1515fea9984b"
+    }
+  ],
+  "checks": [
+    "All original wire/receipt/input/reference-action hashes verified by export.",
+    "All316 decoded mosaics, state vectors and reference actions rehash exactly under current helper.",
+    "Four NPZ archives use allow_pickle=False and retain exact dtype/shape.",
+    "Six unique reset boundaries and contiguous per-episode request indices/seeds preserved.",
+    "All original aggregate p50 values independently recomputed."
+  ],
+  "fixture_manifest_sha256": "65f1935f042163236c9a2f8c2f071ed87f6900efc233c7671c7ce4dc5e315a9f",
+  "fixture_root": "/home/ubuntu/ifl-public-screen-replay-fixture-20260915-v1",
+  "helper_sha256": "ae25f5aad09f1ab0f5d9c46ce18cd3d44d681c0c5db1ef8cfd00c8024f369cbd",
+  "license_review": {
+    "path": "eval/public_release_2026-09-15/robolab_rendered_fixture_license_review_v1.json",
+    "sha256": "8570c71dfc35896823ed071b81f284f610f7617c1770e96532e54acd992aaf77"
+  },
+  "limitations": [
+    "Actual new native replay not run.",
+    "Replay does not recreate task success or control causality.",
+    "Historical host/source identities are preserved; future model runs bind new installed identities."
+  ],
+  "native_replay_run": false,
+  "pixel_publication_ready": false,
+  "pixel_restriction": "Keep local: original rendered scenes have unresolved combined third-party NC/share-alike/non-sale terms. Generic helper source does not bundle pixels.",
+  "requests": 316,
+  "schema": "instinctflash.screen_replay_cpu_qualification.v1",
+  "scope": "Actual local lossless fixture packing and independent final-helper NumPy revalidation; CPU unit/source checks only, no model/GPU/native replay.",
+  "task_quality_certified": false,
+  "test_sha256": "23e376463994dc335ea99d531ced9c5b26c7b16f6e3d42b4549e435492db1294",
+  "tests": {
+    "combined_tests": 110,
+    "new_tests": 16,
+    "ruff": "passed",
+    "subtests": 8
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "capture_sha256": "d5b78633c254bf04664c7fd786c1d33b932f5a586bd8b43f3c5455288065cb85",
+  "cell": {
+    "assets": {
+      "checkpoint": {
+        "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+        "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e"
+      }
+    },
+    "auxiliary_repositories": {},
+    "compile": true,
+    "effective_schedule": {
+      "action": 4,
+      "guidance": 3.0,
+      "shift": 5.0
+    },
+    "expected_shapes": [
+      [
+        32,
+        8
+      ]
+    ],
+    "family": "nano",
+    "framework": "vllm-omni",
+    "historical": {
+      "receipt_name": "omni-nano-compiled-v1.json",
+      "receipt_sha256": "e1d721a4b9d1529fb991066f901ed901695d2f1360ed55ec137dafb83ce2316c",
+      "selected_p50_ms": 4466.3664944819175
+    },
+    "id": "vllm-omni-nano",
+    "quality_certified": false,
+    "selected_indices": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39
+    ],
+    "total_calls": 40,
+    "warmup_calls": 10
+  },
+  "completion_sha256": "8215042fafdc28244375a2095fbac5d4bc72059ff211fd37b1018da860470e34",
+  "latency": {
+    "all_measured_p50_ms": 4417.634500510758,
+    "classification": "SCREEN",
+    "historical_p50_ms": 4466.3664944819175,
+    "p50_ms": 4417.634500510758,
+    "p95_ms": 4435.867230067379,
+    "p99_ms": 4440.7496588502545,
+    "selected_count": 30,
+    "selected_indices": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39
+    ],
+    "task_quality_certified": false
+  },
+  "schema": "instinctflash.framework_comparison.v1",
+  "scope": "Local observation-to-CPU-actions wall time; Omni includes worker IPC. No network or simulator.",
+  "status": "passed",
+  "task_quality_certified": false
+}

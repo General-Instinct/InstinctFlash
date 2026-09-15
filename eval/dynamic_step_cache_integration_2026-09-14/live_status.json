@@ -1,0 +1,90 @@
+{
+  "status": "passed",
+  "pid": 228123,
+  "jobs": [
+    {
+      "precision": "native",
+      "schedule": "dynamic",
+      "status": "passed",
+      "command": [
+        "/home/guanming/thorcol/dz_env/bin/python",
+        "/home/guanming/ifl_eval/dynamic_step_cache_20260914/benchmark.py",
+        "native",
+        "dynamic",
+        "/home/guanming/ifl_eval/dynamic_step_cache_20260914/native-dynamic.json",
+        "--input-archive",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789347693.1144862,
+      "pid": 228132,
+      "exit_code": 0,
+      "ended": 1789348257.5162385,
+      "error": null
+    },
+    {
+      "precision": "native",
+      "schedule": "checkpoint",
+      "status": "passed",
+      "command": [
+        "/home/guanming/thorcol/dz_env/bin/python",
+        "/home/guanming/ifl_eval/dynamic_step_cache_20260914/benchmark.py",
+        "native",
+        "checkpoint",
+        "/home/guanming/ifl_eval/dynamic_step_cache_20260914/native-checkpoint.json",
+        "--input-archive",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789348257.5907233,
+      "pid": 228782,
+      "exit_code": 0,
+      "ended": 1789348607.197102,
+      "error": null
+    },
+    {
+      "precision": "fp8",
+      "schedule": "dynamic",
+      "status": "passed",
+      "command": [
+        "/home/guanming/thorcol/dz_env/bin/python",
+        "/home/guanming/ifl_eval/dynamic_step_cache_20260914/benchmark.py",
+        "fp8",
+        "dynamic",
+        "/home/guanming/ifl_eval/dynamic_step_cache_20260914/fp8-dynamic.json",
+        "--input-archive",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789348607.295534,
+      "pid": 229055,
+      "exit_code": 0,
+      "ended": 1789349154.1652389,
+      "error": null
+    },
+    {
+      "precision": "fp8",
+      "schedule": "checkpoint",
+      "status": "passed",
+      "command": [
+        "/home/guanming/thorcol/dz_env/bin/python",
+        "/home/guanming/ifl_eval/dynamic_step_cache_20260914/benchmark.py",
+        "fp8",
+        "checkpoint",
+        "/home/guanming/ifl_eval/dynamic_step_cache_20260914/fp8-checkpoint.json",
+        "--input-archive",
+        "/home/guanming/ifl_eval/four_frameworks_20260913/source/eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+      ],
+      "started": 1789349154.2759886,
+      "pid": 229441,
+      "exit_code": 0,
+      "ended": 1789349483.9915018,
+      "error": null
+    }
+  ],
+  "quality_certified": false,
+  "started": 1789347693.0533671,
+  "manifests": {
+    "source_manifest.json": "f525c6c9e1142c746a6483a84d5e8a8d400f81edbbb5c2b0c6e13473365f3c53",
+    "driver_manifest.json": "2803dcff386eb510383033809863646a67dc721abac777d293eb9e99d18db7b9",
+    "external_manifest.json": "99a39fff74e262140a2010ab18fffc2ac5c3de335d9417109fa9cbf401d697f8"
+  },
+  "ended": 1789349484.067
+}

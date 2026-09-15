@@ -1,0 +1,80 @@
+{
+  "bindings": [
+    {
+      "path": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v2/inputs/recorded_inputs_v1.npz",
+      "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+      "status": "passed"
+    }
+  ],
+  "cells": [
+    {
+      "arm": "eager_native",
+      "errors": [
+        "receipt does not declare successful completion"
+      ],
+      "family": "dreamzero",
+      "id": "dreamzero-eager_native",
+      "status": "failed"
+    },
+    {
+      "arm": "runtime_default",
+      "family": "dreamzero",
+      "id": "dreamzero-runtime_default",
+      "pending": [
+        "missing artifact: /home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v2/cells/dreamzero-runtime_default/receipt.json"
+      ],
+      "status": "incomplete"
+    },
+    {
+      "arm": "runtime_selected",
+      "family": "dreamzero",
+      "id": "dreamzero-runtime_selected",
+      "pending": [
+        "missing artifact: /home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v2/cells/dreamzero-runtime_selected/receipt.json"
+      ],
+      "status": "incomplete"
+    },
+    {
+      "arm": "operating_point",
+      "family": "dreamzero",
+      "id": "dreamzero-dynamic-fp8",
+      "pending": [
+        "missing artifact: /home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v2/cells/dreamzero-dynamic-fp8/receipt.json"
+      ],
+      "status": "incomplete"
+    }
+  ],
+  "comparisons": [],
+  "counts": {
+    "expected_cells": 4,
+    "failed_cells": 1,
+    "failed_comparisons": 0,
+    "finite_public_actions": 0,
+    "finite_queue_actions": 0,
+    "incomplete_cells": 3,
+    "main_cells": 3,
+    "operating_point_cells": 1,
+    "passed_cells": 0,
+    "runtime_update_cells": 0
+  },
+  "errors": [],
+  "matrix": {
+    "path": "/home/guanming/ifl_public_qualification_20260915_v1/dreamzero_dynamic-fp8_run_v2/matrix.json",
+    "sha256": "b660ddc3377cfb0518be4eda572faea02e2e9259b447351ec9ea4ae514a64a52"
+  },
+  "pending": [],
+  "recommended": false,
+  "reproduction_plan": {
+    "execution_mode": "dynamic-fp8",
+    "sha256": "dd05cff0bde6cf7dbd4ee944332f91c7c825ded127defdd3c319c11ef09b2904"
+  },
+  "require_observed_schedule": true,
+  "schema": "instinctflash.user_report.v1",
+  "scope": "CPU artifact/protocol validation on recorded requests; no simulator or task-quality admission",
+  "status": "failed",
+  "task_quality_validated": false,
+  "validator": {
+    "path": "/dev/shm/ifl_public_envs_20260915_v1/dreamzero_v2/lib/python3.12/site-packages/benchmarks/regression/user_report.py",
+    "sha256": "536e76e1c92453f5a77903d29b741445d05a5056e682514c05585848928bf6ac"
+  }
+}

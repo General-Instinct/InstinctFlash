@@ -25,7 +25,7 @@ ordering. It mirrors the per-stage spec scale-list layouts:
   ``_llm_alpha[i]``    — (qkv, o, gate, up, down)       16 layers
   ``_vlsa_alpha[i]``   — (q, k, v, o, fc1, fc2)          4 layers
   ``_dsm_alpha[i]``    — (fc1, fc2)                      3 mergers
-  ``_dit_alpha[i]``    — (q, k, v, o, ada, ff_proj, ff_down)  32 layers — bf16 path
+  DiT weights/biases are loaded directly in BF16; no DiT quantization scales.
                           (DiT runs bf16 in production; alphas unused)
 
 Returns a dict of ``act_scale`` lists (host floats) keyed by stage:

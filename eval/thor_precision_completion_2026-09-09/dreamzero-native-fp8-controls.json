@@ -1,0 +1,74 @@
+{
+  "scope": "Actual checkpoint native/FP8 native-adapter controls with same direct-BF16 loading, 16 scheduler grid / shipped 8-forward mask, native CFG5/processors/history. Recorded RoboTwin cameras and synthetic DROID state; not simulator quality or public Runtime dispatch.",
+  "arms": {
+    "native": {
+      "diagnostic_inference_seconds": [
+        39.514,
+        50.217,
+        41.981,
+        20.533,
+        23.424,
+        24.547
+      ],
+      "loaded_dit_tensors_equal_checkpoint": 1317,
+      "actions_shape": [
+        6,
+        24,
+        8
+      ],
+      "episode_repeat_exact": true,
+      "frame_positions": [
+        3,
+        5,
+        7,
+        3,
+        5,
+        7
+      ],
+      "fp8_projection_count": 0,
+      "sha256": {
+        "dreamzero-native-directbf16_av15.json": "5bec4220cd0035968eea52fda7f1286b35b14d3837b90ae84e67a3b7b0e61af1",
+        "dreamzero-native-directbf16_av15-actions.npz": "cbdc438e9802c7999601326b5be0a38cc6b5a23f2721ccb6f6a1dc65bd795a6c",
+        "dreamzero-native-directbf16_av15.log": "abcb0fdf4c29d00b7fa4f451bbcf1523f7c182fe4c48ad6cb723edce56c524da"
+      }
+    },
+    "fp8": {
+      "diagnostic_inference_seconds": [
+        309.545,
+        126.082,
+        84.206,
+        21.058,
+        23.701,
+        25.012
+      ],
+      "loaded_dit_tensors_equal_checkpoint": 1317,
+      "actions_shape": [
+        6,
+        24,
+        8
+      ],
+      "episode_repeat_exact": true,
+      "frame_positions": [
+        3,
+        5,
+        7,
+        3,
+        5,
+        7
+      ],
+      "fp8_projection_count": 120,
+      "sha256": {
+        "dreamzero-fp8-directbf16_av15.json": "0850f9aae01111e928ecd2708441669e9e5e89fc5df6622cf391050ecfa36c61",
+        "dreamzero-fp8-directbf16_av15-actions.npz": "bae63f2a284abb5d1168d43d39ddda43ff3200c58dfb293d376916ceface02ff",
+        "dreamzero-fp8-directbf16_av15.log": "84027e1f00b9566b6babd73160cd443048df8f3a2fb1aa883b295a12f7efd951"
+      }
+    }
+  },
+  "numeric_delta": {
+    "mae": 0.019402469146168895,
+    "max_abs": 0.4052734375,
+    "actions_equal": false,
+    "scope": "Decoded mixed-unit actions; not success-rate loss."
+  },
+  "timing_scope": "One process per arm, native measured after FP8 populated compiler caches. First-episode timings include first-use work. Repeat-episode calls are diagnostic only; no controlled speedup or sustained-tail claim."
+}

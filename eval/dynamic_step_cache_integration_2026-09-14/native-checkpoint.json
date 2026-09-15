@@ -1,0 +1,226 @@
+{
+  "status": "passed",
+  "precision": "native",
+  "schedule": "checkpoint",
+  "model": "GEAR-Dreams/DreamZero-DROID",
+  "revision": "96ad344138c66e82536422432ad742f015784942",
+  "torch": "2.11.0+cu130",
+  "device": "NVIDIA Thor",
+  "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+  "scope": "Bounded Thor API latency and native-loop parity SCREEN; no task-quality certificate",
+  "timing_scope": {
+    "included": "public predict and NumPy action conversion, synchronized before/after",
+    "excluded": [
+      "model loading",
+      "episode reset",
+      "observation assembly",
+      "seeding",
+      "diagnostic observers",
+      "tensor hashing",
+      "receipt writes"
+    ],
+    "warmup_episodes": 1,
+    "measured_episodes": 2,
+    "continuation_cycles_per_episode": 2
+  },
+  "quality_certified": false,
+  "timings": [
+    {
+      "episode": 0,
+      "cycle": 0,
+      "seed": 17000,
+      "ms": 37564.27224498475,
+      "phase": "warmup",
+      "step_cache": null
+    },
+    {
+      "episode": 0,
+      "cycle": 1,
+      "seed": 17001,
+      "ms": 25047.645526006818,
+      "phase": "warmup",
+      "step_cache": null
+    },
+    {
+      "episode": 0,
+      "cycle": 2,
+      "seed": 17002,
+      "ms": 24923.266218975186,
+      "phase": "warmup",
+      "step_cache": null
+    },
+    {
+      "episode": 1,
+      "cycle": 0,
+      "seed": 17017,
+      "ms": 20211.110095959157,
+      "phase": "measured",
+      "step_cache": null
+    },
+    {
+      "episode": 1,
+      "cycle": 1,
+      "seed": 17018,
+      "ms": 22875.364987005014,
+      "phase": "measured",
+      "step_cache": null
+    },
+    {
+      "episode": 1,
+      "cycle": 2,
+      "seed": 17019,
+      "ms": 24484.61458500242,
+      "phase": "measured",
+      "step_cache": null
+    },
+    {
+      "episode": 2,
+      "cycle": 0,
+      "seed": 17034,
+      "ms": 21054.066310985945,
+      "phase": "measured",
+      "step_cache": null
+    },
+    {
+      "episode": 2,
+      "cycle": 1,
+      "seed": 17035,
+      "ms": 23074.21891199192,
+      "phase": "measured",
+      "step_cache": null
+    },
+    {
+      "episode": 2,
+      "cycle": 2,
+      "seed": 17036,
+      "ms": 24521.306224982254,
+      "phase": "measured",
+      "step_cache": null
+    }
+  ],
+  "captures": {},
+  "competing_processes": [],
+  "preload_execution_policy": {
+    "category": "BITEXACT",
+    "precision": "native",
+    "tier_ceiling": "behavioral",
+    "transform_tier": "BITEXACT",
+    "nfe": {
+      "video_action": 16
+    },
+    "changed_schedule": {},
+    "step_cache": {
+      "dynamic": false,
+      "fixed_steps": 8,
+      "profile": null,
+      "source": "runtime.step_cache=checkpoint"
+    },
+    "schedule_options": {
+      "dreamzero_schedule": {
+        "grid_steps": 16,
+        "computed_steps": 8,
+        "fixed_mask_steps": 8,
+        "dynamic_cache_schedule": false,
+        "profile": null,
+        "source": "runtime.step_cache=checkpoint"
+      }
+    },
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "loading": {
+    "scope": "malloc_trim(0) during loading only; thread joined before warmup/timing",
+    "samples": 471,
+    "release_calls": 471,
+    "min_available_kib": 64438540,
+    "max_rss_kib": 105279212,
+    "trace_file": "native-checkpoint.load-memory.jsonl"
+  },
+  "setup_seconds": 121.23888582299696,
+  "native_head_seed": 1140,
+  "stage": "public_timing",
+  "continuation_p50_ms": 23779.41674849717,
+  "continuation_sample_count": 4,
+  "execution_policy": {
+    "category": "BITEXACT",
+    "precision": "native",
+    "tier_ceiling": "behavioral",
+    "transform_tier": "BITEXACT",
+    "nfe": {
+      "video_action": 16
+    },
+    "changed_schedule": {},
+    "step_cache": {
+      "dynamic": false,
+      "fixed_steps": 8,
+      "profile": null,
+      "source": "runtime.step_cache=checkpoint"
+    },
+    "schedule_options": {
+      "dreamzero_schedule": {
+        "grid_steps": 16,
+        "computed_steps": 8,
+        "fixed_mask_steps": 8,
+        "dynamic_cache_schedule": false,
+        "profile": null,
+        "source": "runtime.step_cache=checkpoint"
+      }
+    },
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "backend_stats": {
+    "dynamic_cache_schedule": false,
+    "tier": "upstream shipped mask",
+    "precision": "native",
+    "fp8_recipe": null,
+    "build": {
+      "frontend": "dreamzero_iwm.adapter.DreamZeroAdapter",
+      "steps": {
+        "video_action": 16,
+        "kv_commit": 1
+      },
+      "guidance": {
+        "video_action": [
+          "cfg",
+          5.0
+        ]
+      },
+      "dit_step_mask": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        true,
+        true
+      ],
+      "dynamic_cache_schedule": false,
+      "evidence": "Loaded native DreamZero action head; not a task-quality certificate",
+      "step_cache_selection": {
+        "dynamic": false,
+        "fixed_steps": 8,
+        "profile": null,
+        "source": "runtime.step_cache=checkpoint"
+      }
+    },
+    "loading": {
+      "verified_dit_tensors": 1317,
+      "original_checkpoint": "/home/guanming/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+      "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+      "direct_bf16_dit": true,
+      "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+      "initialization_rng_equivalent": false
+    },
+    "step_cache": null
+  },
+  "actions_sha256": "33d4a59c7a4b251711f003df9c9bd123cb94035bbdf08f8f5de2ba284742d99f",
+  "completed_utc_epoch": 1789348604.071987
+}

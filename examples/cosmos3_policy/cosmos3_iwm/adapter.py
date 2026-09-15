@@ -1,21 +1,7 @@
-"""Runtime adapter for the Cosmos3 action-policy family (Edge 3.86B / Nano 15.75B, DROID).
+"""Cosmos DROID adapter using checkpoint-native RoboLab processing.
 
-Wraps our patched cosmos-framework serving service in-process —
-``cosmos_framework.scripts.action_policy_server_robotwin.RobotwinPolicyService`` — the same
-policy pipeline the H100/Thor rows were measured through (the request is pushed through the
-*training-time* ``ActionTransformPipeline``, so serve-time preprocessing stays byte-identical
-to train-time). The published pairs used the pipeline arm's launch line
-(``--num-steps 4 --guidance 1.0 --action-chunk-size 16 --action-dim 8 --domain-name
-droid_lerobot --expected-image-height 540 --expected-image-width 640``); those values are the
-DECLARATION's serving config here, never adapter constants.
-
-The T1 CUDA-graphs arm (torch.compile mode="reduce-overhead" over the same weights: Edge
-310.5 -> 185.8 ms vs pipeline 235.7 on H100) stays an OPTION — ``IFL_COSMOS3_CUDA_GRAPHS=1`` —
-because inductor's cudagraph_trees asserts on a prompt change: the speedup holds for
-single-prompt workloads only, and multi-prompt serving must stay on the pipeline arm. On Thor
-the graphs arm is measured SLOWER (676 vs 660 ms); it is never a default anywhere.
-
-One adapter, two declarations: Edge and Nano share every execution fact except size.
+Historical RoboTwin-service benchmark scripts retain their original protocol;
+they do not certify this corrected 32-action DROID interface.
 """
 
 from __future__ import annotations
@@ -29,12 +15,14 @@ from instinctflash.adapters.base import GuidanceMode, ObservationField, Observat
 
 BACKBONE = "cosmos3_policy"
 MODEL_ID = "nvidia/Cosmos3-Edge-Policy-DROID"
-SERVER_MODULE = "cosmos_framework.scripts.action_policy_server_robotwin"
+NANO_MODEL_ID = "nvidia/Cosmos3-Nano-Policy-DROID"
+SERVER_MODULE = "cosmos_framework.scripts.action_policy_server_robolab"
 
 #: The declaration keys the serving config is built from. Each is a fact about how the
 #: published rows were measured; a checkpoint that omits one is refused, not guessed at.
 REQUIRED_SERVING_KEYS = (
     "domain_name", "action_dim", "action_chunk_size", "image_height", "image_width",
+    "conditioning_fps", "format_prompt_as_json",
 )
 
 
@@ -43,6 +31,8 @@ class Cosmos3PolicyAdapter:
     persistent KV — every request rebuilds its state, so shapes repeat across cycles."""
 
     CUDA_GRAPHS_ENV = "IFL_COSMOS3_CUDA_GRAPHS"
+    PROMPT_KV_CACHE_ENV = "IFL_COSMOS3_PROMPT_KV_CACHE"
+    NANO_ACTION_ONLY_ENV = "IFL_COSMOS3_NANO_ACTION_ONLY"
 
     def spec(self) -> AdapterSpec:
         return AdapterSpec(
@@ -56,10 +46,8 @@ class Cosmos3PolicyAdapter:
                 PhaseSpec("action", nfe=4, truncatable=True, min_nfe=1,
                           depends_on=("prefix",)),
             ),
-            # The model supports CFG, but the published operating point serves guidance=1.0 —
-            # no negative branch, NFE == num_steps. A declaration raising guidance doubles the
-            # network forwards; that is a different operating point with its own numbers.
-            guidance={"action": GuidanceRule(mode=GuidanceMode.NONE)},
+            # Native released DROID serving profile; declarations may override guidance.
+            guidance={"action": GuidanceRule(mode=GuidanceMode.CFG, scale=3.0)},
             observation=ObservationSpec(
                 fields=(
                     ObservationField("image", (540, 640, 3), "uint8"),
@@ -70,14 +58,14 @@ class Cosmos3PolicyAdapter:
                 conditioning=("prompt",),
             ),
             notes={
+                "backbone": "cosmos3_policy",
                 "family": "action_policy",
-                "action_reply": "(chunk, action_dim) = (16, 8) at the declared serving config",
+                "action_reply": "(chunk, action_dim) = (32, 8) at the declared serving config",
                 "sampler": "unipc, shift 5.0",
-                "numeric_tier": ("NUMERIC (vs our own eager: <=1.6e-2 Edge / <=5e-2 Nano; "
-                                 "null controls 0.0)"),
-                "cuda_graphs": ("optional via IFL_COSMOS3_CUDA_GRAPHS=1; SINGLE-PROMPT ONLY "
-                                "(inductor cudagraph_trees asserts on prompt change); measured "
-                                "slower than the pipeline on Thor"),
+                "numeric_tier": "Current DROID quality qualification pending",
+                "cuda_graphs": "Native Thor: checked decoder-layer graphs with a shared pool and owned outputs",
+                "capture_supported": False,
+                "capture_unavailable_reason": "The DROID adapter does not install generic whole-forward graphs; native Thor uses checked decoder-layer graphs",
             },
         )
 
@@ -117,124 +105,139 @@ class Cosmos3PolicyAdapter:
             spec_found = None
         if spec_found is None:
             return False, (
-                f"{SERVER_MODULE} is not importable. This adapter needs OUR patched "
-                f"cosmos-framework checkout (the upstream release does not ship the robotwin "
+                f"{SERVER_MODULE} is not importable. This adapter needs the native "
+                f"cosmos-framework checkout containing the RoboLab "
                 f"policy server); install it into this interpreter, e.g. "
                 f"`uv sync --group=cu130-torch213` inside the patched cosmos-framework tree, "
                 f"and run from that venv.")
         return True, "the model stack imports and the patched cosmos-framework server is present"
 
     def build_in_process(self, checkpoint, plan, *, device=None, nfe=None):
-        import torch
+        return self._build_droid(checkpoint, device=device, nfe=nfe, precision="native", plan=plan)
 
+    def build_fp8(self, checkpoint, *, device=None, nfe=None):
+        return self._build_droid(checkpoint, device=device, nfe=nfe, precision="fp8")
+
+    def _build_droid(self, checkpoint, *, device, nfe, precision, plan=None):
+        import torch
+        from instinctflash.runtime.cosmos_droid import build_droid_service, CosmosDROIDLoop
+        from instinctflash.runtime.engine_backend import requested_operating_point
+
+        timestep_cache = _env_flag("IFL_COSMOS3_TIMESTEP_CACHE", default=False)
+        if timestep_cache and precision != "native":
+            raise ValueError("Native timestep cache currently requires native precision")
+        fused_linear = _env_flag("IFL_BF16_LINEAR_RELU2", default=False)
+        generation_regions = _env_flag("IFL_COSMOS3_GEN_REGIONS", default=False)
+        split_prefill = _env_flag("IFL_COSMOS3_SPLIT_PREFILL", default=False)
+        contiguous_kv = _env_flag("IFL_COSMOS3_CONTIGUOUS_KV", default=False)
+        if fused_linear and not generation_regions:
+            raise ValueError("BF16 linear fusion requires Cosmos GEN regions")
+        if contiguous_kv and not generation_regions:
+            raise ValueError("Contiguous K/V requires Cosmos GEN regions")
+        if split_prefill and not generation_regions:
+            raise ValueError("Split prefill requires Cosmos GEN regions")
+        if generation_regions:
+            if precision != "native":
+                raise ValueError("Cosmos GEN regions currently require native precision")
+            from instinctflash.runtime.precision import require_transform_permission
+            from instinctflash.planners.planner import Tier
+            require_transform_permission(plan, Tier.NUMERIC, "Cosmos generation regions")
         if not torch.cuda.is_available():
             raise RuntimeError("Cosmos3 policy inference requires CUDA")
         dev = str(device or "cuda")
         if ":" in dev and dev.rsplit(":", 1)[1] not in ("", "0"):
-            raise RuntimeError(
-                f"the cosmos-framework stack pins itself to the process's first visible GPU "
-                f"(its distributed init calls torch.cuda.set_device(0)); got device={dev!r}. "
-                f"Select the GPU with CUDA_VISIBLE_DEVICES instead.")
-
+            raise RuntimeError("Select the Cosmos GPU with CUDA_VISIBLE_DEVICES")
         extra = dict(checkpoint.execution.extra or {})
-        # "FILL_ME" is a scaffold sentinel (descriptors/scaffold.py), not a value: an unfilled
-        # scaffolded declaration gets the same loud missing-serving-config message.
         missing = [k for k in REQUIRED_SERVING_KEYS if extra.get(k) in (None, "FILL_ME")]
         if missing:
             raise RuntimeError(_missing_serving_config_message(checkpoint, missing))
-
-        schedule = {**dict(checkpoint.execution.nfe or {}), **dict(nfe or {})}
-        steps = int(schedule.get("action", 4))
-        if steps < 1:
-            raise ValueError(f"Cosmos3 action NFE must be positive, got {steps}")
-
-        cuda_graphs = _env_flag(self.CUDA_GRAPHS_ENV,
-                                default=bool(extra.get("cuda_graphs", False)))
-
-        from cosmos_framework.scripts.action_policy_server_robotwin import (
-            RobotwinPolicyService, RobotwinServerArgs,
-        )
-
-        args = RobotwinServerArgs(
-            checkpoint_path=str(_resolve_model_path(checkpoint)),
-            domain_name=str(extra["domain_name"]),
-            action_dim=int(extra["action_dim"]),
-            action_chunk_size=int(extra["action_chunk_size"]),
-            expected_image_height=int(extra["image_height"]),
-            expected_image_width=int(extra["image_width"]),
-            num_steps=steps,
-            guidance=float(extra.get("guidance", 1.0)),
-            shift=float(extra.get("shift", 5.0)),
-            seed=int(extra.get("seed", 0)),
-            use_cuda_graphs=cuda_graphs,
-            guardrails=False,        # gated repo; irrelevant to actions — same as every arm
-        )
-        service = RobotwinPolicyService(args)
-        self.install(service, plan, cuda_graphs=cuda_graphs)
-        return _Cosmos3PolicyLoop(service)
-
-    def install(self, service, plan, *, cuda_graphs: bool = False):
-        """Report what actually runs. The graphs arm is decided at LOAD (torch.compile inside
-        OmniInference), so this cannot flip it — it can only tell the truth about it."""
-        wanted = {
-            getattr(result, "name", "")
-            for result in getattr(plan, "results", ())
-            if getattr(result, "applies", False)
+        if int(extra["action_dim"]) != 8:
+            raise ValueError("Native DROID joint-position actions require action_dim=8")
+        if _env_flag(self.CUDA_GRAPHS_ENV, default=bool(extra.get("cuda_graphs", False))):
+            raise ValueError("CUDA graphs require new DROID changed-prompt qualification")
+        steps, guidance, _ = requested_operating_point(self, checkpoint, nfe)
+        if steps.get("prefix") != 1 or steps.get("action", 0) < 1:
+            raise ValueError("DROID requires one prefix pass and positive action NFE")
+        mode, scale = guidance["action"]
+        if mode not in ("cfg", "none", "positive_only"):
+            raise ValueError(f"Unsupported DROID guidance mode: {mode}")
+        capability = torch.cuda.get_device_capability()
+        sm120_native = precision == "native" and capability == (12, 0)
+        declared_id = str(getattr(checkpoint.execution, "model_id", "") or checkpoint.model_id)
+        thor_native = (precision == "native" and capability == (11, 0)
+                       and declared_id in (MODEL_ID, NANO_MODEL_ID))
+        nano_action_only = _env_flag(
+            self.NANO_ACTION_ONLY_ENV, default=(sm120_native or thor_native) and declared_id == NANO_MODEL_ID)
+        prompt_kv_cache = _env_flag(
+            self.PROMPT_KV_CACHE_ENV,
+            default=sm120_native and (scale if mode == "cfg" else 1.0) == 1.0)
+        numeric_attention = _numeric_attention_requested(precision, plan, thor_native)
+        conditioning_cache = _env_flag("IFL_COSMOS3_CONDITIONING_CACHE", default=numeric_attention)
+        if precision != "native" and (nano_action_only or prompt_kv_cache or conditioning_cache):
+            raise ValueError("Native residency/KV options require precision='native'")
+        if nano_action_only and declared_id != NANO_MODEL_ID:
+            raise ValueError("Nano action-only residency requires the declared Nano checkpoint")
+        from .nano_action_only import nano_action_only_construction, verify_nano_action_only_model
+        with nano_action_only_construction(enabled=nano_action_only):
+            service, receipt = build_droid_service(
+                _resolve_model_path(checkpoint), precision=precision,
+                format_prompt_as_json=extra["format_prompt_as_json"],
+                steps=steps["action"], guidance=scale if mode == "cfg" else 1.0,
+                seed=int(extra.get("seed", 0)), shift=float(extra.get("shift", 5.0)),
+                image_height=int(extra["image_height"]), image_width=int(extra["image_width"]),
+                policy_config={k: extra[k] for k in
+                               ("domain_name", "action_chunk_size", "conditioning_fps")},
+            )
+            elided_bytes = verify_nano_action_only_model(service.model) if nano_action_only else 0
+        if numeric_attention:
+            from .numeric_attention import install
+            from instinctflash.planners.planner import PassResult, Tier
+            install(service)
+            plan.results.append(PassResult(
+                "cosmos3_cudnn_attention", True, Tier.NUMERIC,
+                "Explicit native BF16 numeric attention; task quality is not certified",
+                params={"backend": "cudnn", "quality_status": "screen"}))
+        if _env_flag("IFL_COSMOS3_EXACT_POINTWISE", default=thor_native):
+            from .exact_pointwise import install
+            install(service)
+        if _env_flag("IFL_COSMOS3_LAYER_GRAPHS", default=thor_native):
+            from .thor_graphs import install
+            install(service)
+        if prompt_kv_cache:
+            from .persistent_text_kv import install_persistent_text_kv
+            install_persistent_text_kv(service)
+        if conditioning_cache:
+            if thor_native:
+                from .conditioning_cache import install
+                install(service)
+            else:
+                service._ifl_conditioning_cache_status = {
+                    "admitted": False, "reason": "Qualified native Thor Edge/Nano declarations only"}
+        if generation_regions:
+            from .generation_region import install
+            from instinctflash.planners.planner import PassResult, Tier
+            install(service, plan, split_prefill=split_prefill, contiguous_kv=contiguous_kv,
+                    fused_linear=fused_linear)
+            plan.results.append(PassResult(
+                "cosmos3_generation_regions", True, Tier.NUMERIC,
+                "Experimental tensor-only GEN compilation; task quality pending",
+                params={"quality_status": "screen", "fullgraph": True, "split_prefill": split_prefill,
+                        "contiguous_kv": contiguous_kv, "fused_linear": fused_linear}))
+        if timestep_cache:
+            from .timestep_cache import install
+            install(service)
+        service._ifl_native_optimizations = {
+            "timestep_cache_requested": timestep_cache,
+            "persistent_text_kv": prompt_kv_cache,
+            "elided_lm_head_bytes": elided_bytes,
+            "conditioning_cache_requested": conditioning_cache,
         }
-        if cuda_graphs:
-            print(
-                "InstinctFlash Cosmos3: CUDA-graphs arm ON (torch.compile reduce-overhead). "
-                "SINGLE-PROMPT ONLY — inductor cudagraph_trees asserts on a prompt change; "
-                "multi-prompt serving must use the pipeline arm (unset "
-                f"{self.CUDA_GRAPHS_ENV}).")
-            return ["graph_capture"]
-        if "graph_capture" in wanted:
-            print(
-                "InstinctFlash Cosmos3: the plan applies graph_capture but the arm is opt-in "
-                f"({self.CUDA_GRAPHS_ENV}=1) because it is single-prompt-only and measured "
-                "slower than the pipeline on Thor. Serving the pipeline arm.")
-        return []
+        if prompt_kv_cache or nano_action_only:
+            print(f"InstinctFlash Cosmos native options: {service._ifl_native_optimizations}")
+        return CosmosDROIDLoop(service, receipt)
 
-
-class _Cosmos3PolicyLoop:
-    """One control cycle = one policy request. Stateless across cycles by upstream design,
-    so reset() only advances the episode counter and reseeds the request stream."""
-
-    def __init__(self, service):
-        self._service = service
-        self._prompt = ""
-
-    def reset(self, **conditioning) -> None:
-        self._prompt = str(conditioning.get("prompt") or "")
-        self._service.notify_next_episode()
-
-    def predict(self, observation):
-        import numpy as np
-
-        obs = dict(observation)
-        prompt = str(obs.get("prompt") or obs.get("task") or self._prompt)
-        if not prompt:
-            raise ValueError("Cosmos3 requires a prompt (in reset() or predict())")
-        image = obs.get("image")
-        if image is None:
-            raise ValueError("Cosmos3 requires 'image': one RGB observation frame "
-                             "(HxWx3 uint8, or an already-encoded base64 PNG string)")
-        state = obs.get("state", obs.get("qpos14", obs.get("qpos")))
-        if state is None:
-            raise ValueError("Cosmos3 requires 'state': the absolute joint state vector")
-        state = np.asarray(state, dtype=np.float32).reshape(-1)
-
-        req = {
-            "image": image if isinstance(image, str) else _encode_png_b64(image),
-            "prompt": prompt,
-            "state": [float(x) for x in state],
-        }
-        out = self._service.predict(req)
-        action = np.asarray(out["action"], dtype=np.float32)
-        return {"action": action, "timing": out.get("timing")}
-
-    def close(self) -> None:
-        self._service = None
+# Compatibility name for callers importing the former adapter-local loop.
+from instinctflash.runtime.cosmos_droid import CosmosDROIDLoop as _Cosmos3PolicyLoop
 
 
 def _encode_png_b64(image) -> str:
@@ -305,3 +308,19 @@ def _env_flag(name: str, *, default: bool) -> bool:
     if normalized in {"0", "false", "no", "off"}:
         return False
     raise RuntimeError(f"{name} must be a boolean flag, got {value!r}")
+
+
+def _numeric_attention_requested(precision, plan, thor_native):
+    from instinctflash.planners.planner import Tier
+    from instinctflash.runtime.precision import require_transform_permission
+
+    choice = os.environ.get("IFL_COSMOS3_ATTENTION", "auto").lower()
+    if choice not in ("auto", "native", "cudnn"):
+        raise ValueError("IFL_COSMOS3_ATTENTION must be auto, native or cudnn")
+    requested = choice == "cudnn" or (
+        choice == "auto" and thor_native and getattr(plan, "tier_ceiling", Tier.BITEXACT) >= Tier.NUMERIC)
+    if requested:
+        if precision != "native" or not thor_native:
+            raise ValueError("Cosmos cuDNN attention requires native Thor Edge/Nano")
+        require_transform_permission(plan, Tier.NUMERIC, "Cosmos cuDNN attention")
+    return requested

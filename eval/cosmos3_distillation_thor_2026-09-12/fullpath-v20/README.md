@@ -1,0 +1,13 @@
+# Edge complete-path gradient pilot
+
+Both paired original-role arms completed exactly2 student/13 fake updates, independent RF/DMD/Adam audit, native export and separate-process exact cold reload. Total150 native branches:40 probes,98 optimizer and12 export/cold. These disposable update2 weights are not quality candidates or warmstarts.
+
+The full-path implementation preserves both native SDE2 [1,.5,0] updates and intermediate-state gradients; the control uses V17's declared last-callback rule. Both match independent stock-native endpoint and all52-parameter VJP references under their respective derivative rules. Cutting the intermediate path reproduces control; forward endpoints match at paired initial weights. This does not identify a correctness defect in V17's declared estimator.
+
+On two pre-update probes, full versus last DMD-gradient relative differences were46.47% and213.76%, with cosines0.9128 and0.4314. These demonstrate a changed training signal, not a quality improvement. Update2 backward was193.81ms versus93.33ms and peak allocated memory21.70GB versus15.50GB. Total instrumented update1665ms versus1630ms includes audit I/O and cannot establish throughput. Full-path gradients fit one H100; inference NFE and latency are unchanged.
+
+[Producer completion](completion_v1.json), [paired admission](preupdate_admission.json), [gradient/cost probes](preupdate_summary_v1.json), [optimizer audit](optimizer_independent_audit.json), and both arm directories preserve the evidence. Flash [independently checked28 bindings](flash_binding_check.json), including both update2 snapshot hashes and source/cold/export inventory reports. It did not rerun numerical audits or rehash every native weight file.
+
+All pilot gates passed. No formal follow-on, quality bank, checkpoint selection or deployment promotion has been launched by Flash. A subsequent quality study must use new fresh-original roles, preserve a paired last/full control, freeze its budget and evaluation before training, and retain both training seeds; this pilot alone cannot justify promotion.
+
+Final handoff is complete: [COMPLETION_HANDOFF.json](COMPLETION_HANDOFF.json). Flash subsequently [rehashed all306 inventory paths](flash_final_inventory_check.json), totaling26,224,377,891 bytes, plus final handoff/dependency references. All8 actual Wan load log lines resolve to the pre-bound ancestorV11 blob SHA20eb789667fa5e60e7516bf509512f6cb61f01b0aa0695eadaea930c13892b36. This supersedes the earlier limited28-binding content check; numerical VJP/Adam audits were not rerun. Exactly150 native branches, zero native failures/retries, and no formal follow-on or quality candidate.

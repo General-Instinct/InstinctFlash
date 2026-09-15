@@ -1,0 +1,36 @@
+{
+  "baseline_semantics": "Matches recorded Thor vendor source; not a new comparison to untouched upstream arithmetic.",
+  "checkout_instructions": [
+    "Clone the public repository into a NEW destination with GIT_LFS_SKIP_SMUDGE=1.",
+    "Check out source.revision detached; verify exact git rev-parse HEAD before applying anything.",
+    "If patch is present, verify its SHA256 and use git apply --check followed by git apply.",
+    "Verify every expected_patched_files SHA256. Existing vendor directories must remain untouched."
+  ],
+  "expected_patched_files": {
+    "lingbotvla/models/vla/lingbot_vla/modeling_lingbot_vla_v2.py": {
+      "bytes": 58666,
+      "sha256": "75a6e24502f022b9f0a57c6c2e667575833e8e9777a83930d24be3a0b8d864ad"
+    },
+    "lingbotvla/models/vla/lingbot_vla/qwen2_action_expert.py": {
+      "bytes": 24008,
+      "sha256": "8a8df29b21d8269b2c8949cbf6f7def0c87708809f9300b806a32d8c00e36de4"
+    }
+  },
+  "fresh_environment_inference_qualified": false,
+  "patch": {
+    "path": "recorded_thor.patch",
+    "sha256": "ef8a413873b43f0ee6a916b2860b62108fa06d4818dccae0560c7e9f7b45c4ee"
+  },
+  "patch_summary": "Thor SDPA attention plus pure-Torch fused-weight MoE fallback for sm_110a compiler failures. No new equivalence claim; this is the recorded vendor baseline.",
+  "schema": "instinctflash.vendor_source.v1",
+  "source": {
+    "commit_url": "https://github.com/robbyant/lingbot-vla-v2/commit/951475ae1b1d87553e7dc47c97b53a3d695c0d13",
+    "public_commit_verified": true,
+    "repository": "https://github.com/robbyant/lingbot-vla-v2",
+    "revision": "951475ae1b1d87553e7dc47c97b53a3d695c0d13"
+  },
+  "source_bootstrap_qualified_CPU": true,
+  "upstream_notices": {
+    "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  }
+}

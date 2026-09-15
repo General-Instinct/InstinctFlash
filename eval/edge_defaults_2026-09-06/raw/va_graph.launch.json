@@ -1,0 +1,21 @@
+{
+  "pid": 108409,
+  "command": [
+    "/home/guanming/venv_va/bin/python",
+    "-u",
+    "-m",
+    "torch.distributed.run",
+    "--nproc_per_node",
+    "1",
+    "--master_port",
+    "29965",
+    "/home/guanming/ifl_eval/edge_defaults_20260906/probe_va.py",
+    "--input",
+    "/home/guanming/ifl_eval/edge_defaults_20260906/va-input.npz",
+    "--output",
+    "/home/guanming/ifl_eval/edge_defaults_20260906/va_action_graph",
+    "--terminal-elision",
+    "--action-graphs"
+  ],
+  "probe_sha256": "03648c2a16392a3a68729f05425c5f63541dbc7d6f3dd45dafcb6a55de28bccb"
+}

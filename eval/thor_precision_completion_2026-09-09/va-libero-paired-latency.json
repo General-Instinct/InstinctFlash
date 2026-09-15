@@ -1,0 +1,315 @@
+{
+  "scope": "Full 20V/50A LIBERO-long public API, same recorded observations/executed history; 1 warmup and 3 measured three-cycle episodes per arm. Early history only; no saturated-ring, sustained tail or task-quality certificate.",
+  "arms": {
+    "native": {
+      "precision": "native",
+      "family": "libero",
+      "scope": "Paired checkpoint-native public Runtime, fixed recorded observations/executed history, original schedule; one warmup episode and three measured three-cycle episodes. Early history only, not saturated ring latency, sustained tail or closed-loop task quality.",
+      "setup_seconds": 23.973525456999596,
+      "nfe": {
+        "video": 20,
+        "action": 50
+      },
+      "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+      "torch": "2.11.0+cu130",
+      "source_sha256": {
+        "instinctflash.adapters.lingbot_va": "dbb0c54404dd84b04f78383c9ad983ded476694b76390ee7595aeeb44c1c3ce4",
+        "instinctflash.runtime.wan_va_engine": "b4b254da55986c2d30c706714d5ae50c6314ef02985b405bf18b446aa50424df"
+      },
+      "ok": true,
+      "calls": [
+        {
+          "label": "episode_0_cycle_0",
+          "ms": 4416.818905000582,
+          "frame": 0,
+          "episode": 0,
+          "cycle": 0,
+          "phase": "warmup"
+        },
+        {
+          "label": "episode_0_cycle_1",
+          "ms": 4214.423478999379,
+          "frame": 4,
+          "episode": 0,
+          "cycle": 1,
+          "phase": "warmup"
+        },
+        {
+          "label": "episode_0_cycle_2",
+          "ms": 4220.169475000148,
+          "frame": 8,
+          "episode": 0,
+          "cycle": 2,
+          "phase": "warmup"
+        },
+        {
+          "label": "episode_1_cycle_0",
+          "ms": 3952.444810000088,
+          "frame": 0,
+          "episode": 1,
+          "cycle": 0,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_1_cycle_1",
+          "ms": 4160.924084000726,
+          "frame": 4,
+          "episode": 1,
+          "cycle": 1,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_1_cycle_2",
+          "ms": 4217.448686000353,
+          "frame": 8,
+          "episode": 1,
+          "cycle": 2,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_2_cycle_0",
+          "ms": 3955.398294000588,
+          "frame": 0,
+          "episode": 2,
+          "cycle": 0,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_2_cycle_1",
+          "ms": 4157.325780000065,
+          "frame": 4,
+          "episode": 2,
+          "cycle": 1,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_2_cycle_2",
+          "ms": 4212.519169000188,
+          "frame": 8,
+          "episode": 2,
+          "cycle": 2,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_3_cycle_0",
+          "ms": 3949.7328430006746,
+          "frame": 0,
+          "episode": 3,
+          "cycle": 0,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_3_cycle_1",
+          "ms": 4163.093862000096,
+          "frame": 4,
+          "episode": 3,
+          "cycle": 1,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_3_cycle_2",
+          "ms": 4200.023818000773,
+          "frame": 8,
+          "episode": 3,
+          "cycle": 2,
+          "phase": "measured"
+        }
+      ],
+      "reset_ms": [
+        400.0592170004893,
+        384.3698740001855,
+        384.7176589997616,
+        384.19452299967816
+      ],
+      "repeated_episode_byte_equal": true,
+      "p50_ms": 4160.924084000726,
+      "p99_ms": 4217.0543246403395,
+      "per_cycle_p50_ms": {
+        "0": 3952.444810000088,
+        "1": 4160.924084000726,
+        "2": 4212.519169000188
+      },
+      "actions_sha256": "c0735fe71332a6f00f307c704ec9e3cf9aaead3b7dfb9fa06cac46a25c388932",
+      "raw_sha256": {
+        "va-public-latency-libero-native.json": "98d72f538e607f39206afeb7cf7c25daa83a2b618a5a57e47bfa00ee43e4eb10",
+        "va-public-latency-libero-native.npz": "c0735fe71332a6f00f307c704ec9e3cf9aaead3b7dfb9fa06cac46a25c388932"
+      }
+    },
+    "fp8": {
+      "precision": "fp8",
+      "family": "libero",
+      "scope": "Paired checkpoint-native public Runtime, fixed recorded observations/executed history, original schedule; one warmup episode and three measured three-cycle episodes. Early history only, not saturated ring latency, sustained tail or closed-loop task quality.",
+      "setup_seconds": 22.454794184000093,
+      "fp8_declaration": {
+        "backbone": "wan_va",
+        "frontend": "serving/flash_rt/frontends/torch/wan_va_thor.py",
+        "steps": {
+          "video": 20,
+          "action": 50
+        },
+        "shifts": {
+          "video": 5.0,
+          "action": 0.05
+        },
+        "guidance": {
+          "video": [
+            "cfg",
+            5.0
+          ],
+          "action": [
+            "positive_only",
+            1.0
+          ]
+        },
+        "cfg_batch": 2,
+        "forwards_per_cycle": 74,
+        "forwards_per_cycle_served_p010": 73,
+        "evidence": "the build sizes its AdaLN step tables from the declared grids (video t=[1000.0, 989.5833129882812, 978.2608642578125, 965.9090576171875, 952.3810424804688, 937.5, 921.0526123046875, 902.7777709960938, 882.3529052734375, 859.375, 833.3333129882812, 803.5714111328125, 769.2307739257812, 729.1666259765625, 681.8181762695312, 625.0, 555.5556030273438, 468.75, 357.1428527832031, 208.3333282470703, 0.0], action t=[999.999755859375, 710.1448974609375, 545.4542236328125, 439.25238037109375, 365.07940673828125, 310.3447265625, 268.2926330566406, 234.9727325439453, 207.9208526611328, 185.52035522460938, 166.6666717529297, 150.5791473388672, 136.69064331054688, 124.57913208007812, 113.92406463623047, 104.47760009765625, 96.04521179199219, 88.47187042236328, 81.63265228271484, 75.42578887939453, 69.76744842529297, 64.58797454833984, 59.829063415527344, 55.44147872924805, 51.383392333984375, 47.61905288696289, 44.117645263671875, 40.85257339477539, 37.80068588256836, 34.9417610168457, 32.25806427001953, 29.733957290649414, 27.355623245239258, 25.11078453063965, 22.988508224487305, 20.979019165039062, 19.073570251464844, 17.26427459716797, 15.54404067993164, 13.906447410583496, 12.34567928314209, 10.856452941894531, 9.43396282196045, 8.07381820678711, 6.772008895874023, 5.524861812591553, 4.329004287719727, 3.1813361644744873, 2.0790021419525146, 1.019368052482605, 0.0]), allocates a 2-stream KV slab, and runs 74 DiT forwards per cycle; WanVaTorchFrontendThor.assert_point refuses any other request",
+        "geometry": {
+          "frame_chunk": 4,
+          "latent_h": 8,
+          "latent_w": 16,
+          "action_per_frame": 4
+        },
+        "pool_slots": 2160,
+        "precision": "fp8",
+        "fp16_families": [],
+        "action_terminal_elision": true,
+        "forwards_per_cycle_served": 73,
+        "slab_rows": 15360,
+        "gate_kernel": "kernel"
+      },
+      "nfe": {
+        "video": 20,
+        "action": 50
+      },
+      "boot_id": "ecc098c4-11fc-4ba3-b4a7-0dcea4d15c73",
+      "torch": "2.11.0+cu130",
+      "source_sha256": {
+        "instinctflash.adapters.lingbot_va": "dbb0c54404dd84b04f78383c9ad983ded476694b76390ee7595aeeb44c1c3ce4",
+        "instinctflash.runtime.wan_va_engine": "b4b254da55986c2d30c706714d5ae50c6314ef02985b405bf18b446aa50424df"
+      },
+      "ok": true,
+      "calls": [
+        {
+          "label": "episode_0_cycle_0",
+          "ms": 6545.304110999496,
+          "frame": 0,
+          "episode": 0,
+          "cycle": 0,
+          "phase": "warmup"
+        },
+        {
+          "label": "episode_0_cycle_1",
+          "ms": 3804.0279729993927,
+          "frame": 4,
+          "episode": 0,
+          "cycle": 1,
+          "phase": "warmup"
+        },
+        {
+          "label": "episode_0_cycle_2",
+          "ms": 3882.5195649997113,
+          "frame": 8,
+          "episode": 0,
+          "cycle": 2,
+          "phase": "warmup"
+        },
+        {
+          "label": "episode_1_cycle_0",
+          "ms": 2078.6099070001,
+          "frame": 0,
+          "episode": 1,
+          "cycle": 0,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_1_cycle_1",
+          "ms": 2078.5254649999843,
+          "frame": 4,
+          "episode": 1,
+          "cycle": 1,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_1_cycle_2",
+          "ms": 2133.41322100041,
+          "frame": 8,
+          "episode": 1,
+          "cycle": 2,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_2_cycle_0",
+          "ms": 1999.948566999592,
+          "frame": 0,
+          "episode": 2,
+          "cycle": 0,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_2_cycle_1",
+          "ms": 2078.385795000031,
+          "frame": 4,
+          "episode": 2,
+          "cycle": 1,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_2_cycle_2",
+          "ms": 2132.9524449993187,
+          "frame": 8,
+          "episode": 2,
+          "cycle": 2,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_3_cycle_0",
+          "ms": 2000.6538790003106,
+          "frame": 0,
+          "episode": 3,
+          "cycle": 0,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_3_cycle_1",
+          "ms": 2078.5180879993277,
+          "frame": 4,
+          "episode": 3,
+          "cycle": 1,
+          "phase": "measured"
+        },
+        {
+          "label": "episode_3_cycle_2",
+          "ms": 2133.09930899959,
+          "frame": 8,
+          "episode": 3,
+          "cycle": 2,
+          "phase": "measured"
+        }
+      ],
+      "reset_ms": [
+        383.72352500027773,
+        380.18473099964467,
+        414.58604599938553,
+        418.58227100055956
+      ],
+      "repeated_episode_byte_equal": true,
+      "p50_ms": 2078.5254649999843,
+      "p99_ms": 2133.3881080403444,
+      "per_cycle_p50_ms": {
+        "0": 2000.6538790003106,
+        "1": 2078.5180879993277,
+        "2": 2133.09930899959
+      },
+      "actions_sha256": "fadb3736e4d146511ba02faafd9561294e0abb9b92de4a5a6e67b84c969ce46c",
+      "raw_sha256": {
+        "va-public-latency-libero-fp8.json": "a14f2e40f0ea91c51f843fac0f5c0a1e40e7a77e47f9a0716312bee4ed0afae6",
+        "va-public-latency-libero-fp8.npz": "fadb3736e4d146511ba02faafd9561294e0abb9b92de4a5a6e67b84c969ce46c"
+      }
+    }
+  },
+  "fp8_speedup": 2.001863414264572,
+  "native_fp8_mae": 0.006698523182421923,
+  "native_fp8_max_abs": 0.08292070031166077
+}

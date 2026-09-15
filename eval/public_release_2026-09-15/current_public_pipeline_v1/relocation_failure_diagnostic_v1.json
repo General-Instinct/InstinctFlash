@@ -1,0 +1,103 @@
+{
+  "GPU_remote_mutations_public_copy": false,
+  "candidate_rendered": false,
+  "cause": "Frozen foreign validate_foreign calls checkpoint_cache_paths; its Path(prepared.assets.checkpoint.path).resolve(strict=True) probes the original Thor /home/guanming checkpoint from the local audit host. Raw metadata references are all byte-equal.",
+  "created_utc": "2026-09-15T07:03:23.840885+00:00",
+  "frozen_assembler": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/assemble_current_v4.py",
+    "sha256": "d67aab97892cfd84e404a7bd0cc5b968c6046a0896b900afbbad8d1d2b84fa78"
+  },
+  "frozen_foreign_runner": {
+    "path": "/home/ubuntu/ifl-public-full-stage-20260915-v6/source/benchmarks/regression/framework_compare.py",
+    "sha256": "22643ca4a7ced86a9deea24b24ba285854223dcae895bd6d99e6ea04bf821c0e"
+  },
+  "minimum_proposed_correction": "Additive CPU audit adapter for this path-only provenance check: exact original prepared/captured/completion path equality with canonical absolute path validation and bound preparation references. Keep all source, array, request, timing, schedule and process checks unchanged; no remote directory creation or rewritten raw evidence.",
+  "partial_summary": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/snapshot_v4/summary.json",
+    "sha256": "fdba651e1cf80696e3664cc0b3cdda142740edc3d489dc33223ff94334418f1f"
+  },
+  "rows": [
+    {
+      "capture": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-edge/capture.json",
+        "sha256": "06f5d527fdb232d73ee611897347676a292bd0e0977afc58e539febecc4f00ef"
+      },
+      "capture_startup_checkpoint_paths": [
+        "/home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Edge-Policy-DROID/snapshots/f9fddb427fd7cff0bef7c73791be36f0ab52d81e"
+      ],
+      "cell": "vllm-omni-edge",
+      "completion": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-edge/completion.json",
+        "sha256": "26ebbfad2fcb4413c33ae4e00004bc149b094ebbb590213a3a837ce4cd5f1ae0"
+      },
+      "completion_startup_checkpoint_paths": [
+        "/home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Edge-Policy-DROID/snapshots/f9fddb427fd7cff0bef7c73791be36f0ab52d81e"
+      ],
+      "missing_path": "/home/guanming",
+      "preparation": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/vllm-omni-edge/preparation.json",
+        "sha256": "ce7ceb94f328f5b051a0274cf3801441d991a240771d14b37ff03ea678204244"
+      },
+      "prepared_checkpoint_path": "/home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Edge-Policy-DROID/snapshots/f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+      "status": "same_failure_reproduced_read_only",
+      "three_recorded_paths_exact": true,
+      "traceback": "Traceback (most recent call last):\n  File \"<stdin>\", line 18, in <module>\n  File \"/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/evidence_assembly_v1/assemble_v4.py\", line 398, in validate_foreign\n    paths = helper.checkpoint_cache_paths(expected[\"cell\"], preparation)\n  File \"/home/ubuntu/ifl-public-full-stage-20260915-v6/source/benchmarks/regression/framework_compare.py\", line 632, in checkpoint_cache_paths\n    return [str(Path(prepared[\"assets\"][\"checkpoint\"][\"path\"]).resolve(strict=True))]\n  File \"/usr/lib/python3.10/pathlib.py\", line 1077, in resolve\n    s = self._accessor.realpath(self, strict=strict)\n  File \"/usr/lib/python3.10/posixpath.py\", line 393, in realpath\n    path, ok = _joinrealpath(filename[:0], filename, strict, {})\n  File \"/usr/lib/python3.10/posixpath.py\", line 428, in _joinrealpath\n    st = os.lstat(newpath)\nFileNotFoundError: [Errno 2] No such file or directory: '/home/guanming'\n"
+    },
+    {
+      "capture": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-nano/capture.json",
+        "sha256": "d5b78633c254bf04664c7fd786c1d33b932f5a586bd8b43f3c5455288065cb85"
+      },
+      "capture_startup_checkpoint_paths": [
+        "/home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Nano-Policy-DROID/snapshots/6706d7680581c255ff61e0f3bb49d90eac55c79e"
+      ],
+      "cell": "vllm-omni-nano",
+      "completion": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-nano/completion.json",
+        "sha256": "8215042fafdc28244375a2095fbac5d4bc72059ff211fd37b1018da860470e34"
+      },
+      "completion_startup_checkpoint_paths": [
+        "/home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Nano-Policy-DROID/snapshots/6706d7680581c255ff61e0f3bb49d90eac55c79e"
+      ],
+      "missing_path": "/home/guanming",
+      "preparation": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/vllm-omni-nano/preparation.json",
+        "sha256": "33cf253f2d0afc900970faa43d1ee0416b745873765e21e36c528d3f513e631d"
+      },
+      "prepared_checkpoint_path": "/home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Nano-Policy-DROID/snapshots/6706d7680581c255ff61e0f3bb49d90eac55c79e",
+      "status": "same_failure_reproduced_read_only",
+      "three_recorded_paths_exact": true,
+      "traceback": "Traceback (most recent call last):\n  File \"<stdin>\", line 18, in <module>\n  File \"/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/evidence_assembly_v1/assemble_v4.py\", line 398, in validate_foreign\n    paths = helper.checkpoint_cache_paths(expected[\"cell\"], preparation)\n  File \"/home/ubuntu/ifl-public-full-stage-20260915-v6/source/benchmarks/regression/framework_compare.py\", line 632, in checkpoint_cache_paths\n    return [str(Path(prepared[\"assets\"][\"checkpoint\"][\"path\"]).resolve(strict=True))]\n  File \"/usr/lib/python3.10/pathlib.py\", line 1077, in resolve\n    s = self._accessor.realpath(self, strict=strict)\n  File \"/usr/lib/python3.10/posixpath.py\", line 393, in realpath\n    path, ok = _joinrealpath(filename[:0], filename, strict, {})\n  File \"/usr/lib/python3.10/posixpath.py\", line 428, in _joinrealpath\n    st = os.lstat(newpath)\nFileNotFoundError: [Errno 2] No such file or directory: '/home/guanming'\n"
+    },
+    {
+      "capture": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-dreamzero/capture.json",
+        "sha256": "8d1106bbc81c445169a2c1099690f508fcde65b3c4fdba0c137f49f739872fb9"
+      },
+      "capture_startup_checkpoint_paths": [
+        "/home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942"
+      ],
+      "cell": "vllm-omni-dreamzero",
+      "completion": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/foreign/vllm-omni-dreamzero/completion.json",
+        "sha256": "267bc4d00e1f43093b5eb5f47e7de51acfb32819b5be26926ca8362a79e6272d"
+      },
+      "completion_startup_checkpoint_paths": [
+        "/home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942"
+      ],
+      "missing_path": "/home/guanming",
+      "preparation": {
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/framework_compare_v1/prepared_assets_v2/vllm-omni-dreamzero/preparation.json",
+        "sha256": "84a32a26fea551fd9678aed1c3b0683895327b08523efd8101a64f39f7781eeb"
+      },
+      "prepared_checkpoint_path": "/home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942",
+      "status": "same_failure_reproduced_read_only",
+      "three_recorded_paths_exact": true,
+      "traceback": "Traceback (most recent call last):\n  File \"<stdin>\", line 18, in <module>\n  File \"/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/evidence_assembly_v1/assemble_v4.py\", line 398, in validate_foreign\n    paths = helper.checkpoint_cache_paths(expected[\"cell\"], preparation)\n  File \"/home/ubuntu/ifl-public-full-stage-20260915-v6/source/benchmarks/regression/framework_compare.py\", line 632, in checkpoint_cache_paths\n    return [str(Path(prepared[\"assets\"][\"checkpoint\"][\"path\"]).resolve(strict=True))]\n  File \"/usr/lib/python3.10/pathlib.py\", line 1077, in resolve\n    s = self._accessor.realpath(self, strict=strict)\n  File \"/usr/lib/python3.10/posixpath.py\", line 393, in realpath\n    path, ok = _joinrealpath(filename[:0], filename, strict, {})\n  File \"/usr/lib/python3.10/posixpath.py\", line 428, in _joinrealpath\n    st = os.lstat(newpath)\nFileNotFoundError: [Errno 2] No such file or directory: '/home/guanming'\n"
+    }
+  ],
+  "schema": "instinctflash.foreign_CPU_relocation_failure.v1",
+  "scientific_or_source_gate_change_performed": false,
+  "status": "concrete_cross_host_path_resolution_identified",
+  "validator_renderer_contract_edits_performed": false
+}

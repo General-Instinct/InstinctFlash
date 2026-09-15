@@ -1,0 +1,196 @@
+{
+  "scope": "Synthetic GR00T Qwen3-VL module screen, not a checkpoint/action benchmark.",
+  "device": "NVIDIA Thor",
+  "torch": "2.10.0+cu130",
+  "transformers": "4.57.6",
+  "source_sha256": "fb5a0c2d85bd3f7fb3fc07b6210fd39b827d575817f74d6174c556e18e4f9fd7",
+  "backend_sha256": "3646004890495286f679a9081caac01a27e97a8cb074d274df7b4d47257ba71d",
+  "module_sources": {
+    "Qwen3VLTextMLP": "class Qwen3VLTextMLP(nn.Module):\n    def __init__(self, config):\n        super().__init__()\n        self.config = config\n        self.hidden_size = config.hidden_size\n        self.intermediate_size = config.intermediate_size\n        self.gate_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)\n        self.up_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)\n        self.down_proj = nn.Linear(self.intermediate_size, self.hidden_size, bias=False)\n        self.act_fn = ACT2FN[config.hidden_act]\n\n    def forward(self, x):\n        down_proj = self.down_proj(self.act_fn(self.gate_proj(x)) * self.up_proj(x))\n        return down_proj\n",
+    "Qwen3VLTextRMSNorm": "@use_kernel_forward_from_hub(\"RMSNorm\")\nclass Qwen3VLTextRMSNorm(nn.Module):\n    def __init__(self, hidden_size, eps: float = 1e-6) -> None:\n        \"\"\"\n        Qwen3VLTextRMSNorm is equivalent to T5LayerNorm\n        \"\"\"\n        super().__init__()\n        self.weight = nn.Parameter(torch.ones(hidden_size))\n        self.variance_epsilon = eps\n\n    def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:\n        input_dtype = hidden_states.dtype\n        hidden_states = hidden_states.to(torch.float32)\n        variance = hidden_states.pow(2).mean(-1, keepdim=True)\n        hidden_states = hidden_states * torch.rsqrt(variance + self.variance_epsilon)\n        return self.weight * hidden_states.to(input_dtype)\n\n    def extra_repr(self):\n        return f\"{tuple(self.weight.shape)}, eps={self.variance_epsilon}\"\n"
+  },
+  "weights": "random; hidden=2048 intermediate=6144; not checkpoint weights",
+  "rows": [
+    {
+      "operation": "residual_norm",
+      "tokens": 1,
+      "mode": "eager",
+      "finite_byte_equal": true,
+      "reference_ms": 0.06188799999654293,
+      "candidate_ms": 0.07132799923419952,
+      "reference_repeat_ms": 0.061872001737356186,
+      "speedup_vs_repeat": 0.867429374181724
+    },
+    {
+      "operation": "residual_norm",
+      "tokens": 1,
+      "mode": "graph",
+      "finite_byte_equal": true,
+      "reference_ms": 0.015392000321298838,
+      "candidate_ms": 0.010639999993145466,
+      "reference_repeat_ms": 0.01521599991247058,
+      "speedup_vs_repeat": 1.430075180664763
+    },
+    {
+      "operation": "rmsnorm",
+      "tokens": 1,
+      "mode": "eager",
+      "finite_byte_equal": true,
+      "reference_ms": 0.05663999915122986,
+      "candidate_ms": 0.06705599650740623,
+      "reference_repeat_ms": 0.05419199913740158,
+      "speedup_vs_repeat": 0.8081603728223792
+    },
+    {
+      "operation": "rmsnorm",
+      "tokens": 1,
+      "mode": "graph",
+      "finite_byte_equal": true,
+      "reference_ms": 0.014847999904304743,
+      "candidate_ms": 0.010288000106811523,
+      "reference_repeat_ms": 0.014720000326633453,
+      "speedup_vs_repeat": 1.4307931739704758
+    },
+    {
+      "operation": "full_mlp",
+      "tokens": 1,
+      "mode": "eager",
+      "finite_byte_equal": true,
+      "reference_ms": 0.2990240007638931,
+      "candidate_ms": 0.29606398940086365,
+      "reference_repeat_ms": 0.3001440018415451,
+      "speedup_vs_repeat": 1.013780846664054
+    },
+    {
+      "operation": "full_mlp",
+      "tokens": 1,
+      "mode": "graph",
+      "finite_byte_equal": true,
+      "reference_ms": 0.2969599962234497,
+      "candidate_ms": 0.2979680001735687,
+      "reference_repeat_ms": 0.2970080077648163,
+      "speedup_vs_repeat": 0.996778203001016
+    },
+    {
+      "operation": "residual_norm",
+      "tokens": 128,
+      "mode": "eager",
+      "finite_byte_equal": true,
+      "reference_ms": 0.06249599903821945,
+      "candidate_ms": 0.07412799820303917,
+      "reference_repeat_ms": 0.06172800064086914,
+      "speedup_vs_repeat": 0.8327218073769374
+    },
+    {
+      "operation": "residual_norm",
+      "tokens": 128,
+      "mode": "graph",
+      "finite_byte_equal": true,
+      "reference_ms": 0.03192000091075897,
+      "candidate_ms": 0.015359999611973763,
+      "reference_repeat_ms": 0.031936001032590866,
+      "speedup_vs_repeat": 2.0791667864168053
+    },
+    {
+      "operation": "rmsnorm",
+      "tokens": 128,
+      "mode": "eager",
+      "finite_byte_equal": true,
+      "reference_ms": 0.056624000892043114,
+      "candidate_ms": 0.06964800134301186,
+      "reference_repeat_ms": 0.055743999779224396,
+      "speedup_vs_repeat": 0.8003675439972618
+    },
+    {
+      "operation": "rmsnorm",
+      "tokens": 128,
+      "mode": "graph",
+      "finite_byte_equal": true,
+      "reference_ms": 0.030160000547766685,
+      "candidate_ms": 0.015056000091135502,
+      "reference_repeat_ms": 0.03076800052076578,
+      "speedup_vs_repeat": 2.043570691719178
+    },
+    {
+      "operation": "full_mlp",
+      "tokens": 128,
+      "mode": "eager",
+      "finite_byte_equal": true,
+      "reference_ms": 0.3503199964761734,
+      "candidate_ms": 0.3513279855251312,
+      "reference_repeat_ms": 0.35199999809265137,
+      "speedup_vs_repeat": 1.0019127783587056
+    },
+    {
+      "operation": "full_mlp",
+      "tokens": 128,
+      "mode": "graph",
+      "finite_byte_equal": true,
+      "reference_ms": 0.35128000378608704,
+      "candidate_ms": 0.3527520000934601,
+      "reference_repeat_ms": 0.3513119965791702,
+      "speedup_vs_repeat": 0.9959178019857907
+    },
+    {
+      "operation": "residual_norm",
+      "tokens": 512,
+      "mode": "eager",
+      "finite_byte_equal": true,
+      "reference_ms": 0.08537599816918373,
+      "candidate_ms": 0.0737600028514862,
+      "reference_repeat_ms": 0.08603199943900108,
+      "speedup_vs_repeat": 1.1663773876503802
+    },
+    {
+      "operation": "residual_norm",
+      "tokens": 512,
+      "mode": "graph",
+      "finite_byte_equal": true,
+      "reference_ms": 0.08092799782752991,
+      "candidate_ms": 0.025631999596953392,
+      "reference_repeat_ms": 0.08092799782752991,
+      "speedup_vs_repeat": 3.1573033356769002
+    },
+    {
+      "operation": "rmsnorm",
+      "tokens": 512,
+      "mode": "eager",
+      "finite_byte_equal": true,
+      "reference_ms": 0.0793600007891655,
+      "candidate_ms": 0.06968000158667564,
+      "reference_repeat_ms": 0.07894399762153625,
+      "speedup_vs_repeat": 1.1329505715257058
+    },
+    {
+      "operation": "rmsnorm",
+      "tokens": 512,
+      "mode": "graph",
+      "finite_byte_equal": true,
+      "reference_ms": 0.07683199644088745,
+      "candidate_ms": 0.022671999409794807,
+      "reference_repeat_ms": 0.07681600004434586,
+      "speedup_vs_repeat": 3.3881440562829073
+    },
+    {
+      "operation": "full_mlp",
+      "tokens": 512,
+      "mode": "eager",
+      "finite_byte_equal": true,
+      "reference_ms": 0.44862399995326996,
+      "candidate_ms": 0.4209440052509308,
+      "reference_repeat_ms": 0.4464479982852936,
+      "speedup_vs_repeat": 1.0605876143055166
+    },
+    {
+      "operation": "full_mlp",
+      "tokens": 512,
+      "mode": "graph",
+      "finite_byte_equal": true,
+      "reference_ms": 0.446383997797966,
+      "candidate_ms": 0.4131519943475723,
+      "reference_repeat_ms": 0.44548800587654114,
+      "speedup_vs_repeat": 1.0782666233525802
+    }
+  ],
+  "competing_gpu_processes_at_end": []
+}

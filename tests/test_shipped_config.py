@@ -144,7 +144,8 @@ def test_every_pass_module_is_classified():
     # modules that back a registry entry, by the pass's own module name
     registry_backed = {
         "substrate", "conditioning_prefill", "hoist_invariant_casts", "graph_capture",
-        "stable_pools", "ring_kv", "conv_layout_ndhwc",
+        "stable_pools", "ring_kv", "conv_layout_ndhwc", "sm120_gated_residual",
+        "sm120_wan_stage2", "action_terminal_elision",
     }
     d = ROOT / "instinctflash" / "passes" / "lingbot"
     for f in sorted(d.glob("*.py")):

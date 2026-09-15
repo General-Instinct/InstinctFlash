@@ -1,0 +1,1504 @@
+{
+  "ok": true,
+  "category": "SCREEN",
+  "task_quality_certified": false,
+  "attention": "cudnn",
+  "checkpoint": "nano-original-sde1-cost-v1",
+  "trained_student": false,
+  "experiment": "original Nano SDE1/SDE2 CFG1 cost only",
+  "torch": "2.10.0+cu130",
+  "cuda": "13.0",
+  "cudnn": 91501,
+  "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+  "benchmark_sha256": "591ad050e85ef94d1f239a6546f2382e85a68137eaaecd2645b08e828540c429",
+  "calls": [
+    {
+      "i": 0,
+      "phase": "warmup",
+      "ms": 4372.030503989663
+    },
+    {
+      "i": 1,
+      "phase": "warmup",
+      "ms": 1606.6043380415067
+    },
+    {
+      "i": 2,
+      "phase": "warmup",
+      "ms": 843.2653229683638
+    },
+    {
+      "i": 3,
+      "phase": "warmup",
+      "ms": 836.1869369982742
+    },
+    {
+      "i": 4,
+      "phase": "warmup",
+      "ms": 790.7235730090179
+    },
+    {
+      "i": 5,
+      "phase": "warmup",
+      "ms": 788.0509250098839
+    },
+    {
+      "i": 6,
+      "phase": "measured",
+      "ms": 788.0606650141999
+    },
+    {
+      "i": 7,
+      "phase": "measured",
+      "ms": 771.0924340062775
+    },
+    {
+      "i": 8,
+      "phase": "measured",
+      "ms": 789.2861109576188
+    },
+    {
+      "i": 9,
+      "phase": "measured",
+      "ms": 791.7341989814304
+    },
+    {
+      "i": 10,
+      "phase": "measured",
+      "ms": 788.760875002481
+    },
+    {
+      "i": 11,
+      "phase": "measured",
+      "ms": 791.053319000639
+    },
+    {
+      "i": 12,
+      "phase": "measured",
+      "ms": 769.1203730064444
+    },
+    {
+      "i": 13,
+      "phase": "measured",
+      "ms": 790.6863889656961
+    },
+    {
+      "i": 14,
+      "phase": "measured",
+      "ms": 771.9360450282693
+    },
+    {
+      "i": 15,
+      "phase": "measured",
+      "ms": 769.112903974019
+    }
+  ],
+  "diagnostic_only": true,
+  "latency_benchmark_valid": false,
+  "release_after_prepare": false,
+  "memory": [
+    {
+      "request": null,
+      "phase": "loaded",
+      "cuda_free_bytes": 5940695040,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 30517291520,
+      "reserved_bytes": 30899437568,
+      "host": {
+        "MemFree_bytes": 4801396736,
+        "MemAvailable_bytes": 93549740032,
+        "Cached_bytes": 87121993728,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": null,
+      "phase": "after_checkpoint_cache_advice",
+      "cuda_free_bytes": 40059232256,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 30517291520,
+      "reserved_bytes": 30899437568,
+      "host": {
+        "MemFree_bytes": 38919933952,
+        "MemAvailable_bytes": 94696583168,
+        "Cached_bytes": 54213672960,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 0,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 39833669632,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 30517291520,
+      "reserved_bytes": 30899437568,
+      "host": {
+        "MemFree_bytes": 38694371328,
+        "MemAvailable_bytes": 94470643712,
+        "Cached_bytes": 54213672960,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 0,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 38734745600,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 30686667264,
+      "reserved_bytes": 31583109120,
+      "host": {
+        "MemFree_bytes": 38298255360,
+        "MemAvailable_bytes": 93370765312,
+        "Cached_bytes": 54213550080,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 0,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 38649516032,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 30696174080,
+      "reserved_bytes": 31583109120,
+      "host": {
+        "MemFree_bytes": 38213025792,
+        "MemAvailable_bytes": 93285535744,
+        "Cached_bytes": 54213550080,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 0,
+      "phase": "after_request",
+      "cuda_free_bytes": 35215384576,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34479276032,
+      "host": {
+        "MemFree_bytes": 34472972288,
+        "MemAvailable_bytes": 89851703296,
+        "Cached_bytes": 54213844992,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 1,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 35216449536,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34479276032,
+      "host": {
+        "MemFree_bytes": 34474037248,
+        "MemAvailable_bytes": 89852768256,
+        "Cached_bytes": 54213844992,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 1,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34782728192,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34902900736,
+      "host": {
+        "MemFree_bytes": 34463940608,
+        "MemAvailable_bytes": 89419046912,
+        "Cached_bytes": 54213844992,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 1,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34782728192,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34902900736,
+      "host": {
+        "MemFree_bytes": 34463940608,
+        "MemAvailable_bytes": 89419046912,
+        "Cached_bytes": 54213844992,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 1,
+      "phase": "after_request",
+      "cuda_free_bytes": 34781175808,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34464485376,
+        "MemAvailable_bytes": 89417494528,
+        "Cached_bytes": 54213840896,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 2,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34778439680,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34461749248,
+        "MemAvailable_bytes": 89414758400,
+        "Cached_bytes": 54213840896,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 2,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34778710016,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34462019584,
+        "MemAvailable_bytes": 89415032832,
+        "Cached_bytes": 54213844992,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 2,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34778710016,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34462019584,
+        "MemAvailable_bytes": 89415032832,
+        "Cached_bytes": 54213844992,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 2,
+      "phase": "after_request",
+      "cuda_free_bytes": 34771218432,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34454528000,
+        "MemAvailable_bytes": 89407557632,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 3,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34772025344,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455334912,
+        "MemAvailable_bytes": 89408364544,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 3,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34772025344,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455334912,
+        "MemAvailable_bytes": 89408364544,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 3,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34772025344,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455334912,
+        "MemAvailable_bytes": 89408364544,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 3,
+      "phase": "after_request",
+      "cuda_free_bytes": 34772185088,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455494656,
+        "MemAvailable_bytes": 89408536576,
+        "Cached_bytes": 54213865472,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 4,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34774282240,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34457591808,
+        "MemAvailable_bytes": 89410633728,
+        "Cached_bytes": 54213865472,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 4,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34774282240,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34457591808,
+        "MemAvailable_bytes": 89410633728,
+        "Cached_bytes": 54213865472,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 4,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34774282240,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34457591808,
+        "MemAvailable_bytes": 89410633728,
+        "Cached_bytes": 54213865472,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 4,
+      "phase": "after_request",
+      "cuda_free_bytes": 34774646784,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34457956352,
+        "MemAvailable_bytes": 89410994176,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 5,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34772549632,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455859200,
+        "MemAvailable_bytes": 89408897024,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 5,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34772549632,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455859200,
+        "MemAvailable_bytes": 89408897024,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 5,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34772549632,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455859200,
+        "MemAvailable_bytes": 89408897024,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 5,
+      "phase": "after_request",
+      "cuda_free_bytes": 34772869120,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34456178688,
+        "MemAvailable_bytes": 89409216512,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 6,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34778521600,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34461831168,
+        "MemAvailable_bytes": 89414868992,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 6,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34778791936,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34462101504,
+        "MemAvailable_bytes": 89415139328,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 6,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34778791936,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34462101504,
+        "MemAvailable_bytes": 89415139328,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 6,
+      "phase": "after_request",
+      "cuda_free_bytes": 34778791936,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34462101504,
+        "MemAvailable_bytes": 89415143424,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 7,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34772242432,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455552000,
+        "MemAvailable_bytes": 89408593920,
+        "Cached_bytes": 54213861376,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 7,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34772520960,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455830528,
+        "MemAvailable_bytes": 89408880640,
+        "Cached_bytes": 54213869568,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 7,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34772520960,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455830528,
+        "MemAvailable_bytes": 89408880640,
+        "Cached_bytes": 54213869568,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 7,
+      "phase": "after_request",
+      "cuda_free_bytes": 34772520960,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455830528,
+        "MemAvailable_bytes": 89408880640,
+        "Cached_bytes": 54213869568,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 8,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34773843968,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34457153536,
+        "MemAvailable_bytes": 89410203648,
+        "Cached_bytes": 54213869568,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 8,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34773843968,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34457153536,
+        "MemAvailable_bytes": 89410203648,
+        "Cached_bytes": 54213873664,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 8,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34773843968,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34457153536,
+        "MemAvailable_bytes": 89410203648,
+        "Cached_bytes": 54213873664,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 8,
+      "phase": "after_request",
+      "cuda_free_bytes": 34774089728,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34457399296,
+        "MemAvailable_bytes": 89410449408,
+        "Cached_bytes": 54213877760,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 9,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34771992576,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455302144,
+        "MemAvailable_bytes": 89408352256,
+        "Cached_bytes": 54213869568,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 9,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34771992576,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455302144,
+        "MemAvailable_bytes": 89408352256,
+        "Cached_bytes": 54213869568,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 9,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34771992576,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455302144,
+        "MemAvailable_bytes": 89408352256,
+        "Cached_bytes": 54213869568,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 9,
+      "phase": "after_request",
+      "cuda_free_bytes": 34772205568,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455515136,
+        "MemAvailable_bytes": 89408565248,
+        "Cached_bytes": 54213877760,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 10,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34774302720,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34457612288,
+        "MemAvailable_bytes": 89410662400,
+        "Cached_bytes": 54213877760,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 10,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34774302720,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34457612288,
+        "MemAvailable_bytes": 89410662400,
+        "Cached_bytes": 54213877760,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 10,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34774302720,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34457612288,
+        "MemAvailable_bytes": 89410662400,
+        "Cached_bytes": 54213877760,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 10,
+      "phase": "after_request",
+      "cuda_free_bytes": 34774704128,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34458013696,
+        "MemAvailable_bytes": 89411063808,
+        "Cached_bytes": 54213873664,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 11,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34772606976,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455916544,
+        "MemAvailable_bytes": 89408966656,
+        "Cached_bytes": 54213873664,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 11,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34772606976,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455916544,
+        "MemAvailable_bytes": 89408966656,
+        "Cached_bytes": 54213873664,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 11,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34772606976,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455916544,
+        "MemAvailable_bytes": 89408966656,
+        "Cached_bytes": 54213873664,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 11,
+      "phase": "after_request",
+      "cuda_free_bytes": 34772606976,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34455916544,
+        "MemAvailable_bytes": 89408966656,
+        "Cached_bytes": 54213873664,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 12,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34774704128,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34458013696,
+        "MemAvailable_bytes": 89411063808,
+        "Cached_bytes": 54213873664,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 12,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34774867968,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34458177536,
+        "MemAvailable_bytes": 89411244032,
+        "Cached_bytes": 54213881856,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 12,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34774867968,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34458177536,
+        "MemAvailable_bytes": 89411244032,
+        "Cached_bytes": 54213881856,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 12,
+      "phase": "after_request",
+      "cuda_free_bytes": 34774867968,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34458177536,
+        "MemAvailable_bytes": 89411244032,
+        "Cached_bytes": 54213881856,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 13,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34776965120,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34460274688,
+        "MemAvailable_bytes": 89413341184,
+        "Cached_bytes": 54213881856,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 13,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34776965120,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34460274688,
+        "MemAvailable_bytes": 89413341184,
+        "Cached_bytes": 54213881856,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 13,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34776965120,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34460274688,
+        "MemAvailable_bytes": 89413341184,
+        "Cached_bytes": 54213881856,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 13,
+      "phase": "after_request",
+      "cuda_free_bytes": 34777096192,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34460405760,
+        "MemAvailable_bytes": 89413472256,
+        "Cached_bytes": 54213881856,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 14,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34777268224,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34460577792,
+        "MemAvailable_bytes": 89413644288,
+        "Cached_bytes": 54213881856,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 14,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34777268224,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34460577792,
+        "MemAvailable_bytes": 89413644288,
+        "Cached_bytes": 54213881856,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 14,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34777268224,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34460577792,
+        "MemAvailable_bytes": 89413644288,
+        "Cached_bytes": 54213881856,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 14,
+      "phase": "after_request",
+      "cuda_free_bytes": 34777268224,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34460577792,
+        "MemAvailable_bytes": 89413648384,
+        "Cached_bytes": 54213885952,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 15,
+      "phase": "before_prepare",
+      "cuda_free_bytes": 34777559040,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32736052224,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34460868608,
+        "MemAvailable_bytes": 89413939200,
+        "Cached_bytes": 54213885952,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 15,
+      "phase": "after_prepare",
+      "cuda_free_bytes": 34777559040,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32905427968,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34460868608,
+        "MemAvailable_bytes": 89413939200,
+        "Cached_bytes": 54213885952,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 15,
+      "phase": "before_velocity",
+      "cuda_free_bytes": 34777559040,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32914934784,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34460868608,
+        "MemAvailable_bytes": 89413939200,
+        "Cached_bytes": 54213885952,
+        "SwapFree_bytes": 0
+      }
+    },
+    {
+      "request": 15,
+      "phase": "after_request",
+      "cuda_free_bytes": 34777559040,
+      "cuda_total_bytes": 131856986112,
+      "allocated_bytes": 32912644096,
+      "reserved_bytes": 34904997888,
+      "host": {
+        "MemFree_bytes": 34460868608,
+        "MemAvailable_bytes": 89413943296,
+        "Cached_bytes": 54213885952,
+        "SwapFree_bytes": 0
+      }
+    }
+  ],
+  "qualification_only": true,
+  "checkpoint_manifest_sha256": "e93bf6a6a6a07277994dace1148ef99f93ee87b8c49d440476b6ad39ded8b4e1",
+  "external_runtime_assets": [
+    {
+      "path": "/home/guanming/.cache/huggingface/hub/models--Wan-AI--Wan2.2-TI2V-5B/snapshots/921dbaf3f1674a56f47e83fb80a34bac8a8f203e/Wan2.2_VAE.pth",
+      "resolved_path": "/home/guanming/.cache/huggingface/hub/models--Wan-AI--Wan2.2-TI2V-5B/blobs/20eb789667fa5e60e7516bf509512f6cb61f01b0aa0695eadaea930c13892b36",
+      "bytes": 2818839170,
+      "sha256": "20eb789667fa5e60e7516bf509512f6cb61f01b0aa0695eadaea930c13892b36"
+    }
+  ],
+  "prompt_contract": {
+    "format_prompt_as_json": false,
+    "metadata_augmentors": [
+      "viewpoint_augmentor",
+      "duration_fps_augmentor",
+      "resolution_info_augmentor"
+    ],
+    "max_action_dim": 64,
+    "history_length": 1,
+    "action_chunk_size": 32,
+    "observed": "service._transform"
+  },
+  "format_prompt_as_json": false,
+  "declared_execution": {
+    "sigmas": [
+      1.0,
+      0.0
+    ],
+    "steps": 1,
+    "guidance": 1.0,
+    "branches_per_callback": 1,
+    "action_padding": "zero"
+  },
+  "checkpoint_cache_advice": [
+    {
+      "relative_path": "transformer/diffusion_pytorch_model-00001-of-00007.safetensors",
+      "bytes": 4902249008
+    },
+    {
+      "relative_path": "transformer/diffusion_pytorch_model-00002-of-00007.safetensors",
+      "bytes": 4999863656
+    },
+    {
+      "relative_path": "transformer/diffusion_pytorch_model-00003-of-00007.safetensors",
+      "bytes": 4932719448
+    },
+    {
+      "relative_path": "transformer/diffusion_pytorch_model-00004-of-00007.safetensors",
+      "bytes": 4983084656
+    },
+    {
+      "relative_path": "transformer/diffusion_pytorch_model-00005-of-00007.safetensors",
+      "bytes": 4949498576
+    },
+    {
+      "relative_path": "transformer/diffusion_pytorch_model-00006-of-00007.safetensors",
+      "bytes": 4261644464
+    },
+    {
+      "relative_path": "transformer/diffusion_pytorch_model-00007-of-00007.safetensors",
+      "bytes": 1317303952
+    },
+    {
+      "relative_path": "vae/diffusion_pytorch_model.safetensors",
+      "bytes": 1409400600
+    },
+    {
+      "relative_path": "vision_encoder/model.safetensors",
+      "bytes": 1152811416
+    }
+  ],
+  "first_request_native_branch_clocks": [
+    1000.0
+  ],
+  "clock_check": "Complete declared SDE grid and literal CFG branches; at most one native FP32 ULP",
+  "backend_stats": {
+    "precision": "native",
+    "fp8_recipe": null,
+    "action_chunk_size": 32,
+    "action_steps": 1,
+    "guidance": 1.0,
+    "conditioning_fps": 15.0,
+    "native_optimizations": {
+      "persistent_text_kv": false,
+      "elided_lm_head_bytes": 1244659712,
+      "conditioning_cache_requested": false
+    },
+    "exact_pointwise": {
+      "installed": [
+        "language_model.model.layers.0.self_attn.rope",
+        "language_model.model.layers.0.self_attn.q_norm",
+        "language_model.model.layers.0.self_attn.k_norm",
+        "language_model.model.layers.0.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.0.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.0.input_layernorm",
+        "language_model.model.layers.0.input_layernorm_moe_gen",
+        "language_model.model.layers.0.post_attention_layernorm",
+        "language_model.model.layers.0.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.1.self_attn.rope",
+        "language_model.model.layers.1.self_attn.q_norm",
+        "language_model.model.layers.1.self_attn.k_norm",
+        "language_model.model.layers.1.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.1.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.1.input_layernorm",
+        "language_model.model.layers.1.input_layernorm_moe_gen",
+        "language_model.model.layers.1.post_attention_layernorm",
+        "language_model.model.layers.1.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.2.self_attn.rope",
+        "language_model.model.layers.2.self_attn.q_norm",
+        "language_model.model.layers.2.self_attn.k_norm",
+        "language_model.model.layers.2.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.2.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.2.input_layernorm",
+        "language_model.model.layers.2.input_layernorm_moe_gen",
+        "language_model.model.layers.2.post_attention_layernorm",
+        "language_model.model.layers.2.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.3.self_attn.rope",
+        "language_model.model.layers.3.self_attn.q_norm",
+        "language_model.model.layers.3.self_attn.k_norm",
+        "language_model.model.layers.3.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.3.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.3.input_layernorm",
+        "language_model.model.layers.3.input_layernorm_moe_gen",
+        "language_model.model.layers.3.post_attention_layernorm",
+        "language_model.model.layers.3.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.4.self_attn.rope",
+        "language_model.model.layers.4.self_attn.q_norm",
+        "language_model.model.layers.4.self_attn.k_norm",
+        "language_model.model.layers.4.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.4.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.4.input_layernorm",
+        "language_model.model.layers.4.input_layernorm_moe_gen",
+        "language_model.model.layers.4.post_attention_layernorm",
+        "language_model.model.layers.4.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.5.self_attn.rope",
+        "language_model.model.layers.5.self_attn.q_norm",
+        "language_model.model.layers.5.self_attn.k_norm",
+        "language_model.model.layers.5.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.5.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.5.input_layernorm",
+        "language_model.model.layers.5.input_layernorm_moe_gen",
+        "language_model.model.layers.5.post_attention_layernorm",
+        "language_model.model.layers.5.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.6.self_attn.rope",
+        "language_model.model.layers.6.self_attn.q_norm",
+        "language_model.model.layers.6.self_attn.k_norm",
+        "language_model.model.layers.6.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.6.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.6.input_layernorm",
+        "language_model.model.layers.6.input_layernorm_moe_gen",
+        "language_model.model.layers.6.post_attention_layernorm",
+        "language_model.model.layers.6.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.7.self_attn.rope",
+        "language_model.model.layers.7.self_attn.q_norm",
+        "language_model.model.layers.7.self_attn.k_norm",
+        "language_model.model.layers.7.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.7.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.7.input_layernorm",
+        "language_model.model.layers.7.input_layernorm_moe_gen",
+        "language_model.model.layers.7.post_attention_layernorm",
+        "language_model.model.layers.7.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.8.self_attn.rope",
+        "language_model.model.layers.8.self_attn.q_norm",
+        "language_model.model.layers.8.self_attn.k_norm",
+        "language_model.model.layers.8.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.8.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.8.input_layernorm",
+        "language_model.model.layers.8.input_layernorm_moe_gen",
+        "language_model.model.layers.8.post_attention_layernorm",
+        "language_model.model.layers.8.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.9.self_attn.rope",
+        "language_model.model.layers.9.self_attn.q_norm",
+        "language_model.model.layers.9.self_attn.k_norm",
+        "language_model.model.layers.9.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.9.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.9.input_layernorm",
+        "language_model.model.layers.9.input_layernorm_moe_gen",
+        "language_model.model.layers.9.post_attention_layernorm",
+        "language_model.model.layers.9.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.10.self_attn.rope",
+        "language_model.model.layers.10.self_attn.q_norm",
+        "language_model.model.layers.10.self_attn.k_norm",
+        "language_model.model.layers.10.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.10.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.10.input_layernorm",
+        "language_model.model.layers.10.input_layernorm_moe_gen",
+        "language_model.model.layers.10.post_attention_layernorm",
+        "language_model.model.layers.10.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.11.self_attn.rope",
+        "language_model.model.layers.11.self_attn.q_norm",
+        "language_model.model.layers.11.self_attn.k_norm",
+        "language_model.model.layers.11.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.11.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.11.input_layernorm",
+        "language_model.model.layers.11.input_layernorm_moe_gen",
+        "language_model.model.layers.11.post_attention_layernorm",
+        "language_model.model.layers.11.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.12.self_attn.rope",
+        "language_model.model.layers.12.self_attn.q_norm",
+        "language_model.model.layers.12.self_attn.k_norm",
+        "language_model.model.layers.12.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.12.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.12.input_layernorm",
+        "language_model.model.layers.12.input_layernorm_moe_gen",
+        "language_model.model.layers.12.post_attention_layernorm",
+        "language_model.model.layers.12.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.13.self_attn.rope",
+        "language_model.model.layers.13.self_attn.q_norm",
+        "language_model.model.layers.13.self_attn.k_norm",
+        "language_model.model.layers.13.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.13.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.13.input_layernorm",
+        "language_model.model.layers.13.input_layernorm_moe_gen",
+        "language_model.model.layers.13.post_attention_layernorm",
+        "language_model.model.layers.13.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.14.self_attn.rope",
+        "language_model.model.layers.14.self_attn.q_norm",
+        "language_model.model.layers.14.self_attn.k_norm",
+        "language_model.model.layers.14.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.14.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.14.input_layernorm",
+        "language_model.model.layers.14.input_layernorm_moe_gen",
+        "language_model.model.layers.14.post_attention_layernorm",
+        "language_model.model.layers.14.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.15.self_attn.rope",
+        "language_model.model.layers.15.self_attn.q_norm",
+        "language_model.model.layers.15.self_attn.k_norm",
+        "language_model.model.layers.15.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.15.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.15.input_layernorm",
+        "language_model.model.layers.15.input_layernorm_moe_gen",
+        "language_model.model.layers.15.post_attention_layernorm",
+        "language_model.model.layers.15.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.16.self_attn.rope",
+        "language_model.model.layers.16.self_attn.q_norm",
+        "language_model.model.layers.16.self_attn.k_norm",
+        "language_model.model.layers.16.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.16.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.16.input_layernorm",
+        "language_model.model.layers.16.input_layernorm_moe_gen",
+        "language_model.model.layers.16.post_attention_layernorm",
+        "language_model.model.layers.16.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.17.self_attn.rope",
+        "language_model.model.layers.17.self_attn.q_norm",
+        "language_model.model.layers.17.self_attn.k_norm",
+        "language_model.model.layers.17.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.17.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.17.input_layernorm",
+        "language_model.model.layers.17.input_layernorm_moe_gen",
+        "language_model.model.layers.17.post_attention_layernorm",
+        "language_model.model.layers.17.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.18.self_attn.rope",
+        "language_model.model.layers.18.self_attn.q_norm",
+        "language_model.model.layers.18.self_attn.k_norm",
+        "language_model.model.layers.18.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.18.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.18.input_layernorm",
+        "language_model.model.layers.18.input_layernorm_moe_gen",
+        "language_model.model.layers.18.post_attention_layernorm",
+        "language_model.model.layers.18.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.19.self_attn.rope",
+        "language_model.model.layers.19.self_attn.q_norm",
+        "language_model.model.layers.19.self_attn.k_norm",
+        "language_model.model.layers.19.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.19.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.19.input_layernorm",
+        "language_model.model.layers.19.input_layernorm_moe_gen",
+        "language_model.model.layers.19.post_attention_layernorm",
+        "language_model.model.layers.19.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.20.self_attn.rope",
+        "language_model.model.layers.20.self_attn.q_norm",
+        "language_model.model.layers.20.self_attn.k_norm",
+        "language_model.model.layers.20.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.20.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.20.input_layernorm",
+        "language_model.model.layers.20.input_layernorm_moe_gen",
+        "language_model.model.layers.20.post_attention_layernorm",
+        "language_model.model.layers.20.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.21.self_attn.rope",
+        "language_model.model.layers.21.self_attn.q_norm",
+        "language_model.model.layers.21.self_attn.k_norm",
+        "language_model.model.layers.21.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.21.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.21.input_layernorm",
+        "language_model.model.layers.21.input_layernorm_moe_gen",
+        "language_model.model.layers.21.post_attention_layernorm",
+        "language_model.model.layers.21.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.22.self_attn.rope",
+        "language_model.model.layers.22.self_attn.q_norm",
+        "language_model.model.layers.22.self_attn.k_norm",
+        "language_model.model.layers.22.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.22.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.22.input_layernorm",
+        "language_model.model.layers.22.input_layernorm_moe_gen",
+        "language_model.model.layers.22.post_attention_layernorm",
+        "language_model.model.layers.22.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.23.self_attn.rope",
+        "language_model.model.layers.23.self_attn.q_norm",
+        "language_model.model.layers.23.self_attn.k_norm",
+        "language_model.model.layers.23.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.23.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.23.input_layernorm",
+        "language_model.model.layers.23.input_layernorm_moe_gen",
+        "language_model.model.layers.23.post_attention_layernorm",
+        "language_model.model.layers.23.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.24.self_attn.rope",
+        "language_model.model.layers.24.self_attn.q_norm",
+        "language_model.model.layers.24.self_attn.k_norm",
+        "language_model.model.layers.24.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.24.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.24.input_layernorm",
+        "language_model.model.layers.24.input_layernorm_moe_gen",
+        "language_model.model.layers.24.post_attention_layernorm",
+        "language_model.model.layers.24.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.25.self_attn.rope",
+        "language_model.model.layers.25.self_attn.q_norm",
+        "language_model.model.layers.25.self_attn.k_norm",
+        "language_model.model.layers.25.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.25.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.25.input_layernorm",
+        "language_model.model.layers.25.input_layernorm_moe_gen",
+        "language_model.model.layers.25.post_attention_layernorm",
+        "language_model.model.layers.25.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.26.self_attn.rope",
+        "language_model.model.layers.26.self_attn.q_norm",
+        "language_model.model.layers.26.self_attn.k_norm",
+        "language_model.model.layers.26.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.26.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.26.input_layernorm",
+        "language_model.model.layers.26.input_layernorm_moe_gen",
+        "language_model.model.layers.26.post_attention_layernorm",
+        "language_model.model.layers.26.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.27.self_attn.rope",
+        "language_model.model.layers.27.self_attn.q_norm",
+        "language_model.model.layers.27.self_attn.k_norm",
+        "language_model.model.layers.27.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.27.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.27.input_layernorm",
+        "language_model.model.layers.27.input_layernorm_moe_gen",
+        "language_model.model.layers.27.post_attention_layernorm",
+        "language_model.model.layers.27.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.28.self_attn.rope",
+        "language_model.model.layers.28.self_attn.q_norm",
+        "language_model.model.layers.28.self_attn.k_norm",
+        "language_model.model.layers.28.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.28.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.28.input_layernorm",
+        "language_model.model.layers.28.input_layernorm_moe_gen",
+        "language_model.model.layers.28.post_attention_layernorm",
+        "language_model.model.layers.28.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.29.self_attn.rope",
+        "language_model.model.layers.29.self_attn.q_norm",
+        "language_model.model.layers.29.self_attn.k_norm",
+        "language_model.model.layers.29.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.29.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.29.input_layernorm",
+        "language_model.model.layers.29.input_layernorm_moe_gen",
+        "language_model.model.layers.29.post_attention_layernorm",
+        "language_model.model.layers.29.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.30.self_attn.rope",
+        "language_model.model.layers.30.self_attn.q_norm",
+        "language_model.model.layers.30.self_attn.k_norm",
+        "language_model.model.layers.30.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.30.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.30.input_layernorm",
+        "language_model.model.layers.30.input_layernorm_moe_gen",
+        "language_model.model.layers.30.post_attention_layernorm",
+        "language_model.model.layers.30.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.31.self_attn.rope",
+        "language_model.model.layers.31.self_attn.q_norm",
+        "language_model.model.layers.31.self_attn.k_norm",
+        "language_model.model.layers.31.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.31.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.31.input_layernorm",
+        "language_model.model.layers.31.input_layernorm_moe_gen",
+        "language_model.model.layers.31.post_attention_layernorm",
+        "language_model.model.layers.31.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.32.self_attn.rope",
+        "language_model.model.layers.32.self_attn.q_norm",
+        "language_model.model.layers.32.self_attn.k_norm",
+        "language_model.model.layers.32.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.32.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.32.input_layernorm",
+        "language_model.model.layers.32.input_layernorm_moe_gen",
+        "language_model.model.layers.32.post_attention_layernorm",
+        "language_model.model.layers.32.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.33.self_attn.rope",
+        "language_model.model.layers.33.self_attn.q_norm",
+        "language_model.model.layers.33.self_attn.k_norm",
+        "language_model.model.layers.33.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.33.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.33.input_layernorm",
+        "language_model.model.layers.33.input_layernorm_moe_gen",
+        "language_model.model.layers.33.post_attention_layernorm",
+        "language_model.model.layers.33.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.34.self_attn.rope",
+        "language_model.model.layers.34.self_attn.q_norm",
+        "language_model.model.layers.34.self_attn.k_norm",
+        "language_model.model.layers.34.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.34.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.34.input_layernorm",
+        "language_model.model.layers.34.input_layernorm_moe_gen",
+        "language_model.model.layers.34.post_attention_layernorm",
+        "language_model.model.layers.34.post_attention_layernorm_moe_gen",
+        "language_model.model.layers.35.self_attn.rope",
+        "language_model.model.layers.35.self_attn.q_norm",
+        "language_model.model.layers.35.self_attn.k_norm",
+        "language_model.model.layers.35.self_attn.q_norm_moe_gen",
+        "language_model.model.layers.35.self_attn.k_norm_moe_gen",
+        "language_model.model.layers.35.input_layernorm",
+        "language_model.model.layers.35.input_layernorm_moe_gen",
+        "language_model.model.layers.35.post_attention_layernorm",
+        "language_model.model.layers.35.post_attention_layernorm_moe_gen",
+        "language_model.model.norm",
+        "language_model.model.norm_moe_gen"
+      ],
+      "checks": 362,
+      "calls": 1110,
+      "rejected": [],
+      "errors": []
+    },
+    "layer_graphs": {
+      "captures": 36,
+      "checks": 72,
+      "replays": 504,
+      "rejected": []
+    },
+    "conditioning_cache_status": null,
+    "conditioning_cache": null,
+    "numeric_attention": {
+      "backend": "cudnn",
+      "precision": "native",
+      "dtype": "bfloat16",
+      "transformation": "NUMERIC",
+      "quality_status": "screen",
+      "task_quality_certified": false,
+      "eligible_python_calls": 144,
+      "fallback_python_calls": 144,
+      "cudnn_version": 91501,
+      "note": "Python call counts exclude CUDA graph replays"
+    },
+    "captured": true,
+    "sampling": {
+      "kind": "rectified_flow_fixed_step",
+      "sigmas": [
+        1.0,
+        0.0
+      ],
+      "sample_type": "sde",
+      "num_train_timesteps": 1000.0
+    },
+    "sampler_calls": 16,
+    "velocity_evaluations": 16,
+    "action_padding": "zero",
+    "padding_projection_calls": 16,
+    "padding_projected_velocity_branches": 16,
+    "padding_hooks_restored": true
+  },
+  "execution_policy": {
+    "category": "NUMERIC",
+    "precision": "native",
+    "tier_ceiling": "numeric",
+    "transform_tier": "NUMERIC",
+    "nfe": {
+      "action": 1,
+      "prefix": 1
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "p50_ms": 788.4107700083405,
+  "p95_ms": 791.4278029900743,
+  "actions_sha256": "e9b2811cfa5b9dbf292f7e774f92aa7ae06b53aba96e001fd4a503679b248290",
+  "baseline_action_byte_identical": true,
+  "raw_report": {
+    "path": "/home/ubuntu/ifl_cosmos_quality_preflight/nano_memory/cache-advice.json",
+    "sha256": "ce65d376975ced6b9b4d241c0466084faa36088fa3431497ed2a532076d3633f"
+  }
+}

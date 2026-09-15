@@ -5,6 +5,7 @@ LingBot-VA. Facts below come from lerobot/pi05_base's own config.json, not from 
 """
 from __future__ import annotations
 
+import dataclasses
 from pathlib import Path
 
 from instinctflash import (AdapterSpec, GuidanceRule, KVLifetime, KVStreamSpec, PhaseSpec, PurityKey)
@@ -54,7 +55,12 @@ class Pi05Adapter:
                         ObservationField("observation.images.right_wrist_0_rgb", (3, 224, 224)),
                         ObservationField("observation.state", (32,))),
                 history=1, conditioning=("prompt",)),
-            notes={"family": "vla", "chunk_size": "50", "n_obs_steps": "1"},
+            # "backbone" identifies this spec to backbone-keyed planner checks (the engine
+            # geometry gate in passes/generic/engine_offload.py keys on it; notes are the one
+            # channel a pass can see). Per-checkpoint action geometry rides on notes too — see
+            # spec_for_checkpoint.
+            notes={"family": "vla", "backbone": BACKBONE, "chunk_size": "50",
+                   "n_obs_steps": "1"},
         )
 
     def observation_contract(self, checkpoint):
@@ -93,6 +99,53 @@ class Pi05Adapter:
             f'{{"observation.images.image": [3, 256, 256], "observation.state": [8]}}. '
             f"The values are in the checkpoint's own train_config.json input_features.")
 
+    def spec_for_checkpoint(self, checkpoint) -> AdapterSpec:
+        """Bind the family spec to the upstream weights this declaration selects.
+
+        Checkpoint facts ride on the spec, from ONE source each ("action geometry" below joins
+        the original two — ``runtime.engine_backend.declared_action_dim`` owns its resolution):
+
+        * ``notes['base_weights']`` — the upstream repo the pointer package selects. Passes that
+          carry per-release numeric evidence (``Pi05TF32Numeric``) key on it, because the plan
+          header ``model_id`` is rewritten by the facade to the DECLARED package id (the correct
+          label for the plan, and the wrong key for evidence measured on the underlying weights).
+        * ``observation`` — resolved by ``observation_contract`` above, the single owner of
+          per-checkpoint geometry (``execution.obs_features``/KNOWN_DECLARATIONS). This method
+          deliberately declares no geometry of its own: an earlier draft hardcoded a 3-field v044
+          contract here that contradicted the declared 4-field one (incl.
+          ``observation.images.empty_camera_0``), which is exactly the two-hooks failure this
+          unification removes. A checkpoint that cannot resolve geometry yet still PLANS with the
+          static shape — serving and ``Runtime.observation`` keep failing loud through
+          ``observation_contract`` itself.
+        """
+        base = self.spec()
+        notes = dict(base.notes)
+        repo = str((checkpoint.execution.extra or {}).get("base_weights") or "")
+        if repo:
+            notes["base_weights"] = repo
+        op = (checkpoint.execution.extra or {}).get("pi05_tf32_numeric")
+        if isinstance(op, dict):
+            notes["tf32_hardware"] = op.get("hardware")
+        # ACTION geometry, for the planner's engine gate (one rule, two surfaces: the runtime's
+        # EngineBackend enforces the same fact via the same helper). The engine's pi05 frontend
+        # serves LIBERO's 7-dim actions as built and used to silently truncate a 32-dim
+        # checkpoint's chunks to (10, 7); the pass can only decline that at plan time if the
+        # declared dimensionality is a fact on the spec. Unresolved stays fail-closed at the
+        # pass: notes carry the reason instead of a number.
+        from instinctflash.runtime.engine_backend import declared_action_dim
+        dim, dim_src = declared_action_dim(checkpoint)
+        if dim is not None:
+            notes["action_dim"] = str(dim)
+            notes["action_dim_source"] = dim_src
+        else:
+            notes["action_dim_unresolved"] = dim_src
+        base = dataclasses.replace(base, notes=notes)
+        try:
+            observation, _source = self.observation_contract(checkpoint)
+        except RuntimeError:
+            return base            # plan-time tolerance; serve/observation stays fail-loud
+        return dataclasses.replace(base, observation=observation)
+
     #: pi05 needs lerobot and torch. It does NOT need diffusers -- which is what the runtime used to
     #: demand of every model, sending a perfectly hostable VLA to a worker it has no reason to have.
     HOST_REQUIRES = ("torch", "lerobot")
@@ -120,44 +173,71 @@ class Pi05Adapter:
         from lerobot.policies.pi05.configuration_pi05 import PI05Config
         from lerobot.policies.pi05.modeling_pi05 import PI05Policy
 
-        repo = (checkpoint.execution.extra or {}).get("base_weights")
+        tf32_planned = _validate_tf32_plan(checkpoint, plan)
+
+        repo = _resolve_weights(checkpoint)
         if not repo:
             raise RuntimeError(
                 f"{checkpoint.model_id}: no local weights and no execution.base_weights, so there is "
                 f"nothing to load. Declare the upstream repo id in base_weights.")
         _require_processor_steps(repo)
         dev = device or ("cuda" if torch.cuda.is_available() else "cpu")
-        # A CONCRETE config object, mutated before PI05Policy constructs any modules: the
-        # compile_model flag is consumed inside the model __init__ (lerobot 0.6.1
-        # modeling_pi05.py wraps sample_actions/forward in torch.compile there — and also flips
-        # torch.set_float32_matmul_precision("high") process-wide before the wrappers), so any
-        # decision that needs the plan has to precede construction.
-        config = PI05Config.from_pretrained(repo)
-        _neutralize_compile_model_for_planned_capture(config, plan, dev)
-        policy = PI05Policy.from_pretrained(repo, config=config)
-        policy.eval()
-        policy.to(dev)
+        from pi05_iwm.precision import Pi05PrecisionLease
+        precision = Pi05PrecisionLease(torch, "tf32" if tf32_planned else "fp32")
+        try:
+            # This must be a CONCRETE config object mutated before PI05Policy constructs any
+            # modules.  With LeRobot 0.6.2, PI05Config.from_pretrained(repo, dtype="float32")
+            # silently leaves v044's JSON value at bfloat16.  TF32 only accelerates FP32 GEMMs, so
+            # accepting that value would publish a NUMERIC plan while running BF16 arithmetic.
+            config = PI05Config.from_pretrained(repo)
+            if tf32_planned:
+                config.dtype = "float32"
+                config.compile_model = False
+            cap = None
+            if str(dev).startswith("cuda") and torch.cuda.is_available():
+                cap = torch.cuda.get_device_capability(torch.device(str(dev)))
+            # Two independent reasons a published compile_model=true does not stand, each
+            # printed with its own cause. Both must run HERE: the flag is consumed by
+            # PI05Policy.from_pretrained below, so any decision that needs the plan has to
+            # precede construction (the same ordering the T0 plan-gated capture install in
+            # lingbot_vla_iwm enforces).
+            _neutralize_compile_model_for_planned_capture(config, plan, dev)
+            _neutralize_compile_model_on_sm110a(config, cap)
+            _apply_compile_permission(config, plan)
 
-        n = dict(nfe or checkpoint.execution.nfe or {})
-        if "action" in n and hasattr(policy.config, "num_inference_steps"):
-            # the declared flow-matching schedule, applied. Without this a checkpoint declaring
-            # nfe {action: 4} would be served at the config's 10 and the plan would be priced wrong.
-            policy.config.num_inference_steps = int(n["action"])
+            policy = PI05Policy.from_pretrained(repo, config=config)
+            policy.eval()
+            policy.to(dev)
+            if tf32_planned:
+                _require_all_floating_parameters_fp32(policy, torch)
 
-        # OVERRIDE THE PUBLISHED DEVICE. `lerobot/pi05_base` ships its pipeline with
-        # `device_processor: {"device": "cpu"}` -- the publisher's deployment assumption baked into the
-        # checkpoint. Left alone it puts language tokens on the CPU while the weights are on cuda:0,
-        # and the run dies inside a Gemma embedding with "Expected all tensors to be on the same
-        # device". Where a model runs is a DEPLOYMENT fact, so the runtime's device wins over anything
-        # a checkpoint asserts about it.
-        pre, post = make_pre_post_processors(
-            policy.config, pretrained_path=repo,
-            preprocessor_overrides={"device_processor": {"device": str(dev)}},
-            postprocessor_overrides={"device_processor": {"device": str(dev)}})
+            n = dict(nfe or checkpoint.execution.nfe or {})
+            if "action" in n and hasattr(policy.config, "num_inference_steps"):
+                # the declared flow-matching schedule, applied. Without this a checkpoint declaring
+                # nfe {action: 4} would be served at the config's 10 and the plan was priced wrong.
+                policy.config.num_inference_steps = int(n["action"])
 
-        loop = _Pi05Loop(policy, pre, post, dev)
-        Pi05Adapter.install(policy, plan, device=dev)
-        return loop
+            # OVERRIDE THE PUBLISHED DEVICE. `lerobot/pi05_base` ships its pipeline with
+            # `device_processor: {"device": "cpu"}` -- the publisher's deployment assumption baked
+            # into the checkpoint. Left alone it puts language tokens on the CPU while the weights
+            # are on cuda:0. Where a model runs is a DEPLOYMENT fact, so the runtime's device wins.
+            pre, post = make_pre_post_processors(
+                policy.config, pretrained_path=repo,
+                preprocessor_overrides={"device_processor": {"device": str(dev)}},
+                postprocessor_overrides={"device_processor": {"device": str(dev)}})
+
+            loop = _Pi05Loop(policy, pre, post, dev, precision_lease=precision)
+            try:
+                from instinctflash.runtime.precision import install_requested_fp8
+                install_requested_fp8(policy.model, plan, "pi05")
+                Pi05Adapter.install(policy, plan, device=dev)
+            except Exception:
+                loop.close()
+                raise
+            return loop
+        except Exception:
+            precision.close()
+            raise
 
     @staticmethod
     def install(policy, plan, *, device=None) -> list[str]:
@@ -189,7 +269,11 @@ class Pi05Adapter:
 
         wanted = {getattr(r, "name", "") for r in getattr(plan, "results", ())
                   if getattr(r, "applies", False)}
+        from pi05_iwm.passes import PASS_NAME
+        tf32_numeric = PASS_NAME in wanted
         if "graph_capture" not in wanted:
+            if tf32_numeric:
+                raise RuntimeError("pi05_tf32_numeric cannot run without graph_capture")
             return []
         if not (device and str(device).startswith("cuda") and torch.cuda.is_available()):
             print("InstinctFlash pi05: graph_capture is planned but needs CUDA; running eager.")
@@ -197,6 +281,15 @@ class Pi05Adapter:
 
         capture = next(r for r in plan.results if r.name == "graph_capture" and r.applies)
         if os.environ.get(CAPTURE_KILL_SWITCH) == "1":
+            if tf32_numeric:
+                # The TF32 operating point is checkpoint-REQUIRED and its manifest declares
+                # static_kv_graph: true — serving it eager would be a different execution
+                # semantics under the same declaration, the exact substitution this repo refuses.
+                raise RuntimeError(
+                    f"{CAPTURE_KILL_SWITCH}=1 cannot serve this checkpoint: it declares the "
+                    f"TF32 static-KV operating point (execution.pi05_tf32_numeric, "
+                    f"static_kv_graph: true), so eager would be a different semantics than the "
+                    f"one declared. Unset {CAPTURE_KILL_SWITCH}, or select the FP32 checkpoint.")
             surface = Pi05Surface(policy.model)
             hoisted = surface.hoist_loop_constants()
             note = (f"{CAPTURE_KILL_SWITCH}=1 — the default static-KV capture is disabled by "
@@ -221,33 +314,97 @@ class Pi05Adapter:
         surface = Pi05Surface(policy.model)
         hoisted = surface.hoist_loop_constants()          # BITEXACT, and the prerequisite
 
+        from pi05_iwm.static_capture import install_static_capture
+
+        if tf32_numeric:
+            if (torch.get_float32_matmul_precision() != "high"
+                    or not torch.backends.cuda.matmul.allow_tf32):
+                raise RuntimeError(
+                    "pi05_tf32_numeric was planned but its process precision lease is not active"
+                )
+            install_static_capture(
+                policy.model,
+                step_tables=True,
+                on_self_check=_record_self_check_on_plan(capture),
+                full_chunk=False,
+                prefix_graph=False,
+            )
+            for h in hoisted:
+                print(f"InstinctFlash pi05: hoisted {h}")
+            numeric = next(r for r in plan.results if r.name == PASS_NAME and r.applies)
+            delta = numeric.params["max_abs_action_delta"]
+            margin = (f"max measured |delta action vs FP32| {float(delta):.3e}"
+                      if delta is not None else "no qualified target-device action margin")
+            print("InstinctFlash pi05: TF32 + static-KV graph installed; plan tier NUMERIC "
+                  f"({margin}). The first capture is "
+                  f"gated by the bit-exact self-check (replay vs TF32 eager).")
+            return ["loop_constant_hoist", "graph_capture_static_kv", PASS_NAME]
+
         # The replay-safe path, BY DEFAULT: static max-extent KV buffers, gate numbers in
         # pi05_iwm/static_capture.py and verify_static_capture.py (bitexact on unseen inputs
         # and prompts; 3.55x denoise step, 1.65x chunk on H100/pi05_base; 206.7 -> 72.8 ms
         # on v044). The per-process proof is the runtime self-check wired here.
-        from pi05_iwm.static_capture import install_static_capture
         compile_superseded = bool(capture.params.get("compile_model_superseded"))
-        install_static_capture(policy.model,
-                               on_self_check=_record_self_check_on_plan(capture))
+        driver = install_static_capture(
+            policy.model, on_self_check=_record_self_check_on_plan(capture),
+            **_native_capture_options(torch.cuda.get_device_capability(device)))
+        graph_mode = (
+            "prefix + full-loop graphs"
+            if getattr(driver, "_prefix_graph_enabled", False)
+            else "full-loop graph" if getattr(driver, "_full_chunk", False)
+            else "per-step graph")
+        if (getattr(driver, "_full_chunk", False)
+                and getattr(driver, "_step_tables", False)):
+            graph_mode += " with baked time/AdaRMS tables"
         for h in hoisted:
             print(f"InstinctFlash pi05: hoisted {h}")
         because = (" — installed in place of the checkpoint's neutralized compile_model"
                    if compile_superseded else
                    " — the pi05-family default on capture-capable devices")
-        print(f"InstinctFlash pi05: static-KV graph capture installed{because}. The first "
+        print(f"InstinctFlash pi05: static-KV {graph_mode} capture installed{because}. The first "
               f"capture is gated by a bit-exact self-check (replay vs eager on staged inputs, "
               f"exact equality); a mismatch releases the graphs and falls back to eager, "
               f"loudly. Kill-switch: {CAPTURE_KILL_SWITCH}=1.")
         return ["loop_constant_hoist", "graph_capture_static_kv"]
 
 
+def _resolve_weights(checkpoint):
+    """Keep a native Hub revision pinned through policy and processor loading."""
+    from pathlib import Path
+    from instinctflash.descriptors.package import WEIGHTS_ANY
+
+    reference = (checkpoint.execution.extra or {}).get("base_weights")
+    if reference is not None and reference == getattr(checkpoint.execution, "model_id", None):
+        package = Path(checkpoint.path)
+        if any((package / name).is_file() for name in WEIGHTS_ANY):
+            return str(package)
+    return reference
+
+
 class _Pi05Loop:
     """One control cycle over pi05. No commit phase: the prefix is rebuilt every cycle."""
 
-    def __init__(self, policy, pre, post, device):
+    def __init__(self, policy, pre, post, device, precision_lease=None):
         import torch
         self._torch, self._p, self._pre, self._post, self._dev = torch, policy, pre, post, device
         self._prompt = ""
+        self._precision_lease = precision_lease
+
+    @property
+    def graph_stats(self):
+        driver = getattr(self._p.model, "_ifl_static_denoiser", None)
+        return {
+            "captured": bool(driver and not driver.rejected and
+                             (getattr(driver, "_chunk_graph", None) is not None or
+                              getattr(driver, "_graph", None) is not None)),
+            "rejected": bool(driver and driver.rejected),
+            "full_graph": bool(driver and driver._full_chunk),
+            "prefix_graph": bool(driver and driver._prefix_graph_enabled),
+            "replays": int(getattr(driver, "replays", 0)),
+            "prefix_replays": int(getattr(driver, "prefix_replays", 0)),
+            "chunk_replays": int(getattr(driver, "chunk_replays", 0)),
+            "self_check": getattr(driver, "self_check", None),
+        }
 
     def reset(self, **conditioning) -> None:
         self._prompt = str(conditioning.get("prompt") or "")
@@ -276,6 +433,9 @@ class _Pi05Loop:
 
     def close(self) -> None:
         self._p = None
+        lease, self._precision_lease = self._precision_lease, None
+        if lease is not None:
+            lease.close()
 
 
 def _record_self_check_on_plan(capture):
@@ -308,6 +468,61 @@ def _record_self_check_on_plan(capture):
     return on_result
 
 
+def _native_capture_options(capability):
+    """Measured native defaults; explicit graph switches remain independent opt-outs."""
+    import os
+    qualified = tuple(capability) in {(9, 0), (11, 0)}
+    full_env = os.environ.get("IFL_PI05_FULL_CHUNK_GRAPH")
+    prefix_env = os.environ.get("IFL_PI05_PREFIX_GRAPH")
+    prefix = (prefix_env == "1" if prefix_env is not None
+              else qualified and full_env != "0")
+    full = (full_env == "1" if full_env is not None else qualified or prefix)
+    tables = (True if full and qualified and "IFL_PI05_FULL_STEP_TABLES" not in os.environ
+              else None)
+    return {"full_chunk": full, "prefix_graph": prefix, "step_tables": tables}
+
+
+def _apply_compile_permission(config, plan):
+    """A publisher's compile flag cannot bypass the caller's arithmetic ceiling."""
+    if not getattr(config, "compile_model", False):
+        return
+    from instinctflash.planners.planner import Tier, PassResult
+    if getattr(plan, "tier_ceiling", Tier.BITEXACT) < Tier.NUMERIC:
+        config.compile_model = False
+        print("InstinctFlash pi05: compile_model neutralized by BITEXACT policy; "
+              "upstream eager arithmetic retained.")
+    else:
+        plan.results.append(PassResult(
+            "pi05_torch_compile", True, Tier.NUMERIC,
+            "Checkpoint compile_model retained with explicit NUMERIC permission"))
+
+
+def _neutralize_compile_model_on_sm110a(config, device_capability) -> bool:
+    """Turn off a checkpoint-published ``compile_model: true`` on sm_110a, saying why.
+
+    ``lerobot/pi05_libero_finetuned_v044`` publishes ``compile_model: true`` in its config, and
+    on Thor (sm_110a) ``torch.compile`` dies inside triton with ``ptxas-blackwell: 'sm_110a' is
+    not defined`` — triton simply cannot emit for this arch (established; the previous
+    workaround was ``TORCH_COMPILE_DISABLE=1`` in the caller's environment, which nobody who
+    just loads the checkpoint knows to set). ``compile_model`` is a publisher's deployment
+    assumption, not model semantics: the eager module computes the same function, so
+    neutralizing the flag changes nothing but the crash. Printed, never silent — the caller
+    must be able to see their config key did not take effect and why.
+
+    Returns True when the key was neutralized.
+    """
+    if not getattr(config, "compile_model", False):
+        return False
+    if tuple(device_capability or ()) != (11, 0):
+        return False
+    config.compile_model = False
+    print("InstinctFlash pi05: the checkpoint publishes compile_model=true, but torch.compile "
+          "is dead on this device (sm_110a: triton fails with \"ptxas-blackwell: 'sm_110a' is "
+          "not defined\"). compile_model neutralized — running the eager module, which computes "
+          "the same function without the crash.")
+    return True
+
+
 #: Why a planned graph_capture outranks a checkpoint-published ``compile_model: true``. Every
 #: number is measured on the same machine and checkpoint (H100, v044, full action chunk): the
 #: static-KV captured chunk runs 72.8 ms against torch.compile max-autotune's 173.3 ms, capture
@@ -321,7 +536,9 @@ COMPILE_SUPERSEDED_REASON = ("superseded by graph_capture: bit-exact, faster "
 def _neutralize_compile_model_for_planned_capture(config, plan, device) -> bool:
     """Turn off a checkpoint-published ``compile_model: true`` when this plan captures instead.
 
-    ``compile_model`` is a publisher's deployment assumption, and when the plan's
+    The SECOND, independent neutralization rule. The sm_110a one above is about a device where
+    torch.compile crashes; this one is about a plan that already holds something strictly
+    better. ``compile_model`` is a publisher's deployment assumption, and when the plan's
     ``graph_capture`` pass APPLIES the runtime's own static-KV capture serves the same denoise
     loop for less on every axis that assumption is about — see COMPILE_SUPERSEDED_REASON for
     the measurements. Honoring the flag on top of capture would buy nothing and cost the
@@ -354,13 +571,93 @@ def _neutralize_compile_model_for_planned_capture(config, plan, device) -> bool:
     config.compile_model = False
     capture.params["compile_model_superseded"] = True
     # PassResult is frozen but params is the runtime-facing dict by contract; explain()
-    # surfaces this as a 'decision:' line.
+    # surfaces this as a 'decision:' line (the conv-layout autotune precedent).
     capture.params["decision"] = tuple(capture.params.get("decision", ())) + (
         f"checkpoint publishes compile_model=true — neutralized: {COMPILE_SUPERSEDED_REASON}",)
     print(f"InstinctFlash pi05: the checkpoint publishes compile_model=true — "
           f"{COMPILE_SUPERSEDED_REASON}. compile_model neutralized; the plan's static-KV "
           f"capture serves the denoise loop instead.")
     return True
+
+
+def _declares_tf32_operating_point(checkpoint) -> bool:
+    """Validate the manifest value, not merely the capability token derived from its key."""
+    op = (checkpoint.execution.extra or {}).get("pi05_tf32_numeric")
+    if op is None:
+        return False
+    if not isinstance(op, dict):
+        raise RuntimeError("execution.pi05_tf32_numeric must be an object")
+    required = {
+        "enabled": True,
+        "tier": "NUMERIC",
+        "math_mode": "tf32",
+        "parameter_dtype": "float32",
+        "compile_model": False,
+        "static_kv_graph": True,
+    }
+    if op.get("hardware") not in {"sm90", "sm110"}:
+        raise RuntimeError("pi05_tf32_numeric hardware must be sm90 or sm110")
+    if op["hardware"] == "sm110" and (op.get("qualification") != "unqualified"
+                                        or op.get("max_abs_action_delta") is not None):
+        raise RuntimeError("Thor TF32 requires explicit unqualified status and no inherited action margin")
+    wrong = {k: (op.get(k), want) for k, want in required.items() if op.get(k) != want}
+    if wrong:
+        raise RuntimeError(f"invalid pi05_tf32_numeric declaration fields: {wrong}")
+    return True
+
+
+def _require_all_floating_parameters_fp32(policy, torch_module) -> None:
+    """Hard gate: a declared TF32 operating point may not actually load BF16/FP16 modules."""
+    floating = []
+    wrong = []
+    for name, parameter in policy.named_parameters():
+        if not parameter.is_floating_point():
+            continue
+        floating.append(name)
+        if parameter.dtype != torch_module.float32:
+            wrong.append((name, str(parameter.dtype)))
+    if not floating:
+        raise RuntimeError("pi05 TF32 operating point loaded no floating-point parameters")
+    if wrong:
+        preview = ", ".join(f"{name}={dtype}" for name, dtype in wrong[:5])
+        more = f" (+{len(wrong) - 5} more)" if len(wrong) > 5 else ""
+        raise RuntimeError(
+            "pi05 TF32 operating point requires every floating parameter to be torch.float32; "
+            f"found {len(wrong)}/{len(floating)} with another dtype: {preview}{more}"
+        )
+
+
+def _validate_tf32_plan(checkpoint, plan) -> bool:
+    """Return TF32 mode, refusing any declaration/plan mismatch before weights load."""
+    tf32_declared = _declares_tf32_operating_point(checkpoint)
+    applied = {r.name for r in getattr(plan, "results", ()) if r.applies}
+    from pi05_iwm.passes import PASS_NAME
+    tf32_planned = PASS_NAME in applied
+    if tf32_declared != tf32_planned:
+        detail = next(
+            (r.reason for r in getattr(plan, "results", ()) if r.name == PASS_NAME),
+            "pass was not evaluated",
+        )
+        raise RuntimeError(
+            "pi0.5 TF32 operating-point declaration and plan disagree: "
+            f"declared={tf32_declared}, applied={tf32_planned}. {detail}. "
+            "The runtime refuses to silently substitute FP32 or TF32 semantics."
+        )
+    if tf32_planned and "graph_capture" not in applied:
+        raise RuntimeError(
+            "pi05_tf32_numeric requires the measured static-KV graph stack, but "
+            "graph_capture is not applied (possibly excluded by the caller)."
+        )
+    if tf32_planned:
+        result = next(r for r in plan.results if r.name == PASS_NAME and r.applies)
+        op = checkpoint.execution.extra["pi05_tf32_numeric"]
+        for field in ("max_abs_action_delta", "evidence", "hardware"):
+            if op.get(field) != result.params.get(field):
+                raise RuntimeError(
+                    f"pi0.5 TF32 manifest {field}={op.get(field)!r} disagrees with the "
+                    f"checkpoint-specific planner evidence {result.params.get(field)!r}"
+                )
+    return tf32_planned
 
 
 def _require_processor_steps(repo: str) -> None:

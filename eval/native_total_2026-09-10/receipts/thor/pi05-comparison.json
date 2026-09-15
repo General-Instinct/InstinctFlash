@@ -1,0 +1,261 @@
+{
+  "family": "pi05",
+  "device": "NVIDIA Thor",
+  "status": "BITEXACT",
+  "baseline_p50_ms": 408.93033699830994,
+  "current_p50_ms": 312.4154939869186,
+  "repeated_baseline_p50_ms": 413.9037709974218,
+  "speedup_range": [
+    1.3089310385336799,
+    1.3248503322141658
+  ],
+  "applied_passes": [
+    "graph_capture"
+  ],
+  "baseline_applied_passes": [],
+  "unchanged_transform_plan": false,
+  "execution_policy": {
+    "category": "BITEXACT",
+    "precision": "native",
+    "tier_ceiling": "bitexact",
+    "transform_tier": "BITEXACT",
+    "nfe": {
+      "prefix": 1,
+      "action": 10
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "source_drift": {
+    "current": [],
+    "baseline_b": []
+  },
+  "backend_stats": {},
+  "reference_scope": "Direct upstream eager policy versus full default native Runtime; same I/O wrappers, weights, dtype and steps",
+  "comparisons": {
+    "baseline_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910/thor-results/pi05-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910/thor-results/pi05-current.json",
+      "baseline_sha256": "c021706abda289ccda5a0487ba14200e3744fe9fa120043f7306b125751bb89a",
+      "candidate_sha256": "1909fa97507169ddd8acdf6d395be01ecafb6101de419c26a969eb21f2b76205",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            7
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        },
+        {
+          "name": "queued_actions",
+          "shape": [
+            23,
+            49,
+            1,
+            7
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "captured": true,
+        "rejected": false,
+        "full_graph": true,
+        "prefix_graph": true,
+        "replays": 280,
+        "prefix_replays": 28,
+        "chunk_replays": 28,
+        "self_check": {
+          "n": 6,
+          "bitexact": true,
+          "max_abs_delta": 0.0,
+          "seconds": 4.434201936994214,
+          "cases": [
+            {
+              "input": 1,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 2,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 3,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 4,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 5,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 6,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            }
+          ],
+          "scope": "sample_actions",
+          "prefix_graph": true
+        }
+      },
+      "baseline_p50_ms": 408.93033699830994,
+      "candidate_p50_ms": 312.4154939869186,
+      "speedup": 1.3089310385336799,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    },
+    "baseline_repeat": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910/thor-results/pi05-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910/thor-results/pi05-baseline_b.json",
+      "baseline_sha256": "c021706abda289ccda5a0487ba14200e3744fe9fa120043f7306b125751bb89a",
+      "candidate_sha256": "8f2f5acd4b3a364cc434d7c6cbb52a471a72919cb196c8e02c411f7ebeaf2274",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            7
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        },
+        {
+          "name": "queued_actions",
+          "shape": [
+            23,
+            49,
+            1,
+            7
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "captured": false,
+        "rejected": false,
+        "full_graph": false,
+        "prefix_graph": false,
+        "replays": 0,
+        "prefix_replays": 0,
+        "chunk_replays": 0,
+        "self_check": null
+      },
+      "baseline_p50_ms": 408.93033699830994,
+      "candidate_p50_ms": 413.9037709974218,
+      "speedup": 0.9879840814517661,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    },
+    "repeat_current": {
+      "baseline": "/home/ubuntu/ifl_eval/native_total_20260910/thor-results/pi05-baseline_b.json",
+      "candidate": "/home/ubuntu/ifl_eval/native_total_20260910/thor-results/pi05-current.json",
+      "baseline_sha256": "8f2f5acd4b3a364cc434d7c6cbb52a471a72919cb196c8e02c411f7ebeaf2274",
+      "candidate_sha256": "1909fa97507169ddd8acdf6d395be01ecafb6101de419c26a969eb21f2b76205",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            7
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        },
+        {
+          "name": "queued_actions",
+          "shape": [
+            23,
+            49,
+            1,
+            7
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "captured": true,
+        "rejected": false,
+        "full_graph": true,
+        "prefix_graph": true,
+        "replays": 280,
+        "prefix_replays": 28,
+        "chunk_replays": 28,
+        "self_check": {
+          "n": 6,
+          "bitexact": true,
+          "max_abs_delta": 0.0,
+          "seconds": 4.434201936994214,
+          "cases": [
+            {
+              "input": 1,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 2,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 3,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 4,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 5,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 6,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            }
+          ],
+          "scope": "sample_actions",
+          "prefix_graph": true
+        }
+      },
+      "baseline_p50_ms": 413.9037709974218,
+      "candidate_p50_ms": 312.4154939869186,
+      "speedup": 1.3248503322141658,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "matching_calls": 23,
+      "total_calls": 23
+    }
+  },
+  "scope": "Recorded camera inputs with synthetic states; finite action bytes, no tolerance or task-quality claim."
+}

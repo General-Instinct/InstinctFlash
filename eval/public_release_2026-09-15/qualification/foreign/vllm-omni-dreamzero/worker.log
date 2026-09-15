@@ -1,0 +1,239 @@
+INFO 09-14 22:04:02 [patch.py:252] NVFP4 W4A4 weight_scale NaN-clamp: installed.
+INFO 09-14 22:04:02 [patch.py:503] inductor factorable-divisibility patch: installed.
+INFO 09-14 22:04:02 [patch.py:568] [cumem-cuda] CuMemAllocator._python_free_callback patched: asleep guard extended to all platforms.
+INFO 09-14 22:04:04 [omni_base.py:207] [Omni] Initializing with model /home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942
+INFO 09-14 22:04:04 [async_omni_engine.py:170] [AsyncOmniEngine] Initializing with model /home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942
+ERROR 09-14 22:04:04 [repo_utils.py:119] Error parsing config for /home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942: The checkpoint you are trying to load has model type `vla` but Transformers does not recognize this architecture. This could be because of an issue with the checkpoint, or because your version of Transformers is out of date.
+ERROR 09-14 22:04:04 [repo_utils.py:119] 
+ERROR 09-14 22:04:04 [repo_utils.py:119] You can update Transformers with the command `pip install --upgrade transformers`. If this does not work, and the checkpoint is very new, then there may not be a release version that supports this model yet. In this case, you can get the most up-to-date code by installing Transformers from source with the command `pip install git+https://github.com/huggingface/transformers.git`, retrying 1 of 2
+ERROR 09-14 22:04:06 [repo_utils.py:117] Error parsing config for /home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942: The checkpoint you are trying to load has model type `vla` but Transformers does not recognize this architecture. This could be because of an issue with the checkpoint, or because your version of Transformers is out of date.
+ERROR 09-14 22:04:06 [repo_utils.py:117] 
+ERROR 09-14 22:04:06 [repo_utils.py:117] You can update Transformers with the command `pip install --upgrade transformers`. If this does not work, and the checkpoint is very new, then there may not be a release version that supports this model yet. In this case, you can get the most up-to-date code by installing Transformers from source with the command `pip install git+https://github.com/huggingface/transformers.git`
+INFO 09-14 22:04:06 [async_omni_engine.py:260] [AsyncOmniEngine] Launching Orchestrator thread with 1 stages
+INFO 09-14 22:04:06 [stage_init_utils.py:760] [stage_init] Set VLLM_WORKER_MULTIPROC_METHOD=spawn
+INFO 09-14 22:04:06 [initialization.py:356] Loaded OmniTransferConfig with 0 connector configurations
+INFO 09-14 22:04:06 [multiproc_executor.py:350] Starting server...
+INFO 09-14 22:04:14 [patch.py:252] NVFP4 W4A4 weight_scale NaN-clamp: installed.
+INFO 09-14 22:04:14 [patch.py:503] inductor factorable-divisibility patch: installed.
+INFO 09-14 22:04:14 [patch.py:568] [cumem-cuda] CuMemAllocator._python_free_callback patched: asleep guard extended to all platforms.
+(DiffusionWorker pid=282759) INFO 09-14 22:04:16 [diffusion_worker.py:1058] Worker 0 created result MessageQueue
+(DiffusionWorker pid=282759) INFO 09-14 22:04:16 [scheduler.py:277] Chunked prefill is enabled with max_num_batched_tokens=2048.
+(DiffusionWorker pid=282759) INFO 09-14 22:04:16 [kernel.py:369] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'])
+(DiffusionWorker pid=282759) INFO 09-14 22:04:16 [diffusion_worker.py:327] Final IR op priority after setting vLLM-Omni overrides: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'])
+(DiffusionWorker pid=282759) INFO 09-14 22:04:16 [diffusion_worker.py:339] Worker 0: Initialized device and distributed environment.
+(DiffusionWorker pid=282759) INFO 09-14 22:04:16 [parallel_state.py:599] Building SP subgroups from explicit sp_group_ranks (sp_size=1, ulysses=1, ring=1, use_ulysses_low=True).
+(DiffusionWorker pid=282759) INFO 09-14 22:04:16 [parallel_state.py:641] SP group details for rank 0: sp_group=[0], ulysses_group=[0], ring_group=[0]
+(DiffusionWorker pid=282759) There are modules in DistributedAutoencoderKLWan that should be kept in float32: []. Casting directly with `to()` can lead to inconsistent results; set `torch_dtype` in `from_pretrained()` instead to keep these modules in float32.
+(DiffusionWorker pid=282759) INFO 09-14 22:04:19 [platform.py:101] Detected Blackwell-class GPU sm_110 (untested variant); routing to CUDNN_ATTN.
+(DiffusionWorker pid=282759) INFO 09-14 22:04:19 [platform.py:338] Defaulting to diffusion attention backend CUDNN_ATTN (Blackwell sm_110, cuDNN 92000, head_dim 128)
+(DiffusionWorker pid=282759) INFO 09-14 22:04:19 [selector.py:93] Resolved diffusion attention backend 'CUDNN_ATTN' for role='self' via platform default
+(DiffusionWorker pid=282759) Multi-thread loading shards:   0% Completed | 0/10 [00:00<?, ?it/s]
+(DiffusionWorker pid=282759) Multi-thread loading shards:  10% Completed | 1/10 [00:04<00:36,  4.08s/it]
+(DiffusionWorker pid=282759) Multi-thread loading shards:  20% Completed | 2/10 [00:08<00:32,  4.05s/it]
+(DiffusionWorker pid=282759) Multi-thread loading shards:  30% Completed | 3/10 [00:12<00:28,  4.07s/it]
+(DiffusionWorker pid=282759) Multi-thread loading shards:  40% Completed | 4/10 [00:16<00:24,  4.07s/it]
+(DiffusionWorker pid=282759) Multi-thread loading shards:  50% Completed | 5/10 [00:20<00:20,  4.10s/it]
+(DiffusionWorker pid=282759) Multi-thread loading shards:  60% Completed | 6/10 [00:24<00:16,  4.13s/it]
+(DiffusionWorker pid=282759) Multi-thread loading shards:  70% Completed | 7/10 [00:25<00:09,  3.17s/it]
+(DiffusionWorker pid=282759) Multi-thread loading shards:  80% Completed | 8/10 [00:29<00:06,  3.39s/it]
+(DiffusionWorker pid=282759) Multi-thread loading shards:  90% Completed | 9/10 [00:33<00:03,  3.38s/it]
+(DiffusionWorker pid=282759) Multi-thread loading shards: 100% Completed | 10/10 [00:37<00:00,  3.59s/it]
+(DiffusionWorker pid=282759) Multi-thread loading shards: 100% Completed | 10/10 [00:37<00:00,  3.71s/it]
+(DiffusionWorker pid=282759) 
+(DiffusionWorker pid=282759) INFO 09-14 22:05:09 [pipeline_dreamzero.py:1818] DreamZero load_weights: loaded 1986 parameters from root checkpoint
+(DiffusionWorker pid=282759) INFO 09-14 22:05:10 [diffusers_loader.py:1058] Loading weights took 37.42 seconds
+(DiffusionWorker pid=282759) INFO 09-14 22:05:10 [diffusion_model_runner.py:340] Model loading took 42.7910 GiB and 54.449509 seconds
+(DiffusionWorker pid=282759) INFO 09-14 22:05:10 [diffusion_model_runner.py:346] Model runner: Model loaded successfully.
+(DiffusionWorker pid=282759) INFO 09-14 22:05:10 [wan_vae_feat_cache_patch.py:92] DreamZero: applied Wan VAE feat_cache tensor sentinel patch.
+(DiffusionWorker pid=282759) INFO 09-14 22:05:10 [pipeline_dreamzero.py:673] DreamZero: torch.compile text/image/VAE encode + per-block DiT (encoders reduce-overhead, DiT default).
+(DiffusionWorker pid=282759) INFO 09-14 22:05:10 [pipeline_dreamzero.py:708] DreamZero: compiled 40/40 transformer blocks.
+(DiffusionWorker pid=282759) INFO 09-14 22:05:31 [pipeline_dreamzero.py:774] DreamZero compile warmup finished (text / image / vae decode).
+(DiffusionWorker pid=282759) INFO 09-14 22:05:31 [backend.py:106] Using custom stepcache enabler for model: DreamZeroPipeline
+(DiffusionWorker pid=282759) INFO 09-14 22:05:31 [backend.py:69] stepcache enabled on DreamZeroPipeline (enabled=True, thresholds=(0.95, 0.93), countdowns=(4, 2))
+(DiffusionWorker pid=282759) INFO 09-14 22:05:31 [diffusion_model_runner.py:437] Model runner: Initialization complete.
+(DiffusionWorker pid=282759) WARNING 09-14 22:05:34 [manager.py:297] AR-Diffusion raised the configured memory budget from 4577313587 to 23519100928 bytes to admit one session that fits actual free device memory
+(DiffusionWorker pid=282759) WARNING 09-14 22:05:34 [manager.py:326] AR-Diffusion resident session capacity reduced from 64 to 1 by the KV memory budget
+(DiffusionWorker pid=282759) INFO 09-14 22:05:34 [manager.py:332] AR-Diffusion cross-attn reservation: 1201.6 MiB/session × 1 sessions = 1201.6 MiB
+(DiffusionWorker pid=282759) INFO 09-14 22:05:34 [manager.py:339] AR-Diffusion model-owned state reservation: 603.0 MiB/session × 1 sessions = 603.0 MiB
+(DiffusionWorker pid=282759) INFO 09-14 22:07:12 [runner.py:181] AR-Diffusion KV cache: blocks=24 layers=40 local_kv_heads=40 head_size=128 tokens/frame=880 frames/block=2 window=9 sink=0 kv_branches=[('positive', 0), ('negative', 1)] cross={'text': 512, 'image': 257} resident_capacity=1 requested_capacity=64
+(DiffusionWorker pid=282759) INFO 09-14 22:07:12 [state_dreamzero.py:161] language is None, resetting
+(DiffusionWorker pid=282759) INFO 09-14 22:07:12 [state.py:220] AR-Diffusion RESET session=__ardiffusion_warmup__ KV branches=('positive', 'negative') kept_cross=[]
+(DiffusionWorker pid=282759) INFO 09-14 22:07:24 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [pos]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:07:24 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [neg]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) /dev/shm/ifl_public_foreign_omni_20260915_v2/lib/python3.12/site-packages/torch/_inductor/lowering.py:2633: UserWarning: Torchinductor does not support code generation for complex operators. Performance may be worse than eager.
+(DiffusionWorker pid=282759)   warnings.warn(
+(DiffusionWorker pid=282759) INFO 09-14 22:07:33 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 3, 44, 80) total_chunks=1 total_latent_t=3
+(DiffusionWorker pid=282759) INFO 09-14 22:07:43 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=2 total_latent_t=5
+(DiffusionWorker pid=282759) INFO 09-14 22:07:53 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=3 total_latent_t=7
+(DiffusionWorker pid=282759) INFO 09-14 22:08:04 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=4 total_latent_t=9
+(DiffusionWorker pid=282759) INFO 09-14 22:08:04 [state_dreamzero.py:176] current_start_frame 9 >= local_attn_size 9, resetting inference state
+(DiffusionWorker pid=282759) INFO 09-14 22:08:04 [state.py:220] AR-Diffusion RESET session=__ardiffusion_warmup__ KV branches=('positive', 'negative') kept_cross=['text']
+(DiffusionWorker pid=282759) INFO 09-14 22:08:05 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [pos]: 40 layers, text=kept img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:08:05 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [neg]: 40 layers, text=kept img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:08:12 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 3, 44, 80) total_chunks=5 total_latent_t=12
+(DiffusionWorker pid=282759) INFO 09-14 22:08:13 [diffusion_worker.py:420] Worker 0: Process-scoped GPU memory after model loading: 72.14 GiB.
+(DiffusionWorker pid=282759) INFO 09-14 22:08:13 [manager.py:112] Initializing DiffusionLoRAManager: device=cuda:0, dtype=torch.bfloat16, max_cached_adapters=1, static_lora_path=None
+(DiffusionWorker pid=282759) INFO 09-14 22:08:13 [diffusion_worker.py:297] Worker 0: Initialization complete.
+(DiffusionWorker pid=282759) INFO 09-14 22:08:13 [diffusion_worker.py:1523] Worker 0: Scheduler loop started.
+(DiffusionWorker pid=282759) INFO 09-14 22:08:13 [diffusion_worker.py:1367] Worker 0 ready to receive requests via shared memory
+INFO 09-14 22:08:13 [multiproc_executor.py:893] Async result pump started for 1 worker queue(s)
+INFO 09-14 22:08:13 [diffusion_engine.py:400] [RequestBatch] engine init max_num_seqs=1 max_wait_ms=0.0
+INFO 09-14 22:08:13 [diffusion_engine.py:1149] dummy run to warm up the model
+(DiffusionWorker pid=282759) INFO 09-14 22:08:13 [pipeline_dreamzero.py:1371] Skipping DreamZero dummy warmup request without robot_obs.
+INFO 09-14 22:08:13 [inline_stage_diffusion_client.py:79] [InlineStageDiffusionClient] stage-0 [rep-0] initialized inline (max_num_seqs=1)
+INFO 09-14 22:08:13 [stage_runtime.py:885] [StageRuntime] Stage 0 replica 0 initialized (diffusion)
+INFO 09-14 22:08:13 [orchestrator.py:603] [Orchestrator] Starting event loop
+INFO 09-14 22:08:13 [async_omni_engine.py:292] [AsyncOmniEngine] Orchestrator ready with 1 stages
+INFO 09-14 22:08:13 [omni_base.py:226] [Omni] AsyncOmniEngine initialized in 249.39 seconds
+INFO 09-14 22:08:13 [omni_base.py:245] [Omni] Initialized with 1 stages for model /home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:08:13 [state_dreamzero.py:161] language is None, resetting
+(DiffusionWorker pid=282759) INFO 09-14 22:08:13 [state.py:220] AR-Diffusion RESET session=benchmark-0 KV branches=('positive', 'negative') kept_cross=[]
+(DiffusionWorker pid=282759) INFO 09-14 22:08:14 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [pos]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:08:14 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [neg]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:08:21 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 3, 44, 80) total_chunks=1 total_latent_t=3
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.13s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.14s/it]
+{"i": 0, "phase": "warmup", "cycle": 0, "episode": 0, "reset": true, "seed": 1140, "request_sha256": "ecee9d925e727c8ae3c557c9dabd637a5ab43896e819729c359b57b656359202", "ms": 8137.581893010065, "shape": [24, 8], "finite": true, "action_sha256": "0b8bb36e38bed9df62f68a188f8a44503bee7d1d222f48e42028adcd81170b99"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:08:30 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=2 total_latent_t=5
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.37s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.37s/it]
+{"i": 1, "phase": "warmup", "cycle": 1, "episode": 0, "reset": false, "seed": 1140, "request_sha256": "f2040c8b2f1a07f0d8fb49b34524b9ffb177a25e6168d5c69495035622533547", "ms": 8368.859592999797, "shape": [24, 8], "finite": true, "action_sha256": "a0c7e5a64abd78edd56119996f48a610b414f59f5f8eb26657264075affa019e"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:08:39 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=3 total_latent_t=7
+Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.07s/it]Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.07s/it]
+{"i": 2, "phase": "warmup", "cycle": 2, "episode": 0, "reset": false, "seed": 1140, "request_sha256": "7c65d58ae51bab8934f9018f9a29b60045786fd345231d1454ff9c72a0d6f6cd", "ms": 9069.507514999714, "shape": [24, 8], "finite": true, "action_sha256": "52ca3b5df2ba1ef3b2306053bdfdaef01ff6f7f90fcfe54902e4d1d296763360"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:08:39 [state_dreamzero.py:161] language is None, resetting
+(DiffusionWorker pid=282759) INFO 09-14 22:08:39 [state.py:220] AR-Diffusion RESET session=benchmark-1 KV branches=('positive', 'negative') kept_cross=[]
+(DiffusionWorker pid=282759) INFO 09-14 22:08:40 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [pos]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:08:40 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [neg]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:08:47 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 3, 44, 80) total_chunks=1 total_latent_t=3
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.26s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.26s/it]
+{"i": 3, "phase": "measured", "cycle": 0, "episode": 1, "reset": true, "seed": 1140, "request_sha256": "1c0ef5cb8fb2ac92a9ea68e2569bf75e2e2d25af5e0b4c9d0f1016060d04d03b", "ms": 8258.012094942387, "shape": [24, 8], "finite": true, "action_sha256": "0b8bb36e38bed9df62f68a188f8a44503bee7d1d222f48e42028adcd81170b99"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:08:55 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=2 total_latent_t=5
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.38s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.38s/it]
+{"i": 4, "phase": "measured", "cycle": 1, "episode": 1, "reset": false, "seed": 1140, "request_sha256": "0c4c5d34cfb0590d11f9dce6b7df252658acb8046d404e0f2c89fe4693f514c4", "ms": 8376.230494002812, "shape": [24, 8], "finite": true, "action_sha256": "a0c7e5a64abd78edd56119996f48a610b414f59f5f8eb26657264075affa019e"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:09:04 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=3 total_latent_t=7
+Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.09s/it]Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.09s/it]
+{"i": 5, "phase": "measured", "cycle": 2, "episode": 1, "reset": false, "seed": 1140, "request_sha256": "21e536aefd64b2d3cf8931cb4e2cce5965cb4e46d7824e6e12e0e3a73ac22d58", "ms": 9093.604730034713, "shape": [24, 8], "finite": true, "action_sha256": "52ca3b5df2ba1ef3b2306053bdfdaef01ff6f7f90fcfe54902e4d1d296763360"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:09:04 [state_dreamzero.py:161] language is None, resetting
+(DiffusionWorker pid=282759) INFO 09-14 22:09:04 [state.py:220] AR-Diffusion RESET session=benchmark-2 KV branches=('positive', 'negative') kept_cross=[]
+(DiffusionWorker pid=282759) INFO 09-14 22:09:06 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [pos]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:09:06 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [neg]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:09:13 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 3, 44, 80) total_chunks=1 total_latent_t=3
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.27s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.27s/it]
+{"i": 6, "phase": "measured", "cycle": 0, "episode": 2, "reset": true, "seed": 1140, "request_sha256": "05efa28567a0df2ee51e5fc9aa8bd6f74077aa3b8f16345bcdd4a7dfd5d27214", "ms": 8271.387976012193, "shape": [24, 8], "finite": true, "action_sha256": "0b8bb36e38bed9df62f68a188f8a44503bee7d1d222f48e42028adcd81170b99"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:09:21 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=2 total_latent_t=5
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.38s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.38s/it]
+{"i": 7, "phase": "measured", "cycle": 1, "episode": 2, "reset": false, "seed": 1140, "request_sha256": "c2a82b3a3497791ff1ae43579994af7f2e2524288c57ba082b38ff7f8aba8ff8", "ms": 8377.715837035794, "shape": [24, 8], "finite": true, "action_sha256": "a0c7e5a64abd78edd56119996f48a610b414f59f5f8eb26657264075affa019e"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:09:30 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=3 total_latent_t=7
+Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.09s/it]Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.09s/it]
+{"i": 8, "phase": "measured", "cycle": 2, "episode": 2, "reset": false, "seed": 1140, "request_sha256": "7d757e7fde310d44ee17f19610acdf3bcae947e979f5f9239fe56b1c54f0a7b4", "ms": 9093.966454965994, "shape": [24, 8], "finite": true, "action_sha256": "52ca3b5df2ba1ef3b2306053bdfdaef01ff6f7f90fcfe54902e4d1d296763360"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:09:30 [state_dreamzero.py:161] language is None, resetting
+(DiffusionWorker pid=282759) INFO 09-14 22:09:30 [state.py:220] AR-Diffusion RESET session=benchmark-3 KV branches=('positive', 'negative') kept_cross=[]
+(DiffusionWorker pid=282759) INFO 09-14 22:09:31 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [pos]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:09:31 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [neg]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:09:38 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 3, 44, 80) total_chunks=1 total_latent_t=3
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.26s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.26s/it]
+{"i": 9, "phase": "measured", "cycle": 0, "episode": 3, "reset": true, "seed": 1140, "request_sha256": "de7c51884059146b2728e227b1b11aecf937eadccc0fcf2ba3471b48feac5403", "ms": 8257.419481000397, "shape": [24, 8], "finite": true, "action_sha256": "7b4eb1ed4eb1a5859be2ce902226001f941d9dcd1892709321ec4eaaffce2767"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:09:47 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=2 total_latent_t=5
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.39s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.39s/it]
+{"i": 10, "phase": "measured", "cycle": 1, "episode": 3, "reset": false, "seed": 1140, "request_sha256": "b8453ae7d21514a6f56e45582f0c68ae54e0fc20382243306c892b7b8b18962d", "ms": 8391.987596987747, "shape": [24, 8], "finite": true, "action_sha256": "68bf1396c1f01d77cbad863b52406b3d521cd94d1ed26eaaa4f64fc938ff1b95"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:09:56 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=3 total_latent_t=7
+Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.06s/it]Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.07s/it]
+{"i": 11, "phase": "measured", "cycle": 2, "episode": 3, "reset": false, "seed": 1140, "request_sha256": "ab246ee8ac50be8700cfa32e5d6ebff481e6a383e0c36ec547abde6b8fcf0603", "ms": 9067.299021000508, "shape": [24, 8], "finite": true, "action_sha256": "0ee03f33e53eefaf2b94efbd186043649fc94c69f2a01e720f90a7e78e723699"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:09:56 [state_dreamzero.py:161] language is None, resetting
+(DiffusionWorker pid=282759) INFO 09-14 22:09:56 [state.py:220] AR-Diffusion RESET session=benchmark-4 KV branches=('positive', 'negative') kept_cross=[]
+(DiffusionWorker pid=282759) INFO 09-14 22:09:57 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [pos]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:09:57 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [neg]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:10:04 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 3, 44, 80) total_chunks=1 total_latent_t=3
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.24s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.24s/it]
+{"i": 12, "phase": "measured", "cycle": 0, "episode": 4, "reset": true, "seed": 1140, "request_sha256": "93ac95b982db1021f1cf06c82c1b5d24d64dce944e38f73caea8cab7d99881fa", "ms": 8244.011003989726, "shape": [24, 8], "finite": true, "action_sha256": "7b4eb1ed4eb1a5859be2ce902226001f941d9dcd1892709321ec4eaaffce2767"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:10:13 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=2 total_latent_t=5
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.35s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.35s/it]
+{"i": 13, "phase": "measured", "cycle": 1, "episode": 4, "reset": false, "seed": 1140, "request_sha256": "33d50b821aed03438b0452abf32c8ddd9c8ff6a8fe37daa7c03a371a59b531a1", "ms": 8348.925400001463, "shape": [24, 8], "finite": true, "action_sha256": "68bf1396c1f01d77cbad863b52406b3d521cd94d1ed26eaaa4f64fc938ff1b95"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:10:22 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=3 total_latent_t=7
+Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.07s/it]Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.07s/it]
+{"i": 14, "phase": "measured", "cycle": 2, "episode": 4, "reset": false, "seed": 1140, "request_sha256": "85c2d3b4d22ec595ea0750e36575fb695b0dd59b97a14fe973123714eef576f9", "ms": 9073.084431001917, "shape": [24, 8], "finite": true, "action_sha256": "0ee03f33e53eefaf2b94efbd186043649fc94c69f2a01e720f90a7e78e723699"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:10:22 [state_dreamzero.py:161] language is None, resetting
+(DiffusionWorker pid=282759) INFO 09-14 22:10:22 [state.py:220] AR-Diffusion RESET session=benchmark-5 KV branches=('positive', 'negative') kept_cross=[]
+(DiffusionWorker pid=282759) INFO 09-14 22:10:23 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [pos]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:10:23 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [neg]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:10:30 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 3, 44, 80) total_chunks=1 total_latent_t=3
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.26s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.26s/it]
+{"i": 15, "phase": "measured", "cycle": 0, "episode": 5, "reset": true, "seed": 1140, "request_sha256": "aa1defc70bf411c1cadb14b7acfd0d4454d01c8772d0d350965ed29d84222f76", "ms": 8259.41400701413, "shape": [24, 8], "finite": true, "action_sha256": "7b4eb1ed4eb1a5859be2ce902226001f941d9dcd1892709321ec4eaaffce2767"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:10:38 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=2 total_latent_t=5
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.37s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.37s/it]
+{"i": 16, "phase": "measured", "cycle": 1, "episode": 5, "reset": false, "seed": 1140, "request_sha256": "ff6cad9fdfe7f4a653c8e21b6c58a3c1825d172be6713d9225c578d85abafdfc", "ms": 8373.98466002196, "shape": [24, 8], "finite": true, "action_sha256": "68bf1396c1f01d77cbad863b52406b3d521cd94d1ed26eaaa4f64fc938ff1b95"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:10:47 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=3 total_latent_t=7
+Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.08s/it]Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.08s/it]
+{"i": 17, "phase": "measured", "cycle": 2, "episode": 5, "reset": false, "seed": 1140, "request_sha256": "a9fbf07886ba5c4c5d9328e23be22fe6770699766640f01a35d653bdaa2ef386", "ms": 9078.024983988144, "shape": [24, 8], "finite": true, "action_sha256": "0ee03f33e53eefaf2b94efbd186043649fc94c69f2a01e720f90a7e78e723699"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:10:48 [state_dreamzero.py:161] language is None, resetting
+(DiffusionWorker pid=282759) INFO 09-14 22:10:48 [state.py:220] AR-Diffusion RESET session=benchmark-6 KV branches=('positive', 'negative') kept_cross=[]
+(DiffusionWorker pid=282759) INFO 09-14 22:10:49 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [pos]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:10:49 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [neg]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:10:56 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 3, 44, 80) total_chunks=1 total_latent_t=3
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.24s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.24s/it]
+{"i": 18, "phase": "measured", "cycle": 0, "episode": 6, "reset": true, "seed": 1140, "request_sha256": "4fbefe9053443ed4660f45eae10fe16c6e992eb37fa627c38b9d463cab0671ac", "ms": 8242.297819000669, "shape": [24, 8], "finite": true, "action_sha256": "7b4eb1ed4eb1a5859be2ce902226001f941d9dcd1892709321ec4eaaffce2767"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:11:04 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=2 total_latent_t=5
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.36s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.36s/it]
+{"i": 19, "phase": "measured", "cycle": 1, "episode": 6, "reset": false, "seed": 1140, "request_sha256": "7273fddb8a64746df232c70f3ea67d0e68030f1e695679266f97cf61209b48a2", "ms": 8358.163215976674, "shape": [24, 8], "finite": true, "action_sha256": "68bf1396c1f01d77cbad863b52406b3d521cd94d1ed26eaaa4f64fc938ff1b95"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:11:13 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=3 total_latent_t=7
+Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.08s/it]Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.08s/it]
+{"i": 20, "phase": "measured", "cycle": 2, "episode": 6, "reset": false, "seed": 1140, "request_sha256": "f046a412f55d7fbc2256dc5b37a24a42d252aa97ceea793f0beebbd691234a78", "ms": 9079.395923006814, "shape": [24, 8], "finite": true, "action_sha256": "0ee03f33e53eefaf2b94efbd186043649fc94c69f2a01e720f90a7e78e723699"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:11:13 [state_dreamzero.py:161] language is None, resetting
+(DiffusionWorker pid=282759) INFO 09-14 22:11:13 [state.py:220] AR-Diffusion RESET session=benchmark-7 KV branches=('positive', 'negative') kept_cross=[]
+(DiffusionWorker pid=282759) INFO 09-14 22:11:14 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [pos]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:11:15 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [neg]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:11:22 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 3, 44, 80) total_chunks=1 total_latent_t=3
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.27s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.27s/it]
+{"i": 21, "phase": "measured", "cycle": 0, "episode": 7, "reset": true, "seed": 1140, "request_sha256": "d1fad0eab5d6518b45757959095c6ac7250f669ff3925c71a440a2238942cd1f", "ms": 8266.237294999883, "shape": [24, 8], "finite": true, "action_sha256": "7b4eb1ed4eb1a5859be2ce902226001f941d9dcd1892709321ec4eaaffce2767"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:11:30 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=2 total_latent_t=5
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.38s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.38s/it]
+{"i": 22, "phase": "measured", "cycle": 1, "episode": 7, "reset": false, "seed": 1140, "request_sha256": "20ead0da3e9b6e93f7d4b19e55baa146206d73e19f93b6a73088049ae9a64f0c", "ms": 8381.25807303004, "shape": [24, 8], "finite": true, "action_sha256": "68bf1396c1f01d77cbad863b52406b3d521cd94d1ed26eaaa4f64fc938ff1b95"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:11:39 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=3 total_latent_t=7
+Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.08s/it]Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.08s/it]
+{"i": 23, "phase": "measured", "cycle": 2, "episode": 7, "reset": false, "seed": 1140, "request_sha256": "531cbb2eeef4960873c2166027a8f5e16c0945d0ebc3c0eee193be549c92ea2d", "ms": 9084.016640961636, "shape": [24, 8], "finite": true, "action_sha256": "0ee03f33e53eefaf2b94efbd186043649fc94c69f2a01e720f90a7e78e723699"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:11:39 [state_dreamzero.py:161] language is None, resetting
+(DiffusionWorker pid=282759) INFO 09-14 22:11:39 [state.py:220] AR-Diffusion RESET session=benchmark-8 KV branches=('positive', 'negative') kept_cross=[]
+(DiffusionWorker pid=282759) INFO 09-14 22:11:40 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [pos]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:11:40 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [neg]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:11:47 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 3, 44, 80) total_chunks=1 total_latent_t=3
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.25s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.25s/it]
+{"i": 24, "phase": "measured", "cycle": 0, "episode": 8, "reset": true, "seed": 1140, "request_sha256": "f7c213006424bf2a4c94fc5dc2cde29d87b6779be190f692eb87da5d04e82634", "ms": 8254.311874974519, "shape": [24, 8], "finite": true, "action_sha256": "7b4eb1ed4eb1a5859be2ce902226001f941d9dcd1892709321ec4eaaffce2767"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:11:56 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=2 total_latent_t=5
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.37s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.37s/it]
+{"i": 25, "phase": "measured", "cycle": 1, "episode": 8, "reset": false, "seed": 1140, "request_sha256": "b516cf4cbb46be6a3e7f0c1d577564f711a1c13380ed69bd6565092681fcfe7a", "ms": 8376.053106971085, "shape": [24, 8], "finite": true, "action_sha256": "68bf1396c1f01d77cbad863b52406b3d521cd94d1ed26eaaa4f64fc938ff1b95"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:12:05 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=3 total_latent_t=7
+Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.09s/it]Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.09s/it]
+{"i": 26, "phase": "measured", "cycle": 2, "episode": 8, "reset": false, "seed": 1140, "request_sha256": "072341776400db212a800d2bb8358c76ec502b72a77301d353f8eed7e9d2db30", "ms": 9087.899478035979, "shape": [24, 8], "finite": true, "action_sha256": "0ee03f33e53eefaf2b94efbd186043649fc94c69f2a01e720f90a7e78e723699"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:12:05 [state_dreamzero.py:161] language is None, resetting
+(DiffusionWorker pid=282759) INFO 09-14 22:12:05 [state.py:220] AR-Diffusion RESET session=benchmark-9 KV branches=('positive', 'negative') kept_cross=[]
+(DiffusionWorker pid=282759) INFO 09-14 22:12:06 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [pos]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:12:06 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [neg]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:12:13 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 3, 44, 80) total_chunks=1 total_latent_t=3
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.27s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.27s/it]
+{"i": 27, "phase": "measured", "cycle": 0, "episode": 9, "reset": true, "seed": 1140, "request_sha256": "01219bf59ab3ee7600f95ca20f8ece29ed2bf6d6cb28c822e58251b10bfce24d", "ms": 8270.691395970061, "shape": [24, 8], "finite": true, "action_sha256": "7b4eb1ed4eb1a5859be2ce902226001f941d9dcd1892709321ec4eaaffce2767"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:12:21 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=2 total_latent_t=5
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.38s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.38s/it]
+{"i": 28, "phase": "measured", "cycle": 1, "episode": 9, "reset": false, "seed": 1140, "request_sha256": "24a92a5c2d3810d8d9ad916f16d41ca0f92aad6f237af96046270ddcced5fcce", "ms": 8377.314667974133, "shape": [24, 8], "finite": true, "action_sha256": "68bf1396c1f01d77cbad863b52406b3d521cd94d1ed26eaaa4f64fc938ff1b95"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:12:31 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=3 total_latent_t=7
+Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.10s/it]Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.10s/it]
+{"i": 29, "phase": "measured", "cycle": 2, "episode": 9, "reset": false, "seed": 1140, "request_sha256": "601ec4fddabe3046693e860a8edcbf757f2e2b8a6b0703b2475452bbbd0b0982", "ms": 9104.364558996167, "shape": [24, 8], "finite": true, "action_sha256": "0ee03f33e53eefaf2b94efbd186043649fc94c69f2a01e720f90a7e78e723699"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:12:31 [state_dreamzero.py:161] language is None, resetting
+(DiffusionWorker pid=282759) INFO 09-14 22:12:31 [state.py:220] AR-Diffusion RESET session=benchmark-10 KV branches=('positive', 'negative') kept_cross=[]
+(DiffusionWorker pid=282759) INFO 09-14 22:12:32 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [pos]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:12:32 [pipeline_dreamzero.py:326] AR-Diffusion CROSS POPULATE [neg]: 40 layers, text=(1, 512, 4096) img=(1, 257, 5120)
+(DiffusionWorker pid=282759) INFO 09-14 22:12:39 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 3, 44, 80) total_chunks=1 total_latent_t=3
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.27s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.27s/it]
+{"i": 30, "phase": "measured", "cycle": 0, "episode": 10, "reset": true, "seed": 1140, "request_sha256": "00ebe3ef625a0ccc0632d8284ef534ff92af5ea2b47579069252c752195375c8", "ms": 8268.851809029002, "shape": [24, 8], "finite": true, "action_sha256": "7b4eb1ed4eb1a5859be2ce902226001f941d9dcd1892709321ec4eaaffce2767"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:12:47 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=2 total_latent_t=5
+Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.39s/it]Processed prompts: 100%|██████████| 1/1 [00:08<00:00,  8.39s/it]
+{"i": 31, "phase": "measured", "cycle": 1, "episode": 10, "reset": false, "seed": 1140, "request_sha256": "36d25f7fbf2acfe0572f3cfd90e6f0753c5620b44da7ecd0369472ce9ba8cb09", "ms": 8388.968961022329, "shape": [24, 8], "finite": true, "action_sha256": "68bf1396c1f01d77cbad863b52406b3d521cd94d1ed26eaaa4f64fc938ff1b95"}
+Processed prompts:   0%|          | 0/1 [00:00<?, ?it/s](DiffusionWorker pid=282759) INFO 09-14 22:12:56 [state_dreamzero.py:81] append_video_latents: chunk_shape=(1, 16, 2, 44, 80) total_chunks=3 total_latent_t=7
+Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.08s/it]Processed prompts: 100%|██████████| 1/1 [00:09<00:00,  9.08s/it]
+{"i": 32, "phase": "measured", "cycle": 2, "episode": 10, "reset": false, "seed": 1140, "request_sha256": "dc7ee1aa37390df25d8f0215bba4f1906006ff334ce2deb903daa284d729432c", "ms": 9080.61144198291, "shape": [24, 8], "finite": true, "action_sha256": "0ee03f33e53eefaf2b94efbd186043649fc94c69f2a01e720f90a7e78e723699"}
+INFO 09-14 22:12:57 [omni_base.py:762] [Omni] Shutting down
+INFO 09-14 22:12:57 [async_omni_engine.py:1723] [AsyncOmniEngine] Shutting down Orchestrator
+INFO 09-14 22:12:57 [orchestrator.py:704] [Orchestrator] Received shutdown signal
+INFO 09-14 22:12:57 [orchestrator.py:3055] [Orchestrator] Shutting down all 1 client(s)
+(DiffusionWorker pid=282759) INFO 09-14 22:12:57 [diffusion_worker.py:1456] Worker 0: Received shutdown message
+(DiffusionWorker pid=282759) INFO 09-14 22:12:57 [diffusion_worker.py:1478] event loop terminated.
+(DiffusionWorker pid=282759) INFO 09-14 22:12:58 [diffusion_worker.py:1546] Worker 0: Shutdown complete.
+INFO 09-14 22:13:02 [stage_pool.py:1338] [StagePool] Stage 0 replica 0 shut down

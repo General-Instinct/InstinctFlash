@@ -1,0 +1,75 @@
+PASS  test_user_report.py: 86 tests passed
+........................................................................ [ 83%]
+..............                                                           [100%]
+86 passed in 0.68s
+
+PASS  test_user_provenance.py: 46 tests passed
+..............................................                           [100%]
+46 passed in 0.50s
+
+PASS  test_vla2_prompt_reuse.py: 13 tests passed
+.............                                                            [100%]
+13 passed in 1.37s
+
+PASS  test_vla2_scale_accumulator.py: 3 tests passed
+...                                                                      [100%]
+3 passed in 1.14s
+
+PASS  test_vla2_checkpoint_moe.py: 2 tests passed
+..                                                                       [100%]
+2 passed in 0.09s
+
+PASS  test_lingbot_vla_v2_adapter.py: 11 tests passed
+...........                                                              [100%]
+11 passed in 1.14s
+
+PASS  test_repo_surface.py: 
+
+=== 1. the root reads as a framework, not a notebook ===
+  OK    no research documents at the root
+  OK    exactly README + ARCHITECTURE + CHECKPOINTS   ['README.md']
+
+=== 2. the first screen answers what / install / load / actions ===
+  OK    install, load and get-actions all appear up front   [3279, 3639, 5567]
+  OK    and in that order
+  OK    the load example is the public Runtime API
+  OK    the actions example loops
+  OK    the first screen does not mention 'Optimizer('
+  OK    the first screen does not mention 'port='
+  OK    the first screen does not mention 'plan.serve'
+
+=== 3. no research chronology or profiling tables ===
+  OK    README does not mention 'Layer 6'
+  OK    README does not mention 'Layer 5'
+  OK    README does not mention 'P001'
+  OK    README does not mention 'P007'
+  OK    README does not mention 'marginal slope'
+  OK    README does not mention 'NOT EVALUATED'
+  OK    README does not mention 'ABBA'
+  OK    README does not mention 'RETRACTED'
+  OK    README does not mention 'PROPOSED API'
+  OK    README does not mention 'operating point'
+  OK    README does not mention 'Quality (25'
+  OK    no date-stamped changelog entries
+  OK    the news section is not a results table
+  OK    ## Results has its own scope outside news
+  OK    table rows inside actual news remain rejected
+  OK    ### Results has its own scope outside news
+  OK    table rows inside actual news remain rejected
+
+=== 4. every link in the README points at something ===
+  OK    all 21 local links resolve
+
+=== 5. the canonical docs describe main, not its history ===
+  OK    README.md does not contain 'PROPOSED API'
+  OK    README.md does not contain 'RETRACTED'
+  OK    README.md does not contain 'not implemented yet'
+  OK    README.md does not contain 'PROFILE.md'
+  OK    README.md does not contain '3.38'
+  OK    README.md does not contain 'Fast runs'
+  OK    README.md does not contain '566 matched pairs'
+  OK    README.md links no deleted document
+
+==============================================================================
+PASS: the root and the README present a maintained framework.
+

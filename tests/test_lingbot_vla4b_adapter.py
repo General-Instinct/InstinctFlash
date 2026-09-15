@@ -35,6 +35,7 @@ def test_example_surface_stays_product_shaped():
     # delete or replace them.
     root_files = {path.name for path in PLUGIN_ROOT.iterdir() if path.is_file()}
     assert root_files == {
+        "LICENSE",
         "README.md",
         "profile_infer.py",
         "pyproject.toml",

@@ -1,0 +1,80 @@
+{
+  "attempts": [
+    {
+      "cell": "nano-eager_native",
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/matrix.json",
+        "--cell",
+        "nano-eager_native",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/inputs/recorded_inputs_v1.npz"
+      ],
+      "exit_code": 0,
+      "log_sha256": "ba7b10a8b46fe66abe5a48adb6292b9b9eba5dc3cb4218e1811f0a415abc8f53",
+      "optimizer_environment": {}
+    },
+    {
+      "cell": "nano-runtime_default",
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/matrix.json",
+        "--cell",
+        "nano-runtime_default",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/inputs/recorded_inputs_v1.npz"
+      ],
+      "exit_code": 0,
+      "log_sha256": "6c8f5996997364b6bb956b9918da28549f72dd8edfabb06beb1d14ee4c1ddad8",
+      "optimizer_environment": {}
+    },
+    {
+      "cell": "nano-runtime_selected",
+      "command": [
+        "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+        "-I",
+        "-B",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/matrix.json",
+        "--cell",
+        "nano-runtime_selected",
+        "--output-root",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1",
+        "--fixture",
+        "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_pytorch_triton_run_v1/inputs/recorded_inputs_v1.npz"
+      ],
+      "exit_code": 0,
+      "log_sha256": "5f6b4a36379786fd7d7e3c715538f36d383e7ffa1cfc7f03fd0c7a52e2f5d145",
+      "optimizer_environment": {
+        "IFL_BF16_LINEAR_RELU2": "0",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+        "IFL_COSMOS3_GEN_REGIONS": "1",
+        "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1"
+      }
+    }
+  ],
+  "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+  "plan_sha256": "51ed54d80f9069db4b9f119905a4cc7deecd2f2718e2a79c9f63190da2bac8a9",
+  "prepared": "/home/guanming/ifl_public_qualification_20260915_v1/nano_numeric_prepared_v1",
+  "report_status": "passed",
+  "schema": "instinctflash.public_reproduction.v1",
+  "status": "passed",
+  "task_quality_validated": false
+}

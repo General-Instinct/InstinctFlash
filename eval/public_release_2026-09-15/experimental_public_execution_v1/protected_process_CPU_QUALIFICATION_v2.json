@@ -1,0 +1,71 @@
+{
+  "actual_readonly_capture_source": {
+    "bytes": 10168,
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/protected_process_inspector_v1.py",
+    "sha256": "7a5887eaaa2010a539383bee1f6cbc90b20dfd71be2c75cf0d33b2940c541f73"
+  },
+  "cleanup_executed": false,
+  "created_unix": 1789455313.2671762,
+  "files": {
+    "archive_config_template_v2.json": {
+      "bytes": 3131,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/archive_config_template_v2.json",
+      "sha256": "60e3034e79b09f18149bffb965b7931066cd44a4f6bf6c455d03f55ca4d396bd"
+    },
+    "archive_inactive_v5_cache_v2.py": {
+      "bytes": 15831,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/archive_inactive_v5_cache_v2.py",
+      "sha256": "652a84f7842d7eb9d2d89776eb8fece142952067408066e98aea6690febca914"
+    },
+    "config_template_v2.json": {
+      "bytes": 125608,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/config_template_v2.json",
+      "sha256": "292b7df6ff19595623259ff49cee7c298dc6d18b4a5690223f3f40d9d7f5325f"
+    },
+    "protected_process_inspector_v2.py": {
+      "bytes": 10853,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/protected_process_inspector_v2.py",
+      "sha256": "3dbd83aba8a3cc3a15a299d351cc7ccbec0965c5a943bcd48fa2fb18daf4e2bb"
+    },
+    "protected_services_snapshot_v1.json": {
+      "bytes": 7139,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/protected_services_snapshot_v1.json",
+      "sha256": "39d58cb80df248a27df9a2a57265b30f0acf5d20afac963aca9986c4cf82f3fa"
+    },
+    "run_queue_v2.py": {
+      "bytes": 30856,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/run_queue_v2.py",
+      "sha256": "a08c6839757337eb325cc2de594393ec572332b8cfdefbc5fb1dc31cc653d384"
+    },
+    "test_protected_process_v2.py": {
+      "bytes": 9271,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/test_protected_process_v2.py",
+      "sha256": "9d7d25a258abcc4220fd10f65f8f62069187de2da66503b99b99728291f0183c"
+    }
+  },
+  "model_arithmetic_changed": false,
+  "previous_test_fixture_correction": "First real-open-FD test mocked /proc root without division; fixed test proxy only. No production change from that test failure.",
+  "remote_or_GPU_actions_by_implementer": false,
+  "reviewer_correction": "V1 inspector discarded earlier readable fd paths on later EACCES. Additive inspector V2 retains all partial paths; V1 source and actual snapshot preserved.",
+  "ruff": {
+    "executable": "/home/ubuntu/cosmos-framework/.venv/bin/ruff",
+    "status": "passed"
+  },
+  "schema": "instinctflash.protected_process_cleanup_v2.CPU_qualification",
+  "status": "passed_CPU_only",
+  "sudo_attempted": false,
+  "tests": {
+    "command": ".venv-dev/bin/python -m pytest -q eval/public_release_2026-09-15/experimental_public_execution_v1/test_protected_process_v2.py",
+    "meaningful_cases": [
+      "Actual six-identity schema replay with explicit CPU host-mocking only, not a new remote inspection",
+      "PID reuse/start/UID/GID/parent/argv0/command/cgroup drift fatal",
+      "Unknown Python and same-comm new Tailscale process fatal",
+      "Protected service readable target reference including mixed readable/denied fd fatal",
+      "Actual local open file descriptor fatal",
+      "Changed inspector rejected before import and altered snapshot rejected",
+      "AST-exact all native commands/validation/lifecycle/archival functions; only config passed to guard at file-operation sites"
+    ],
+    "passed": 26,
+    "seconds": 0.14
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "installed_package": {
+    "passed": true,
+    "tests_run": 17,
+    "module": "/home/ubuntu/ifl_eval/precision_evidence_20260906_v2/package-env/lib/python3.10/site-packages/instinctflash/__init__.py",
+    "prefix": "/home/ubuntu/ifl_eval/precision_evidence_20260906_v2/package-env",
+    "actual_profiles": {
+      "ab_a": "3aa008cbf1ed5f1e808deb6965bb36dcad32919d0f350bed425993abf589bef7",
+      "ab_b": "cf8aed88b65ed22c7df83eeba49b26489fd0b97ba516baf294bab60bd487782d"
+    },
+    "scope": "Installed package tests and real endpoint receipt bindings; closed-loop evidence and latency are still running."
+  },
+  "real_cli_selection": [
+    {
+      "scenario": "blocking_50hz",
+      "exit_code": 3,
+      "matches_report": true
+    },
+    {
+      "scenario": "pipelined_20hz",
+      "exit_code": 0,
+      "matches_report": true
+    },
+    {
+      "scenario": "reaction_500ms",
+      "exit_code": 3,
+      "matches_report": true
+    },
+    {
+      "scenario": "thor_requires_local_evidence",
+      "exit_code": 3,
+      "matches_report": true
+    }
+  ],
+  "real_episodes": 160,
+  "bound_records_reverified": true,
+  "scope": "Focused tests and real evidence/CLI checks, not a claim that the entire repository test suite passed."
+}

@@ -80,6 +80,7 @@ def test_example_surface_stays_product_shaped():
     # gate while keeping the number it proved fails here.
     root_files = {path.name for path in PLUGIN_ROOT.iterdir() if path.is_file()}
     assert root_files == {
+        "LICENSE",
         "README.md",
         "benchmark_runtime.py",
         "config.json",
@@ -131,6 +132,11 @@ def test_pointer_package_and_known_hub_declaration_validate():
     known = lookup("nvidia/GR00T-N1.7-3B")
     assert known["execution"]["backbone"] == "groot_n17"
     assert known["execution"]["nfe"]["action"] == 4
+    # One checkpoint, one set of execution facts: a bare Hub id must serve exactly what the
+    # pointer package serves. These drifted once (the fastpath flags lived only in the package,
+    # so `from_pretrained("nvidia/GR00T-N1.7-3B")` ran ~11% slower than the published row).
+    package_execution = json.loads((package / "instinctflash.json").read_text())["execution"]
+    assert known["execution"] == package_execution
 
 
 def test_known_hub_release_gets_a_declared_view_without_copying_weights():
@@ -330,3 +336,18 @@ if __name__ == "__main__":
     from run_tests import run_module_tests
 
     raise SystemExit(run_module_tests(globals()))
+
+
+def test_unqualified_full_backbone_is_refused_before_model_construction(monkeypatch):
+    from types import SimpleNamespace
+    import torch
+    from groot_n17_iwm.adapter import GR00TN17Adapter
+    monkeypatch.setattr(torch.cuda, 'is_available', lambda: True)
+    monkeypatch.setenv('IFL_GROOT_FULL_GRAPH', '1')
+    checkpoint = SimpleNamespace(execution=SimpleNamespace(extra={}))
+    try:
+        GR00TN17Adapter().build_in_process(checkpoint, None, device='cuda')
+    except ValueError as error:
+        assert 'not qualified' in str(error)
+    else:
+        raise AssertionError('unqualified full backbone reached model construction')

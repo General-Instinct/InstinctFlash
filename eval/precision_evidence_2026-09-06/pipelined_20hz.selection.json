@@ -1,0 +1,119 @@
+{
+  "budget": {
+    "control_hz": 20,
+    "executed_actions": 50,
+    "max_deadline_miss_fraction": 0.01,
+    "scheduling": "pipelined",
+    "target_device": "H100"
+  },
+  "candidates": [
+    {
+      "assessment": {
+        "budget": {
+          "control_hz": 20,
+          "executed_actions": 50,
+          "max_deadline_miss_fraction": 0.01,
+          "scheduling": "pipelined",
+          "target_device": "H100"
+        },
+        "count": 128,
+        "deadline_misses": 0,
+        "deadline_ms": 2500.0,
+        "deployment_certified": false,
+        "max_ms": 833.823760971427,
+        "measurement_sha256": "12217dd45c26a34dcb2a1f83d558fc4cc90765cd7a4dc2f2478afa1694f02acd",
+        "meets_observed_budget": true,
+        "miss_fraction": 0.0,
+        "p50_ms": 822.8163823951036,
+        "p95_ms": 829.2823558906093,
+        "p99_ms": 832.6679348247126,
+        "p99_sample_warning": false,
+        "schema_version": 1,
+        "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+      },
+      "eligible": true,
+      "precision": "native",
+      "profile_id": "3aa008cbf1ed5f1e808deb6965bb36dcad32919d0f350bed425993abf589bef7",
+      "quality_status": "screen",
+      "reasons": []
+    },
+    {
+      "assessment": {
+        "budget": {
+          "control_hz": 20,
+          "executed_actions": 50,
+          "max_deadline_miss_fraction": 0.01,
+          "scheduling": "pipelined",
+          "target_device": "H100"
+        },
+        "count": 128,
+        "deadline_misses": 0,
+        "deadline_ms": 2500.0,
+        "deployment_certified": false,
+        "max_ms": 135.11024927720428,
+        "measurement_sha256": "624dffe1b2fc775ef21720ae3297671e2dd9e1d68d9a120d8124a4d440c6c4ce",
+        "meets_observed_budget": true,
+        "miss_fraction": 0.0,
+        "p50_ms": 131.0793429147452,
+        "p95_ms": 133.5760117508471,
+        "p99_ms": 134.73463616333902,
+        "p99_sample_warning": false,
+        "schema_version": 1,
+        "scope": "Observed policy-call latency under this explicit scheduling scenario. Sensor/actuator latency and sustained controller scheduling require separate measurement."
+      },
+      "eligible": false,
+      "precision": "native",
+      "profile_id": "cf8aed88b65ed22c7df83eeba49b26489fd0b97ba516baf294bab60bd487782d",
+      "quality_status": "screen",
+      "reasons": [
+        "no matching paired closed-loop certificate; screening/repeats do not authorize selection"
+      ]
+    }
+  ],
+  "deployment_certified": false,
+  "policy": {
+    "allow_step_change": false,
+    "allowed_precisions": [
+      "native"
+    ],
+    "baseline_profile_id": "3aa008cbf1ed5f1e808deb6965bb36dcad32919d0f350bed425993abf589bef7",
+    "max_quality_loss": 0.05,
+    "quality_registry_sha256": "f30cb4ccedcb9906af4a57f7e48a79961ccbbb9b428e20ef2a58b11742a41a7c",
+    "required_suites": [
+      "robotwin50_easy",
+      "robotwin50_hard"
+    ],
+    "required_tasks": {
+      "robotwin50_easy": [
+        "adjust_bottle",
+        "beat_block_hammer",
+        "blocks_ranking_rgb",
+        "blocks_ranking_size",
+        "click_alarmclock",
+        "click_bell",
+        "dump_bin_bigbin",
+        "grab_roller",
+        "handover_block",
+        "handover_mic"
+      ],
+      "robotwin50_hard": [
+        "adjust_bottle",
+        "beat_block_hammer",
+        "blocks_ranking_rgb",
+        "blocks_ranking_size",
+        "click_alarmclock",
+        "click_bell",
+        "dump_bin_bigbin",
+        "grab_roller",
+        "handover_block",
+        "handover_mic"
+      ]
+    },
+    "tier_ceiling": "numeric"
+  },
+  "reason": "native_baseline_meets_observed_budget",
+  "schema_version": 1,
+  "scope": "Offline evidence-based selection, not automatic model loading or an end-to-end realtime guarantee. Prefers native precision and lower transformation tier; does not infer minimum true task loss from small samples.",
+  "selected_profile_id": "3aa008cbf1ed5f1e808deb6965bb36dcad32919d0f350bed425993abf589bef7",
+  "selection_sha256": "1e2c62da93608384d1604c6e2a5fe5442622d5c2a0383b6a8ceb8d426d1666b3"
+}

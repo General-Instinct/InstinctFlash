@@ -1,0 +1,66 @@
+{
+  "schema_version": 18,
+  "status": "success",
+  "arm_id": "nano_sde1_cfg1_seed12032",
+  "training_seed": 12032,
+  "student_updates": 64,
+  "steps": 1,
+  "guidance": 1,
+  "times": [
+    1.0,
+    0.0
+  ],
+  "action_shape": [
+    33,
+    64
+  ],
+  "future_action_shape": [
+    32,
+    8
+  ],
+  "action_padding": "zero",
+  "state_key": "student",
+  "snapshot": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12032/checkpoints/update_0064/training.pt",
+    "bytes": 609453597,
+    "sha256": "fd6b96b7274997075cdc33e7c20a714426055ab971cad645c9a1b99c0f8d79e0"
+  },
+  "protocol": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training_protocol.json",
+    "bytes": 1244835,
+    "sha256": "cc9f256a984b02b69a0f26820f8726e2e60afcf02ecba2813750dfb5d9926c69"
+  },
+  "plan": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/export_seed12032.json",
+    "bytes": 13048,
+    "sha256": "8a8f96afef0a8c320032b9acb16fc4b12627bf1aa0532d977dc4fbd485bf1bb0"
+  },
+  "manifest": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12032/checkpoints/update_0064/manifest.json",
+    "bytes": 2757,
+    "sha256": "1a07ea2525663761d4091be7cb707c8184fd0b6ce1c1d79aea0eec53c5416b9e"
+  },
+  "student_state_sha256": "431e2b85108ec0d22df99e1e495b1ee147ff585b873023cd219ce03cd0cf6f5b",
+  "source_report": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12032/export_roundtrip/source_report.json",
+    "bytes": 9752,
+    "sha256": "a3c2c42eaf666af5b122e2a7f5102971128649d59164abe7c04ae5fe79f657a0"
+  },
+  "cold_report": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12032/export_roundtrip/cold_report.json",
+    "bytes": 6956,
+    "sha256": "15009bfacafae11e9afa5d060e77bbc7a2e8f07ef355b598fc9bb854054f34e7"
+  },
+  "export_inventory": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12032/export_roundtrip/export_inventory.json",
+    "bytes": 42133,
+    "sha256": "e0487447a443acddffbc8a70d987c4a2d10723d2f5a9f52f6a0320af43bd5c6a"
+  },
+  "checkpoint": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12032/export_roundtrip/checkpoint",
+  "live_state_matches_snapshot": true,
+  "cold_reload_bitexact": true,
+  "native_serving_bitexact": true,
+  "actual_callbacks": 3,
+  "actual_branches": 3,
+  "scope": "Source helper, native raw serving and separate-process cold reload must agree bitexact; mechanical only, no quality or runtime admission."
+}

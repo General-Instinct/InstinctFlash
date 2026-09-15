@@ -1,0 +1,179 @@
+diff --git a/evaluation/robotwin/eval_polict_client_openpi.py b/evaluation/robotwin/eval_polict_client_openpi.py
+index 7ed5265..51fbeac 100644
+--- a/evaluation/robotwin/eval_polict_client_openpi.py
++++ b/evaluation/robotwin/eval_polict_client_openpi.py
+@@ -6,7 +6,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+ import cv2
+ from pathlib import Path
+ 
+-robowin_root = Path("/path/to/your/robowin")
++robowin_root = Path(os.environ.get("ROBOTWIN_ROOT", "/path/to/your/robowin"))
+ if str(robowin_root) not in sys.path:
+     sys.path.insert(0, str(robowin_root))
+ 
+@@ -469,10 +469,49 @@ def eval_policy(task_name,
+ 
+     args["eval_mode"] = True
+ 
++    # --- InstinctWM: pinned scene set + action-stream logging (both opt-in) -------------
++    # Stock behaviour searches seeds upward from st_seed and keeps whichever pass the
++    # expert gate. That gate is NOT deterministic run-to-run (mostly in check_success),
++    # so two arms of an A/B silently evaluate DIFFERENT scene sets and the comparison is
++    # not paired. IWM_SEED_CACHE pins the scene set: the first run records the accepted
++    # seeds, every later run replays exactly those, and any seed the gate later rejects is
++    # reported as a divergence instead of being quietly replaced by the next seed up.
++    _iwm_cache_path = os.environ.get("IWM_SEED_CACHE")
++    _iwm_pinned = None
++    _iwm_pin_idx = 0
++    _iwm_gate_divergences = []
++    if _iwm_cache_path:
++        _iwm_cache_path = os.path.join(_iwm_cache_path, f"{task_name}.json")
++        if os.path.exists(_iwm_cache_path):
++            with open(_iwm_cache_path) as _f:
++                _iwm_pinned = json.load(_f)["seeds"]
++            print(f"\033[36m[InstinctWM] scene set PINNED to {len(_iwm_pinned)} cached seeds "
++                  f"from {_iwm_cache_path}\033[0m")
++        else:
++            print(f"\033[36m[InstinctWM] no seed cache at {_iwm_cache_path}; this run will "
++                  f"RECORD one\033[0m")
++    # Per-chunk action dumps make bit-exactness checkable on the REAL observation
++    # distribution rather than on synthetic frames.
++    _iwm_action_log = os.environ.get("IWM_ACTION_LOG")
++    if _iwm_action_log:
++        _iwm_action_log = os.path.join(_iwm_action_log, task_name)
++        os.makedirs(_iwm_action_log, exist_ok=True)
++
+     while succ_seed < test_num:
+         render_freq = args["render_freq"]
+         args["render_freq"] = 0
+ 
++        if _iwm_pinned is not None:
++            if _iwm_pin_idx >= len(_iwm_pinned):
++                raise RuntimeError(
++                    f"[InstinctWM] pinned seed list for {task_name} exhausted after "
++                    f"{succ_seed}/{test_num} accepted episodes. The cache has "
++                    f"{len(_iwm_pinned)} seeds and the expert gate rejected "
++                    f"{len(_iwm_gate_divergences)} of them this run: {_iwm_gate_divergences}. "
++                    f"A short run is not a low score -- refusing to silently under-count.")
++            now_seed = _iwm_pinned[_iwm_pin_idx]
++            _iwm_pin_idx += 1
++
+         if expert_check:
+             try:
+                 TASK_ENV.setup_demo(now_ep_num=now_id, seed=now_seed, is_test=True, **args)
+@@ -495,6 +534,16 @@ def eval_policy(task_name,
+             succ_seed += 1
+             suc_test_seed_list.append(now_seed)
+         else:
++            if _iwm_pinned is not None:
++                # A pinned seed that the gate accepted on a previous run and rejects now is
++                # harness nondeterminism, not a property of the policy. Record it and move
++                # to the next PINNED seed -- never fall through to now_seed+1, which would
++                # pull in a scene the other arm never saw.
++                _iwm_gate_divergences.append(int(now_seed))
++                print(f"\033[33m[InstinctWM] expert gate rejected pinned seed {now_seed} "
++                      f"(accepted on the recording run) -- harness nondeterminism\033[0m")
++                args["render_freq"] = render_freq
++                continue
+             now_seed += 1
+             args["render_freq"] = render_freq
+             continue
+@@ -545,6 +594,7 @@ def eval_policy(task_name,
+         full_obs_list = []
+         gen_video_list = []
+         full_action_history = []
++        _iwm_chunks = []
+ 
+         initial_obs = TASK_ENV.get_obs() 
+         inint_eef_pose = initial_obs['endpose']['left_endpose'] + \
+@@ -562,6 +612,10 @@ def eval_policy(task_name,
+ 
+             ret = model.infer(dict(obs=first_obs, prompt=prompt, save_visualization=save_visualization, video_guidance_scale=video_guidance_scale, action_guidance_scale=action_guidance_scale)) #(TASK_ENV, model, observation)
+             action = ret['action']
++            if _iwm_action_log:
++                # Raw server output, before any client-side unnormalization or pose
++                # composition, so a diff isolates the ENGINE rather than the harness.
++                _iwm_chunks.append(np.asarray(action))
+             if 'video' in ret:
+                 imagined_video = ret['video']
+                 gen_video_list.append(imagined_video)
+@@ -653,7 +707,27 @@ def eval_policy(task_name,
+             f"\033[93m{task_name}\033[0m | \033[94m{args['policy_name']}\033[0m | \033[92m{args['task_config']}\033[0m | \033[91m{args['ckpt_setting']}\033[0m\n"
+             f"Success rate: \033[96m{TASK_ENV.suc}/{TASK_ENV.test_num}\033[0m => \033[95m{round(TASK_ENV.suc/TASK_ENV.test_num*100, 1)}%\033[0m, current seed: \033[90m{now_seed}\033[0m\n"
+         )
+-        now_seed += 1
++        # Key the dump by SEED, not by episode index: with a pinned scene set the seed is
++        # the only identifier that means the same thing in both arms.
++        if _iwm_action_log and _iwm_chunks:
++            np.savez_compressed(
++                os.path.join(_iwm_action_log, f"seed_{int(now_seed)}.npz"),
++                chunks=np.stack(_iwm_chunks), success=np.array(bool(succ)),
++                instruction=np.array(prompt, dtype=object), allow_pickle=True)
++        if _iwm_pinned is None:
++            now_seed += 1
++
++    # Record the accepted scene set so a later arm can replay exactly it.
++    if _iwm_cache_path and _iwm_pinned is None:
++        os.makedirs(os.path.dirname(_iwm_cache_path), exist_ok=True)
++        with open(_iwm_cache_path, "w") as _f:
++            json.dump({"task": task_name, "st_seed": int(st_seed),
++                       "seeds": [int(s) for s in suc_test_seed_list]}, _f, indent=2)
++        print(f"\033[36m[InstinctWM] recorded {len(suc_test_seed_list)} accepted seeds -> "
++              f"{_iwm_cache_path}\033[0m")
++    if _iwm_gate_divergences:
++        print(f"\033[33m[InstinctWM] {len(_iwm_gate_divergences)} pinned seeds were rejected "
++              f"by the expert gate this run: {_iwm_gate_divergences}\033[0m")
+ 
+     return now_seed, TASK_ENV.suc
+ 
+diff --git a/wan_va/configs/__init__.py b/wan_va/configs/__init__.py
+index fe3791d..505aec6 100644
+--- a/wan_va/configs/__init__.py
++++ b/wan_va/configs/__init__.py
+@@ -6,6 +6,11 @@ from .va_robotwin_i2va import va_robotwin_i2va_cfg
+ from .va_robotwin_train_cfg import va_robotwin_train_cfg
+ from .va_demo_train_cfg import va_demo_train_cfg
+ from .va_demo_cfg import va_demo_cfg
++from .va_fans_train_cfg import va_fans_cfg, va_fans_train_cfg
++from .va_fans_i2va import va_fans_i2va_cfg
++from .va_fans_server import va_fans_server_cfg
++from .va_sa_train_cfg import va_sa_cfg, va_sa_train_cfg
++from .va_sa_i2va import va_sa_i2va_cfg
+ from .va_demo_i2va import va_demo_i2va_cfg
+ from .va_libero_cfg import va_libero_cfg
+ from .va_libero_train_cfg import va_libero_train_cfg
+@@ -17,6 +22,13 @@ VA_CONFIGS = {
+     'robotwin_i2av': va_robotwin_i2va_cfg,
+     'franka_i2av': va_franka_i2va_cfg,
+     'robotwin_train': va_robotwin_train_cfg,
++    'fans': va_fans_cfg,
++    'fans_train': va_fans_train_cfg,
++    'fans_i2av': va_fans_i2va_cfg,
++    'fans_server': va_fans_server_cfg,
++    'sa': va_sa_cfg,
++    'sa_train': va_sa_train_cfg,
++    'sa_i2av': va_sa_i2va_cfg,
+     'demo': va_demo_cfg,
+     'demo_train': va_demo_train_cfg,
+     'demo_i2av': va_demo_i2va_cfg,
+diff --git a/wan_va/configs/va_robotwin_cfg.py b/wan_va/configs/va_robotwin_cfg.py
+index 5fa703f..19e229d 100644
+--- a/wan_va/configs/va_robotwin_cfg.py
++++ b/wan_va/configs/va_robotwin_cfg.py
+@@ -1,4 +1,6 @@
+ # Copyright 2024-2025 The Robbyant Team Authors. All rights reserved.
++import os
++
+ from easydict import EasyDict
+ 
+ from .shared_config import va_shared_cfg
+@@ -6,7 +8,8 @@ from .shared_config import va_shared_cfg
+ va_robotwin_cfg = EasyDict(__name__='Config: VA robotwin')
+ va_robotwin_cfg.update(va_shared_cfg)
+ 
+-va_robotwin_cfg.wan22_pretrained_model_name_or_path = "/path/to/pretrained/model"
++va_robotwin_cfg.wan22_pretrained_model_name_or_path = os.environ.get(
++    "LINGBOT_CKPT", "/path/to/pretrained/model")
+ 
+ va_robotwin_cfg.attn_window = 72
+ va_robotwin_cfg.frame_chunk_size = 2

@@ -1,0 +1,21 @@
+{
+  "scope": "One-process public Runtime generation timing; recorded cameras, synthetic states. No transport, closed-loop quality, sustained tail or isolated quantization certificate.",
+  "native_completed": true,
+  "measured_calls": 32,
+  "native_p50_ms": 755.2525419999938,
+  "retained_shapes": {
+    "actions": [
+      37,
+      50,
+      14
+    ]
+  },
+  "native_numeric_completed": false,
+  "failure": "Native SDPA vision lengths.tolist() performs a device-to-host copy during CUDA Graph capture. Campaign stopped before FP8 and GR00T arms.",
+  "candidate_fix": "Hoist fixed-grid SDPA/eager cu_seqlens to CPU; preserve FA2 metadata device and reject changed grid values. Four CPU regression tests pass; actual device campaign pending.",
+  "sha256": {
+    "public-latency-sdpa-vla2-native.json": "fffa6e2838b8781d85d71324e814c9c1043f6bad1a26f91a535db9effdd0e563",
+    "public-latency-sdpa-vla2-native.npz": "80a0842fdc1a0b0180cb13c1b7ba8c331e1efff533610a84b7feb6371916d97c",
+    "public-latency-sdpa-vla2-native_numeric.log": "eb710dcc0badf70e626872e426217c6b4aa48c835e6315e7117348456df3890c"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "updated_utc": "2026-09-13T02:45:31.142246+00:00",
+  "hardware": [
+    "jetson_thor"
+  ],
+  "h100": "exploratory records retained; excluded from final comparison; no active local benchmark workers at scope change",
+  "frameworks": [
+    "lerobot",
+    "vllm-omni",
+    "instinctflash-internal"
+  ],
+  "selection": "minimum measured p50 among configurations passing that model existing quality acceptance standard",
+  "distilled_schedules": "eligible under the same quality requirement; unqualified candidates remain diagnostic only",
+  "thor_gpu_lock": "/tmp/thor_gpu.lock",
+  "allowed_techniques": [
+    "native",
+    "numeric",
+    "fp8",
+    "distillation",
+    "cfg_change",
+    "sampling_step_change"
+  ],
+  "quality_loss_threshold": "per-model existing acceptance standards",
+  "quality_threshold_status": "user_confirmed",
+  "primary_table": "one quality-admitted winner per model and framework; configuration explicit",
+  "quality_admission": "reuse each model existing metric, reference, margin and confidence rule; require evidence matching actual deployed candidate"
+}

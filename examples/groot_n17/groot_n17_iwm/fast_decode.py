@@ -175,6 +175,10 @@ def _absolute_joint_exact(relative: np.ndarray, reference: np.ndarray) -> np.nda
 
 def install_fast_decode(policy) -> FastOXEDecoder | None:
     processor = policy.processor
+    # A fine-tune may contain only its own embodiment. The DROID-specific
+    # optimization must not require an unrelated modality configuration.
+    if OXE_DROID not in processor.modality_configs:
+        return None
     current = getattr(processor, "_instinctflash_fast_decoder", None)
     if current is not None:
         return current

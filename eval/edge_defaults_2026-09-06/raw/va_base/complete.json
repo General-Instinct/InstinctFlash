@@ -1,0 +1,21 @@
+{
+  "complete": true,
+  "schedule": {
+    "video": 25,
+    "action": 50
+  },
+  "guidance": "native",
+  "terminal_elision": false,
+  "action_graphs": false,
+  "cycles": 48,
+  "runs": 2,
+  "input_sha256": "ec99dc9ff3d00d6dbfbaf2473d90becb76f723d31973a3fd023129fe3d428917",
+  "numeric_environment": {
+    "matmul_tf32": false,
+    "cudnn_tf32": true,
+    "cudnn_benchmark": false
+  },
+  "torch": "2.11.0+cu130",
+  "gpu": "NVIDIA Thor",
+  "scope": "Repeated real frames; fixed-input saturation stress, not closed-loop accuracy. CUDA event intervals include stream idle time; they are not kernel busy time."
+}

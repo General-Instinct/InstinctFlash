@@ -1,0 +1,62 @@
+{
+  "feedback_refused_before_prediction": true,
+  "owned_checkpoint_view_released": true,
+  "load_receipt": {
+    "verified_dit_tensors": 1317,
+    "original_checkpoint": "/home/guanming/.cache/instinctflash/declared/GEAR-Dreams__DreamZero-DROID",
+    "original_config_sha256": "93b808c65724db8cd29bd70d37d1f26f70d498c7c5d621b7b754fdbaa82d46f2",
+    "direct_bf16_dit": true,
+    "scope": "Candidate direct BF16 DiT assignment; initialization RNG consumption differs; retain frozen components and final checkpoint loading",
+    "initialization_rng_equivalent": false
+  },
+  "ok": true,
+  "precision": "native",
+  "checkpoint": "/home/guanming/.cache/huggingface/hub/models--GEAR-Dreams--DreamZero-DROID/snapshots/96ad344138c66e82536422432ad742f015784942",
+  "recipe": null,
+  "executed_fp8_projections": {},
+  "frame_positions": [
+    3,
+    5,
+    7,
+    3,
+    5,
+    7
+  ],
+  "repeated_episodes_equal": true,
+  "scheduler_steps": 16,
+  "dit_step_mask": [
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    true,
+    true,
+    true
+  ],
+  "scope": "Actual public Runtime native/FP8 dispatch with native checkpoint processors and owned direct-BF16 view; recorded RoboTwin cameras and synthetic DROID state. Not speed or task-quality certification.",
+  "local_verification": {
+    "finite_shape": [
+      6,
+      24,
+      8
+    ],
+    "repeated_episode_byte_equal": true,
+    "prior_native_byte_equal": false,
+    "prior_native_max_abs": 0.05696102976799011,
+    "prior_native_mae": 0.00860295258462429,
+    "raw_sha256": {
+      "dreamzero-native-public_current.json": "ee8f96a0e39441b75522c0b4e80ec87d5d0a0784fd71c83d916b6ea2b58700f9",
+      "dreamzero-native-public_current-actions.npz": "2063cd10a9ad1c813daaca50c313756523a17786ad0ef372ea85385310f0d801"
+    }
+  },
+  "scope_note": "Execution/repeat/feedback/cleanup pass; cross-run native output drift unresolved. Do not claim new/old source equivalence."
+}

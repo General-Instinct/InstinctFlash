@@ -9,13 +9,22 @@ this directory optimizes for *being correct and auditable*, not for being fast t
 `shipped_configuration()` is the source of truth for the production LingBot serving flags:
 
 ```text
---no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout
+--no-fsdp --no-empty-cache --no-debug-dump --conditioning-prefill --ring-kv --conv-layout --action-terminal-elision
 ```
 
-This serves P001 (substrate elision), P002 (conditioning prefill), P003 (ring KV addressing), and
-P007 (convolution layout) at an overall NUMERIC tier. P005 (`--graph-blocks`) and P006
-(`--stable-pools`) remain available for measurement but are **NOT RECOMMENDED** in the shipped
-configuration.
+This serves P001 (substrate elision), P002 (conditioning prefill), P003 (ring KV addressing),
+P007 (convolution layout) and P010 (action pred-commit forward elision) at an overall NUMERIC tier
+(P007 is the only non-bit-exact member). P005 (`--graph-blocks`) and P006 (`--stable-pools`) remain
+available for measurement but are **NOT RECOMMENDED** in the shipped configuration.
+
+P010 skips the action loop's padded terminal forward (`wan_va_server.py:542-546`): its output is
+discarded at `:548` and its provisional K/V is dropped by `clear_pred_cache` (`:574`) before anything
+reads it. Only the forward's slot allocation is replayed, which is what keeps it bit-exact past ring
+saturation (the naive skip was refuted there on 2026-08-09). It fails closed: if any forward arrives
+before `clear_pred_cache` (the vendor's offline `generate()`, or a `predict()` without `commit()`) the
+skipped forward is materialized and the pass disables itself for that server; it declines unless
+`video_exec_step == -1`. Gate: `probe_action_terminal_elision.py`, 48 seeded cycles x ABBA on both
+allocators and both operating points, max|Δaction| = 0.000e+00 everywhere.
 
 ## What it is
 

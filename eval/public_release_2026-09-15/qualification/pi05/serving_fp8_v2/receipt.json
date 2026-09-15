@@ -1,0 +1,180 @@
+{
+  "action_archive_sha256": "8377cc9e32d65269ee946c8694723deae1eb1fc3fd701520d570a557d0e1e3c7",
+  "calls": [
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        7
+      ],
+      "cycle": 0,
+      "episode": 0,
+      "request_sha256": "08531911347ddc883782b2369d0b42500f5425bacf5888bd3172f98e54cb2fbc",
+      "roundtrip_ms": 3532.200672023464,
+      "server_timing": {
+        "infer_ms": 3528.0926410341635,
+        "prev_total_ms": 77.87472999189049
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        7
+      ],
+      "cycle": 1,
+      "episode": 0,
+      "request_sha256": "e0bc2ea9e02797870a28ae32efc62fca4306f53772c92b68dc71d68c1aaf1752",
+      "roundtrip_ms": 5.994003964588046,
+      "server_timing": {
+        "infer_ms": 2.4126580101437867,
+        "prev_total_ms": 3534.5409299479797
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        7
+      ],
+      "cycle": 2,
+      "episode": 0,
+      "request_sha256": "f8e927c68e23c167ce1f2087e97c83ede43e2621d16dfea6716b3d5ccd644956",
+      "roundtrip_ms": 5.118460976518691,
+      "server_timing": {
+        "infer_ms": 2.1876029786653817,
+        "prev_total_ms": 8.090079994872212
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        7
+      ],
+      "cycle": 0,
+      "episode": 1,
+      "request_sha256": "2c89a93c168166857c487d5f9830641175a987a6f7d261d4c96e4416aff27e0a",
+      "roundtrip_ms": 54.96241297805682,
+      "server_timing": {
+        "infer_ms": 52.43599700042978,
+        "prev_total_ms": 0.6007479969412088
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        7
+      ],
+      "cycle": 1,
+      "episode": 1,
+      "request_sha256": "bfc40eecca33394bd631f0e474b885989a2c8e8911b744da0859b8bf5f03c2c3",
+      "roundtrip_ms": 5.139848974067718,
+      "server_timing": {
+        "infer_ms": 2.098482975270599,
+        "prev_total_ms": 56.73660902539268
+      }
+    },
+    {
+      "action_dtype": "float32",
+      "action_shape": [
+        7
+      ],
+      "cycle": 2,
+      "episode": 1,
+      "request_sha256": "387d360494c72d421619d2f6465f7ce020014055b4ffe62d6a330e0a0857060c",
+      "roundtrip_ms": 4.5088249607943,
+      "server_timing": {
+        "infer_ms": 2.0256119896657765,
+        "prev_total_ms": 7.064823992550373
+      }
+    }
+  ],
+  "cell_id": "pi05-runtime_selected",
+  "checkpoint": {
+    "model_id": "lerobot/pi05_libero_finetuned_v044",
+    "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1"
+  },
+  "checkpoint_path": "/home/guanming/.cache/instinctflash/declared/lerobot__pi05_libero_finetuned_v044/0812b08aa6b16dd6932969debb4ebb8c96bdd1c4d047d86d0c759ffb0c10ed76",
+  "command": [
+    "/dev/shm/ifl_public_envs_20260915_v1/pi05/bin/python",
+    "-I",
+    "-m",
+    "instinctflash.cli",
+    "serve",
+    "--config_path=/home/guanming/ifl_public_qualification_20260915_v1/pi05_fp8_serving_v2/serve.json"
+  ],
+  "config_sha256": "9a7bc9d518230b15c154160fb9bbb27ef04aec592225d4624db83a2d6409311a",
+  "fixture_sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411",
+  "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/pi05/bin/python",
+  "latency_benchmark": false,
+  "metadata": {
+    "backbone": "pi05",
+    "checkpoint_nfe": {
+      "action": 10,
+      "prefix": 1
+    },
+    "execution_policy": {
+      "category": "FP8",
+      "changed_schedule": {},
+      "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate",
+      "nfe": {
+        "action": 10,
+        "prefix": 1
+      },
+      "precision": "fp8",
+      "schedule_options": {},
+      "step_cache": null,
+      "tier_ceiling": "numeric",
+      "transform_tier": "NUMERIC"
+    },
+    "extra": {
+      "base_weights": "lerobot/pi05_libero_finetuned_v044",
+      "obs_features": {
+        "observation.images.empty_camera_0": [
+          3,
+          224,
+          224
+        ],
+        "observation.images.image": [
+          3,
+          256,
+          256
+        ],
+        "observation.images.image2": [
+          3,
+          256,
+          256
+        ],
+        "observation.state": [
+          8
+        ]
+      },
+      "param_bytes": 7473096344
+    },
+    "guidance": {
+      "action": "none"
+    },
+    "instinctflash_version": "0.1.0",
+    "model_id": "lerobot/pi05_libero_finetuned_v044",
+    "nfe": {
+      "action": 10,
+      "prefix": 1
+    },
+    "observation": "flat keys: observation.images.empty_camera_0 (3, 224, 224) float32; observation.images.image (3, 256, 256) float32; observation.images.image2 (3, 256, 256) float32; observation.state (8,) float32; plus prompt",
+    "observation_source": "the checkpoint's declared execution.obs_features",
+    "precision": "fp8",
+    "protocol": {
+      "prompt_rotation": true,
+      "reset_extension": true,
+      "wire": "openpi-websocket-msgpack-numpy"
+    }
+  },
+  "plan_sha256": "1ea6a5051492a63e1d7c7449507486e40e61b6eea9271488aeade7b337d9d3bb",
+  "request_timeout_s": 600,
+  "rng_scope": "unseeded FP8 transport check",
+  "schema": "instinctflash.serving_smoke.v1",
+  "scope": "Installed CLI and loopback WebSocket; two episodes, three calls each",
+  "seed": null,
+  "server_exit_code": 0,
+  "server_pid": 267244,
+  "startup_timeout_s": 1200,
+  "status": "passed",
+  "task_quality_validated": false
+}

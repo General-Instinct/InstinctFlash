@@ -1,0 +1,9 @@
+[Unit]
+Description=InstinctFlash Thor Cosmos performance and action regression
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/InstinctFlash
+EnvironmentFile=%h/.config/instinctflash/thor-regression.env
+ExecStart=/usr/bin/env ${REGRESSION_PYTHON} benchmarks/regression/deploy_thor.py --host ${THOR_HOST} --remote-root ${THOR_RESULTS} --python ${THOR_PYTHON} --output-root ${LOCAL_RESULTS}
+TimeoutStartSec=2h

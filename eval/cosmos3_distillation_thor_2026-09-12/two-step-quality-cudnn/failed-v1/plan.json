@@ -1,0 +1,57 @@
+{
+  "status": "frozen",
+  "scope": "Historical original SDE2 CFG1 actual cuDNN BF16 quality diagnostic; no trained two-step student or quality admission",
+  "configurations": [
+    "original_sde2_cfg1"
+  ],
+  "checkpoint": "/home/guanming/ifl_eval/cosmos_distill_20260912/original-v11-control-v1",
+  "declaration_sha256": "2937fb4b4312184af697d74dce7b87532f8b5c5efb810df768f4a7cca449dada",
+  "sources": {
+    "run_control.py": "1dd152abecd32974f138262a83097aca6a98781d02445c5099934d4a1dc43797",
+    "capture_control.py": "5e669efb89b999e5b4b558d3141762effd15d6d0e259b44c52cc1117e9252b41",
+    "validate_control.py": "bec701a2bbf8a856710db96528952b81ef1389a42e034ec32ea6ca3ed1796076",
+    "producer_capture.py": "a47d4b4edd55d72feed08bf2f87ba5392b0fc89be457c4d7a0f0fe4a6b84980a",
+    "protocol.json": "13e660f76bd71d17739d373ca4e5095c0fb855b71218f41c259223934fec544b",
+    "inventory.json": "deb07111d6162d6aec00e9bae57188bcb49500177ad2695739dcfce4858fe4ac",
+    "test_capture_control.py": "56c10ddbe6c5b115bf0ff6ffb8c80dee0df659f10b29b9d00d35889dcf0d29b0"
+  },
+  "data": {
+    "path": "/home/guanming/ifl_eval/cosmos_distill_20260912/realtime-quality-v1/development.npz",
+    "sha256": "45c047f262d5fa7d7e7839838e2288c3d98c698aaadd39245a67a395dc8c8dbe",
+    "bytes": 39512673
+  },
+  "expected_requests": 128,
+  "expected_callbacks": 256,
+  "expected_denoiser_branches": 256,
+  "outputs_read_before_freeze": false,
+  "historical_student_and_H100_outputs_already_seen": true,
+  "runtime_scope": "Original weights loaded through Runtime; native raw prepare/generate/decode with explicit frozen generation overrides, not Runtime.predict or a latency benchmark",
+  "execution_contract": {
+    "original_sde2_cfg1": {
+      "id": "original_sde2_cfg1",
+      "kind": "fixed",
+      "steps": 2,
+      "times": [
+        1.0,
+        0.5,
+        0.0
+      ],
+      "guidance": 1.0,
+      "shift": 1.0,
+      "action_padding": "zero",
+      "weight": "original",
+      "reference_only": false,
+      "endpoint": "untrained_two_step_control"
+    }
+  },
+  "limitations": [
+    "Native original UniPC4 padding differs intentionally from zero-padded SDE controls/students.",
+    "Final producer completion, new data, controller deadline and closed-loop success remain pending."
+  ],
+  "revision": 1,
+  "amendment": "Separate cuDNN output bank; all original SDE2 request identities preserved",
+  "cpu_checks": "Full native endpoint parity for 1/2/4-step CFG1/4 and UniPC4; malformed grids rejected",
+  "frozen_at": "2026-09-12T19:25:21.829728+00:00",
+  "attention": "cudnn",
+  "native_capture_plan_sha256": "9a7e79cf13d7658167ab3edc1b1e4403d4e256ac9a48f0aa38d2e47676574eba"
+}

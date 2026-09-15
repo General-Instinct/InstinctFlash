@@ -1,0 +1,90 @@
+Overwriting feature type 'VideoFrame' (VideoFrame -> VideoFrame)
+[INFO][lingbotvla.models.vla.lingbot_vla.qwen3vl_in_vla:114] 09/10/2026 16:10:16 >> apply Qwen3-VL Lingbot patch
+loading model from: /home/guanming/.cache/instinctflash/declared/robbyant__lingbot-vla-v2-6b-robotwin/checkpoints/global_step_50000/hf_ckpt
+✅ Merged Qwen3-VL text: intermediate_size = 9728
+✅ Merged Qwen3-VL text: num_hidden_layers = 36
+✅ Merged Qwen3-VL text: vocab_size = 151936
+✅ Merged Qwen3-VL text: tie_word_embeddings = True
+✅ Merged Qwen3-VL text: rope_theta = 5000000
+✅ Merged Qwen3-VL text: hidden_size = 2560
+✅ Merged Qwen3-VL text: num_attention_heads = 32
+✅ Merged Qwen3-VL text: hidden_act = silu
+✅ Merged Qwen3-VL text: rms_norm_eps = 1e-06
+✅ Merged Qwen3-VL text: max_position_embeddings = 262144
+✅ Merged Qwen3-VL text: num_key_value_heads = 8
+Initializing model ... 
+=====Action Expert V2 init 36 Layers, hidden=768, q_heads=32, kv_heads=8, head_dim=128.=====
+=====Using Eager Attn=====
+  0%|          | 0/6 [00:00<?, ?it/s] 17%|█▋        | 1/6 [00:00<00:01,  3.29it/s] 50%|█████     | 3/6 [00:00<00:00,  7.97it/s] 83%|████████▎ | 5/6 [00:00<00:00,  6.95it/s]100%|██████████| 6/6 [00:00<00:00,  7.17it/s]
+Model initialized ... 
+/home/guanming/lingbot-vla-v2-repo/deploy/lingbot_vla_v2_policy.py:370: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+  image = torch.as_tensor(observation[image_feature]).permute(2, 0, 1).contiguous()
+Denoise 10 steps
+sample_actions batch=1 cost 1.4351630210876465 s
+{'i': 0, 'cycle': 0, 'phase': 'warmup', 'ms': 1485.0108989921864, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7146918773651123 s
+{'i': 1, 'cycle': 0, 'phase': 'warmup', 'ms': 727.8006580017973, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7159719467163086 s
+{'i': 2, 'cycle': 0, 'phase': 'warmup', 'ms': 728.8771409948822, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.717918872833252 s
+{'i': 3, 'cycle': 0, 'phase': 'measured', 'ms': 730.9161770099308, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7397043704986572 s
+{'i': 4, 'cycle': 0, 'phase': 'measured', 'ms': 752.9971949988976, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7399768829345703 s
+{'i': 5, 'cycle': 0, 'phase': 'measured', 'ms': 753.4923699859064, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7486286163330078 s
+{'i': 6, 'cycle': 0, 'phase': 'measured', 'ms': 762.0971729920711, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7480132579803467 s
+{'i': 7, 'cycle': 0, 'phase': 'measured', 'ms': 761.4833720144816, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7441842555999756 s
+{'i': 8, 'cycle': 0, 'phase': 'measured', 'ms': 757.5325510115363, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7472052574157715 s
+{'i': 9, 'cycle': 0, 'phase': 'measured', 'ms': 761.7271550116129, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7470846176147461 s
+{'i': 10, 'cycle': 0, 'phase': 'measured', 'ms': 759.8962460178882, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7442238330841064 s
+{'i': 11, 'cycle': 0, 'phase': 'measured', 'ms': 756.9966090086382, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7470760345458984 s
+{'i': 12, 'cycle': 0, 'phase': 'measured', 'ms': 759.3410670233425, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7514197826385498 s
+{'i': 13, 'cycle': 0, 'phase': 'measured', 'ms': 764.3006650032476, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7511913776397705 s
+{'i': 14, 'cycle': 0, 'phase': 'measured', 'ms': 765.1798720180523, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7476756572723389 s
+{'i': 15, 'cycle': 0, 'phase': 'measured', 'ms': 760.4599829937797, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7466869354248047 s
+{'i': 16, 'cycle': 0, 'phase': 'measured', 'ms': 759.5892829995137, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7462286949157715 s
+{'i': 17, 'cycle': 0, 'phase': 'measured', 'ms': 759.2523130006157, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7470130920410156 s
+{'i': 18, 'cycle': 0, 'phase': 'measured', 'ms': 760.0827699934598, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.747650146484375 s
+{'i': 19, 'cycle': 0, 'phase': 'measured', 'ms': 760.7820839912165, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7533519268035889 s
+{'i': 20, 'cycle': 0, 'phase': 'measured', 'ms': 766.6175230115186, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7469789981842041 s
+{'i': 21, 'cycle': 0, 'phase': 'measured', 'ms': 760.1427990011871, 'shape': [50, 14]}
+Denoise 10 steps
+sample_actions batch=1 cost 0.7527050971984863 s
+{'i': 22, 'cycle': 0, 'phase': 'measured', 'ms': 765.85080800578, 'shape': [50, 14]}

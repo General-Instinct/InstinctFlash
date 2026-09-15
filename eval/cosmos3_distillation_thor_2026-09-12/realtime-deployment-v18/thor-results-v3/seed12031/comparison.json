@@ -1,0 +1,38 @@
+{
+  "category": "SCREEN",
+  "trained_student": true,
+  "task_quality_certified": false,
+  "seed": 12031,
+  "comparisons": {
+    "native_to_cudnn": {
+      "maxabs": 0.03125,
+      "meanabs": 0.001964587304327223,
+      "byte_identical": false,
+      "speedup": 1.4410289506406009
+    },
+    "cudnn_to_combined": {
+      "maxabs": 0.0,
+      "meanabs": 0.0,
+      "byte_identical": true,
+      "speedup": 1.0972652156851952
+    }
+  },
+  "p50_ms": {
+    "native": 1131.590814475203,
+    "cudnn": 785.265843529487,
+    "combined": 715.6572834937833
+  },
+  "p95_ms": {
+    "native": 1180.4283444071189,
+    "cudnn": 788.1815051106969,
+    "combined": 717.4928611813812
+  },
+  "files": {
+    "native.npz": "990cdbf1e0308f52d53218d594ab3e9be330efeb141f58930ad73f726d256ccb",
+    "cudnn.json": "0f01a39c8fb234b1c724159f7eb77902cf9116b3442b85100da2537557884211",
+    "native.json": "421b04519465de5024befce89531fae75e49ac028d60bafbc564f1459caa52f7",
+    "combined.json": "608ff22bfe4b75f3c74b3a477b5c31a9a376891f12fd9d61fc4cec3ea5fb765d",
+    "combined.npz": "d312f97ea38953884fb807e9184cee16331c81a82631fbcc615e0b5786497f64",
+    "cudnn.npz": "d312f97ea38953884fb807e9184cee16331c81a82631fbcc615e0b5786497f64"
+  }
+}

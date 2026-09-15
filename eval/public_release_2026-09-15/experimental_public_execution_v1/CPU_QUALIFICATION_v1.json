@@ -1,0 +1,96 @@
+{
+  "GPU_calls": 0,
+  "actual_screens_qualified": 0,
+  "checks": [
+    {
+      "command": [
+        ".venv-dev/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "eval/public_release_2026-09-15/experimental_public_execution_v1/test_queue_v1.py"
+      ],
+      "label": "pytest",
+      "log": {
+        "bytes": 99,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/pytest_v1.log",
+        "sha256": "a087c1e6b3f70d261533157f162a8cfd98c79c39561ca62cc2b34752147024c0"
+      },
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/ruff",
+        "check",
+        "eval/public_release_2026-09-15/experimental_public_execution_v1/run_queue_v1.py",
+        "eval/public_release_2026-09-15/experimental_public_execution_v1/test_queue_v1.py"
+      ],
+      "label": "ruff",
+      "log": {
+        "bytes": 19,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/ruff_v1.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "returncode": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "eval/public_release_2026-09-15/experimental_public_execution_v1/run_queue_v1.py",
+        "--config",
+        "eval/public_release_2026-09-15/experimental_public_execution_v1/config_template_v1.json"
+      ],
+      "label": "plan_only",
+      "log": {
+        "bytes": 5364,
+        "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/plan_only_v1.log",
+        "sha256": "a4d241bfa520204ad3a40938961d96282c79e69eb67668e17bb85c4d681395e3"
+      },
+      "returncode": 0
+    }
+  ],
+  "created_utc": "2026-09-15T06:13:47.217173+00:00",
+  "native_launches": 0,
+  "remote_actions": 0,
+  "schema": "instinctflash.experimental_public_queue_CPU_qualification.v1",
+  "scope": "Synthetic result-contract tests, real bounded CPU subprocess lifecycle tests, real own-process /proc handle rejection, local archive/reclaim of test-created synthetic bytes; no model/environment/remote operations.",
+  "source_map": {
+    "foreign_Omni_stack_not_used": true,
+    "groups": {
+      "cosmos-framework": 667,
+      "cosmos3-iwm": 11,
+      "instinctflash": 223,
+      "instinctflash-cosmos3-sde1": 26
+    },
+    "known_current_Nano_runtime_source_hashes_matched": 271,
+    "native_vendor_Python_files_selected": 667,
+    "native_vendor_payload_inventory_files": 717
+  },
+  "sources": {
+    "config_template_v1.json": {
+      "bytes": 124375,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/config_template_v1.json",
+      "sha256": "19ece16842e72e6a89958a5eb8ba4faf3e2d800b13b7c7412eb1339181731943"
+    },
+    "planned_commands_v1.json": {
+      "bytes": 5384,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/planned_commands_v1.json",
+      "sha256": "b01a509396511d93216b6aedd0e49cfecaad79787c8b1ad3893fb1eed159762d"
+    },
+    "run_queue_v1.py": {
+      "bytes": 31718,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/run_queue_v1.py",
+      "sha256": "43d46fb02e76ff3e88a7f3337c9a703dd5a7f6e27a9e1a039326770d44ed957a"
+    },
+    "test_queue_v1.py": {
+      "bytes": 16116,
+      "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/test_queue_v1.py",
+      "sha256": "058da290b97dc4d891daa6a334c4e955b92d6fe774752f459db29d539401b409"
+    }
+  },
+  "status": "passed_CPU_only",
+  "tests_passed": 28,
+  "weight_reads": 0
+}

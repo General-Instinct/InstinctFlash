@@ -1,0 +1,329 @@
+{
+  "schema_version": 18,
+  "status": "success",
+  "stage": "source-export",
+  "plan": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/export_seed12031.json",
+    "bytes": 13048,
+    "sha256": "1b00d175ca2aa7529a70ebafeede9a7b0a4b70fafda6b2ec2c203b5e7bbbd5cd"
+  },
+  "protocol": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training_protocol.json",
+    "bytes": 1244835,
+    "sha256": "cc9f256a984b02b69a0f26820f8726e2e60afcf02ecba2813750dfb5d9926c69"
+  },
+  "arm_id": "nano_sde1_cfg1_seed12031",
+  "training_seed": 12031,
+  "student_updates": 64,
+  "steps": 1,
+  "guidance": 1,
+  "snapshot": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12031/checkpoints/update_0064/training.pt",
+    "bytes": 609453597,
+    "sha256": "6475c27f7d30ba37cb676d24aa93bcb704eacd7aeb31f453f94aea5bd2606ebd"
+  },
+  "training_report": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12031/report.json",
+    "bytes": 57396,
+    "sha256": "4103a0e518ff310d08bf76e343cde662a5d07f17cf7fc8978fd57026d3582ecc"
+  },
+  "manifest": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12031/checkpoints/update_0064/manifest.json",
+    "bytes": 2757,
+    "sha256": "dc0f552a3b39772139e5bf93ce3291169b7ed07efaa256a82b37f552d0e11d25"
+  },
+  "pid": 1785665,
+  "process_nonce": "28a3fbbc18444e2284ab0a5e4f5a110f",
+  "created_at": "2026-09-12T21:07:55.114757+00:00",
+  "runtime": {
+    "python": "3.13.14 (main, Jul 18 2026, 17:02:37) [Clang 22.1.3 ]",
+    "numpy": "2.2.6",
+    "torch": "2.10.0+cu130",
+    "cuda": "13.0",
+    "device": "NVIDIA H100 80GB HBM3",
+    "capability": [
+      9,
+      0
+    ],
+    "tf32_matmul": false,
+    "tf32_cudnn": false
+  },
+  "live_state_matches_snapshot": true,
+  "native_serving_bitexact": true,
+  "student_state_sha256": "287ee19eb4662ee20f55176df8ee486bd6e6ff6864a6d9a187e51298fa2bf018",
+  "expected_merged_backbone_state": "4e9de5ff525ef2616e941ac24285109e406a700b5cb7405642dd32bc37f320c7",
+  "merged_native": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12031/export_roundtrip/merged_native.pt",
+    "bytes": 1577336369,
+    "sha256": "5bf1fe0ce6b7594c2e598b0440aa914c2f919136c8d3f66f03f609a65bfe07c8"
+  },
+  "expected_outputs": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12031/export_roundtrip/expected_outputs.pt",
+    "bytes": 9163093,
+    "sha256": "30d551e387cfbddcac7e4329c0b959d7944c20eaada7ca6bcd59b0bf46ab4966"
+  },
+  "source_serving_outputs": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12031/export_roundtrip/source_serving_outputs.pt",
+    "bytes": 9163165,
+    "sha256": "356e2cf8496a8ace6c8d53f15f6134599731c0b2504bb2c7e4ec8f05c098d83c"
+  },
+  "export_inventory": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/nano_dmd_v18/training/nano_sde1_cfg1_seed12031/export_roundtrip/export_inventory.json",
+    "bytes": 42133,
+    "sha256": "d84bf88d4a15bb166d830b0123dc21894e83f64b9c1d059d6fc5a7d4ac51e289"
+  },
+  "helper_execution": {
+    "schema_version": 16,
+    "execution": "complete_declared_deployment_grid",
+    "steps": 1,
+    "times": [
+      1.0,
+      0.0
+    ],
+    "guidance": 1.0,
+    "callbacks": 1,
+    "network_branches": 1,
+    "native_branches": [
+      {
+        "timestep": 1000.0,
+        "padding_max": 0.0,
+        "conditioning": "conditional"
+      }
+    ],
+    "callback_timesteps": [
+      1000.0
+    ],
+    "callback_parameter_graphs": [
+      false
+    ],
+    "gradient": "none",
+    "output_requires_grad": false,
+    "native_callable_unchanged": true,
+    "native_hook_restored": true,
+    "sampling_rng_restored": true,
+    "rng_visibility_contract": "cpu_without_cuda_or_one_visible_cuda_at_logical0",
+    "native_action_shape": [
+      33,
+      64
+    ],
+    "generated_action_shape": [
+      32,
+      8
+    ],
+    "preserved_history_rows": [
+      0
+    ],
+    "action_padding_policy": "droid_rf_training_zero_action_padding",
+    "weight_training_status": "not_inferred_by_rollout"
+  },
+  "serving_execution": {
+    "sampler_calls": 1,
+    "preparation_calls": 1,
+    "sampler_denoiser_callbacks": 1,
+    "model_velocity_branch_calls": 1,
+    "sampler_class": "cosmos_framework.model.generator.diffusion.samplers.fixed_step.FixedStepSampler",
+    "sample_type": "sde",
+    "rf_grid": [
+      1.0,
+      0.0
+    ],
+    "num_train_timesteps": 1000.0,
+    "effective_sampler_arguments": {
+      "num_steps": 1,
+      "shift": 0.0,
+      "seed": [
+        1065378039
+      ]
+    },
+    "native_conditioning_passed": true,
+    "sampler_host_seconds": 0.14143388904631138,
+    "callback_timesteps": [
+      1000.0
+    ],
+    "native_initial_noise": [
+      {
+        "shape": [
+          572352
+        ],
+        "dtype": "torch.float32",
+        "sha256": "dbfe511a1330427feb5294b63b69e2ae1266a5081144fa6d9c451998513e4bf2"
+      }
+    ],
+    "native_condition_reference": [
+      {
+        "shape": [
+          572352
+        ],
+        "dtype": "torch.float32",
+        "sha256": "68b3291c974b4fd1ba11ab7ae961391cc1ed0f697378d9fbfcd60eb1b12292dc"
+      }
+    ],
+    "native_condition_mask": [
+      {
+        "shape": [
+          572352
+        ],
+        "dtype": "torch.float32",
+        "sha256": "6fa59985d67811da17dba7b3f3b2ba27ee3739b09e7cbc779284a45e5997c653"
+      }
+    ],
+    "generation_arguments": {
+      "seed": [
+        1065378039
+      ],
+      "guidance": 1.0,
+      "num_steps": 1,
+      "shift": 1.0,
+      "guidance_interval": null,
+      "normalize_cfg": false,
+      "skip_text_tokens_for_cfg": false
+    },
+    "action_padding_intervention": {
+      "schema_version": 1,
+      "policy": "droid_rf_training_zero_action_padding",
+      "raw_action_dim": 8,
+      "padded_action_dim": 64,
+      "sampler_change": "padded_coordinates_are_zero_reference_constraints",
+      "velocity_change": "project_only_padded_action_inputs_before_native_packing",
+      "prepared_calls": 1,
+      "prepared_original": {
+        "noise": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "dbfe511a1330427feb5294b63b69e2ae1266a5081144fa6d9c451998513e4bf2"
+          }
+        ],
+        "condition_reference": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "68b3291c974b4fd1ba11ab7ae961391cc1ed0f697378d9fbfcd60eb1b12292dc"
+          }
+        ],
+        "condition_mask": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "ca5c3496af371a05aa7e2a130553cd65821796c10e9bc94df897a87d820f5012"
+          }
+        ]
+      },
+      "prepared_effective": {
+        "noise": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "dbfe511a1330427feb5294b63b69e2ae1266a5081144fa6d9c451998513e4bf2"
+          }
+        ],
+        "condition_reference": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "68b3291c974b4fd1ba11ab7ae961391cc1ed0f697378d9fbfcd60eb1b12292dc"
+          }
+        ],
+        "condition_mask": [
+          {
+            "shape": [
+              572352
+            ],
+            "dtype": "torch.float32",
+            "sha256": "6fa59985d67811da17dba7b3f3b2ba27ee3739b09e7cbc779284a45e5997c653"
+          }
+        ]
+      },
+      "nonpadding_unchanged": true,
+      "mask_delta_coordinates": [
+        1792
+      ],
+      "initial_padding_max_before": [
+        0.0
+      ],
+      "initial_padding_max_after": [
+        0.0
+      ],
+      "projected_velocity_branches": 1,
+      "velocity_padding_max_before": [
+        0.0
+      ],
+      "velocity_padding_max_after": [
+        0.0
+      ],
+      "hooks_restored": true
+    },
+    "action_offset": 570240,
+    "action_shape": [
+      33,
+      64
+    ],
+    "normalizer": {
+      "raw_action_dim": 8,
+      "qualified_class": null,
+      "offset": null,
+      "scale": null,
+      "forward_clamp": null,
+      "forward_clamp_mask": null
+    },
+    "native_module_bindings_restored": true,
+    "sampling_rng_restored": true,
+    "role_binding": true,
+    "output_arrays": {
+      "action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "8d76cb670b2eff79a0f188cce9ff79790b6f93b1e7d605e1b1631bdecc72a6fe"
+      },
+      "model_action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "c246d78086646ef2254bcfea3d584bf8567f5494c64a0991205cc5ad1f4252f5"
+      },
+      "measured_action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "9a69b99f9ce0181348ba3c38df5f87640570a6daf0b50d78c86cf456779af79f"
+      },
+      "model_measured_action": {
+        "shape": [
+          32,
+          8
+        ],
+        "dtype": "float32",
+        "sha256": "3872e03e37d96b250019fc50633cde7ac097e1aa59ec641ac3da63c18b63166f"
+      }
+    },
+    "generation_host_seconds": 0.31178206764161587,
+    "full_joint_fp32": {
+      "shape": [
+        572352
+      ],
+      "dtype": "float32",
+      "sha256": "ebe509d54be836b7344152a5023d64f9dc5b3c5fed3c14eb760429caf4110953"
+    }
+  },
+  "actual_callbacks": 2,
+  "actual_branches": 2,
+  "source_and_input_postcheck": "unchanged",
+  "seconds": 352.8332515126094
+}

@@ -1,0 +1,32 @@
+{
+  "source_sha256": "a99752ecdf8e4a73be8242e3803a44eff2923a0355913a068809063b0d1b9b52",
+  "source_hashes": {
+    "instinctflash/runtime/engine_backend.py": "a99752ecdf8e4a73be8242e3803a44eff2923a0355913a068809063b0d1b9b52",
+    "instinctflash/runtime/facade.py": "8520aaa54dd1e0e0571abc0a27f160472ad34f7cc925e9fab79a5b53f375d531",
+    "instinctflash/passes/generic/engine_offload.py": "2baafc6178448738e41d408352f52571b1bb97ce7e892d84e65ec8160ab6f460"
+  },
+  "pi05_camera_mapping": {
+    "image": 0,
+    "wrist_image": 11,
+    "wrist_image_right": 22
+  },
+  "expected_two_real_cameras": {
+    "image": 11,
+    "wrist_image": 22
+  },
+  "mapping_matches_two_real_cameras": false,
+  "state_present_after_mapping": false,
+  "chunk50_geometry_guard_reason": null,
+  "horizon_gate_scope": "The current geometry guard checks action dimension, not action horizon. The separate operating-point guard checks denoise NFE/guidance. Neither is a verified chunk-50-to-chunk-10 refusal.",
+  "action_contract": "Native pi05 _Pi05Loop uses select_action and returns one decoded action (buffered across calls); EngineBackend returns a full 10x7 chunk each call. Runtime method names alone do not unify this controller cadence.",
+  "runtime_scope": "Current generic engine reset receives the episode prompt; predict does not run the checkpoint state-to-prompt processor. T3 specialized server instead receives per-call token IDs and applies the native postprocessor externally.",
+  "decision": "Do not label the staged engine benchmark an interchangeable pi05 robot-facing Runtime API benchmark.",
+  "families": {
+    "pi05": "Engine supports FP16 control and FP8; fixed chunk 10. Generic Runtime contract has state/prompt and camera mapping gaps for standard v044 observations.",
+    "vla4b": "Standalone staged engine available, FP16 vision plus FP8 LM/expert. No full-engine FP16 switch. Historical gate inputs are synthetic; not task-quality evidence.",
+    "vla2": "Historical complete engine uses additional repacked artifacts/custom MoE wiring. Generic staged frontend defaults to routed_moe_stub. Earlier qualification observed intermittent native NUMERIC capture admission; the new profile is measured separately. Historical and current sources are not interchangeable.",
+    "groot": "Standalone engine consumes backbone auxiliary features prepared outside each prediction; old 122/42 ratio excludes repeated vision only on engine side. No matched full-policy speed ratio established.",
+    "wan_va": "Experimental build-specific engine; no unified FP8 Runtime route. Different NFE/CFG and ring history require their own comparison.",
+    "cosmos_dreamzero": "No supported unified FP8 comparison established by existing records."
+  }
+}

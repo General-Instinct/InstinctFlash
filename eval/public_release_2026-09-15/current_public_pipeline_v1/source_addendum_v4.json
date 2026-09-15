@@ -1,0 +1,132 @@
+{
+  "DreamZero_cache_scope": "One owned V6 compiler-cache namespace is shared serially by the normal paired arms and later WS process. This is not a per-arm cold-compiler measurement; no action/precision/schedule/acceptance rule changes.",
+  "DreamZero_compiler_memory_environment": {
+    "TORCHINDUCTOR_CACHE_DIR": "/dev/shm/ifl_public_dreamzero_compile_v6/inductor",
+    "TORCHINDUCTOR_COMPILE_THREADS": "1",
+    "TRITON_CACHE_DIR": "/dev/shm/ifl_public_dreamzero_compile_v6/triton"
+  },
+  "DreamZero_historical_comparability": {
+    "new_native_control": "dreamzero-runtime_selected",
+    "new_same_ID_precision": "native",
+    "old_same_ID_precision": "fp8",
+    "same_ID_comparable": [
+      "dreamzero-eager_native",
+      "dreamzero-runtime_default",
+      "dreamzero-dynamic-fp8"
+    ],
+    "scope": "The new native runtime_selected control is independently subject to the unchanged main BITEXACT gate. Its same-ID older FP8 control is not a like-for-like historical precision comparison; report it as not comparable, never exact equivalence."
+  },
+  "DreamZero_ptxas_probe": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/dreamzero_ptxas_v1/completion.json",
+    "sha256": "4dc9f27dea66673b241f7d3fb2283be029f4c1ab40c2b2f40d6dfbe3260c55c0"
+  },
+  "DreamZero_queue_config": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/dreamzero_memory_preparation_v1/dreamzero_paired_serving_queue_v6.json",
+    "sha256": "9c86963b0adbd4b92f0465e04ca27c7b0775e7fdeb68517a4983d80500b18247"
+  },
+  "DreamZero_requested_plan": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/failed_run_v5/plan.json",
+    "sha256": "dd05cff0bde6cf7dbd4ee944332f91c7c825ded127defdd3c319c11ef09b2904"
+  },
+  "DreamZero_selection_reason": "The already-prepared execution_mode dynamic-fp8 intentionally adds a fourth operating_point. Public serve_smoke defaults to that requested last cell. The third main runtime_selected is a native/checkpoint/BITEXACT control, not the requested published route. This fixed mapping follows predeclared CLI intent, not observed speed.",
+  "SDE1_documentation_correction": {
+    "expected_sentence": "The main Cosmos README table uses full UniPC4/CFG3; task-quality evidence is reported separately.",
+    "path": "examples/cosmos3_sde1/README.rst",
+    "sha256": "d7ecffee74dbfa2af32468778133ac572a14336d139424c3a0b731664951b0eb",
+    "wheel_scope": [
+      "METADATA",
+      "RECORD"
+    ]
+  },
+  "actual_selection_created": false,
+  "allow_added_or_removed_source_paths": false,
+  "allowed_changed_source_paths": [
+    "README.md",
+    "INSTALL.rst",
+    "REPRODUCE.rst",
+    "scripts/bootstrap_vendor.py",
+    "tests/test_bootstrap_vendor.py",
+    "scripts/build_public_release.py",
+    "examples/cosmos3_sde1/README.rst"
+  ],
+  "contract": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/contract_v1.json",
+    "sha256": "1086a7e236219f6b8a073bee9e695d870981877cd52dda8646d75dace0146f0d"
+  },
+  "created_utc": "2026-09-15T06:15:57.760225+00:00",
+  "historical_acceptance_changed": false,
+  "normal_queue_source": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/dreamzero_memory_preparation_v1/thor_queue_v5.py",
+    "sha256": "2edf097f3d001fe6db1f5a52f730e2c78889d5274b807409d66fc943faa59844"
+  },
+  "preserved_DreamZero_V5_failure": {
+    "files": {
+      "cells/dreamzero-eager_native/native_loaded_values.json": {
+        "bytes": 495274,
+        "sha256": "97d11e928f608c26c59d04b95d3cef73b9e53770de5558c4c01621e4f410bc8e"
+      },
+      "inputs/recorded_inputs_v1.npz": {
+        "bytes": 1312979,
+        "sha256": "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
+      },
+      "logs/dreamzero-eager_native.log": {
+        "bytes": 49030,
+        "sha256": "37b76112c0255d71ca2ce76fba1d9d7a4a83faeedbf80179df1db8b8306015b7"
+      },
+      "matrix.json": {
+        "bytes": 5365,
+        "sha256": "b660ddc3377cfb0518be4eda572faea02e2e9259b447351ec9ea4ae514a64a52"
+      },
+      "plan.json": {
+        "bytes": 7999,
+        "sha256": "dd05cff0bde6cf7dbd4ee944332f91c7c825ded127defdd3c319c11ef09b2904"
+      },
+      "preparation.json": {
+        "bytes": 1244,
+        "sha256": "de28c29c49106d77c63157b26d0cf940def1f27467b2181f7d4eb8edaddbc230"
+      },
+      "profiles.json": {
+        "bytes": 41271,
+        "sha256": "82f0165c0365b2abf66b53cb8c9855d4ee8f670f41f7d17b04236a73a4ea5cf6"
+      },
+      "run.json": {
+        "bytes": 1265,
+        "sha256": "e39d786095bbdbb781740a5d605ed48e5269ba8be73d0b0f15f23d2d71b37115"
+      },
+      "validated_report/report.csv": {
+        "bytes": 1457,
+        "sha256": "56d7e65345b08c9a451bfd682ca9837ca446d7a3d765fa0ba243d7cb59604bc8"
+      },
+      "validated_report/report.json": {
+        "bytes": 2790,
+        "sha256": "a3ac6251566200c323efe0cc4e8b1ccd8c67494333f88f66982ca3240e489d65"
+      }
+    },
+    "root": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/qualification/dreamzero/failed_run_v5"
+  },
+  "published_selected_cell_ids": {
+    "dreamzero": "dreamzero-dynamic-fp8",
+    "edge": "edge-runtime_selected",
+    "groot": "groot-runtime_selected",
+    "nano": "nano-runtime_selected",
+    "pi05": "pi05-runtime_selected",
+    "va": "va-runtime_selected",
+    "vla2": "vla2-runtime_selected",
+    "vla4": "vla4-runtime_selected"
+  },
+  "reason": "Root prospectively corrected published/WS selected-ID mapping to the requested DreamZero dynamic-fp8 operating point before its actual result. All four prepared paired arms, native/default gates, original sources/outcomes and fixed V6 compiler settings remain required. Existing V1-V3 and strict historical helpers are preserved.",
+  "require_DreamZero_queue_applied_compiler_environment_and_hash": true,
+  "required_operating_point_ids": {
+    "dreamzero": [
+      "dreamzero-dynamic-fp8"
+    ],
+    "va": [
+      "va-2v4a-fp8"
+    ]
+  },
+  "schema": "instinctflash.current_pipeline_source_addendum.v4",
+  "supersedes": {
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/current_public_pipeline_v1/source_addendum_v3.json",
+    "sha256": "6d3cc4af0c14e87c02bff67f1eea60f08601838e351632a76853accd70d92da9"
+  }
+}

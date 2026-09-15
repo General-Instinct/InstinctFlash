@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "name": "LingBot-VA RoboTwin untrained guidance x NFE frontier (the 2026-08-31/09-02 campaign grid, as a declared sweep)",
+  "baseline": {"id": "2V/4A@w5", "nfe": {"video": 2, "action": 4},
+               "guidance": {"video": "cfg", "action": "positive_only"},
+               "forwards_per_cycle": 10, "batch2_forwards_per_cycle": 10},
+  "points": [
+    {"id": "2V/4A@w3", "nfe": {"video": 2, "action": 4}, "guidance": {"video": 3, "action": "positive_only"},
+     "forwards_per_cycle": 10, "batch2_forwards_per_cycle": 10},
+    {"id": "2V/4A@w7", "nfe": {"video": 2, "action": 4}, "guidance": {"video": 7, "action": "positive_only"},
+     "forwards_per_cycle": 10, "batch2_forwards_per_cycle": 10},
+    {"id": "2V/4A@w9", "nfe": {"video": 2, "action": 4}, "guidance": {"video": 9, "action": "positive_only"},
+     "forwards_per_cycle": 10, "batch2_forwards_per_cycle": 10},
+    {"id": "2V/2A@w5", "nfe": {"video": 2, "action": 2}, "guidance": {"video": "cfg", "action": "positive_only"},
+     "forwards_per_cycle": 8, "batch2_forwards_per_cycle": 8},
+    {"id": "2V/2A@w3", "nfe": {"video": 2, "action": 2}, "guidance": {"video": 3, "action": "positive_only"},
+     "forwards_per_cycle": 8, "batch2_forwards_per_cycle": 8},
+    {"id": "2V/2A@w1", "nfe": {"video": 2, "action": 2},
+     "guidance": {"video": {"mode": "cfg", "scale": 1.0}, "action": "positive_only"},
+     "forwards_per_cycle": 8, "batch2_forwards_per_cycle": 0},
+    {"id": "1V/4A@w5", "nfe": {"video": 1, "action": 4}, "guidance": {"video": "cfg", "action": "positive_only"},
+     "forwards_per_cycle": 9, "batch2_forwards_per_cycle": 9},
+    {"id": "1V/4A@w3", "nfe": {"video": 1, "action": 4}, "guidance": {"video": 3, "action": "positive_only"},
+     "forwards_per_cycle": 9, "batch2_forwards_per_cycle": 9},
+    {"id": "1V/4A@w1", "nfe": {"video": 1, "action": 4},
+     "guidance": {"video": {"mode": "cfg", "scale": 1.0}, "action": "positive_only"},
+     "forwards_per_cycle": 9, "batch2_forwards_per_cycle": 0},
+    {"id": "1V/2A@w5", "nfe": {"video": 1, "action": 2}, "guidance": {"video": "cfg", "action": "positive_only"},
+     "forwards_per_cycle": 7, "batch2_forwards_per_cycle": 7},
+    {"id": "1V/2A@w1", "nfe": {"video": 1, "action": 2},
+     "guidance": {"video": {"mode": "cfg", "scale": 1.0}, "action": "positive_only"},
+     "forwards_per_cycle": 7, "batch2_forwards_per_cycle": 0}
+  ],
+  "repeat_baseline": true,
+  "driver": {
+    "command": ["${IFL_BENCH_FAMILY_PYTHON}", "${IFL_BENCH_WAN_VA_ROBOTWIN_DRIVER}"],
+    "environment": {"TQDM_DISABLE": "1"},
+    "timeout_seconds": 7200,
+    "revision": "${IFL_BENCH_DRIVER_REVISION}"
+  },
+  "screening": {"margin": -0.05, "interval": "wald_central95", "min_pairs": 10},
+  "control_steps_per_cycle": 32,
+  "notes": [
+    "Points are OPERATING POINTS: (schedule grid, per-stream guidance, CFG batching). forwards/cycle = (V+1)+(A+1)+2 (V Euler + pred-commit, A+1 action, 2 kv-commit); every forward is CFG batch-2 while the video stream requests a negative branch (w>1) and batch-1 at w=1 (video positive-only).",
+    "This is the grid the hand-run campaign measured (iwm_distill/fewstep/guidance/gw_autotable.md; h1_report.md section 4b; standing archives iwm_results/fewstep_*). The evidence itself is registered as data in instinctflash/distill/evidence/. A RoboTwin closed-loop wan_va driver for benchmarks.vla is not landed yet (instinctflash_driver.py refuses closed-loop by design), so this spec compiles and documents; it does not yet run through `python -m benchmarks.vla run`."
+  ]
+}

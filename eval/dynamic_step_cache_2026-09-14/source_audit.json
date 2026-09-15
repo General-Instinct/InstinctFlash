@@ -1,0 +1,477 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-09-14",
+  "scope": "Local pinned-source and existing-receipt audit; no GPU run or worker operation. Only these research artifacts were written.",
+  "pins": {
+    "omni_commit": "f7d9deb45ab56e6a2ccc1690279bd9e6bdefbfe3",
+    "omni_worktree": "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913",
+    "audited_omni_files_clean_against_commit": true,
+    "retained_receipt_packages": {
+      "vllm": "0.29.0",
+      "vllm-omni": "0.29.0.dev0+gf7d9deb45",
+      "torch": "2.13.0",
+      "transformers": "5.14.1"
+    },
+    "thor_compatibility": "The retained manifest declares two startup-only edits (dummy warmup recognition and clean checkpoint-page reclamation); the stepcache algorithm is unchanged. Audited clone pipeline hash is the manifest before_sha256."
+  },
+  "sources": {
+    "native_head": {
+      "path": "/home/ubuntu/dreamzero-repo/groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py",
+      "sha256": "7193cd73423472aa252bee73bd80e0d673c89d773ec852e90f50154729b50845",
+      "lines": [
+        [
+          207,
+          223
+        ],
+        [
+          943,
+          971
+        ],
+        [
+          1224,
+          1305
+        ],
+        [
+          1340,
+          1349
+        ]
+      ]
+    },
+    "omni_config": {
+      "path": "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913/vllm_omni/diffusion/cache/stepcache/config.py",
+      "sha256": "99f7fb873d2f44f1fd290261c72a6470cf569fbbe39c95178095f7acaca65721",
+      "lines": [
+        [
+          17,
+          50
+        ]
+      ]
+    },
+    "omni_state": {
+      "path": "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913/vllm_omni/diffusion/cache/stepcache/state.py",
+      "sha256": "32b00daaf6cd6e4ac73cf9c6f40eb3c69c46386f5fc0759d6cd6f23569b75a87",
+      "lines": [
+        [
+          13,
+          51
+        ]
+      ]
+    },
+    "omni_backend": {
+      "path": "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913/vllm_omni/diffusion/cache/stepcache/backend.py",
+      "sha256": "41b7620aba6308181a7153feefc92f39378e66aacae504456171a6ec9e0a52e2",
+      "lines": [
+        [
+          63,
+          73
+        ],
+        [
+          115,
+          124
+        ]
+      ]
+    },
+    "omni_pipeline": {
+      "path": "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913/vllm_omni/diffusion/models/dreamzero/pipeline_dreamzero.py",
+      "sha256": "0a8ff73237cd9018e10e0ac34e19660aaceb0480b4af89d7169ffb64fde910a2",
+      "lines": [
+        [
+          595,
+          613
+        ],
+        [
+          776,
+          789
+        ],
+        [
+          1082,
+          1204
+        ],
+        [
+          1241,
+          1349
+        ],
+        [
+          1436,
+          1443
+        ],
+        [
+          1468,
+          1516
+        ],
+        [
+          1553,
+          1604
+        ]
+      ]
+    },
+    "omni_runner": {
+      "path": "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913/vllm_omni/diffusion/worker/diffusion_model_runner.py",
+      "sha256": "d33706fc14f5b1652fa59327a27b708c5e16337e5a5e29f34817a4ae1aab7e1b",
+      "lines": [
+        [
+          644,
+          676
+        ],
+        [
+          749,
+          757
+        ]
+      ]
+    },
+    "omni_ar_runner": {
+      "path": "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913/vllm_omni/experimental/ar_diffusion/runner.py",
+      "sha256": "273fd6df7ac7a8e9fb5d6cb89a08d265dd22f96f43336ea2570bb6abc4a8e4b6",
+      "lines": [
+        [
+          308,
+          325
+        ]
+      ]
+    },
+    "omni_cfg": {
+      "path": "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913/vllm_omni/diffusion/distributed/cfg_parallel.py",
+      "sha256": "1f13fc09bc0b64fb268e08291dc4f05420ae5d5757e49a0b23cb53b811b65170",
+      "lines": [
+        [
+          155,
+          168
+        ],
+        [
+          228,
+          237
+        ]
+      ]
+    },
+    "omni_deploy": {
+      "path": "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913/vllm_omni/deploy/dreamzero.yaml",
+      "sha256": "d1c802e7fc82404bbbf6d24d8b4abab9dbfd903f300627d2f8ae0a18b57e05fb",
+      "lines": [
+        [
+          1,
+          32
+        ]
+      ]
+    },
+    "omni_defaults": {
+      "path": "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913/vllm_omni/diffusion/models/dreamzero/utils.py",
+      "sha256": "7fbc75554637768e64f449a6cd05ae1c2ec311ced229e340c513066783788f1e",
+      "lines": [
+        [
+          6,
+          9
+        ]
+      ]
+    },
+    "omni_cache_defaults": {
+      "path": "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913/vllm_omni/diffusion/data.py",
+      "sha256": "5e684a3f86632c4a213317ec2f48fd907cd1e9683a1e49ee86178575364b8ebb",
+      "lines": [
+        [
+          620,
+          624
+        ]
+      ]
+    },
+    "omni_persistent_state": {
+      "path": "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913/vllm_omni/diffusion/models/dreamzero/state_dreamzero.py",
+      "sha256": "75d0bec216a0a940e568baf4c0463a4702298a70d8f3fb23ac8bb6e0c35a11d8",
+      "lines": [
+        [
+          104,
+          128
+        ],
+        [
+          153,
+          180
+        ]
+      ]
+    },
+    "benchmark_driver": {
+      "path": "/home/ubuntu/InstinctFlash/eval/framework_comparison_2026-09-13/benchmark_omni_dreamzero_v4.py",
+      "sha256": "22a44859be80d6561b50c34cfa1a4c17b4fab89878f3a3a0703bbc7a8d53088b",
+      "lines": [
+        [
+          31,
+          43
+        ],
+        [
+          46,
+          73
+        ]
+      ]
+    },
+    "benchmark_launcher": {
+      "path": "/home/ubuntu/InstinctFlash/eval/framework_comparison_2026-09-13/run_omni_compile_thor.py",
+      "sha256": "4f495fdd0091e11c4d440e0fc2720ba906594ef0bd2866d4dc17a09e8c2cf522",
+      "lines": [
+        [
+          9,
+          14
+        ]
+      ]
+    },
+    "retained_receipt": {
+      "path": "/home/ubuntu/InstinctFlash/eval/framework_comparison_2026-09-13/receipts/omni-dreamzero-compiled-v1.json",
+      "sha256": "6b4202980f1c841464d14953cae5b2008d2f5e20d67ba21e93b4788e14af1da1",
+      "lines": []
+    },
+    "compatibility_manifest": {
+      "path": "/home/ubuntu/InstinctFlash/eval/framework_comparison_2026-09-13/omni_compatibility_manifest.json",
+      "sha256": "d1c9293fb7d81a301cfd45757f85f18e44fa5c8c4ad0538c970d28e403b72f7c",
+      "lines": []
+    },
+    "benchmark_log": {
+      "path": "/home/ubuntu/ifl_eval/framework_comparison_20260913/omni-dreamzero-compiled-v1.log",
+      "sha256": "7bbe7a75f7657c6d28d9b3debcabcf66f101c6ee065d815800e50cdb86669bec",
+      "lines": [
+        [
+          49,
+          54
+        ]
+      ]
+    },
+    "original_step_cache_claims": {
+      "path": "/home/ubuntu/InstinctFlash/eval/dynamic_step_cache_2026-09-14/research/prior_step_cache.py",
+      "sha256": "23d132c92493541f90923b181fdd2f58e07939c7be2e0b59c6df0de8c61caf02",
+      "lines": [
+        [
+          1,
+          22
+        ]
+      ],
+      "origin": "git show HEAD:examples/dreamzero/step_cache.py",
+      "origin_commit": "c07925f578c7c4af604d87debc7767ec773bd4fb",
+      "original_path": "examples/dreamzero/step_cache.py",
+      "scope": "Frozen prior claim text; current source was corrected separately."
+    },
+    "historical_summary": {
+      "path": "/home/ubuntu/iwm_distill/bench_dreamzero_h100/ours_stepcache.json",
+      "sha256": "0cebf1009b9ccf464c748e265c5e8a3ee6242d89ad66057143b551f54068dd49",
+      "lines": []
+    },
+    "historical_native_fixed": {
+      "path": "/home/ubuntu/iwm_distill/bench_dreamzero_h100/stock_capture.json",
+      "sha256": "22da41c8130acfa1d36664979ba01f07093c326ddc2e125450e1f1fe401a2792",
+      "lines": []
+    },
+    "historical_native_dynamic": {
+      "path": "/home/ubuntu/iwm_distill/bench_dreamzero_h100/ours_stepcache_raw.json",
+      "sha256": "4175d0ce44b8a993a59445edc5c4bdbe16274f25581b4bc56c06bd5d7182a2c1",
+      "lines": []
+    },
+    "historical_omni": {
+      "path": "/home/ubuntu/iwm_distill/bench_dreamzero_h100/vllm_omni.json",
+      "sha256": "164b6af4b11c6bc75cb07061b7e6408c06a8f6cae362769ba9d001591c3da0c1",
+      "lines": []
+    },
+    "historical_mislabeled_stock": {
+      "path": "/home/ubuntu/iwm_distill/bench_dreamzero_h100/stock.json",
+      "sha256": "73f4a08b5dc05ec81e5772a5ebb05d86ef925d0fc4f8c6498b82bddfd9b6e064",
+      "lines": []
+    },
+    "historical_reproduce_script": {
+      "path": "/home/ubuntu/InstinctFlash/examples/dreamzero/reproduce_h100.sh",
+      "sha256": "7fdc8cbb2ed88e52c0d5adbf83d406e1cdf6c953c2594ddbd480d80d5474315b",
+      "lines": [
+        [
+          59,
+          70
+        ]
+      ]
+    },
+    "historical_mislabeled_log": {
+      "path": "/tmp/rm_dz_sc_m.log",
+      "sha256": "261c595e52220067ec3cd13e89545c80025ca958299da116e9728d31c9df7503",
+      "lines": [
+        [
+          1,
+          8
+        ]
+      ]
+    },
+    "historical_native_fixed_actions": {
+      "path": "/home/ubuntu/iwm_distill/bench_dreamzero_h100/stock_capture_actions.npz",
+      "sha256": "0edb8a147699d9636a526cacde6d3c36a7a796463798a6a4ef7b7133c13b4fa8",
+      "lines": []
+    },
+    "historical_native_dynamic_actions": {
+      "path": "/home/ubuntu/iwm_distill/bench_dreamzero_h100/ours_stepcache_raw_actions.npz",
+      "sha256": "8c9d3ae61a2d32cd27a1efb69e37407909a07558eed0650ffbda8fa16796d90c",
+      "lines": []
+    },
+    "corrected_step_cache_documentation": {
+      "path": "/home/ubuntu/InstinctFlash/examples/dreamzero/step_cache.py",
+      "sha256": "7dd2e875a0608ecba5bbf933e8d28d7bdce4bb2ea83a32c4b090c5a44c97a5b6",
+      "lines": [],
+      "scope": "Corrected current docstring, distinct from the frozen prior claims."
+    }
+  },
+  "algorithm": {
+    "classification": "Approximate hold-last joint-output reuse requiring explicit BEHAVIORAL permission; current evidence is SCREEN, not exact memoization or a task-quality certificate.",
+    "same_default_decision_rule": true,
+    "native_history_tuple": [
+      "timestep",
+      "CFG_video_velocity",
+      "conditional_action_velocity"
+    ],
+    "native_similarity_tuple_index": 1,
+    "omni_history_tuple": [
+      "CFG_video_velocity"
+    ],
+    "omni_similarity_tuple_index": 0,
+    "tuple_normalization": "Compare native_history[-1][1] with omni_history[-1][0]; Omni caches the latest action separately. The indexing difference does not denote a different comparison signal.",
+    "comparison": "Take the last two COMPUTED video velocities, flatten from dimension 1, cast to float32, cosine_similarity(dim=1), then mean across the batch. Skipped steps are not appended.",
+    "strict_thresholds": [
+      0.95,
+      0.93
+    ],
+    "skip_countdowns": [
+      4,
+      2
+    ],
+    "min_history_steps": 2,
+    "max_history": 2,
+    "countdown_semantics": "A threshold trigger skips the CURRENT slot and sets 4 or 2. Subsequent countdown>1 calls decrement and skip; countdown==1 clears and forces one recompute. Thus a trigger gives 4 or 2 total skipped slots, followed by a forced recompute if the schedule has another slot. The next slot may trigger a new skip burst.",
+    "payload": "Reuse the latest CFG-combined video velocity AND latest positive/conditional action velocity. Video CFG = negative + scale*(positive-negative). Action is positive only; its similarity and magnitude do not enter the gate.",
+    "scheduler": "Both video and action schedulers still advance at every slot using their current timestep/latent and the fresh or reused velocity. Time skipping here does not reduce the scheduler clock.",
+    "order1_extrapolation_used": false,
+    "order1_note": "Native cache_predict_order1 is defined at 1340 but the actual skip branch at 1283-1285 holds the last prediction; no call to that extrapolator occurs in this path.",
+    "sources": [
+      "native_head",
+      "omni_state",
+      "omni_pipeline",
+      "omni_cfg"
+    ],
+    "required_permission": "BEHAVIORAL",
+    "evidence_status": "SCREEN"
+  },
+  "lifecycle": {
+    "native": "Each lazy_joint_video_action invocation creates an empty prev_predictions list and resets self.skip_countdown=0 immediately before denoising.",
+    "omni": "Predictions and cached payloads are local to diffuse(). Countdown belongs to pipeline._stepcache_state. Normal request execution refreshes the backend before pipeline.forward: ARDiffusionModelRunner.execute_model -> super.execute_model -> _refresh_cache_for_requests -> backend.refresh -> state.reset.",
+    "direct_call_pitfall": "Calling diffuse repeatedly while bypassing the runner does not itself reset the pipeline countdown. The first two computations rebuild history, but a prior countdown may still affect later decisions. A shared API must reset explicitly per generation.",
+    "persistent_state": "Autoregressive KV, prompt embeddings, CLIP, VAE stream and attention-window state have separate session/window lifetimes. Step prediction payloads do not persist across requests. Normal KV prefill runs before diffuse and is not step-skipped.",
+    "sources": [
+      "native_head",
+      "omni_pipeline",
+      "omni_backend",
+      "omni_runner",
+      "omni_ar_runner",
+      "omni_persistent_state"
+    ]
+  },
+  "safeguards_and_limits": {
+    "present": [
+      "First two computed predictions establish history.",
+      "Countdown expiry forces a recompute if a later scheduler slot exists.",
+      "Skip path asserts a cached prediction is available.",
+      "Omni clones video/action outputs while stepcache is active to protect retained values from compiled output-buffer reuse.",
+      "Normal request refresh resets countdown."
+    ],
+    "absent": [
+      "No mandatory last-slot recompute; dynamic schedule does not preserve fixed-mask endpoints.",
+      "No action-specific similarity/error bound or norm-change test.",
+      "No explicit finite-value guard or propagated-output error certificate; NaN similarity fails the threshold comparisons but the cached payload is not separately validated.",
+      "No adaptation while inside a skip burst; no fresh prediction is available then.",
+      "No guarantee of fewer computed slots than the native fixed eight-of-sixteen mask.",
+      "No per-request actual DiT computation/skip counters in the retained Omni timing receipt."
+    ],
+    "config_pitfalls": "The converter checks only equal threshold/countdown lengths. min_history<2 can index missing predictions; max_history<min_history prevents establishing history; nonpositive countdowns defeat the intended bounded refresh; unsorted thresholds can shadow the intended longer burst. Pinned defaults are valid.",
+    "batch_pitfall": "Similarity is averaged across batch samples. The pinned deployment admits max_num_seqs=1; a future batched API must explicitly choose shared vs per-sample decisions instead of silently treating the batch mean as an individual guarantee."
+  },
+  "actual_benchmark": {
+    "source": "September 13 retained compiled Omni DreamZero cell, not a new run.",
+    "model_revision": "96ad344138c66e82536422432ad742f015784942",
+    "dtype": "bfloat16",
+    "sampler_slots": 16,
+    "cfg_scale": 5.0,
+    "sigma_shift": 5.0,
+    "seed": 1140,
+    "action_horizon": 24,
+    "compile_requested": true,
+    "cache_backend": "step_cache",
+    "thresholds": [
+      0.95,
+      0.93
+    ],
+    "countdowns": [
+      4,
+      2
+    ],
+    "topology": "One GPU, max_num_seqs=1, TP=1, CFG parallel disabled; conditional and unconditional DiT branches run sequentially.",
+    "requests": "33 calls: 3 warmup + 30 measured, three cycles per session; explicit reset at cycle 0 and new benchmark-episode session_id. Continuation selection retains cycles 1 and 2.",
+    "call_count_semantics": "A recomputed denoising slot executes two branch transformer forwards at CFG5; skipping that slot avoids both. The normal per-request observation/KV prefill executes an additional CFG pair outside the skipped denoise loop.",
+    "actual_computed_slots": null,
+    "actual_skipped_slots": null,
+    "actual_saved_dit_forward_calls": null,
+    "count_evidence_limit": "The receipt records i/phase/ms/action-shape and compile/cache configuration; the available log confirms enabled thresholds but has no per-request slot mask or call counter. Do not infer four computed slots or identical skip patterns across implementations from the thresholds or elapsed time.",
+    "ratio_attribution": "No Omni same-input cache-on/off and compile-on/off ablation is retained; no fraction of the cross-framework gap can be assigned to dynamic cache or compilation.",
+    "sources": [
+      "omni_deploy",
+      "omni_defaults",
+      "omni_cache_defaults",
+      "benchmark_driver",
+      "benchmark_launcher",
+      "retained_receipt",
+      "benchmark_log"
+    ]
+  },
+  "corrected_claims": [
+    {
+      "claim": "Omni uses this exact algorithm.",
+      "correction": "The pinned default decision rule matches native after normalizing history tuple layout. Lifetime ownership, payload storage, compilation, preprocessing and persistent caches differ, and actual skip patterns depend on their computed video predictions."
+    },
+    {
+      "claim": "Dynamic mode skips more than the fixed eight-step mask.",
+      "correction": "It may skip more or less. Low similarities compute all sixteen slots; dynamic mode replaces the fixed mask rather than applying additional skips to it."
+    },
+    {
+      "claim": "The 2.77x Omni gap comes from stepcache plus compiled kernels; the remainder is compiled kernels.",
+      "correction": "The historical arithmetic ratio exists, and both features were enabled, but no isolated attribution is supported. The historical summary itself records incompatible observation contracts."
+    },
+    {
+      "claim": "1786.6 ms and 1843.1 ms are interchangeable stock/dynamic benchmarks.",
+      "correction": "The paired capture receipt uses stock_capture=3116.5 ms and ours_stepcache_raw=1786.6 ms. stock.json=1843.1 carries a stock label but its associated dynamic-run log identifies another dynamic measurement. Keep exact experiment identity and do not mix denominators."
+    },
+    {
+      "claim": "Outputs differ by construction.",
+      "correction": "Approximate reuse can change outputs and the historical paired screen measured a difference; it does not mathematically guarantee a nonzero difference for every input."
+    },
+    {
+      "claim": "serving_env returns an environment overlay.",
+      "correction": "The existing helper copies all os.environ and changes DYNAMIC_CACHE_SCHEDULE. It exposes no generic cache API, counters or admission gate."
+    }
+  ],
+  "historical_evidence": {
+    "native_paired_capture_ms": {
+      "fixed": 3116.5,
+      "dynamic": 1786.6
+    },
+    "scope": "Historical native fixed-mask vs dynamic action-output screen, not the current Thor cell and not an Omni cache ablation.",
+    "action_screen": {
+      "requests": 12,
+      "shape": [
+        12,
+        24,
+        8
+      ],
+      "max_abs": 0.2880859375,
+      "mean_abs": 0.031968842402824924,
+      "p95_of_per_request_max": 0.27573242187499997,
+      "task_quality_certified": false
+    },
+    "action_check_note": "Read-only CPU NumPy recomputation of both bound historical action NPZ files confirms finite equal-shaped arrays and the reported deltas; this is a historical output screen without deployment/task-quality qualification.",
+    "omni_historical_ms": 1123.8,
+    "omni_ratio_attribution_supported": false
+  },
+  "shared_api_recommendations": [
+    "Expose this as an explicit approximate step-reuse policy requiring BEHAVIORAL permission, separately from exact tensor-cache admission. SCREEN describes the present evidence, not an execution permission. Keep disabled unless a declared recipe selects it.",
+    "Use immutable validated policy configuration and a generation-owned state returned by begin_generation(context). Hold countdown, signal history and owned output payload together; always reset on begin, exception or context change.",
+    "Let the model adapter define comparison_signal(payload) and the coupled payload schema. DreamZero selects video-after-CFG and reuses (video-after-CFG, positive-action), while prefill/KV commits remain outside this API.",
+    "Preserve scheduler advancement at every original slot. Record a fresh payload only after an actual recomputation, and retain clone/detach-owned tensors with explicit shape/dtype/device checks.",
+    "Validate min_history>=2, max_history>=min_history, equal list lengths, descending finite thresholds in [-1,1], and positive integral countdowns. Force recompute on unavailable, mismatched or nonfinite payload; document additional guards as a changed recipe.",
+    "If mandatory endpoint recompute or action-sensitive admission is added, name and qualify it as a distinct policy. These safeguards are not native default parity.",
+    "Record per-request sampler slots, computed/skip decisions and reasons, similarities when evaluated, stale age, CFG branch calls and prefill calls separately. Bind configuration and source hashes to each timing/output receipt.",
+    "Use CPU parity tests against the extracted pinned rules for index normalization, strict threshold boundaries, countdown expiry, no final-step guarantee, generation reset and different shapes/dtypes. Numerical/quality qualification still requires separately authorized measured controls."
+  ]
+}

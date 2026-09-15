@@ -45,6 +45,33 @@ def main() -> int:
     check("identical outcomes pass", c2.passed, c2.verdict[:46])
     check("zero discordant pairs is noted, not hidden",
           any("discordant" in n for n in c2.notes))
+    check("default mode carries no tango fields (byte-stable certificate)",
+          c2.ci_method is None and c2.tango_central90 is None
+          and '"tango_central90"' not in c2.to_json())
+
+    print("\n=== 2b. the opt-in tango_one_sided95 mode is explicitly named, never ci95 ===")
+    c2t = certify(t2, s2, margin=-0.05, interval="tango_one_sided95")
+    check("identical outcomes pass under the tango rule", c2t.passed, c2t.verdict[:60])
+    check("paired score interval stays non-degenerate at zero discordance",
+          c2t.tango_central90[0] < 0 < c2t.tango_central90[1],
+          f"tango_central90={c2t.tango_central90}")
+    check("NI decides on Tango while McNemar is descriptive",
+          "Tango" in c2t.ci_method and "McNemar" in c2t.p_value_kind)
+    check("ci95 keeps its Wald meaning in both modes",
+          c2t.ci95 == c2.ci95, f"ci95={c2t.ci95}")
+    check("the decision bound is serialized under its own name",
+          '"tango_central90"' in c2t.to_json() and
+          c2t.lower_confidence_bound == c2t.tango_central90[0])
+
+    print("\n=== 2c. the secondary task-collapse gate fails a collapsed task ===")
+    t2c = arm([1, 1, 0, 1], "x") + [Outcome("y0", 7, "other_task", True)]
+    s2c = arm([1, 1, 0, 1], "x") + [Outcome("y0", 7, "other_task", False)]
+    c2c = certify(t2c, s2c, margin=-0.99, fail_on_task_collapse=True)
+    check("collapse gate overrides an aggregate pass",
+          not c2c.passed and "task-collapse" in c2c.verdict, c2c.verdict[:60])
+    check("collapsed task is named", c2c.collapsed_tasks == ("other_task",))
+    c2n = certify(t2c, s2c, margin=-0.99)
+    check("gate off by default", c2n.passed and c2n.collapsed_tasks is None)
 
     print("\n=== 3. a small drop inside the margin passes ===")
     t3 = arm([1] * 92 + [0] * 8)

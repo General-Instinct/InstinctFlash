@@ -58,8 +58,35 @@ def test_readme_answers_four_questions_first():
     check(at == sorted(at), "and in that order")
     check("Runtime.from_pretrained" in head, "the load example is the public Runtime API")
     check("episode.predict" in head, "the actions example loops")
-    for banned in ("Optimizer(", "tier_ceiling", "port=", "plan.serve"):
+    # Precision/tier permission is part of the public Runtime API. The first
+    # screen should still avoid requiring internal planner or engine plumbing.
+    for banned in ("Optimizer(", "port=", "plan.serve"):
         check(banned not in head, f"the first screen does not mention {banned!r}")
+
+
+def _news_body(text: str) -> str | None:
+    news = re.search(r"^## What's new[^\n]*\n", text, re.M)
+    if news is None:
+        return None
+    following = text[news.end():]
+    next_heading = re.search(r"^#{2,3}\s+", following, re.M)
+    return following[:next_heading.start()] if next_heading else following
+
+
+def _contains_results_table(text: str) -> bool:
+    # Release summaries may quote their linked measurements. Full result rows
+    # belong in the Results section, outside the capability announcements.
+    return re.search(r"^\s*\|.*\|\s*$", text, re.M) is not None
+
+
+def test_news_scope_separates_results_without_hiding_news_tables():
+    for heading in ("## Results", "### Results"):
+        body = _news_body(f"## What's new\nNew supported model: 1.33×.\n{heading}\n| Model | 3× |\n")
+        check(body is not None and not _contains_results_table(body),
+              f"{heading} has its own scope outside news")
+        body = _news_body(f"## What's new\n| Model | 20 ms | 3× |\n{heading}\n")
+        check(body is not None and _contains_results_table(body),
+              "table rows inside actual news remain rejected")
 
 
 def test_readme_has_no_research_chronology():
@@ -77,10 +104,9 @@ def test_readme_has_no_research_chronology():
                    "RETRACTED", "PROPOSED API", "operating point", "Quality (25"):
         check(banned not in text, f"README does not mention {banned!r}")
     check(not re.search(r"\*\*\[20\d\d/\d\d\]\*\*", text), "no date-stamped changelog entries")
-    news = re.search(r"^## What's new", text, re.M)
-    if news:
-        body = text[news.end():text.index("\n## ", news.end())]
-        check("×" not in body and "ms" not in body.split(), "the news section is not a results table")
+    body = _news_body(text)
+    if body is not None:
+        check(not _contains_results_table(body), "the news section is not a results table")
 
 
 def test_canonical_docs_describe_only_main():
@@ -110,6 +136,7 @@ def main() -> int:
     test_root_is_product_shaped()
     test_readme_answers_four_questions_first()
     test_readme_has_no_research_chronology()
+    test_news_scope_separates_results_without_hiding_news_tables()
     test_every_readme_link_resolves()
     test_canonical_docs_describe_only_main()
     print("\n" + "=" * 78)

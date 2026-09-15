@@ -1,0 +1,23 @@
+{
+  "output": {
+    "format": "json"
+  },
+  "runtime": {
+    "device": "cuda:0",
+    "exclude_passes": [
+      "cfg_branch_elision"
+    ],
+    "nfe": {
+      "action": 4,
+      "video": 2
+    },
+    "precision": "fp8",
+    "step_cache": "checkpoint",
+    "tier_ceiling": "behavioral"
+  },
+  "serve": {
+    "host": "127.0.0.1",
+    "model": "/home/guanming/.cache/instinctflash/declared/robbyant__lingbot-va-posttrain-robotwin/25c73c83cd83866da8ef6cc9b0bd869b5430f626e6c2814bcb654f2a3dea8b72",
+    "port": 57479
+  }
+}

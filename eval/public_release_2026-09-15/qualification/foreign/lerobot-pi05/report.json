@@ -1,0 +1,137 @@
+{
+  "capture_sha256": "78f930744832fb8abe5d5884bae9b4f39a0d6bfc9f65ee4f39c67c808328e0bd",
+  "cell": {
+    "assets": {
+      "checkpoint": {
+        "model_id": "lerobot/pi05_libero_finetuned_v044",
+        "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1"
+      }
+    },
+    "auxiliary_repositories": {
+      "google/paligemma-3b-pt-224": {
+        "files": {
+          "added_tokens.json": {
+            "bytes": 24,
+            "sha256": "7d0bad90030d638a4bf89a82e91206e25f1fbe0012f14bca21666a64b643bc49"
+          },
+          "config.json": {
+            "bytes": 1027,
+            "sha256": "e00c72cdff16296bf1229c3267b99f5247d8c740cae84336866338d64fa7918f"
+          },
+          "special_tokens_map.json": {
+            "bytes": 607,
+            "sha256": "5ef37093ae4236587b6e8266acb815b46e2db8ce656c66552bfa574d32880405"
+          },
+          "tokenizer.json": {
+            "bytes": 17549604,
+            "sha256": "ef6773c135b77b834de1d13c75a4c98ab7a3684ffd602d1831e1f1bf5467c563"
+          },
+          "tokenizer_config.json": {
+            "bytes": 39968,
+            "sha256": "3259402b1d1802e02417d7bff75a889ec61d359d15be6050a957b307c48edbbe"
+          }
+        },
+        "revision": "35e4f46485b4d07967e7e9935bc3786aad50687c"
+      }
+    },
+    "compile": true,
+    "effective_schedule": {
+      "action": 1
+    },
+    "expected_shapes": [
+      [
+        7
+      ]
+    ],
+    "family": "pi05",
+    "framework": "lerobot",
+    "historical": {
+      "receipt_name": "lerobot-pi05-nfe1-compiled-v2.json",
+      "receipt_sha256": "1cba7ed02697634fc1dd8e1c343f650d41133105250a10d0937470baf2d026f1",
+      "selected_p50_ms": 93.97249150788411
+    },
+    "id": "lerobot-pi05",
+    "quality_certified": false,
+    "selected_indices": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39
+    ],
+    "total_calls": 40,
+    "warmup_calls": 10
+  },
+  "completion_sha256": "d23ebaa3c2ff2e585faba6d2b6800da64afdce2a117634d38d43b66a7478d93a",
+  "latency": {
+    "all_measured_p50_ms": 93.91610501916148,
+    "classification": "SCREEN",
+    "historical_p50_ms": 93.97249150788411,
+    "p50_ms": 93.91610501916148,
+    "p95_ms": 94.12004993355367,
+    "p99_ms": 94.14269157103263,
+    "selected_count": 30,
+    "selected_indices": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39
+    ],
+    "task_quality_certified": false
+  },
+  "schema": "instinctflash.framework_comparison.v1",
+  "scope": "Local observation-to-CPU-actions wall time; Omni includes worker IPC. No network or simulator.",
+  "status": "passed",
+  "task_quality_certified": false
+}

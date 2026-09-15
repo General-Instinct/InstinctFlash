@@ -1,0 +1,67 @@
+{
+  "schema_version": 20,
+  "status": "success",
+  "arm_id": "edge_sde2_complete_path_seed12041",
+  "training_seed": 12041,
+  "student_updates": 2,
+  "steps": 2,
+  "guidance": 1.0,
+  "times": [
+    1.0,
+    0.5,
+    0.0
+  ],
+  "action_shape": [
+    33,
+    64
+  ],
+  "future_action_shape": [
+    32,
+    8
+  ],
+  "action_padding": "zero",
+  "state_key": "student",
+  "snapshot": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/fullpath_v20/pilot/edge_sde2_complete_path_seed12041/checkpoints/update_0002/training.pt",
+    "bytes": 302984685,
+    "sha256": "4c09b0d9c1bd1c75d05e44516403bf67f2d1eaa2f71944d80d076113d7ac2855"
+  },
+  "protocol": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/fullpath_v20/pilot_protocol_v1.json",
+    "bytes": 1046918,
+    "sha256": "749f25628de31d4aa79f408164dd967b718e92f4b7f99b333824182f926e59e8"
+  },
+  "plan": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/fullpath_v20/export_1_v1.json",
+    "bytes": 12654,
+    "sha256": "d66391fe3402516ef23278e1a1d7756db956be742aa8abb0fbba6195789aed1e"
+  },
+  "manifest": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/fullpath_v20/pilot/edge_sde2_complete_path_seed12041/checkpoints/update_0002/manifest.json",
+    "bytes": 2673,
+    "sha256": "fa17414460e5c1444c0944d67e13d449025cef80d791baf98e98b3eab48c84de"
+  },
+  "student_state_sha256": "04ca49a244f2493338109ac6f71e3df67c549ef0a99efa8194c73ab8a81f8a4e",
+  "source_report": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/fullpath_v20/pilot/edge_sde2_complete_path_seed12041/export_roundtrip/source_report.json",
+    "bytes": 10236,
+    "sha256": "6ad29b35bdc0f7f5f638e8a610d774757724903c9efd1c185acefe4b1567d836"
+  },
+  "cold_report": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/fullpath_v20/pilot/edge_sde2_complete_path_seed12041/export_roundtrip/cold_report.json",
+    "bytes": 7013,
+    "sha256": "e01e15b0d409b7b27e77729bc7dfc06b0daec442e263044e50854e2023c18f07"
+  },
+  "export_inventory": {
+    "path": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/fullpath_v20/pilot/edge_sde2_complete_path_seed12041/export_roundtrip/export_inventory.json",
+    "bytes": 35818,
+    "sha256": "bbbe171dc8e9dcc05802bea3e0caebcb71c25fd6a97ccbe35acb3a44128269b1"
+  },
+  "checkpoint": "/home/ubuntu/InstinctCompress/results/cosmos3_droid/fullpath_v20/pilot/edge_sde2_complete_path_seed12041/export_roundtrip/checkpoint",
+  "live_state_matches_snapshot": true,
+  "cold_reload_bitexact": true,
+  "native_serving_bitexact": true,
+  "actual_callbacks": 6,
+  "actual_branches": 6,
+  "scope": "Source helper, native raw serving and separate-process cold reload must agree bitexact; mechanical only, no quality or runtime admission."
+}

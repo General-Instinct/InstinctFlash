@@ -1,0 +1,106 @@
+{
+  "CPU_qualification": {
+    "bytes": 3727,
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/CPU_QUALIFICATION_v1.json",
+    "sha256": "03754a7f5b0e9b4c1ed54a2afed898d00a0f230d615eb2a19a6352a2724fdf11"
+  },
+  "all_GPU_execution_and_SSH_owned_by_root": true,
+  "commands": {
+    "bytes": 5384,
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/planned_commands_v1.json",
+    "sha256": "b01a509396511d93216b6aedd0e49cfecaad79787c8b1ad3893fb1eed159762d"
+  },
+  "deployment_files": [
+    "run_queue_v1.py",
+    "final root-owned config_v1.json",
+    "../experimental_thor_preparation_plan_v1.json",
+    "../prepare_experimental_thor_base_view_v1.py"
+  ],
+  "environment": {
+    "C_ABI": "Not required by these actual SDE1 recipes. Nano SwiGLU is the public Triton pointwise path. The public run deliberately clears all IFL_* before setting its exact recipe knobs.",
+    "Nano_uses": "Same vendor/native tool activations, auxiliary_assets_v2/nano/run.env replaces edge asset activation.",
+    "activations": [
+      "/home/guanming/ifl_public_qualification_20260915_v1/bootstrap_edge_v3/run.env",
+      "/home/guanming/ifl_public_qualification_20260915_v1/native_hf_tool_v1/prepared/run.env",
+      "/home/guanming/ifl_public_qualification_20260915_v1/auxiliary_assets_v2/edge/run.env"
+    ],
+    "cache_scope": "Fresh per-operation Inductor/Triton cache directories under run_root/compiler_caches; retained. Do not claim cold-cache historical reproduction or infer task quality.",
+    "interpreter": "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+    "native_HF_tool": "Retains exact already-qualified offline UV_PYTHON and cache/tool/constraint paths; does not reinstall or repoint tool environment.",
+    "ptxas": {
+      "path": "/usr/local/cuda-13.2/bin/ptxas",
+      "sha256": "623241c41030050ea9a43130ec03322166ea2822f9c091ec5bd2bed135b2864e"
+    },
+    "selectors": [
+      "TRITON_PTXAS_PATH",
+      "TRITON_PTXAS_BLACKWELL_PATH"
+    ]
+  },
+  "failure_semantics": "First error, timeout, contention, capacity shortfall, source change or uncertain cleanup stops queue and preserves partial outputs. Owned process group is terminated finitely. No automatic retries/resume/recapture; SCREEN success is not task qualification.",
+  "independent_read": "Peer formal_remaining_scene_risk independently read validate_run at predecessor source6703448f; all producer field shapes matched. Later changes only CLI/static mode, process-name parsing and private-root symlink guard; same validate_run body.",
+  "limits": "No remote static check, real preparation or GPU inference has occurred. Source guard covers the927listed public Python/data inputs plus exact PTXAS; the existing corrected dependency environment is reused, not claimed newly installed. Same-UID handle scope explicitly excludes privileged/other-UID visibility.",
+  "on_host_commands": {
+    "execute": [
+      "flock",
+      "-n",
+      "/tmp/thor_gpu.lock",
+      "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+      "-I",
+      "-B",
+      "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/run_queue_v1.py",
+      "--config",
+      "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/config_v1.json",
+      "--config-sha256",
+      "FINAL_CONFIG_SHA256",
+      "--execute"
+    ],
+    "static": [
+      "/dev/shm/ifl_public_envs_20260915_v1/cosmos_pytorch_triton_v1/bin/python",
+      "-I",
+      "-B",
+      "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/run_queue_v1.py",
+      "--config",
+      "/home/guanming/ifl_public_qualification_20260915_v1/experimental_public_control_v1/config_v1.json",
+      "--config-sha256",
+      "FINAL_CONFIG_SHA256",
+      "--check-only"
+    ]
+  },
+  "operational_sequence": [
+    "Root waits for actual passed main DreamZero queue, checks ownership/idle/no competing heavy job and exact overlay transfer.",
+    "New Edge original base view on NVMe; original weights are verified hardlinks, original source stays untouched.",
+    "Edge seed12031 default-copy preparation on private tmpfs; native public CLI run6warmup+10measured.",
+    "Validate exact public completion/command/source/fixture/finite32x8actions/SDE1CFG1zero-padding/nativeVAE; copy/fsync/rehash all small preparation+run evidence ontoNVMe.",
+    "If explicitly enabled, reclaim only that newly owned independent Edge prepared checkpoint after completed process-group exit, private0700/owner/inode checks and same-UID handle scan; save receipt.",
+    "Repeat once for Edge seed12032; no retries.",
+    "Nano original prepare onNVMe with --link-unmodified, preserving exact original shared weights; native run12warmup+24measured and all36layer replay gates; archive small evidence, retain Nano preparation."
+  ],
+  "root_finalization": [
+    "Replace null SHA values with actual passed predecessor and current qualified activation-file hashes.",
+    "Fresh GPU idle and capacity checks, exact source/interpreter static checks, root-held /tmp/thor_gpu.lock, no other heavy workers.",
+    "Ensure both exact overlays are fully transferred; public preparation verifies full hashes before any weights are materialized.",
+    "Change template_only to false only after review and bind final config SHA at launch. No automatic follow-on from this file."
+  ],
+  "schema": "instinctflash.experimental_public_queue_handoff.v1",
+  "source": {
+    "bytes": 31718,
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/run_queue_v1.py",
+    "sha256": "43d46fb02e76ff3e88a7f3337c9a703dd5a7f6e27a9e1a039326770d44ed957a"
+  },
+  "status": "ready_for_root_review_not_launched",
+  "storage": {
+    "archive_max_bytes_per_recipe": 167772160,
+    "archive_max_single_file_bytes": 67108864,
+    "edge_prepare_required_free_GiB": 20.542077142745256,
+    "edge_prepare_required_free_bytes": 22056887380,
+    "minimum_NVMe_free_bytes": 1073741824,
+    "minimum_tmpfs_reserve_bytes": 12884901888,
+    "optional_environment_reclaim": "Only root may separately choose previously completed task-owned environment/cache cleanup after preserving prior receipts. This queue contains no such deletion and never removes original checkpoints, overlays, baseview, Nano weights, run evidence or shared caches.",
+    "two_overlay_bytes": 839137376
+  },
+  "template": {
+    "bytes": 124375,
+    "path": "/home/ubuntu/InstinctFlash/eval/public_release_2026-09-15/experimental_public_execution_v1/config_template_v1.json",
+    "sha256": "19ece16842e72e6a89958a5eb8ba4faf3e2d800b13b7c7412eb1339181731943"
+  }
+}

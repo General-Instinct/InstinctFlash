@@ -1,0 +1,217 @@
+{
+  "family": "va",
+  "precision": "fp8",
+  "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+  "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+  "device": "NVIDIA H100 80GB HBM3",
+  "torch": "2.9.0+cu126",
+  "scope": "Matched public Runtime generation latency, synchronized wall time; recorded cameras and synthetic state, no network or simulator. No task-quality certificate.",
+  "calls": [
+    {
+      "i": 0,
+      "cycle": 0,
+      "phase": "warmup",
+      "ms": 2716.273363213986,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 1,
+      "cycle": 1,
+      "phase": "warmup",
+      "ms": 1479.8999358899891,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 2,
+      "cycle": 2,
+      "phase": "warmup",
+      "ms": 1497.1421021036804,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 3,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 389.31331411004066,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 4,
+      "cycle": 1,
+      "phase": "measured",
+      "ms": 498.95236222073436,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 5,
+      "cycle": 2,
+      "phase": "measured",
+      "ms": 503.570425324142,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 6,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 397.89553079754114,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 7,
+      "cycle": 1,
+      "phase": "measured",
+      "ms": 508.2633048295975,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 8,
+      "cycle": 2,
+      "phase": "measured",
+      "ms": 513.793770223856,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 9,
+      "cycle": 0,
+      "phase": "measured",
+      "ms": 396.1420110426843,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 10,
+      "cycle": 1,
+      "phase": "measured",
+      "ms": 499.480539932847,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    },
+    {
+      "i": 11,
+      "cycle": 2,
+      "phase": "measured",
+      "ms": 513.3526022545993,
+      "shape": [
+        16,
+        2,
+        16
+      ]
+    }
+  ],
+  "variant": "current_fewstep_fp8",
+  "options": {
+    "IFL_BENCH_TIER": "numeric"
+  },
+  "competing_gpu_processes": [],
+  "runtime_reference": "robbyant/lingbot-va-posttrain-robotwin",
+  "excluded_passes": [
+    "cfg_branch_elision"
+  ],
+  "arm": "current_fewstep_fp8",
+  "reference_scope": "Direct upstream default schedule versus explicitly selected numeric/few-step Runtime; identical recorded input and request seeds",
+  "applied_passes_before_load": [
+    "engine_offload"
+  ],
+  "setup_seconds": 10.356431471649557,
+  "e4m3_tensors": [],
+  "ok": false,
+  "error": "AssertionError('FP8 requested but no actual packed E4M3 tensors found')",
+  "traceback": "Traceback (most recent call last):\n  File \"/home/ubuntu/ifl_eval/numeric_extension_20260910/source/eval/numeric_extension_2026-09-10/benchmark.py\", line 124, in <module>\n    assert report['e4m3_tensors'],'FP8 requested but no actual packed E4M3 tensors found'\nAssertionError: FP8 requested but no actual packed E4M3 tensors found\n",
+  "sources": {
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/adapters/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/adapters/base.py": "faddf49c84fe9d087365b3cf566bb68bbe4b2bf08eb7a426006c936b27ef047d",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/descriptors/deployment.py": "75b9e6ca18b3ad6492f2b9ae22bf11390938a4322361c1188cf4841c44216b42",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/state/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/state/types.py": "9d1e43574a1929b73c892cccff56453d2bc71bd02df85a83850208da2e69fc0b",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/descriptors/model.py": "93c26dcc782b69705e0e84babaf195740f6990e9413e27722e4eb4170400ffc5",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/descriptors/__init__.py": "6c32d9902026f776decf7bd32e13498b67b78e589051d1b5f7454b0129e16c75",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/adapters/lingbot_va.py": "969220bbf18a56b301bcd3b801eecc4ffa863e518501b82cb4872d857693e846",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/loader.py": "a2bce76e99f4443089d21bbc12b3bed53afc1fb2df5e796b225c5b94e4688aea",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/planners/planner.py": "bc31c3c764fa6c98acbd7b5aa0f46b1030d341b823c0bc01ffb59ebb700d4a80",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/planners/__init__.py": "f4e300ea720721cc0ffbc3ddbf5172d67b3d9f9ba00b64900b3ed071cdf879e8",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/contract.py": "eb1a3dcdaafefd2a49bca96d17784526fef9f3299fd26dcf800d394046e4f7f1",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/lingbot/action_terminal_elision.py": "92a28ff193f10bf19541f0e0a253b31b5b7ae7f4a8b743212debf675d0daf632",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/lingbot/cfg_elision.py": "41f7b8370bc1b8928b17048dabf54520537ef431ef4d98013ead4efeab9f96d8",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/lingbot/conditioning_prefill.py": "3cbc5e5f2ace0b2d061383698cfd85a0a5190f2a4e8e02fa2c3e6e0b9fc56468",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/lingbot/conv_layout_ndhwc.py": "10926b28cd68d773d773ec5b884672db9d8cdfac64d9758ae934860c37c204ae",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/lingbot/ring_kv.py": "264c0addbbfcff2ba0e8f445af6fe2d7e85f799124749a2a2c6ff3992412e2af",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/lingbot/sm120_gated_residual.py": "ba5addcbabf82d76194aa98c20b738dd3dfba4d267f4e62a747fb6dc91fa5d12",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/lingbot/sm120_wan_stage2.py": "3a151b5f00b5144874436cf7570b9a635fbba73e30d724722d5dc7a6e2128b1a",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/lingbot/substrate.py": "7f6162ba2d175db9ad56425a3aa8cb68b90f1778c343ba37f381ea02618d3abf",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/lingbot/__init__.py": "cc153c3e272cd18b7510dec81e625168124e7db3f06909bf6cdb49cfd9e8fd52",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/descriptors/checkpoint.py": "a2949d1fa9ae40fe27c9d4e981616327406604118af72f547f78f00426e387ba",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/descriptors/package.py": "0766dc55a35d7d2fab55de5aa931699bbcaece7fda78de3d91ee39424087c8d7",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/execution.py": "c6aa42720d799f4a2f2b8c50bd10dc113c89e07493e341db0050ca090f008471",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/facade.py": "24f9521b02ea55c830af7e01102bb887a20153eeb0e7b394d5669eb14e52fa7b",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/__init__.py": "50071567526aab898205d92b382b3ca392aabaf33584379bf436fb48bb488b8f",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/precision.py": "3296d47dd912c7aa66295b4a835c44dcd13b323b98b0005823b29d43057b47cf",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/descriptors/known.py": "05f6d5587a3c8ef543e2560ac0c91d1def49caec3d89851b50c9a190edab6834",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/descriptors/guidance.py": "3455608a231758fb2a146409f04c6d2253b7f3859cccf22f6dea9dcd93b32d9d",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/backends/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/backends/sm120_residual.py": "1509fc2143e21a9513ee11c4389d68b1a31db221d4ddbd9e148cdb81e225e717",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/backends/sm120_wan_stage2.py": "0ede242abc15ae802b762f187c5932f0e81bb0617687ebc3f8185882f7745f4d",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/registry.py": "cff56c57748cb40212a2072d8dcfd1b0bd395a8446492f8a71682a31e8afe2a8",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/generic/engine_offload.py": "d686eef806c88bc559212ad23a5af42ee4a11e6eb3099629d8dfcf14279dcdd1",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/generic/graph_capture.py": "898ef8861ebad68068b90d0b7ce0d6dc6e4d662662b07d96dde375dbaa1b1e50",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/passes/generic/__init__.py": "f04a5033aab0d0ace4d3bdd460011049cef662f8aecf7856b0d35c9e45c24113",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/engine_backend.py": "25f81836f1c649ff3dc007dc54bbd1918a8eb8121ac7d574e0dfe147a90bc1b1",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/torch_fp8_linear.py": "9bfd50ba1b4c9893d03d5952e8fcf3878408984c06cfa02befd33920092c8b53",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/h100_fp8.py": "fe7ebc0ef9dffca2405f490431b6eb3df7050715d4f3722a19349bcf22506213",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/sm120_install.py": "f3486d11b3ca1f1297222c08787619441fe5e3408f28bc2337db8bc01ac288be",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/sm120_stage2_install.py": "7d527ed57b46b6ebe601273ca49d4cda2b31fe1d60dd5af0a8d37f530cda724a",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/lingbot_install.py": "b72a8cd3889e6681250c65f7ef671448e8719ee61e78deb3ecb4f76c59db1435",
+    "/home/ubuntu/lingbot-va/wan_va/wan_va_server.py": "9c2a427611db487fea5cf40f184b713bf2088e533990ee00fdcd020d2668b4bf",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/backends/conv/semantics.py": "a7894fc64f015c80d76c33b66ff90540ef398a95f25d0db2078c0d85221bba51",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/backends/conv/capabilities.py": "90ff841d7784d93f8b144c007db025db4bb99b50d638e2b6dcbd8675cbca92d2",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/backends/conv/reference.py": "659ecfdd90e7a5d1de601b79f1f885527893b26f62ea47bce8567da6ea5dd594",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/backends/conv/registry.py": "a1073e5db5640c37a7c3a5455d52681b61621d083a2a945c3f28bc2b162e8a50",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/backends/conv/__init__.py": "65e0bb5759513212d7b8d5625979f957d4b32cf8f94f3271254b6220ad20481e",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/autotune.py": "687f307415f6e9fdd398cff468d61efcc8c1ba2fe2cbe30c7a7c4dfcf72d067e",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/backends/conv/apply.py": "0e74a8645db1494847bf653bd09f3328a0ca2981096f92f7524581dd9a896e4f",
+    "/home/ubuntu/ifl_eval/numeric_extension_20260910/source/instinctflash/runtime/fp8_pack.py": "649174d8262611cacb6f012de4c103839fab9b11d42a7c969f31cf9c851c13b5"
+  }
+}

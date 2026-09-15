@@ -20,10 +20,9 @@ harness that cannot detect a null result cannot detect a real one either.
 Both arms drive `Runtime.episode().predict()` over an identical fixed observation sequence and dump
 every action. The comparison is then bytes, not eyeballs.
 
-WHY SEPARATE PROCESSES. The hoist and the install both patch the CLASS (`type(model).embed_suffix`,
-`type(model).denoise_step`), so two Runtimes in one interpreter would share them and the "baseline" arm
-would silently be the captured arm. That is the shape of the two harness errors this project has
-already made -- a reference arm that was not the reference -- so the arms are isolated by process.
+WHY SEPARATE PROCESSES. The current hoist and install are instance-scoped, but TF32 precision and RNG
+state are process-global. Isolating arms still prevents the "baseline" arm from inheriting treatment
+state -- the shape of two harness errors this project has already made.
 
 WHY THE TIMING IS PAIRED TOO. The first chunk-cost number came off a different GPU on a different day.
 Both arms run here, on the same device, back to back.

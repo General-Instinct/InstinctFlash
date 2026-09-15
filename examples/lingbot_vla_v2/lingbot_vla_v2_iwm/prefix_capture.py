@@ -73,6 +73,15 @@ class StaticVision:
             pos_embeds = visual.fast_pos_embed_interpolate(self._grid)
         expert.pos_embeds = pos_embeds
         expert.position_embeddings = position_embeddings
+        # Native eager/SDPA vision splits Q/K/V with lengths.tolist(). Keep
+        # this fixed-grid metadata on CPU so capture never performs a D2H copy.
+        # FA2 consumes CUDA cu_seqlens directly and must retain its original device.
+        implementations = {
+            getattr(block.attn.config, "_attn_implementation", None)
+            for block in visual.blocks
+        }
+        if implementations and implementations <= {"eager", "sdpa"}:
+            cu_seqlens = cu_seqlens.cpu()
         expert.cu_seqlens = cu_seqlens
         expert.visual_split_sizes = split_sizes
         expert.visual_max_seqlen = max_seqlen
@@ -83,6 +92,8 @@ class StaticVision:
             self._grid = image_grid_thw.clone()
             self._prepare_grid_metadata()
         else:
+            if not torch.equal(self._grid, image_grid_thw):
+                raise RuntimeError("vision grid values changed; cached position and sequence metadata are invalid")
             _copy_same(self._image, image, "vision pixels")
             _copy_same(self._grid, image_grid_thw, "vision grid")
 

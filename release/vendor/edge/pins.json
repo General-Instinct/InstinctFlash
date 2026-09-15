@@ -1,0 +1,54 @@
+{
+  "architecture": "aarch64",
+  "checkpoint": {
+    "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+    "revision": "f9fddb427fd7cff0bef7c73791be36f0ab52d81e"
+  },
+  "constraints": {
+    "kind": "observed_effective_versions_not_install_requirements",
+    "package_count": 120,
+    "path": "constraints.txt",
+    "sha256": "f4ef18a1eae292473737f7f74d3a0cf4dc6c269435ee7b8d4e9e3cf4e443e9f4"
+  },
+  "corrected_historical_group": "cu130 Torch2.10, not the adapter text example cu130-torch213; recorded uv.lock patch retained.",
+  "family": "edge",
+  "key_packages": {
+    "NATTEN": "0.21.6.dev6+cu130.torch210.gb300",
+    "diffusers": "0.39.0",
+    "huggingface-hub": "0.36.2",
+    "lerobot": null,
+    "numpy": "2.2.6",
+    "tokenizers": "0.22.2",
+    "torch": "2.10.0+cu130",
+    "torchvision": "0.25.0+cu130",
+    "transformers": "4.57.6",
+    "triton": "3.6.0"
+  },
+  "package_source_origin": "Pinned Git source plus installed package metadata; see source.json.",
+  "python": "3.13.15",
+  "qualification": {
+    "GPU_test_in_this_capture": false,
+    "fresh_dependency_resolution": false,
+    "fresh_environment_inference": false,
+    "historical_source_hashes_checked": 215,
+    "historical_source_hashes_matched": 215
+  },
+  "remaining_steps": [
+    "Resolve target CUDA/Torch wheel artifact and record its public URL/hash.",
+    "Resolve upstream dependencies under these constraints in a new per-family environment.",
+    "Run public_deploy doctor before explicitly fetching checkpoint/tokenizer assets.",
+    "Run actual public Python/CLI/WebSocket and reproduction gates; metadata alone does not establish acceleration."
+  ],
+  "schema": "instinctflash.vendor_environment.v1",
+  "source_manifest": "../cosmos/source.json",
+  "torch_artifact": {
+    "build_version": "2.10.0+cu130",
+    "cuda": "13.0",
+    "distribution_version": "2.10.0+cu130",
+    "source_commit": "449b1768410104d3ed79d3bcfe4ba1d65c7f22c0",
+    "status": "exact_original_wheel_artifact_origin_not_recorded",
+    "wheel_sha256": null,
+    "wheel_url": null
+  },
+  "upstream_package_repository": null
+}

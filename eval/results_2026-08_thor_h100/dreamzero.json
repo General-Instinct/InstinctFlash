@@ -1,0 +1,18 @@
+{
+ "model": "GEAR-Dreams/DreamZero-DROID (Wan2.2-5B WAM, snapshot 96ad3441)",
+ "hardware": "Jetson Thor (SM110), single GPU",
+ "status": "deferred",
+ "torch_ms": null,
+ "ours_ms": null,
+ "speedup": null,
+ "notes": {
+  "decision": "DreamZero workstream deferred by coordinator decision (2026-08-26); on-Thor measurement walled, not debugged further",
+  "what_was_completed": "61GB checkpoint fully downloaded + snapshot intact; missing Wan components identified and pre-seeded no-xet (models_t5_umt5-xxl-enc-bf16.pth ~11GB + models_clip_open-clip-xlm-roberta-large-vit-huge-14.pth ~4.8GB from Wan-AI/Wan2.1-I2V-14B-480P; Wan2.2_VAE.pth already cached); dz_env (py3.12 + torch 2.11 via frt_env .pth bridge, transformers 4.51.3, openpi-client) imports and serves",
+  "wall": "serve_dreamzero_wan22.py: model load took >40 min (77GB of weights into 122GB unified memory; RSS plateaued ~103GB, only ~20GB left available); after the websocket server came up, the FIRST measure call (1-frame cache-warm per the H100 protocol) did not return within ~80 minutes, GPU utilization ~3% throughout - not progressing, not obviously computing. No result was produced; per the eval-integrity rule no number is reported",
+  "hypothesis_not_pursued": "memory pressure on the 128GB unified board (weights + activations + KV/window cache for 3 cams thrashing near the ceiling); the H100 run used 80GB HBM + separate host RAM. Not debugged per coordinator directive",
+  "protocol_that_would_have_been_used": "stock arm then DYNAMIC_CACHE_SCHEDULE=true arm, measure_dz_stock.py (3 cams 160x320, call0 1-frame warm, 4-frame calls, no state keys, n=8 warmup=2); H100 reference pair: 3226.7 -> 1843.1 ms (1.75x), tier SCREEN"
+ },
+ "walls": [
+  "first inference call hung >80 min at ~3% GPU after 40+ min model load; killed cleanly and deferred per coordinator decision"
+ ]
+}

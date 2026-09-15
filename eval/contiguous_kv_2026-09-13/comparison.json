@@ -1,0 +1,58 @@
+{
+  "status": "complete_numerical_latency_screen",
+  "quality_certified": false,
+  "default_enabled": false,
+  "latency_p50_ms": {
+    "reference-a": 1160.46370647382,
+    "contiguous-kv": 1155.6257490010466,
+    "reference-b": 1157.2111599962227
+  },
+  "latency_reduction_percent_vs_a": 0.41689864541079036,
+  "latency_reduction_percent_vs_b": 0.13700273986134714,
+  "reference_ab_byte_equal": true,
+  "reference_ab_max_abs": 0.0,
+  "candidate_byte_equal_to_a": true,
+  "candidate_action_mae": 0.0,
+  "candidate_action_max_abs": 0.0,
+  "candidate_joint_mae": 0.0,
+  "candidate_gripper_mae": 0.0,
+  "coverage": {
+    "reference-a": {
+      "measured_requests": 10,
+      "compiled_layers_per_request": 224,
+      "compiled_prefill_layers_per_request": 56
+    },
+    "contiguous-kv": {
+      "measured_requests": 10,
+      "compiled_layers_per_request": 224,
+      "compiled_prefill_layers_per_request": 56
+    },
+    "reference-b": {
+      "measured_requests": 10,
+      "compiled_layers_per_request": 224,
+      "compiled_prefill_layers_per_request": 56
+    }
+  },
+  "prefill_extraction_checks": 84,
+  "total_compiled_prefill_layers": 812,
+  "schedule": {
+    "action_chunk_size": 32,
+    "action_steps": 4,
+    "guidance": 3.0,
+    "conditioning_fps": 15.0
+  },
+  "receipts": [
+    {
+      "path": "edge-reference-a.json",
+      "sha256": "a8432a5293fda128aa5dcf602e97372ce3e5b23964f1026e9886e229f0038a04"
+    },
+    {
+      "path": "edge-contiguous-kv.json",
+      "sha256": "97d4d85c0316063a3aa86545f7a5aaaf74c2f0461d8b93688d678c2921b1854d"
+    },
+    {
+      "path": "edge-reference-b.json",
+      "sha256": "633ac76ffb41de3a435c7d1d171362f1477c1a34a47db01b99437689c242bec9"
+    }
+  ]
+}

@@ -3,6 +3,9 @@ __pycache__/
 *.egg-info/
 .venv/
 venv/
+*.so
+*.whl
+instinctflash/native/build/
 
 # uv materialises the three environments here (.venv core, .venv-dev, .venv-server);
 # uv.lock IS committed -- it is the artifact that makes "the env that produced this
@@ -13,13 +16,20 @@ venv/
 # anyone pointing IWM_RESULT_DIR / IWM_LOG_DIR at the working tree by accident.
 results/
 logs/
+benchmarks/vla/runs/
 *.npz
+# Small non-pickle input archive shipped with the public reproduction commands.
+!benchmarks/regression/fixtures/recorded_inputs_v1.npz
+# Small frozen action arrays required to reproduce the native Thor comparisons.
+!eval/edge_defaults_2026-09-06/raw/*.npz
+!eval/edge_defaults_2026-09-06/raw/va_*/actions.npz
 *.qdstrm
 *.nsys-rep
 cycle_trace.json
 
-# Design docs stay local (not published)
-docs/
+# Local working design notes are not release source. Public usage and reproduction
+# documentation lives beside the code; the retired docs/rfc tree stays excluded.
+docs/*
 
 # Generated certificates. A certificate is the OUTPUT of a certification run, not source: the two
 # that were committed by accident carried delta -0.030 and -0.040, both superseded by the 2V/4A
@@ -30,3 +40,29 @@ certificate.json
 examples/external_plugin/my-world-model/
 examples/external_plugin/*.egg-info/
 dist/
+serving/third_party/cutlass/
+
+# Local packaging output.
+/build/
+/examples/*/build/
+# Rebuildable local benchmark logs, source bundles and profiler traces.
+/eval/**/*.log
+/eval/**/*.jsonl
+/eval/**/*.tar.gz
+/eval/**/*.trace.json.gz
+/eval/**/live_status*.json
+# Frozen action receipts for the qualified native/FP8 staging comparisons.
+!eval/native_optimization_2026-09-10/receipts/**/*.npz
+
+# Frozen native coverage action receipts.
+!eval/native_coverage_2026-09-10/receipts/**/*.npz
+
+# Small action archives backing the shared-cache regression and Thor framework table.
+!eval/shared_tensor_cache_2026-09-13/*.npz
+!eval/shared_tensor_cache_2026-09-13/matched/*.npz
+!eval/nano_split_prefill_2026-09-13/v2/*.npz
+!eval/four_frameworks_2026-09-13/*.npz
+!eval/four_frameworks_2026-09-13/*/*.npz
+!eval/dynamic_step_cache_integration_2026-09-14/*.npz
+!eval/*_2026-09-13/**/*.npz
+!eval/*_2026-09-14/**/*.npz

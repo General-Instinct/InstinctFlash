@@ -1,0 +1,281 @@
+{
+  "CPU_validation": [
+    {
+      "command": [
+        "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_bootstrap_vendor.py"
+      ],
+      "result": "32 passed in 0.30s"
+    },
+    {
+      "command": [
+        "/home/ubuntu/InstinctFlash/.venv-dev/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_bootstrap_vendor.py",
+        "tests/test_public_deploy.py",
+        "tests/test_public_reproduce.py"
+      ],
+      "overlaps_prior_run": true,
+      "result": "116 passed in 2.05s"
+    },
+    {
+      "command": [
+        "/home/ubuntu/cosmos-framework/.venv/bin/ruff",
+        "check",
+        "tests/test_bootstrap_vendor.py",
+        "tests/test_public_deploy.py"
+      ],
+      "result": "All checks passed!"
+    }
+  ],
+  "bootstrap_mechanism": {
+    "behavior": "Existing dependency_resolution command appends every public_wheel_overrides entry as a complete PEP508 URL with sha256 fragment; no native-library swap or post-install replacement.",
+    "lines": "326-339",
+    "source": {
+      "bytes": 25794,
+      "path": "scripts/bootstrap_vendor.py",
+      "sha256": "46193787a967fdc62eefe2dd6106980c21b9ffbb634ca3de5def92b4594eee29"
+    },
+    "unchanged_vs_stage_v7": true
+  },
+  "bounded_other_origins_check": {
+    "captured_original_packaging": {
+      "bytes": 27751,
+      "path": "eval/public_release_2026-09-15/vendor_provenance_sources/upstream_packaging_v1.json",
+      "sha256": "9855253c4933ddbce4aeed7ac37e7bb0114701a1fe45df9f9be12dcf57b51835"
+    },
+    "cosmos_nonselected_indexed_packages": "torchao, flash-attn, flash-attn-3-nv, transformer-engine, megatron-core and upstream lerobot are absent from this minimal inference requirements/constraints set; no additional override was added.",
+    "cosmos_selected_inference_packages_with_upstream_indexes": [
+      "natten",
+      "torch",
+      "torchcodec",
+      "torchvision",
+      "triton"
+    ],
+    "cosmos_source": {
+      "commit_url": "https://github.com/NVIDIA/cosmos-framework/commit/f734253f0f6af3e268372402f44435c38f55ef3e",
+      "public_commit_verified": true,
+      "repository": "https://github.com/NVIDIA/cosmos-framework",
+      "revision": "f734253f0f6af3e268372402f44435c38f55ef3e"
+    },
+    "existing_other_four_complete_wheel_overrides_unchanged": true,
+    "foreign_comparison": "LeRobot and Omni use Python 3.12 with different Torch/vendor recipes. No foreign source-origin conclusion or change follows from this cp313 wheel proof.",
+    "groot": {
+      "current_target": "Python 3.12; Torch 2.11.0; Triton 3.6.0",
+      "finding": "Analogous upstream index declaration exists, but this cp313 Cosmos artifact proof does not establish the correct cp312 qualified build. No GR00T pin or environment was changed.",
+      "original_triton_source": [
+        {
+          "index": "pytorch-cu128",
+          "marker": "sys_platform == 'linux'"
+        }
+      ]
+    },
+    "limit": "This is a bounded comparison of pinned inference packaging inputs, not an audit of every installed binary distribution.",
+    "other_main_families": "DreamZero, VA, VLA4 and VLA2 captured original packaging has no corresponding uv index declarations. pi05 follows its package route. All six non-Cosmos recipes remain exact stage v7."
+  },
+  "changed_inputs": [
+    {
+      "current": {
+        "bytes": 5258,
+        "path": "release/vendor/edge/bootstrap.json",
+        "sha256": "40507a7e4737b8558302ef1a594910ce39c9ba38a9000f3925fb24f858e47ed6"
+      },
+      "v7": {
+        "bytes": 4245,
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v7/source/release/vendor/edge/bootstrap.json",
+        "sha256": "a580150be2d153d441e078ebf87b07b489f1869c4836d871fa307ae124d05d3e"
+      }
+    },
+    {
+      "current": {
+        "bytes": 5258,
+        "path": "release/vendor/nano/bootstrap.json",
+        "sha256": "dfa300b91d35e0c52e661b4235c7926ffbb8c3b6ac36ad58effc932512275021"
+      },
+      "v7": {
+        "bytes": 4245,
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v7/source/release/vendor/nano/bootstrap.json",
+        "sha256": "8c7a2e0a12dbcd6e1e8db4fc425e6eeec87aee7b7f0749f4bbab5d86961ac90c"
+      }
+    },
+    {
+      "current": {
+        "bytes": 50604,
+        "path": "release/deployment_profiles.json",
+        "sha256": "8187485677cb6ab1192960fa80481b913ab8e03d9cab9de8599589fc1038cfac"
+      },
+      "v7": {
+        "bytes": 49033,
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v7/source/release/deployment_profiles.json",
+        "sha256": "84c29e7b1e9f5e97b94f1abdb9d1080d6469d80e9a3175e89551d61bcf83daa4"
+      }
+    },
+    {
+      "current": {
+        "bytes": 50604,
+        "path": "benchmarks/regression/fixtures/deployment_profiles.json",
+        "sha256": "8187485677cb6ab1192960fa80481b913ab8e03d9cab9de8599589fc1038cfac"
+      },
+      "v7": {
+        "bytes": 49033,
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v7/source/benchmarks/regression/fixtures/deployment_profiles.json",
+        "sha256": "84c29e7b1e9f5e97b94f1abdb9d1080d6469d80e9a3175e89551d61bcf83daa4"
+      }
+    },
+    {
+      "current": {
+        "bytes": 14840,
+        "path": "tests/test_bootstrap_vendor.py",
+        "sha256": "e91d1386e97a6a4b28d6f6cf8fb0b35b403bd657c5c87f7362988d12092329ce"
+      },
+      "v7": {
+        "bytes": 12421,
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v7/source/tests/test_bootstrap_vendor.py",
+        "sha256": "76c462a0c56831fd09589194e5cb9436d565f85658ffe2579aab5a4f1d6eaf91"
+      }
+    },
+    {
+      "current": {
+        "bytes": 23209,
+        "path": "tests/test_public_deploy.py",
+        "sha256": "88774380a80aa907423d627b0a7caa48580677ad0acdaaf219877ff1f0ef282c"
+      },
+      "v7": {
+        "bytes": 22766,
+        "path": "/home/ubuntu/ifl-public-full-stage-20260915-v7/source/tests/test_public_deploy.py",
+        "sha256": "01ece518332f206db21b302409ed714abba795ea2c1238395661891a483c483c"
+      }
+    }
+  ],
+  "created_at": "2026-09-15T05:02:07.234379+00:00",
+  "historical_limit": "Earlier collected version metadata records Triton3.6.0 and its directory only; earlier RECORD audit explicitly enumerates torch/transformers/lerobot, excludingTriton. No frozen historical Triton RECORD found in bounded local eval JSON/text search. Current old RECORD is not evidence of loaded libraries at the earlier inference timestamp.",
+  "no_GPU_or_model_import": true,
+  "no_current_public_worktree_changes": true,
+  "no_environment_mutations": true,
+  "no_native_library_swaps": true,
+  "no_remote_actions": true,
+  "preserved": {
+    "all_model_fields_except_bootstrap_equal_stage_v7": true,
+    "checkpoint_pins": 8,
+    "execution_mode_objects": 20,
+    "installer_vendor_source_constraints_requirements_and_other_family_recipes_equal_stage_v7": [
+      {
+        "bytes": 25794,
+        "path": "scripts/bootstrap_vendor.py",
+        "sha256": "46193787a967fdc62eefe2dd6106980c21b9ffbb634ca3de5def92b4594eee29"
+      },
+      {
+        "bytes": 3880,
+        "path": "release/vendor/cosmos/source.json",
+        "sha256": "60ea2649af252573aae7475db83a7fb1fe108cc6c9e9d5505638ee6b92643df0"
+      },
+      {
+        "bytes": 11087,
+        "path": "release/vendor/cosmos/inference_packaging.patch",
+        "sha256": "f2384b6829b0e1df1067043064859c922df4886afcbad367a2ce35a52db309d0"
+      },
+      {
+        "bytes": 772,
+        "path": "release/vendor/edge/inference_requirements.txt",
+        "sha256": "b496c347752b7654ec3f949c8681f2c76e46992167277b9ef0a74c1dcd6eab9f"
+      },
+      {
+        "bytes": 2539,
+        "path": "release/vendor/edge/constraints.txt",
+        "sha256": "c19a61c904c304b17c8430782c97994bf68ad2e8529885f8bb7925cc6c4a0c32"
+      },
+      {
+        "bytes": 772,
+        "path": "release/vendor/nano/inference_requirements.txt",
+        "sha256": "b496c347752b7654ec3f949c8681f2c76e46992167277b9ef0a74c1dcd6eab9f"
+      },
+      {
+        "bytes": 2539,
+        "path": "release/vendor/nano/constraints.txt",
+        "sha256": "c19a61c904c304b17c8430782c97994bf68ad2e8529885f8bb7925cc6c4a0c32"
+      },
+      {
+        "bytes": 1824,
+        "path": "release/vendor/va/bootstrap.json",
+        "sha256": "531db91ca886922fe5903e124efe03561a9cb7ebc70678edec4c0f295fbbf5bd"
+      },
+      {
+        "bytes": 3874,
+        "path": "release/vendor/vla4/bootstrap.json",
+        "sha256": "86c8223119889485765a465feef1eb18e5fadf7058b5641b5b18fa7ea4017691"
+      },
+      {
+        "bytes": 3353,
+        "path": "release/vendor/vla2/bootstrap.json",
+        "sha256": "acb0847ee46ef0219eeb843ee130283f2fc27254defef198bc05cd939ddf55d5"
+      },
+      {
+        "bytes": 1232,
+        "path": "release/vendor/pi05/bootstrap.json",
+        "sha256": "142e10fed092cecc388bf28a6a6ca0fb3f5556bded4bb239e767d196019d53bd"
+      },
+      {
+        "bytes": 2350,
+        "path": "release/vendor/groot/bootstrap.json",
+        "sha256": "bc982c9985c06035b191fbf3aadffde70374f3038603a40f9b9d41cca6fb9cf0"
+      },
+      {
+        "bytes": 2437,
+        "path": "release/vendor/dreamzero/bootstrap.json",
+        "sha256": "799a14d8091b8691e609a05a748e4724df0cf5b6f66dec302c3a032dfed94cd9"
+      }
+    ],
+    "runtime_python_files_equal_stage_v7": 145
+  },
+  "provenance_handoff": {
+    "bytes": 8587,
+    "path": "eval/public_release_2026-09-15/triton_build_provenance_v1/PROVENANCE_HANDOFF.json",
+    "sha256": "c87c7971c0ac1bfe06a4ea0076bee9aa2cde1794da7ac20fbbbebbc5e30edbd0"
+  },
+  "provenance_source_bindings_verified": 12,
+  "qualification_status": "Earlier installation evidence is retained as prior_recipe_status. Corrected complete-wheel installation and numerical impact remain pending; no earlier capture is relabeled.",
+  "regression_scope": "Runs actual Bootstrap.install command construction with mocked subprocess/installer boundary; exact official Triton URL/hash, cp313 target, version constraint, binary-only resolution and all previous overrides are required. Stops before any environment or wheel installation; other family cp312 recipes remain unchanged.",
+  "rejected_same_version_origin": {
+    "bytes": 176133521,
+    "filename": "triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl",
+    "sha256": "448e02fe6dc898e9e5aa89cf0ee5c371e99df5aa5e8ad976a80b93334f3494fd",
+    "url": "https://files.pythonhosted.org/packages/3c/12/34d71b350e89a204c2c7777a9bba0dcf2f19a5bfdd70b57c4dbc5ffd7154/triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl"
+  },
+  "revised_stage_plan": {
+    "next_CPU_build_checks": [
+      "Build additive nine-wheel/source stage, preserving all existing stages.",
+      "Compare every qualified runtime/adapter/native source and wheel implementation payload; expect catalog/docs metadata changes only.",
+      "Fresh cold CPU package/adapter/profile validation plus exact source delta report."
+    ],
+    "not_created_or_frozen": true,
+    "preserve_stage_v7": {
+      "bytes": 900288,
+      "path": "/home/ubuntu/ifl-public-full-stage-20260915-v7/manifest.json",
+      "sha256": "2a7e35c0d32e8ed700027a38610b3b7f5c521bf36c3308b36c346ba6d3f50377"
+    },
+    "proposed_next_root": "/home/ubuntu/ifl-public-full-stage-20260915-v8",
+    "publication": "No publication or download availability claim; root owns final review and push.",
+    "required_before_stage": [
+      "Asset owner finalizes DreamZero auxiliary metadata and combined vendor source freeze.",
+      "Refresh checked deployment catalog mirror and explicit builder source-control hashes from the combined freeze.",
+      "Root records isolated complete-wheel installation/numerical diagnostic independently; it must not be claimed by this CPU recipe change."
+    ]
+  },
+  "schema_version": 1,
+  "scope": "Complete public Cosmos Triton build selection only; no installation, runtime math, GPU, remote or public worktree change.",
+  "selected_complete_wheel": {
+    "bytes": 176135525,
+    "filename": "triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl",
+    "index_expected_sha256": "58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09",
+    "local_full_archive_hash_verified": true,
+    "original_index_r2_url_status": 403,
+    "sha256": "58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09",
+    "url": "https://download.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl"
+  },
+  "status": "local_CPU_source_origin_fix_passed_next_stage_pending_combined_freeze"
+}

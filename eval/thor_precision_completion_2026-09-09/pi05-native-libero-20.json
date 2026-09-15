@@ -1,0 +1,189 @@
+{
+  "all_episode_wire_and_action_checks_passed": true,
+  "driver_sources": {
+    "pi05_runtime_libero_campaign.py": "24c556c6335f54d857796dd1dcd8bc792f9fde0f67f06820548d5211790a2908",
+    "pi05_runtime_libero_scene.py": "d0294a753caa70705e1a44764ff87747f0706f83e83e91065727724c43531321",
+    "remote_policy.py": "6a8553ee114cf80af09793de666d7f0e7f5dc82ab12eb35f42bbbb812dec3b63",
+    "wan_va_libero_driver.py": "39519080a7c12d53c32d347bcd991737dc5ba6b22ba518268685b2421617d455"
+  },
+  "episodes": 20,
+  "identity": {
+    "action_dim": 7,
+    "action_nfe": 10,
+    "model_id": "lerobot/pi05_libero_finetuned_v044",
+    "model_revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+    "n_action_steps": 50,
+    "observation_processor": "native LeRobot preprocess_observation + LiberoProcessorStep",
+    "precision": "native",
+    "protocol": "pi05-public-libero-50-v1",
+    "seed_rule": "per request torch/numpy/python seed = episode_seed + action_index; no queue resets within episode",
+    "sources": {
+      "LiberoProcessorStep": "41cf74048b233652b2b03d38c79b30d6f1d341592d553a5625f971de555f3a3a",
+      "Runtime": "eba50f93043e075ddce7cfb9304e247d08a63f89d809dd37831b1fed63e7f795",
+      "preprocess_observation": "4a37ce5d9ac70a22f88e63c02b84ef3e30be72725e52fe6a03ec7e3407c143e7"
+    }
+  },
+  "manifest_sha256": "6b4b2bfd8eda4553847436d8cf5c152843e80916cefb9c0b0f41969192abc2b4",
+  "rows": [
+    {
+      "result_sha256": "b9a3618fbbf44714ead4374e738083ec50c5da91740c52501752cbfea551735e",
+      "seed": 0,
+      "steps": 276,
+      "success": true,
+      "task": 0
+    },
+    {
+      "result_sha256": "3b424a9cf96e97ce6923c560a5b8a2614631011a85e561341f384c2fac12ab24",
+      "seed": 1,
+      "steps": 299,
+      "success": true,
+      "task": 0
+    },
+    {
+      "result_sha256": "6cdd92c0b5ceaf4c2ca368d10494fa733dc85f2a901c17b13a02af4ac7303c16",
+      "seed": 10000,
+      "steps": 283,
+      "success": true,
+      "task": 1
+    },
+    {
+      "result_sha256": "1a9dcd4a51e8320b55b4e1da309580946f1d348f0c35dc693930bb7c237b0d58",
+      "seed": 10001,
+      "steps": 262,
+      "success": true,
+      "task": 1
+    },
+    {
+      "result_sha256": "dfda51a3dd023794be20706c9a8ef2109b1a8cdca59180d544426aaf54987fce",
+      "seed": 20000,
+      "steps": 520,
+      "success": false,
+      "task": 2
+    },
+    {
+      "result_sha256": "b5022f966bf39aea7055550e4d33efcc44eee92af6c9c2b0528dd548412a6faa",
+      "seed": 20001,
+      "steps": 241,
+      "success": true,
+      "task": 2
+    },
+    {
+      "result_sha256": "9e7b8745acc55583fec03ece9e68fd6cbf7549cdd9544d7cb45faccd85127ef5",
+      "seed": 30000,
+      "steps": 520,
+      "success": false,
+      "task": 3
+    },
+    {
+      "result_sha256": "50f9c351ed4811d3c4f3adc29c5f329c24d18fd670ac44eae11dbfb300bd1358",
+      "seed": 30001,
+      "steps": 219,
+      "success": true,
+      "task": 3
+    },
+    {
+      "result_sha256": "6639a183fcf00d61069c0c69f89cf330e6afab273eaf8fa2bff8d97b54c06fe9",
+      "seed": 40000,
+      "steps": 281,
+      "success": true,
+      "task": 4
+    },
+    {
+      "result_sha256": "d2e01b934d17f9a2a449172d67d28a3ae44536eeef8ee100f51984bdfff29206",
+      "seed": 40001,
+      "steps": 520,
+      "success": false,
+      "task": 4
+    },
+    {
+      "result_sha256": "cb25cc6a5f7473aa92c5ace004b9e196ff02f857310885305f90ed92bc52d8d1",
+      "seed": 50000,
+      "steps": 178,
+      "success": true,
+      "task": 5
+    },
+    {
+      "result_sha256": "bee3184f712b3087300c42a131d34889a8097cba2ed86e8c4135f9deb7295cb1",
+      "seed": 50001,
+      "steps": 173,
+      "success": true,
+      "task": 5
+    },
+    {
+      "result_sha256": "2a28bb4678d37988e35c5a9a6fcdba31071530298f8bdcc89c92b306f271e645",
+      "seed": 60000,
+      "steps": 271,
+      "success": true,
+      "task": 6
+    },
+    {
+      "result_sha256": "98e25b7778a7d55178a85080cdfcd89564b9e154a1a006d757c66906451bcafb",
+      "seed": 60001,
+      "steps": 221,
+      "success": true,
+      "task": 6
+    },
+    {
+      "result_sha256": "0ba6ccf0a421d835c50495f2d949195413486677a76d25656837ad8fde3ff5a3",
+      "seed": 70000,
+      "steps": 287,
+      "success": true,
+      "task": 7
+    },
+    {
+      "result_sha256": "473dcc5bfd535b4c35d0117abc1244ae3ab7dd6e0ca82f8525fb7ddb7d9c2776",
+      "seed": 70001,
+      "steps": 246,
+      "success": true,
+      "task": 7
+    },
+    {
+      "result_sha256": "a17f8da4b2f78b65bcac8d415312af02bac972372a30cc1f3aed41af2126400d",
+      "seed": 80000,
+      "steps": 520,
+      "success": false,
+      "task": 8
+    },
+    {
+      "result_sha256": "e7fd51f61983906672d9c43f6dec56a9a2e67ec9b6a69eaed6e0d921391bc142",
+      "seed": 80001,
+      "steps": 361,
+      "success": true,
+      "task": 8
+    },
+    {
+      "result_sha256": "fa538baedb13a181fa3f89a50d7a8f9084c3cae8bcde2faa253ea5b4752bb9c6",
+      "seed": 90000,
+      "steps": 251,
+      "success": true,
+      "task": 9
+    },
+    {
+      "result_sha256": "7bbe0e7841eb9bd86f2a3989392551c2b64abd0dcbe89ea3130a337af26ec3a3",
+      "seed": 90001,
+      "steps": 267,
+      "success": true,
+      "task": 9
+    }
+  ],
+  "scene_sha256": "03698c149e265021c64a7c69acd09c2c3a53ae1c8f07d5e6818821322fb41538",
+  "scope": "Completed native arm only; 20 fixed LIBERO-10 episodes, paused simulation, checkpoint-native 50-action Runtime. Not a native/FP8 quality comparison, non-inferiority or real-time certificate.",
+  "simulator_identity": {
+    "environment": {
+      "mujoco": "2.3.7",
+      "numpy": "1.26.4",
+      "robosuite": "1.4.1",
+      "scipy": "1.13.1",
+      "torch": "2.7.0"
+    },
+    "render_environment": {
+      "LP_NUM_THREADS": "1",
+      "MUJOCO_GL": "osmesa",
+      "PYOPENGL_PLATFORM": "osmesa",
+      "PYTHONHASHSEED": "0"
+    },
+    "revision": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+    "tree_sha256": "fa6da4d20c9ab1a67e45f6aec4c7ec38a4adfd9cf42dea65bb5519d311c63e48"
+  },
+  "successes": 16
+}

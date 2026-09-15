@@ -392,15 +392,23 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
     if "use_fp8" in sig.parameters:
         kwargs["use_fp8"] = use_fp8
     if config == "lingbot_vla_v2":
+        # One config name, two arms: the SM80/SM90 datacenter graft takes the full knob set;
+        # the Thor engine frontend (Vla2TorchFrontendThor) takes only num_views/use_cuda_graph.
+        # Feature-detect so the same call site dispatches to either arm.
         kwargs["use_cuda_graph"] = bool(use_cuda_graph)
-        kwargs["use_cuda_kernels"] = bool(use_cuda_kernels)
-        kwargs["use_prefix_graph"] = bool(use_prefix_graph)
-        kwargs["use_gpu_preprocess"] = bool(use_gpu_preprocess)
-        kwargs["gpu_preprocess_mode"] = str(gpu_preprocess_mode)
-        kwargs["robot"] = str(robot)
-        if source_root is not None:
+        if "use_cuda_kernels" in sig.parameters:
+            kwargs["use_cuda_kernels"] = bool(use_cuda_kernels)
+        if "use_prefix_graph" in sig.parameters:
+            kwargs["use_prefix_graph"] = bool(use_prefix_graph)
+        if "use_gpu_preprocess" in sig.parameters:
+            kwargs["use_gpu_preprocess"] = bool(use_gpu_preprocess)
+        if "gpu_preprocess_mode" in sig.parameters:
+            kwargs["gpu_preprocess_mode"] = str(gpu_preprocess_mode)
+        if "robot" in sig.parameters:
+            kwargs["robot"] = str(robot)
+        if "source_root" in sig.parameters and source_root is not None:
             kwargs["source_root"] = source_root
-        if qwen3vl_path is not None:
+        if "qwen3vl_path" in sig.parameters and qwen3vl_path is not None:
             kwargs["qwen3vl_path"] = qwen3vl_path
     elif config == "pi0fast":
         kwargs.update(

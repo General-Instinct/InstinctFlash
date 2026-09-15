@@ -42,6 +42,13 @@ class PassResult:
     #: free-form knobs the runtime layer consumes when installing this pass
     params: dict = field(default_factory=dict)
     expected_win: str = "unknown"
+    #: True only when the CALLER dropped this pass (`Plan.without` / an exclude knob). This is a
+    #: DIFFERENT fact from applies=False, which also covers tier-ceiling demotion — the runtime is
+    #: required to retain the caller's arithmetic permission and hard exclusions even when
+    #: selecting a different executor.
+    #: `params` survive `without()` so explain() can show what was dropped; before this flag that
+    #: made params['backend']=='engine' indistinguishable from a live engine request.
+    excluded: bool = False
 
 
 class OptimizationPass(Protocol):
@@ -67,6 +74,7 @@ class Plan:
     #: guidance scale, CFG batching) -- `AdapterSpec.operating_point()`. Printed by explain()
     #: because `nfe` alone underspecifies what runs (docs/rfc/fewstep-distillation.md §11).
     operating_point: str = ""
+    tier_ceiling: Tier = Tier.BITEXACT
 
     @property
     def applied(self) -> list[PassResult]:
@@ -84,6 +92,16 @@ class Plan:
         Useful in practice: it is the configuration you can ship without buying a paired
         non-inferiority run, which costs roughly 10x the GPU time of measuring the speedup.
         """
+        required = [
+            r.name for r in self.applied
+            if r.tier > Tier.BITEXACT and r.params.get("required_by_checkpoint")
+        ]
+        if required:
+            raise RuntimeError(
+                f"cannot form a BITEXACT subset: checkpoint-required operating-point pass(es) "
+                f"{required} define this package's execution semantics. Select the FP32 checkpoint "
+                "instead of silently serving a different operating point."
+            )
         return Plan(self.model_id, [r for r in self.results if r.tier == Tier.BITEXACT],
                     operating_point=self.operating_point)
 
@@ -100,10 +118,10 @@ class Plan:
         return Plan(self.model_id, [
             PassResult(name=r.name, applies=False, tier=r.tier,
                        reason=f"dropped by caller via Plan.without(): {r.reason}",
-                       params=r.params, expected_win=r.expected_win)
+                       params=r.params, expected_win=r.expected_win, excluded=True)
             if r.name in names else r
             for r in self.results
-        ], operating_point=self.operating_point)
+        ], operating_point=self.operating_point, tier_ceiling=self.tier_ceiling)
 
     def serve(self, model, port: int, **kwargs):
         """Install this plan on `model` and start serving it.
@@ -126,18 +144,30 @@ class Plan:
             if r.applies and r.expected_win != "unknown":
                 out.append(f"         expected: {r.expected_win}")
             # A construction-time Decision recorded by the installer (params['decision']): what
-            # the backend actually chose, e.g. pi05's compile_model neutralization.
+            # the backend actually chose, e.g. P007's per-signature layout/kernel selection.
             for line in r.params.get("decision", ()):
                 out.append(f"         decision: {line}")
         if self.tier() > Tier.BITEXACT:
             lossy = [r.name for r in self.applied if r.tier > Tier.BITEXACT]
+            required = [
+                r.name for r in self.applied
+                if r.tier > Tier.BITEXACT and r.params.get("required_by_checkpoint")
+            ]
             out += [
                 "",
                 f"  NOTE: plan is {self.tier().name} because of {lossy}.",
                 "        Any accuracy-neutrality claim for this plan requires a paired",
-                "        non-inferiority run. `plan.bitexact_subset()` is the largest",
-                "        configuration that does not.",
+                "        non-inferiority run.",
             ]
+            if required:
+                out += [
+                    f"        {required} are checkpoint-required; there is no valid BITEXACT",
+                    "        subset of this package. Select its FP32 checkpoint instead.",
+                ]
+            else:
+                out += [
+                    "        `plan.bitexact_subset()` is the largest configuration that does not.",
+                ]
         return "\n".join(out)
 
 
@@ -148,7 +178,10 @@ class Optimizer:
         self,
         passes: Sequence[OptimizationPass] | None = None,
         tier_ceiling: Tier = Tier.BITEXACT,
+        tier_ceiling_explicit: bool = False,
     ):
+        #: Kept for API compatibility. A checkpoint never widens the selected ceiling;
+        #: required numerical transforms need explicit caller permission.
         #: passes are evaluated in registration order; ordering matters where one pass is a
         #: precondition for another (sync elimination gates graph capture, for instance).
         if passes is None:
@@ -163,6 +196,7 @@ class Optimizer:
             passes = default_passes()
         self._passes = list(passes)
         self._ceiling = tier_ceiling
+        self._ceiling_explicit = tier_ceiling_explicit
 
     def compile(self, spec: AdapterSpec, deployment: DeploymentSpec | None = None,
                 capabilities: frozenset[str] | None = None) -> Plan:
@@ -222,7 +256,24 @@ class Optimizer:
                 elif getattr(hw, "min_capability", None) or getattr(hw, "requires", frozenset()):
                     hw_unchecked = True
             r = p.evaluate(spec, deployment)
-            if r.applies and r.tier > self._ceiling:
+            # Required checkpoint transforms cannot silently widen the arithmetic budget.
+            # Refuse incompatible packages rather than omit a required transform.
+            required_cap = r.params.get("required_by_checkpoint") if r.applies else None
+            checkpoint_required = bool(
+                isinstance(required_cap, str)
+                and required_cap.startswith("declares:")
+                and capabilities is not None
+                and required_cap in capabilities
+            )
+            if r.applies and r.tier > self._ceiling and checkpoint_required:
+                raise RuntimeError(
+                    f"{r.name} is required by the selected checkpoint ({required_cap}) at "
+                    f"tier {r.tier.name}, but tier_ceiling={self._ceiling.name}. "
+                    "Checkpoint declarations never widen the default BITEXACT policy. "
+                    f"Explicitly select tier_ceiling='{r.tier.name.lower()}' to permit "
+                    "this transform, or select a compatible checkpoint."
+                )
+            elif r.applies and r.tier > self._ceiling:
                 r = PassResult(
                     name=r.name, applies=False, tier=r.tier,
                     reason=f"legal but tier {r.tier.name} exceeds ceiling "
@@ -241,4 +292,5 @@ class Optimizer:
                     params=r.params, expected_win=r.expected_win,
                 )
             results.append(r)
-        return Plan(spec.model_id, results, operating_point=spec.operating_point())
+        return Plan(spec.model_id, results, operating_point=spec.operating_point(),
+                    tier_ceiling=self._ceiling)

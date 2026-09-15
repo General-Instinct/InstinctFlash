@@ -1,0 +1,155 @@
+{
+  "capture_sha256": "3c4544fec0ae2906ec39246aa56ee5b5a6a27a5d7611b40dde1b5f8e0e13be30",
+  "cell": {
+    "assets": {
+      "checkpoint": {
+        "model_id": "nvidia/GR00T-N1.7-3B",
+        "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495"
+      }
+    },
+    "auxiliary_repositories": {
+      "nvidia/Cosmos-Reason2-2B": {
+        "files": {
+          "chat_template.json": {
+            "bytes": 5502,
+            "sha256": "6f8a6a55027e3da5160105556cda5dd69f6423f1c32645f6730d32de7773d0c4"
+          },
+          "config.json": {
+            "bytes": 1505,
+            "sha256": "bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b"
+          },
+          "generation_config.json": {
+            "bytes": 269,
+            "sha256": "1e241830b48b397cb0900101421df5450baddc7adf01e5fc86b5615865f3bae4"
+          },
+          "merges.txt": {
+            "bytes": 1671839,
+            "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"
+          },
+          "preprocessor_config.json": {
+            "bytes": 390,
+            "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516"
+          },
+          "tokenizer.json": {
+            "bytes": 7032403,
+            "sha256": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7"
+          },
+          "tokenizer_config.json": {
+            "bytes": 10868,
+            "sha256": "c2da771801886ad9ae98181793ffd3dfb7f1af30f6f7c6a4e15d7dbba52e2399"
+          },
+          "video_preprocessor_config.json": {
+            "bytes": 385,
+            "sha256": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13"
+          },
+          "vocab.json": {
+            "bytes": 2776833,
+            "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+          }
+        },
+        "revision": "9ce19a195e423419c349abfc86fd07178b230561"
+      }
+    },
+    "compile": false,
+    "effective_schedule": {
+      "action": 4
+    },
+    "expected_shapes": [
+      [
+        1,
+        40,
+        17
+      ]
+    ],
+    "family": "groot",
+    "framework": "lerobot",
+    "historical": {
+      "receipt_name": "lerobot-groot-v3.json",
+      "receipt_sha256": "7bffa52f9ffa9e4b5e42de134a714d2db0efa394f7e579bffe709d94acc22b90",
+      "selected_p50_ms": 247.94665299123153
+    },
+    "id": "lerobot-groot",
+    "quality_certified": false,
+    "selected_indices": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39
+    ],
+    "total_calls": 40,
+    "warmup_calls": 10
+  },
+  "completion_sha256": "e73a11024f1694cebcabe389defee56851e48350198e60da732bbcc1599a6309",
+  "latency": {
+    "all_measured_p50_ms": 247.0066364912782,
+    "classification": "SCREEN",
+    "historical_p50_ms": 247.94665299123153,
+    "p50_ms": 247.0066364912782,
+    "p95_ms": 247.62160770769697,
+    "p99_ms": 247.9903974791523,
+    "selected_count": 30,
+    "selected_indices": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39
+    ],
+    "task_quality_certified": false
+  },
+  "schema": "instinctflash.framework_comparison.v1",
+  "scope": "Local observation-to-CPU-actions wall time; Omni includes worker IPC. No network or simulator.",
+  "status": "passed",
+  "task_quality_certified": false
+}

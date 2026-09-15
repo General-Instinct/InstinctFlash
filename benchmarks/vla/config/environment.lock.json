@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "orchestrator": {
+    "python": ">=3.10",
+    "dependencies": "Python standard library plus the checked-out instinctflash package",
+    "hub_cli": "hf (huggingface_hub 1.28.x contract)"
+  },
+  "reference_closed_loop_environments": {
+    "pi05": {
+      "python": "3.12.14",
+      "torch": "2.11.0+cu128",
+      "lerobot": "0.6.2",
+      "libero": "hf-libero 0.1.4",
+      "sapien": "3.0.0b1",
+      "mplib": "0.2.1",
+      "notes": "Reference only. Other families keep their upstream-compatible driver environments isolated."
+    },
+    "robotwin": {
+      "repository": "https://github.com/RoboTwin-Platform/RoboTwin.git",
+      "revision": "30954692d06ba7e89f7a6b76064f4062c488fa81"
+    }
+  },
+  "invariant": {
+    "baseline_and_candidate": "May use different interpreters, but each result must report a stable environment_fingerprint.",
+    "model": "Every result must echo the exact locked model revision in its request.",
+    "dataset": "Every request contains the exact dataset and asset revisions.",
+    "gpu": "One plan process owns an exclusive per-GPU lock; jobs execute sequentially.",
+    "credentials": "Never serialized. Tokens remain in the process environment."
+  }
+}

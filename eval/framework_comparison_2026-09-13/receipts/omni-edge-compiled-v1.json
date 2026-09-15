@@ -1,0 +1,391 @@
+{
+  "framework": "vllm-omni",
+  "compile_requested": true,
+  "model": "nvidia/Cosmos3-Edge-Policy-DROID",
+  "checkpoint": "/home/guanming/.cache/huggingface/hub/models--nvidia--Cosmos3-Edge-Policy-DROID/snapshots/f9fddb427fd7cff0bef7c73791be36f0ab52d81e",
+  "scope": "local Omni request to CPU actions, including worker IPC; no network",
+  "packages": {
+    "vllm": "0.29.0",
+    "vllm-omni": "0.29.0.dev0+gf7d9deb45",
+    "torch": "2.13.0",
+    "transformers": "5.14.1"
+  },
+  "fixture_sha256": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172",
+  "script_sha256": "345774482a5db06df78dbf86365db4c79ddd0a9e5d8663db095e9d97a3174a1b",
+  "protocol": {
+    "steps": 4,
+    "guidance": 3.0,
+    "shift": 5.0,
+    "history_length": 1,
+    "horizon": 32,
+    "format_prompt_as_json": true,
+    "precision": "bfloat16"
+  },
+  "calls": [
+    {
+      "i": 0,
+      "phase": "warmup",
+      "ms": 1507.734701037407,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 1,
+      "phase": "warmup",
+      "ms": 1076.5907420427538,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 2,
+      "phase": "warmup",
+      "ms": 1087.575659970753,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 3,
+      "phase": "warmup",
+      "ms": 1090.042194002308,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 4,
+      "phase": "warmup",
+      "ms": 1082.7251709997654,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 5,
+      "phase": "warmup",
+      "ms": 1084.7991660120897,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 6,
+      "phase": "warmup",
+      "ms": 1086.0744430101477,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 7,
+      "phase": "warmup",
+      "ms": 1088.8464570161887,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 8,
+      "phase": "warmup",
+      "ms": 1083.7590330047533,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 9,
+      "phase": "warmup",
+      "ms": 1080.080515006557,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 10,
+      "phase": "measured",
+      "ms": 1077.1815860061906,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 11,
+      "phase": "measured",
+      "ms": 1083.161721995566,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 12,
+      "phase": "measured",
+      "ms": 1079.6615569852293,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 13,
+      "phase": "measured",
+      "ms": 1083.2406859844923,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 14,
+      "phase": "measured",
+      "ms": 1084.7097290097736,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 15,
+      "phase": "measured",
+      "ms": 1080.406745953951,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 16,
+      "phase": "measured",
+      "ms": 1085.0095130153932,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 17,
+      "phase": "measured",
+      "ms": 1082.577161025256,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 18,
+      "phase": "measured",
+      "ms": 1082.428877998609,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 19,
+      "phase": "measured",
+      "ms": 1081.5267310244963,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 20,
+      "phase": "measured",
+      "ms": 1085.3697219863534,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 21,
+      "phase": "measured",
+      "ms": 1084.583581017796,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 22,
+      "phase": "measured",
+      "ms": 1085.0206969771534,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 23,
+      "phase": "measured",
+      "ms": 1083.6297000059858,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 24,
+      "phase": "measured",
+      "ms": 1078.9686179487035,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 25,
+      "phase": "measured",
+      "ms": 1079.6625300426967,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 26,
+      "phase": "measured",
+      "ms": 1087.1648309985176,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 27,
+      "phase": "measured",
+      "ms": 1083.115743007511,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 28,
+      "phase": "measured",
+      "ms": 1077.7588189812377,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 29,
+      "phase": "measured",
+      "ms": 1078.2092830049805,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 30,
+      "phase": "measured",
+      "ms": 1075.073420011904,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 31,
+      "phase": "measured",
+      "ms": 1081.4371729502454,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 32,
+      "phase": "measured",
+      "ms": 1088.2562139886431,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 33,
+      "phase": "measured",
+      "ms": 1081.9303899770603,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 34,
+      "phase": "measured",
+      "ms": 1089.5306409802288,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 35,
+      "phase": "measured",
+      "ms": 1083.4235119982623,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 36,
+      "phase": "measured",
+      "ms": 1086.2316430429928,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 37,
+      "phase": "measured",
+      "ms": 1085.7754619792104,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 38,
+      "phase": "measured",
+      "ms": 1083.9362909900956,
+      "shape": [
+        32,
+        8
+      ]
+    },
+    {
+      "i": 39,
+      "phase": "measured",
+      "ms": 1079.0824039722793,
+      "shape": [
+        32,
+        8
+      ]
+    }
+  ],
+  "setup_seconds": 28.983297917002346,
+  "ok": true,
+  "p50_ms": 1083.1387325015385,
+  "p95_ms": 1087.7650916430866,
+  "p99_ms": 1089.161057152669
+}

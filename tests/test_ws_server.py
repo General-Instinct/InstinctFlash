@@ -266,7 +266,13 @@ def test_busy_port_fails_loudly():
     server, port = start_server(rt)
     try:
         second = WebsocketPolicyServer(StubRuntime(), host="127.0.0.1", port=port)
-        thread = threading.Thread(target=second.serve_forever, daemon=True)
+        errors = []
+        def expected_bind_failure():
+            try:
+                second.serve_forever()
+            except RuntimeError as error:
+                errors.append(error)
+        thread = threading.Thread(target=expected_bind_failure, daemon=True)
         thread.start()
         msg = ""
         try:
@@ -275,6 +281,9 @@ def test_busy_port_fails_loudly():
             msg = str(e)
         check("cannot bind" in msg and "forever" in msg,
               "bind failure names the port and the retry-forever trap", msg[:100])
+        thread.join(10)
+        check(not thread.is_alive() and len(errors) == 1,
+              "failed server exits its thread with one captured bind error")
     finally:
         server.shutdown()
 

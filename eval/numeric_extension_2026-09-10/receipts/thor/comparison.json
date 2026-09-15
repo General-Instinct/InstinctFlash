@@ -1,0 +1,540 @@
+{
+  "family": "pi05",
+  "arm": "current",
+  "device": "NVIDIA Thor",
+  "status": "NUMERIC_SCREEN",
+  "invalid": {},
+  "baseline_p50_ms": 419.7816630039597,
+  "current_p50_ms": 287.0249435072765,
+  "repeated_baseline_p50_ms": 410.74748151004314,
+  "speedup_range": [
+    1.4310515193939237,
+    1.4625267681424268
+  ],
+  "reference_repeat_bitexact": true,
+  "applied_passes": [
+    "graph_capture",
+    "pi05_tf32_numeric"
+  ],
+  "execution_policy": {
+    "category": "NUMERIC",
+    "precision": "native",
+    "tier_ceiling": "numeric",
+    "transform_tier": "NUMERIC",
+    "nfe": {
+      "prefix": 1,
+      "action": 10
+    },
+    "changed_schedule": {},
+    "schedule_options": {},
+    "claim_scope": "selected checkpoint-relative transforms; not an accuracy certificate"
+  },
+  "pass_results": [
+    {
+      "name": "graph_capture",
+      "applies": true,
+      "tier": "BITEXACT",
+      "params": {
+        "capture_unit_from": "adapter sites of kind CAPTURE_UNIT",
+        "verify": "host-effect gate refuses a region that mutates host state",
+        "device_evidence": "pi05 native NFE=10 on Thor: the 2026-09-09 matched study measured capture gains with byte-equal actions on its inputs; see eval/fp8_comparison_2026-09-09. The family startup exact self-check still decides admission for this checkpoint and process.",
+        "decision": [
+          "graph_capture: self-check bit-exact on 6 inputs (replay == eager exactly, 3 on a refilled prefix; 0.2 s startup cost, once per process)"
+        ],
+        "self_check": {
+          "n": 6,
+          "bitexact": true,
+          "max_abs_delta": 0.0,
+          "seconds": 0.20927956598461606,
+          "cases": [
+            {
+              "input": 1,
+              "timestep": 1.0,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 2,
+              "timestep": 0.899999976,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 3,
+              "timestep": 0.800000012,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 4,
+              "timestep": 1.0,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 5,
+              "timestep": 0.899999976,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 6,
+              "timestep": 0.800000012,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            }
+          ]
+        }
+      },
+      "reason": "all streams (prefix) are rebuilt within a control cycle, so shapes repeat, so one capture serves every cycle; 11 forward(s) per control step (prefix=1 + action=10) each pay full dispatch cost today; pi05 native NFE=10 on Thor: the 2026-09-09 matched study measured capture gains with byte-equal actions on its inputs; see eval/fp8_comparison_2026-09-09. The family startup exact self-check still decides admission for this checkpoint and process."
+    },
+    {
+      "name": "engine_offload",
+      "applies": false,
+      "tier": "NUMERIC",
+      "params": {},
+      "reason": "precision='native': FP8 engine is not authorized; pi05 action geometry could not be verified: config.json is present but declares no 1-D output_features.action.shape to read the action dimensionality from"
+    },
+    {
+      "name": "pi05_tf32_numeric",
+      "applies": true,
+      "tier": "NUMERIC",
+      "params": {
+        "required_by_checkpoint": "declares:pi05_tf32_numeric",
+        "precision": "tf32",
+        "static_kv_graph": true,
+        "max_abs_action_delta": null,
+        "hardware": "sm110",
+        "qualification": "unqualified",
+        "evidence": "eval/numeric_extension_2026-09-10/README.md"
+      },
+      "reason": "checkpoint explicitly declares the sm110 TF32 operating point: FP32 GEMMs use TF32 tensor cores and the action loop uses replay-safe static-KV CUDA Graphs; measured weights are lerobot/pi05_libero_finetuned_v044; Thor execution support; target-device action/task quality unqualified; exact graph replay self-check remains required"
+    },
+    {
+      "name": "fsdp_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "allocator_churn_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "debug_dump_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "obs_decode_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "model declares no observation-decode modules"
+    },
+    {
+      "name": "conditioning_prefill",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "['prefix_kv'] is chunk- or episode-constant, but the model's own implementation already hoists it out of the loop, so there is nothing to hoist"
+    },
+    {
+      "name": "prompt_encoder_staging",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "ring_kv_addressing",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "action_terminal_forward_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "sm120_gated_residual",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "sm120_wan_stage2",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "conv_layout_ndhwc",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "checkpoint does not declare ['backbone:wan_va']; the pass is not applicable to it. This is a CAPABILITY decision, not a recipe one."
+    },
+    {
+      "name": "cfg_branch_elision",
+      "applies": false,
+      "tier": "BITEXACT",
+      "params": {},
+      "reason": "no stream requests a negative branch at its served scale, so nothing duplicates the batch (every forward is already batch-1)"
+    }
+  ],
+  "graph_stats": {
+    "captured": true,
+    "rejected": false,
+    "full_graph": false,
+    "prefix_graph": false,
+    "replays": 218,
+    "prefix_replays": 0,
+    "chunk_replays": 0,
+    "self_check": {
+      "n": 6,
+      "bitexact": true,
+      "max_abs_delta": 0.0,
+      "seconds": 0.20927956598461606,
+      "cases": [
+        {
+          "input": 1,
+          "timestep": 1.0,
+          "prefix": "captured-chunk",
+          "max_abs_delta": 0.0
+        },
+        {
+          "input": 2,
+          "timestep": 0.899999976,
+          "prefix": "captured-chunk",
+          "max_abs_delta": 0.0
+        },
+        {
+          "input": 3,
+          "timestep": 0.800000012,
+          "prefix": "captured-chunk",
+          "max_abs_delta": 0.0
+        },
+        {
+          "input": 4,
+          "timestep": 1.0,
+          "prefix": "refilled",
+          "max_abs_delta": 0.0
+        },
+        {
+          "input": 5,
+          "timestep": 0.899999976,
+          "prefix": "refilled",
+          "max_abs_delta": 0.0
+        },
+        {
+          "input": 6,
+          "timestep": 0.800000012,
+          "prefix": "refilled",
+          "max_abs_delta": 0.0
+        }
+      ]
+    }
+  },
+  "backend_stats": {},
+  "comparisons": {
+    "reference_repeat": {
+      "baseline": "/home/ubuntu/ifl_eval/numeric_extension_20260910_thor_results/pi05-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/numeric_extension_20260910_thor_results/pi05-baseline_b.json",
+      "baseline_sha256": "b7d5358e3dfeec0fcf305969a9deb8876e982f69817985ff602aad709a89733c",
+      "candidate_sha256": "5fdec252fdeec0ae1afa7fbe371a8c4c7540439845db4ac774a3331b02fe07ba",
+      "protocol_differences": {},
+      "bitexact": true,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            7
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        },
+        {
+          "name": "queued_actions",
+          "shape": [
+            23,
+            49,
+            1,
+            7
+          ],
+          "finite": true,
+          "bitexact": true,
+          "max_abs_delta": 0.0
+        }
+      ],
+      "candidate_stats": {
+        "captured": false,
+        "rejected": false,
+        "full_graph": false,
+        "prefix_graph": false,
+        "replays": 0,
+        "prefix_replays": 0,
+        "chunk_replays": 0,
+        "self_check": null
+      },
+      "baseline_p50_ms": 419.7816630039597,
+      "candidate_p50_ms": 410.74748151004314,
+      "speedup": 1.0219944902904916,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "declared_protocol_changes": {},
+      "unexpected_protocol_changes": {},
+      "source_drift": []
+    },
+    "reference_candidate": {
+      "baseline": "/home/ubuntu/ifl_eval/numeric_extension_20260910_thor_results/pi05-baseline_a.json",
+      "candidate": "/home/ubuntu/ifl_eval/numeric_extension_20260910_thor_results/pi05-current.json",
+      "baseline_sha256": "b7d5358e3dfeec0fcf305969a9deb8876e982f69817985ff602aad709a89733c",
+      "candidate_sha256": "006075fcb837e47ccfb6c3b217e4aa65b40eee819ad6586ea414c53d1eef8879",
+      "protocol_differences": {
+        "numeric_environment": [
+          {
+            "matmul_tf32": false,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          },
+          {
+            "matmul_tf32": true,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          }
+        ]
+      },
+      "bitexact": false,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            7
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.02040231227874756
+        },
+        {
+          "name": "queued_actions",
+          "shape": [
+            23,
+            49,
+            1,
+            7
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.11078882217407227
+        }
+      ],
+      "candidate_stats": {
+        "captured": true,
+        "rejected": false,
+        "full_graph": false,
+        "prefix_graph": false,
+        "replays": 218,
+        "prefix_replays": 0,
+        "chunk_replays": 0,
+        "self_check": {
+          "n": 6,
+          "bitexact": true,
+          "max_abs_delta": 0.0,
+          "seconds": 0.20927956598461606,
+          "cases": [
+            {
+              "input": 1,
+              "timestep": 1.0,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 2,
+              "timestep": 0.899999976,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 3,
+              "timestep": 0.800000012,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 4,
+              "timestep": 1.0,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 5,
+              "timestep": 0.899999976,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 6,
+              "timestep": 0.800000012,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            }
+          ]
+        }
+      },
+      "baseline_p50_ms": 419.7816630039597,
+      "candidate_p50_ms": 287.0249435072765,
+      "speedup": 1.4625267681424268,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "declared_protocol_changes": {
+        "numeric_environment": [
+          {
+            "matmul_tf32": false,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          },
+          {
+            "matmul_tf32": true,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          }
+        ]
+      },
+      "unexpected_protocol_changes": {},
+      "source_drift": []
+    },
+    "repeat_candidate": {
+      "baseline": "/home/ubuntu/ifl_eval/numeric_extension_20260910_thor_results/pi05-baseline_b.json",
+      "candidate": "/home/ubuntu/ifl_eval/numeric_extension_20260910_thor_results/pi05-current.json",
+      "baseline_sha256": "5fdec252fdeec0ae1afa7fbe371a8c4c7540439845db4ac774a3331b02fe07ba",
+      "candidate_sha256": "006075fcb837e47ccfb6c3b217e4aa65b40eee819ad6586ea414c53d1eef8879",
+      "protocol_differences": {
+        "numeric_environment": [
+          {
+            "matmul_tf32": false,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          },
+          {
+            "matmul_tf32": true,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          }
+        ]
+      },
+      "bitexact": false,
+      "arrays": [
+        {
+          "name": "actions",
+          "shape": [
+            23,
+            7
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.02040231227874756
+        },
+        {
+          "name": "queued_actions",
+          "shape": [
+            23,
+            49,
+            1,
+            7
+          ],
+          "finite": true,
+          "bitexact": false,
+          "max_abs_delta": 0.11078882217407227
+        }
+      ],
+      "candidate_stats": {
+        "captured": true,
+        "rejected": false,
+        "full_graph": false,
+        "prefix_graph": false,
+        "replays": 218,
+        "prefix_replays": 0,
+        "chunk_replays": 0,
+        "self_check": {
+          "n": 6,
+          "bitexact": true,
+          "max_abs_delta": 0.0,
+          "seconds": 0.20927956598461606,
+          "cases": [
+            {
+              "input": 1,
+              "timestep": 1.0,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 2,
+              "timestep": 0.899999976,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 3,
+              "timestep": 0.800000012,
+              "prefix": "captured-chunk",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 4,
+              "timestep": 1.0,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 5,
+              "timestep": 0.899999976,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            },
+            {
+              "input": 6,
+              "timestep": 0.800000012,
+              "prefix": "refilled",
+              "max_abs_delta": 0.0
+            }
+          ]
+        }
+      },
+      "baseline_p50_ms": 410.74748151004314,
+      "candidate_p50_ms": 287.0249435072765,
+      "speedup": 1.4310515193939237,
+      "scope": "Recorded inputs only; inspect candidate_stats for actual admission. No task-quality certificate.",
+      "declared_protocol_changes": {
+        "numeric_environment": [
+          {
+            "matmul_tf32": false,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          },
+          {
+            "matmul_tf32": true,
+            "cudnn_tf32": false,
+            "cudnn_benchmark": false
+          }
+        ]
+      },
+      "unexpected_protocol_changes": {},
+      "source_drift": []
+    }
+  },
+  "scope": "Original default schedule is the denominator. Action deltas are a recorded-input screen, not a task-quality certificate or a new numerical tolerance."
+}

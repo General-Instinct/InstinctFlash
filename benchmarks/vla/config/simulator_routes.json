@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "routes": [
+    {
+      "backbone": "wan_va",
+      "simulators": [
+        "libero",
+        "robotwin"
+      ],
+      "next_work": "Expand paired screening; existing frozen-scene bridges implemented.",
+      "sources": [
+        "https://github.com/robbyant/lingbot-va"
+      ]
+    },
+    {
+      "backbone": "pi05",
+      "simulators": [
+        "libero",
+        "robotwin"
+      ],
+      "next_work": "LIBERO original/capture comparison implemented with unchanged NFE and explicit precision settings; expand paired evidence. RoboTwin adapter remains to be implemented.",
+      "sources": [
+        "https://huggingface.co/lerobot/pi05_libero_finetuned_v044"
+      ]
+    },
+    {
+      "backbone": "lingbot_vla",
+      "simulators": [
+        "robotwin"
+      ],
+      "next_work": "Frozen joint-action adapter implemented; expand paired clean/randomized screening beyond smoke.",
+      "sources": [
+        "https://github.com/robbyant/lingbot-vla"
+      ]
+    },
+    {
+      "backbone": "lingbot_vla_v2",
+      "simulators": [
+        "robotwin"
+      ],
+      "next_work": "Frozen joint-action adapter implemented. Runtime numeric changes require quality measurement; action-byte mismatch is not a bitexact pass.",
+      "sources": [
+        "https://github.com/robbyant/lingbot-vla-v2"
+      ]
+    },
+    {
+      "backbone": "groot_n17",
+      "simulators": [
+        "libero",
+        "robolab"
+      ],
+      "next_work": "Pinned GR00T-N1.7-LIBERO libero_10 adapter implemented; evaluate actual fine-tune and native action processor. DROID RoboLab remains a separate route.",
+      "sources": [
+        "https://github.com/NVIDIA/Isaac-GR00T/tree/main/examples/LIBERO",
+        "https://github.com/NVIDIA/Isaac-GR00T/tree/main/examples/RoboLab"
+      ]
+    },
+    {
+      "backbone": "dreamzero",
+      "simulators": [
+        "droid_sim_evals"
+      ],
+      "next_work": "Connect local policy to the official DROID simulation client and freeze simulation assets/scenes.",
+      "sources": [
+        "https://github.com/dreamzero0/dreamzero",
+        "https://github.com/arhanjain/sim-evals",
+        "https://docs.isaacsim.omniverse.nvidia.com/5.0.0/installation/requirements.html"
+      ],
+      "rendering_requirement": "Supported RTX GPU for Isaac Sim; H100-only local renderer unsupported. A remote RTX simulator may use an H100 policy endpoint."
+    },
+    {
+      "backbone": "cosmos3_policy",
+      "simulators": [
+        "robolab"
+      ],
+      "next_work": "Integrate RoboLab DROID client separately for Edge and Nano checkpoint identities.",
+      "sources": [
+        "https://github.com/NVIDIA/cosmos-framework/blob/main/docs/action_policy_droid_server.md",
+        "https://github.com/NVlabs/RoboLab",
+        "https://docs.isaacsim.omniverse.nvidia.com/5.0.0/installation/requirements.html"
+      ],
+      "rendering_requirement": "Supported RTX GPU for Isaac Sim; H100-only local renderer unsupported. A remote RTX simulator may use an H100 policy endpoint."
+    }
+  ]
+}

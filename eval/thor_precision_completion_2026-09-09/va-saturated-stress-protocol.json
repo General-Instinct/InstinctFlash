@@ -1,0 +1,29 @@
+{
+  "status": "Both LIBERO and RoboTwin native/FP8 complete and verified",
+  "scope": "Synthetic-history saturation stress, not continuous physical episode or task-quality certificate",
+  "cycles_per_episode": 48,
+  "episodes_per_arm": 2,
+  "families": [
+    "libero",
+    "robotwin"
+  ],
+  "precisions": [
+    "native",
+    "fp8"
+  ],
+  "input_schedule": "original initial and first-commit windows, then repeat last full recorded window and recorded executed-action chunk",
+  "probe_sha256": "a0559ca96b1340546e00108c0690c71a12c267c01238e50f922ebc5bdd6b5791",
+  "input_sha256": {
+    "va-libero-observations.npz": "4c8840cca4589c8a93a027fb612be40b0a10abda806d0265268919f206ee4067",
+    "va_eval_obs.npz": "d6f08f968287b78eadd0ef3001e90f0a46397b17294dbd2c46c854feb5b93172"
+  },
+  "remote_root": "/home/guanming/ifl_eval/thor_precision_completion_20260909",
+  "source_overlay": "source",
+  "no_result_claim": true,
+  "source_manifest": "va-stress-source-manifest.json",
+  "source_manifest_sha256": "445e4a0a44d70dcefe332abccef0f99f96418ea4784401a13b685ec3beb63241",
+  "completed_comparisons": [
+    "va-saturated-libero-comparison.json",
+    "va-saturated-robotwin-comparison.json"
+  ]
+}
