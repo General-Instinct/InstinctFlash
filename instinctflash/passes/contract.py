@@ -104,7 +104,7 @@ def _cudnn_available() -> bool:
 #: `requires={"cudnn"}` came to be dormant-broken. Enforced by tests/test_hardware_probe.py.
 KNOWN_FEATURES = frozenset({
     "cpu", "cuda", "cuda_graphs", "triton", "fp8", "nvfp4", "wgmma", "tma", "cudnn", "cublas",
-    "sm120_kernels", "sm120_stage2_kernels",
+    "sm120_kernels", "sm120_stage2_kernels", "sm120_stage3_kernels",
 })
 
 
@@ -224,6 +224,13 @@ class DeviceProfile:
 
             if cap == (12, 0) and stage2_available():
                 feats.add("sm120_stage2_kernels")
+        except Exception:                                    # noqa: BLE001  never fail a probe
+            pass
+        try:
+            from instinctflash.backends.sm120_wan_stage3 import available as stage3_available
+
+            if cap == (12, 0) and stage3_available():
+                feats.add("sm120_stage3_kernels")
         except Exception:                                    # noqa: BLE001  never fail a probe
             pass
         return DeviceProfile(name=p.name, capability=cap, total_memory=p.total_memory,

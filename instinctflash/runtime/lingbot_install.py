@@ -23,6 +23,7 @@ import torch
 
 from instinctflash.runtime.sm120_install import install_sm120_gated_residual
 from instinctflash.runtime.sm120_stage2_install import install_sm120_wan_stage2
+from instinctflash.runtime.sm120_stage3_install import install_sm120_wan_stage3
 
 
 # --- substrate passes -------------------------------------------------------------------
@@ -485,6 +486,7 @@ INSTALLERS: dict[str, Callable[..., list[str]]] = {
     "action_terminal_forward_elision": install_action_terminal_forward_elision,
     "sm120_gated_residual": install_sm120_gated_residual,
     "sm120_wan_stage2": install_sm120_wan_stage2,
+    "sm120_wan_stage3": install_sm120_wan_stage3,
     "conv_layout_ndhwc": install_conv_layout_autotune,
 }
 
@@ -513,6 +515,11 @@ def install_plan(server_module, va_server_cls, plan) -> list[str]:
             "sm120_wan_stage2 requires sm120_gated_residual in the same plan. P009-A2 reuses "
             "P009-A1 for the final FFN residual, so installing it alone would produce a plan "
             "whose runtime dependency is absent."
+        )
+    if "sm120_wan_stage3" in applied_names and "sm120_wan_stage2" not in applied_names:
+        raise RuntimeError(
+            "sm120_wan_stage3 requires sm120_wan_stage2 in the same plan. P009-A3 reuses "
+            "A2's two middle block kernels and cannot install independently."
         )
     if "prompt_encoder_staging" in applied_names and "conditioning_prefill" not in applied_names:
         raise RuntimeError(

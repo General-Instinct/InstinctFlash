@@ -30,3 +30,16 @@ target_compile_options(instinctflash_sm120_wan_stage2 PRIVATE
     -gencode=arch=compute_120,code=sm_120
   >
 )
+
+add_library(instinctflash_sm120_wan_stage3 SHARED wan_stage3_sm120.cu)
+set_target_properties(instinctflash_sm120_wan_stage3 PROPERTIES
+  POSITION_INDEPENDENT_CODE ON
+  PREFIX "lib"
+  OUTPUT_NAME "instinctflash_sm120_wan_stage3"
+)
+target_compile_options(instinctflash_sm120_wan_stage3 PRIVATE
+  $<$<COMPILE_LANGUAGE:CUDA>:
+    -O3
+    -gencode=arch=compute_120,code=sm_120
+  >
+)

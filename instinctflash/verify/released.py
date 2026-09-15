@@ -197,6 +197,19 @@ RELEASED = (
         measured_on="RTX 5090, author-measured",
     ),
     Released(
+        pid="P009-A3", name="sm120_wan_stage3", version="1.0.0", tier=Tier.BITEXACT,
+        step_speedup=1.0127,
+        gates="Independent SM120 ABI v1 fuses norm1 FP32 LayerNorm with Ada scale/shift while "
+              "reproducing PyTorch 2.9's D=3072 Welford order and final BF16 RNE. Operator gate: "
+              "0 differing words for output, mean, and rstd across random/constant/alternating "
+              "patterns, three exponent scales, and rows 64/480; dtype/shape/alias guards refused "
+              "invalid inputs; local region speedup 2.22x/2.64x. Real 5B model 42-cycle A-B-B-A: "
+              "168/168 actions bitwise equal, 409.50 -> 404.34 ms = 1.0127x; growing "
+              "406.53 -> 401.23 ms; saturated 454.95 -> 449.44 ms; candidate spread 0.073%. "
+              "Adds about 0.094 GiB peak memory and executes exactly 12,540 A3 calls per arm.",
+        measured_on="RTX 5090, author-measured",
+    ),
+    Released(
         pid="P010", name="action_terminal_forward_elision", version="1.0.0", tier=Tier.BITEXACT,
         step_speedup=1.098,
         gates="Skips the action loop's padded terminal forward (wan_va_server.py:542-546, action_mode=True "
@@ -390,6 +403,10 @@ DISPOSITIONS = (
                 "P009-A1 library and its independent stage2 ABI. The planner auto-applies it only "
                 "when both native features are present; architecture-neutral serving and machines "
                 "without either extension remain unchanged."),
+    Disposition("P009-A3", AVAILABLE, ("--sm120-wan-stage3",),
+                "Correct and profitable on RTX 5090, but requires the A1/A2 chain and its own "
+                "independent stage3 ABI. The planner applies it only when all three native "
+                "features are present; other devices and builds remain unchanged."),
     Disposition("P010", SERVED, ("--action-terminal-elision",),
                 "Bit-exact through the ring wrap on both allocators and both operating points (two "
                 "independent 48-cycle ABBA runs, max|delta action| = 0.000e+00 everywhere), so no "

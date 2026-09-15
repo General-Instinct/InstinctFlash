@@ -113,6 +113,9 @@ def main() -> int:
              "cross-residual+AdaLayerNorm with exact PyTorch-2.9 Welford ordering. Requires "
              "--sm120-gated-residual and IFL_SM120_STAGE2_LIBRARY (or a packaged "
              "libinstinctflash_sm120_wan_stage2.so).")
+    ap.add_argument("--sm120-wan-stage3", action="store_true",
+        help="P009-A3: fuse norm1 FP32 LayerNorm + Ada scale/shift. Requires "
+             "--sm120-wan-stage2 and IFL_SM120_STAGE3_LIBRARY.")
 
     ap.add_argument("--graph-blocks", action="store_true",
         help="[NOT SHIPPABLE -- 2.17x but NOT bit-exact, max|d action| 1.398 = 136%% of real "
@@ -186,6 +189,8 @@ def main() -> int:
         ap.error("--benchmark-receipt owns episode seeding and currently supports base weights only")
     if args.sm120_wan_stage2 and not args.sm120_gated_residual:
         ap.error("--sm120-wan-stage2 requires --sm120-gated-residual")
+    if args.sm120_wan_stage3 and not args.sm120_wan_stage2:
+        ap.error("--sm120-wan-stage3 requires --sm120-wan-stage2")
 
 
     # Every variant below calls the SAME installer that `plan.serve()` calls. They used to be
@@ -201,6 +206,7 @@ def main() -> int:
         install_obs_decode_elision,
         install_sm120_gated_residual,
         install_sm120_wan_stage2,
+        install_sm120_wan_stage3,
     )
 
     S = import_lingbot_server()
@@ -296,6 +302,9 @@ def main() -> int:
 
     if getattr(args, "sm120_wan_stage2", False):
         applied += install_sm120_wan_stage2(S, S.VA_Server)
+
+    if getattr(args, "sm120_wan_stage3", False):
+        applied += install_sm120_wan_stage3(S, S.VA_Server)
 
     if getattr(args, "conv_layout", False):
         from instinctflash.backends.conv.apply import install_conv_layout

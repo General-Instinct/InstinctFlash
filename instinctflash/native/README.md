@@ -9,6 +9,7 @@ cmake -S instinctflash/native -B /tmp/instinctflash-sm120-build \
 cmake --build /tmp/instinctflash-sm120-build -j
 export IFL_SM120_KERNEL_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120.so
 export IFL_SM120_STAGE2_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_stage2.so
+export IFL_SM120_STAGE3_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_stage3.so
 ```
 
 `DeviceProfile` reports `sm120_kernels` only when the library loads and exports the expected ABI.
@@ -19,3 +20,7 @@ LingBot production shapes before every launch.
 P009-A2 has a separate library, environment variable, feature (`sm120_stage2_kernels`), and ABI.
 It is selected only together with P009-A1 and additionally validates Welford-specific LayerNorm,
 stride, alignment, alias, upstream-source, 30-block, and single-stream preconditions.
+
+P009-A3 is another independent ABI (`sm120_stage3_kernels`). It requires A1+A2 and fuses the
+remaining norm1 FP32 LayerNorm + Ada modulation chain only for the certified D3072, rows 64/480,
+Torch 2.9/CUDA 12.8 operating point; all other shapes and builds fail closed.

@@ -716,6 +716,8 @@ class LingBotVA:
                 serve_flags.append("--sm120-gated-residual")
             if "sm120_wan_stage2" in applied:
                 serve_flags.append("--sm120-wan-stage2")
+            if "sm120_wan_stage3" in applied:
+                serve_flags.append("--sm120-wan-stage3")
         argv = [python, "-u", "-m", "instinctflash.runtime.lingbot_worker",
                 "--config-name", cfg_name or "robotwin",
                 "--port", str(port), *serve_flags]
@@ -768,6 +770,9 @@ class LingBotVA:
         stage2_native = os.environ.get("IFL_SM120_STAGE2_LIBRARY")
         if stage2_native:
             env["IFL_SM120_STAGE2_LIBRARY"] = stage2_native
+        stage3_native = os.environ.get("IFL_SM120_STAGE3_LIBRARY")
+        if stage3_native:
+            env["IFL_SM120_STAGE3_LIBRARY"] = stage3_native
         if device:
             env["CUDA_VISIBLE_DEVICES"] = device.split(":")[-1] if ":" in device else device
         return argv, env
