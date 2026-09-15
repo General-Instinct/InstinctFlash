@@ -23,22 +23,20 @@
 
 Prediction p50 on **Jetson Thor** (ms), measured September 15, 2026.
 
-| Model | Native PyTorch | LeRobot | vLLM-Omni | InstinctFlash |
-| --- | ---: | ---: | ---: | ---: |
-| LingBot-VA | 15506.32 · 25V/50A | — | Unsupported | **2891.74** · FP8, 25V/50A |
-| ↳ LingBot-VA @2V/4A | — | 1171.08 · native, 2V/4A | Unsupported | **459.10** · FP8, 2V/4A |
-| LingBot-VLA-4B | 624.22 · NFE10 | Unsupported | Unsupported | **221.53** · FP8, NFE10 |
-| LingBot-VLA-V2-6B | 734.56 · NFE10 | Unsupported | Unsupported | **394.11** · FP8, NFE10 |
-| Cosmos3 Edge DROID | 3393.78 · UniPC4 CFG3 | Unsupported | 1074.11 · compiled, UniPC4 CFG3 | **1048.01** · BF16 NUMERIC, UniPC4 CFG3 |
-| Cosmos3 Nano DROID | 10184.68 · UniPC4 CFG3 | Unsupported | 4417.63 · compiled, UniPC4 CFG3 | **4772.38** · BF16 NUMERIC, UniPC4 CFG3 |
-| pi05 | 408.58 · NFE10 | 93.92 · compiled, NFE1 | Unsupported | **51.85** · FP8, NFE10 |
-| GR00T N1.7 | 139.50 · NFE4 | 247.01 · native, NFE4 | Not qualified | **117.30** · native, NFE4 |
-| DreamZero DROID | 23563.08 · fixed 8/16 DiT | Unsupported | 8729.64 · compiled, upstream step cache | **11899.42** · FP8, 16 solver updates, dynamic cache |
+| Model | Native PyTorch | InstinctFlash | Speedup |
+| --- | ---: | ---: | ---: |
+| LingBot-VA | 15506.32 · 25V/50A | **2891.74** · FP8, 25V/50A | **5.36×** |
+| ↳ LingBot-VA @2V/4A | — | **459.10** · FP8, 2V/4A | **33.78×** |
+| LingBot-VLA-4B | 624.22 · NFE10 | **221.53** · FP8, NFE10 | **2.82×** |
+| LingBot-VLA-V2-6B | 734.56 · NFE10 | **394.11** · FP8, NFE10 | **1.86×** |
+| Cosmos3 Edge DROID | 3393.78 · UniPC4 CFG3 | **1048.01** · BF16 NUMERIC, UniPC4 CFG3 | **3.24×** |
+| Cosmos3 Nano DROID | 10184.68 · UniPC4 CFG3 | **4772.38** · BF16 NUMERIC, UniPC4 CFG3 | **2.13×** |
+| pi05 | 408.58 · NFE10 | **51.85** · FP8, NFE10 | **7.88×** |
+| GR00T N1.7 | 139.50 · NFE4 | **117.30** · native, NFE4 | **1.19×** |
+| DreamZero DROID | 23563.08 · fixed 8/16 DiT | **11899.42** · FP8, 16 solver updates, dynamic cache | **1.98×** |
 
-Precision, steps and cache policies are shown per cell; framework protocols differ.
-VA measures early continuations. DreamZero's native reference uses an eager DiT with vendor encoder compilation.
-
-—: unmeasured · Unsupported: no matching policy in the pinned registry · Not qualified: no validated measurement.
+VA measures early continuations; its 2V/4A speedup uses the full 25V/50A native baseline.
+DreamZero's native reference uses an eager DiT with vendor encoder compilation.
 These are speed measurements; task quality is evaluated separately.
 
 [Current protocol, raw results and historical comparison scope](eval/public_release_2026-09-15/results.rst) · [Reproduction commands](REPRODUCE.rst)
