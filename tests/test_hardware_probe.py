@@ -53,7 +53,7 @@ def test_vocabulary_is_closed():
             sources.append(t)
     declared = set()
     for src in sources:
-        for m in re.finditer(r"requires=frozenset\(\{([^}]*)\}\)", src):
+        for m in re.finditer(r"requires\s*=\s*frozenset\s*\(\s*\{([^}]*)\}\s*\)", src):
             declared |= {t.strip().strip("\"'") for t in m.group(1).split(",") if t.strip()}
     print(f"  declared across the tree : {sorted(declared) or '(none)'}")
     print(f"  nameable by the probe    : {sorted(KNOWN_FEATURES)}")

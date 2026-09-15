@@ -1,0 +1,23 @@
+# RTX 5090 / SM120 verification environment (CPython 3.10, CUDA 12.8).
+# Install the model-serving pins first, then the complete development surface.
+-r requirements-serving.txt
+
+pytest==9.1.1
+rerun-sdk==0.37.2
+pandas==2.3.3
+ninja==1.13.0
+usd-core==26.8
+
+# FlashRT's optional JAX and server surfaces.
+jax==0.6.2
+jaxlib==0.6.2
+flax==0.10.7
+orbax-checkpoint==0.11.39
+fastapi==0.141.1
+uvicorn==0.53.0
+
+# Training-recipe companion used by the complete core test suite.
+instinct-pdd @ git+https://github.com/General-Instinct/instinct-pdd.git@f72b277380cbec20faf396ff25e9679a69e72d24
+
+# FlashAttention is intentionally built separately so its wheel contains only
+# compute_120/sm_120. See serving/README.rst, "RTX 5090 build".
