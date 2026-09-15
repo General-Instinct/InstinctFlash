@@ -116,6 +116,9 @@ def main() -> int:
     ap.add_argument("--sm120-wan-stage3", action="store_true",
         help="P009-A3: fuse norm1 FP32 LayerNorm + Ada scale/shift. Requires "
              "--sm120-wan-stage2 and IFL_SM120_STAGE3_LIBRARY.")
+    ap.add_argument("--sm120-wan-qk-rope", action="store_true",
+        help="P009-A4: fuse self-attention Q/K RMSNorm + RoPE. Requires "
+             "--sm120-wan-stage3 and IFL_SM120_QK_ROPE_LIBRARY.")
 
     ap.add_argument("--graph-blocks", action="store_true",
         help="[NOT SHIPPABLE -- 2.17x but NOT bit-exact, max|d action| 1.398 = 136%% of real "
@@ -191,6 +194,8 @@ def main() -> int:
         ap.error("--sm120-wan-stage2 requires --sm120-gated-residual")
     if args.sm120_wan_stage3 and not args.sm120_wan_stage2:
         ap.error("--sm120-wan-stage3 requires --sm120-wan-stage2")
+    if args.sm120_wan_qk_rope and not args.sm120_wan_stage3:
+        ap.error("--sm120-wan-qk-rope requires --sm120-wan-stage3")
 
 
     # Every variant below calls the SAME installer that `plan.serve()` calls. They used to be
@@ -207,6 +212,7 @@ def main() -> int:
         install_sm120_gated_residual,
         install_sm120_wan_stage2,
         install_sm120_wan_stage3,
+        install_sm120_wan_qk_rope,
     )
 
     S = import_lingbot_server()
@@ -305,6 +311,9 @@ def main() -> int:
 
     if getattr(args, "sm120_wan_stage3", False):
         applied += install_sm120_wan_stage3(S, S.VA_Server)
+
+    if getattr(args, "sm120_wan_qk_rope", False):
+        applied += install_sm120_wan_qk_rope(S, S.VA_Server)
 
     if getattr(args, "conv_layout", False):
         from instinctflash.backends.conv.apply import install_conv_layout

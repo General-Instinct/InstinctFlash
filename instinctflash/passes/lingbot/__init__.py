@@ -17,6 +17,7 @@ from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
 from instinctflash.passes.lingbot.sm120_gated_residual import SM120GatedResidual
 from instinctflash.passes.lingbot.sm120_wan_stage2 import SM120WanStage2
 from instinctflash.passes.lingbot.sm120_wan_stage3 import SM120WanStage3
+from instinctflash.passes.lingbot.sm120_wan_qk_rope import SM120WanQKRoPE
 from instinctflash.passes.lingbot.substrate import (
     AllocatorChurnElision,
     DebugDumpElision,
@@ -51,6 +52,7 @@ def default_passes() -> "list[OptimizationPass]":
         SM120GatedResidual(),
         SM120WanStage2(),
         SM120WanStage3(),
+        SM120WanQKRoPE(),
         ConvLayoutAutotune(),
         CFGBranchElision(),
     ]
@@ -70,5 +72,6 @@ __all__ = [
     "SM120GatedResidual",
     "SM120WanStage2",
     "SM120WanStage3",
+    "SM120WanQKRoPE",
     "default_passes",
 ]

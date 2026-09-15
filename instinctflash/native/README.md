@@ -10,6 +10,7 @@ cmake --build /tmp/instinctflash-sm120-build -j
 export IFL_SM120_KERNEL_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120.so
 export IFL_SM120_STAGE2_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_stage2.so
 export IFL_SM120_STAGE3_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_stage3.so
+export IFL_SM120_QK_ROPE_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_qk_rope.so
 ```
 
 `DeviceProfile` reports `sm120_kernels` only when the library loads and exports the expected ABI.
@@ -24,3 +25,7 @@ stride, alignment, alias, upstream-source, 30-block, and single-stream precondit
 P009-A3 is another independent ABI (`sm120_stage3_kernels`). It requires A1+A2 and fuses the
 remaining norm1 FP32 LayerNorm + Ada modulation chain only for the certified D3072, rows 64/480,
 Torch 2.9/CUDA 12.8 operating point; all other shapes and builds fail closed.
+
+P009-A4 (`sm120_qk_rope_kernels`) requires A1+A2+A3 and replaces only the 30 self-attention
+Q/K RMSNorm+RoPE regions. It pins P003's ring-aware forward and validates BF16 weights,
+complex64 frequencies, H24/D128 geometry, alignment, aliasing, and one-stream execution.

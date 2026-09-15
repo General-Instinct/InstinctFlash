@@ -24,6 +24,7 @@ import torch
 from instinctflash.runtime.sm120_install import install_sm120_gated_residual
 from instinctflash.runtime.sm120_stage2_install import install_sm120_wan_stage2
 from instinctflash.runtime.sm120_stage3_install import install_sm120_wan_stage3
+from instinctflash.runtime.sm120_qk_rope_install import install_sm120_wan_qk_rope
 
 
 # --- substrate passes -------------------------------------------------------------------
@@ -487,6 +488,7 @@ INSTALLERS: dict[str, Callable[..., list[str]]] = {
     "sm120_gated_residual": install_sm120_gated_residual,
     "sm120_wan_stage2": install_sm120_wan_stage2,
     "sm120_wan_stage3": install_sm120_wan_stage3,
+    "sm120_wan_qk_rope": install_sm120_wan_qk_rope,
     "conv_layout_ndhwc": install_conv_layout_autotune,
 }
 
@@ -520,6 +522,11 @@ def install_plan(server_module, va_server_cls, plan) -> list[str]:
         raise RuntimeError(
             "sm120_wan_stage3 requires sm120_wan_stage2 in the same plan. P009-A3 reuses "
             "A2's two middle block kernels and cannot install independently."
+        )
+    if "sm120_wan_qk_rope" in applied_names and "sm120_wan_stage3" not in applied_names:
+        raise RuntimeError(
+            "sm120_wan_qk_rope requires sm120_wan_stage3 in the same plan; A4 extends the "
+            "certified A1/A2/A3 block chain."
         )
     if "prompt_encoder_staging" in applied_names and "conditioning_prefill" not in applied_names:
         raise RuntimeError(
