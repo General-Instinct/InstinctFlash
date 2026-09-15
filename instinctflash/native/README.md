@@ -12,6 +12,7 @@ export IFL_SM120_STAGE2_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_
 export IFL_SM120_STAGE3_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_stage3.so
 export IFL_SM120_QK_ROPE_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_qk_rope.so
 export IFL_SM120_GEMM_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_gemm.so
+export IFL_SM120_RING_CONCAT_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_ring_concat.so
 ```
 
 `DeviceProfile` reports `sm120_kernels` only when the library loads and exports the expected ABI.
@@ -36,3 +37,8 @@ configurations for the certified `(M,N,K)=(480,3072,3072)` and `(64,14336,3072)`
 Linear shapes. Every other shape keeps upstream `torch.nn.Linear`; weight mutation, pointer,
 dtype, contiguity, module-graph, Torch/CUDA/cuBLASLt version, device, and stream mismatches fail
 closed. The tactic IDs are certified specifically against cuBLASLt 12.8.4 (`120804`).
+
+P009-A6 (`sm120_ring_concat_kernels`) requires A1-A5. For a wrapped P003 ring interval it
+copies K and V together into one shared persistent scratch arena, preserving ascending physical
+slot order exactly. It is certified only for the production `[2,9792,24,128]` BF16 pools;
+shape, wrap state, dtype, contiguity, alignment, device, ABI, and stream mismatches fail closed.

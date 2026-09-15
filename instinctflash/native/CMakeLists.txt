@@ -71,3 +71,16 @@ target_compile_options(instinctflash_sm120_wan_gemm PRIVATE
   >
 )
 target_link_libraries(instinctflash_sm120_wan_gemm PRIVATE CUDA::cublasLt)
+
+add_library(instinctflash_sm120_wan_ring_concat SHARED wan_ring_concat_sm120.cu)
+set_target_properties(instinctflash_sm120_wan_ring_concat PROPERTIES
+  POSITION_INDEPENDENT_CODE ON
+  PREFIX "lib"
+  OUTPUT_NAME "instinctflash_sm120_wan_ring_concat"
+)
+target_compile_options(instinctflash_sm120_wan_ring_concat PRIVATE
+  $<$<COMPILE_LANGUAGE:CUDA>:
+    -O3
+    -gencode=arch=compute_120,code=sm_120
+  >
+)

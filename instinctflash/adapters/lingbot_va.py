@@ -722,6 +722,8 @@ class LingBotVA:
                 serve_flags.append("--sm120-wan-qk-rope")
             if "sm120_wan_gemm" in applied:
                 serve_flags.append("--sm120-wan-gemm")
+            if "sm120_wan_ring_concat" in applied:
+                serve_flags.append("--sm120-wan-ring-concat")
         argv = [python, "-u", "-m", "instinctflash.runtime.lingbot_worker",
                 "--config-name", cfg_name or "robotwin",
                 "--port", str(port), *serve_flags]
@@ -783,6 +785,9 @@ class LingBotVA:
         gemm_native = os.environ.get("IFL_SM120_GEMM_LIBRARY")
         if gemm_native:
             env["IFL_SM120_GEMM_LIBRARY"] = gemm_native
+        ring_concat_native = os.environ.get("IFL_SM120_RING_CONCAT_LIBRARY")
+        if ring_concat_native:
+            env["IFL_SM120_RING_CONCAT_LIBRARY"] = ring_concat_native
         if device:
             env["CUDA_VISIBLE_DEVICES"] = device.split(":")[-1] if ":" in device else device
         return argv, env

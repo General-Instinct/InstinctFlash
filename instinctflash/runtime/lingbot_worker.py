@@ -122,6 +122,9 @@ def main() -> int:
     ap.add_argument("--sm120-wan-gemm", action="store_true",
         help="P009-A5: use certified no-split-K cuBLASLt tactics. Requires "
              "--sm120-wan-qk-rope and IFL_SM120_GEMM_LIBRARY.")
+    ap.add_argument("--sm120-wan-ring-concat", action="store_true",
+        help="P009-A6: replace wrapped-ring K/V materialization with the exact SM120 copy. "
+             "Requires --sm120-wan-gemm and IFL_SM120_RING_CONCAT_LIBRARY.")
 
     ap.add_argument("--graph-blocks", action="store_true",
         help="[NOT SHIPPABLE -- 2.17x but NOT bit-exact, max|d action| 1.398 = 136%% of real "
@@ -201,6 +204,8 @@ def main() -> int:
         ap.error("--sm120-wan-qk-rope requires --sm120-wan-stage3")
     if args.sm120_wan_gemm and not args.sm120_wan_qk_rope:
         ap.error("--sm120-wan-gemm requires --sm120-wan-qk-rope")
+    if args.sm120_wan_ring_concat and not args.sm120_wan_gemm:
+        ap.error("--sm120-wan-ring-concat requires --sm120-wan-gemm")
 
 
     # Every variant below calls the SAME installer that `plan.serve()` calls. They used to be
@@ -219,6 +224,7 @@ def main() -> int:
         install_sm120_wan_stage3,
         install_sm120_wan_qk_rope,
         install_sm120_wan_gemm,
+        install_sm120_wan_ring_concat,
     )
 
     S = import_lingbot_server()
@@ -323,6 +329,9 @@ def main() -> int:
 
     if getattr(args, "sm120_wan_gemm", False):
         applied += install_sm120_wan_gemm(S, S.VA_Server)
+
+    if getattr(args, "sm120_wan_ring_concat", False):
+        applied += install_sm120_wan_ring_concat(S, S.VA_Server)
 
     if getattr(args, "conv_layout", False):
         from instinctflash.backends.conv.apply import install_conv_layout
