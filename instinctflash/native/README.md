@@ -11,6 +11,7 @@ export IFL_SM120_KERNEL_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_
 export IFL_SM120_STAGE2_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_stage2.so
 export IFL_SM120_STAGE3_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_stage3.so
 export IFL_SM120_QK_ROPE_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_qk_rope.so
+export IFL_SM120_GEMM_LIBRARY=/tmp/instinctflash-sm120-build/libinstinctflash_sm120_wan_gemm.so
 ```
 
 `DeviceProfile` reports `sm120_kernels` only when the library loads and exports the expected ABI.
@@ -29,3 +30,9 @@ Torch 2.9/CUDA 12.8 operating point; all other shapes and builds fail closed.
 P009-A4 (`sm120_qk_rope_kernels`) requires A1+A2+A3 and replaces only the 30 self-attention
 Q/K RMSNorm+RoPE regions. It pins P003's ring-aware forward and validates BF16 weights,
 complex64 frequencies, H24/D128 geometry, alignment, aliasing, and one-stream execution.
+
+P009-A5 (`sm120_gemm_kernels`) requires A1+A2+A3+A4 and pins two no-split-K cuBLASLt
+configurations for the certified `(M,N,K)=(480,3072,3072)` and `(64,14336,3072)` BF16
+Linear shapes. Every other shape keeps upstream `torch.nn.Linear`; weight mutation, pointer,
+dtype, contiguity, module-graph, Torch/CUDA/cuBLASLt version, device, and stream mismatches fail
+closed. The tactic IDs are certified specifically against cuBLASLt 12.8.4 (`120804`).

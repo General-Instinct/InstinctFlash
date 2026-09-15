@@ -720,6 +720,8 @@ class LingBotVA:
                 serve_flags.append("--sm120-wan-stage3")
             if "sm120_wan_qk_rope" in applied:
                 serve_flags.append("--sm120-wan-qk-rope")
+            if "sm120_wan_gemm" in applied:
+                serve_flags.append("--sm120-wan-gemm")
         argv = [python, "-u", "-m", "instinctflash.runtime.lingbot_worker",
                 "--config-name", cfg_name or "robotwin",
                 "--port", str(port), *serve_flags]
@@ -778,6 +780,9 @@ class LingBotVA:
         qk_rope_native = os.environ.get("IFL_SM120_QK_ROPE_LIBRARY")
         if qk_rope_native:
             env["IFL_SM120_QK_ROPE_LIBRARY"] = qk_rope_native
+        gemm_native = os.environ.get("IFL_SM120_GEMM_LIBRARY")
+        if gemm_native:
+            env["IFL_SM120_GEMM_LIBRARY"] = gemm_native
         if device:
             env["CUDA_VISIBLE_DEVICES"] = device.split(":")[-1] if ":" in device else device
         return argv, env

@@ -25,6 +25,7 @@ from instinctflash.runtime.sm120_install import install_sm120_gated_residual
 from instinctflash.runtime.sm120_stage2_install import install_sm120_wan_stage2
 from instinctflash.runtime.sm120_stage3_install import install_sm120_wan_stage3
 from instinctflash.runtime.sm120_qk_rope_install import install_sm120_wan_qk_rope
+from instinctflash.runtime.sm120_gemm_install import install_sm120_wan_gemm
 
 
 # --- substrate passes -------------------------------------------------------------------
@@ -489,6 +490,7 @@ INSTALLERS: dict[str, Callable[..., list[str]]] = {
     "sm120_wan_stage2": install_sm120_wan_stage2,
     "sm120_wan_stage3": install_sm120_wan_stage3,
     "sm120_wan_qk_rope": install_sm120_wan_qk_rope,
+    "sm120_wan_gemm": install_sm120_wan_gemm,
     "conv_layout_ndhwc": install_conv_layout_autotune,
 }
 
@@ -527,6 +529,11 @@ def install_plan(server_module, va_server_cls, plan) -> list[str]:
         raise RuntimeError(
             "sm120_wan_qk_rope requires sm120_wan_stage3 in the same plan; A4 extends the "
             "certified A1/A2/A3 block chain."
+        )
+    if "sm120_wan_gemm" in applied_names and "sm120_wan_qk_rope" not in applied_names:
+        raise RuntimeError(
+            "sm120_wan_gemm requires sm120_wan_qk_rope in the same plan; A5 pins tactics "
+            "only for the certified A1/A2/A3/A4 execution graph."
         )
     if "prompt_encoder_staging" in applied_names and "conditioning_prefill" not in applied_names:
         raise RuntimeError(

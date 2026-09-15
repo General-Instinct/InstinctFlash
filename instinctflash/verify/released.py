@@ -223,6 +223,21 @@ RELEASED = (
         measured_on="RTX 5090, author-measured",
     ),
     Released(
+        pid="P009-A5", name="sm120_wan_gemm", version="1.0.0", tier=Tier.BITEXACT,
+        step_speedup=1.0175,
+        gates="Independent SM120 ABI v1 pins two cuBLASLt BF16+bias tactics with split-K fixed "
+              "to one; all K=14336 and weak/noisy K=3072 candidates retain upstream PyTorch. "
+              "Exhaustive screen: 0 differences over 85,229,568 outputs across four candidate "
+              "shapes; the selected production gate rechecked 21,528,576 outputs over random, "
+              "constant, and alternating inputs at three exponent scales. The two selected shapes "
+              "measured 1.20x and 1.69x locally. Real 5B model 42-cycle A-B-B-A: 168/168 actions "
+              "bitwise equal, 395.03 -> 388.24 ms = 1.0175x; growing saves 5.18 ms and saturated "
+              "saves 5.09 ms; candidate-arm spread 0.167%. Static outputs add about 0.561 GiB peak "
+              "memory. Shape, module-count, dtype, contiguity, alignment, weight-version, pointer, "
+              "device, ABI, Torch/CUDA/cuBLASLt-version, no-workspace, and one-stream conditions fail closed.",
+        measured_on="RTX 5090, author-measured",
+    ),
+    Released(
         pid="P010", name="action_terminal_forward_elision", version="1.0.0", tier=Tier.BITEXACT,
         step_speedup=1.098,
         gates="Skips the action loop's padded terminal forward (wan_va_server.py:542-546, action_mode=True "
@@ -424,6 +439,10 @@ DISPOSITIONS = (
                 "Correct and profitable on RTX 5090, but requires A1/A2/A3 and its independent "
                 "QK-RoPE ABI. The planner applies it only with the complete native feature chain; "
                 "other devices and builds remain unchanged."),
+    Disposition("P009-A5", AVAILABLE, ("--sm120-wan-gemm",),
+                "Correct and profitable on RTX 5090, but requires A1-A4 and its independent "
+                "pinned-cuBLASLt ABI. It applies only to two certified shapes with split-K=1; "
+                "all other Linear calls stay on the original PyTorch path."),
     Disposition("P010", SERVED, ("--action-terminal-elision",),
                 "Bit-exact through the ring wrap on both allocators and both operating points (two "
                 "independent 48-cycle ABBA runs, max|delta action| = 0.000e+00 everywhere), so no "
