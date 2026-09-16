@@ -29,6 +29,7 @@ PROFILE_PATH = ROOT / "release" / "deployment_profiles.json"
 PROFILE_PATHS = {
     "jetson_thor": PROFILE_PATH,
     "rtx4090": ROOT / "release" / "rtx4090" / "deployment_profiles.json",
+    "rtx5090": ROOT / "release" / "rtx5090" / "deployment_profiles.json",
 }
 SCHEMA = "instinctflash.deployment_profiles.v1"
 FAMILIES = {"va", "vla4", "vla2", "pi05", "groot", "edge", "nano", "dreamzero"}
@@ -47,6 +48,8 @@ def load_profiles(path: Path | None = None, *, target: str = "jetson_thor") -> d
     if len(rows) != 8 or {row["id"] for row in rows} != FAMILIES:
         raise ValueError("catalog must contain exactly the eight distinct model variants")
     for row in rows:
+        if row.get("deployment_target", "jetson_thor") != target:
+            raise ValueError("model deployment target differs from its catalog")
         if not re.fullmatch(r"[0-9a-f]{40}", row["checkpoint"]["revision"]):
             raise ValueError("checkpoint revision must be an immutable 40-character commit")
         if "native" not in row["execution_modes"]:

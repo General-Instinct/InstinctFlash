@@ -124,6 +124,11 @@ class Cosmos3PolicyAdapter:
             raise ValueError("Cosmos SM89 FP8 requires its explicit executor plan")
         return self._build_droid(checkpoint, device=device, nfe=nfe, precision="fp8", plan=plan)
 
+    def build_sm120_fp8(self, checkpoint, plan, *, device=None, nfe=None):
+        from instinctflash.runtime.sm120_fp8 import _require_requested_recipe
+        _require_requested_recipe(plan, "cosmos3_policy")
+        return self._build_droid(checkpoint, device=device, nfe=nfe, precision="fp8", plan=plan)
+
     def _build_droid(self, checkpoint, *, device, nfe, precision, plan=None):
         import torch
         from instinctflash.runtime.cosmos_droid import build_droid_service, CosmosDROIDLoop
@@ -170,32 +175,34 @@ class Cosmos3PolicyAdapter:
         capability = torch.cuda.get_device_capability()
         sm120_native = precision == "native" and capability == (12, 0)
         declared_id = str(getattr(checkpoint.execution, "model_id", "") or checkpoint.model_id)
-        sm89_residency = capability == (8, 9) and declared_id in (MODEL_ID, NANO_MODEL_ID)
-        if capability == (8, 9) and precision == "fp8":
-            from instinctflash.runtime.sm89_fp8 import requested
-            if not sm89_residency or not requested(plan):
-                raise ValueError("Cosmos SM89 FP8 requires a released Edge/Nano declaration and recipe")
+        desktop_residency = capability in ((8, 9), (12, 0)) and declared_id in (MODEL_ID, NANO_MODEL_ID)
+        if capability in ((8, 9), (12, 0)) and precision == "fp8":
+            from instinctflash.runtime.desktop_fp8 import backend_for_capability
+            implementation = backend_for_capability(capability)
+            if not desktop_residency:
+                raise ValueError("Cosmos desktop FP8 requires an Edge/Nano declaration")
+            implementation._require_requested_recipe(plan, "cosmos3_policy")
         thor_native = (precision == "native" and capability == (11, 0)
                        and declared_id in (MODEL_ID, NANO_MODEL_ID))
         nano_action_only = _env_flag(
             self.NANO_ACTION_ONLY_ENV,
-            default=(sm120_native or thor_native or sm89_residency) and declared_id == NANO_MODEL_ID)
+            default=(sm120_native or thor_native or desktop_residency) and declared_id == NANO_MODEL_ID)
         prompt_kv_cache = _env_flag(
             self.PROMPT_KV_CACHE_ENV,
             default=sm120_native and (scale if mode == "cfg" else 1.0) == 1.0)
         numeric_attention = _numeric_attention_requested(precision, plan, thor_native)
         conditioning_cache = _env_flag("IFL_COSMOS3_CONDITIONING_CACHE", default=numeric_attention)
         if precision != "native" and (prompt_kv_cache or conditioning_cache
-                                     or (nano_action_only and not sm89_residency)):
+                                     or (nano_action_only and not desktop_residency)):
             raise ValueError("Native residency/KV options require precision='native'")
         if nano_action_only and declared_id != NANO_MODEL_ID:
             raise ValueError("Nano action-only residency requires the declared Nano checkpoint")
         from .nano_action_only import nano_action_only_construction, verify_nano_action_only_model
         from .sm89_residency import cpu_construction, finalize_service
         with nano_action_only_construction(enabled=nano_action_only), \
-                cpu_construction(enabled=sm89_residency) as construction:
+                cpu_construction(enabled=desktop_residency) as construction:
             finalizer = (lambda service: finalize_service(
-                service, construction, precision=precision, device=dev)) if sm89_residency else None
+                service, construction, precision=precision, device=dev)) if desktop_residency else None
             service, receipt = build_droid_service(
                 _resolve_model_path(checkpoint), precision=precision,
                 format_prompt_as_json=extra["format_prompt_as_json"],

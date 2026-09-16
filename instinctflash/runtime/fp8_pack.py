@@ -46,8 +46,8 @@ def _pack_kernel(X, SCALE, Y, N: tl.constexpr, BLOCK: tl.constexpr,
 
 
 def pack_bf16_e4m3(x, scale):
-    if x.device.type != 'cuda' or torch.cuda.get_device_capability(x.device) not in ((8, 9), (9, 0), (11, 0)):
-        raise ValueError('FP8 packing requires SM89, SM90 or SM110')
+    if x.device.type != 'cuda' or torch.cuda.get_device_capability(x.device) not in ((8, 9), (9, 0), (11, 0), (12, 0)):
+        raise ValueError('FP8 packing requires SM89, SM90, SM110 or SM120')
     if x.dtype != torch.bfloat16 or not x.is_contiguous():
         raise ValueError('FP8 packing requires contiguous BF16 inputs')
     if scale.dtype != torch.float32 or scale.numel() != 1 or scale.device != x.device:

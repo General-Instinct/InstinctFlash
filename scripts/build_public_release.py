@@ -77,6 +77,8 @@ PROFILE_MIRRORS = {
     PROFILE_MIRROR: "release/deployment_profiles.json",
     "benchmarks/regression/fixtures/deployment_profiles_rtx4090.json":
         "release/rtx4090/deployment_profiles.json",
+    "benchmarks/regression/fixtures/deployment_profiles_rtx5090.json":
+        "release/rtx5090/deployment_profiles.json",
 }
 HELD_PREFIXES = ("instinctflash/train", "instinctflash/distill", "serving", "eval")
 WORKER = "instinctflash/runtime/lingbot_worker.py"
@@ -96,6 +98,7 @@ FULL_TEST_FIXTURES: dict[str, str] = {
 SELECTED_CONTROLS: dict[str, str] = {
     "release/deployment_profiles.json": "8187485677cb6ab1192960fa80481b913ab8e03d9cab9de8599589fc1038cfac",
     "release/rtx4090/deployment_profiles.json": "500a5982270e3f1e1780e18622d167266dd117fd6b868adf36335d41fc168bce",
+    "release/rtx5090/deployment_profiles.json": "91f40e2bd3c79fac4c0940f14e0025661ef63bce573920adf8beba0944dc1e61",
     "release/rtx4090/qualification-evidence/0f1f4b56a962ff964b014e78c659db05eb63048c0d5221ca50ad8d14f00fda8c.json": "0f1f4b56a962ff964b014e78c659db05eb63048c0d5221ca50ad8d14f00fda8c",
     "release/rtx4090/qualification-evidence/1db3da741844526604028812306a5fc8301cf11fa190e0ef10bc71f43d389643.json": "1db3da741844526604028812306a5fc8301cf11fa190e0ef10bc71f43d389643",
     "release/rtx4090/qualification-evidence/443249acad43b13c20d72eabb5bfe71923be0bdbb86d6fed1dd34864200de33a.json": "443249acad43b13c20d72eabb5bfe71923be0bdbb86d6fed1dd34864200de33a",
@@ -175,11 +178,12 @@ SELECTED_CONTROLS: dict[str, str] = {
     "release/rtx4090/results/reproduce_manifest.json": "aa9b21510b0a95a255987a5fa08f0e396939c0bfc31f5345911301747dd5a25b",
     "release/rtx4090/results/results.json": "2daa1a9f2e3280e8f97abd2839cf894c0b4aa3722f1014a153ac8f0d8f06ba07",
     "release/rtx4090/results/results.rst": "7f618c1bd1f6bfd1bdaab10617e9c48275c91e566a2b620673a32b5a91a6f537",
-    "scripts/bootstrap_vendor.py": "8d91862a99bba392ab2fba237e37cfa043533bfa538b547be4c0ac3a19fa6373",
+    "scripts/bootstrap_vendor.py": "010951263ba70ee994f48548febdab02e5baef9268db803eb7a7188e58aafdb8",
     "scripts/prepare_auxiliary_assets.py": "e44be6692297d24984075c2d5b1aa11823ab361776a3407fc711224e053e3a2d",
-    "scripts/prepare_native_tools.py": "05e1a722cb53cde4245601b41f0320b95622c1ab36e7931980cc582abaa64f4e",
-    "scripts/public_deploy.py": "305aab49024e9f100a9a0db1744ceba65e196d15eda66ff6362f1023ed70d92c",
+    "scripts/prepare_native_tools.py": "1d19fa591864706071aa1c420b62fa6686655fe21dacb4c7f22d8123b1bd5ce9",
+    "scripts/public_deploy.py": "d7ea22fc75d2ba949b6c3c8acce2a74d0eb4833a5ba29aa0ce9cb436985300ea",
     "scripts/qualify_sm89_fp8.py": "7dd70fc40c3e9998fad2f693645b9c2742d094888d5c420749c7d1b368f83f7b",
+    "scripts/qualify_sm120_fp8.py": "7c7240e2f03f37be6bc410b4b713152c3fd0593e3d364f23b47f9e66bb953640",
     "scripts/repair_vendor_wheel.py": "1f62f053a37b29966202111da5262cb3da0464bba2d4697721cce97f1ea310ff",
 }
 PUBLIC_VENDOR_FILES: dict[str, str] = {
@@ -196,6 +200,19 @@ PUBLIC_VENDOR_FILES: dict[str, str] = {
     "release/vendor/rtx4090/va/bootstrap.json": "4982a1816280cc871774b364a507639197efb7f2aeb6a190dd743bed3cbefaa9",
     "release/vendor/rtx4090/vla2/bootstrap.json": "64066ce1ff7f3456d940f3efa3859bbb52ab4501db756945d3fa18ffe9474f66",
     "release/vendor/rtx4090/vla4/bootstrap.json": "1d3709b89b3c73e61f7bbded316d9df25424f68de43b5cb31fa90f3bdb3b0e8e",
+    "release/vendor/rtx5090/cosmos/inference_packaging.patch": "82a8d6596d8ca8daa06ec33390453f205ec535fb1109b8b23a08f5176a6489c7",
+    "release/vendor/rtx5090/dreamzero/bootstrap.json": "264232a13c79c2abd629e8445e763dcba1a166ae96462d95cc5b5f8a77517035",
+    "release/vendor/rtx5090/edge/bootstrap.json": "25feecaf0f522ef77931c07333d5af3a1883920fed7b7ef7f2555838be7b461d",
+    "release/vendor/rtx5090/edge/constraints.txt": "3b488334f2a7d3501085155892e0af30fdadda9d2522f116d7e05189e7546c2e",
+    "release/vendor/rtx5090/edge/inference_requirements.txt": "7ac7a69235e63035c38e96fb6a34bcfc8d9c1cee6210f6374441f03776ea66e8",
+    "release/vendor/rtx5090/groot/bootstrap.json": "b50efafaf1773f7425c039b1c6e6b53f9956b1ff019f7397ac11e2e1f5cf1429",
+    "release/vendor/rtx5090/nano/bootstrap.json": "a50bbac04a0cd95e36aace806d3a589dcb70e457c9b5f4066b3714d02dd7f00e",
+    "release/vendor/rtx5090/nano/constraints.txt": "3b488334f2a7d3501085155892e0af30fdadda9d2522f116d7e05189e7546c2e",
+    "release/vendor/rtx5090/nano/inference_requirements.txt": "7ac7a69235e63035c38e96fb6a34bcfc8d9c1cee6210f6374441f03776ea66e8",
+    "release/vendor/rtx5090/pi05/bootstrap.json": "c30d9b0ee3644c59ec313690fc1fe8ff50f701d825f074f9ad1c2da93890f937",
+    "release/vendor/rtx5090/va/bootstrap.json": "f1f3f8a016e30e9ede9420391f109989d8ce464ae6947ede795b41b147b73a2d",
+    "release/vendor/rtx5090/vla2/bootstrap.json": "a3b092e0c9902886f8d0a7850747684f185d940ea72cf0442740c2037270b336",
+    "release/vendor/rtx5090/vla4/bootstrap.json": "54b6f0d994b6ebd9272afe02eaaa963e97853c932dd883362358f5eb17cb2948",
     "release/vendor/README.rst": "5e6159d73dd42d682c22f1c1c73f9dd1f347f7c026e23312ef6c39ad790b99f7",
     "release/vendor/asset_profiles.json": "706eb897ac27cd092adf86ab9f2f14539bf19bf6c803abc64705e51e52929794",
     "release/vendor/auxiliary_assets.json": "68c8d84e7290920bdcb090b2eb858668211463b7869e6dee5f78c2e51f3c5183",

@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from importlib.util import find_spec
 
+from .desktop_fp8 import SM89, TARGETS
 
 EXECUTOR = "sm89_torch_fp8"
 
@@ -20,10 +21,11 @@ class ProjectionRecipe:
     attention_types: frozenset[str]
     projection_names: tuple[str, ...]
     requires_owned_builder: bool = False
+    architecture: str = "sm89"
 
     @property
     def recipe_id(self):
-        return f"sm89_{self.family}_attention_qkv_v1"
+        return f"{self.architecture}_{self.family}_attention_qkv_v1"
 
 
 RECIPES = {
@@ -49,51 +51,52 @@ RECIPES = {
 }
 
 
-def recipe_for(family: str) -> ProjectionRecipe:
+def recipe_for(family: str, *, _target=SM89) -> ProjectionRecipe:
     try:
-        return RECIPES[family]
+        recipe = RECIPES[family]
+        return recipe if _target is SM89 else replace(recipe, architecture=_target.prefix)
     except KeyError:
-        raise ValueError(f"No SM89 FP8 recipe for backbone {family!r}") from None
+        raise ValueError(f"No {_target.label} FP8 recipe for backbone {family!r}") from None
 
 
-def available(family=None) -> tuple[bool, str]:
+def available(family=None, *, _target=SM89) -> tuple[bool, str]:
     """Check dependencies and the selected device without launching a kernel."""
     if family is not None and family not in RECIPES:
-        return False, f"No SM89 FP8 recipe for backbone {family!r}"
+        return False, f"No {_target.label} FP8 recipe for backbone {family!r}"
     import torch
-    if not torch.cuda.is_available() or torch.cuda.get_device_capability() != (8, 9):
-        return False, "SM89 projection executor requires an RTX Ada SM89 CUDA device"
+    if not torch.cuda.is_available() or torch.cuda.get_device_capability() != _target.capability:
+        return False, f"{_target.label} projection executor requires a bound {_target.label} CUDA device"
     if not callable(getattr(torch, "_scaled_mm", None)):
-        return False, "SM89 E4M3 projections require torch._scaled_mm"
+        return False, f"{_target.label} E4M3 projections require torch._scaled_mm"
     if find_spec("triton") is None:
-        return False, "SM89 E4M3 activation packing requires Triton"
-    return True, "SM89 + PyTorch per-tensor E4M3 projections; device and task qualification are separate"
+        return False, f"{_target.label} E4M3 activation packing requires Triton"
+    return True, f"{_target.label} + PyTorch per-tensor E4M3 projections; device and task qualification are separate"
 
 
-def requested(plan) -> bool:
+def requested(plan, *, _target=SM89) -> bool:
     return any(r.name == "engine_offload" and r.applies
-               and r.params.get("executor") == EXECUTOR
+               and r.params.get("executor") == _target.executor
                for r in getattr(plan, "results", ()))
 
 
-def _allowed_recipe_ids(family):
-    recipe = recipe_for(family)
+def _allowed_recipe_ids(family, *, _target=SM89):
+    recipe = recipe_for(family, _target=_target)
     allowed = {recipe.recipe_id}
     if family in {"cosmos3_policy", "dreamzero"}:
         allowed.add(recipe.recipe_id + "_dense_mlp")
     return allowed
 
 
-def _require_requested_recipe(plan, family):
+def _require_requested_recipe(plan, family, *, _target=SM89):
     candidates = [r for r in getattr(plan, "results", ())
                   if r.name == "engine_offload" and r.applies]
-    if (len(candidates) != 1 or candidates[0].params.get("executor") != EXECUTOR
+    if (len(candidates) != 1 or candidates[0].params.get("executor") != _target.executor
             or candidates[0].params.get("backend") != "engine"
-            or candidates[0].params.get("recipe_id") not in _allowed_recipe_ids(family)):
-        raise ValueError(f"SM89 {family} construction requires its explicit executor and recipe plan")
+            or candidates[0].params.get("recipe_id") not in _allowed_recipe_ids(family, _target=_target)):
+        raise ValueError(f"{_target.label} {family} construction requires its explicit executor and recipe plan")
 
 
-def install_sm89_fp8(model, family: str, *, device=None, storage_device=None, include_mlp=False):
+def install_sm89_fp8(model, family: str, *, device=None, storage_device=None, include_mlp=False, _target=SM89):
     """Validate then pack a family's declared projections, optionally from CPU.
 
     CPU sources must already have their final native BF16 dtype. Only packed
@@ -104,26 +107,28 @@ def install_sm89_fp8(model, family: str, *, device=None, storage_device=None, in
     its own recipe identifier. It never converts sparse expert weight arrays.
     """
     import torch
-    from .torch_fp8_linear import SM89FP8Linear
 
-    recipe = recipe_for(family)
+    from . import torch_fp8_linear
+    linear_type = getattr(torch_fp8_linear, _target.linear_class)
+
+    recipe = recipe_for(family, _target=_target)
     if include_mlp and family not in {"cosmos3_policy", "dreamzero"}:
-        raise ValueError(f"No SM89 dense-MLP recipe for {family}")
-    if hasattr(model, "_sm89_fp8_recipe"):
-        raise ValueError("SM89 FP8 already installed")
+        raise ValueError(f"No {_target.label} dense-MLP recipe for {family}")
+    if any(hasattr(model, target.receipt_attribute) for target in TARGETS):
+        raise ValueError(f"{_target.label} FP8 already installed")
     targets = []
 
     def add(parent, name, path):
         source = getattr(parent, name, None)
         if type(source) is not torch.nn.Linear:
-            raise ValueError(f"SM89 recipe requires a plain Linear at {path}.{name}")
+            raise ValueError(f"{_target.label} recipe requires a plain Linear at {path}.{name}")
         if source._forward_hooks or source._forward_pre_hooks or source._backward_hooks:
-            raise ValueError(f"Cannot replace hooked SM89 projection {path}.{name}")
+            raise ValueError(f"Cannot replace hooked {_target.label} projection {path}.{name}")
         # Preserve native FP32 projection arithmetic instead of silently casting.
         if source.weight.dtype != torch.bfloat16:
             return
         if source.in_features % 16 or source.out_features % 16:
-            raise ValueError(f"SM89 projection dimensions must be multiples of 16: {path}.{name}")
+            raise ValueError(f"{_target.label} projection dimensions must be multiples of 16: {path}.{name}")
         targets.append((path, parent, name, source))
 
     for path, parent in model.named_modules():
@@ -132,7 +137,7 @@ def install_sm89_fp8(model, family: str, *, device=None, storage_device=None, in
                 add(parent, name, path)
     attention_projections = len(targets)
     if not attention_projections:
-        raise ValueError(f"No eligible native BF16 attention projections for SM89 {family}")
+        raise ValueError(f"No eligible native BF16 attention projections for {_target.label} {family}")
     if include_mlp:
         for path, parent in model.named_modules():
             if family == "cosmos3_policy" and type(parent).__name__ == "MoTDecoderLayer":
@@ -141,23 +146,23 @@ def install_sm89_fp8(model, family: str, *, device=None, storage_device=None, in
                     fields = {"Qwen3VLTextMLP": ("gate_proj", "up_proj", "down_proj"),
                               "Nemotron3DenseVLMLP": ("up_proj", "down_proj")}.get(type(mlp).__name__)
                     if fields is None:
-                        raise ValueError(f"Unsupported SM89 dense MoT MLP at {path}.{tower}")
+                        raise ValueError(f"Unsupported {_target.label} dense MoT MLP at {path}.{tower}")
                     for name in fields:
                         add(mlp, name, f"{path}.{tower}")
             elif family == "dreamzero" and type(parent).__name__ == "CausalWanAttentionBlock":
                 for name in ("0", "2"):
                     add(parent.ffn, name, f"{path}.ffn")
         if len(targets) == attention_projections:
-            raise ValueError(f"No eligible dense MLP projections for SM89 {family}")
+            raise ValueError(f"No eligible dense MLP projections for {_target.label} {family}")
     # Keep originals until all packing succeeds; allocation failures cannot leave
     # a partially converted model. CPU-loading bridges retain originals in RAM.
     storage_kw = {"storage_device": storage_device} if storage_device is not None else {}
-    packed = [SM89FP8Linear(source, device=device, **storage_kw)
+    packed = [linear_type(source, device=device, **storage_kw)
               for _, _, _, source in targets]
     receipt = {
-        "executor": EXECUTOR, "precision": "fp8", "family": family,
+        "executor": _target.executor, "precision": "fp8", "family": family,
         "recipe_id": recipe.recipe_id + ("_dense_mlp" if include_mlp else ""),
-        "recipe": SM89FP8Linear.recipe, "capability": [8, 9],
+        "recipe": linear_type.recipe, "capability": list(_target.capability),
         "scope": "BF16 attention Q/K/V" + (" and audited dense MLP" if include_mlp else " only"),
         "quality_status": "unverified", "quality_certificate": None,
         "packed_storage_device": str(storage_device or device or "source CUDA device"),
@@ -169,48 +174,51 @@ def install_sm89_fp8(model, family: str, *, device=None, storage_device=None, in
     }
     for (_, parent, name, _), replacement in zip(targets, packed):
         setattr(parent, name, replacement)
-    model._sm89_fp8_recipe = receipt
+    setattr(model, _target.receipt_attribute, receipt)
     return receipt
 
 
-def maybe_install_sm89_fp8(model, plan, family):
-    if not requested(plan):
+def maybe_install_sm89_fp8(model, plan, family, *, _target=SM89):
+    if not requested(plan, _target=_target):
         return
-    _require_requested_recipe(plan, family)
-    if hasattr(model, "_sm89_fp8_recipe"):
+    _require_requested_recipe(plan, family, _target=_target)
+    if hasattr(model, _target.receipt_attribute):
         # A family may have packed CPU weights before its final CUDA placement.
-        return validate_receipt(model._sm89_fp8_recipe, family)
-    return install_sm89_fp8(model, family)
+        return validate_receipt(getattr(model, _target.receipt_attribute), family, _target=_target)
+    return install_sm89_fp8(model, family, _target=_target)
 
 
-def validate_receipt(receipt, family):
-    if (not isinstance(receipt, dict) or receipt.get("executor") != EXECUTOR
+def validate_receipt(receipt, family, *, _target=SM89):
+    if (not isinstance(receipt, dict) or receipt.get("executor") != _target.executor
             or receipt.get("precision") != "fp8" or receipt.get("family") != family
-            or receipt.get("recipe_id") not in _allowed_recipe_ids(family)
+            or receipt.get("recipe_id") not in _allowed_recipe_ids(family, _target=_target)
             or not isinstance(receipt.get("projections"), list) or not receipt["projections"]):
-        raise ValueError(f"SM89 {family} build did not install its declared FP8 projections")
+        raise ValueError(f"{_target.label} {family} build did not install its declared FP8 projections")
+    if _target is not SM89 and receipt.get("capability") != list(_target.capability):
+        raise ValueError(f"{_target.label} FP8 receipt has a different device capability")
     return receipt
 
 
-def build_sm89_loop(adapter, checkpoint, plan, *, device=None, nfe=None, step_cache=None):
+def build_sm89_loop(adapter, checkpoint, plan, *, device=None, nfe=None, step_cache=None, _target=SM89):
     """Keep the family's observation/action processing and feedback ownership."""
     import torch
+
     from .h100_fp8 import H100Loop
 
     family = checkpoint.execution.backbone
-    recipe = recipe_for(family)
+    recipe = recipe_for(family, _target=_target)
     if (not torch.cuda.is_available()
-            or torch.cuda.get_device_capability(device) != (8, 9)):
-        raise RuntimeError("SM89 FP8 plan requires an SM89 CUDA device")
-    _require_requested_recipe(plan, family)
-    owned_builder = getattr(adapter, "build_sm89_fp8", None)
+            or torch.cuda.get_device_capability(device) != _target.capability):
+        raise RuntimeError(f"{_target.label} FP8 plan requires an {_target.label} CUDA device")
+    _require_requested_recipe(plan, family, _target=_target)
+    owned_builder = getattr(adapter, _target.builder, None)
     if recipe.requires_owned_builder and not callable(owned_builder):
-        raise RuntimeError(f"SM89 {family} requires an owned FP8 loading/residency builder")
+        raise RuntimeError(f"{_target.label} {family} requires an owned FP8 loading/residency builder")
     if family == "wan_va":
         for index, result in enumerate(plan.results):
             if result.name == "cfg_branch_elision" and result.applies:
                 plan.results[index] = replace(result, applies=False,
-                    reason="SM89 FP8 retains native CFG execution")
+                    reason=f"{_target.label} FP8 retains native CFG execution")
     if callable(owned_builder):
         kwargs = {"device": device, "nfe": nfe}
         if step_cache is not None:
@@ -223,7 +231,7 @@ def build_sm89_loop(adapter, checkpoint, plan, *, device=None, nfe=None, step_ca
             stats = loop.backend_stats
             if callable(stats):
                 stats = stats()
-            receipt = validate_receipt(stats.get("fp8_recipe"), family)
+            receipt = validate_receipt(stats.get("fp8_recipe"), family, _target=_target)
         else:
             if family == "pi05":
                 model = loop._p.model
@@ -233,7 +241,7 @@ def build_sm89_loop(adapter, checkpoint, plan, *, device=None, nfe=None, step_ca
                 model = loop._server.vla.model
             else:
                 model = loop._server.transformer
-            receipt = validate_receipt(getattr(model, "_sm89_fp8_recipe", None), family)
+            receipt = validate_receipt(getattr(model, _target.receipt_attribute, None), family, _target=_target)
         # The owned low-memory builders may select the explicitly registered
         # dense-MLP extension. Expose the installed numerical recipe in explain().
         for index, result in enumerate(plan.results):
@@ -243,7 +251,7 @@ def build_sm89_loop(adapter, checkpoint, plan, *, device=None, nfe=None, step_ca
                     "installed_projection_count": len(receipt["projections"]),
                     "installed_scope": receipt.get("scope"),
                 })
-        return H100Loop(loop, receipt, executor=EXECUTOR)
+        return H100Loop(loop, receipt, executor=_target.executor)
     except Exception:
         loop.close()
         raise

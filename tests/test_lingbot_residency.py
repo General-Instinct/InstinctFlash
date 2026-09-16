@@ -193,9 +193,16 @@ def fake_prompt_stack(monkeypatch, events):
     return module, Server, config
 
 
-def test_native_reference_wrapper_preserves_native_calls_and_records_residency(monkeypatch, tmp_path):
+@pytest.mark.parametrize("capability,name,memory", [
+    ((8, 9), "NVIDIA GeForce RTX 4090", 24 << 30),
+    ((12, 0), "NVIDIA GeForce RTX 5090", 32 << 30),
+])
+def test_native_reference_wrapper_preserves_native_calls_and_records_residency(monkeypatch, tmp_path, capability, name, memory):
     events = []
     module, Server, config = fake_prompt_stack(monkeypatch, events)
+    monkeypatch.setattr(torch.cuda, "get_device_properties", lambda device:
+                        SimpleNamespace(major=capability[0], minor=capability[1], total_memory=memory,
+                                        name=name, uuid="CPU-lifecycle-test-only"))
     module.VA_Server = Server
     source = tmp_path / "cpu_fixture_server.py"
     source.write_text("# CPU-only native-server lifecycle fixture\n")
@@ -205,6 +212,7 @@ def test_native_reference_wrapper_preserves_native_calls_and_records_residency(m
     assert module.VA_Server is Server and module.load_text_encoder is loader
     assert server.text_encoder.location == "cpu"
     assert receipt["successful_resets"] == 0
+    assert receipt["device"]["capability"] == list(capability)
     assert receipt["removed_decoder_count"] == 2
     assert receipt["removed_decoder_bytes"] == 8
     assert not hasattr(Server, "_iwm_prompt_encoder_load_staging_installed")

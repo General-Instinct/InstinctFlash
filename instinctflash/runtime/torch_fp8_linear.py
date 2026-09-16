@@ -23,12 +23,12 @@ class ThorFP8Linear(nn.Module):
             raise ValueError(f"FP8 projections require CUDA capability in {self.supported_capabilities}")
         storage = torch.device(storage_device) if storage_device is not None else target
         if storage != target and not (self.allow_cpu_source and storage.type == "cpu"):
-            raise ValueError("Separate CPU packed storage is supported only by the SM89 recipe")
+            raise ValueError("Separate CPU packed storage is supported only by a desktop projection recipe")
         if w.device != target and not (self.allow_cpu_source and w.device.type == "cpu"):
             # CUDA without an index and cuda:current identify the same target.
             target_index = target.index if target.index is not None else torch.cuda.current_device()
             if w.device != torch.device("cuda", target_index):
-                raise ValueError("Pack FP8 weights on their target device; CPU packing is SM89-only")
+                raise ValueError("Pack FP8 weights on their target device; CPU packing requires a desktop projection recipe")
         if w.dtype != torch.bfloat16:
             raise ValueError("This FP8 recipe requires native BF16 projection weights")
         if linear.in_features % 16 or linear.out_features % 16:
@@ -104,3 +104,9 @@ class SM89FP8Linear(ThorFP8Linear):
     @torch.amp.custom_fwd(device_type="cuda", cast_inputs=torch.bfloat16)
     def forward(self, x):
         return super().forward(x)
+
+
+class SM120FP8Linear(SM89FP8Linear):
+    """Explicit SM120 E4M3 arithmetic; device qualification remains separate."""
+
+    supported_capabilities = ((12, 0),)

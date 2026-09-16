@@ -93,21 +93,28 @@ def cpu_construction(enabled=True, *, network_type=None):
 
 def finalize_service(service, construction, *, precision, device):
     from cosmos_framework.model.generator.mot.unified_mot import MoTDecoderLayer
-    from instinctflash.runtime.sm89_fp8 import install_sm89_fp8
+
+    from instinctflash.runtime.desktop_fp8 import (
+        backend_for_capability,
+        target_for_capability,
+    )
     from instinctflash.runtime.module_residency import install_module_residency
 
     model = service.model
     construction.verify(model)
-    if (torch.cuda.get_device_capability(device) != (8, 9)
+    capability = torch.cuda.get_device_capability(device)
+    if (target_for_capability(capability) is None
             or (torch.distributed.is_initialized() and torch.distributed.get_world_size() != 1)):
-        raise RuntimeError("Cosmos SM89 residency requires single-rank SM89 execution")
+        raise RuntimeError("Cosmos desktop residency requires single-rank SM89 or SM120 execution")
     if (model.config.compile.enabled or getattr(model.config.compile, "use_cuda_graphs", False)
             or model.config.lora_enabled):
-        raise ValueError("Cosmos SM89 residency requires the native eager, non-LoRA network")
+        raise ValueError("Cosmos desktop residency requires the native eager, non-LoRA network")
     layers = list(model.net.language_model.model.layers)
     if not layers or any(type(layer) is not MoTDecoderLayer for layer in layers):
-        raise ValueError("Cosmos SM89 residency requires native MoTDecoderLayer modules")
-    fp8 = (install_sm89_fp8(model, "cosmos3_policy", device=device,
+        raise ValueError("Cosmos desktop residency requires native MoTDecoderLayer modules")
+    implementation = backend_for_capability(capability)
+    install_fp8 = getattr(implementation, f"install_{target_for_capability(capability).prefix}_fp8")
+    fp8 = (install_fp8(model, "cosmos3_policy", device=device,
                             storage_device="cpu", include_mlp=True)
            if precision == "fp8" else None)
     owner = install_module_residency(model.net, layers, device=device,
@@ -121,10 +128,15 @@ def finalize_service(service, construction, *, precision, device):
 
 def build_native_service(create_service, *, nano, device="cuda"):
     """Retain a stock benchmark service factory with the same owned residency."""
-    from .nano_action_only import nano_action_only_construction, verify_nano_action_only_model
+    from instinctflash.runtime.desktop_fp8 import target_for_capability
 
-    if torch.cuda.get_device_capability(device) != (8, 9):
-        raise RuntimeError("Cosmos SM89 native residency requires an SM89 device")
+    from .nano_action_only import (
+        nano_action_only_construction,
+        verify_nano_action_only_model,
+    )
+
+    if target_for_capability(torch.cuda.get_device_capability(device)) is None:
+        raise RuntimeError("Cosmos native residency requires an SM89 or SM120 device")
     with nano_action_only_construction(enabled=nano), cpu_construction() as construction:
         service = create_service()
         elided = verify_nano_action_only_model(service.model) if nano else 0

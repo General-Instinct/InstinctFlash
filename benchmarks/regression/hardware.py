@@ -3,7 +3,8 @@ from __future__ import annotations
 
 import math
 
-TARGETS = {"jetson_thor": (11, 0), "rtx4090": (8, 9)}
+TARGETS = {"jetson_thor": (11, 0), "rtx4090": (8, 9), "rtx5090": (12, 0)}
+TARGET_DEVICE_NAMES = {"rtx4090": "NVIDIA GeForce RTX 4090", "rtx5090": "NVIDIA GeForce RTX 5090"}
 DEFAULT_TARGET = "jetson_thor"
 
 
@@ -30,7 +31,8 @@ def device_matches(target, capability, name):
     return (isinstance(capability, (list, tuple))
             and all(type(part) is int for part in capability)
             and list(capability) == target["capability"]
-            and (target["name"] != "rtx4090" or name == "NVIDIA GeForce RTX 4090"))
+            and (target["name"] not in TARGET_DEVICE_NAMES
+                 or name == TARGET_DEVICE_NAMES[target["name"]]))
 
 
 def probe_device(target, torch):

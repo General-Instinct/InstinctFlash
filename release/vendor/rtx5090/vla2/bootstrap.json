@@ -1,0 +1,77 @@
+{
+  "adapter_directory": "examples/lingbot_vla_v2",
+  "audited_pure_python_sdists": {
+    "antlr4-python3-runtime": {
+      "bytes": 117034,
+      "scope": "Official PyPI source inspected: setuptools packages/bin pygrun only; no extensions, compiler calls, CUDA source or runtime imports in setup.py.",
+      "url": "https://files.pythonhosted.org/packages/3e/38/7859ff46355f76f8d19459005ca000b6e7012f2f1ca597746cbcd1fbfe5e/antlr4-python3-runtime-4.9.3.tar.gz#sha256=f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b",
+      "version": "4.9.3"
+    }
+  },
+  "constraints": {
+    "path": "vla2/bootstrap_constraints.txt",
+    "sha256": "bfc0bd893830a1c247e13382bfeb2dc11cb1aec47df65f275ee5d7ddb13bdf4f"
+  },
+  "deployment_target": "rtx5090",
+  "explicit_exclusions": [
+    "Training, hardware robot drivers, visualization UI, vendor TensorRT builders, CUDA source compilation are not installed by this inference-only bootstrap.",
+    "FlashAttention/native acceleration remains a separately built and qualified dependency where selected."
+  ],
+  "family": "vla2",
+  "historical_constraint_deviations": [
+    {
+      "bootstrap": "5.2.3",
+      "historical": "6.2.5",
+      "package": "cachebox",
+      "reason": "Satisfy unchanged public DeepDiff9.1 dependency>=5.2,<6; historical environment metadata was inconsistent. Fresh actions remain a separate gate."
+    }
+  ],
+  "mandatory_native_host_imports": {
+    "pydantic": "2.13.4",
+    "torchdata": "0.11.0"
+  },
+  "packaging_patch": {
+    "after": {
+      "pyproject.toml": "8b1b7f29e86626c58fde5bbefe682387519f478b68829708118fa87447ece3e6",
+      "setup.py": "843ac26c38a41abae578250bc0f9419194b320a0f67327d941037a4268f6cfe7"
+    },
+    "before": {
+      "pyproject.toml": "89af0b07014aa2a0d4c5eb387181cda56cd3d21a98d360abf691dea4dc200549",
+      "setup.py": "11fdc0d257f4fe68cabf161355843632628807549db6df751a38f0ca2f949ba5"
+    },
+    "path": "vla2/inference_packaging.patch",
+    "scope": "Packaging metadata only. Explicit inference dependencies replace training/UI/native-build requirements and incompatible historical Torch pins. Runtime source files are unchanged; actual inference remains an independent gate.",
+    "sha256": "0ab6d53c4d2e0cee3af5656a19fa313080561dcac96f5f67e074d990e3626d63"
+  },
+  "public_wheel_overrides": {
+    "torch": "https://files.pythonhosted.org/packages/1a/c9/82638ef24d7877510f83baf821f5619a61b45568ce21c0a87a91576510aa/torch-2.11.0-cp312-cp312-manylinux_2_28_x86_64.whl#sha256=0f68f4ac6d95d12e896c3b7a912b5871619542ec54d3649cf48cc1edd4dd2756",
+    "torchdata": "https://files.pythonhosted.org/packages/95/d4/af694ef718aedbe95a72760ab9ff7a6a7a44ace2d7f70c27bfeb67c5c503/torchdata-0.11.0-py3-none-any.whl#sha256=52b940fbbe0e00fb21cabddf528449d1bec5bfb0d0823b7487b15f951658ee33",
+    "torchvision": "https://files.pythonhosted.org/packages/f5/d8/cb6ccda1a1f35a6597645818641701207b3e8e13553e75fce5d86bac74b2/torchvision-0.26.0-cp312-cp312-manylinux_2_28_x86_64.whl#sha256=d61a5abb6b42a0c0c311996c2ac4b83a94418a97182c83b055a2a4ae985e05aa"
+  },
+  "python_metadata_overlays": [
+    {
+      "path": "vla2/lerobot_inference.json",
+      "sha256": "40c38453be0d4815023779523e784f3ca28f22a1c905c9edb1a4538e48c736ec"
+    }
+  ],
+  "qualification": {
+    "GPU_verified": false,
+    "evidence": null,
+    "status": "target_profile_prepared_install_and_GPU_checks_pending",
+    "task_quality_certified": false
+  },
+  "requirements": {
+    "path": "vla2/inference_requirements.txt",
+    "sha256": "bdafe50b25049c529941ddb43d1d3a8f391f28d95ce4594ef5ddf5119d090797",
+    "unconstrained_direct_packages": []
+  },
+  "root_env": "LINGBOT_VLA_V2_ROOT",
+  "schema": "instinctflash.vendor_bootstrap.v1",
+  "source_manifest": "vla2/source.json",
+  "target": {
+    "machine": "x86_64",
+    "python_minor": "3.12",
+    "system": "Linux"
+  },
+  "wheel_metadata_repair": null
+}

@@ -11,10 +11,13 @@ from benchmarks.regression import native_reference
 from benchmarks.regression.hardware import target_record
 
 
-def hardware():
-    return {"target": target_record("rtx4090"), "status": "passed",
-            "name": "NVIDIA GeForce RTX 4090", "capability": [8, 9],
-            "uuid": "CPU-receipt-unit-test-only", "total_memory_bytes": 24 << 30}
+def hardware(target="rtx4090"):
+    record = target_record(target)
+    return {"target": record, "status": "passed",
+            "name": "NVIDIA GeForce RTX " + ("4090" if target == "rtx4090" else "5090"),
+            "capability": record["capability"],
+            "uuid": "CPU-receipt-unit-test-only",
+            "total_memory_bytes": (24 if target == "rtx4090" else 32) << 30}
 
 
 @pytest.mark.parametrize("change", [
@@ -34,14 +37,15 @@ def test_rtx4090_native_constructor_requires_device_receipt(tmp_path):
         native_reference.build("va", None, output_dir=tmp_path, target=target_record("rtx4090"))
 
 
-def test_reference_binds_device_residency_and_original_schedule():
-    observed = hardware()
+@pytest.mark.parametrize("target", ["rtx4090", "rtx5090"])
+def test_reference_binds_device_residency_and_original_schedule(target):
+    observed = hardware(target)
     residency = {"schema": "instinctflash.native_va_residency.v1", "successful_resets": 0,
                  "device": {key: observed[key] for key in
                             ("name", "uuid", "capability", "total_memory_bytes")}}
     checkpoint = SimpleNamespace(execution=SimpleNamespace(nfe={"video": 25, "action": 50}))
     api = native_reference.Reference(checkpoint, None, native_nfe={"video": 2, "action": 4},
-        target=target_record("rtx4090"), hardware=observed, native_residency=residency)
+        target=target_record(target), hardware=observed, native_residency=residency)
     assert api.execution_policy["checkpoint_nfe"] == {"video": 25, "action": 50}
     assert api.execution_policy["nfe"] == {"video": 2, "action": 4}
     assert api.execution_policy["native_residency"] is residency
@@ -65,7 +69,8 @@ def test_reference_refuses_cross_device_residency_receipt():
 
 
 @pytest.mark.parametrize("family", ["edge", "nano"])
-def test_cosmos_native_target_uses_original_service_args_and_no_fp8(monkeypatch, tmp_path, family):
+@pytest.mark.parametrize("target", ["rtx4090", "rtx5090"])
+def test_cosmos_native_target_uses_original_service_args_and_no_fp8(monkeypatch, tmp_path, family, target):
     calls = []
 
     class NativeService:
@@ -90,7 +95,7 @@ def test_cosmos_native_target_uses_original_service_args_and_no_fp8(monkeypatch,
     checkpoint = SimpleNamespace(path="/original/checkpoint", execution=SimpleNamespace(
         extra=fields, nfe={"action": 4}))
     result = native_reference.build(family, checkpoint, output_dir=tmp_path,
-        target=target_record("rtx4090"), hardware=hardware())
+        target=target_record(target), hardware=hardware(target))
     assert calls[0] == ("residency", family == "nano", "cuda:0")
     expected = dict(checkpoint_path=checkpoint.path, **fields, num_steps=4,
                     guidance=3.0, shift=5.0, seed=0)
@@ -99,7 +104,8 @@ def test_cosmos_native_target_uses_original_service_args_and_no_fp8(monkeypatch,
     assert not result.execution_policy["native_residency"]["schedule_changed_by_residency"]
 
 
-def test_dreamzero_native_residency_keeps_lazy_load_full_value_gate_and_fixed_mask(monkeypatch, tmp_path):
+@pytest.mark.parametrize("target", ["rtx4090", "rtx5090"])
+def test_dreamzero_native_residency_keeps_lazy_load_full_value_gate_and_fixed_mask(monkeypatch, tmp_path, target):
     import torch.distributed.device_mesh as device_mesh
 
     calls = []
@@ -137,7 +143,7 @@ def test_dreamzero_native_residency_keeps_lazy_load_full_value_gate_and_fixed_ma
     monkeypatch.setitem(sys.modules, "groot.vla.model.n1_5.sim_policy", SimpleNamespace(GrootSimPolicy=policy_factory))
     monkeypatch.setitem(sys.modules, "benchmarks.regression.native_loaded", SimpleNamespace(verify_loaded=verify_loaded))
     result = native_reference.build("dreamzero", checkpoint, output_dir=tmp_path,
-        target=target_record("rtx4090"), hardware=hardware())
+        target=target_record(target), hardware=hardware(target))
     assert [call[0] for call in calls] == ["builder", "policy", "value_gate", "wrapper"]
     assert calls[0][2] == dict(dynamic=False, fixed_steps=8, profile=None, source="native_reference_checkpoint")
     assert calls[0][3] == "native"

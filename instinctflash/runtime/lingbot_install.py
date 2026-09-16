@@ -382,7 +382,7 @@ def _run_prompt_encoder_staged_reset(server, original_reset, prompt):
 
 
 def build_native_reference_server(server_module, job_config, *, device="cuda:0", expected_device=None):
-    """Construct a declared RTX 4090 native reference with bounded weight residency.
+    """Construct a bound desktop native reference with bounded weight residency.
 
     Only placement/allocation order and unused observation-decoder residency change.
     Native FSDP, attention, history layout, CFG, schedules and CUDA prompt arithmetic
@@ -390,13 +390,15 @@ def build_native_reference_server(server_module, job_config, *, device="cuda:0",
     Returns the server plus a receipt updated after each successful native reset.
     """
     if not torch.cuda.is_available():
-        raise RuntimeError("native VA residency requires an actual RTX 4090 CUDA device")
+        raise RuntimeError("native VA residency requires an actual RTX 4090 or RTX 5090 CUDA device")
     props = torch.cuda.get_device_properties(device)
     actual = {"name": str(props.name), "capability": [props.major, props.minor],
               "uuid": str(props.uuid), "total_memory_bytes": int(props.total_memory)}
-    if (actual["name"] != "NVIDIA GeForce RTX 4090" or actual["capability"] != [8, 9]
+    from instinctflash.runtime.desktop_fp8 import target_for_capability
+    selected = target_for_capability(actual["capability"])
+    if (selected is None or actual["name"] != selected.device_name
             or not needs_prompt_encoder_staging(actual["capability"], actual["total_memory_bytes"])):
-        raise RuntimeError("native VA residency is qualified for selection only on RTX 4090 SM89")
+        raise RuntimeError("native VA residency is supported only on RTX 4090 SM89 or RTX 5090 SM120")
     if expected_device is not None and any(expected_device.get(key) != value for key, value in actual.items()):
         raise RuntimeError("native VA residency device differs from the benchmark device receipt")
     source = Path(server_module.__file__).resolve()

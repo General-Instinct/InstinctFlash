@@ -1,0 +1,40 @@
+{
+  "adapter_directory": "examples/pi05_vla",
+  "constraints": {
+    "path": "pi05/constraints.txt",
+    "sha256": "905c172e03803e94334ead5e5dd548ac1d6c2774bdad144aca2aca0b912f5482"
+  },
+  "deployment_target": "rtx5090",
+  "explicit_exclusions": [
+    "Training, hardware robot drivers, visualization UI, vendor TensorRT builders, CUDA source compilation are not installed by this inference-only bootstrap.",
+    "FlashAttention/native acceleration remains a separately built and qualified dependency where selected."
+  ],
+  "family": "pi05",
+  "packaging_patch": null,
+  "public_wheel_overrides": {
+    "torch": "https://files.pythonhosted.org/packages/1a/c9/82638ef24d7877510f83baf821f5619a61b45568ce21c0a87a91576510aa/torch-2.11.0-cp312-cp312-manylinux_2_28_x86_64.whl#sha256=0f68f4ac6d95d12e896c3b7a912b5871619542ec54d3649cf48cc1edd4dd2756",
+    "torchvision": "https://files.pythonhosted.org/packages/f5/d8/cb6ccda1a1f35a6597645818641701207b3e8e13553e75fce5d86bac74b2/torchvision-0.26.0-cp312-cp312-manylinux_2_28_x86_64.whl#sha256=d61a5abb6b42a0c0c311996c2ac4b83a94418a97182c83b055a2a4ae985e05aa"
+  },
+  "qualification": {
+    "GPU_verified": false,
+    "evidence": null,
+    "status": "target_profile_prepared_install_and_GPU_checks_pending",
+    "task_quality_certified": false
+  },
+  "requirements": {
+    "path": "pi05/inference_requirements.txt",
+    "sha256": "9444ae3caae3d37abb71c8e1755f70cb7435d658167c18c1601c17130f743f09",
+    "unconstrained_direct_packages": [
+      "accelerate"
+    ]
+  },
+  "root_env": null,
+  "schema": "instinctflash.vendor_bootstrap.v1",
+  "source_manifest": null,
+  "target": {
+    "machine": "x86_64",
+    "python_minor": "3.12",
+    "system": "Linux"
+  },
+  "wheel_metadata_repair": null
+}

@@ -28,7 +28,7 @@ WAN_REPO = "Wan-AI/Wan2.2-TI2V-5B"
 WAN_REVISION = "921dbaf3f1674a56f47e83fb80a34bac8a8f203e"
 WAN_FILE = "Wan2.2_VAE.pth"
 WAN_BYTES = 2818839170
-TARGET_MACHINES = {"jetson_thor": "aarch64", "rtx4090": "x86_64"}
+TARGET_MACHINES = {"jetson_thor": "aarch64", "rtx4090": "x86_64", "rtx5090": "x86_64"}
 
 
 def sha(path: Path) -> str:

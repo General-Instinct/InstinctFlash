@@ -38,7 +38,7 @@ def residency_declaration(family, hardware, description):
 
 def build(family, checkpoint, *, output_dir, nfe=None, target=None, hardware=None):
     target = bound_target(target)
-    if target["name"] == "rtx4090" or hardware is not None:
+    if target["name"] in ("rtx4090", "rtx5090") or hardware is not None:
         validate_device_receipt(hardware, target)
     residency = None
     extra = dict(checkpoint.execution.extra or {})
@@ -118,7 +118,7 @@ def build(family, checkpoint, *, output_dir, nfe=None, target=None, hardware=Non
                 'action_dim', 'image_height', 'image_width', 'format_prompt_as_json')},
             num_steps=int(steps['action']), guidance=3.0,
             shift=float(extra.get('shift', 5.0)), seed=int(extra.get('seed', 0)))
-        if target["name"] == "rtx4090":
+        if target["name"] in ("rtx4090", "rtx5090"):
             from cosmos3_iwm.sm89_residency import build_native_service
             service = build_native_service(lambda: EagerService(service_args),
                                            nano=family == "nano", device=dev)
@@ -156,7 +156,7 @@ def build(family, checkpoint, *, output_dir, nfe=None, target=None, hardware=Non
         cfg.num_inference_steps = int(steps['video'])
         cfg.action_num_inference_steps = int(steps['action'])
         apply_declared_guidance(cfg, checkpoint.execution.guidance)
-        if target["name"] == "rtx4090":
+        if target["name"] in ("rtx4090", "rtx5090"):
             from instinctflash.runtime.lingbot_install import build_native_reference_server
             server, residency = build_native_reference_server(
                 server_module, cfg, device=dev, expected_device=hardware)
@@ -174,7 +174,7 @@ def build(family, checkpoint, *, output_dir, nfe=None, target=None, hardware=Non
         mesh = init_device_mesh('cuda', mesh_shape=(1,), mesh_dim_names=('ip',))
         tag = str(extra.get('embodiment_tag') or 'oxe_droid')
         path = _resolve_model_path(checkpoint)
-        if target["name"] == "rtx4090":
+        if target["name"] in ("rtx4090", "rtx5090"):
             if int(steps.get("video_action", 16)) != 16 or int(steps.get("kv_commit", 1)) != 1:
                 raise ValueError("DreamZero native reference requires its original 16-update/1-commit grid")
             from dreamzero_iwm.adapter import _build_owned_native_loop
@@ -241,7 +241,7 @@ def build(family, checkpoint, *, output_dir, nfe=None, target=None, hardware=Non
     else:
         raise ValueError(f'No audited upstream constructor for {family}')
     return Reference(checkpoint, loop, native_nfe=native_nfe,
-                     target=target if target["name"] == "rtx4090" else None,
+                     target=target if target["name"] in ("rtx4090", "rtx5090") else None,
                      hardware=hardware, native_residency=residency)
 
 
@@ -257,8 +257,8 @@ class Reference:
             validate_device_receipt(hardware, target)
             self.execution_policy.update(target=bound_target(target), hardware=deepcopy(hardware))
         if native_residency is not None:
-            if target is None or target["name"] != "rtx4090":
-                raise ValueError("native residency receipt requires the RTX 4090 target")
+            if target is None or target["name"] not in ("rtx4090", "rtx5090"):
+                raise ValueError("native residency receipt requires the RTX 4090 or RTX 5090 target")
             if any(native_residency["device"].get(key) != hardware.get(key)
                    for key in ("name", "uuid", "capability", "total_memory_bytes")):
                 raise ValueError("native residency receipt is bound to a different device")

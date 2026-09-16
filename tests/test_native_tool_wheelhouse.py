@@ -55,6 +55,21 @@ def test_exact_catalog_full_hash_and_metadata_admission(tmp_path):
     assert all(len(x["metadata_sha256"]) == 64 for x in result["wheels"])
 
 
+def test_5090_tool_reuse_requires_explicit_target_and_retains_all_23_pins(tmp_path):
+    cache = tmp_path / "cache"
+    manifest = wheelhouse(cache)
+    with pytest.raises(ValueError, match="catalog or target"):
+        tools.admit_wheelhouse(cache, tools.CATALOG, target="rtx5090")
+    manifest["target"] = "rtx5090"
+    save_manifest(cache, manifest)
+    result = tools.admit_wheelhouse(cache, tools.CATALOG, target="rtx5090")
+    assert result["target"] == "rtx5090" and len(result["wheels"]) == 23
+    assert result["all_original_file_hashes_checked"] is True
+    assert result["package_versions"] == tools.load_catalog(tools.CATALOG)["packages"]
+    with pytest.raises(ValueError, match="catalog or target"):
+        tools.admit_wheelhouse(cache, tools.CATALOG, target="rtx4090")
+
+
 @pytest.mark.parametrize("fault", ["catalog", "constraints", "argv", "versions", "target", "minor",
                                    "missing", "duplicate", "entry-version", "entry-name", "path",
                                    "url", "url-auth", "url-query", "sha", "partial-sha", "size",

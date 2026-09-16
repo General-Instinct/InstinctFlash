@@ -1,0 +1,83 @@
+{
+  "adapter_directory": "examples/cosmos3_policy",
+  "audited_pure_python_sdists": {
+    "antlr4-python3-runtime": {
+      "bytes": 117034,
+      "scope": "Official PyPI source inspected: setuptools packages/bin pygrun only; no extensions, compiler calls, CUDA source or runtime imports in setup.py.",
+      "url": "https://files.pythonhosted.org/packages/3e/38/7859ff46355f76f8d19459005ca000b6e7012f2f1ca597746cbcd1fbfe5e/antlr4-python3-runtime-4.9.3.tar.gz#sha256=f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b",
+      "version": "4.9.3"
+    },
+    "iopath": {
+      "bytes": 42226,
+      "scope": "Official PyPI setup.py + version.py inspected; setuptools Python package only, no extensions/compiler/GPU path.",
+      "url": "https://files.pythonhosted.org/packages/72/73/b3d451dfc523756cf177d3ebb0af76dc7751b341c60e2a21871be400ae29/iopath-0.1.10.tar.gz#sha256=3311c16a4d9137223e20f141655759933e1eda24f8bff166af834af3c645ef01",
+      "version": "0.1.10"
+    }
+  },
+  "compiler_wheel_origin": {
+    "distribution": "triton",
+    "sha256": "0075039ff27765480083b1a109999bf27110f3542f1f9fad95f0f9065a36da79",
+    "url": "https://download-r2.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+    "version": "3.6.0"
+  },
+  "constraints": {
+    "path": "rtx5090/nano/constraints.txt",
+    "sha256": "3b488334f2a7d3501085155892e0af30fdadda9d2522f116d7e05189e7546c2e"
+  },
+  "deployment_target": "rtx5090",
+  "explicit_exclusions": [
+    "Training, hardware robot drivers, visualization UI, vendor TensorRT builders, CUDA source compilation are not installed by this inference-only bootstrap.",
+    "FlashAttention/native acceleration remains a separately built and qualified dependency where selected.",
+    "openpi-client/openpi-server are required only by the upstream standalone websocket main(); InstinctFlash uses its own public websocket server and calls the native policy class directly. They are not imported by that policy module at import time."
+  ],
+  "family": "nano",
+  "mandatory_native_host_imports": {
+    "boto3": "1.43.80",
+    "pandas": "3.0.5"
+  },
+  "native_tool": {
+    "path": "cosmos/hf_tool.json",
+    "scope": "Fresh isolated hf1.16.4 closure of23 pinned packages, native uvx unchanged, offline runtime reuse; model weights are prepared separately.",
+    "sha256": "7f12f1e464690b79cd9a1822e16ec23b337be4e7e585afd7e6ce7adc662c100c"
+  },
+  "packaging_patch": {
+    "after": {
+      "pyproject.toml": "e7973e0338a690d7b90b2927c8112e0015992bc519c54c166574c1a82cc7ae0e"
+    },
+    "before": {
+      "pyproject.toml": "f9a476ddb1b66366ad046d93c5a9286b9be1d62caa1f38b2f8a33dfbbbce2d34"
+    },
+    "path": "rtx5090/cosmos/inference_packaging.patch",
+    "scope": "Packaging metadata only. Explicit inference dependencies replace training/UI/native-build requirements and incompatible historical Torch pins. Runtime source files are unchanged; actual inference remains an independent gate.",
+    "sha256": "82a8d6596d8ca8daa06ec33390453f205ec535fb1109b8b23a08f5176a6489c7"
+  },
+  "public_wheel_overrides": {
+    "natten": "https://github.com/nvidia-cosmos/cosmos-dependencies/releases/download/v1.5.0/natten-0.21.6.dev6%2Bcu130.torch210-cp313-cp313-linux_x86_64.whl#sha256=13d81645a33e58500c33f4c8840c992cab1bf43b2f476b96e7a70c3864906511",
+    "torch": "https://download-r2.pytorch.org/whl/cu130/torch-2.10.0%2Bcu130-cp313-cp313-manylinux_2_28_x86_64.whl#sha256=7e0d9922e9e91f780b2761a0c5ebac3c15c9740bab042e1b59149afa6d6474eb",
+    "torchcodec": "https://download.pytorch.org/whl/cu130/torchcodec-0.10.0%2Bcu130-cp313-cp313-manylinux_2_28_x86_64.whl#sha256=db2c833d3fe41f6c4b0ab793bfc5095b503302efb2f8aca97bf285b253c9910f",
+    "torchvision": "https://download-r2.pytorch.org/whl/cu130/torchvision-0.25.0%2Bcu130-cp313-cp313-manylinux_2_28_x86_64.whl#sha256=e85337d59bdbf7006cd0c76012da3663ded5606dadc68f72280d9f2ab1e9191a",
+    "triton": "https://download-r2.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl#sha256=0075039ff27765480083b1a109999bf27110f3542f1f9fad95f0f9065a36da79"
+  },
+  "qualification": {
+    "GPU_verified": false,
+    "evidence": null,
+    "status": "target_profile_prepared_install_and_GPU_checks_pending",
+    "task_quality_certified": false
+  },
+  "requirements": {
+    "path": "rtx5090/nano/inference_requirements.txt",
+    "sha256": "7ac7a69235e63035c38e96fb6a34bcfc8d9c1cee6210f6374441f03776ea66e8",
+    "unconstrained_direct_packages": [
+      "pip"
+    ]
+  },
+  "root_env": null,
+  "schema": "instinctflash.vendor_bootstrap.v1",
+  "source_manifest": "cosmos/source.json",
+  "target": {
+    "machine": "x86_64",
+    "python_minor": "3.13",
+    "system": "Linux"
+  },
+  "wheel_metadata_repair": null
+}

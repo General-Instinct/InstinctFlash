@@ -1,4 +1,4 @@
-"""Single-SM89 residency for the original DreamZero policy and complete history.
+"""Single-desktop-GPU residency for the original DreamZero policy and complete history.
 
 Weights and committed KV may live on CPU; all model arithmetic still runs on
 CUDA. Native processors, both CFG branches, solver updates and cache contents
@@ -16,6 +16,8 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from types import MethodType
 
+from instinctflash.runtime.desktop_fp8 import SM89, target_for_capability
+
 _POST_INIT_HASH = "71358c4fc3ae74a0d944ac3003df39febbec60926095e9aa404c144b351cb978"
 _CONSTRUCTION = ContextVar("dreamzero_residency_construction", default=None)
 
@@ -25,6 +27,14 @@ def use_sm89_residency(device="cuda"):
 
     return (torch.cuda.is_available()
             and torch.cuda.get_device_capability(device) == (8, 9)
+            and torch.cuda.get_device_properties(device).total_memory <= 40 << 30)
+
+
+def use_desktop_residency(device="cuda"):
+    import torch
+
+    return (torch.cuda.is_available()
+            and target_for_capability(torch.cuda.get_device_capability(device)) is not None
             and torch.cuda.get_device_properties(device).total_memory <= 40 << 30)
 
 
@@ -50,6 +60,8 @@ def construction_scope():
 def build_head(config, ifl_dynamic_cache_schedule, ifl_fixed_dit_steps,
                ifl_residency_precision):
     """Return the original native head with an instance-owned placement method."""
+    import torch
+
     from .schedule import build_head as native_head
 
     if ifl_residency_precision not in ("native", "fp8"):
@@ -57,8 +69,8 @@ def build_head(config, ifl_dynamic_cache_schedule, ifl_fixed_dit_steps,
     owners = _CONSTRUCTION.get()
     if owners is None or owners:
         raise RuntimeError("DreamZero residency head requires its single owned construction scope")
-    if not use_sm89_residency():
-        raise ValueError("DreamZero residency requires an SM89 device with at most 40 GiB")
+    if not use_desktop_residency():
+        raise ValueError("DreamZero residency requires an SM89 or SM120 device with at most 40 GiB")
     from groot.vla.model.dreamzero.action_head.wan_flow_matching_action_tf import (
         WANPolicyHead,
     )
@@ -71,7 +83,8 @@ def build_head(config, ifl_dynamic_cache_schedule, ifl_fixed_dit_steps,
     if hashlib.sha256(source.encode()).hexdigest() != _POST_INIT_HASH:
         raise ValueError("DreamZero post-initialize changed; re-audit residency construction")
     head = native_head(config, ifl_dynamic_cache_schedule, ifl_fixed_dit_steps)
-    owner = DreamZeroResidency(head, precision=ifl_residency_precision)
+    owner = DreamZeroResidency(head, precision=ifl_residency_precision,
+                               target=target_for_capability(torch.cuda.get_device_capability()))
     owners.append(owner)
     head._ifl_residency = owner
     head.post_initialize = MethodType(_post_initialize, head)
@@ -168,9 +181,10 @@ class CPUKVStorage:
 
 
 class DreamZeroResidency:
-    def __init__(self, head, *, precision):
+    def __init__(self, head, *, precision, target=SM89):
         self.head = head
         self.precision = precision
+        self.target = target
         self.initialized = False
         self.closed = False
         self.weights = None
@@ -200,8 +214,10 @@ class DreamZeroResidency:
             # Same final native post_initialize dtype; never cast after FP8 packing.
             head.to(dtype=torch.bfloat16)
             if self.precision == "fp8":
-                from instinctflash.runtime.sm89_fp8 import install_sm89_fp8
-                self.fp8_recipe = install_sm89_fp8(
+                from instinctflash.runtime.desktop_fp8 import backend_for_capability
+                implementation = backend_for_capability(self.target.capability)
+                install_fp8 = getattr(implementation, f"install_{self.target.prefix}_fp8")
+                self.fp8_recipe = install_fp8(
                     head.model, "dreamzero", device="cuda", include_mlp=True,
                     storage_device="cpu")
             self.weights = install_module_residency(
@@ -219,7 +235,7 @@ class DreamZeroResidency:
 
     def report(self):
         return copy.deepcopy({
-            "recipe": "dreamzero_sm89_native_layer_and_kv_residency_v1",
+            "recipe": f"dreamzero_{self.target.prefix}_native_layer_and_kv_residency_v1",
             "precision": self.precision, "component_compilation": False,
             "component_execution": "native eager CUDA; transfer time included",
             "weights": self.weights.report() if self.weights else None,

@@ -53,6 +53,22 @@ def test_verified_cache_resolves_exact_public_pin_without_loading_package(wheelh
     assert "fixture" not in sys.modules
 
 
+def test_5090_can_reuse_bytes_only_with_a_distinct_target_manifest(wheelhouse):
+    directory, profile, manifest, path = wheelhouse
+    original_bytes = path.read_bytes()
+    profile["deployment_target"] = "rtx5090"
+    with pytest.raises(ValueError, match="selected pinned recipe"):
+        bootstrap.admit_dependency_wheelhouse(directory, profile)
+    manifest["target"] = "rtx5090"
+    (directory / "manifest.json").write_text(json.dumps(manifest))
+    receipt = bootstrap.admit_dependency_wheelhouse(directory, profile)
+    assert receipt["target"] == "rtx5090" and receipt["verified_wheels"] == 1
+    assert path.read_bytes() == original_bytes
+    profile["deployment_target"] = "rtx4090"
+    with pytest.raises(ValueError, match="selected pinned recipe"):
+        bootstrap.admit_dependency_wheelhouse(directory, profile)
+
+
 @pytest.mark.parametrize("mutation", ["bytes", "hash", "target", "pin", "extra", "traversal",
                                       "linked", "metadata", "source"])
 def test_tampered_cache_cannot_replace_a_pinned_dependency(wheelhouse, mutation):

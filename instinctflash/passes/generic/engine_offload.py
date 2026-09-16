@@ -32,18 +32,23 @@ class EngineOffloadApplicable:
     def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
         dev = getattr(deployment, "device", None)
         cap = getattr(dev, "capability", None) if dev is not None else None
-        if cap == (8, 9):
-            from instinctflash.runtime.sm89_fp8 import EXECUTOR, RECIPES
+        if cap in ((8, 9), (12, 0)):
+            from instinctflash.runtime.desktop_fp8 import (
+                backend_for_capability,
+                target_for_capability,
+            )
+            implementation = backend_for_capability(cap)
+            target = target_for_capability(cap)
             backbone = dict(spec.notes or {}).get("backbone")
-            recipe = RECIPES.get(backbone)
+            recipe = implementation.RECIPES.get(backbone)
             if recipe is None:
                 return PassResult(self.name, False, Tier.NUMERIC,
-                                  reason="No SM89 FP8 recipe for this backbone")
+                                  reason=f"No {target.label} FP8 recipe for this backbone")
             return PassResult(
                 self.name, True, Tier.NUMERIC,
-                reason="SM89 explicit per-family E4M3 projection recipe; native processing and "
+                reason=f"{target.label} explicit per-family E4M3 projection recipe; native processing and "
                        "schedule retained. Loading capacity and task quality require device qualification",
-                params={"backend": "engine", "executor": EXECUTOR,
+                params={"backend": "engine", "executor": implementation.EXECUTOR,
                         "recipe_id": recipe.recipe_id, "certification": "uncertified"})
         if cap == (9, 0):
             from instinctflash.runtime.engine_backend import ENGINE_BACKBONES

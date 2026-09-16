@@ -2,6 +2,7 @@ import sys
 import threading
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 import pytest
 import torch
@@ -110,3 +111,44 @@ def test_droid_finalizer_receives_original_serving_profile_before_legacy_fp8(tmp
     assert service.args.conditioning_fps == 15
     assert service.args.format_prompt_as_json is False
     assert service.setup["use_torch_compile"] is False
+
+
+@pytest.mark.parametrize("capability,prefix", [((8, 9), "sm89"), ((12, 0), "sm120")])
+@pytest.mark.parametrize("precision", ["native", "fp8"])
+def test_finalizer_binds_cpu_storage_to_actual_desktop_recipe(monkeypatch, capability, prefix, precision):
+    from cosmos3_iwm.sm89_residency import INFERENCE_RESERVE_BYTES, finalize_service
+
+    from instinctflash.runtime import module_residency, sm89_fp8, sm120_fp8
+
+    class MoTDecoderLayer(torch.nn.Module):
+        pass
+
+    monkeypatch.setitem(sys.modules, "cosmos_framework.model.generator.mot.unified_mot",
+                        SimpleNamespace(MoTDecoderLayer=MoTDecoderLayer))
+    monkeypatch.setattr(torch.cuda, "get_device_capability", lambda device: capability)
+    monkeypatch.setattr(torch.distributed, "is_initialized", lambda: False)
+    layers = [MoTDecoderLayer()]
+    net = SimpleNamespace(language_model=SimpleNamespace(model=SimpleNamespace(layers=layers)))
+    model = SimpleNamespace(net=net, config=SimpleNamespace(
+        compile=SimpleNamespace(enabled=False, use_cuda_graphs=False), lora_enabled=False))
+    service, construction = SimpleNamespace(model=model), SimpleNamespace(verify=Mock())
+    installers = {"sm89": Mock(return_value={"executor": "sm89_torch_fp8"}),
+                  "sm120": Mock(return_value={"executor": "sm120_torch_fp8"})}
+    monkeypatch.setattr(sm89_fp8, "install_sm89_fp8", installers["sm89"])
+    monkeypatch.setattr(sm120_fp8, "install_sm120_fp8", installers["sm120"])
+    owner = SimpleNamespace(receipt={})
+    placement = Mock(return_value=owner)
+    monkeypatch.setattr(module_residency, "install_module_residency", placement)
+    result = finalize_service(service, construction, precision=precision, device="cuda:0")
+    construction.verify.assert_called_once_with(model)
+    placement.assert_called_once_with(net, layers, device="cuda:0", reserve_bytes=INFERENCE_RESERVE_BYTES)
+    assert service._ifl_sm89_residency is construction.residency is owner
+    assert owner.receipt["checkpoint_materialization"] == "cpu"
+    if precision == "fp8":
+        installers[prefix].assert_called_once_with(model, "cosmos3_policy", device="cuda:0",
+                                                   storage_device="cpu", include_mlp=True)
+        assert result["executor"] == prefix + "_torch_fp8"
+    else:
+        assert result is None
+        installers[prefix].assert_not_called()
+    installers["sm89" if prefix == "sm120" else "sm120"].assert_not_called()

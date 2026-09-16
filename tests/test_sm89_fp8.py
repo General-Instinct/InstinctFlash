@@ -243,7 +243,10 @@ class SM89Contracts(unittest.TestCase):
         linear = torch.nn.Linear(32, 16, dtype=torch.bfloat16)
         with patch.object(torch.cuda, "get_device_capability", return_value=(8, 9)):
             packed = SM89FP8Linear(linear, device="cuda", storage_device="cpu")
-        expected_scale = linear.weight.float().abs().amax().clamp_min(1e-12).reshape(1) / 448.
+        # CPU preplacement matches CUDA's FP32 reciprocal multiply, not CPU
+        # true division (which can differ by one ULP for this random maximum).
+        maximum = linear.weight.float().abs().amax().clamp_min(1e-12).reshape(1)
+        expected_scale = maximum * torch.tensor(1.0 / 448.0, dtype=torch.float32)
         expected = (linear.weight.float() / expected_scale).clamp(-448, 448).to(torch.float8_e4m3fn)
         self.assertTrue(torch.equal(packed.weight_scale, expected_scale))
         self.assertTrue(torch.equal(packed.weight_fp8.view(torch.uint8), expected.view(torch.uint8)))

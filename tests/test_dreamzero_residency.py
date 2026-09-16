@@ -134,7 +134,20 @@ def test_residency_is_specific_to_small_sm89_devices(monkeypatch, capability, me
     assert residency.use_sm89_residency() is expected
 
 
-def test_fp8_owned_builder_requires_permission_before_loading(monkeypatch):
+@pytest.mark.parametrize("capability,memory,expected", [
+    ((8, 9), 24 << 30, True), ((12, 0), 32 << 30, True),
+    ((12, 0), 48 << 30, False), ((11, 0), 128 << 30, False),
+    ((9, 0), 80 << 30, False),
+])
+def test_desktop_residency_requires_explicit_capability_and_small_device(monkeypatch, capability, memory, expected):
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
+    monkeypatch.setattr(torch.cuda, "get_device_capability", lambda device: capability)
+    monkeypatch.setattr(torch.cuda, "get_device_properties", lambda device: SimpleNamespace(total_memory=memory))
+    assert residency.use_desktop_residency() is expected
+
+
+@pytest.mark.parametrize("builder", ["build_sm89_fp8", "build_sm120_fp8"])
+def test_fp8_owned_builder_requires_permission_before_loading(monkeypatch, builder):
     from dreamzero_iwm.adapter import DreamZeroAdapter
 
     from instinctflash.planners.planner import Plan, Tier
@@ -145,7 +158,7 @@ def test_fp8_owned_builder_requires_permission_before_loading(monkeypatch):
     build = Mock(side_effect=AssertionError("must not load"))
     monkeypatch.setattr(adapter, "_build_native", build)
     with pytest.raises(ValueError, match="explicit executor"):
-        adapter.build_sm89_fp8(None, Plan("dreamzero", [], tier_ceiling=Tier.NUMERIC))
+        getattr(adapter, builder)(None, Plan("dreamzero", [], tier_ceiling=Tier.NUMERIC))
     build.assert_not_called()
 
 

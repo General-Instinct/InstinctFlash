@@ -171,10 +171,20 @@ class DreamZeroAdapter:
         require_dreamzero_fp8_environment()
         _require_requested_recipe(plan, BACKBONE)
         return self._build_native(checkpoint, plan, device=device, nfe=nfe,
-                                  step_cache=step_cache, sm89_fp8=True)
+                                  step_cache=step_cache, desktop_fp8=True)
+
+    def build_sm120_fp8(self, checkpoint, plan, *, device=None, nfe=None, step_cache=None):
+        """Bind the SM120 recipe before native CPU loading and residency."""
+        from instinctflash.runtime.precision import require_dreamzero_fp8_environment
+        from instinctflash.runtime.sm120_fp8 import _require_requested_recipe
+
+        require_dreamzero_fp8_environment()
+        _require_requested_recipe(plan, BACKBONE)
+        return self._build_native(checkpoint, plan, device=device, nfe=nfe,
+                                  step_cache=step_cache, desktop_fp8=True)
 
     def _build_native(self, checkpoint, plan, *, device=None, nfe=None, step_cache=None,
-                      sm89_fp8=False):
+                      desktop_fp8=False):
         import torch
 
         if not torch.cuda.is_available():
@@ -208,7 +218,7 @@ class DreamZeroAdapter:
             step_cache = resolve_step_cache(checkpoint, tier_ceiling=ceiling, family="dreamzero")
         if not isinstance(step_cache, ResolvedStepCache):
             raise TypeError("DreamZero build requires a resolved step-cache selection")
-        if sm89_fp8:
+        if desktop_fp8:
             from instinctflash.runtime.precision import require_dreamzero_fp8_schedule
             require_dreamzero_fp8_schedule(step_cache)
         if plan is not None:
@@ -244,10 +254,10 @@ class DreamZeroAdapter:
         mesh = init_device_mesh("cuda", mesh_shape=(1,), mesh_dim_names=("ip",))
         tag = str(extra.get("embodiment_tag") or "oxe_droid")
         model_path = _resolve_model_path(checkpoint)
-        from .residency import use_sm89_residency
-        low_memory = use_sm89_residency(dev)
-        if sm89_fp8 and not low_memory:
-            raise ValueError("DreamZero SM89 builder requires the single-device Ada residency path")
+        from .residency import use_desktop_residency
+        low_memory = use_desktop_residency(dev)
+        if desktop_fp8 and not low_memory:
+            raise ValueError("DreamZero desktop FP8 requires the single-device residency path")
         return _build_owned_native_loop(
             model_path,
             lambda path: GrootSimPolicy(
@@ -259,7 +269,7 @@ class DreamZeroAdapter:
                 image_height=_get_expected_video_resolution(policy)[0],
                 image_width=_get_expected_video_resolution(policy)[1], embodiment_tag=tag),
             step_cache=step_cache,
-            residency_precision=("fp8" if sm89_fp8 else "native") if low_memory else None,
+            residency_precision=("fp8" if desktop_fp8 else "native") if low_memory else None,
         )
 
     def build_fp8(self, checkpoint, *, device=None, nfe=None, plan=None, step_cache=None):

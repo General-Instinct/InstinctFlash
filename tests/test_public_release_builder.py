@@ -159,7 +159,7 @@ def test_staged_pyproject_excludes_train_data_without_changing_source_metadata(r
     config = builder.tomllib.loads((Path(result["source"]) / "pyproject.toml").read_text())
     assert config["tool"]["setuptools"]["packages"]["find"]["exclude"] == ["instinctflash.train*", "instinctflash.distill*"]
     assert config["tool"]["setuptools"]["package-data"] == {"benchmarks.vla": ["config/*.json"],
-                                                            "benchmarks.regression": ["fixtures/deployment_profiles.json", "fixtures/deployment_profiles_rtx4090.json"]}
+                                                            "benchmarks.regression": ["fixtures/deployment_profiles.json", "fixtures/deployment_profiles_rtx4090.json", "fixtures/deployment_profiles_rtx5090.json"]}
     assert (repository / "pyproject.toml").read_bytes() == before
     assert result["files"]["pyproject.toml"]["source_sha256"] == builder.sha(before)
 
@@ -392,6 +392,7 @@ def test_full_staged_rtx_closure_plans_all_eight_without_installs(repository, tm
                      "release/rtx4090/results/reproduce_manifest.json", "release/rtx4090/results/render_results.py"):
         assert builder.sha((stage / relative).read_bytes()) == CURRENT_CONTROLS[relative]
     assert "scripts/qualify_sm89_fp8.py" in result["files"]
+    assert "scripts/qualify_sm120_fp8.py" in result["files"]
     assert "benchmarks/regression/hardware.py" in result["files"]
     environment = dict(os.environ, CUDA_VISIBLE_DEVICES="", HF_HUB_OFFLINE="1", UV_OFFLINE="1")
     environment.pop("PYTHONPATH", None)
@@ -406,7 +407,7 @@ def test_full_staged_rtx_closure_plans_all_eight_without_installs(repository, tm
         completed = subprocess.run([sys.executable, str(stage / "scripts/prepare_auxiliary_assets.py"), "plan", family],
                                    capture_output=True, text=True, env=environment, timeout=15, check=True)
         assert json.loads(completed.stdout)["family"] == family
-    for target in ("jetson_thor", "rtx4090"):
+    for target in ("jetson_thor", "rtx4090", "rtx5090"):
         completed = subprocess.run([sys.executable, str(stage / "scripts/public_deploy.py"), "plan", "all", "--target", target],
                                    capture_output=True, text=True, env=environment, timeout=15, check=True)
         assert json.loads(completed.stdout)["ok"] is True
@@ -415,18 +416,21 @@ def test_full_staged_rtx_closure_plans_all_eight_without_installs(repository, tm
         "from benchmarks.regression.reproduce import make_plan; "
         "models=('pi05','va','vla4','vla2','groot','edge','nano','dreamzero'); "
         "assert all(make_plan(m,'native',target='rtx4090')['target']['capability']==[8,9] for m in models); "
+        "assert all(make_plan(m,'native',target='rtx5090')['target']['capability']==[12,0] for m in models); "
         "assert 'torch' not in sys.modules"
     )
     subprocess.run([sys.executable, "-I", "-c", code, str(stage)], env=environment, timeout=15, check=True)
 
 
 @pytest.mark.parametrize("omitted", ["benchmarks/regression/hardware.py",
-                                    "benchmarks/regression/fixtures/deployment_profiles_rtx4090.json"])
+                                    "benchmarks/regression/fixtures/deployment_profiles_rtx4090.json",
+                                    "benchmarks/regression/fixtures/deployment_profiles_rtx5090.json"])
 def test_core_wheel_cannot_drop_rtx_dispatch_or_profile(tmp_path, omitted):
     wheel = tmp_path / "core.whl"
     members = {"instinctflash/__init__.py": b"", "benchmarks/regression/hardware.py": b"# explicit targets\n",
                "benchmarks/regression/fixtures/deployment_profiles.json": b"{}",
-               "benchmarks/regression/fixtures/deployment_profiles_rtx4090.json": b'{"target":"rtx4090"}'}
+               "benchmarks/regression/fixtures/deployment_profiles_rtx4090.json": b'{"target":"rtx4090"}',
+               "benchmarks/regression/fixtures/deployment_profiles_rtx5090.json": b'{"target":"rtx5090"}'}
     files = {name: {"sha256": builder.sha(content), "wheel_required": True} for name, content in members.items()}
     with zipfile.ZipFile(wheel, "w") as archive:
         for name, content in members.items():

@@ -352,6 +352,9 @@ def engine_available(backbone=None) -> "tuple[bool, str]":
     if cap == (8, 9):
         from .sm89_fp8 import available
         return available(backbone)
+    if cap == (12, 0):
+        from .sm120_fp8 import available
+        return available(backbone)
     if cap == (9, 0):
         return (hasattr(torch, "_scaled_mm"), "H100 PyTorch E4M3 projection executor requires torch._scaled_mm")
     if cap != (11, 0):
@@ -391,6 +394,13 @@ class EngineBackend:
                 f"engine backend has no frontend for backbone {backbone!r} "
                 f"(supported: {ENGINE_BACKBONES}). This is a T2 gap, not a configuration error.")
         import torch
+        if any(r.name == "engine_offload" and r.applies and r.params.get("executor") == "sm120_torch_fp8"
+               for r in getattr(plan, "results", ())):
+            from .sm120_fp8 import build_sm120_loop
+            self._loop = build_sm120_loop(
+                adapter, checkpoint, plan, device=device, nfe=nfe, step_cache=step_cache)
+            self._checkpoint = checkpoint
+            return
         if any(r.name == "engine_offload" and r.applies and r.params.get("executor") == "sm89_torch_fp8"
                for r in getattr(plan, "results", ())):
             from .sm89_fp8 import build_sm89_loop
