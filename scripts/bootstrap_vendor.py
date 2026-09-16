@@ -12,7 +12,6 @@ import argparse
 import copy
 import csv
 import datetime as dt
-import errno
 import hashlib
 import io
 import json
@@ -130,7 +129,7 @@ def activation_environment(profile: dict, vendor: Path) -> dict:
     return values
 
 
-def admit_dependency_wheelhouse(directory: Path, profile: dict) -> dict:
+def admit_dependency_wheelhouse(directory: Path, profile: dict, *, checkout: Path = CHECKOUT) -> dict:
     """Verify a transported cache before any wheel is installed or imported.
 
     Requirements/constraints remain authoritative. Explicit public URL pins
@@ -145,7 +144,15 @@ def admit_dependency_wheelhouse(directory: Path, profile: dict) -> dict:
     expected = {"requirements_sha256": profile["requirements"]["sha256"],
                 "constraints_sha256": profile["constraints"]["sha256"],
                 "public_wheel_overrides": profile["public_wheel_overrides"]}
-    if (manifest.get("schema") != "instinctflash.dependency_wheelhouse.v1"
+    schema = manifest.get("schema")
+    if schema == "instinctflash.dependency_wheelhouse.v2":
+        expected.update(python_metadata_overlays=profile.get("python_metadata_overlays", []),
+                        audited_pure_python_sdists=profile.get("audited_pure_python_sdists", {}))
+    elif profile.get("python_metadata_overlays") or profile.get("audited_pure_python_sdists"):
+        raise ValueError("this recipe requires wheelhouse v2 original dependency inputs")
+    elif manifest.get("overlay_inputs") or manifest.get("source_archives"):
+        raise ValueError("original dependency inputs require wheelhouse v2")
+    if (schema not in {"instinctflash.dependency_wheelhouse.v1", "instinctflash.dependency_wheelhouse.v2"}
             or manifest.get("family") != profile["family"] or manifest.get("target") != target
             or manifest.get("inputs") != expected):
         raise ValueError("dependency wheelhouse does not match the selected pinned recipe")
@@ -207,11 +214,88 @@ def admit_dependency_wheelhouse(directory: Path, profile: dict) -> dict:
         if len(matches) != 1:
             raise ValueError(f"dependency wheelhouse lacks the exact public wheel: {name}")
         overrides[name] = str(wheel_directory / matches[0]["filename"])
+    originals = (_admit_original_dependency_inputs(directory, manifest, profile, checkout, set(by_name))
+                 if schema == "instinctflash.dependency_wheelhouse.v2" else {})
     return {"directory": str(directory), "wheel_directory": str(wheel_directory),
             "manifest_sha256": sha(manifest_path),
             "target": target, "family": profile["family"], "verified_wheels": len(seen),
             "explicit_override_paths": overrides,
-            "scope": "caller-supplied wheelhouse; recipe, file hashes and metadata verified"}
+            "scope": "caller-supplied wheelhouse; recipe, file hashes and metadata verified", **originals}
+
+
+def _admit_original_dependency_inputs(directory: Path, manifest: dict, profile: dict,
+                                     checkout: Path, wheel_names: set[str]) -> dict:
+    """Bind original overlay wheels and audited sources before offline preparation."""
+    normalize = lambda value: re.sub(r"[-_.]+", "-", value).lower()
+    overlay_rules = {}
+    for reference in profile.get("python_metadata_overlays", []):
+        if reference["path"] in overlay_rules:
+            raise ValueError("repeated metadata overlay recipe")
+        rule_path = checked_path(checkout / "release/vendor", reference["path"], reference["sha256"])
+        overlay_rules[reference["path"]] = (reference, json.loads(rule_path.read_text()))
+    sources = profile.get("audited_pure_python_sdists", {})
+    paths = {"overlay_input_paths": {}, "source_archive_paths": {}}
+    selected_names = set(wheel_names)
+    for group, expected_count in (("overlay_inputs", len(overlay_rules)), ("source_archives", len(sources))):
+        entries = manifest.get(group, [])
+        if not isinstance(entries, list) or len(entries) != expected_count:
+            raise ValueError(f"dependency wheelhouse lacks exact {group}")
+        folder = directory / group
+        if (entries or folder.exists() or folder.is_symlink()) and (folder.is_symlink() or not folder.is_dir()):
+            raise ValueError(f"dependency wheelhouse {group} directory is missing or linked")
+        seen, bindings = set(), set()
+        for entry in entries:
+            filename = entry["filename"]
+            if not isinstance(filename, str) or Path(filename).name != filename or filename in seen:
+                raise ValueError(f"invalid original dependency path in {group}")
+            seen.add(filename)
+            name = normalize(entry["name"])
+            if name in selected_names:
+                raise ValueError("original dependency input collides with another selected package")
+            selected_names.add(name)
+            if group == "overlay_inputs":
+                key = entry["rule_path"]
+                if key not in overlay_rules or key in bindings:
+                    raise ValueError("unrecognized or repeated metadata overlay input")
+                reference, rule = overlay_rules[key]
+                if (entry.get("rule_sha256") != reference["sha256"]
+                        or any(entry[field] != rule[field] for field in ("filename", "url", "bytes", "sha256"))):
+                    raise ValueError("original metadata overlay input differs from pinned rule")
+                if not filename.endswith(".whl"):
+                    raise ValueError("metadata overlay input must be the original wheel")
+            else:
+                key = name
+                if key not in sources or key in bindings or key not in PURE_SDISTS:
+                    raise ValueError("unrecognized or repeated audited source archive")
+                source = sources[key]
+                url, fragment = urldefrag(source["url"])
+                parsed = urlsplit(url)
+                expected_version, expected_sha = PURE_SDISTS[key]
+                if (source["version"] != expected_version or fragment != "sha256=" + expected_sha
+                        or parsed.scheme != "https" or parsed.hostname != "files.pythonhosted.org"
+                        or parsed.username or parsed.password or parsed.query
+                        or entry["version"] != expected_version or entry["sha256"] != expected_sha
+                        or entry["bytes"] != source["bytes"] or entry["url"] != url
+                        or filename != unquote(Path(urlsplit(url).path).name)):
+                    raise ValueError("original source archive differs from audited profile")
+            bindings.add(key)
+            path = folder / filename
+            if (path.is_symlink() or not path.is_file() or path.stat().st_size != entry["bytes"]
+                    or sha(path) != entry["sha256"]):
+                raise ValueError(f"original dependency artifact differs from full size or SHA256: {filename}")
+            if group == "overlay_inputs":
+                with zipfile.ZipFile(path) as archive:
+                    from email.parser import BytesParser
+                    metadata = BytesParser().parsebytes(archive.read(rule["metadata_member"]))
+                if normalize(metadata.get("Name", "")) != name or metadata.get("Version") != entry["version"]:
+                    raise ValueError("original overlay wheel metadata differs from manifest")
+                paths["overlay_input_paths"][key] = str(path)
+            else:
+                paths["source_archive_paths"][key] = str(path)
+        if folder.exists() and (folder.is_symlink() or {p.name for p in folder.iterdir()} != seen):
+            raise ValueError(f"dependency wheelhouse contains unlisted {group}")
+    return {**paths, "verified_overlay_inputs": len(paths["overlay_input_paths"]),
+            "verified_source_archives": len(paths["source_archive_paths"])}
 
 
 def share_dependency_artifacts(admission: dict, cache: Path) -> dict:
@@ -224,49 +308,57 @@ def share_dependency_artifacts(admission: dict, cache: Path) -> dict:
     manifest_path = Path(admission["directory"]) / "manifest.json"
     if sha(manifest_path) != admission["manifest_sha256"]:
         raise ValueError("dependency manifest changed after admission")
-    entries = json.loads(manifest_path.read_text())["wheels"]
+    manifest = json.loads(manifest_path.read_text())
+    entries = manifest["wheels"]
     names = [re.sub(r"[-_.]+", "-", entry["name"]).lower() for entry in entries]
     if len(set(names)) != len(names):
         raise ValueError("shared artifacts require one exact wheel per package")
     cache = cache.expanduser().resolve()
     cache.mkdir(parents=True, exist_ok=True)
-    paths = {}
-    for name, entry in zip(names, entries):
+    def publish(entry: dict, source: Path) -> str:
         directory = cache / entry["sha256"]
         directory.mkdir(exist_ok=True)
         if directory.is_symlink():
             raise ValueError("shared dependency artifact directory cannot be linked")
-        source = Path(admission["wheel_directory"]) / entry["filename"]
         target = directory / entry["filename"]
         if not target.exists() and not target.is_symlink():
+            # uv keys local archives by ctime on Unix. Keep a dedicated inode:
+            # adding/removing links in a caller's wheelhouse must not invalidate it.
+            with tempfile.NamedTemporaryFile(dir=directory, delete=False) as temporary:
+                staging = Path(temporary.name)
             try:
-                os.link(source, target)
-            except FileExistsError:
-                pass  # A concurrent installer may have published the same file.
-            except OSError as error:
-                if error.errno != errno.EXDEV:
-                    raise
-                with tempfile.NamedTemporaryFile(dir=directory, delete=False) as temporary:
-                    staging = Path(temporary.name)
+                shutil.copyfile(source, staging)
+                if sha(staging) != entry["sha256"]:
+                    raise ValueError("dependency artifact changed while copying")
                 try:
-                    shutil.copyfile(source, staging)
-                    if sha(staging) != entry["sha256"]:
-                        raise ValueError("dependency artifact changed while copying")
-                    try:
-                        os.link(staging, target)
-                    except FileExistsError:
-                        pass
-                finally:
-                    staging.unlink()
+                    os.link(staging, target)
+                except FileExistsError:
+                    pass  # Another installer may have published the same bytes.
+            finally:
+                staging.unlink()
         if (target.is_symlink() or not target.is_file()
                 or target.stat().st_size != entry["bytes"] or sha(target) != entry["sha256"]):
-            raise ValueError(f"shared dependency artifact differs from manifest: {name}")
-        paths[name] = str(target)
+            raise ValueError(f"shared dependency artifact differs from manifest: {entry['name']}")
+        return str(target)
+
+    paths = {name: publish(entry, Path(admission["wheel_directory"]) / entry["filename"])
+             for name, entry in zip(names, entries)}
+    overlay_paths, source_paths = {}, {}
+    for entry in manifest.get("overlay_inputs", []):
+        key = entry["rule_path"]
+        overlay_paths[key] = publish(entry, Path(admission["overlay_input_paths"][key]))
+    for entry in manifest.get("source_archives", []):
+        name = re.sub(r"[-_.]+", "-", entry["name"]).lower()
+        if name in paths:
+            raise ValueError("source archive collides with an installable wheel")
+        source_paths[name] = publish(entry, Path(admission["source_archive_paths"][name]))
+        paths[name] = source_paths[name]
     constraints = "".join(f"{name} @ {Path(path).as_uri()}\n" for name, path in sorted(paths.items()))
     overrides = {name: paths[re.sub(r"[-_.]+", "-", name).lower()]
                  for name in admission["explicit_override_paths"]}
     return {"cache": str(cache), "paths": paths, "constraints": constraints,
             "explicit_override_paths": overrides,
+            "overlay_input_paths": overlay_paths, "source_archive_paths": source_paths,
             "scope": "same verified wheels at stable file URLs; dependency versions unchanged"}
 
 
@@ -485,10 +577,14 @@ class Bootstrap:
                 raise ValueError("unaudited Python dependency metadata overlay")
             root = self.root / "python_metadata_overlay"
             root.mkdir()
-            original = root / "original" / rule["filename"]
-            original.parent.mkdir()
-            with urllib.request.urlopen(rule["url"], timeout=120) as src, original.open("xb") as dst:
-                shutil.copyfileobj(src, dst)
+            wheelhouse = getattr(self, "dependency_wheelhouse", None)
+            if wheelhouse is not None:
+                original = Path(wheelhouse["overlay_input_paths"][reference["path"]])
+            else:
+                original = root / "original" / rule["filename"]
+                original.parent.mkdir()
+                with urllib.request.urlopen(rule["url"], timeout=120) as src, original.open("xb") as dst:
+                    shutil.copyfileobj(src, dst)
             output = root / "inference_only" / rule["filename"]
             receipt = prepare_inference_metadata(original, output, rule)
             write_json(root / "receipt.json", receipt)
@@ -500,7 +596,8 @@ class Bootstrap:
         try:
             deployment_target = self.profile.get("deployment_target", "jetson_thor")
             wheelhouse_dir = getattr(self.args, "dependency_wheelhouse", None)
-            wheelhouse = admit_dependency_wheelhouse(wheelhouse_dir, self.profile) if wheelhouse_dir else None
+            wheelhouse = (admit_dependency_wheelhouse(wheelhouse_dir, self.profile, checkout=self.args.checkout)
+                          if wheelhouse_dir else None)
             if wheelhouse:
                 write_json(self.root / "dependency_wheelhouse_admission.json", wheelhouse)
             indexes = (["--offline", "--no-index", "--find-links", wheelhouse["wheel_directory"]]
@@ -515,7 +612,10 @@ class Bootstrap:
                 artifact_constraints = self.root / "dependency_artifacts.constraints.txt"
                 artifact_constraints.write_text(shared_artifacts["constraints"])
                 indexes += ["-c", str(artifact_constraints)]
-                wheelhouse = {**wheelhouse, "explicit_override_paths": shared_artifacts["explicit_override_paths"]}
+                wheelhouse = {**wheelhouse, "explicit_override_paths": shared_artifacts["explicit_override_paths"],
+                              "overlay_input_paths": shared_artifacts["overlay_input_paths"],
+                              "source_archive_paths": shared_artifacts["source_archive_paths"]}
+            self.dependency_wheelhouse = wheelhouse
             compiler = (prepare_ptxas(self.args.ptxas, self.root / "compiler", target=deployment_target)
                         if getattr(self.args, "ptxas", None) else None)
             if compiler:
@@ -541,16 +641,38 @@ class Bootstrap:
                     *[str(p) for p in auxiliary_wheels]]
             deps += ([f"{name} @ {Path(path).as_uri()}" for name, path in wheelhouse["explicit_override_paths"].items()]
                      if wheelhouse else [f"{name} @ {url}" for name, url in self.profile["public_wheel_overrides"].items()])
+            # The local source constraint also applies to later source-wheel
+            # installs, even when that dependency is already installed.
+            offline_source_build_options = []
             for name, source in self.profile.get("audited_pure_python_sdists", {}).items():
                 if (name not in PURE_SDISTS or source["version"] != PURE_SDISTS[name][0] or
                         not source["url"].endswith("#sha256=" + PURE_SDISTS[name][1])):
                     raise ValueError("unaudited source-build exception")
-                deps += ["--no-binary", name, f"{name} @ {source['url']}"]
+                source_url = (Path(wheelhouse["source_archive_paths"][name]).as_uri()
+                              if wheelhouse else source["url"])
+                deps += ["--no-binary", name, f"{name} @ {source_url}"]
+                if wheelhouse:
+                    offline_source_build_options += ["--no-binary", name]
+            if wheelhouse and self.profile.get("audited_pure_python_sdists"):
+                # Runtime constraints do not constrain PEP 517's isolated build.
+                # Bind that resolver to the same admitted original wheel bytes.
+                manifest = json.loads((Path(wheelhouse["directory"]) / "manifest.json").read_text())
+                build_constraints = self.root / "dependency_build.constraints.txt"
+                build_lines = []
+                for entry in manifest["wheels"]:
+                    name = re.sub(r"[-_.]+", "-", entry["name"]).lower()
+                    path = (Path(shared_artifacts["paths"][name]) if shared_artifacts
+                            else Path(wheelhouse["wheel_directory"]) / entry["filename"])
+                    build_lines.append(f"{name} @ {path.as_uri()}\n")
+                build_constraints.write_text("".join(build_lines))
+                deps += ["--build-constraints", str(build_constraints)]
+                offline_source_build_options += ["--build-constraints", str(build_constraints)]
             self.command("dependency_resolution", deps)
             # Only our public source wheels and Python-only inference metadata are built.
             # No upstream training/native build extras are selected.
             self.command("build_tools", [self.args.uv, "pip", "install", "--python", str(self.python),
                          *indexes, "--only-binary", ":all:",
+                         *offline_source_build_options,
                          "-c", str(constraints), "build", "wheel", "setuptools>=77"])
             wheel_dir = self.root / "wheels"
             wheel_dir.mkdir()
@@ -585,6 +707,7 @@ class Bootstrap:
             wheels = sorted(wheel_dir.glob("*.whl"))
             self.command("install_source_wheels", [self.args.uv, "pip", "install", "--python", str(self.python),
                          *indexes, "--only-binary", ":all:",
+                         *offline_source_build_options,
                          "-c", str(constraints), *[str(p) for p in wheels]])
             self.command("pip_check", [str(self.python), "-m", "pip", "check"])
             self.command("uv_pip_check", [self.args.uv, "pip", "check", "--python", str(self.python)])
