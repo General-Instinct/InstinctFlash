@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-16T11:55:00.212206+00:00",
+  "status": "PASS",
+  "hardware": "RTX 5090 / SM120",
+  "model": {
+    "repo": "lerobot/pi05_libero_finetuned_v044",
+    "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+    "model_sha256": "877b3ec1130548b69af7f8aeef3ec9d3fc7738040f0b9beb490857ec970997ae"
+  },
+  "dataset": {
+    "repo": "lerobot/libero_spatial_image",
+    "revision": "d86c0b94922572b3b657e1d1a3d01f0952ddeb46",
+    "file": "data/chunk-000/file-000.parquet",
+    "file_sha256": "cc4681188f4c5eeec4253d51ddbaa5ad90ad01bcd7ed4c23fc767a1e0c14686b",
+    "prompt": "pick up the black bowl next to the cookie box and place it on the plate",
+    "calibration_indices": [
+      0,
+      30,
+      60,
+      90
+    ],
+    "evaluation_indices": [
+      10,
+      50,
+      100
+    ],
+    "preprocessing": "LeRobot/OpenPI centered bilinear resize-with-pad to 224x224"
+  },
+  "protocol": {
+    "process_isolation": true,
+    "warmup_replays": 1,
+    "seeds": [
+      424242,
+      5090,
+      120120
+    ],
+    "action_operating_point": "FlashRT pi05 horizon 10, action dim 7",
+    "thresholds": {
+      "min_action_cosine": 0.98,
+      "min_speedup": 1.05,
+      "noise_bitwise_equal": true
+    }
+  },
+  "source_sha256": {
+    "serving/flash_rt/frontends/torch/pi05_rtx.py": "2ff79138da7bd66de82bb7f85f3a8b063e66805ec049aca4bca0f07daabd71f4",
+    "serving/flash_rt/models/pi05/pipeline_rtx.py": "c8f6b0a8fadb188ab8878f0ba2b451ae97d2836935c69f5bd28a7d46d4014e0d",
+    "serving/flash_rt/hardware/rtx/attn_backend.py": "9cb6224dc031edf3e2750e81acb883831194365f46f2f06cf1a19fdafbc6616b"
+  },
+  "arms": {
+    "native": {
+      "mode": "native",
+      "python": "3.10.20",
+      "torch": "2.9.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA GeForce RTX 5090",
+      "capability": [
+        12,
+        0
+      ],
+      "fp8_layout": "nk",
+      "fp8_weight_count": 0,
+      "binary_sha256": {
+        "flash_rt_kernels": "86ae023058b7d218badbfa8b853965825f7dad5ea8adef113a0158086bdf44e6",
+        "flash_rt_fa2": "aaaf05ad9d6eee0d19bb27425630970d40dcce35ee3397b84221208fef926ca6"
+      },
+      "load_ms": 2703.016058978392,
+      "calibrate_ms": 267.97182302107103,
+      "latency_ms": [
+        31.75426900270395,
+        31.699429004220292,
+        31.65817999979481
+      ],
+      "peak_allocated_bytes": 6800181760,
+      "peak_reserved_bytes": 6822035456,
+      "action_shape": [
+        3,
+        10,
+        7
+      ],
+      "action_min": -0.9512632489204407,
+      "action_max": 0.9194779396057129
+    },
+    "fp8": {
+      "mode": "fp8",
+      "python": "3.10.20",
+      "torch": "2.9.0+cu128",
+      "cuda": "12.8",
+      "device": "NVIDIA GeForce RTX 5090",
+      "capability": [
+        12,
+        0
+      ],
+      "fp8_layout": "nk",
+      "fp8_weight_count": 253,
+      "binary_sha256": {
+        "flash_rt_kernels": "86ae023058b7d218badbfa8b853965825f7dad5ea8adef113a0158086bdf44e6",
+        "flash_rt_fa2": "aaaf05ad9d6eee0d19bb27425630970d40dcce35ee3397b84221208fef926ca6"
+      },
+      "load_ms": 2820.930680987658,
+      "calibrate_ms": 357.96595600550063,
+      "latency_ms": [
+        20.83902299636975,
+        20.86684200912714,
+        20.757881982717663
+      ],
+      "peak_allocated_bytes": 9825471488,
+      "peak_reserved_bytes": 9925820416,
+      "action_shape": [
+        3,
+        10,
+        7
+      ],
+      "action_min": -0.9512632489204407,
+      "action_max": 0.9194779396057129
+    }
+  },
+  "comparisons": [
+    {
+      "dataset_row": 10,
+      "seed": 424242,
+      "noise_bitwise_equal": true,
+      "action_cosine": 0.9999572579454794,
+      "max_abs_action_delta": 0.015428006649017334,
+      "mean_abs_action_delta": 0.0026861170772463083
+    },
+    {
+      "dataset_row": 50,
+      "seed": 5090,
+      "noise_bitwise_equal": true,
+      "action_cosine": 0.9999592032763638,
+      "max_abs_action_delta": 0.014585942029953003,
+      "mean_abs_action_delta": 0.002075952710583806
+    },
+    {
+      "dataset_row": 100,
+      "seed": 120120,
+      "noise_bitwise_equal": true,
+      "action_cosine": 0.9999311414546364,
+      "max_abs_action_delta": 0.026227593421936035,
+      "mean_abs_action_delta": 0.002699169097468257
+    }
+  ],
+  "summary": {
+    "min_action_cosine": 0.9999311414546364,
+    "max_abs_action_delta": 0.026227593421936035,
+    "native_p50_ms": 31.699429004220292,
+    "fp8_p50_ms": 20.83902299636975,
+    "speedup": 1.5211571583630612
+  },
+  "failures": []
+}

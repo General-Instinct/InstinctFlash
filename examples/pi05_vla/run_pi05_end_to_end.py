@@ -27,6 +27,7 @@ The timings here are NOT pi05's per-step latency -- see `measure_chunk_cost.py` 
 from __future__ import annotations
 
 import json
+import os
 import sys
 import tempfile
 import time
@@ -41,7 +42,7 @@ import numpy as np                                                 # noqa: E402
 import instinctflash                                                  # noqa: E402
 from pi05_iwm.adapter import Pi05Adapter                           # noqa: E402
 
-BASE = "lerobot/pi05_base"
+BASE = os.environ.get("IFL_PI05_BASE", "lerobot/pi05_base")
 PROMPT = "Put the exhaust fans back to the slots."
 FAILED: list[str] = []
 
@@ -61,7 +62,13 @@ def declare(into: Path) -> Path:
         "execution": {"model_id": "example-org/pi05-declared", "backbone": "pi05", "servable": True,
                       "guidance": {"action": "none"},
                       "nfe": {"action": 10, "prefix": 1},
-                      "base_weights": BASE},
+                      "base_weights": BASE,
+                      "obs_features": {
+                          "observation.images.base_0_rgb": [3, 224, 224],
+                          "observation.images.left_wrist_0_rgb": [3, 224, 224],
+                          "observation.images.right_wrist_0_rgb": [3, 224, 224],
+                          "observation.state": [32],
+                      }},
         # provenance never reaches the runtime; it is here to prove that stays true
         "provenance": {"training_method": "not the runtime's business"},
     }, indent=2))
