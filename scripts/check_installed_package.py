@@ -72,6 +72,7 @@ def check(*, require_all_adapters: bool, require_torch_free: bool) -> dict:
         for name in ("sm120_fp8_results.json", "sm120_libero_screen_results.json",
                      "sm120_checkpoint_reference_results.json",
                      "sm120_libero_matched_results.json",
+                     "sm120_task5_diagnostic_results.json",
                      "verify_sm120_fp8.py", "reproduce_sm120_libero.py",
                      "verify_checkpoint_reference.py", "requirements-sm120.lock"):
             matches = [p for p in adapter.files or [] if str(p).endswith("share/instinctflash/pi05/" + name)]

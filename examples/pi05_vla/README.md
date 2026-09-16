@@ -289,10 +289,83 @@ environment and set `PI05_CHECKPOINT`, `PI05_DATASET`, and `LIBERO_CONFIG_PATH`
 repository variables on that runner. Runner registration is a separate GitHub
 administrative step. No external runner is created by adding the workflow file.
 
-The pi0.5 adapter wheel includes its numeric/reference/matched/historical-screen
+The pi0.5 adapter wheel includes its numeric/reference/matched/historical-screen/diagnostic
 JSON evidence, dependency lock and reproduction scripts under
 `share/instinctflash/pi05`. The installed-package
 check verifies those assets are present.
+
+### Task-5 three-arm diagnosis
+
+The completed 50-seed comparison measured **official LeRobot 29/50 (58%)**,
+**FlashRT BF16 28/50 (56%)**, and **FlashRT FP8 34/50 (68%)**. FP8 minus
+official is +10 percentage points, with a paired central 95% interval of
+[-4.54, +24.75] points. This does not establish superiority. The weakness is
+also present in the official model under this shared protocol; it cannot be
+attributed solely to FP8 quantization.
+
+The failure traces contain both ineffective/wrong-object grasps and placement
+errors. Of the 21 official failures, 13 lifted the target and reached within
+7 cm of the plate, one lifted but stayed farther away, and seven never lifted
+the target 4 cm. All 21 ended outside the actual 3 cm horizontal success
+threshold. For example, seed 40122 moved the ramekin and the other bowl while
+the target bowl was not lifted; the videos and body-position traces distinguish
+this from a failure to place an otherwise correctly grasped target.
+
+**Reproducibility finding:** all 50 BF16 action traces, success outcomes and
+noise sequences matched the earlier campaign. FP8 did not: fresh calibration
+changed 39 actual scale values despite identical frames and percentile, all
+50 action digests differed, and seven seeds changed success outcome
+(four gains / three losses; 33/50 previously, 34/50 now). Common noise prefixes
+still matched; different episode lengths account for full noise-list differences.
+Autotune logs also differed, but this diagnosis does not isolate their causal
+contribution. Persisting/validating actual calibration scales and selected GEMM
+algorithms is a remaining requirement for bit-exact cross-process FP8 replay.
+The earlier 500-pair certificate remains an immutable record of that run, not
+a promise that recalibrating/re-autotuning reproduces identical trajectories.
+
+The separate `benchmarks.vla.pi05_sm120_diagnostic` tool compares official
+LeRobot, FlashRT BF16 and FlashRT FP8 without changing the qualified rollout or
+inference implementation. It reuses a completed 500-pair campaign's checkpoint,
+calibration frames, selected percentile, frozen resets and seeds 40100–40149.
+Each arm runs in its own process: computed chunk 50, executed horizon 10,
+NFE 10, 10 settling steps and a 280-step limit. Official weights are checked
+tensor-by-tensor, including the legitimate tied embedding alias.
+
+The official arm receives the exact BF16-rounded diffusion noise values used
+by FlashRT, promoted to FP32 for its stock action projection. This isolates
+implementation differences but is **not** an evaluation of LeRobot's default
+FP32 random sampler. All arms share the qualified simulator/input adapter, so
+a shared adapter issue cannot be excluded by this comparison alone.
+
+Use the locked environment and EGL variables from the reproduction instructions
+above, then run from the repository root:
+
+```bash
+PYTHONPATH=serving:. python -m benchmarks.vla.pi05_sm120_diagnostic \
+  --baseline /path/to/completed-500-pair-campaign \
+  --output /path/to/new-task5-diagnostic --task 5 --episodes 50
+
+PYTHONPATH=. python scripts/analyze_pi05_diagnostic.py \
+  --campaign /path/to/new-task5-diagnostic \
+  --output /path/to/diagnostic-analysis --sheet-seeds 40102 40122 \
+  --evidence /path/to/task5-diagnostic-evidence.json
+```
+
+Each episode saves an MP4 with both cameras and a non-pickle NPZ containing
+policy observations, BF16-rounded noise, predicted chunks, executed actions,
+robot states, body positions and the actual success predicates. The report
+checks their hashes and recomputes the action/noise digests. Complete arms can
+be resumed; partial arms are rerun. Changed sources/configuration require a new
+output directory. The diagnostic refuses to write into the baseline campaign.
+
+`sm120_task5_diagnostic_results.json` is the compact portable record; videos and
+bulk trajectories remain outside the repository. CPU CI checks its source
+hashes, all 50 paired seeds, noise sequences and recomputed confidence intervals.
+It is a **post-hoc task diagnosis**, not a new suite-wide qualification or a
+claim of superiority. Recording overhead makes its timings unsuitable for a
+performance certificate. Geometric labels (4 cm lift / 7 cm proximity) are
+descriptive only: they never replace LIBERO's real `On` predicate, which also
+requires contact, vertical ordering and horizontal center separation below 3 cm.
 
 ## Run it
 
