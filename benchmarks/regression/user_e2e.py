@@ -140,6 +140,16 @@ def fp8_weights(root):
     """Read packed-weight metadata after timing; never convert or mutate tensors."""
     import torch
     seen, found = set(), []
+    # Plain policy/server objects bridge the public loop to its nn.Module. Use
+    # their defining namespaces: sys.modules aliases do not change __module__.
+    packages = (
+        "instinctflash", "flash_rt", "lingbotvla", "lingbot_vla_iwm",
+        "lingbot_vla_v2_iwm", "groot_n17_iwm", "gr00t", "groot",
+        "cosmos3_iwm", "cosmos_framework", "dreamzero_iwm", "pi05_iwm",
+        "eval_utils", "wan_va",
+    )
+    modules = {"wan_va_server", "deploy.lingbot_vla_policy",
+               "deploy.lingbot_vla_v2_policy"}
 
     def visit(value, path, depth=0):
         if id(value) in seen or depth > 128:
@@ -154,8 +164,11 @@ def fp8_weights(root):
         elif isinstance(value, (list, tuple)):
             for i, child in enumerate(value):
                 visit(child, path+f"[{i}]", depth+1)
-        elif isinstance(value, torch.nn.Module) or type(value).__module__.startswith((
-                "instinctflash", "flash_rt", "lingbot", "groot", "cosmos", "dreamzero", "pi05", "eval_utils")):
+        elif (isinstance(value, torch.nn.Module)
+              or type(value).__module__ in modules
+              or any(type(value).__module__ == package
+                     or type(value).__module__.startswith(package + ".")
+                     for package in packages)):
             if hasattr(value, "__dict__"):
                 visit(vars(value), path, depth+1)
     visit(root, "backend")
