@@ -1,8 +1,11 @@
 """Transported archives are verified against the original recipe before use."""
 import copy
+import errno
 import hashlib
 import importlib.util
 import json
+import os
+import shutil
 import sys
 import zipfile
 from pathlib import Path
@@ -82,3 +85,54 @@ def test_tampered_cache_cannot_replace_a_pinned_dependency(wheelhouse, mutation)
     (directory / "manifest.json").write_text(json.dumps(manifest))
     with pytest.raises(ValueError):
         bootstrap.admit_dependency_wheelhouse(directory, profile)
+
+
+def test_two_transported_copies_use_the_same_verified_artifact_url(wheelhouse):
+    directory, profile, manifest, source = wheelhouse
+    first = bootstrap.admit_dependency_wheelhouse(directory, profile)
+    cache = directory / "shared"
+    one = bootstrap.share_dependency_artifacts(first, cache)
+    other = directory / "second-family-cache"
+    shutil.copytree(source.parent, other / "wheels")
+    (other / "manifest.json").write_text(json.dumps(manifest))
+    two = bootstrap.share_dependency_artifacts(bootstrap.admit_dependency_wheelhouse(other, profile), cache)
+    assert one == two
+    target = Path(one["paths"]["fixture"])
+    assert os.stat(target).st_ino == os.stat(source).st_ino
+    assert one["constraints"] == f"fixture @ {target.as_uri()}\n"
+    assert one["explicit_override_paths"] == {"fixture": str(target)}
+
+
+@pytest.mark.parametrize("mutation", ["content", "symlink", "manifest"])
+def test_changed_shared_artifact_is_rejected_without_replacement(wheelhouse, mutation):
+    directory, profile, _, _ = wheelhouse
+    admission = bootstrap.admit_dependency_wheelhouse(directory, profile)
+    shared = bootstrap.share_dependency_artifacts(admission, directory / "shared")
+    target = Path(shared["paths"]["fixture"])
+    if mutation == "content":
+        target.write_bytes(b"changed")
+    elif mutation == "symlink":
+        target.unlink()
+        target.symlink_to(directory / "missing")
+    else:
+        (directory / "manifest.json").write_text("{}")
+    with pytest.raises(ValueError):
+        bootstrap.share_dependency_artifacts(admission, directory / "shared")
+
+
+def test_shared_artifact_cross_filesystem_copy_is_still_verified(wheelhouse, monkeypatch):
+    directory, profile, _, source = wheelhouse
+    admission = bootstrap.admit_dependency_wheelhouse(directory, profile)
+    original_link = os.link
+
+    def simulate_cross_filesystem(src, dst):
+        if src == source:
+            raise OSError(errno.EXDEV, "different filesystem")
+        return original_link(src, dst)
+
+    monkeypatch.setattr(bootstrap.os, "link", simulate_cross_filesystem)
+    result = bootstrap.share_dependency_artifacts(admission, directory / "shared")
+    target = Path(result["paths"]["fixture"])
+    assert target.read_bytes() == source.read_bytes()
+    assert target.stat().st_ino != source.stat().st_ino
+    assert list(target.parent.iterdir()) == [target]

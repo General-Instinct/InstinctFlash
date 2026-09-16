@@ -12,6 +12,7 @@ import argparse
 import copy
 import csv
 import datetime as dt
+import errno
 import hashlib
 import io
 import json
@@ -21,6 +22,7 @@ import shlex
 import shutil
 import subprocess
 import sys
+import tempfile
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -210,6 +212,62 @@ def admit_dependency_wheelhouse(directory: Path, profile: dict) -> dict:
             "target": target, "family": profile["family"], "verified_wheels": len(seen),
             "explicit_override_paths": overrides,
             "scope": "caller-supplied wheelhouse; recipe, file hashes and metadata verified"}
+
+
+def share_dependency_artifacts(admission: dict, cache: Path) -> dict:
+    """Give identical wheels a stable file URL across separate family installs.
+
+    uv keys local archives by their source location. A shared extraction cache
+    alone does not deduplicate wheels arriving in different family directories.
+    Exact file-URL constraints also keep the selected manifest authoritative.
+    """
+    manifest_path = Path(admission["directory"]) / "manifest.json"
+    if sha(manifest_path) != admission["manifest_sha256"]:
+        raise ValueError("dependency manifest changed after admission")
+    entries = json.loads(manifest_path.read_text())["wheels"]
+    names = [re.sub(r"[-_.]+", "-", entry["name"]).lower() for entry in entries]
+    if len(set(names)) != len(names):
+        raise ValueError("shared artifacts require one exact wheel per package")
+    cache = cache.expanduser().resolve()
+    cache.mkdir(parents=True, exist_ok=True)
+    paths = {}
+    for name, entry in zip(names, entries):
+        directory = cache / entry["sha256"]
+        directory.mkdir(exist_ok=True)
+        if directory.is_symlink():
+            raise ValueError("shared dependency artifact directory cannot be linked")
+        source = Path(admission["wheel_directory"]) / entry["filename"]
+        target = directory / entry["filename"]
+        if not target.exists() and not target.is_symlink():
+            try:
+                os.link(source, target)
+            except FileExistsError:
+                pass  # A concurrent installer may have published the same file.
+            except OSError as error:
+                if error.errno != errno.EXDEV:
+                    raise
+                with tempfile.NamedTemporaryFile(dir=directory, delete=False) as temporary:
+                    staging = Path(temporary.name)
+                try:
+                    shutil.copyfile(source, staging)
+                    if sha(staging) != entry["sha256"]:
+                        raise ValueError("dependency artifact changed while copying")
+                    try:
+                        os.link(staging, target)
+                    except FileExistsError:
+                        pass
+                finally:
+                    staging.unlink()
+        if (target.is_symlink() or not target.is_file()
+                or target.stat().st_size != entry["bytes"] or sha(target) != entry["sha256"]):
+            raise ValueError(f"shared dependency artifact differs from manifest: {name}")
+        paths[name] = str(target)
+    constraints = "".join(f"{name} @ {Path(path).as_uri()}\n" for name, path in sorted(paths.items()))
+    overrides = {name: paths[re.sub(r"[-_.]+", "-", name).lower()]
+                 for name in admission["explicit_override_paths"]}
+    return {"cache": str(cache), "paths": paths, "constraints": constraints,
+            "explicit_override_paths": overrides,
+            "scope": "same verified wheels at stable file URLs; dependency versions unchanged"}
 
 
 def prepare_ptxas(path: Path, output: Path, *, target: str = "jetson_thor") -> dict:
@@ -447,6 +505,17 @@ class Bootstrap:
                 write_json(self.root / "dependency_wheelhouse_admission.json", wheelhouse)
             indexes = (["--offline", "--no-index", "--find-links", wheelhouse["wheel_directory"]]
                        if wheelhouse else ["--index-url", "https://pypi.org/simple"])
+            shared_artifacts = None
+            artifact_cache = getattr(self.args, "dependency_artifact_cache", None)
+            if artifact_cache:
+                if wheelhouse is None:
+                    raise ValueError("--dependency-artifact-cache requires --dependency-wheelhouse")
+                shared_artifacts = share_dependency_artifacts(wheelhouse, artifact_cache)
+                write_json(self.root / "shared_dependency_artifacts.json", shared_artifacts)
+                artifact_constraints = self.root / "dependency_artifacts.constraints.txt"
+                artifact_constraints.write_text(shared_artifacts["constraints"])
+                indexes += ["-c", str(artifact_constraints)]
+                wheelhouse = {**wheelhouse, "explicit_override_paths": shared_artifacts["explicit_override_paths"]}
             compiler = (prepare_ptxas(self.args.ptxas, self.root / "compiler", target=deployment_target)
                         if getattr(self.args, "ptxas", None) else None)
             if compiler:
@@ -552,6 +621,7 @@ class Bootstrap:
                       "native_tool_preparation": native_tool,
                       "compiler_preparation": compiler,
                       "dependency_wheelhouse": wheelhouse,
+                      "shared_dependency_artifacts": shared_artifacts,
                       "wheels": [{"path": str(p), "sha256": sha(p)} for p in wheels]}
             write_json(self.root / "completion.json", result)
             return result
@@ -579,6 +649,8 @@ def main(argv=None) -> int:
     p.add_argument("--package-wheel-dir", type=Path)
     p.add_argument("--dependency-wheelhouse", type=Path,
                    help="Use a manifest-bound, hash-verified dependency wheel cache; keep the selected recipe's pins.")
+    p.add_argument("--dependency-artifact-cache", type=Path,
+                   help="Give verified wheelhouse files stable shared paths for reuse across family environments.")
     p.add_argument("--repaired-wheel", type=Path)
     p.add_argument("--repair-receipt", type=Path)
     p.add_argument("--ptxas", type=Path,

@@ -68,6 +68,10 @@ wheel's size, SHA256 and package metadata, including the original digests of
 explicit URL pins, then resolves dependencies without an index. The admission
 receipt records the cache used. This option covers dependency wheels; vendor
 source checkout and separately declared tools still follow their own setup.
+When installing several families from transported caches, add
+``--dependency-artifact-cache /path/to/shared-archives``. Identical verified
+wheels then use the same file URLs, so ``uv`` can reuse their extracted files.
+Combine this with the executable shared ``--cache-dir`` and ``--link-mode hardlink``.
 
 If the required Python version is missing, ``uv python install 3.12`` (or
 ``3.13`` for Cosmos) installs it separately. Pass the path printed by
