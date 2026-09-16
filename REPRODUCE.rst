@@ -258,8 +258,11 @@ until interrupted; its checkpoint, cache and library paths must remain available
 
 For your robot, inspect ``runtime.observation.describe()`` and replace the
 recorded fixture with current cameras and robot state. Reset at episode
-boundaries and report actions actually executed when a controller changes them.
-See `INSTALL.rst <INSTALL.rst>`_ for Python and OpenPI-compatible client examples.
+boundaries, including repeated prompts. VA accepts feedback about the previous
+action chunk actually executed; DreamZero's native wrapper rejects overrides.
+See `Load and predict <INSTALL.rst#load-and-predict>`_ for Python history handling
+and `Connect a WebSocket client <INSTALL.rst#connect-a-websocket-client>`_ for
+the wire reset/feedback messages and the single-stream server contract.
 
 Task quality and historical experiments
 --------------------------------------

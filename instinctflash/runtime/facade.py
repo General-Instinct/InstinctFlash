@@ -140,19 +140,18 @@ class Runtime:
     def reset(self, **conditioning: Any) -> None:
         """Start a new episode on this runtime. Conditioning is whatever the checkpoint needs.
 
-        The simple, single-robot form. For concurrent or clearly-scoped episodes use `episode()`.
+        One runtime holds one active episode. Use `episode()` for a scoped handle
+        to that same state; use separate runtimes for independent observation streams.
         """
         self._backend.reset(**conditioning)
 
     def episode(self, **conditioning: Any) -> "Episode":
         """An explicit episode handle: `with runtime.episode(prompt=...) as ep: ep.predict(obs)`.
 
-        WHY BOTH THIS AND `reset()`. `reset()` mutates one implicit episode, which is exactly right
-        for one robot in one loop and is what LeRobot exposes. It has no way to say "these two
-        rollouts are separate", so as soon as a fleet shares one loaded model -- the case this
-        runtime exists for -- episode identity has to become a value the caller holds rather than
-        hidden state the caller hopes it reset. vLLM reached the same conclusion and calls it a
-        request id.
+        This resets the runtime's one backend state. Handles do not isolate or
+        snapshot episodes: opening another handle replaces the state used by an
+        earlier handle. Finish each episode before opening the next, and serialize
+        predict/reset/close calls on each runtime.
         """
         self._backend.reset(**conditioning)
         return Episode(self, conditioning)
@@ -283,7 +282,10 @@ class Runtime:
 
 
 class Episode:
-    """One rollout. Created by `Runtime.episode()`; holds no weights and is cheap to make.
+    """A scoped handle to the runtime's current rollout, without independent state.
+
+    Created by `Runtime.episode()`. Opening another episode on the same runtime
+    resets the shared backend; an older handle does not retain its previous state.
 
     The verbs stop here deliberately. There is no `step()` -- ambiguous between a denoising step and
     a control step, and it buys nothing over `predict`. There is no `commit()` -- committing state is

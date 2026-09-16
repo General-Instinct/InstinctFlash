@@ -876,7 +876,10 @@ def main(argv=None) -> int:
         else:
             result = Bootstrap(a, profile).install()
         print(json.dumps(result, indent=2, sort_keys=True))
-        return 0
+        # Keep the complete package/doctor receipt available to callers, while
+        # making a failed required check visible to shell automation. An
+        # explicitly deferred doctor records None and remains a successful install.
+        return 1 if a.command == "install" and result["CPU_doctor_passed"] is False else 0
     except (ValueError, RuntimeError, OSError, subprocess.SubprocessError) as error:
         print(json.dumps({"status": "failed", "error_type": type(error).__name__, "error": str(error)}))
         return 1

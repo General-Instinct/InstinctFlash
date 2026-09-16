@@ -330,6 +330,61 @@ def test_failed_command_has_exact_log_and_stops(tmp_path):
     assert "dependency conflict" in log.read_text()
 
 
+@pytest.mark.parametrize("doctor_exit,deferred,expected_exit", [(1, False, 1), (0, False, 0), (None, True, 0)])
+def test_cli_preserves_install_and_doctor_receipts_and_propagates_failure(
+        tmp_path, monkeypatch, capsys, doctor_exit, deferred, expected_exit):
+    # Exercise the real install/CLI completion path and command receipt writer.
+    # Replace package-manager work with bounded Python fixtures; the doctor is
+    # still a real process whose exit and full output must reach the receipt.
+    monkeypatch.setattr(subprocess, "check_output", lambda *a, **kw: '["Linux","x86_64","3.12"]')
+    original_command = bootstrap.Bootstrap.command
+    requested_labels = []
+    doctor_report = {"status": "failed" if doctor_exit else "passed", "missing": ["vendor_api"] if doctor_exit else []}
+
+    def fixture_command(self, label, argv, **kwargs):
+        requested_labels.append(label)
+        assert label in {"venv", "dependency_resolution", "build_tools", "build_0", "build_1", "build_2",
+                         "install_source_wheels", "pip_check", "uv_pip_check", "cpu_doctor"}
+        if label == "venv":
+            (self.env_dir / "bin").mkdir(parents=True)
+            (self.env_dir / "bin/activate").write_text("# fixture environment\n")
+        if label.startswith("build_") and label != "build_tools":
+            (self.root / "wheels" / f"fixture_{label}-0.1-py3-none-any.whl").write_bytes(b"CPU fixture wheel")
+        if label == "cpu_doctor":
+            assert not deferred
+            assert argv[-2:] == ["--target", "rtx4090"]
+            program = f"print({json.dumps(doctor_report)!r}); raise SystemExit({doctor_exit})"
+        else:
+            program = f"print({label!r})"
+        return original_command(self, label, [sys.executable, "-I", "-c", program], **kwargs)
+
+    monkeypatch.setattr(bootstrap.Bootstrap, "command", fixture_command)
+    root = tmp_path / "installed"
+    argv = ["install", "pi05", "--target", "rtx4090", "--root", str(root)]
+    if deferred:
+        argv.append("--defer-doctor")
+    assert bootstrap.main(argv) == expected_exit
+    output = json.loads(capsys.readouterr().out)
+    completion = json.loads((root / "completion.json").read_text())
+    assert output == completion
+    assert completion["status"] == "packages_checked"
+    assert completion["CPU_doctor_passed"] is (None if deferred else doctor_exit == 0)
+    assert completion["CPU_doctor_deferred"] is deferred
+    assert (root / "activate.sh").is_file()
+    assert not (root / "failure.json").exists()
+    assert {"pip_check", "uv_pip_check"} <= set(requested_labels)
+    doctors = [entry for entry in completion["commands"] if entry["label"] == "cpu_doctor"]
+    if deferred:
+        assert not doctors
+    else:
+        assert len(doctors) == 1 and doctors[0]["returncode"] == doctor_exit
+        log = Path(doctors[0]["log"])
+        assert json.loads(log.read_text()) == doctor_report
+        assert doctors[0]["log_sha256"] == bootstrap.sha(log)
+        doctor_receipt = next((root / "receipts").glob("*_cpu_doctor.json"))
+        assert json.loads(doctor_receipt.read_text()) == doctors[0]
+
+
 def test_packaging_manifest_cannot_touch_model_source(tmp_path):
     import shutil
 

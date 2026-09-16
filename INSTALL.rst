@@ -31,6 +31,9 @@ patches, creates a separate environment, and installs noneditable vendor, core
 and adapter wheels. It writes dependency checks, source hashes and activation
 settings under the output directory. It needs network access, Git, the selected
 Python interpreter and ``uv``; supply an existing executable with ``--uv``.
+A failed required CPU doctor returns a nonzero exit status while preserving the
+complete installation receipt and doctor log. ``--defer-doctor`` explicitly
+leaves that check pending; it does not certify an inference environment.
 ``--ptxas`` checks that the selected CUDA assembler supports Thor's ``sm_110a``
 target and saves both Triton compiler overrides in the activation. The measured
 installation uses CUDA 13.2; some bundled Triton assemblers do not support Thor.
@@ -263,6 +266,21 @@ contract and its ``runtime.observation_source``; adapter contracts are in
 `DreamZero <examples/dreamzero/dreamzero_iwm/adapter.py>`_.
 LingBot-VA and DreamZero also require their episode-dependent camera history.
 Reset once at an episode boundary, then retain the runtime across control cycles.
+For the shipped RoboTwin VA checkpoint, send one current camera frame on the
+first call, four newly observed frames on the second, and eight on later calls.
+Each frame is a camera dictionary under ``obs``. DreamZero DROID uses one frame
+per camera initially and four per camera on each continuation call. Use frames
+observed while the previous action chunk executed; repeating a frame to fill
+the history changes the model input.
+
+One Runtime has one active episode. ``runtime.episode(prompt=...)`` offers a
+context-managed handle to the same backend state; it does not isolate concurrent
+episodes. Finish one episode before starting another and serialize calls.
+
+For VA, pass the previous chunk actually executed with
+``runtime.predict(observation, executed_action=previous_executed_chunk)`` when
+it differs from the returned chunk. Omit it when the returned chunk was executed
+unchanged. DreamZero's native wrapper rejects executed-action overrides.
 
 Construction can download checkpoint weights. Native in-process loading is
 normally deferred until reset or predict; an FP8 engine can load during
@@ -307,6 +325,49 @@ or contact a worker. ``runtime.execution_policy`` reports the selected schedule
 and arithmetic policy. Where supported, realized dynamic-cache counts appear
 inside ``stats`` after inference; planning estimates are not measured calls.
 Use one active observation stream per runtime and reset between episodes.
+
+Connect a WebSocket client
+--------------------------
+
+The ``serve`` command uses OpenPI's msgpack/numpy wire format. A client can use
+the dependencies already supplied by ``.[serve]``. After starting the loopback
+server above, this generator sends one episode's iterable of observations and
+yields the returned action chunks::
+
+    from websockets.sync.client import connect
+    from instinctflash.serving import msgpack_numpy
+
+    def receive(connection):
+        reply = connection.recv(timeout=120)
+        if isinstance(reply, str):
+            raise RuntimeError(reply)
+        return msgpack_numpy.unpackb(reply)
+
+    def stream_episode(observations, instruction):
+        with connect("ws://127.0.0.1:8000", compression=None, max_size=None) as connection:
+            metadata = receive(connection)  # The first frame is server metadata.
+            print(metadata["observation"])
+            connection.send(msgpack_numpy.packb({"reset": True, "prompt": instruction}))
+            receive(connection)  # Reset acknowledgment; no action is returned.
+            for observation in observations:
+                observation = dict(observation, prompt=instruction)
+                connection.send(msgpack_numpy.packb(observation))
+                yield receive(connection)["action"]
+
+Supply observations from the current cameras and robot state using the advertised
+contract; execute each yielded chunk before collecting the next observation.
+Keep the connection for subsequent control cycles. Send the reset message at
+every episode boundary, even if the prompt is unchanged, and after reconnecting.
+OpenPI client 0.1.1's ``reset()`` sends no message; with that client use
+``client.infer({"reset": True, "prompt": instruction})`` explicitly.
+A changed prompt also starts a new episode, but an unchanged prompt does not.
+
+The Python history requirements above apply to each wire observation too.
+For VA feedback, put ``executed_action`` in the observation map; the server
+passes it to ``Runtime.predict`` as the keyword argument described above.
+Do not send this field for DreamZero. All connections to one server share its
+single runtime episode; use one active robot observation stream per server.
+Adjust the receive timeout for the selected model's startup and prediction time.
 
 Native engine assets
 --------------------
