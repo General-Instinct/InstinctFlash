@@ -73,6 +73,15 @@ When installing several families from transported caches, add
 wheels then use the same file URLs, so ``uv`` can reuse their extracted files.
 Combine this with the executable shared ``--cache-dir`` and ``--link-mode hardlink``.
 
+To reuse an existing vendor Git checkout or a self-contained Git bundle, add
+``--vendor-source /path/to/prior/vendor`` or ``--vendor-source /path/to/vendor.bundle``.
+The bootstrap fetches the profile's exact commit into its new destination and
+runs the same source and patch checks. Local working-tree edits are excluded;
+the input repository is unchanged. The receipt retains the original repository
+URL and revision and records the local transport separately, including a bundle's
+SHA256. A missing commit or incomplete bundle fails without a network fallback.
+Without this option, the bootstrap fetches from the pinned public repository.
+
 If the required Python version is missing, ``uv python install 3.12`` (or
 ``3.13`` for Cosmos) installs it separately. Pass the path printed by
 ``uv python find 3.12`` as the bootstrap's ``--python`` argument.

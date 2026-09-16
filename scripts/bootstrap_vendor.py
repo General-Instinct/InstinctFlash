@@ -129,6 +129,26 @@ def activation_environment(profile: dict, vendor: Path) -> dict:
     return values
 
 
+def vendor_source_transport(profile: dict, source: Path | None) -> dict | None:
+    """Describe an explicit local transport without replacing the pinned source."""
+    if not profile["source_manifest"]:
+        if source is not None:
+            raise ValueError("--vendor-source requires a family with a Git source profile")
+        return None
+    if source is None:
+        return {"kind": "public_https", "url": profile["source"]["source"]["repository"]}
+    path = source.expanduser().resolve(strict=True)
+    if path.is_dir():
+        return {"kind": "local_git_repository", "path": str(path)}
+    if path.is_file():
+        with path.open("rb") as f:
+            header = f.readline(32)
+        if header in (b"# v2 git bundle\n", b"# v3 git bundle\n"):
+            return {"kind": "local_git_bundle", "path": str(path),
+                    "bytes": path.stat().st_size, "sha256": sha(path)}
+    raise ValueError("--vendor-source must be a local Git repository or Git bundle")
+
+
 def admit_dependency_wheelhouse(directory: Path, profile: dict, *, checkout: Path = CHECKOUT) -> dict:
     """Verify a transported cache before any wheel is installed or imported.
 
@@ -466,6 +486,16 @@ class Bootstrap:
         self.vendor = (args.vendor_dir or self.root / "vendor").expanduser().absolute()
         self.environment = clean_environment(args.cache_dir)
         self.environment["UV_LINK_MODE"] = getattr(args, "link_mode", "copy")
+        self.source_transport = vendor_source_transport(profile, getattr(args, "vendor_source", None))
+        if self.source_transport and self.source_transport["kind"].startswith("local_git_"):
+            # Fetch objects from the explicit local input only, including when a
+            # partial clone would otherwise lazily contact its configured remote.
+            for key in tuple(self.environment):
+                if key.startswith("GIT_"):
+                    self.environment.pop(key)
+            self.environment.update(GIT_ALLOW_PROTOCOL="file", GIT_NO_LAZY_FETCH="1",
+                                    GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull,
+                                    GIT_LFS_SKIP_SMUDGE="1", GIT_TERMINAL_PROMPT="0")
         self.receipts = self.root / "receipts"
         self.python = self.env_dir / "bin/python"
         self.commands = []
@@ -491,6 +521,10 @@ class Bootstrap:
         targets = [self.root, self.env_dir]
         if self.profile["source_manifest"]:
             targets.append(self.vendor)
+        if self.source_transport and self.source_transport["kind"] == "local_git_repository":
+            source = Path(self.source_transport["path"])
+            if any(target.resolve().is_relative_to(source) for target in targets):
+                raise ValueError("bootstrap destinations must be outside the local vendor source")
         for target in targets:
             if target.exists() or target.is_symlink():
                 raise ValueError(f"refusing existing destination: {target}")
@@ -501,17 +535,37 @@ class Bootstrap:
         self.root.mkdir(parents=True, exist_ok=False)
         self.receipts.mkdir()
         write_json(self.receipts / "plan.json", {"profile": self.profile, "source_sha256": sha(Path(__file__)),
+                    "vendor_source_transport": self.source_transport,
                     "model_constructed": False, "GPU_verified": False, "weights_downloaded": False})
 
     def prepare_source(self) -> None:
         if not self.profile["source_manifest"]:
             return
         manifest = self.profile["source"]
+        transport = self.source_transport
+        local = transport["kind"].startswith("local_git_")
+        git = ["git", "-c", "core.hooksPath=/dev/null"]
+        if local:
+            git += ["-c", "core.fsmonitor=false", "-c", "fetch.fsckObjects=true"]
         self.vendor.mkdir(parents=True, exist_ok=False)
-        self.command("git_init", ["git", "init", str(self.vendor)])
-        self.command("git_fetch", ["git", "-c", "core.hooksPath=/dev/null", "fetch", "--depth=1",
-                                   manifest["source"]["repository"], manifest["source"]["revision"]], cwd=self.vendor)
-        self.command("git_checkout", ["git", "-c", "core.hooksPath=/dev/null", "checkout", "--detach", "FETCH_HEAD"], cwd=self.vendor)
+        self.command("git_init", [*git, "init", str(self.vendor)])
+        if transport["kind"] == "local_git_bundle":
+            self.command("git_bundle_verify", [*git, "bundle", "verify", transport["path"]], cwd=self.vendor)
+        fetch = [*git, "fetch"]
+        if local:
+            fetch += ["--no-tags"]
+        # Git imports the bundle's pack; --depth is unsupported for bundles.
+        if transport["kind"] != "local_git_bundle":
+            fetch += ["--depth=1"]
+        fetch += [transport["path"] if local else transport["url"], manifest["source"]["revision"]]
+        self.command("git_fetch", fetch, cwd=self.vendor)
+        if transport["kind"] == "local_git_bundle" and (
+                Path(transport["path"]).stat().st_size != transport["bytes"]
+                or sha(Path(transport["path"])) != transport["sha256"]):
+            raise ValueError("local vendor bundle changed during fetch")
+        self.command("git_checkout", [*git, "checkout", "--detach", "FETCH_HEAD"], cwd=self.vendor)
+        if local:
+            self.command("git_connectivity", [*git, "fsck", "--connectivity-only", "HEAD"], cwd=self.vendor)
         head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.vendor, env=self.environment, text=True).strip()
         if head != manifest["source"]["revision"]:
             raise ValueError("fetched vendor commit mismatch")
@@ -535,7 +589,8 @@ class Bootstrap:
         self.command("inference_metadata_patch", ["git", "apply", str(patch)], cwd=self.vendor)
         for name, expected in packaging["after"].items():
             checked_path(self.vendor, name, expected)
-        write_json(self.receipts / "vendor_source.json", {"revision": head, "recorded_patch": manifest["patch"],
+        write_json(self.receipts / "vendor_source.json", {"repository": manifest["source"]["repository"],
+                   "revision": head, "transport": transport, "recorded_patch": manifest["patch"],
                    "inference_metadata_patch": packaging, "runtime_files_changed_by_metadata_patch": False})
 
     def repaired_wheel(self) -> Path:
@@ -766,6 +821,8 @@ def main(argv=None) -> int:
     p.add_argument("--uv", default="uv")
     p.add_argument("--env-dir", type=Path)
     p.add_argument("--vendor-dir", type=Path)
+    p.add_argument("--vendor-source", type=Path,
+                   help="Fetch the profile's exact commit from a local Git repository or self-contained bundle.")
     p.add_argument("--cache-dir", type=Path)
     p.add_argument("--link-mode", choices=("copy", "hardlink"), default="copy",
                    help="Use hardlink only with an executable shared cache on the environment filesystem.")
@@ -791,7 +848,12 @@ def main(argv=None) -> int:
         p.error("install requires --root at a new destination")
     try:
         profile = load_profile(a.model, a.checkout, target=a.target)
-        result = profile if a.command == "plan" else Bootstrap(a, profile).install()
+        if a.command == "plan":
+            result = profile
+            if a.vendor_source is not None:
+                result = {**profile, "vendor_source_transport": vendor_source_transport(profile, a.vendor_source)}
+        else:
+            result = Bootstrap(a, profile).install()
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     except (ValueError, RuntimeError, OSError, subprocess.SubprocessError) as error:
