@@ -16,6 +16,7 @@ import hashlib
 import io
 import json
 import os
+import re
 import shlex
 import shutil
 import subprocess
@@ -23,6 +24,7 @@ import sys
 import urllib.request
 import zipfile
 from pathlib import Path
+from urllib.parse import unquote, urldefrag, urlsplit
 
 import prepare_native_tools
 import repair_vendor_wheel
@@ -124,6 +126,90 @@ def activation_environment(profile: dict, vendor: Path) -> dict:
         # Documented package-update opt-out; no model or preprocessing change.
         values["NO_ALBUMENTATIONS_UPDATE"] = "1"
     return values
+
+
+def admit_dependency_wheelhouse(directory: Path, profile: dict) -> dict:
+    """Verify a transported cache before any wheel is installed or imported.
+
+    Requirements/constraints remain authoritative. Explicit public URL pins
+    additionally require their original SHA256, even if a manifest was edited.
+    A local wheelhouse is an explicit caller-supplied dependency source, whose
+    complete manifest and hashes are recorded separately from public resolution.
+    """
+    directory = directory.expanduser().resolve(strict=True)
+    manifest_path = directory / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    target = profile.get("deployment_target", "jetson_thor")
+    expected = {"requirements_sha256": profile["requirements"]["sha256"],
+                "constraints_sha256": profile["constraints"]["sha256"],
+                "public_wheel_overrides": profile["public_wheel_overrides"]}
+    if (manifest.get("schema") != "instinctflash.dependency_wheelhouse.v1"
+            or manifest.get("family") != profile["family"] or manifest.get("target") != target
+            or manifest.get("inputs") != expected):
+        raise ValueError("dependency wheelhouse does not match the selected pinned recipe")
+    relative = manifest.get("wheel_directory", ".")
+    if not isinstance(relative, str) or relative not in (".", "wheels"):
+        raise ValueError("dependency wheelhouse uses an unsupported archive directory")
+    wheel_directory = directory / relative
+    if wheel_directory.is_symlink() or not wheel_directory.is_dir():
+        raise ValueError("dependency wheelhouse archive directory is missing or linked")
+    entries = manifest.get("wheels")
+    if not isinstance(entries, list) or not entries:
+        raise ValueError("dependency wheelhouse has no verified wheels")
+    seen, by_name = set(), {}
+    public_urls = {urldefrag(url)[0] for url in profile["public_wheel_overrides"].values()}
+    for entry in entries:
+        filename = entry["filename"]
+        if (not isinstance(filename, str) or Path(filename).name != filename
+                or not filename.endswith(".whl") or filename in seen):
+            raise ValueError("dependency wheelhouse contains an invalid or repeated wheel path")
+        seen.add(filename)
+        url = urlsplit(entry["url"])
+        if (url.scheme != "https" or url.username or url.password
+                or (url.hostname not in {"files.pythonhosted.org", "download.pytorch.org",
+                                         "download-r2.pytorch.org"}
+                    and urldefrag(entry["url"])[0] not in public_urls)
+                or unquote(Path(url.path).name) != filename):
+            raise ValueError("dependency wheelhouse wheel has an invalid public source binding")
+        digest = entry["sha256"]
+        if not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
+            raise ValueError("dependency wheelhouse requires full SHA256 digests")
+        path = wheel_directory / filename
+        if path.is_symlink() or not path.is_file() or path.stat().st_size != entry["bytes"]:
+            raise ValueError(f"dependency wheelhouse file missing or wrong size: {filename}")
+        if sha(path) != digest:
+            raise ValueError(f"dependency wheelhouse hash mismatch: {filename}")
+        with zipfile.ZipFile(path) as archive:
+            metadata = [info for info in archive.infolist()
+                        if info.filename.endswith(".dist-info/METADATA") and info.filename.count("/") == 1]
+            if len(metadata) != 1 or metadata[0].file_size > 1 << 20:
+                raise ValueError(f"dependency wheel metadata is invalid: {filename}")
+            from email.parser import BytesParser
+            message = BytesParser().parsebytes(archive.read(metadata[0]))
+        normalize = lambda value: re.sub(r"[-_.]+", "-", value).lower()
+        if (normalize(message.get("Name", "")) != normalize(entry["name"])
+                or message.get("Version") != entry["version"]):
+            raise ValueError(f"dependency wheel metadata differs from manifest: {filename}")
+        by_name.setdefault(normalize(entry["name"]), []).append(entry)
+    actual = {path.name for path in wheel_directory.glob("*.whl")}
+    if actual != seen:
+        raise ValueError("dependency wheelhouse contains wheels outside the verified manifest")
+    overrides = {}
+    for name, original_url in profile["public_wheel_overrides"].items():
+        url, fragment = urldefrag(original_url)
+        if not fragment.startswith("sha256="):
+            raise ValueError("public wheel override requires its original SHA256")
+        matches = [entry for entry in by_name.get(re.sub(r"[-_.]+", "-", name).lower(), [])
+                   if entry["sha256"] == fragment.removeprefix("sha256=")
+                   and urldefrag(entry["url"])[0] == url]
+        if len(matches) != 1:
+            raise ValueError(f"dependency wheelhouse lacks the exact public wheel: {name}")
+        overrides[name] = str(wheel_directory / matches[0]["filename"])
+    return {"directory": str(directory), "wheel_directory": str(wheel_directory),
+            "manifest_sha256": sha(manifest_path),
+            "target": target, "family": profile["family"], "verified_wheels": len(seen),
+            "explicit_override_paths": overrides,
+            "scope": "caller-supplied wheelhouse; recipe, file hashes and metadata verified"}
 
 
 def prepare_ptxas(path: Path, output: Path, *, target: str = "jetson_thor") -> dict:
@@ -355,6 +441,12 @@ class Bootstrap:
         self.prepare_roots()
         try:
             deployment_target = self.profile.get("deployment_target", "jetson_thor")
+            wheelhouse_dir = getattr(self.args, "dependency_wheelhouse", None)
+            wheelhouse = admit_dependency_wheelhouse(wheelhouse_dir, self.profile) if wheelhouse_dir else None
+            if wheelhouse:
+                write_json(self.root / "dependency_wheelhouse_admission.json", wheelhouse)
+            indexes = (["--offline", "--no-index", "--find-links", wheelhouse["wheel_directory"]]
+                       if wheelhouse else ["--index-url", "https://pypi.org/simple"])
             compiler = (prepare_ptxas(self.args.ptxas, self.root / "compiler", target=deployment_target)
                         if getattr(self.args, "ptxas", None) else None)
             if compiler:
@@ -374,11 +466,12 @@ class Bootstrap:
             base = self.args.checkout / "release/vendor"
             requirements = checked_path(base, self.profile["requirements"]["path"], self.profile["requirements"]["sha256"])
             constraints = checked_path(base, self.profile["constraints"]["path"], self.profile["constraints"]["sha256"])
-            deps = [self.args.uv, "pip", "install", "--python", str(self.python), "--index-url", "https://pypi.org/simple",
+            deps = [self.args.uv, "pip", "install", "--python", str(self.python), *indexes,
                     "--only-binary", ":all:", "-c", str(constraints), "-r", str(requirements),
                     *([str(repaired)] if repaired else []),
                     *[str(p) for p in auxiliary_wheels]]
-            deps += [f"{name} @ {url}" for name, url in self.profile["public_wheel_overrides"].items()]
+            deps += ([f"{name} @ {Path(path).as_uri()}" for name, path in wheelhouse["explicit_override_paths"].items()]
+                     if wheelhouse else [f"{name} @ {url}" for name, url in self.profile["public_wheel_overrides"].items()])
             for name, source in self.profile.get("audited_pure_python_sdists", {}).items():
                 if (name not in PURE_SDISTS or source["version"] != PURE_SDISTS[name][0] or
                         not source["url"].endswith("#sha256=" + PURE_SDISTS[name][1])):
@@ -388,7 +481,7 @@ class Bootstrap:
             # Only our public source wheels and Python-only inference metadata are built.
             # No upstream training/native build extras are selected.
             self.command("build_tools", [self.args.uv, "pip", "install", "--python", str(self.python),
-                         "--index-url", "https://pypi.org/simple", "--only-binary", ":all:",
+                         *indexes, "--only-binary", ":all:",
                          "-c", str(constraints), "build", "wheel", "setuptools>=77"])
             wheel_dir = self.root / "wheels"
             wheel_dir.mkdir()
@@ -422,7 +515,7 @@ class Bootstrap:
                                               "--outdir", str(wheel_dir), str(project)])
             wheels = sorted(wheel_dir.glob("*.whl"))
             self.command("install_source_wheels", [self.args.uv, "pip", "install", "--python", str(self.python),
-                         "--index-url", "https://pypi.org/simple", "--only-binary", ":all:",
+                         *indexes, "--only-binary", ":all:",
                          "-c", str(constraints), *[str(p) for p in wheels]])
             self.command("pip_check", [str(self.python), "-m", "pip", "check"])
             self.command("uv_pip_check", [self.args.uv, "pip", "check", "--python", str(self.python)])
@@ -458,6 +551,7 @@ class Bootstrap:
                       "task_quality_certified": False, "weights_downloaded": False, "commands": self.commands,
                       "native_tool_preparation": native_tool,
                       "compiler_preparation": compiler,
+                      "dependency_wheelhouse": wheelhouse,
                       "wheels": [{"path": str(p), "sha256": sha(p)} for p in wheels]}
             write_json(self.root / "completion.json", result)
             return result
@@ -483,6 +577,8 @@ def main(argv=None) -> int:
     p.add_argument("--link-mode", choices=("copy", "hardlink"), default="copy",
                    help="Use hardlink only with an executable shared cache on the environment filesystem.")
     p.add_argument("--package-wheel-dir", type=Path)
+    p.add_argument("--dependency-wheelhouse", type=Path,
+                   help="Use a manifest-bound, hash-verified dependency wheel cache; keep the selected recipe's pins.")
     p.add_argument("--repaired-wheel", type=Path)
     p.add_argument("--repair-receipt", type=Path)
     p.add_argument("--ptxas", type=Path,

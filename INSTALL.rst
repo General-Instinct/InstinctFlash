@@ -62,6 +62,13 @@ To share downloaded packages across separate compatible environments, use
 must be on an executable filesystem that supports hard links. Model files can
 live on a different filesystem; do not put an environment on a ``noexec`` mount.
 
+For a transported dependency cache, ``--dependency-wheelhouse /path/to/cache``
+accepts a manifest bound to the selected recipe. The bootstrap checks every
+wheel's size, SHA256 and package metadata, including the original digests of
+explicit URL pins, then resolves dependencies without an index. The admission
+receipt records the cache used. This option covers dependency wheels; vendor
+source checkout and separately declared tools still follow their own setup.
+
 If the required Python version is missing, ``uv python install 3.12`` (or
 ``3.13`` for Cosmos) installs it separately. Pass the path printed by
 ``uv python find 3.12`` as the bootstrap's ``--python`` argument.
