@@ -251,7 +251,8 @@ def test_public_runtime_close_keeps_refused_backend_for_retry(fake_source_gate):
 
 
 def test_real_source_gate_accepts_audited_methods_and_rejects_modified_loop():
-    source = Path("/home/ubuntu/dreamzero-repo/groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py")
+    source = Path(os.environ.get("DREAMZERO_ROOT", "/home/ubuntu/dreamzero-repo")) / \
+        "groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py"
     if not source.is_file():
         pytest.skip("Pinned DreamZero source checkout unavailable")
     tree = ast.parse(source.read_text())
@@ -379,7 +380,8 @@ def test_owned_constructor_rejects_changed_allocation_protocol():
 
 
 def test_owned_constructor_gate_matches_pinned_native_source():
-    source = Path("/home/ubuntu/dreamzero-repo/groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py")
+    source = Path(os.environ.get("DREAMZERO_ROOT", "/home/ubuntu/dreamzero-repo")) / \
+        "groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py"
     if not source.is_file():
         pytest.skip("Pinned DreamZero source checkout unavailable")
     data = source.read_text()

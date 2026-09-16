@@ -6,6 +6,7 @@ import builtins
 from contextlib import nullcontext
 from dataclasses import FrozenInstanceError
 import hashlib
+import os
 from pathlib import Path
 from types import SimpleNamespace
 import weakref
@@ -285,10 +286,12 @@ def _pinned_method(path, expected_hash, name):
 
 def pinned_methods():
     native = _pinned_method(
-        Path("/home/ubuntu/dreamzero-repo/groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py"),
+        Path(os.environ.get("DREAMZERO_ROOT", "/home/ubuntu/dreamzero-repo")) /
+        "groot/vla/model/dreamzero/action_head/wan_flow_matching_action_tf.py",
         "7193cd73423472aa252bee73bd80e0d673c89d773ec852e90f50154729b50845", "should_run_model")
     omni = _pinned_method(
-        Path("/home/ubuntu/work_clones/vllm-omni-benchmark-20260913/vllm_omni/diffusion/cache/stepcache/state.py"),
+        Path(os.environ.get("VLLM_OMNI_ROOT", "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913")) /
+        "vllm_omni/diffusion/cache/stepcache/state.py",
         "32b00daaf6cd6e4ac73cf9c6f40eb3c69c46386f5fc0759d6cd6f23569b75a87", "should_run_step")
     return native, omni
 

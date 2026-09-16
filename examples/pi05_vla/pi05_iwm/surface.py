@@ -124,7 +124,14 @@ class Pi05CacheBinder:
     def unflatten(self, leaves, spec):
         if isinstance(spec, tuple) and len(spec) == 2 and spec[0] == self.TAG + ".legacy":
             from transformers.cache_utils import DynamicCache
-            return DynamicCache(tuple((leaves[2*i], leaves[2*i+1]) for i in range(spec[1])))
+            # Transformers 4.55 preallocates one empty DynamicLayer in DynamicCache.__init__.
+            # Passing ddp_cache_data to the constructor appends the restored layers after that
+            # placeholder, so a one-layer cache silently becomes [(None, None), (K, V)]. Build
+            # through the public update API instead; it fills layer 0 and preserves N layers.
+            cache = DynamicCache()
+            for i in range(spec[1]):
+                cache.update(leaves[2 * i], leaves[2 * i + 1], i)
+            return cache
         if not (isinstance(spec, tuple) and len(spec) == 2 and spec[0] == self.TAG):
             return self._tree.unflatten(leaves, spec)
         from transformers.cache_utils import DynamicCache

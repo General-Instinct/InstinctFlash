@@ -346,22 +346,21 @@ def _quantize_fp8_e4m3(w_bf16: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor
 def _select_fp8_layout(hardware: Optional[str], fp8_layout: Optional[str]) -> str:
     """Choose the Pi0.5 FP8 weight layout.
 
-    ``kn`` is the existing SM120 path: weights are stored as [K,N] and use
-    ``fp8_nn_dev``. ``nk`` is the SM89-compatible path: weights are stored
-    as [N,K] and use ``fp8_nt_dev``.
+    ``nk`` is the consumer RTX path: weights are stored as [N,K] and use
+    ``fp8_nt_dev``. CUDA 12.8 cuBLASLt rejects the no-transpose ``kn``
+    descriptor for production Pi0.5 shapes on SM120, while the transpose-B
+    route is supported on both SM89 and SM120.
     """
     if fp8_layout is not None:
         if fp8_layout not in ("kn", "nk"):
             raise ValueError(f"fp8_layout must be 'kn' or 'nk', got {fp8_layout!r}")
         return fp8_layout
-    if hardware == "rtx_sm89":
+    if hardware in ("rtx_sm89", "rtx_sm120"):
         return "nk"
-    if hardware == "rtx_sm120":
-        return "kn"
     try:
         if torch.cuda.is_available():
             major, minor = torch.cuda.get_device_capability()
-            if major == 8 and minor == 9:
+            if (major, minor) in ((8, 9), (12, 0)):
                 return "nk"
     except Exception:
         pass

@@ -33,7 +33,8 @@ from flash_rt.models.wan_va.pipeline_thor import expand_spans, launches_per_forw
 from instinctflash.runtime import engine_backend as eb  # noqa: E402
 
 P5, P1 = op.POINT_2V4A_W5, op.POINT_2V2A_W1
-CKPT = Path("/home/ubuntu/ckpt_lingbot/lingbot-va-posttrain-robotwin/transformer")
+CKPT = Path(os.environ.get(
+    "LINGBOT_CKPT", "/home/ubuntu/ckpt_lingbot/lingbot-va-posttrain-robotwin")) / "transformer"
 
 
 def test_the_two_stage2_points_derive_different_tables_and_forward_counts():

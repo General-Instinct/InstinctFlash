@@ -29,8 +29,24 @@ from __future__ import annotations
 import importlib
 import pathlib
 import sys
+from contextlib import contextmanager
 
 import pytest
+
+
+@contextmanager
+def _fresh_flash_rt_modules():
+    """Re-import FlashRT without replacing module identities for later tests."""
+    saved = {name: module for name, module in sys.modules.items()
+             if name.startswith("flash_rt")}
+    for name in saved:
+        sys.modules.pop(name, None)
+    try:
+        yield
+    finally:
+        for name in [key for key in sys.modules if key.startswith("flash_rt")]:
+            sys.modules.pop(name, None)
+        sys.modules.update(saved)
 
 
 def test_kernels_so_lives_in_flash_rt():
@@ -63,18 +79,15 @@ def test_import_without_flash_attn(monkeypatch):
     # Purge any cached flash_rt submodules so the import re-runs end
     # to end. Only top-level + hardware/rtx submodules need clearing —
     # those are where the offending import used to live.
-    to_purge = [k for k in sys.modules if k.startswith("flash_rt")]
-    for k in to_purge:
-        sys.modules.pop(k, None)
+    with _fresh_flash_rt_modules():
+        # Top-level import must succeed.
+        flash_rt = importlib.import_module("flash_rt")
+        assert flash_rt.__version__
 
-    # Top-level import must succeed.
-    flash_rt = importlib.import_module("flash_rt")
-    assert flash_rt.__version__
-
-    # The RTX attention backend module must also import without
-    # touching upstream flash_attn. Backend instantiation is GPU-bound
-    # and is exercised separately in tests/test_pi05_*.py.
-    importlib.import_module("flash_rt.hardware.rtx.attn_backend")
+        # The RTX attention backend module must also import without
+        # touching upstream flash_attn. Backend instantiation is GPU-bound
+        # and is exercised separately in tests/test_pi05_*.py.
+        importlib.import_module("flash_rt.hardware.rtx.attn_backend")
 
 
 def test_legacy_path_raises_clear_error_without_flash_attn(monkeypatch):
@@ -85,14 +98,11 @@ def test_legacy_path_raises_clear_error_without_flash_attn(monkeypatch):
     backend init.
     """
     monkeypatch.setitem(sys.modules, "flash_attn", None)
-    to_purge = [k for k in sys.modules if k.startswith("flash_rt")]
-    for k in to_purge:
-        sys.modules.pop(k, None)
+    with _fresh_flash_rt_modules():
+        from flash_rt.hardware.rtx.attn_backend import _make_flash_attn_proxy
 
-    from flash_rt.hardware.rtx.attn_backend import _make_flash_attn_proxy
-
-    with pytest.raises(ImportError) as excinfo:
-        _make_flash_attn_proxy(need_legacy=True)
-    msg = str(excinfo.value)
-    assert "FVK_RTX_FA2" in msg
-    assert "flash-attention/releases" in msg
+        with pytest.raises(ImportError) as excinfo:
+            _make_flash_attn_proxy(need_legacy=True)
+        msg = str(excinfo.value)
+        assert "FVK_RTX_FA2" in msg
+        assert "flash-attention/releases" in msg

@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "model": "robbyant/lingbot-va-posttrain-robotwin",
+  "model_revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+  "device": "NVIDIA GeForce RTX 5090",
+  "capability": [
+    12,
+    0
+  ],
+  "torch": "2.9.0+cu128",
+  "cuda": "12.8",
+  "tier": "BITEXACT",
+  "operator_gate": {
+    "all_bitexact": true,
+    "compared_words": 15045408,
+    "differing_words": 0,
+    "patterns": [
+      "random",
+      "constant",
+      "alternating"
+    ],
+    "exponents": [
+      -4,
+      0,
+      4
+    ],
+    "rows": [
+      64,
+      480
+    ],
+    "all_invalid_inputs_rejected": true,
+    "timings_ms": {
+      "64": {
+        "eager_ms": 0.022175999358296394,
+        "fused_ms": 0.012927999719977379,
+        "speedup": 1.7153465221714281
+      },
+      "480": {
+        "eager_ms": 0.03206400014460087,
+        "fused_ms": 0.018271999433636665,
+        "speedup": 1.7548161743905653
+      }
+    }
+  },
+  "real_model_abba42": {
+    "status": "pass",
+    "action_equality": {
+      "baseline_a": {
+        "all_equal": true,
+        "equal_cycles": 42,
+        "max_abs": 0.0
+      },
+      "candidate_b1": {
+        "all_equal": true,
+        "equal_cycles": 42,
+        "max_abs": 0.0
+      },
+      "candidate_b2": {
+        "all_equal": true,
+        "equal_cycles": 42,
+        "max_abs": 0.0
+      },
+      "baseline_a2": {
+        "all_equal": true,
+        "equal_cycles": 42,
+        "max_abs": 0.0
+      }
+    },
+    "full_cycles_0_41": {
+      "baseline_mean_ms": 404.7096071428572,
+      "candidate_mean_ms": 396.4169166666667,
+      "delta_ms": 8.2926904761905,
+      "speedup": 1.0209191135078717,
+      "latency_reduction_percent": 2.049047101879964,
+      "samples_per_arm": 42
+    },
+    "cold_cycles_0_3": {
+      "baseline_mean_ms": 373.56712500000003,
+      "candidate_mean_ms": 366.52049999999997,
+      "delta_ms": 7.046625000000063,
+      "speedup": 1.0192257322578138,
+      "latency_reduction_percent": 1.886307581268043,
+      "samples_per_arm": 4
+    },
+    "growing_cycles_4_36": {
+      "baseline_mean_ms": 401.2736515151515,
+      "candidate_mean_ms": 393.1157575757576,
+      "delta_ms": 8.157893939393944,
+      "speedup": 1.0207518874076724,
+      "latency_reduction_percent": 2.0330001505433737,
+      "samples_per_arm": 33
+    },
+    "saturated_cycles_37_41": {
+      "baseline_mean_ms": 452.3009,
+      "candidate_mean_ms": 442.12170000000003,
+      "delta_ms": 10.17919999999998,
+      "speedup": 1.0230235249706132,
+      "latency_reduction_percent": 2.250537197692948,
+      "samples_per_arm": 5
+    },
+    "arm_means_ms": {
+      "baseline_a": 405.19671428571434,
+      "candidate_b1": 396.5872857142858,
+      "candidate_b2": 396.2465476190476,
+      "baseline_a2": 404.2225
+    },
+    "arm_spread_percent": {
+      "baseline": 0.2410094157832161,
+      "candidate": 0.08599143570730193
+    },
+    "kernel_calls": {
+      "baseline_a": 0,
+      "candidate_b1": 25080,
+      "candidate_b2": 25080,
+      "baseline_a2": 0
+    },
+    "peak_memory_gib": {
+      "baseline_a": 19.3149,
+      "candidate_b1": 19.5025,
+      "candidate_b2": 19.5025,
+      "baseline_a2": 19.3149
+    }
+  },
+  "reset_replay": {
+    "cycles": 3,
+    "all_actions_equal": true,
+    "max_abs": 0.0,
+    "buffer_pointers_stable": true
+  },
+  "artifacts": {
+    "source_sha256": "97bd16749a67f31c24a04b29fe23ea815a6992a772bde56f1cd9d4749dfad3ee",
+    "library_sha256": "8e9d684d707b2fe39ff99b5b71fba35f10e1c6fd702831ec43353573ffdc3784"
+  },
+  "status": "pass"
+}

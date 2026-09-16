@@ -607,6 +607,16 @@ def main() -> int:
         install_server(S, args.benchmark_receipt.resolve(), applied,
                        protocol="wan-va-libero-paused-v1" if args.config_name == "libero" else None)
 
+    # A managed single-GPU worker is not launched by torchrun, but the upstream
+    # server initializes NCCL through env:// even at world size one. Supply the
+    # same safe defaults as the in-process placement; explicit launcher values
+    # continue to win.
+    os.environ.setdefault("MASTER_ADDR", "127.0.0.1")
+    os.environ.setdefault("MASTER_PORT", "29531")
+    os.environ.setdefault("RANK", "0")
+    os.environ.setdefault("WORLD_SIZE", "1")
+    os.environ.setdefault("LOCAL_RANK", "0")
+
     S.init_logger()
     S.run(a)
     return 0

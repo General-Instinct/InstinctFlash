@@ -311,7 +311,8 @@ class _ControlLoop:
     FRAMES_PER_CYCLE = 8
     FRAMES_FIRST_CYCLE = 4
 
-    def __init__(self, server, cameras: tuple[str, ...], *, frame_chunk_size: int = 2):
+    def __init__(self, server, cameras: tuple[str, ...], *, frame_chunk_size: int = 2,
+                 owns_process_group: bool = False):
         if type(frame_chunk_size) is not int or frame_chunk_size < 2:
             raise ValueError("LingBot-VA requires a declared frame_chunk_size >= 2")
         self._server, self._cameras = server, cameras
@@ -322,6 +323,7 @@ class _ControlLoop:
         self.FRAMES_FIRST_CYCLE = (frame_chunk_size - 1) * 4
         self._pending_action = None
         self._cycles = 0
+        self._owns_process_group = bool(owns_process_group)
 
     # -- what the runtime calls -------------------------------------------------------------------
     def reset(self, **conditioning):
@@ -353,6 +355,12 @@ class _ControlLoop:
 
     def close(self):
         self._server = None
+        if self._owns_process_group:
+            import torch.distributed as dist
+
+            if dist.is_initialized():
+                dist.destroy_process_group()
+            self._owns_process_group = False
 
     # -- private ----------------------------------------------------------------------------------
     def _frames(self, observation) -> list:
@@ -631,6 +639,9 @@ class LingBotVA:
         os.environ.setdefault("MASTER_PORT", "29531")
         os.environ.setdefault("RANK", "0")
         os.environ.setdefault("WORLD_SIZE", "1")
+        import torch.distributed as dist
+
+        owns_process_group = not dist.is_initialized()
         S.init_distributed(int(os.getenv("WORLD_SIZE", 1)), int(os.getenv("LOCAL_RANK", 0)),
                            int(os.getenv("RANK", 0)))
         cfg.rank = cfg.local_rank = 0
@@ -653,11 +664,21 @@ class LingBotVA:
         if seed is not None:
             from instinctflash.runtime.lingbot_install import install_deterministic_seed
             applied += install_deterministic_seed(S, int(seed))
-        server = S.VA_Server(cfg)
-        from instinctflash.runtime.precision import install_requested_fp8
-        install_requested_fp8(server.transformer, plan, "wan_va")
+        try:
+            server = S.VA_Server(cfg)
+            from instinctflash.runtime.precision import install_requested_fp8
+            install_requested_fp8(server.transformer, plan, "wan_va")
+        except BaseException:
+            if owns_process_group and dist.is_initialized():
+                dist.destroy_process_group()
+            raise
         print(f"InstinctFlash in-process: applied {applied or ['STOCK BASELINE']}", flush=True)
-        return _ControlLoop(server, tuple(cfg.obs_cam_keys), frame_chunk_size=cfg.frame_chunk_size)
+        return _ControlLoop(
+            server,
+            tuple(cfg.obs_cam_keys),
+            frame_chunk_size=cfg.frame_chunk_size,
+            owns_process_group=owns_process_group,
+        )
 
     def wrap_worker_client(self, client, checkpoint):
         """Use the same deferred-commit protocol across in-process and worker placement."""

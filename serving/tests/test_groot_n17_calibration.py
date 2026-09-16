@@ -20,7 +20,10 @@ import pytest
 import torch
 
 
-_CKPT_GLOB = "/root/.cache/huggingface/hub/models--nvidia--GR00T-N1.7-3B/snapshots/*"
+_CKPT_GLOB = os.environ.get(
+    "GROOT_N17_CKPT",
+    "/root/.cache/huggingface/hub/models--nvidia--GR00T-N1.7-3B/snapshots/*",
+)
 _FIXTURE = Path(
     "/work/tests/fixtures/gr00t_n17_ref_oxe_droid_relative_eef_relative_joint_2v_traj1_step0_seed0.pt")
 _AUX = _FIXTURE.with_name(_FIXTURE.stem + "_llm_aux.pt")
@@ -30,6 +33,8 @@ _AUX = _FIXTURE.with_name(_FIXTURE.stem + "_llm_aux.pt")
 def frontend():
     if not torch.cuda.is_available():
         pytest.skip("CUDA required")
+    if not _FIXTURE.exists() or not _AUX.exists():
+        pytest.skip(f"fixtures missing ({_FIXTURE} / {_AUX})")
     matches = sorted(glob.glob(_CKPT_GLOB))
     if not matches:
         pytest.skip("N1.7 ckpt not in HF cache")

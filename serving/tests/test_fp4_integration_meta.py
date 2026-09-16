@@ -17,9 +17,16 @@ Checks:
 from __future__ import annotations
 
 import time
+import pytest
 import torch
 
-import flash_rt.flash_rt_fp4 as fvk_fp4
+if not torch.cuda.is_available() or torch.cuda.get_device_capability() not in ((10, 0), (11, 0)):
+    pytest.skip(
+        "flash_rt_fp4 is the SM100/SM110 add-on; SM120 uses flash_rt_kernels NVFP4 paths",
+        allow_module_level=True,
+    )
+
+fvk_fp4 = pytest.importorskip("flash_rt.flash_rt_fp4")
 import flash_rt.flash_rt_kernels as fvk
 from flash_rt.executors.fp4_utils import (
     FP4ActScratch, fp4_gemm, pick_variant,
