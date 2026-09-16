@@ -33,6 +33,7 @@ REQUIRED_FILES = (
     "instinctflash/native/bf16/build.sh",
     "instinctflash/native/bf16/linear_relu2_sm110.cu",
     "benchmarks/vla/config/adapters.json",
+    "benchmarks/vla/pi05_sm120_libero.py",
     "benchmarks/regression/runtime_bundle.py",
     "benchmarks/regression/systemd/instinctflash-thor-regression.service",
     "benchmarks/regression/systemd/instinctflash-thor-regression.timer",
@@ -66,6 +67,17 @@ def check(*, require_all_adapters: bool, require_torch_free: bool) -> dict:
         assert not torch_present, "the clean core audit environment contains Torch"
 
     assets = {}
+    if require_all_adapters:
+        adapter = importlib.metadata.distribution("pi05-iwm")
+        for name in ("sm120_fp8_results.json", "sm120_libero_screen_results.json",
+                     "sm120_checkpoint_reference_results.json",
+                     "sm120_libero_matched_results.json",
+                     "verify_sm120_fp8.py", "reproduce_sm120_libero.py",
+                     "verify_checkpoint_reference.py", "requirements-sm120.lock"):
+            matches = [p for p in adapter.files or [] if str(p).endswith("share/instinctflash/pi05/" + name)]
+            assert len(matches) == 1, f"missing pi05 reproduction asset: {name}"
+            assert Path(adapter.locate_file(matches[0])).is_file()
+            assets["pi05/" + name] = hashlib.sha256(Path(adapter.locate_file(matches[0])).read_bytes()).hexdigest()
     for relative in REQUIRED_FILES:
         path = Path(distribution.locate_file(relative))
         assert path.is_file(), f"wheel omits {relative}"

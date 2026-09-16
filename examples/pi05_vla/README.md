@@ -96,17 +96,38 @@ Native BF16 and FP8 run in separate processes with identical prompt, observation
 bitwise-equal diffusion-noise tensors. SM120 must select the transpose-B `nk` layout; CUDA 12.8
 cuBLASLt rejects the previous `kn` descriptor for production Pi0.5 shapes.
 
-The checked-in gate used four real calibration frames and three held-out rows/seeds. All three
-FP8 action chunks cleared the preregistered cosine floor of 0.98; the minimum was **0.9999183** and
-the maximum absolute action delta was **0.021599**. Median replay latency was
-**31.85 ms native → 20.60 ms FP8 (1.546x)**. FP8 registered 253 quantized weights. The
-one-time quantization peak remains 9.15 GiB, but the frontend then releases 15 fully replaced BF16
-source tensors (5.04 GiB). Steady allocated memory is **6.33 GiB native vs 3.83 GiB FP8**, a
-2.50 GiB (39.4%) reduction; the qualification gate caps the FP8/native resident ratio at 0.75.
+The current gate runs through public `flash_rt.load_model`, explicit multi-frame
+`calibrate(..., prompt=...)`, and `predict(..., state=...)`. The checkpoint's own
+LeRobot processors normalize state, encode its 32 padded state entries into the
+prompt, resize images, and decode actions using the declared **MEAN_STD** statistics.
+The engine computes the checkpoint-native **50** action steps and returns **10**
+for LIBERO replanning. Missing state and unsupported public horizons are refused.
+Both FP8 steady residency and startup peak are gated at at most 0.75 of native
+PyTorch allocated memory. Full current measurements are in `sm120_fp8_results.json`.
 
-This is the FlashRT `pi05` operating point: a 10-action, 7-dimensional LIBERO horizon. It is not
-the LeRobot Runtime adapter's checkpoint-native 50-action queue, which is separately exercised by
-`run_pi05_end_to_end.py`. Reproduce the SM120 gate with:
+Current public-API replay medians are **41.57 ms BF16 → 24.60 ms FP8 (1.69x)**.
+FP8 peak allocated memory is **4.01 GiB**, with **3.89 GiB** steady allocation
+versus **6.37 GiB** native. These are PyTorch allocator measurements, not total
+process VRAM including raw CUDA/cuBLAS/EGL allocations. The three numeric cases
+use four calibration frames at percentile 99.9; the task campaign below uses
+its separately frozen eight-frame, percentile-99.0 calibration.
+
+Earlier 1.546x / 9.15 GiB measurements used the legacy FlashRT contract: no state
+tokens, a computed chunk of 10, and quantile action decoding. They are not a
+checkpoint-semantic qualification and must not be compared as the same operating
+point. The new streaming quantizer avoids the full BF16 GPU weight staging that
+caused that startup peak.
+
+The numerical gate also exercises 12 token lengths against an eight-entry graph
+cache and verifies eviction/close destroys the graph handles. This is explicitly
+shape-only stress and is excluded from task-quality and timing measurements.
+Decoder attention-output autotune now allocates by the actual `M*K` read size:
+`K=2048` does not fit its old `DEC_D=1024` scratch choice. CPU capacity tests
+cover both single/batched and 10/50-step cases; the GPU regression was checked
+with Compute Sanitizer.
+
+The separate LeRobot Runtime adapter's 50-action *execution queue* is exercised by
+`run_pi05_end_to_end.py`. Reproduce the corrected SM120 gate with:
 
 ```bash
 hf download lerobot/pi05_libero_finetuned_v044 \
@@ -128,7 +149,7 @@ The complete protocol, source hashes, per-arm memory/timing, and per-case compar
 
 ### RTX 5090 LIBERO closed-loop screen
 
-The same FP8 binary and checkpoint completed a real `libero_spatial` simulator screen using
+The historical legacy FlashRT binary and checkpoint completed a `libero_spatial` screen using
 `hf-libero==0.1.4`, robosuite 1.4.0, MuJoCo 3.8.1, and the immutable
 `lerobot/libero-assets@0b3ea86be5fe169d0fd036ae63d1070ec09e90f6` assets. Ten tasks × three
 episodes produced **21/30 successes (70.0%)**. Per-task successes were
@@ -138,16 +159,140 @@ calibrated, captured, and completed without a runtime failure.
 This is deliberately labelled a **SCREEN**: three episodes per task are not a statistical
 non-inferiority certificate, and this run did not include a matched native-precision arm. The
 complete protocol, package/source/binary hashes, task descriptions, timings, and limitations are
-in `sm120_libero_screen_results.json`. Reproduce after configuring the pinned LIBERO assets with:
+in `sm120_libero_screen_results.json`. Its source hashes remain unchanged. It also
+omitted state tokens and used a different action decoder; this record is retained
+for historical audit only. Reproduction requires the original source revision
+`08771e1`, not the current API, which deliberately refuses missing checkpoint state.
+
+## Matched RTX 5090 LIBERO qualification
+
+`benchmarks/vla/pi05_libero_driver.py --matched-config CONFIG.json` now has a
+FlashRT Native/FP8 campaign. Native means the FlashRT BF16 implementation here;
+this does not certify the separate LeRobot Runtime 50-action queue. Both arms use
+the checkpoint-native computed chunk of 50, 10 actions per replan, NFE=10,
+10 settling steps and the LeRobot Spatial 280-step episode limit.
+Seeds 40100–40149 select all 50 initial states, with Python, NumPy and Torch
+reseeded per episode. A single synchronous environment runs at a time. The
+second arm consumes a checked reset against the first arm's recorded state and
+camera digest; policy noise hashes must match for every common inference call.
+
+### Completed 500-pair result
+
+The full Spatial campaign passed the pooled non-inferiority gate:
+**Native 472/500 (94.4%), FP8 479/500 (95.8%)**. The difference is **+1.4 percentage
+points**, with a Tango paired central 95% interval of **[-0.135, +3.198] points**.
+The one-sided 95% lower bound is **+0.138 points**, above the preregistered
+**-5-point** margin. No task collapsed. This establishes non-inferiority; the
+central 95% interval crosses zero, so no superiority claim is made.
+
+| Spatial task | Native / 50 | FP8 / 50 |
+| --- | ---: | ---: |
+| 0 | 50 | 50 |
+| 1 | 50 | 48 |
+| 2 | 50 | 50 |
+| 3 | 50 | 50 |
+| 4 | 47 | 48 |
+| 5 | 28 | 33 |
+| 6 | 50 | 50 |
+| 7 | 49 | 50 |
+| 8 | 49 | 50 |
+| 9 | 49 | 50 |
+
+`sm120_libero_matched_results.json` contains all 500 paired outcomes, initial
+observation/action digests, source/dependency fingerprints and the calibration
+selection. The frozen choice is percentile **99.0**, without BF16 exceptions;
+its task-7 calibration holdout speedup was **1.549x**. Task 5 remains weak on
+both arms; a separate upstream closed-loop comparison is needed before
+attributing that weakness to the checkpoint or engine.
+
+`sm120_checkpoint_reference_results.json` independently checks **812 loaded
+checkpoint tensors** and compares three real inputs against official LeRobot
+with identical explicit noise values. The minimum action cosine is **0.999927**.
+This reference check is numerical, not another 500-episode task campaign.
+
+### Reproduction protocol
+
+The calibration study takes eight fixed demonstration frames per task and eight
+disjoint numeric holdout frames. It compares percentile 99.0/99.9/100 and BF16
+exceptions for encoder down-projection scale outliers. Selection happens before
+closed-loop evaluation. These percentiles reduce *per-frame maxima across
+frames*, not individual activation elements. An outlier warning alone is not
+proof of activation saturation or task failure.
+
+FP8 weights are uploaded and quantized one matrix at a time from the CPU
+checkpoint. The whole BF16 model is no longer staged on the GPU. Explicit
+`bf16_encoder_down_layers=(...)` exceptions are available on
+`Pi05TorchFrontendRtx` for single-sample inference; batched mode refuses this
+uncertified combination. `flash_rt.load_model(..., action_horizon=10)` explicitly
+declares the public pi0.5 horizon, and other horizons fail before model loading.
+For recalibration, call `model.calibrate(..., prompt=...)` with the new fixed
+sample set. The legacy `model.recalibrate()` cache-reset shortcut is not supported
+by this checkpoint frontend.
+
+Use a source checkout and a dedicated Python 3.10 environment. The complete
+tested dependency list is `requirements-sm120.lock`; it includes a TorchCodec
+version compatible with Torch 2.9.0+cu128. OpenPI's required transformers changes
+are installed from commit `215abfb217dbac7d5f1273282331b9b1866c0479`, with all five
+files SHA-256 checked (the model's version check is not bypassed).
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 MUJOCO_GL=egl PYOPENGL_PLATFORM=egl \
-LIBERO_CONFIG_PATH=/path/to/libero-config PYTHONPATH=serving:. python \
-  serving/examples/thor/eval_libero.py \
-  --checkpoint /path/to/pi05_libero --task_suite libero_spatial \
-  --framework torch --num_trials 3 --replan_steps 5 --seed 7 \
-  --output /tmp/pi05-libero-sm120-screen.json
+uv venv --python 3.10 --seed /path/to/pi05-env
+uv pip install --python /path/to/pi05-env/bin/python --torch-backend cu128 \
+  -r examples/pi05_vla/requirements-sm120.lock ./serving
+/path/to/pi05-env/bin/python scripts/install_pi05_transformers.py
+source /path/to/pi05-env/bin/activate
 ```
+
+Build the SM120 `flash_rt_kernels` and `flash_rt_fa2` targets with the same Python
+interpreter if this checkout does not already contain matching native binaries.
+The manual GPU workflow shows the full CMake invocation. Download the
+fixed calibration shards (roughly 500 MB), then prepare an isolated simulator
+configuration. Older `hf` versions spell `--type dataset` as `--repo-type dataset`.
+
+```bash
+hf download lerobot/libero_spatial_image --type dataset \
+  --revision d86c0b94922572b3b657e1d1a3d01f0952ddeb46 \
+  --include 'data/chunk-000/file-00[0-4].parquet' meta/tasks.parquet \
+  --local-dir /path/to/libero_spatial
+
+PYTHONPATH=serving:. python scripts/prepare_pi05_libero.py \
+  --install --download --assets /path/to/libero-assets \
+  --config-dir /path/to/isolated-libero-config
+
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=serving:. OMP_NUM_THREADS=1 \
+OPENBLAS_NUM_THREADS=1 PYTHONHASHSEED=0 MUJOCO_GL=egl \
+PYOPENGL_PLATFORM=egl MUJOCO_EGL_DEVICE_ID=0 \
+LIBERO_CONFIG_PATH=/path/to/isolated-libero-config python \
+  examples/pi05_vla/reproduce_sm120_libero.py \
+  --checkpoint /path/to/pi05_libero --dataset /path/to/libero_spatial \
+  --output /path/to/new-campaign
+```
+
+The wrapper invokes the same campaign as the driver's `--matched-config`
+entry. Results, source/binary/asset hashes, calibration rows, per-episode noise
+and action digests, and logs stay in the output directory. Repeating the command
+resumes completed task arms; changed configuration or sources require a new
+directory. All 500 matched pairs are required for a qualification result. The
+non-inferiority margin is 5 percentage points. The existing repository Tango
+matched-pair score implementation supplies a one-sided 95% lower decision bound
+and a separately computed central 95% interval. A task where Native succeeds at
+least once and FP8 never succeeds also fails. The scope is this fixed ten-task suite.
+Pass `--evidence examples/pi05_vla/sm120_libero_matched_results.json` to the wrapper
+to reproduce the published calibration choice without a new candidate selection;
+the source, environment and regenerated calibration manifest must match.
+
+CPU CI checks the evidence and matching rules. The manual
+`.github/workflows/pi05-sm120.yml` workflow builds the current kernels and runs
+real numeric/startup-memory gates on a trusted runner labelled `rtx5090`; the
+full LIBERO campaign is an explicit workflow input. Provision the FlashRT CUDA
+environment and set `PI05_CHECKPOINT`, `PI05_DATASET`, and `LIBERO_CONFIG_PATH`
+repository variables on that runner. Runner registration is a separate GitHub
+administrative step. No external runner is created by adding the workflow file.
+
+The pi0.5 adapter wheel includes its numeric/reference/matched/historical-screen
+JSON evidence, dependency lock and reproduction scripts under
+`share/instinctflash/pi05`. The installed-package
+check verifies those assets are present.
 
 ## Run it
 

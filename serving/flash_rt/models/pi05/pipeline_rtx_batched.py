@@ -355,6 +355,8 @@ class Pi05BatchedPipeline(Pi05Pipeline):
             large = Bb["dec_act_fp8_large_b2"]
             scratch_scale = Bb["dec_act_scale"]
         buf = small if act_n <= small.nbytes else large
+        if act_n > buf.nbytes:
+            raise ValueError(f"FP8 activation scratch too small for {weight_name}: {act_n} > {buf.nbytes}")
         return buf.ptr.value, scratch_scale.ptr.value
 
     def _fp8_gemm_b2(self, act_bf16_ptr: int, act_n: int, weight_name: str,
@@ -1087,10 +1089,9 @@ class Pi05BatchedPipeline(Pi05Pipeline):
             ]:
                 w_fp8_ptr, w_scale_ptr = self._weight_fp8(name_prefix)
                 act_scale_ptr = self.fp8_act_scales[name_prefix].ptr.value
-                act_buf = (Bb["vis_act_fp8_large_b2"] if K_val == VIS_H
-                           else Bb["vis_act_fp8_b2"])
+                act_ptr, _ = self._pick_fp8_scratch_b2(name_prefix, M_val * K_val)
                 self._autotune_fp8_matmul(
-                    act_buf.ptr.value, w_fp8_ptr, Bb[out_key].ptr.value,
+                    act_ptr, w_fp8_ptr, Bb[out_key].ptr.value,
                     M_val, N_val, K_val, act_scale_ptr, w_scale_ptr)
 
         # Encoder FP8 at B*seq
@@ -1103,10 +1104,9 @@ class Pi05BatchedPipeline(Pi05Pipeline):
             ]:
                 w_fp8_ptr, w_scale_ptr = self._weight_fp8(name_prefix)
                 act_scale_ptr = self.fp8_act_scales[name_prefix].ptr.value
-                act_buf = (Bb["enc_act_fp8_large_b2"] if K_val == ENC_H
-                           else Bb["enc_act_fp8_b2"])
+                act_ptr, _ = self._pick_fp8_scratch_b2(name_prefix, M_val * K_val)
                 self._autotune_fp8_matmul(
-                    act_buf.ptr.value, w_fp8_ptr, Bb[out_key].ptr.value,
+                    act_ptr, w_fp8_ptr, Bb[out_key].ptr.value,
                     M_val, N_val, K_val, act_scale_ptr, w_scale_ptr)
 
         # Decoder FP8 at B*ds
@@ -1119,10 +1119,9 @@ class Pi05BatchedPipeline(Pi05Pipeline):
             ]:
                 w_fp8_ptr, w_scale_ptr = self._weight_fp8(name_prefix)
                 act_scale_ptr = self.fp8_act_scales[name_prefix].ptr.value
-                act_buf = (Bb["dec_act_fp8_large_b2"] if K_val == DEC_H
-                           else Bb["dec_act_fp8_b2"])
+                act_ptr, _ = self._pick_fp8_scratch_b2(name_prefix, M_val * K_val)
                 self._autotune_fp8_matmul(
-                    act_buf.ptr.value, w_fp8_ptr, Bb[out_key].ptr.value,
+                    act_ptr, w_fp8_ptr, Bb[out_key].ptr.value,
                     M_val, N_val, K_val, act_scale_ptr, w_scale_ptr)
 
         self._cudart.cudaDeviceSynchronize()

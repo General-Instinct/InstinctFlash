@@ -490,6 +490,8 @@ class Pi05Pipeline:
             large = B["dec_act_fp8_large"]
             scratch_scale = B["dec_act_scale"]
         buf = small if act_n <= (small.nbytes // 1) else large
+        if act_n > buf.nbytes:
+            raise ValueError(f"FP8 activation scratch too small for {weight_name}: {act_n} > {buf.nbytes}")
         return buf.ptr.value, scratch_scale.ptr.value
 
     def _fp8_gemm(self, act_bf16_ptr: int, act_n: int, weight_name: str,
@@ -876,7 +878,19 @@ class Pi05Pipeline:
                 seq, ENC_H, ENC_D, stream=stream)
 
         # SiLU(gate) * up → hidden (or FP8)
-        if fused:
+        down_name = f"encoder_ffn_down_w_{i}"
+        if self.use_fp8 and down_name not in W["fp8"]:
+            if not W["encoder_ffn_down_w"][i]:
+                raise RuntimeError(f"missing BF16 fallback for {down_name}")
+            fvk.gate_geglu_merged(
+                B["encoder_gate_merged"].ptr.value,
+                B["encoder_hidden"].ptr.value,
+                seq, ENC_H, stream=stream)
+            gemm.bf16_nn(
+                B["encoder_hidden"].ptr.value, W["encoder_ffn_down_w"][i],
+                B["encoder_x_norm"].ptr.value,
+                seq, ENC_D, ENC_H, stream=stream)
+        elif fused:
             down_name = f"encoder_ffn_down_w_{i}"
             act_scale_down = self.fp8_act_scales[down_name].ptr.value
             fvk.gate_geglu_merged_fp8(
@@ -1212,12 +1226,9 @@ class Pi05Pipeline:
             ]:
                 w_fp8_ptr, w_scale_ptr = self._weight_fp8(name_prefix)
                 act_scale_ptr = self.fp8_act_scales[name_prefix].ptr.value
-                if K_val == VIS_H:
-                    act_buf = B["vis_act_fp8_large"]
-                else:
-                    act_buf = B["vis_act_fp8"]
+                act_ptr, _ = self._pick_fp8_scratch(name_prefix, M_val * K_val)
                 self._autotune_fp8_matmul(
-                    act_buf.ptr.value, w_fp8_ptr, B[out_key].ptr.value,
+                    act_ptr, w_fp8_ptr, B[out_key].ptr.value,
                     M_val, N_val, K_val, act_scale_ptr, w_scale_ptr)
 
         # Encoder FP8 shapes
@@ -1228,12 +1239,24 @@ class Pi05Pipeline:
                 ("encoder_ffn_gate_up_w_0", seq, 2 * ENC_H,  ENC_D, "encoder_gate_merged"),
                 ("encoder_ffn_down_w_0",    seq, ENC_D,      ENC_H, "encoder_x_norm"),
             ]:
+                if name_prefix not in W["fp8"]:
+                    name_prefix = next((f"encoder_ffn_down_w_{i}" for i in range(ENC_L)
+                                        if f"encoder_ffn_down_w_{i}" in W["fp8"]), None)
+                    if name_prefix is None:
+                        continue
                 w_fp8_ptr, w_scale_ptr = self._weight_fp8(name_prefix)
                 act_scale_ptr = self.fp8_act_scales[name_prefix].ptr.value
-                act_buf = B["enc_act_fp8_large"] if K_val == ENC_H else B["enc_act_fp8"]
+                act_ptr, _ = self._pick_fp8_scratch(name_prefix, M_val * K_val)
                 self._autotune_fp8_matmul(
-                    act_buf.ptr.value, w_fp8_ptr, B[out_key].ptr.value,
+                    act_ptr, w_fp8_ptr, B[out_key].ptr.value,
                     M_val, N_val, K_val, act_scale_ptr, w_scale_ptr)
+
+        if self.use_fp8:
+            fallback = next((p for p in W["encoder_ffn_down_w"] if p), None)
+            if fallback:
+                gemm.autotune_bf16_nn(
+                    B["encoder_hidden"].ptr.value, fallback,
+                    B["encoder_x_norm"].ptr.value, seq, ENC_D, ENC_H)
 
         # Decoder FP8 shapes
         if self.use_fp8 and self.use_fp8_decoder and self.fp8_calibrated:
@@ -1245,9 +1268,11 @@ class Pi05Pipeline:
             ]:
                 w_fp8_ptr, w_scale_ptr = self._weight_fp8(name_prefix)
                 act_scale_ptr = self.fp8_act_scales[name_prefix].ptr.value
-                act_buf = B["dec_act_fp8_large"] if K_val == DEC_H else B["dec_act_fp8"]
+                # Attention output has K=8*256=2048, not DEC_D=1024. Selecting
+                # the small buffer except for FFN down caused out-of-bounds reads.
+                act_ptr, _ = self._pick_fp8_scratch(name_prefix, M_val * K_val)
                 self._autotune_fp8_matmul(
-                    act_buf.ptr.value, w_fp8_ptr, B[out_key].ptr.value,
+                    act_ptr, w_fp8_ptr, B[out_key].ptr.value,
                     M_val, N_val, K_val, act_scale_ptr, w_scale_ptr)
 
         self._cudart.cudaDeviceSynchronize()
@@ -1280,6 +1305,10 @@ class Pi05Pipeline:
             self.calibrate_fp8()
         self.autotune_gemms()
 
+        old_graph = getattr(self, "_graph", None)
+        if old_graph is not None:
+            old_graph.sync(self._graph_stream)
+            old_graph.close()
         self._graph = CUDAGraph()
         if external_stream_int is None:
             stream = self._graph.create_stream()

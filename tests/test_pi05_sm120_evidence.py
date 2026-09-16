@@ -29,7 +29,7 @@ def test_sm120_fp8_result_is_pinned_pass_and_source_bound():
     assert result["protocol"]["warmup_replays"] == 2
     assert result["protocol"]["timing_replays"] == 9
     assert result["protocol"]["action_operating_point"] == (
-        "FlashRT pi05 horizon 10, action dim 7"
+        "checkpoint chunk 50, executed horizon 10, action dim 7"
     )
 
     for relative, expected in result["source_sha256"].items():
@@ -49,9 +49,21 @@ def test_sm120_fp8_numeric_and_performance_thresholds_hold():
     assert result["arms"]["fp8"]["released_bf16_key_count"] == thresholds["expected_released_bf16_keys"]
     assert result["arms"]["fp8"]["released_bf16_bytes"] >= thresholds["min_released_bf16_bytes"]
     assert result["summary"]["fp8_to_native_resident_ratio"] <= thresholds["max_fp8_resident_ratio"]
+    assert result["summary"]["fp8_to_native_peak_ratio"] <= thresholds["max_fp8_peak_ratio"]
+    assert result["protocol"]["calibration_seed"] == 5090120
     assert result["summary"]["resident_memory_reduction_bytes"] > 0
     assert result["arms"]["native"]["action_shape"] == [3, 10, 7]
     assert result["arms"]["fp8"]["action_shape"] == [3, 10, 7]
+    for arm in result["arms"].values():
+        assert arm["computed_action_chunk"] == 50
+        assert arm["executed_action_horizon"] == 10
+        assert arm["state_tokenized"] is True
+        assert arm["state_changes_tokens"] is True
+        assert arm["missing_state_refused"] is True
+        assert arm["graph_lifecycle"]["profiles"] == 12
+        assert arm["graph_lifecycle"]["evicted_and_destroyed"] >= 4
+        assert arm["graph_lifecycle"]["all_closed"] is True
+        assert arm["normalization"] == "checkpoint MEAN_STD"
     assert len(result["comparisons"]) == 3
     for comparison in result["comparisons"]:
         assert comparison["noise_bitwise_equal"] is True
@@ -73,7 +85,21 @@ def test_base_runtime_reproduction_accepts_a_pinned_local_checkpoint():
         assert key in source
 
 
-def test_sm120_libero_screen_is_complete_and_source_bound():
+def test_sm120_actions_match_the_fully_loaded_official_lerobot_reference():
+    result = json.loads((ROOT / "examples/pi05_vla/sm120_checkpoint_reference_results.json").read_text())
+    assert result["status"] == "PASS"
+    assert result["loaded_weights"]["checked_tensors"] == 812
+    assert result["loaded_weights"]["checkpoint_sha256"] == json.loads(RESULT.read_text())["model"]["model_sha256"]
+    assert result["packages"]["lerobot"] == "0.4.4"
+    assert result["packages"]["transformers"] == "4.53.2"
+    assert len(result["comparisons"]) == 3
+    assert all(case["action_cosine"] >= .98 for case in result["comparisons"])
+    assert all(case["token_count"] > 100 for case in result["comparisons"])
+    for relative, expected in result["source_sha256"].items():
+        assert _sha256(ROOT / relative) == expected, f"reference source changed: {relative}"
+
+
+def test_historical_sm120_libero_screen_keeps_its_original_source_identity():
     path = ROOT / "examples/pi05_vla/sm120_libero_screen_results.json"
     result = json.loads(path.read_text())
     assert result["status"] == "SCREEN"
@@ -92,6 +118,40 @@ def test_sm120_libero_screen_is_complete_and_source_bound():
     assert sum(task["successes"] for task in result["tasks"]) == 21
     assert sum(task["num_trials"] for task in result["tasks"]) == 30
     assert result["summary"] == {"successes": 21, "episodes": 30, "success_rate": 0.7}
+    # This is the immutable 30-episode observation from 08771e1, not evidence for
+    # the current implementation. Current-source integrity is checked above and
+    # by the matched campaign; rewriting old screen hashes would invent a rerun.
+    assert result["source_sha256"]["serving/flash_rt/frontends/torch/pi05_rtx.py"] == (
+        "f259ecb3f27cce579093f8c033e7efa266a6b714d03b5e9772366fb1d5faf210")
+    assert result["source_sha256"]["serving/flash_rt/models/pi05/pipeline_rtx.py"] == (
+        "c8f6b0a8fadb188ab8878f0ba2b451ae97d2836935c69f5bd28a7d46d4014e0d")
+    assert "/workspace/" not in path.read_text()
+
+
+def test_full_matched_sm120_qualification_is_complete_and_recomputable():
+    from benchmarks.vla.pi05_sm120_libero import paired_statistics
+    path = ROOT / "examples/pi05_vla/sm120_libero_matched_results.json"
+    result = json.loads(path.read_text())
+    assert result["status"] == "PASS"
+    protocol = result["protocol"]
+    assert protocol["computed_action_chunk"] == 50
+    assert protocol["action_horizon"] == protocol["replan_steps"] == protocol["nfe"] == 10
+    assert protocol["max_steps"] == 280 and protocol["wait_steps"] == 10
+    assert protocol["noninferiority_margin"] == .05
+    assert protocol["selected"]["percentile"] in (99.0, 99.9, 100.0)
+    pairs = result["pairs"]
+    assert len(pairs) == 500
+    assert {(p["task_id"], p["seed"]) for p in pairs} == {
+        (task, seed) for task in range(10) for seed in range(40100, 40150)}
+    assert all(type(p["native"]) is bool and type(p["fp8"]) is bool for p in pairs)
+    assert paired_statistics(pairs) == result["summary"]
+    assert result["summary"]["noninferior"] and not result["summary"]["collapsed_tasks"]
+    assert result["pairing"]["matched_initial_states_and_observations"] == 500
+    assert result["pairing"]["matched_noise_calls"] >= 500
+    for row in result["calibration"]["tasks"].values():
+        assert len(row["calibration_positions"]) == len(row["holdout_positions"]) == 8
+        assert not set(row["calibration_positions"]) & set(row["holdout_positions"])
     for relative, expected in result["source_sha256"].items():
-        assert _sha256(ROOT / relative) == expected, f"screen source changed: {relative}"
+        assert _sha256(ROOT / relative) == expected, f"matched source changed: {relative}"
+    assert _sha256(ROOT / "scripts/summarize_pi05_sm120.py") == result["exporter_source_sha256"]
     assert "/workspace/" not in path.read_text()

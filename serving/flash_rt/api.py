@@ -56,7 +56,8 @@ class VLAModel:
                     Or a dict with 'image'/'wrist_image' keys.
             prompt: text prompt. Only needed on first call or when changing prompt.
                     If None, reuses the last prompt.
-            state: robot state array (Pi0/Pi0-FAST only). Passed to set_prompt().
+            state: robot state array (required by checkpoint-native Pi0.5).
+                   Also used by Pi0/Pi0-FAST and passed to set_prompt().
                    Pi0 uses continuous state projection; Pi0-FAST discretizes to text.
 
         Returns:
@@ -71,6 +72,8 @@ class VLAModel:
                 else:
                     self._pipe.set_prompt(prompt)
             self._current_prompt = prompt
+            if getattr(self._pipe, "requires_state", False):
+                self._needs_real_data_calibration = not self._pipe.calibrated
         elif self._current_prompt is None:
             raise ValueError("prompt is required on first call")
 
@@ -125,6 +128,7 @@ class VLAModel:
         self,
         observations,
         *,
+        prompt=None,
         percentile: float = 99.9,
         max_samples=None,
         verbose: bool = False,
@@ -148,6 +152,9 @@ class VLAModel:
                 "This frontend does not expose a public calibrate() API. "
                 "Upgrade to a recent version of FlashRT that includes "
                 "the unified calibration interface.")
+        if prompt is not None:
+            self._pipe.set_prompt(prompt)
+            self._current_prompt = prompt
         self._pipe.calibrate(
             observations,
             percentile=percentile,
@@ -196,6 +203,7 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
                hardware="auto",
                embodiment_tag=None,
                action_horizon=None,
+               bf16_encoder_down_layers=(),
                use_fp4=False,
                fp4_layers=None,
                use_awq=None,
@@ -257,7 +265,8 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
             slots. For a working demo pick one of ``"gr1"``,
             ``"robocasa_panda_omron"``, or ``"behavior_r1_pro"``. Any other
             tag prints a warning and emits noise-like actions.
-        action_horizon: GROOT only. Number of action steps to generate per
+        action_horizon: Pi0.5 accepts 10 only (also its default); unqualified
+            horizons are refused. For GROOT, number of action steps to generate per
             inference (default = ``ACTION_HORIZON_MAX`` = 50). Set to a
             smaller value (e.g. 16 for LIBERO) to reduce N1.6 DiT compute.
             The N1.7 BF16 baseline currently computes its native 40 steps and
@@ -298,6 +307,9 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
         raise ValueError(
             f"Unknown config: {config}. Supported: pi05, groot, groot_n17, pi0, "
             "pi0fast, lingbot_vla_v2")
+    if config == "pi05" and action_horizon is not None:
+        if type(action_horizon) is not int or action_horizon != 10:
+            raise ValueError("FlashRT pi05 certifies action_horizon=10 only")
     if framework not in ("torch", "jax"):
         raise ValueError(
             f"Unknown framework: {framework}. Supported: torch, jax")
@@ -385,12 +397,19 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
     # actually accepts. Keeps the dispatch table simple while still letting
     # users specify groot/pi0fast knobs.
     import inspect
+    if config == "pi05" and framework == "torch" and arch == "rtx_sm120" and not use_fp4:
+        from flash_rt.frontends.torch.pi05_checkpoint import Pi05CheckpointFrontend
+        pipe_cls = Pi05CheckpointFrontend
     sig = inspect.signature(pipe_cls)
     kwargs: dict = {"num_views": (3 if config == "lingbot_vla_v2" else num_views)}
     if "hardware" in sig.parameters:
         kwargs["hardware"] = arch
     if "use_fp8" in sig.parameters:
         kwargs["use_fp8"] = use_fp8
+    if bf16_encoder_down_layers:
+        if "bf16_encoder_down_layers" not in sig.parameters:
+            raise ValueError("BF16 encoder down exceptions require the SM120 pi05 checkpoint frontend")
+        kwargs["bf16_encoder_down_layers"] = bf16_encoder_down_layers
     if config == "lingbot_vla_v2":
         # One config name, two arms: the SM80/SM90 datacenter graft takes the full knob set;
         # the Thor engine frontend (Vla2TorchFrontendThor) takes only num_views/use_cuda_graph.
@@ -434,6 +453,11 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
     else:
         # pi05, pi0 — both Thor and rtx variants take (checkpoint, num_views, autotune)
         # or (checkpoint, num_views). Feature-detect.
+        if config == "pi05" and action_horizon is not None:
+            if "chunk_size" in sig.parameters:
+                kwargs["chunk_size"] = action_horizon
+            if "action_horizon" in sig.parameters:
+                kwargs["action_horizon"] = action_horizon
         if "autotune" in sig.parameters:
             kwargs["autotune"] = autotune
         if "weight_cache" in sig.parameters:
@@ -454,4 +478,7 @@ def load_model(checkpoint, framework="torch", num_views=2, autotune=3,
     logger.info(
         "Model loaded: config=%s, framework=%s, arch=%s, class=%s",
         config, framework, arch, pipe_cls.__name__)
-    return VLAModel(pipe, framework)
+    model = VLAModel(pipe, framework)
+    if config == "pi05":
+        model.action_horizon = 10
+    return model

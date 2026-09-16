@@ -606,6 +606,8 @@ def serve(sock_path: Path, snapshot: Path, revision: str, optimization: str = "s
 
 def main() -> int:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--matched-config", type=Path,
+                        help="Run the source-locked FlashRT Native/FP8 SM120 paired campaign")
     parser.add_argument("--request", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--serve", action="store_true")
@@ -614,6 +616,9 @@ def main() -> int:
     parser.add_argument("--revision", type=str)
     parser.add_argument("--optimization", choices=["stock", "instinctflash_capture"], default="stock")
     args = parser.parse_args()
+    if args.matched_config:
+        from benchmarks.vla.pi05_sm120_libero import campaign
+        return campaign(args.matched_config)
     if args.serve:
         if not (args.socket and args.snapshot and args.revision):
             parser.error("--serve requires --socket, --snapshot and --revision")

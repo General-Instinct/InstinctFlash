@@ -69,6 +69,17 @@ TOOL_FILES = {
     "scripts/build_public_release.py",
     "scripts/audit_release_scope.py",
     "scripts/check_installed_package.py",
+    "scripts/prepare_pi05_libero.py",
+    "scripts/install_pi05_transformers.py",
+    "scripts/summarize_pi05_sm120.py",
+    "examples/pi05_vla/requirements-sm120.lock",
+    "examples/pi05_vla/verify_checkpoint_reference.py",
+    "examples/pi05_vla/sm120_fp8_results.json",
+    "examples/pi05_vla/sm120_libero_screen_results.json",
+    "examples/pi05_vla/sm120_checkpoint_reference_results.json",
+    "examples/pi05_vla/sm120_libero_matched_results.json",
+    "examples/pi05_vla/verify_sm120_fp8.py",
+    "examples/pi05_vla/reproduce_sm120_libero.py",
 }
 SCOPE_PATH = "release/oss_scope.json"
 PROFILE_MIRROR = "benchmarks/regression/fixtures/deployment_profiles.json"

@@ -1,0 +1,94 @@
+name: Pi0.5 RTX 5090 qualification
+on:
+  workflow_dispatch:
+    inputs:
+      matched_libero:
+        description: Run the full 500-pair LIBERO qualification after the numeric gate
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  sm120:
+    # Register a trusted external machine with this label. Manual dispatch avoids
+    # executing unreviewed fork PRs on a persistent GPU host.
+    runs-on: [self-hosted, linux, x64, rtx5090]
+    timeout-minutes: 180
+    env:
+      CUDA_VISIBLE_DEVICES: '0'
+      PYTHONPATH: 'serving:.'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONHASHSEED: '0'
+      MUJOCO_GL: egl
+      PYOPENGL_PLATFORM: egl
+      MUJOCO_EGL_DEVICE_ID: '0'
+      PI05_CHECKPOINT: ${{ vars.PI05_CHECKPOINT }}
+      PI05_DATASET: ${{ vars.PI05_DATASET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - uses: actions/checkout@v4
+        with:
+          repository: NVIDIA/cutlass
+          ref: da5e086dab31d63815acafdac9a9c5893b1c69e2
+          path: serving/third_party/cutlass
+      - name: Check external runner inputs
+        run: |
+          test -f "$PI05_CHECKPOINT/model.safetensors"
+          test -f "$PI05_DATASET/data/chunk-000/file-000.parquet"
+      - name: Install the complete locked pi0.5 environment
+        run: |
+          python -m venv "$RUNNER_TEMP/pi05-env"
+          "$RUNNER_TEMP/pi05-env/bin/python" -m pip install \
+            --extra-index-url https://download.pytorch.org/whl/cu128 \
+            -r examples/pi05_vla/requirements-sm120.lock
+          "$RUNNER_TEMP/pi05-env/bin/python" scripts/install_pi05_transformers.py
+          "$RUNNER_TEMP/pi05-env/bin/python" -m pip check
+          printf '%s\n' "$RUNNER_TEMP/pi05-env/bin" >> "$GITHUB_PATH"
+      - name: Verify the target device
+        run: |
+          python -c 'import torch; assert torch.cuda.get_device_capability(0) == (12, 0); assert "5090" in torch.cuda.get_device_name(0)'
+      - name: Build current SM120 kernels and FA2
+        run: |
+          cmake -S serving -B "$RUNNER_TEMP/flashrt-sm120-build" \
+            -DGPU_ARCH=120 -DFA2_ARCH_NATIVE_ONLY=ON -DCMAKE_BUILD_TYPE=Release \
+            -DPython3_EXECUTABLE="$(command -v python)"
+          cmake --build "$RUNNER_TEMP/flashrt-sm120-build" --parallel 4 --target flash_rt_kernels flash_rt_fa2
+      - name: Real FP8 numeric, speed and memory gate
+        run: >-
+          python examples/pi05_vla/verify_sm120_fp8.py
+          --checkpoint "$PI05_CHECKPOINT"
+          --dataset "$PI05_DATASET/data/chunk-000/file-000.parquet"
+          --output "$RUNNER_TEMP/pi05-sm120-numeric.json"
+      - name: Prepare immutable LIBERO assets and verify EGL
+        if: ${{ inputs.matched_libero }}
+        run: >-
+          python scripts/prepare_pi05_libero.py --download
+          --assets "$RUNNER_TEMP/pi05-libero-assets"
+          --config-dir "$RUNNER_TEMP/pi05-libero-config"
+      - name: Matched LIBERO task qualification
+        if: ${{ inputs.matched_libero }}
+        env:
+          LIBERO_CONFIG_PATH: ${{ runner.temp }}/pi05-libero-config
+        run: >-
+          python examples/pi05_vla/reproduce_sm120_libero.py
+          --checkpoint "$PI05_CHECKPOINT" --dataset "$PI05_DATASET"
+          --output "$RUNNER_TEMP/pi05-libero"
+      - name: Official LeRobot reference gate
+        run: >-
+          python examples/pi05_vla/verify_checkpoint_reference.py
+          --checkpoint "$PI05_CHECKPOINT"
+          --dataset "$PI05_DATASET/data/chunk-000/file-000.parquet"
+          --output "$RUNNER_TEMP/pi05-sm120-reference.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pi05-sm120-evidence
+          path: |
+            ${{ runner.temp }}/pi05-sm120-numeric.json
+            ${{ runner.temp }}/pi05-sm120-reference.json
+            ${{ runner.temp }}/pi05-libero/*.json
+            ${{ runner.temp }}/pi05-libero/*.log

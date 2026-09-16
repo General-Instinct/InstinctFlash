@@ -1,0 +1,50 @@
+{
+  "status": "PASS",
+  "loaded_weights": {
+    "checkpoint_sha256": "877b3ec1130548b69af7f8aeef3ec9d3fc7738040f0b9beb490857ec970997ae",
+    "checked_tensors": 812,
+    "verified_aliases": {
+      "model.paligemma_with_expert.paligemma.model.language_model.embed_tokens.weight": "model.paligemma_with_expert.paligemma.lm_head.weight"
+    }
+  },
+  "comparisons": [
+    {
+      "seed": 424242,
+      "action_cosine": 0.9999267770170513,
+      "max_abs_delta": 0.03197672963142395,
+      "mean_abs_delta": 0.0040360381826758385,
+      "token_count": 152
+    },
+    {
+      "seed": 5090,
+      "action_cosine": 0.9999707672754912,
+      "max_abs_delta": 0.012701034545898438,
+      "mean_abs_delta": 0.001987734343856573,
+      "token_count": 153
+    },
+    {
+      "seed": 120120,
+      "action_cosine": 0.9999655959718224,
+      "max_abs_delta": 0.012550637125968933,
+      "mean_abs_delta": 0.0023662149906158447,
+      "token_count": 153
+    }
+  ],
+  "source_sha256": {
+    "examples/pi05_vla/verify_sm120_fp8.py": "48b81c7f4079f5c7307ff44813e6a82497128392928b6546ee15d8f013d97c1e",
+    "serving/flash_rt/api.py": "cb5072c08a13cf896521c611d9fc4b432489671a16c2d0746c8552a84a2fdbf3",
+    "serving/flash_rt/frontends/torch/pi05_rtx.py": "d5b4d4d887ba2c22d2bebb4a5282e11cab07d9a698ba440fd538cdec9002e7c1",
+    "serving/flash_rt/frontends/torch/pi05_checkpoint.py": "77d103983226be45c255187f4a73edb750e427823898cb51960114d284bd189f",
+    "serving/flash_rt/models/pi05/pipeline_rtx.py": "681b9b04f5ba0c2878d5e09b920179b933009851165303093b5c59012958e1e8",
+    "serving/flash_rt/hardware/rtx/attn_backend.py": "9cb6224dc031edf3e2750e81acb883831194365f46f2f06cf1a19fdafbc6616b",
+    "serving/flash_rt/core/utils/actions.py": "e8021f60347b8d256e0a63a05090cbd261a2ddf2cf78c8426833dc10f223d0ec",
+    "serving/flash_rt/core/cuda_graph.py": "2f954e5cb66d89c8246a0e56a9dbd577fc44fba9a01874463ed251937b1e4121",
+    "examples/pi05_vla/verify_checkpoint_reference.py": "3beafdf54325e09f53d5348412628d1a947df7ab1b54085d89f26e391f884754"
+  },
+  "packages": {
+    "lerobot": "0.4.4",
+    "transformers": "4.53.2",
+    "torch": "2.9.0+cu128"
+  },
+  "scope": "official LeRobot 50-step computation and processors; identical explicit noise values"
+}

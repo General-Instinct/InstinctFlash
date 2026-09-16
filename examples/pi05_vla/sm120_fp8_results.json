@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-16T13:27:08.739369+00:00",
+  "generated_at": "2026-09-16T16:02:37.461202+00:00",
   "status": "PASS",
   "hardware": "RTX 5090 / SM120",
   "model": {
@@ -36,20 +36,27 @@
       5090,
       120120
     ],
-    "action_operating_point": "FlashRT pi05 horizon 10, action dim 7",
+    "calibration_seed": 5090120,
+    "action_operating_point": "checkpoint chunk 50, executed horizon 10, action dim 7",
     "thresholds": {
       "min_action_cosine": 0.98,
       "min_speedup": 1.05,
       "max_fp8_resident_ratio": 0.75,
+      "max_fp8_peak_ratio": 0.75,
       "min_released_bf16_bytes": 5000000000,
       "expected_released_bf16_keys": 15,
       "noise_bitwise_equal": true
     }
   },
   "source_sha256": {
-    "serving/flash_rt/frontends/torch/pi05_rtx.py": "f259ecb3f27cce579093f8c033e7efa266a6b714d03b5e9772366fb1d5faf210",
-    "serving/flash_rt/models/pi05/pipeline_rtx.py": "c8f6b0a8fadb188ab8878f0ba2b451ae97d2836935c69f5bd28a7d46d4014e0d",
-    "serving/flash_rt/hardware/rtx/attn_backend.py": "9cb6224dc031edf3e2750e81acb883831194365f46f2f06cf1a19fdafbc6616b"
+    "examples/pi05_vla/verify_sm120_fp8.py": "48b81c7f4079f5c7307ff44813e6a82497128392928b6546ee15d8f013d97c1e",
+    "serving/flash_rt/api.py": "cb5072c08a13cf896521c611d9fc4b432489671a16c2d0746c8552a84a2fdbf3",
+    "serving/flash_rt/frontends/torch/pi05_rtx.py": "d5b4d4d887ba2c22d2bebb4a5282e11cab07d9a698ba440fd538cdec9002e7c1",
+    "serving/flash_rt/frontends/torch/pi05_checkpoint.py": "77d103983226be45c255187f4a73edb750e427823898cb51960114d284bd189f",
+    "serving/flash_rt/models/pi05/pipeline_rtx.py": "681b9b04f5ba0c2878d5e09b920179b933009851165303093b5c59012958e1e8",
+    "serving/flash_rt/hardware/rtx/attn_backend.py": "9cb6224dc031edf3e2750e81acb883831194365f46f2f06cf1a19fdafbc6616b",
+    "serving/flash_rt/core/utils/actions.py": "e8021f60347b8d256e0a63a05090cbd261a2ddf2cf78c8426833dc10f223d0ec",
+    "serving/flash_rt/core/cuda_graph.py": "2f954e5cb66d89c8246a0e56a9dbd577fc44fba9a01874463ed251937b1e4121"
   },
   "arms": {
     "native": {
@@ -64,32 +71,38 @@
       ],
       "fp8_layout": "nk",
       "fp8_weight_count": 0,
+      "computed_action_chunk": 50,
+      "executed_action_horizon": 10,
+      "state_tokenized": true,
+      "state_changes_tokens": true,
+      "missing_state_refused": true,
+      "normalization": "checkpoint MEAN_STD",
       "binary_sha256": {
         "flash_rt_kernels": "86ae023058b7d218badbfa8b853965825f7dad5ea8adef113a0158086bdf44e6",
         "flash_rt_fa2": "aaaf05ad9d6eee0d19bb27425630970d40dcce35ee3397b84221208fef926ca6"
       },
-      "load_ms": 2583.358922973275,
-      "calibrate_ms": 276.06651198584586,
+      "load_ms": 13885.211246000836,
+      "calibrate_ms": 834.6413650142495,
       "paired_case_latency_ms": [
-        31.786208011908457,
-        31.815966998692602,
-        31.80283700930886
+        42.493432003539056,
+        42.5153819960542,
+        42.36356198089197
       ],
       "latency_ms": [
-        31.91087700542994,
-        32.00417599873617,
-        31.919745990308,
-        31.89980599563569,
-        31.853417021920905,
-        31.80027799680829,
-        30.640615994343534,
-        30.663765995996073,
-        30.64427600475028
+        42.11208299966529,
+        42.11413400480524,
+        41.69241600902751,
+        41.56758598401211,
+        41.58145599649288,
+        41.105109005002305,
+        40.96044899779372,
+        40.942260005977005,
+        40.96067001228221
       ],
-      "peak_allocated_bytes": 6800181760,
-      "peak_reserved_bytes": 6822035456,
-      "resident_allocated_bytes": 6798374400,
-      "resident_reserved_bytes": 6822035456,
+      "peak_allocated_bytes": 6844589568,
+      "peak_reserved_bytes": 6941573120,
+      "resident_allocated_bytes": 6839074304,
+      "resident_reserved_bytes": 6941573120,
       "released_bf16_bytes": 0,
       "released_bf16_key_count": 0,
       "action_shape": [
@@ -97,8 +110,14 @@
         10,
         7
       ],
-      "action_min": -0.9512632489204407,
-      "action_max": 0.9194779396057129
+      "action_min": -1.0171964168548584,
+      "action_max": 1.0037463903427124,
+      "graph_lifecycle": {
+        "shape_only_stress": true,
+        "profiles": 12,
+        "evicted_and_destroyed": 4,
+        "all_closed": true
+      }
     },
     "fp8": {
       "mode": "fp8",
@@ -112,32 +131,38 @@
       ],
       "fp8_layout": "nk",
       "fp8_weight_count": 253,
+      "computed_action_chunk": 50,
+      "executed_action_horizon": 10,
+      "state_tokenized": true,
+      "state_changes_tokens": true,
+      "missing_state_refused": true,
+      "normalization": "checkpoint MEAN_STD",
       "binary_sha256": {
         "flash_rt_kernels": "86ae023058b7d218badbfa8b853965825f7dad5ea8adef113a0158086bdf44e6",
         "flash_rt_fa2": "aaaf05ad9d6eee0d19bb27425630970d40dcce35ee3397b84221208fef926ca6"
       },
-      "load_ms": 2794.930175994523,
-      "calibrate_ms": 357.20684999250807,
+      "load_ms": 14174.671816988848,
+      "calibrate_ms": 1152.4365970108192,
       "paired_case_latency_ms": [
-        20.579222007654607,
-        20.552583009703085,
-        20.56247301516123
+        24.851311987731606,
+        24.915372021496296,
+        24.790491996100172
       ],
       "latency_ms": [
-        20.551573019474745,
-        20.562232995871454,
-        20.574173016939312,
-        20.37374401697889,
-        20.61028199386783,
-        20.703831978607923,
-        20.664412004407495,
-        20.604921999620274,
-        20.601322001311928
+        24.779141996987164,
+        24.791981006274,
+        24.60186299867928,
+        24.618313007522374,
+        24.620473006507382,
+        24.577792995842174,
+        24.558612989494577,
+        24.538373021641746,
+        24.552974005928263
       ],
-      "peak_allocated_bytes": 9825471488,
-      "peak_reserved_bytes": 9919528960,
-      "resident_allocated_bytes": 4116998144,
-      "resident_reserved_bytes": 4469030912,
+      "peak_allocated_bytes": 4304514048,
+      "peak_reserved_bytes": 4787798016,
+      "resident_allocated_bytes": 4176409600,
+      "resident_reserved_bytes": 4267704320,
       "released_bf16_bytes": 5413330944,
       "released_bf16_key_count": 15,
       "action_shape": [
@@ -145,8 +170,14 @@
         10,
         7
       ],
-      "action_min": -0.9550122618675232,
-      "action_max": 0.9194779396057129
+      "action_min": -1.0132949352264404,
+      "action_max": 0.9959436058998108,
+      "graph_lifecycle": {
+        "shape_only_stress": true,
+        "profiles": 12,
+        "evicted_and_destroyed": 4,
+        "all_closed": true
+      }
     }
   },
   "comparisons": [
@@ -154,35 +185,36 @@
       "dataset_row": 10,
       "seed": 424242,
       "noise_bitwise_equal": true,
-      "action_cosine": 0.9999342892893729,
-      "max_abs_action_delta": 0.021599173545837402,
-      "mean_abs_action_delta": 0.00342033919878304
+      "action_cosine": 0.9999789790679952,
+      "max_abs_action_delta": 0.010423332452774048,
+      "mean_abs_action_delta": 0.002419897587969899
     },
     {
       "dataset_row": 50,
       "seed": 5090,
       "noise_bitwise_equal": true,
-      "action_cosine": 0.999955411732452,
-      "max_abs_action_delta": 0.014585942029953003,
-      "mean_abs_action_delta": 0.002222185954451561
+      "action_cosine": 0.9999701239762155,
+      "max_abs_action_delta": 0.015605628490447998,
+      "mean_abs_action_delta": 0.002007304923608899
     },
     {
       "dataset_row": 100,
       "seed": 120120,
       "noise_bitwise_equal": true,
-      "action_cosine": 0.9999183265633168,
-      "max_abs_action_delta": 0.02005636692047119,
-      "mean_abs_action_delta": 0.0030627064406871796
+      "action_cosine": 0.9999339689406607,
+      "max_abs_action_delta": 0.020846635103225708,
+      "mean_abs_action_delta": 0.0028197101783007383
     }
   ],
   "summary": {
-    "min_action_cosine": 0.9999183265633168,
-    "max_abs_action_delta": 0.021599173545837402,
-    "native_p50_ms": 31.853417021920905,
-    "fp8_p50_ms": 20.601322001311928,
-    "speedup": 1.5461831536778283,
-    "fp8_to_native_resident_ratio": 0.6055856741282151,
-    "resident_memory_reduction_bytes": 2681376256
+    "min_action_cosine": 0.9999339689406607,
+    "max_abs_action_delta": 0.020846635103225708,
+    "native_p50_ms": 41.56758598401211,
+    "fp8_p50_ms": 24.60186299867928,
+    "speedup": 1.6896113105842274,
+    "fp8_to_native_resident_ratio": 0.6106688441091106,
+    "fp8_to_native_peak_ratio": 0.6288929387562658,
+    "resident_memory_reduction_bytes": 2662664704
   },
   "failures": []
 }

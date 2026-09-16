@@ -32,10 +32,9 @@ from pathlib import Path
 import numpy as np
 import pyarrow.parquet as pq
 import torch
-import torch.nn.functional as F
 from PIL import Image
 
-from flash_rt.frontends.torch.pi05_rtx import Pi05TorchFrontendRtx
+from flash_rt import load_model
 
 
 MODEL_REPO = "lerobot/pi05_libero_finetuned_v044"
@@ -52,6 +51,7 @@ TIMING_ITERATIONS = 9
 MIN_ACTION_COSINE = 0.98
 MIN_SPEEDUP = 1.05
 MAX_FP8_RESIDENT_RATIO = 0.75
+MAX_FP8_PEAK_RATIO = 0.75
 MIN_RELEASED_BF16_BYTES = 5_000_000_000
 EXPECTED_RELEASED_BF16_KEYS = 15
 
@@ -82,16 +82,8 @@ def load_observations(path: Path, indices: tuple[int, ...]) -> list[dict]:
                 Image.open(io.BytesIO(row[key]["bytes"])).convert("RGB"),
                 dtype=np.uint8,
             )
-            # Exact LeRobot/OpenPI centered resize-with-pad arithmetic.  These source frames are
-            # square, so this is a 256 -> 224 bilinear resize with no non-zero padding extent.
-            tensor = torch.from_numpy(raw.copy()).permute(2, 0, 1).unsqueeze(0)
-            resized = F.interpolate(
-                tensor, size=(224, 224), mode="bilinear", align_corners=False
-            )
-            return (
-                torch.round(resized).clamp(0, 255).to(torch.uint8)[0]
-                .permute(1, 2, 0).numpy()
-            )
+            # The checkpoint processor owns image normalization and resizing.
+            return raw.copy()
 
         observations.append({
             "image": image("observation.images.image"),
@@ -111,33 +103,51 @@ def run_arm(checkpoint: Path, dataset: Path, mode: str, output: Path) -> None:
 
     torch.cuda.reset_peak_memory_stats()
     started = time.perf_counter()
-    runtime = Pi05TorchFrontendRtx(
+    model = load_model(
         checkpoint,
         num_views=2,
         use_fp8=mode == "fp8",
         hardware="rtx_sm120",
+        action_horizon=10,
     )
+    runtime = model._pipe
+    frontend = runtime.frontend
     load_ms = (time.perf_counter() - started) * 1000.0
-    if runtime.fp8_layout != "nk":
-        raise AssertionError(f"SM120 selected {runtime.fp8_layout!r}, expected 'nk'")
+    if frontend.fp8_layout != "nk":
+        raise AssertionError(f"SM120 selected {frontend.fp8_layout!r}, expected 'nk'")
 
     runtime.set_prompt(PROMPT)
+    initial_tokens = runtime.prepare(calibration[0])[0]["token_ids"]
+    changed_state = {**calibration[0], "state": calibration[0]["state"].copy()}
+    changed_state["state"][0] += 0.5
+    if np.array_equal(initial_tokens, runtime.prepare(changed_state)[0]["token_ids"]):
+        raise AssertionError("state changes do not reach the checkpoint token inputs")
+    try:
+        runtime.prepare({k: v for k, v in calibration[0].items() if k != "state"})
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("missing checkpoint state was accepted")
+    torch.manual_seed(5090120)
     started = time.perf_counter()
-    runtime.calibrate(calibration, percentile=99.9)
+    model.calibrate(calibration, prompt=PROMPT, percentile=99.9)
     calibrate_ms = (time.perf_counter() - started) * 1000.0
 
     # The first replay after capture is deliberately not part of the timing or numeric pair.
     torch.manual_seed(1)
-    runtime.infer(evaluation[0])
+    def predict(obs):
+        return model.predict(images=[obs["image"], obs["wrist_image"]], state=obs["state"])
+
+    predict(evaluation[0])
     torch.manual_seed(2)
-    runtime.infer(evaluation[1])
-    runtime.latency_records.clear()
+    predict(evaluation[1])
+    frontend.latency_records.clear()
 
     outputs, noises, latencies = [], [], []
     for observation, seed in zip(evaluation, SEEDS):
         torch.manual_seed(seed)
         started = time.perf_counter()
-        actions = runtime.infer(observation)["actions"].astype(np.float32)
+        actions = predict(observation).astype(np.float32)
         latencies.append((time.perf_counter() - started) * 1000.0)
         if not np.isfinite(actions).all():
             raise AssertionError(f"{mode} produced non-finite actions for seed {seed}")
@@ -149,7 +159,7 @@ def run_arm(checkpoint: Path, dataset: Path, mode: str, output: Path) -> None:
     for index in range(TIMING_ITERATIONS):
         torch.manual_seed(9000 + index)
         started = time.perf_counter()
-        runtime.infer(evaluation[index % len(evaluation)])
+        predict(evaluation[index % len(evaluation)])
         latencies.append((time.perf_counter() - started) * 1000.0)
 
     actions = np.stack(outputs)
@@ -161,8 +171,14 @@ def run_arm(checkpoint: Path, dataset: Path, mode: str, output: Path) -> None:
         "cuda": torch.version.cuda,
         "device": torch.cuda.get_device_name(0),
         "capability": list(torch.cuda.get_device_capability(0)),
-        "fp8_layout": runtime.fp8_layout,
-        "fp8_weight_count": len(runtime._fp8_weights),
+        "fp8_layout": frontend.fp8_layout,
+        "fp8_weight_count": len(frontend._fp8_weights),
+        "computed_action_chunk": runtime.config.chunk_size,
+        "executed_action_horizon": runtime.action_horizon,
+        "state_tokenized": True,
+        "state_changes_tokens": True,
+        "missing_state_refused": True,
+        "normalization": "checkpoint MEAN_STD",
         "binary_sha256": {
             "flash_rt_kernels": sha256(Path(flash_rt_kernels.__file__)),
             "flash_rt_fa2": sha256(Path(flash_rt_fa2.__file__)),
@@ -175,12 +191,37 @@ def run_arm(checkpoint: Path, dataset: Path, mode: str, output: Path) -> None:
         "peak_reserved_bytes": torch.cuda.max_memory_reserved(),
         "resident_allocated_bytes": torch.cuda.memory_allocated(),
         "resident_reserved_bytes": torch.cuda.memory_reserved(),
-        "released_bf16_bytes": getattr(runtime, "_released_bf16_bytes", 0),
-        "released_bf16_key_count": len(getattr(runtime, "_released_bf16_keys", ())),
+        "released_bf16_bytes": getattr(frontend, "_released_bf16_bytes", 0),
+        "released_bf16_key_count": len(getattr(frontend, "_released_bf16_keys", ())),
         "action_shape": list(actions.shape),
         "action_min": float(actions.min()),
         "action_max": float(actions.max()),
     }
+    # Shape-only stress, excluded from the action/timing/memory comparison above.
+    # Exercise more token lengths than the eight-entry cache and verify that the
+    # evicted and replaced CUDA graph handles are actually destroyed.
+    prepared, batch = runtime.prepare(evaluation[0])
+    original_prepare = runtime.prepare
+    graphs = []
+    try:
+        for offset in range(12):
+            staged = {**prepared, "token_ids": prepared["token_ids"][:len(prepared["token_ids"]) - offset]}
+            runtime.prepare = lambda obs, staged=staged: (staged, batch)
+            if not np.isfinite(predict(evaluation[0])).all():
+                raise AssertionError("non-finite output during graph profile stress")
+            graphs.append(runtime.pipeline._graph)
+            if len(runtime._profiles) > 8:
+                raise AssertionError("graph profile cache exceeded its bound")
+        evicted = sum(not graph.captured for graph in graphs)
+        if evicted < 4:
+            raise AssertionError("evicted CUDA graphs were not destroyed")
+    finally:
+        runtime.prepare = original_prepare
+    model.close()
+    if any(graph.captured for graph in graphs):
+        raise AssertionError("frontend close left live CUDA graphs")
+    payload["graph_lifecycle"] = {"shape_only_stress": True, "profiles": 12,
+                                  "evicted_and_destroyed": evicted, "all_closed": True}
     output.write_text(json.dumps(payload, indent=2) + "\n")
 
 
@@ -218,9 +259,14 @@ def run_child(mode: str, args, output: Path) -> None:
 def source_hashes() -> dict[str, str]:
     root = Path(__file__).resolve().parents[2]
     relatives = (
+        "examples/pi05_vla/verify_sm120_fp8.py",
+        "serving/flash_rt/api.py",
         "serving/flash_rt/frontends/torch/pi05_rtx.py",
+        "serving/flash_rt/frontends/torch/pi05_checkpoint.py",
         "serving/flash_rt/models/pi05/pipeline_rtx.py",
         "serving/flash_rt/hardware/rtx/attn_backend.py",
+        "serving/flash_rt/core/utils/actions.py",
+        "serving/flash_rt/core/cuda_graph.py",
     )
     return {relative: sha256(root / relative) for relative in relatives}
 
@@ -284,6 +330,9 @@ def qualify(args) -> int:
             arms["fp8"]["resident_allocated_bytes"]
             / arms["native"]["resident_allocated_bytes"]
         )
+        peak_ratio = arms["fp8"]["peak_allocated_bytes"] / arms["native"]["peak_allocated_bytes"]
+        if peak_ratio > MAX_FP8_PEAK_RATIO:
+            failures.append(f"FP8 startup peak ratio {peak_ratio:.4f} > {MAX_FP8_PEAK_RATIO:.4f}")
         if resident_ratio > MAX_FP8_RESIDENT_RATIO:
             failures.append(
                 f"FP8 resident ratio {resident_ratio:.4f} > {MAX_FP8_RESIDENT_RATIO:.4f}"
@@ -324,11 +373,13 @@ def qualify(args) -> int:
                 "warmup_replays": 2,
                 "timing_replays": TIMING_ITERATIONS,
                 "seeds": list(SEEDS),
-                "action_operating_point": "FlashRT pi05 horizon 10, action dim 7",
+                "calibration_seed": 5090120,
+                "action_operating_point": "checkpoint chunk 50, executed horizon 10, action dim 7",
                 "thresholds": {
                     "min_action_cosine": MIN_ACTION_COSINE,
                     "min_speedup": MIN_SPEEDUP,
                     "max_fp8_resident_ratio": MAX_FP8_RESIDENT_RATIO,
+                    "max_fp8_peak_ratio": MAX_FP8_PEAK_RATIO,
                     "min_released_bf16_bytes": MIN_RELEASED_BF16_BYTES,
                     "expected_released_bf16_keys": EXPECTED_RELEASED_BF16_KEYS,
                     "noise_bitwise_equal": True,
@@ -346,6 +397,7 @@ def qualify(args) -> int:
                 "fp8_p50_ms": fp8_p50,
                 "speedup": speedup,
                 "fp8_to_native_resident_ratio": resident_ratio,
+                "fp8_to_native_peak_ratio": peak_ratio,
                 "resident_memory_reduction_bytes": (
                     arms["native"]["resident_allocated_bytes"]
                     - arms["fp8"]["resident_allocated_bytes"]

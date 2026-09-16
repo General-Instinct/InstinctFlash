@@ -219,8 +219,10 @@ def action_digest(values: np.ndarray) -> str:
 
 
 def seed_everything(seed: int) -> None:
+    import random
     import torch
 
+    random.seed(seed)
     np.random.seed(seed % (2**32))
     torch.manual_seed(seed)
     if torch.cuda.is_available():

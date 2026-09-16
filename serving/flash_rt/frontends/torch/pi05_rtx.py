@@ -471,13 +471,27 @@ class Pi05TorchFrontendRtx:
                  max_prompt_len: int = MAX_PROMPT_LEN_DEFAULT,
                  use_fp8: bool = True,
                  hardware: Optional[str] = None,
-                 fp8_layout: Optional[str] = None):
+                 fp8_layout: Optional[str] = None,
+                 bf16_encoder_down_layers: tuple[int, ...] = (),
+                 action_output: str = "robot",
+                 inputs_normalized: bool = False):
         checkpoint_dir = pathlib.Path(checkpoint_dir)
         self.num_views = int(num_views)
         self.chunk_size = int(chunk_size)
         self.max_prompt_len = int(max_prompt_len)
         self.use_fp8 = bool(use_fp8)
         self.fp8_layout = _select_fp8_layout(hardware, fp8_layout)
+        if action_output not in ("robot", "normalized"):
+            raise ValueError("action_output must be robot or normalized")
+        self.action_output = action_output
+        self.inputs_normalized = bool(inputs_normalized)
+        if any(type(i) is not int or not 0 <= i < ENC_L
+               for i in bf16_encoder_down_layers):
+            raise ValueError(f"BF16 encoder down layers must be integers in [0, {ENC_L})")
+        if bf16_encoder_down_layers and not self.use_fp8:
+            raise ValueError("BF16 exceptions require use_fp8=True")
+        self.bf16_encoder_down_layers = tuple(sorted(set(bf16_encoder_down_layers)))
+        self._bf16_encoder_down_weights: dict[int, torch.Tensor] = {}
 
         self.latency_records: list[float] = []
         self.calibrated = False
@@ -503,10 +517,11 @@ class Pi05TorchFrontendRtx:
         self._checkpoint_path = str(safetensors_path)
         raw_ckpt = convert_pi05_safetensors(safetensors_path)
 
-        # Move checkpoint tensors to CUDA BF16. Native keeps the complete store; FP8 releases
-        # only matrices with complete quantized replacements after decoder-style precomputation.
+        # Keep replaceable matrices on CPU until their individual quantization step.
         self._ckpt_bf16 = {}
         for k, v in raw_ckpt.items():
+            if self.use_fp8 and k in _FP8_REPLACED_BF16_KEYS:
+                continue
             if isinstance(v, torch.Tensor):
                 self._ckpt_bf16[k] = v.to("cuda", bf16).contiguous()
             else:
@@ -524,13 +539,17 @@ class Pi05TorchFrontendRtx:
         self._fp8_weights: dict = {}
         self._fp8_store: list = []  # holds tensors alive
         if self.use_fp8:
-            self._quantize_all_fp8()
+            self._quantize_all_fp8(raw_ckpt)
+            self._released_bf16_bytes = sum(
+                raw_ckpt[k].numel() * 2 for k in _FP8_REPLACED_BF16_KEYS
+            ) - sum(t.numel() * 2 for t in self._bf16_encoder_down_weights.values())
+            self._released_bf16_keys = _FP8_REPLACED_BF16_KEYS
 
         # ── Pre-compute decoder styles (time MLP + style modulation) ──
         self._precomputed_styles = _precompute_decoder_styles(
             self._ckpt_bf16, self.chunk_size, num_steps=num_steps)
         if self.use_fp8:
-            self._release_replaced_bf16_weights()
+            torch.cuda.empty_cache()
 
         # ── Attention backend (torch, owns Q/K/V/O) ──
         enc_seq_max = self.num_views * 256 + self.max_prompt_len
@@ -582,13 +601,14 @@ class Pi05TorchFrontendRtx:
             raise FileNotFoundError(
                 f"norm_stats not found near checkpoint: {e}") from e
 
-    def _quantize_all_fp8(self) -> None:
-        """Pre-quantize all large GEMM weights to FP8 E4M3."""
-        W = self._ckpt_bf16
+    def _quantize_all_fp8(self, source: Optional[dict] = None) -> None:
+        """Upload and quantize one CPU matrix at a time, releasing each BF16 temporary."""
+        W = self._ckpt_bf16 if source is None else source
         store = self._fp8_store
         fp8 = self._fp8_weights
 
         def quant(name: str, w: torch.Tensor):
+            w = w.to(device="cuda", dtype=bf16)
             if self.fp8_layout == "nk":
                 w = w.t().contiguous()
             else:
@@ -614,7 +634,11 @@ class Pi05TorchFrontendRtx:
                 [W["encoder_ffn_gate_w"][i], W["encoder_ffn_up_w"][i]], dim=1
             ).contiguous()
             quant(f"encoder_ffn_gate_up_w_{i}", gate_up)
-            quant(f"encoder_ffn_down_w_{i}", W["encoder_ffn_down_w"][i])
+            if i in self.bf16_encoder_down_layers:
+                self._bf16_encoder_down_weights[i] = W["encoder_ffn_down_w"][i].to(
+                    device="cuda", dtype=bf16).contiguous()
+            else:
+                quant(f"encoder_ffn_down_w_{i}", W["encoder_ffn_down_w"][i])
 
         # Decoder (18 layers × 4)
         for i in range(DEC_L):
@@ -627,35 +651,8 @@ class Pi05TorchFrontendRtx:
             quant(f"decoder_ffn_down_w_{i}", W["decoder_ffn_down_w"][i])
 
         logger.info("FP8 quantized %d GEMM weights (layout=%s)", len(fp8), self.fp8_layout)
-
-    def _release_replaced_bf16_weights(self) -> None:
-        """Release BF16 matrices whose FP8 replacements are complete.
-
-        The FP8 execution path never reads its large BF16 fallback pointers, including during
-        dynamic activation calibration.  Retaining both stores made steady-state FP8 residency
-        about 2.8 GiB larger than native.  Prompt, CFG, and batched pipeline rebuilds remain legal:
-        :meth:`_build_pipeline_weights` publishes null fallback pointers while keeping every bias,
-        norm, embedding, action projection, and precomputed style tensor alive.
-        """
-        if len(self._fp8_weights) != _EXPECTED_FP8_WEIGHT_COUNT:
-            raise RuntimeError(
-                f"refusing BF16 release: expected {_EXPECTED_FP8_WEIGHT_COUNT} FP8 weights, "
-                f"got {len(self._fp8_weights)}"
-            )
-        released = 0
-        missing = []
-        for key in _FP8_REPLACED_BF16_KEYS:
-            tensor = self._ckpt_bf16.pop(key, None)
-            if tensor is None:
-                missing.append(key)
-                continue
-            released += tensor.numel() * tensor.element_size()
-        if missing:
-            raise RuntimeError(f"FP8 source tensors missing before release: {missing}")
-        self._released_bf16_bytes = released
-        self._released_bf16_keys = _FP8_REPLACED_BF16_KEYS
-        torch.cuda.empty_cache()
-        logger.info("Released %.3f GiB of replaced BF16 weights", released / (1 << 30))
+        if len(fp8) != _EXPECTED_FP8_WEIGHT_COUNT - len(self.bf16_encoder_down_layers):
+            raise RuntimeError("incomplete FP8 weight conversion")
 
     def _build_pipeline_weights(self) -> dict:
         """Produce the pointer dict that Pi05Pipeline expects."""
@@ -674,6 +671,9 @@ class Pi05TorchFrontendRtx:
             return 0 if self.use_fp8 else p(key)
 
         def fallback_p_list(key: str, count: int) -> list[int]:
+            if self.use_fp8 and key == "encoder_ffn_down_w":
+                return [self._bf16_encoder_down_weights[i].data_ptr()
+                        if i in self._bf16_encoder_down_weights else 0 for i in range(count)]
             return [0] * count if self.use_fp8 else p_list(key)
 
         weights = {
@@ -789,7 +789,7 @@ class Pi05TorchFrontendRtx:
             "RL mode enabled: cfg_beta=%.2f, advantage_positive=%s",
             new_config["cfg_beta"], new_config["advantage_positive"])
 
-    def set_prompt(self, prompt_text: str) -> None:
+    def set_prompt(self, prompt_text) -> None:
         """Tokenise prompt + (re)build the pipeline for the exact prompt length.
 
         When RL mode is enabled (see :meth:`set_rl_mode`), this also
@@ -800,8 +800,18 @@ class Pi05TorchFrontendRtx:
             self._set_prompt_rl(prompt_text)
             return
 
-        embeds, prompt_len = _embed_prompt(
-            prompt_text, self.embedding_weight, max_len=MAX_PROMPT_LEN_DEFAULT)
+        if isinstance(prompt_text, (np.ndarray, list)):
+            ids = np.asarray(prompt_text)
+            if (ids.ndim != 1 or ids.dtype.kind not in "iu" or
+                    not 1 <= len(ids) <= self.max_prompt_len or
+                    np.any(ids < 0) or np.any(ids >= self.embedding_weight.shape[0])):
+                raise ValueError("invalid processed pi05 token IDs")
+            token_ids = torch.as_tensor(ids, dtype=torch.long, device="cuda")
+            embeds = F.embedding(token_ids, self.embedding_weight) * float(ENC_D ** .5)
+            prompt_len = len(ids)
+        else:
+            embeds, prompt_len = _embed_prompt(
+                prompt_text, self.embedding_weight, max_len=self.max_prompt_len)
 
         if self.pipeline is None or prompt_len != self.current_prompt_len:
             logger.info("Building Pi05Pipeline for prompt_len=%d...", prompt_len)
@@ -1180,6 +1190,8 @@ class Pi05TorchFrontendRtx:
         self.latency_records.append(latency_ms)
 
         raw_actions = self._noise_out.float().cpu().numpy()  # (chunk, 32)
+        if self.action_output == "normalized":
+            return {"actions": raw_actions}
         unnorm = unnormalize_actions(raw_actions, self.norm_stats)
         robot_actions = unnorm[:, :LIBERO_ACTION_DIM]
 
@@ -1257,6 +1269,8 @@ class Pi05TorchFrontendRtx:
         Disabling rebuilds the standard single-sample pipeline on the
         next :meth:`set_prompt`.
         """
+        if enable and self.bf16_encoder_down_layers:
+            raise ValueError("BF16 encoder down exceptions are qualified for single-sample inference only")
         if not enable:
             if isinstance(self.pipeline, Pi05BatchedPipeline):
                 self.pipeline = None
@@ -1473,6 +1487,9 @@ class Pi05TorchFrontendRtx:
                 img_list.append(observation["wrist_image_right"])
         tensors = []
         for im in img_list[:self.num_views]:
+            if self.inputs_normalized:
+                tensors.append(torch.as_tensor(im, device="cuda", dtype=bf16))
+                continue
             tensors.append(
                 torch.from_numpy(im.astype(np.float32) / 127.5 - 1.0).to("cuda", bf16))
         return torch.stack(tensors)
@@ -1486,6 +1503,9 @@ class Pi05TorchFrontendRtx:
             if self.num_views >= 3 and "wrist_image_right" in observation:
                 img_list.append(observation["wrist_image_right"])
         for v, im in enumerate(img_list[:self.num_views]):
+            if self.inputs_normalized:
+                self._img_buf[v].copy_(torch.as_tensor(im, dtype=bf16))
+                continue
             norm = torch.from_numpy(im.astype(np.float32) / 127.5 - 1.0)
             self._img_buf[v].copy_(norm.to(bf16))
 

@@ -76,6 +76,20 @@ class CUDAGraph:
         """Synchronize stream."""
         _check(_cudart.cudaStreamSynchronize(stream), "cudaStreamSynchronize")
 
+    def close(self):
+        """Release graph handles after the caller has completed all replays.
+
+        Streams are owned by callers and are not destroyed here. Idempotent so
+        profile eviction and frontend shutdown may both release the same graph.
+        """
+        self._captured = False
+        if self._graph_exec.value:
+            _check(_cudart.cudaGraphExecDestroy(self._graph_exec), "cudaGraphExecDestroy")
+            self._graph_exec = ctypes.c_void_p()
+        if self._graph.value:
+            _check(_cudart.cudaGraphDestroy(self._graph), "cudaGraphDestroy")
+            self._graph = ctypes.c_void_p()
+
     @property
     def captured(self) -> bool:
         return self._captured

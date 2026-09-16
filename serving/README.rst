@@ -74,6 +74,22 @@ while preserving the vendor environment's checked dependencies.
 RTX 5090 build
 --------------
 
+For checkpoint-native pi0.5 LIBERO, use a separate Python 3.10 environment with
+``examples/pi05_vla/requirements-sm120.lock`` and the hash-checked official
+dependency installer ``scripts/install_pi05_transformers.py``. The
+``pi05-sm120`` package extra declares its direct model/simulator dependencies;
+the lock file pins the complete tested environment. Do not merge its LeRobot
+dependency constraints into a different model's environment.
+
+The public SM120 pi0.5 frontend requires the real 8-D robot state (end-effector
+position, axis-angle orientation, and two gripper joint positions). It computes
+the checkpoint's 50-action chunk and returns the qualified 10-action horizon.
+Use ``model.calibrate(real_samples, prompt=task, percentile=...)`` before
+``model.predict(images, state=robot_state)`` for fixed-data calibration. The
+checkpoint's own processors supply state tokens and MEAN_STD action decoding.
+Full commands and paired qualification evidence are in
+``examples/pi05_vla/README.md``.
+
 RTX 5090 uses Linux x86_64, CPython 3.10, CUDA 12.8 and ``GPU_ARCH=120``.
 It cannot reuse the Thor CPython 3.12/aarch64 wheel. Start from the
 LingBot-VA environment pins and install the complete verification extras::
