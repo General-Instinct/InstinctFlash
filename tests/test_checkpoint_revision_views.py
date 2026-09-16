@@ -5,8 +5,54 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 from instinctflash.descriptors.known import lookup
 from instinctflash.descriptors.package import _declared_view
+
+
+@pytest.mark.parametrize("offline", ["1", "yes", "TRUE", "On"])
+def test_offline_pinned_hub_load_never_requests_a_remote_tree(tmp_path, monkeypatch, offline):
+    import sys
+    from instinctflash.descriptors.package import from_pretrained
+
+    monkeypatch.setenv("HF_HUB_OFFLINE", offline)
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
+    revision = "a" * 40
+    source = snapshot(tmp_path, revision, "weights")
+    (source / "config.json").write_text('{"type":"pi05"}')
+
+    def download(repo_id, **options):
+        assert repo_id == "lerobot/pi05_libero_finetuned_v044"
+        assert options["revision"] == revision
+        if not options.get("local_files_only"):
+            raise AssertionError("Pinned snapshot attempted a network tree request")
+        return str(source)
+
+    monkeypatch.setitem(sys.modules, "huggingface_hub", SimpleNamespace(snapshot_download=download))
+    checkpoint = from_pretrained("lerobot/pi05_libero_finetuned_v044", revision=revision)
+    assert (Path(checkpoint.path) / "model.safetensors").read_bytes() == b"weights"
+
+
+@pytest.mark.parametrize("offline", [None, "0", "false"])
+def test_online_hub_load_keeps_revision_resolution(tmp_path, monkeypatch, offline):
+    import sys
+    from instinctflash.descriptors.package import from_pretrained
+
+    if offline is None:
+        monkeypatch.delenv("HF_HUB_OFFLINE", raising=False)
+    else:
+        monkeypatch.setenv("HF_HUB_OFFLINE", offline)
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
+    source = snapshot(tmp_path, "snapshot", "weights")
+    (source / "config.json").write_text('{"type":"pi05"}')
+
+    def download(repo_id, *, revision):
+        assert revision == "main"
+        return str(source)
+
+    monkeypatch.setitem(sys.modules, "huggingface_hub", SimpleNamespace(snapshot_download=download))
+    assert from_pretrained("lerobot/pi05_libero_finetuned_v044", revision="main").path
 
 
 def snapshot(root, name, value):

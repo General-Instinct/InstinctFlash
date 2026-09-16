@@ -27,6 +27,7 @@ this fails when a *directory* is not a checkpoint.
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -542,7 +543,13 @@ def from_pretrained(model_id_or_path: str | Path, *, revision: str | None = None
                 f"{model_id_or_path!r} is not a local directory and huggingface_hub is not installed, "
                 f"so it cannot be resolved as a Hub repo id. Install huggingface_hub, or pass a path."
             ) from e
-        p = Path(snapshot_download(str(model_id_or_path), revision=revision))
+        download_options = {"revision": revision}
+        # A commit hash can skip Hub revision resolution. Some Hub versions
+        # then attempt a tree request even with HF_HUB_OFFLINE enabled, so
+        # explicitly select the local snapshot branch for offline deployments.
+        if os.environ.get("HF_HUB_OFFLINE", "").upper() in {"1", "ON", "YES", "TRUE"}:
+            download_options["local_files_only"] = True
+        p = Path(snapshot_download(str(model_id_or_path), **download_options))
         from instinctflash.descriptors.checkpoint import _declaration_file
         if _declaration_file(p) is None:
             # A known upstream release: its authors publish weights without a declaration, and we
