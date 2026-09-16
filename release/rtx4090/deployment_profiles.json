@@ -824,6 +824,28 @@
       ],
       "deployment_target": "rtx4090",
       "execution_modes": {
+        "fp8": {
+          "effective_schedule": {
+            "nfe": {
+              "action": 4,
+              "backbone": 1
+            },
+            "sampler": "checkpoint"
+          },
+          "environment": {},
+          "evidence_cell": "groot-rtx4090-fp8-pending",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "fp8",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "numeric"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        },
         "native": {
           "effective_schedule": {
             "nfe": {
@@ -961,6 +983,31 @@
       ],
       "deployment_target": "rtx4090",
       "execution_modes": {
+        "fp8": {
+          "effective_schedule": {
+            "guidance": 3.0,
+            "nfe": {
+              "action": 4,
+              "prefix": 1
+            },
+            "sampler": "unipc",
+            "shift": 5.0,
+            "steps": 4
+          },
+          "environment": {},
+          "evidence_cell": "edge-rtx4090-fp8-pending",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "fp8",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "numeric"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        },
         "native": {
           "effective_schedule": {
             "guidance": 3.0,
@@ -998,10 +1045,6 @@
             "steps": 4
           },
           "environment": {
-            "IFL_BF16_LINEAR_RELU2": "0",
-            "IFL_COSMOS3_CONTIGUOUS_KV": "0",
-            "IFL_COSMOS3_GEN_REGIONS": "1",
-            "IFL_COSMOS3_SPLIT_PREFILL": "1",
             "IFL_COSMOS3_TIMESTEP_CACHE": "1"
           },
           "evidence_cell": "edge-runtime_selected",
@@ -1130,6 +1173,31 @@
       ],
       "deployment_target": "rtx4090",
       "execution_modes": {
+        "fp8": {
+          "effective_schedule": {
+            "guidance": 3.0,
+            "nfe": {
+              "action": 4,
+              "prefix": 1
+            },
+            "sampler": "unipc",
+            "shift": 5.0,
+            "steps": 4
+          },
+          "environment": {},
+          "evidence_cell": "nano-rtx4090-fp8-pending",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "fp8",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "numeric"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        },
         "native": {
           "effective_schedule": {
             "guidance": 3.0,
@@ -1167,10 +1235,6 @@
             "steps": 4
           },
           "environment": {
-            "IFL_BF16_LINEAR_RELU2": "0",
-            "IFL_COSMOS3_CONTIGUOUS_KV": "0",
-            "IFL_COSMOS3_GEN_REGIONS": "1",
-            "IFL_COSMOS3_SPLIT_PREFILL": "1",
             "IFL_COSMOS3_TIMESTEP_CACHE": "1"
           },
           "evidence_cell": "nano-runtime_selected",

@@ -396,7 +396,12 @@ class Bootstrap:
             if self.profile["source_manifest"]:
                 projects.append(self.vendor)
             if self.args.package_wheel_dir:
-                catalog = json.loads((self.args.checkout / "release/deployment_profiles.json").read_text())
+                catalog_root = self.args.checkout / "release"
+                if deployment_target != "jetson_thor":
+                    catalog_root /= deployment_target
+                catalog = json.loads((catalog_root / "deployment_profiles.json").read_text())
+                if catalog.get("target") != deployment_target:
+                    raise ValueError("supplied-wheel catalog does not match the deployment target")
                 row = next(m for m in catalog["models"] if m["id"] == self.profile["family"])
                 distributions = {"instinctflash", "flash-rt", row["adapter"]["distribution"]}
                 supplied = []

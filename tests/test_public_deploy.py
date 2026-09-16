@@ -469,3 +469,24 @@ def test_doctor_failure_exit_code_and_no_sensitive_exception_text(monkeypatch, c
     monkeypatch.setattr(deploy.subprocess, "run", lambda *a, **kw: SimpleNamespace(
         returncode=7, stdout="SECRET_STDOUT", stderr="SECRET_STDERR"))
     assert "SECRET" not in json.dumps(deploy.run_probe({}, 1))
+
+
+def test_all_rtx4090_models_expose_fp8_without_changing_the_native_schedule():
+    from benchmarks.regression.reproduce import make_plan
+
+    catalog = deploy.load_profiles(target="rtx4090")
+    for profile in catalog["models"]:
+        native = profile["execution_modes"]["native"]
+        fp8 = profile["execution_modes"]["fp8"]
+        assert fp8["runtime_kwargs"]["precision"] == "fp8"
+        assert fp8["runtime_kwargs"]["tier_ceiling"] == "numeric"
+        assert fp8["effective_schedule"] == native["effective_schedule"]
+        assert fp8["schedule_changed"] is False
+        assert fp8["gpu_qualified_by_plan"] is False
+        # Exercise the installed runner's selection validation too, rather than
+        # allowing a catalog-only setting that the user cannot actually prepare.
+        assert make_plan(profile["id"], "fp8", target="rtx4090")
+        if profile["id"] in ("edge", "nano"):
+            environment = profile["execution_modes"]["numeric"]["environment"]
+            assert not {"IFL_COSMOS3_GEN_REGIONS", "IFL_COSMOS3_SPLIT_PREFILL",
+                        "IFL_BF16_LINEAR_RELU2"}.intersection(environment)

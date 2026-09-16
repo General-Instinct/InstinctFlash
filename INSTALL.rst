@@ -77,8 +77,10 @@ Use the selected model alias in both commands. Model downloads use your normal
 Hugging Face authentication; accept any required upstream access conditions
 first. Cosmos preparation includes the external Wan VAE. Keep the generated
 asset activation alongside the vendor activation for subsequent sessions.
+For RTX 4090, also pass ``--target rtx4090`` to the doctor command; asset
+preparation uses the same original checkpoints on both devices.
 
-Install the published native libraries or build them using
+For Thor, install the published native libraries or build them using
 `the backend guide <serving/README.rst>`_. The CPU core
 environment above does not become a model environment by installing an adapter.
 Use one environment per incompatible vendor stack; Edge and Nano can share the
@@ -357,9 +359,10 @@ comparison groups and do not establish architecture-only speedups.
 
 Native precision and a bitexact ceiling describe the selected checkpoint-relative
 optimizations; they do not guarantee action equality against a separate reference
-implementation. The current DreamZero native reference retains vendor encoder
+implementation. The Thor DreamZero native reference retains vendor encoder
 compilation and uses an eager DiT. Set ``TORCHINDUCTOR_COMPILE_THREADS=1`` for its
 Thor reproduction to limit compiler memory use. The
+4090 reference uses eager components with declared CPU weight/KV residency. The
 `earlier comparison <eval/user_e2e_2026-09-14/dreamzero_default_difference.json>`_
 used a different compilation setup and retains its original action differences.
 

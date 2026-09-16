@@ -101,7 +101,7 @@ RTX 4090 results; consult the target's qualified results before choosing a mode.
 Explicit execution selections
 -----------------------------
 
-.. list-table:: Main README InstinctFlash selections
+.. list-table:: Thor README InstinctFlash selections
    :header-rows: 1
 
    * - Model alias
@@ -141,7 +141,7 @@ transformations; action agreement is measured against the separate eager
 reference. FP8, NUMERIC and changed schedules have distinct selections and
 never imply a task-quality certificate.
 
-For Edge, bind the library produced by the native build during preparation::
+For Edge on Thor, bind the library produced by the native build during preparation::
 
     python -I -m benchmarks.regression.reproduce prepare \
       --model edge --mode numeric --output edge-inputs \
