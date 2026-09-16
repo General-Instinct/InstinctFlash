@@ -1,0 +1,50 @@
+{
+  "adapter_directory": null,
+  "constraints": {
+    "path": "va/constraints.txt",
+    "sha256": "918ac1422e84629c289428486c603cbabdab8d098a884ff325cf6b0984ad4252"
+  },
+  "deployment_target": "rtx4090",
+  "explicit_exclusions": [
+    "Training, hardware robot drivers, visualization UI, vendor TensorRT builders, CUDA source compilation are not installed by this inference-only bootstrap.",
+    "FlashAttention/native acceleration remains a separately built and qualified dependency where selected."
+  ],
+  "family": "va",
+  "packaging_patch": {
+    "after": {
+      "pyproject.toml": "b4a22a1cb1beec68fd7f3250dec876de4401985577b1adbd52ae3a67901ca429"
+    },
+    "before": {
+      "pyproject.toml": "a3109a71e732ceda3a1ebb9413443ed1824b4fd1b50a239ac13d9db86203ceae"
+    },
+    "path": "va/inference_packaging.patch",
+    "scope": "Packaging metadata only. Explicit inference dependencies replace training/UI/native-build requirements and incompatible historical Torch pins. Runtime source files are unchanged; actual inference remains an independent gate.",
+    "sha256": "9e255aaf463683181f13c0104b678323817680833d0537543629ce767cbf2f72"
+  },
+  "public_wheel_overrides": {
+    "torch": "https://files.pythonhosted.org/packages/1a/c9/82638ef24d7877510f83baf821f5619a61b45568ce21c0a87a91576510aa/torch-2.11.0-cp312-cp312-manylinux_2_28_x86_64.whl#sha256=0f68f4ac6d95d12e896c3b7a912b5871619542ec54d3649cf48cc1edd4dd2756",
+    "torchvision": "https://files.pythonhosted.org/packages/f5/d8/cb6ccda1a1f35a6597645818641701207b3e8e13553e75fce5d86bac74b2/torchvision-0.26.0-cp312-cp312-manylinux_2_28_x86_64.whl#sha256=d61a5abb6b42a0c0c311996c2ac4b83a94418a97182c83b055a2a4ae985e05aa"
+  },
+  "qualification": {
+    "GPU_verified": false,
+    "evidence": null,
+    "status": "target_profile_prepared_install_and_GPU_checks_pending",
+    "task_quality_certified": false
+  },
+  "requirements": {
+    "path": "va/inference_requirements.txt",
+    "sha256": "8d9c6b5fea6a0278b41ba3b6302272d8ef8175d0065c6eb350ddc44606630c20",
+    "unconstrained_direct_packages": [
+      "imageio"
+    ]
+  },
+  "root_env": "LINGBOT_ROOT",
+  "schema": "instinctflash.vendor_bootstrap.v1",
+  "source_manifest": "va/source.json",
+  "target": {
+    "machine": "x86_64",
+    "python_minor": "3.12",
+    "system": "Linux"
+  },
+  "wheel_metadata_repair": null
+}

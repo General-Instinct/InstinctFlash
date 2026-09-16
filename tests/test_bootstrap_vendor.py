@@ -1,13 +1,12 @@
 import importlib.util
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -31,6 +30,60 @@ def test_all_profiles_have_exact_source_and_inputs(family):
         assert len(p["source"]["source"]["revision"]) == 40
         assert set(p["packaging_patch"]["before"]) <= {"pyproject.toml", "setup.py"}
         assert p["packaging_patch"]["before"].keys() == p["packaging_patch"]["after"].keys()
+
+
+@pytest.mark.parametrize("family", bootstrap.FAMILIES)
+def test_rtx4090_profiles_preserve_vendor_source_and_bind_x86_wheels(family):
+    thor = bootstrap.load_profile(family)
+    rtx = bootstrap.load_profile(family, target="rtx4090")
+    assert rtx["deployment_target"] == "rtx4090"
+    assert rtx["target"]["machine"] == "x86_64"
+    assert rtx["wheel_metadata_repair"] is None
+    assert rtx["qualification"]["GPU_verified"] is False
+    assert rtx["source_manifest"] == thor["source_manifest"]
+    assert rtx["packaging_patch"] == thor["packaging_patch"]
+    for name in ("torch", "torchvision"):
+        assert "x86_64.whl#sha256=" in rtx["public_wheel_overrides"][name]
+    assert all("aarch64" not in url for url in rtx["public_wheel_overrides"].values())
+    if family in {"edge", "nano"}:
+        assert ".gb300" not in rtx["public_wheel_overrides"]["natten"]
+        assert "x86_64" in rtx["public_wheel_overrides"]["triton"]
+
+
+def test_rtx4090_plan_is_offline_and_requires_explicit_target(tmp_path):
+    r = subprocess.run([sys.executable, str(ROOT / "scripts/bootstrap_vendor.py"), "plan", "pi05",
+                        "--target", "rtx4090", "--root", str(tmp_path / "absent")],
+                       capture_output=True, text=True, check=True, env={"PATH": os.environ["PATH"]})
+    assert json.loads(r.stdout)["target"]["machine"] == "x86_64"
+    assert not (tmp_path / "absent").exists()
+    assert bootstrap.load_profile("pi05")["target"]["machine"] == "aarch64"
+
+
+def test_rtx4090_dependency_command_never_installs_thor_wheel_repair(tmp_path, monkeypatch):
+    b = bootstrap.Bootstrap(args(tmp_path), bootstrap.load_profile("pi05", target="rtx4090"))
+    monkeypatch.setattr(subprocess, "check_output", lambda *a, **kw: '["Linux","x86_64","3.12"]')
+    monkeypatch.setattr(b, "prepare_source", lambda: None)
+    monkeypatch.setattr(b, "repaired_wheel", lambda: pytest.fail("Thor repair must not run on x86_64"))
+    monkeypatch.setattr(b, "auxiliary_python_wheels", lambda: [])
+    commands = []
+
+    class StopBeforeInstall(Exception):
+        pass
+
+    def command(label, argv, **kwargs):
+        commands.append((label, argv))
+        if label == "dependency_resolution":
+            raise StopBeforeInstall
+
+    monkeypatch.setattr(b, "command", command)
+    with pytest.raises(StopBeforeInstall):
+        b.install()
+    argv = commands[-1][1]
+    assert commands[-1][0] == "dependency_resolution"
+    assert "None" not in argv
+    assert not any("aarch64" in item for item in argv)
+    assert any(item.startswith("torch @ ") and "x86_64" in item for item in argv)
+    assert "--no-deps" not in argv
 
 
 def test_plan_does_not_require_uv_torch_network_or_create_destination(tmp_path):
@@ -104,6 +157,23 @@ def test_thor_compiler_rejects_nonexecutable_before_creating_output(tmp_path):
     with pytest.raises(ValueError, match="executable"):
         bootstrap.prepare_ptxas(compiler, tmp_path / "absent")
     assert not (tmp_path / "absent").exists()
+
+
+def test_rtx4090_compiler_uses_ada_target_and_omits_blackwell_override(tmp_path, monkeypatch):
+    compiler = tmp_path / "ptxas"
+    compiler.write_bytes(b"Ada-capable assembler")
+    compiler.chmod(0o700)
+
+    def assemble(command, **kwargs):
+        assert "--gpu-name=sm_89" in command
+        assert ".target sm_89" in Path(command[2]).read_text()
+        Path(command[-1]).write_bytes(b"sm89 cubin")
+        return subprocess.CompletedProcess(command, 0, b"", b"")
+
+    monkeypatch.setattr(subprocess, "run", assemble)
+    result = bootstrap.prepare_ptxas(compiler, tmp_path / "probe", target="rtx4090")
+    assert result["target"] == "sm_89" and result["GPU_used"] is False
+    assert result["environment"] == {"TRITON_PTXAS_PATH": str(compiler)}
 
 
 def test_dreamzero_checks_complete_native_entrypoint_and_pinned_cli_dependency():
@@ -217,7 +287,7 @@ def test_interpreter_mismatch_fails_before_fetch_or_install_and_preserves_receip
     b = bootstrap.Bootstrap(a, bootstrap.load_profile("va"))
     monkeypatch.setattr(subprocess, "check_output", lambda *a, **kw: '["Linux","x86_64","3.12"]')
     monkeypatch.setattr(b, "command", lambda *a, **kw: pytest.fail("unexpected install"))
-    with pytest.raises(ValueError, match="historical target"):
+    with pytest.raises(ValueError, match="selected target"):
         b.install()
     assert json.loads((b.root / "failure.json").read_text())["automatic_retry"] is False
     assert not b.env_dir.exists()

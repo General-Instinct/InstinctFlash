@@ -19,23 +19,29 @@ import copy
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import subprocess
 import sys
-
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILE_PATH = ROOT / "release" / "deployment_profiles.json"
+PROFILE_PATHS = {
+    "jetson_thor": PROFILE_PATH,
+    "rtx4090": ROOT / "release" / "rtx4090" / "deployment_profiles.json",
+}
 SCHEMA = "instinctflash.deployment_profiles.v1"
 FAMILIES = {"va", "vla4", "vla2", "pi05", "groot", "edge", "nano", "dreamzero"}
 IDENTIFIER = re.compile(r"[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*\Z")
 
 
-def load_profiles(path: Path = PROFILE_PATH) -> dict:
+def load_profiles(path: Path | None = None, *, target: str = "jetson_thor") -> dict:
     """Read the portable catalog; historical eval files are not runtime dependencies."""
+    if target not in PROFILE_PATHS:
+        raise ValueError(f"unsupported deployment target: {target}")
+    path = PROFILE_PATHS[target] if path is None else path
     document = json.loads(path.read_text())
-    if document.get("schema") != SCHEMA or document.get("target") != "jetson_thor":
+    if document.get("schema") != SCHEMA or document.get("target") != target:
         raise ValueError("unsupported deployment profile schema or target")
     rows = document.get("models", [])
     if len(rows) != 8 or {row["id"] for row in rows} != FAMILIES:
@@ -83,6 +89,9 @@ def load_profiles(path: Path = PROFILE_PATH) -> dict:
 
 
 def make_plan(profile: dict, execution: str = "native", *, python: str = sys.executable) -> dict:
+    target = profile.get("deployment_target", "jetson_thor")
+    if target not in PROFILE_PATHS:
+        raise ValueError(f"unsupported deployment target: {target}")
     modes = profile["execution_modes"]
     if execution not in modes:
         raise ValueError(f"{profile['id']} supports execution modes: {', '.join(modes)}")
@@ -103,6 +112,7 @@ def make_plan(profile: dict, execution: str = "native", *, python: str = sys.exe
     }
     return {
         "id": profile["id"], "label": profile["label"], "checkpoint": checkpoint,
+        "target": target,
         "adapter": profile["adapter"], "upstream": profile["upstream"],
         "python": profile["python"], "bootstrap": profile["bootstrap"],
         "execution": execution, "available_execution_modes": list(modes),
@@ -110,7 +120,7 @@ def make_plan(profile: dict, execution: str = "native", *, python: str = sys.exe
         "commands": {
             "install_core_and_adapter_after_vendor_setup": install,
             "doctor_before_weights": [python, str(Path(__file__).resolve()), "doctor",
-                                      profile["id"], "--execution", execution],
+                                      profile["id"], "--execution", execution, "--target", target],
             "prepare_pinned_checkpoint_after_doctor": [python, "-c", prepare],
             "serve_after_saving_config": ["instinctflash", "serve", "--config_path=serve.json"],
         },
@@ -155,9 +165,9 @@ def _find_without_import(name: str):
 
 def _native_file_check(requirement: dict) -> dict:
     """Check file/host ABI presence only; never dlopen a CUDA library."""
-    from importlib.machinery import EXTENSION_SUFFIXES
     import platform
     import struct
+    from importlib.machinery import EXTENSION_SUFFIXES
 
     kind, name = requirement["kind"], requirement["name"]
     path = None
@@ -448,7 +458,8 @@ def doctor(profile: dict, execution: str = "native", *, timeout: float = 45,
             "scope": "CPU dependency/source checks before download; not a deployment qualification",
             "checks": checks, "distributions": probe.get("distributions", {}),
             "python": {"executable": sys.executable, "version": sys.version.split()[0],
-                       "historical_thor": profile["python"]["historical_thor"]},
+                       "historical_thor": profile["python"]["historical_thor"],
+                       "target": profile["python"].get("target", profile["python"]["historical_thor"])},
             "bootstrap_status": profile["bootstrap"]["status"],
             "upstream_pin_status": upstream["pin_status"],
             "GPU_verified": False, "weights_downloaded": False, "model_constructed": False,
@@ -465,13 +476,14 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("command", choices=("plan", "doctor"))
     parser.add_argument("model", choices=("all", *sorted(FAMILIES)))
+    parser.add_argument("--target", choices=tuple(PROFILE_PATHS), default="jetson_thor")
     parser.add_argument("--execution", default="native", help="Explicit named recipe; see plan output for supported modes.")
     parser.add_argument("--timeout", type=float, default=45, help="Maximum seconds for each CPU dependency subprocess.")
     args = parser.parse_args(arguments)
     if not 0 < args.timeout <= 300:
         parser.error("--timeout must be greater than 0 and at most 300 seconds")
     try:
-        catalog = load_profiles()
+        catalog = load_profiles(target=args.target)
         selected = [row for row in catalog["models"] if args.model in ("all", row["id"])]
         # Validate all selections before any imports so a mixed unsupported recipe fails early.
         plans = [make_plan(row, args.execution) for row in selected]
@@ -480,7 +492,7 @@ def main(argv=None) -> int:
         ]
         ok = all(row.get("ok", True) for row in results)
         report = {"schema": "instinctflash.public_deploy.v1", "command": args.command, "ok": ok,
-                  "target": catalog["target"], "profiles_sha256": hashlib.sha256(PROFILE_PATH.read_bytes()).hexdigest(),
+                  "target": catalog["target"], "profiles_sha256": hashlib.sha256(PROFILE_PATHS[args.target].read_bytes()).hexdigest(),
                   "results": results, "evidence_scope": catalog["evidence_scope"]}
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if ok else 1

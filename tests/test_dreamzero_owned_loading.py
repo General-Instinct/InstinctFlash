@@ -8,7 +8,8 @@ from unittest.mock import Mock
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'examples/dreamzero'))
-from dreamzero_iwm.adapter import _build_owned_native_loop, SHIPPED_DIT_MASK
+from dreamzero_iwm.adapter import SHIPPED_DIT_MASK, _build_owned_native_loop
+
 from instinctflash.runtime import dreamzero_checkpoint as loading
 
 
@@ -113,3 +114,42 @@ def test_resolved_default_lora_view_preserves_original_and_freezes_schedule(tmp_
     assert not view.exists()
     assert (tmp_path / 'config.json').read_bytes() == original
     assert (tmp_path / 'model.safetensors').read_bytes() == b'fixture-weight-bytes'
+
+
+@pytest.mark.parametrize('precision', ['native', 'fp8'])
+def test_owned_residency_view_and_cleanup_preserve_original_checkpoint(tmp_path, precision):
+    from dreamzero_iwm.residency import _CONSTRUCTION
+
+    from instinctflash.runtime.step_cache_policy import ResolvedStepCache
+
+    config = {'action_head_cfg': {
+        '_target_': 'groot.vla.model.dreamzero.action_head.wan_flow_matching_action_tf.WANPolicyHead',
+        'config': {'train_architecture': 'lora'}}}
+    original = json.dumps(config).encode()
+    (tmp_path / 'config.json').write_bytes(original)
+    owner = SimpleNamespace(initialized=True, close=Mock(),
+        fp8_recipe={'recipe_id': 'declared'} if precision == 'fp8' else None,
+        report=lambda: {'complete_history': True})
+    observed = {}
+
+    def factory(path):
+        observed['path'] = path
+        selected = json.loads((path / 'config.json').read_text())['action_head_cfg']
+        assert selected['_target_'] == 'dreamzero_iwm.residency.build_head'
+        assert selected['ifl_residency_precision'] == precision
+        assert selected['ifl_fixed_dit_steps'] == 8
+        assert selected['ifl_dynamic_cache_schedule'] is False
+        _CONSTRUCTION.get().append(owner)
+        head = SimpleNamespace(num_inference_steps=16, cfg_scale=5.,
+            dynamic_cache_schedule=False, dit_step_mask=SHIPPED_DIT_MASK, _ifl_residency=owner)
+        return SimpleNamespace(trained_model=SimpleNamespace(action_head=head))
+
+    loop = _build_owned_native_loop(tmp_path, factory, lambda _: SimpleNamespace(),
+        step_cache=ResolvedStepCache(False, 8, None, 'test'), residency_precision=precision)
+    assert loop.backend_stats['precision'] == precision
+    assert loop.backend_stats['residency']['complete_history'] is True
+    loop.close()
+    loop.close()
+    owner.close.assert_called_once()
+    assert not observed['path'].exists()
+    assert (tmp_path / 'config.json').read_bytes() == original

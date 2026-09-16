@@ -22,6 +22,7 @@ from __future__ import annotations
 from instinctflash.adapters.base import AdapterSpec
 from instinctflash.descriptors.deployment import DeploymentSpec
 from instinctflash.planners.planner import PassResult, Tier
+from instinctflash.runtime.lingbot_residency import needs_prompt_encoder_staging
 
 
 class FSDPElision:
@@ -84,15 +85,15 @@ class AllocatorChurnElision:
 
     def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
         device = getattr(deployment, "device", None)
-        if (device is not None and device.capability == (12, 0)
-                and device.total_memory <= 40 << 30):
+        if device is not None and needs_prompt_encoder_staging(
+                device.capability, device.total_memory):
             return PassResult(
                 self.name, False, Tier.BITEXACT,
-                "low-memory SM120 wan_va deployment: decoder residency elision makes the model "
-                "fit, but suppressing the upstream post-action empty_cache leaves fragmented "
-                "reserved blocks and the later 8-frame VAE commit OOMs on a 32 GiB RTX 5090. "
-                "Keep the pressure-release calls on this measured device class",
-                expected_win="memory-safety gate measured on RTX 5090; no numerical change",
+                "memory-constrained wan_va deployment: retain upstream empty_cache calls so "
+                "reset-only T5 weights and later 8-frame VAE commits can release reserved "
+                "blocks. Applies to <=40 GiB SM89/SM120 devices; RTX 4090 fit requires an "
+                "actual multi-cycle device test",
+                expected_win="allocator pressure release; no numerical change or fit claim",
             )
         return PassResult(
             self.name, True, Tier.BITEXACT,
@@ -103,7 +104,7 @@ class AllocatorChurnElision:
 
 
 class PromptEncoderStaging:
-    """Stage the 5.7B T5 prompt encoder to CPU between episode resets on low-memory SM120.
+    """Stage the 5.7B T5 prompt encoder between resets on memory-constrained GPUs.
 
     The T5 is only exercised inside `_reset`, which encodes the episode prompt; between episodes
     it is dead weight. On a 32 GiB RTX 5090 with the decoder residency already elided, returning
@@ -115,7 +116,7 @@ class PromptEncoderStaging:
     This class exists so that decision is a PLAN LINE rather than a silent per-reset device sniff
     buried in an installer: `explain()` must show per-reset device moves + empty_cache on the
     device class where they happen, exactly as the sibling `AllocatorChurnElision` declares its
-    low-memory-SM120 decline. Bit-exact: parameter placement between episodes cannot change a
+    memory-pressure decline. Bit-exact: parameter placement between episodes cannot change a
     tensor value, and the prompt encode itself always runs on-device.
     """
 
@@ -128,25 +129,27 @@ class PromptEncoderStaging:
         if device is None:
             return PassResult(
                 self.name, False, Tier.BITEXACT,
-                "no probed device: staging is a memory-pressure decision for a measured device "
+                "no probed device: staging is a memory-pressure decision for a supported device "
                 "class, and an unprobed target must decline rather than be left undecided")
-        if device.capability == (12, 0) and device.total_memory <= 40 << 30:
+        if needs_prompt_encoder_staging(device.capability, device.total_memory):
             return PassResult(
                 self.name, True, Tier.BITEXACT,
-                "low-memory SM120 wan_va deployment: the 5.7B T5 prompt encoder is dead weight "
-                "between episodes; staging it to CPU at the end of each reset (with a real "
-                "empty_cache) gives the 8-frame VAE commit contiguous headroom",
+                "memory-constrained wan_va deployment: load the 5.7B T5 on CPU, encode prompts "
+                "on CUDA at each reset, then stage it out before allocating the unchanged full "
+                "history pool and cross-KV prefill. Retain real "
+                "empty_cache calls for subsequent history commits",
                 params={
                     "staged_module": "text_encoder (5.7B T5)",
                     "when": "per episode reset",
                     "action": "to('cpu') after prompt encode + torch.cuda.empty_cache()",
+                    "history_allocation": "defer the exact native allocation until T5 is on CPU",
                     "requires_pass": "conditioning_prefill",
                 },
-                expected_win="memory-safety gate measured on RTX 5090; no latency claim",
+                expected_win="reduce resident weights; RTX 4090 device fit not yet measured",
             )
         return PassResult(
             self.name, False, Tier.BITEXACT,
-            f"no memory pressure on this device class (sm_{device.capability[0]}"
+            f"outside the staging device policy (sm_{device.capability[0]}"
             f"{device.capability[1]}, {device.total_memory / 2**30:.0f} GiB): keeping the "
             f"prompt encoder resident avoids per-reset PCIe moves and allocator churn")
 

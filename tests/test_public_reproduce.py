@@ -2,15 +2,14 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
 from benchmarks.regression import reproduce
-
 
 CATALOG = json.loads(reproduce.profiles_path().read_text())
 MODES = [(profile["id"], mode) for profile in CATALOG["models"] for mode in profile["execution_modes"]]
@@ -22,6 +21,18 @@ def test_packaged_profile_mirror_matches_canonical_source():
     packaged = root / "benchmarks/regression/fixtures/deployment_profiles.json"
     assert packaged.read_bytes() == canonical.read_bytes(), "refresh the checked packaged profile mirror"
     assert reproduce.profiles_path().resolve() == packaged.resolve()
+
+
+def test_rtx4090_packaged_profile_has_its_own_bound_mirror():
+    root = Path(__file__).resolve().parents[1]
+    canonical = root / "release/rtx4090/deployment_profiles.json"
+    packaged = root / "benchmarks/regression/fixtures/deployment_profiles_rtx4090.json"
+    assert packaged.read_bytes() == canonical.read_bytes()
+    assert reproduce.profiles_path("rtx4090").resolve() == packaged.resolve()
+    for family in reproduce.ACTION_SHAPES:
+        plan = reproduce.make_plan(family, target="rtx4090")
+        assert plan["target"] == {"name": "rtx4090", "capability": [8, 9]}
+        assert len(plan["matrix"]["cells"]) == 3
 
 
 @pytest.mark.parametrize("model,mode", MODES)
@@ -114,7 +125,8 @@ def audit(event, args):
     if event == 'open' and isinstance(args[1], str) and any(c in args[1] for c in 'wax+'):
         raise AssertionError(event)
 sys.addaudithook(audit)
-namespace = runpy.run_path(sys.argv[1])
+sys.path.insert(0, str(pathlib.Path(sys.argv[1]).parents[2]))
+namespace = runpy.run_module('benchmarks.regression.reproduce')
 assert namespace['make_plan']('edge')['execution_mode'] == 'native'
 assert 'torch' not in sys.modules
 '''
@@ -246,10 +258,10 @@ def test_run_uses_fresh_children_retains_failure_without_retry(prepared, tmp_pat
     def capture(command, **kwargs):
         index = len(calls)
         calls.append((command, kwargs))
-        kwargs["stdout"].write("synthetic capture output\n")
-        return SimpleNamespace(returncode=7 if index == failure_index else 0)
+        kwargs["log"].write("synthetic capture output\n")
+        return {"exit_code": 7 if index == failure_index else 0, "timed_out": False}
     monkeypatch.setattr(reproduce, "require_installed", lambda: None)
-    monkeypatch.setattr(reproduce.subprocess, "run", capture)
+    monkeypatch.setattr(reproduce, "capture_process", capture)
     # Existing scientific validator has independent tests; this isolates orchestration.
     monkeypatch.setattr(reproduce, "report", lambda root, output: {"status": "passed"})
     result = reproduce.run(root, tmp_path / "run")
@@ -258,7 +270,7 @@ def test_run_uses_fresh_children_retains_failure_without_retry(prepared, tmp_pat
     assert result["status"] == ("passed" if failure_index is None else "failed_or_incomplete")
     for command, kwargs in calls:
         assert command[:5] == [sys.executable, "-I", "-B", "-m", "benchmarks.regression.user_e2e"]
-        assert kwargs["check"] is False and kwargs["env"]["HF_HUB_OFFLINE"] == "1"
+        assert kwargs["timeout"] == 7200 and kwargs["env"]["HF_HUB_OFFLINE"] == "1"
     assert (tmp_path / "run/run.json").is_file()
     assert len(list((tmp_path / "run/logs").glob("*.log"))) == expected
     with pytest.raises(ValueError, match="already exists"):

@@ -13,17 +13,20 @@ refuses to load.
 
 from __future__ import annotations
 
+import hashlib
 import inspect
 import os
 import sys
 import threading
+from functools import wraps
+from pathlib import Path
 from typing import Callable, Sequence
 
 import torch
 
+from instinctflash.runtime.lingbot_residency import needs_prompt_encoder_staging
 from instinctflash.runtime.sm120_install import install_sm120_gated_residual
 from instinctflash.runtime.sm120_stage2_install import install_sm120_wan_stage2
-
 
 # --- substrate passes -------------------------------------------------------------------
 # These substrate passes used to live as inline patches in eval/lingbot_va_robotwin/serve_variant.py.
@@ -55,13 +58,66 @@ def install_fsdp_elision(server_module, va_server_cls=None) -> list[str]:
     return ["fsdp_elision"]
 
 
-def install_allocator_churn_elision(server_module, va_server_cls=None) -> list[str]:
-    """Stop handing the caching allocator back to the driver between control steps.
+class _ModuleAttributeView:
+    """Override a server import without mutating the imported Torch module globally."""
 
-    Patched on `torch.cuda` rather than on the server module because the server calls through
-    to `torch.cuda.empty_cache` from two different sites (`wan_va_server.py:569`, `:603`).
-    """
-    torch.cuda.empty_cache = lambda *a, **k: None
+    def __init__(self, original, **overrides):
+        self._original = original
+        self.__dict__.update(overrides)
+
+    def __getattr__(self, name):
+        return getattr(self._original, name)
+
+
+def _arm_allocator_churn_elision(server_module, va_server_cls, enabled):
+    state = va_server_cls.__dict__.get("_iwm_allocator_churn_state")
+    if state is None:
+        methods = ("_reset", "_infer", "_compute_kv_cache")
+        missing = [name for name in methods if not callable(getattr(va_server_cls, name, None))]
+        if missing:
+            raise RuntimeError(f"allocator_churn_elision: upstream server is missing {missing}")
+        state = threading.local()
+        original_torch = getattr(server_module, "torch", torch)
+
+        def empty_cache(*args, **kwargs):
+            if not getattr(state, "elide", False):
+                return original_torch.cuda.empty_cache(*args, **kwargs)
+            return None
+
+        # All three upstream call sites look up this module's torch import. Other
+        # model families, threads and unarmed VA instances retain the real allocator.
+        server_module.torch = _ModuleAttributeView(
+            original_torch, cuda=_ModuleAttributeView(original_torch.cuda, empty_cache=empty_cache))
+        original_init = va_server_cls.__init__
+
+        @wraps(original_init)
+        def initialize(self, *args, **kwargs):
+            self._iwm_elide_allocator_churn = getattr(state, "pending", False)
+            if hasattr(state, "pending"):
+                del state.pending
+            original_init(self, *args, **kwargs)
+
+        def wrap_call(original):
+            @wraps(original)
+            def call(self, *args, **kwargs):
+                previous = getattr(state, "elide", False)
+                state.elide = getattr(self, "_iwm_elide_allocator_churn", False)
+                try:
+                    return original(self, *args, **kwargs)
+                finally:
+                    state.elide = previous
+            return call
+
+        va_server_cls.__init__ = initialize
+        for name in methods:
+            setattr(va_server_cls, name, wrap_call(getattr(va_server_cls, name)))
+        va_server_cls._iwm_allocator_churn_state = state
+    state.pending = bool(enabled)
+
+
+def install_allocator_churn_elision(server_module, va_server_cls=None) -> list[str]:
+    """Elide allocator releases only for the next server's own control calls."""
+    _arm_allocator_churn_elision(server_module, va_server_cls or server_module.VA_Server, True)
     return ["allocator_churn_elision"]
 
 
@@ -189,14 +245,14 @@ def install_obs_decode_elision(server_module, va_server_cls) -> list[str]:
     return ["obs_decode_elision"]
 
 
-#: One-shot, thread-local arming for prompt_encoder_staging, the same shape as the constructor
-#: tokens in install_conv_layout_autotune and the SM120 installers. `pending` unset means NO PLAN
-#: SPOKE (the serve_variant flag path), where the measured device class decides as it always has.
+#: One-shot, thread-local arming for prompt_encoder_staging. The standalone worker's
+#: conditioning-prefill installer arms its next build too; unarmed later servers retain native
+#: residency. A plan that declines staging explicitly disarms the token before installation.
 _PROMPT_ENCODER_STAGING = threading.local()
 
 
 def install_prompt_encoder_staging(server_module, va_server_cls) -> list[str]:
-    """Arm the low-memory-SM120 T5 staging for exactly the next server built by this thread.
+    """Arm constrained-memory T5 staging for the next server built by this thread.
 
     The mechanism itself lives in `install_conditioning_prefill._reset` -- the only site that
     knows when the prompt encode has finished -- and `install_plan` enforces that pairing. This
@@ -208,6 +264,195 @@ def install_prompt_encoder_staging(server_module, va_server_cls) -> list[str]:
     return ["prompt_encoder_staging"]
 
 
+def _prompt_staging_decision(device):
+    planned = getattr(_PROMPT_ENCODER_STAGING, "pending", None)
+    if planned is not None:
+        del _PROMPT_ENCODER_STAGING.pending
+    hardware = False
+    if torch.cuda.is_available():
+        props = torch.cuda.get_device_properties(device)
+        hardware = needs_prompt_encoder_staging((props.major, props.minor), props.total_memory)
+    return bool(planned and hardware)
+
+
+def _install_prompt_encoder_load_staging(server_module, va_server_cls):
+    """Bind reset residency before any GPU weights are loaded, once per instance."""
+    if va_server_cls.__dict__.get("_iwm_prompt_encoder_load_staging_installed", False):
+        return
+    original_loader = getattr(server_module, "load_text_encoder", None)
+    if not callable(original_loader) or "torch_device" not in inspect.signature(original_loader).parameters:
+        raise RuntimeError("prompt_encoder_staging: upstream load_text_encoder must accept torch_device")
+    original_init = va_server_cls.__init__
+
+    @wraps(original_loader)
+    def load_text_encoder(*args, **kwargs):
+        owner = getattr(_PROMPT_ENCODER_STAGING, "building", None)
+        if owner is not None and owner._iwm_prompt_encoder_staged_decision:
+            bound = inspect.signature(original_loader).bind(*args, **kwargs)
+            bound.arguments["torch_device"] = "cpu"
+            return original_loader(*bound.args, **bound.kwargs)
+        return original_loader(*args, **kwargs)
+
+    @wraps(original_init)
+    def initialize(self, *args, **kwargs):
+        config = args[0] if args else kwargs.get("job_config")
+        rank = getattr(config, "local_rank", 0)
+        device = f"cuda:{rank}"
+        self._iwm_prompt_encoder_staged_decision = _prompt_staging_decision(device)
+        previous = getattr(_PROMPT_ENCODER_STAGING, "building", None)
+        _PROMPT_ENCODER_STAGING.building = self
+        try:
+            original_init(self, *args, **kwargs)
+            if self._iwm_prompt_encoder_staged_decision and str(self.device) != device:
+                raise RuntimeError("prompt_encoder_staging: native constructor changed the selected device")
+        finally:
+            _PROMPT_ENCODER_STAGING.building = previous
+
+    server_module.load_text_encoder = load_text_encoder
+    va_server_cls.__init__ = initialize
+    va_server_cls._iwm_prompt_encoder_load_staging_installed = True
+
+
+def _clear_prompt_reset_state(server):
+    """Release a previous episode before bringing the 5.7B T5 back onto CUDA."""
+    transformer = server.transformer
+    transformer.clear_cache(server.cache_name)
+    if callable(getattr(transformer, "clear_cross_cache", None)):
+        transformer.clear_cross_cache()
+    seen = set()
+    for name in ("streaming_vae", "streaming_vae_half"):
+        wrapper = getattr(server, name, None)
+        if wrapper is not None and id(wrapper) not in seen:
+            seen.add(id(wrapper))
+            wrapper.clear_cache()
+    server.init_latent = None
+    server.prompt_embeds = server.negative_prompt_embeds = None
+
+
+def _run_prompt_encoder_staged_reset(server, original_reset, prompt):
+    _clear_prompt_reset_state(server)
+    torch.cuda.empty_cache()
+    transformer = server.transformer
+    create_cache = getattr(transformer, "create_empty_cache", None)
+    if not callable(create_cache):
+        raise RuntimeError("prompt_encoder_staging: transformer has no create_empty_cache")
+    # Native _reset allocates its entire ring before encoding the prompt. That
+    # overlaps ~6.72 GiB of empty KV with ~10.58 GiB of T5 on the published CFG arm.
+    # Delay allocation, not capacity: replay the original call with identical args.
+    missing = object()
+    previous = transformer.__dict__.get("create_empty_cache", missing)
+    cache_calls = []
+
+    def defer_cache(*args, **kwargs):
+        cache_calls.append((args, kwargs))
+
+    transformer.create_empty_cache = defer_cache
+    try:
+        # Identical CUDA prompt kernels/dtype. Placement between calls is the only change.
+        server.text_encoder.to(server.device)
+        result = original_reset(server, prompt=prompt)
+    except BaseException:
+        _clear_prompt_reset_state(server)
+        raise
+    finally:
+        if previous is missing:
+            del transformer.create_empty_cache
+        else:
+            transformer.create_empty_cache = previous
+        server.text_encoder.to("cpu")
+        torch.cuda.empty_cache()
+    try:
+        if len(cache_calls) != 1:
+            raise RuntimeError(
+                "prompt_encoder_staging: expected exactly one native KV allocation at reset, "
+                f"got {len(cache_calls)}; refusing a changed upstream reset contract")
+        args, kwargs = cache_calls[0]
+        create_cache(*args, **kwargs)
+    except BaseException:
+        _clear_prompt_reset_state(server)
+        raise
+    tensors = list(server.text_encoder.parameters()) + list(server.text_encoder.buffers())
+    server._iwm_prompt_encoder_staged_bytes = sum(t.numel() * t.element_size() for t in tensors)
+    allocation = inspect.signature(create_cache).bind(*args, **kwargs).arguments
+    server._iwm_prompt_encoder_last_cache_allocation = {
+        key: value if type(value) in (str, int, float, bool) or value is None else str(value)
+        for key, value in allocation.items()}
+    server._iwm_prompt_encoder_staged_resets = getattr(server, "_iwm_prompt_encoder_staged_resets", 0) + 1
+    return result
+
+
+def build_native_reference_server(server_module, job_config, *, device="cuda:0", expected_device=None):
+    """Construct a declared RTX 4090 native reference with bounded weight residency.
+
+    Only placement/allocation order and unused observation-decoder residency change.
+    Native FSDP, attention, history layout, CFG, schedules and CUDA prompt arithmetic
+    stay with the upstream server. No Runtime optimizer plan is installed.
+    Returns the server plus a receipt updated after each successful native reset.
+    """
+    if not torch.cuda.is_available():
+        raise RuntimeError("native VA residency requires an actual RTX 4090 CUDA device")
+    props = torch.cuda.get_device_properties(device)
+    actual = {"name": str(props.name), "capability": [props.major, props.minor],
+              "uuid": str(props.uuid), "total_memory_bytes": int(props.total_memory)}
+    if (actual["name"] != "NVIDIA GeForce RTX 4090" or actual["capability"] != [8, 9]
+            or not needs_prompt_encoder_staging(actual["capability"], actual["total_memory_bytes"])):
+        raise RuntimeError("native VA residency is qualified for selection only on RTX 4090 SM89")
+    if expected_device is not None and any(expected_device.get(key) != value for key, value in actual.items()):
+        raise RuntimeError("native VA residency device differs from the benchmark device receipt")
+    source = Path(server_module.__file__).resolve()
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    original_class = server_module.VA_Server
+    if any(getattr(original_class, name, False) for name in (
+            "_iwm_conditioning_prefill_installed", "_iwm_obs_decode_elision_installed",
+            "_iwm_allocator_churn_state", "_iwm_prompt_encoder_load_staging_installed")):
+        raise RuntimeError("native VA reference requires a fresh unoptimized vendor server class")
+
+    class NativeResidencyServer(original_class):
+        pass
+
+    receipt = {
+        "schema": "instinctflash.native_va_residency.v1", "device": actual,
+        "native_source": {"path": str(source), "sha256": source_hash},
+        "prompt_encoder": "CPU between resets; unchanged CUDA prompt encode at reset",
+        "history_allocation": "exact native full allocation after prompt encoder leaves CUDA",
+        "observation_decoder": "removed unused predicted-pixel decoders; action-only reference",
+        "native_math": "unchanged FSDP, attention, dtype, CFG and sampling schedule",
+        "successful_resets": 0,
+    }
+    original_reset = NativeResidencyServer._reset
+
+    @wraps(original_reset)
+    def reset(self, prompt=None):
+        if not self._iwm_prompt_encoder_staged_decision:
+            return original_reset(self, prompt=prompt)
+        result = _run_prompt_encoder_staged_reset(self, original_reset, prompt)
+        receipt.update(successful_resets=self._iwm_prompt_encoder_staged_resets,
+                       staged_encoder_bytes=self._iwm_prompt_encoder_staged_bytes,
+                       last_full_history_allocation=self._iwm_prompt_encoder_last_cache_allocation)
+        return result
+
+    NativeResidencyServer._reset = reset
+    original_loader = server_module.load_text_encoder
+    missing = object()
+    pending = getattr(_PROMPT_ENCODER_STAGING, "pending", missing)
+    try:
+        _install_prompt_encoder_load_staging(server_module, NativeResidencyServer)
+        install_obs_decode_elision(server_module, NativeResidencyServer)
+        _PROMPT_ENCODER_STAGING.pending = True
+        server = NativeResidencyServer(job_config)
+    finally:
+        server_module.load_text_encoder = original_loader
+        if pending is missing:
+            if hasattr(_PROMPT_ENCODER_STAGING, "pending"):
+                del _PROMPT_ENCODER_STAGING.pending
+        else:
+            _PROMPT_ENCODER_STAGING.pending = pending
+    receipt.update(removed_decoder_bytes=server._iwm_obs_decode_elided_bytes,
+                   removed_decoder_count=server._iwm_obs_decode_elided_count)
+    server._iwm_native_residency_receipt = receipt
+    return server, receipt
+
+
 def install_conditioning_prefill(server_module, va_server_cls) -> list[str]:
     """Cache the episode-constant cross-attention K/V for all layers.
 
@@ -216,6 +461,12 @@ def install_conditioning_prefill(server_module, va_server_cls) -> list[str]:
       2. `WanTransformer3DModel` — gain populate/clear/query methods.
       3. `VA_Server._reset` — release, then repopulate once the prompt embeds exist.
     """
+    # The standalone worker flag historically also enables the eligible memory
+    # policy. Arm only this build; a later unplanned server must keep native residency.
+    if not hasattr(_PROMPT_ENCODER_STAGING, "pending"):
+        _PROMPT_ENCODER_STAGING.pending = True
+    if va_server_cls.__dict__.get("_iwm_conditioning_prefill_installed", False):
+        return ["conditioning_prefill"]
     import modules.model as M
 
     Attn = M.WanAttention if hasattr(M, "WanAttention") else None
@@ -311,56 +562,37 @@ def install_conditioning_prefill(server_module, va_server_cls) -> list[str]:
     Model.forward = model_forward
 
     # ---- 4. lifecycle: release on reset, repopulate once prompts exist -------------------
+    _install_prompt_encoder_load_staging(server_module, va_server_cls)
     _orig_reset = va_server_cls._reset
 
     def _staging_decision(self):
-        # Bound per server at first reset, then sticky. The plan's verdict -- armed one-shot on
-        # this thread by install_plan / install_prompt_encoder_staging -- wins; with no plan in
-        # play (the serve_variant flag path) the measured device class decides, as it always has.
-        # Either way the hardware predicate below is the same one PromptEncoderStaging.evaluate()
-        # plans against, so a plan line and the runtime behaviour cannot disagree on a probed
-        # device.
+        # New instances bind this in the constructor. Legacy probes can install the
+        # cross-cache after construction; their first reset binds the same decision.
         decided = getattr(self, "_iwm_prompt_encoder_staged_decision", None)
         if decided is None:
-            planned = getattr(_PROMPT_ENCODER_STAGING, "pending", None)
-            if planned is not None:
-                del _PROMPT_ENCODER_STAGING.pending
-            hardware = False
-            if torch.cuda.is_available():
-                props = torch.cuda.get_device_properties(self.device)
-                hardware = ((props.major, props.minor) == (12, 0)
-                            and props.total_memory <= 40 << 30)
-            decided = hardware if planned is None else (planned and hardware)
+            decided = _prompt_staging_decision(self.device)
             self._iwm_prompt_encoder_staged_decision = decided
         return decided
 
     def _reset(self, prompt=None):
         prompt_encoder_staged = _staging_decision(self)
-        if prompt_encoder_staged:
-            # Keep prompt numerics on the same CUDA kernels as the reference. Between episodes the
-            # 5.7B T5 is dead weight; move it back only for reset, then stage it out again below.
-            self.text_encoder.to(self.device)
         if hasattr(self, "transformer"):
             self.transformer.clear_cross_cache()
-        _orig_reset(self, prompt=prompt)
+        if prompt_encoder_staged:
+            _run_prompt_encoder_staged_reset(self, _orig_reset, prompt)
+        else:
+            _orig_reset(self, prompt=prompt)
         # _reset is the ONLY writer of prompt_embeds (wan_va_server.py:424,:426) and also
         # recomputes use_cfg (:379), which is the only thing that can change the batch dim.
         if getattr(self, "prompt_embeds", None) is not None:
             text_emb = self._iwm_text_emb()
             self.transformer.populate_cross_cache(text_emb)
         if prompt_encoder_staged:
-            tensors = list(self.text_encoder.parameters()) + list(self.text_encoder.buffers())
-            staged_bytes = sum(t.numel() * t.element_size() for t in tensors)
-            self.text_encoder.to("cpu")
-            # allocator_churn_elision deliberately declines on this measured low-memory SM120
-            # configuration, so this is the real CUDA allocator call. Returning the now-dead T5
-            # blocks gives the following 8-frame VAE commit contiguous headroom.
-            torch.cuda.empty_cache()
-            self._iwm_prompt_encoder_staged_bytes = staged_bytes
             if not getattr(self, "_iwm_prompt_encoder_staging_reported", False):
                 print(
-                    f"InstinctFlash prompt encoder residency: staged {staged_bytes / 2**30:.2f} "
-                    "GiB to CPU between episode resets (low-memory SM120).",
+                    f"InstinctFlash prompt encoder residency: staged "
+                    f"{self._iwm_prompt_encoder_staged_bytes / 2**30:.2f} GiB to CPU "
+                    "between episode resets (memory-constrained device).",
                     flush=True,
                 )
                 self._iwm_prompt_encoder_staging_reported = True
@@ -374,6 +606,7 @@ def install_conditioning_prefill(server_module, va_server_cls) -> list[str]:
 
     va_server_cls._reset = _reset
     va_server_cls._iwm_text_emb = _iwm_text_emb
+    va_server_cls._iwm_conditioning_prefill_installed = True
 
     return ["conditioning_prefill"]
 
@@ -406,7 +639,9 @@ def install_action_terminal_forward_elision(server_module, va_server_cls) -> lis
     if getattr(model_cls, "_iwm_ate_installed", False):
         return ["action_terminal_forward_elision"]
 
-    from instinctflash.passes.lingbot.action_terminal_elision import ActionTerminalForwardElision
+    from instinctflash.passes.lingbot.action_terminal_elision import (
+        ActionTerminalForwardElision,
+    )
 
     ActionTerminalForwardElision().install(server_module, va_server_cls)
     return ["action_terminal_forward_elision"]
@@ -520,11 +755,14 @@ def install_plan(server_module, va_server_cls, plan) -> list[str]:
             "mechanism lives in conditioning_prefill's reset wrapper, which is the only site "
             "that knows when the prompt encode has finished."
         )
-    if "conditioning_prefill" in applied_names and "prompt_encoder_staging" not in applied_names:
+    if "prompt_encoder_staging" not in applied_names:
         # The plan spoke and did not apply staging (declined, ceiling, or Plan.without). The
         # runtime device sniff must not re-enable what explain() reports as skipped, so disarm
         # the one-shot token for the next server built by this thread.
         _PROMPT_ENCODER_STAGING.pending = False
+    allocator_state = va_server_cls.__dict__.get("_iwm_allocator_churn_state")
+    if allocator_state is not None:
+        allocator_state.pending = False
 
     unsupported = [
         r.name for r in plan.applied

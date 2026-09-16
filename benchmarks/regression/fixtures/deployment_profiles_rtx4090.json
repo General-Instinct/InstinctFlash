@@ -1,0 +1,1509 @@
+{
+  "checkpoint_revision_source": {
+    "path": "eval/user_e2e_2026-09-14/matrix_final.json",
+    "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+  },
+  "default_execution": "native",
+  "evidence_scope": "RTX 4090 target recipes. Package checks and actual single-device inference/latency qualification are pending and recorded independently; historical Thor evidence is not 4090 evidence.",
+  "models": [
+    {
+      "adapter": {
+        "distribution": "instinctflash",
+        "entry_point": "instinctflash.adapters.lingbot_va:LingBotVA",
+        "package_directory": null,
+        "source": "instinctflash/adapters/lingbot_va.py"
+      },
+      "backbone": "wan_va",
+      "bootstrap": {
+        "asset_preparation": [
+          "python3",
+          "scripts/prepare_auxiliary_assets.py",
+          "prepare",
+          "va",
+          "--root",
+          "<new-assets>"
+        ],
+        "command": [
+          "python3",
+          "scripts/bootstrap_vendor.py",
+          "install",
+          "va",
+          "--target",
+          "rtx4090",
+          "--root",
+          "<new-output>"
+        ],
+        "install_guide": "INSTALL.rst",
+        "notes": [
+          "Use the separately pinned Linux/x86_64 RTX 4090 profile and original checkpoint/auxiliary assets. Installation, native extensions and actual GPU execution require their own checks.",
+          "The benchmark uses one RTX 4090; preserve the checkpoint schedule, action horizon and episode state unless explicitly selecting a changed execution policy."
+        ],
+        "qualification": null,
+        "recipe": "release/vendor/rtx4090/va/bootstrap.json",
+        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "upstream_install_guide": "https://github.com/robbyant/lingbot-va#readme"
+      },
+      "checkpoint": {
+        "model_id": "robbyant/lingbot-va-posttrain-robotwin",
+        "revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70"
+      },
+      "dependency_imports": [
+        {
+          "attributes": [],
+          "module": "torch"
+        },
+        {
+          "attributes": [],
+          "module": "numpy"
+        },
+        {
+          "attributes": [],
+          "module": "websockets"
+        },
+        {
+          "attributes": [],
+          "module": "msgpack"
+        },
+        {
+          "attributes": [],
+          "module": "diffusers"
+        },
+        {
+          "attributes": [],
+          "module": "transformers"
+        },
+        {
+          "attributes": [],
+          "module": "safetensors"
+        },
+        {
+          "attributes": [],
+          "module": "einops"
+        },
+        {
+          "attributes": [],
+          "module": "ftfy"
+        },
+        {
+          "attributes": [],
+          "module": "easydict"
+        },
+        {
+          "attributes": [],
+          "module": "cv2"
+        }
+      ],
+      "deployment_target": "rtx4090",
+      "execution_modes": {
+        "2v4a-fp8": {
+          "effective_schedule": {
+            "action_steps": 4,
+            "nfe": {
+              "action": 4,
+              "video": 2
+            },
+            "sampler": "checkpoint",
+            "video_steps": 2
+          },
+          "environment": {},
+          "evidence_cell": "va-2v4a-fp8",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "exclude_passes": [
+              "cfg_branch_elision"
+            ],
+            "nfe": {
+              "action": 4,
+              "video": 2
+            },
+            "precision": "fp8",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "behavioral"
+          },
+          "schedule_changed": true,
+          "task_quality_certified": false
+        },
+        "2v4a-native": {
+          "effective_schedule": {
+            "action_steps": 4,
+            "nfe": {
+              "action": 4,
+              "video": 2
+            },
+            "sampler": "checkpoint",
+            "video_steps": 2
+          },
+          "environment": {},
+          "evidence_cell": "va-2v4a-native",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "exclude_passes": [
+              "cfg_branch_elision"
+            ],
+            "nfe": {
+              "action": 4,
+              "video": 2
+            },
+            "precision": "native",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "behavioral"
+          },
+          "schedule_changed": true,
+          "task_quality_certified": false
+        },
+        "fp8": {
+          "effective_schedule": {
+            "action_steps": 50,
+            "nfe": {
+              "action": 50,
+              "video": 25
+            },
+            "sampler": "checkpoint",
+            "video_steps": 25
+          },
+          "environment": {},
+          "evidence_cell": "va-runtime_selected",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "exclude_passes": [
+              "cfg_branch_elision"
+            ],
+            "precision": "fp8",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "numeric"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        },
+        "native": {
+          "effective_schedule": {
+            "action_steps": 50,
+            "nfe": {
+              "action": 50,
+              "video": 25
+            },
+            "sampler": "checkpoint",
+            "video_steps": 25
+          },
+          "environment": {},
+          "evidence_cell": "va-runtime_default",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "native",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "bitexact"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        }
+      },
+      "id": "va",
+      "label": "LingBot-VA",
+      "python": {
+        "historical_thor": "3.12",
+        "minimum_core": "3.10",
+        "other_vendor_versions": "not_qualified_by_this_profile",
+        "target": "3.12"
+      },
+      "release_gaps": [
+        "RTX 4090 installation, model residency, numerical comparison and measured latency are pending actual-device qualification."
+      ],
+      "source_only_modules": [],
+      "upstream": {
+        "pin_status": "public_commit_and_recorded_patch_bound",
+        "repository": "https://github.com/robbyant/lingbot-va",
+        "revision": "7c6ffa9bfc4b83582cafc860fab4c82cc7deeeeb",
+        "root_env": "LINGBOT_ROOT",
+        "source_manifest": "release/vendor/va/source.json",
+        "source_markers": [
+          "wan_va/wan_va_server.py"
+        ]
+      }
+    },
+    {
+      "adapter": {
+        "distribution": "lingbot-vla-iwm",
+        "entry_point": "lingbot_vla_iwm.adapter:LingBotVLA4BAdapter",
+        "package_directory": "examples/lingbot_vla",
+        "source": "examples/lingbot_vla/lingbot_vla_iwm/adapter.py"
+      },
+      "backbone": "lingbot_vla",
+      "bootstrap": {
+        "asset_preparation": [
+          "python3",
+          "scripts/prepare_auxiliary_assets.py",
+          "prepare",
+          "vla4",
+          "--root",
+          "<new-assets>"
+        ],
+        "command": [
+          "python3",
+          "scripts/bootstrap_vendor.py",
+          "install",
+          "vla4",
+          "--target",
+          "rtx4090",
+          "--root",
+          "<new-output>"
+        ],
+        "install_guide": "INSTALL.rst",
+        "notes": [
+          "Use the separately pinned Linux/x86_64 RTX 4090 profile and original checkpoint/auxiliary assets. Installation, native extensions and actual GPU execution require their own checks.",
+          "The benchmark uses one RTX 4090; preserve the checkpoint schedule, action horizon and episode state unless explicitly selecting a changed execution policy."
+        ],
+        "qualification": null,
+        "recipe": "release/vendor/rtx4090/vla4/bootstrap.json",
+        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "upstream_install_guide": "https://github.com/robbyant/lingbot-vla#readme"
+      },
+      "checkpoint": {
+        "model_id": "robbyant/lingbot-vla-4b-posttrain-robotwin",
+        "revision": "fb71a2c9749ccfedbb7290c2c3f0e5e7c7305c9e"
+      },
+      "dependency_imports": [
+        {
+          "attributes": [],
+          "module": "torch"
+        },
+        {
+          "attributes": [],
+          "module": "numpy"
+        },
+        {
+          "attributes": [],
+          "module": "websockets"
+        },
+        {
+          "attributes": [],
+          "module": "msgpack"
+        },
+        {
+          "attributes": [],
+          "module": "torchvision"
+        },
+        {
+          "attributes": [],
+          "module": "transformers"
+        },
+        {
+          "attributes": [],
+          "module": "safetensors"
+        },
+        {
+          "attributes": [],
+          "module": "yaml"
+        },
+        {
+          "attributes": [],
+          "module": "lerobot"
+        },
+        {
+          "attributes": [],
+          "module": "ipdb"
+        },
+        {
+          "attributes": [
+            "StatefulDataLoader"
+          ],
+          "module": "torchdata.stateful_dataloader"
+        },
+        {
+          "attributes": [
+            "BaseModel"
+          ],
+          "module": "pydantic"
+        },
+        {
+          "attributes": [
+            "LingbotVLAServer"
+          ],
+          "module": "deploy.lingbot_vla_policy"
+        }
+      ],
+      "deployment_target": "rtx4090",
+      "execution_modes": {
+        "fp8": {
+          "effective_schedule": {
+            "nfe": {
+              "action": 10,
+              "prefix": 1
+            },
+            "sampler": "checkpoint"
+          },
+          "environment": {},
+          "evidence_cell": "vla4-runtime_update",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "fp8",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "numeric"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        },
+        "native": {
+          "effective_schedule": {
+            "nfe": {
+              "action": 10,
+              "prefix": 1
+            },
+            "sampler": "checkpoint"
+          },
+          "environment": {},
+          "evidence_cell": "vla4-runtime_default",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "native",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "bitexact"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        }
+      },
+      "id": "vla4",
+      "label": "LingBot-VLA-4B",
+      "python": {
+        "historical_thor": "3.12",
+        "minimum_core": "3.10",
+        "other_vendor_versions": "not_qualified_by_this_profile",
+        "target": "3.12"
+      },
+      "release_gaps": [
+        "RTX 4090 installation, model residency, numerical comparison and measured latency are pending actual-device qualification."
+      ],
+      "source_only_modules": [],
+      "upstream": {
+        "pin_status": "public_commit_and_recorded_patch_bound",
+        "repository": "https://github.com/robbyant/lingbot-vla",
+        "revision": "4eb34b7693a0565c67433f8fac9c59a2e67eb60b",
+        "root_env": "LINGBOT_VLA_ROOT",
+        "source_manifest": "release/vendor/vla4/source.json",
+        "source_markers": [
+          "deploy/lingbot_vla_policy.py"
+        ]
+      }
+    },
+    {
+      "adapter": {
+        "distribution": "lingbot-vla-v2-iwm",
+        "entry_point": "lingbot_vla_v2_iwm.adapter:LingBotVLAV2Adapter",
+        "package_directory": "examples/lingbot_vla_v2",
+        "source": "examples/lingbot_vla_v2/lingbot_vla_v2_iwm/adapter.py"
+      },
+      "backbone": "lingbot_vla_v2",
+      "bootstrap": {
+        "asset_preparation": [
+          "python3",
+          "scripts/prepare_auxiliary_assets.py",
+          "prepare",
+          "vla2",
+          "--root",
+          "<new-assets>"
+        ],
+        "command": [
+          "python3",
+          "scripts/bootstrap_vendor.py",
+          "install",
+          "vla2",
+          "--target",
+          "rtx4090",
+          "--root",
+          "<new-output>"
+        ],
+        "install_guide": "INSTALL.rst",
+        "notes": [
+          "Use the separately pinned Linux/x86_64 RTX 4090 profile and original checkpoint/auxiliary assets. Installation, native extensions and actual GPU execution require their own checks.",
+          "The benchmark uses one RTX 4090; preserve the checkpoint schedule, action horizon and episode state unless explicitly selecting a changed execution policy."
+        ],
+        "qualification": null,
+        "recipe": "release/vendor/rtx4090/vla2/bootstrap.json",
+        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "upstream_install_guide": "https://github.com/robbyant/lingbot-vla-v2#readme"
+      },
+      "checkpoint": {
+        "model_id": "robbyant/lingbot-vla-v2-6b-robotwin",
+        "revision": "0451855729ec904f970600e0aec8b84661423afe"
+      },
+      "deferred_native_imports": [
+        {
+          "module": "deploy.lingbot_vla_v2_policy",
+          "reason": "The pinned group_gemm pretuned decorator queries CUDA capability/device name during module import. CPU doctor locates this source and checks mandatory dependencies; full deployment import requires a separate actual-device gate.",
+          "source_sha256": {
+            "deploy/lingbot_vla_v2_policy.py": "ede2f532ea9cf06acd49fadb6915c5b8da2caa09dbd342cfb82754f182f386d2",
+            "lingbotvla/ops/group_gemm/utils/config.py": "d6a79bb8b43c87b68cf6dafebeed30382e2935c3771a4a7c930245ce860abe9a",
+            "lingbotvla/ops/group_gemm/utils/device.py": "b6c0b0815f251d6d45ef85c546372cea75ae836d6070e3117641afaab1e55eb2",
+            "lingbotvla/ops/group_gemm/utils/path.py": "82100f20fdf6aa4455dde917606e2f2b36fc062ff23db59f0f4aad01e7751d2d",
+            "lingbotvla/ops/group_gemm/utils/pretuned.py": "7b09a5353a92c54d49911b96d042545a0143f83e02448f964755d30d0dbe0ba5"
+          }
+        }
+      ],
+      "dependency_imports": [
+        {
+          "attributes": [],
+          "module": "torch"
+        },
+        {
+          "attributes": [],
+          "module": "numpy"
+        },
+        {
+          "attributes": [],
+          "module": "websockets"
+        },
+        {
+          "attributes": [],
+          "module": "msgpack"
+        },
+        {
+          "attributes": [],
+          "module": "torchvision"
+        },
+        {
+          "attributes": [],
+          "module": "transformers"
+        },
+        {
+          "attributes": [],
+          "module": "safetensors"
+        },
+        {
+          "attributes": [],
+          "module": "yaml"
+        },
+        {
+          "attributes": [],
+          "module": "lerobot"
+        },
+        {
+          "attributes": [],
+          "module": "torchdata"
+        },
+        {
+          "attributes": [],
+          "module": "pydantic"
+        }
+      ],
+      "deployment_target": "rtx4090",
+      "execution_modes": {
+        "fp8": {
+          "effective_schedule": {
+            "nfe": {
+              "action": 10,
+              "prefix": 1
+            },
+            "sampler": "checkpoint"
+          },
+          "environment": {},
+          "evidence_cell": "vla2-runtime_update",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "fp8",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "numeric"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        },
+        "native": {
+          "effective_schedule": {
+            "nfe": {
+              "action": 10,
+              "prefix": 1
+            },
+            "sampler": "checkpoint"
+          },
+          "environment": {},
+          "evidence_cell": "vla2-runtime_default",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "native",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "bitexact"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        },
+        "numeric": {
+          "effective_schedule": {
+            "nfe": {
+              "action": 10,
+              "prefix": 1
+            },
+            "sampler": "checkpoint"
+          },
+          "environment": {},
+          "evidence_cell": "vla2-runtime_numeric",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "native",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "numeric"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        }
+      },
+      "id": "vla2",
+      "label": "LingBot-VLA-V2-6B",
+      "python": {
+        "historical_thor": "3.12",
+        "minimum_core": "3.10",
+        "other_vendor_versions": "not_qualified_by_this_profile",
+        "target": "3.12"
+      },
+      "release_gaps": [
+        "RTX 4090 installation, model residency, numerical comparison and measured latency are pending actual-device qualification."
+      ],
+      "source_only_modules": [
+        "deploy.lingbot_vla_v2_policy"
+      ],
+      "upstream": {
+        "pin_status": "public_commit_and_recorded_patch_bound",
+        "repository": "https://github.com/robbyant/lingbot-vla-v2",
+        "revision": "951475ae1b1d87553e7dc47c97b53a3d695c0d13",
+        "root_env": "LINGBOT_VLA_V2_ROOT",
+        "source_manifest": "release/vendor/vla2/source.json",
+        "source_markers": [
+          "deploy/lingbot_vla_v2_policy.py"
+        ]
+      }
+    },
+    {
+      "adapter": {
+        "distribution": "pi05-iwm",
+        "entry_point": "pi05_iwm.adapter:Pi05Adapter",
+        "package_directory": "examples/pi05_vla",
+        "source": "examples/pi05_vla/pi05_iwm/adapter.py"
+      },
+      "backbone": "pi05",
+      "bootstrap": {
+        "asset_preparation": [
+          "python3",
+          "scripts/prepare_auxiliary_assets.py",
+          "prepare",
+          "pi05",
+          "--root",
+          "<new-assets>"
+        ],
+        "command": [
+          "python3",
+          "scripts/bootstrap_vendor.py",
+          "install",
+          "pi05",
+          "--target",
+          "rtx4090",
+          "--root",
+          "<new-output>"
+        ],
+        "install_guide": "INSTALL.rst",
+        "notes": [
+          "Use the separately pinned Linux/x86_64 RTX 4090 profile and original checkpoint/auxiliary assets. Installation, native extensions and actual GPU execution require their own checks.",
+          "The benchmark uses one RTX 4090; preserve the checkpoint schedule, action horizon and episode state unless explicitly selecting a changed execution policy."
+        ],
+        "qualification": null,
+        "recipe": "release/vendor/rtx4090/pi05/bootstrap.json",
+        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "upstream_install_guide": "https://github.com/huggingface/lerobot#readme"
+      },
+      "checkpoint": {
+        "model_id": "lerobot/pi05_libero_finetuned_v044",
+        "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1"
+      },
+      "dependency_imports": [
+        {
+          "attributes": [],
+          "module": "torch"
+        },
+        {
+          "attributes": [],
+          "module": "numpy"
+        },
+        {
+          "attributes": [],
+          "module": "websockets"
+        },
+        {
+          "attributes": [],
+          "module": "msgpack"
+        },
+        {
+          "attributes": [],
+          "module": "lerobot"
+        },
+        {
+          "attributes": [
+            "make_pre_post_processors"
+          ],
+          "module": "lerobot.policies.factory"
+        },
+        {
+          "attributes": [
+            "PI05Config"
+          ],
+          "module": "lerobot.policies.pi05.configuration_pi05"
+        },
+        {
+          "attributes": [
+            "PI05Policy"
+          ],
+          "module": "lerobot.policies.pi05.modeling_pi05"
+        }
+      ],
+      "deployment_target": "rtx4090",
+      "execution_modes": {
+        "fp8": {
+          "effective_schedule": {
+            "nfe": {
+              "action": 10,
+              "prefix": 1
+            },
+            "sampler": "checkpoint"
+          },
+          "environment": {},
+          "evidence_cell": "pi05-runtime_selected",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "fp8",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "numeric"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        },
+        "native": {
+          "effective_schedule": {
+            "nfe": {
+              "action": 10,
+              "prefix": 1
+            },
+            "sampler": "checkpoint"
+          },
+          "environment": {},
+          "evidence_cell": "pi05-runtime_default",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "native",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "bitexact"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        }
+      },
+      "id": "pi05",
+      "label": "pi05",
+      "python": {
+        "historical_thor": "3.12",
+        "minimum_core": "3.10",
+        "other_vendor_versions": "not_qualified_by_this_profile",
+        "target": "3.12"
+      },
+      "release_gaps": [
+        "RTX 4090 installation, model residency, numerical comparison and measured latency are pending actual-device qualification."
+      ],
+      "source_only_modules": [],
+      "upstream": {
+        "package_pin": {
+          "distribution": "lerobot",
+          "version": "0.6.1"
+        },
+        "pin_status": "public_package_version_pinned_historical_git_commit_unrecorded",
+        "repository": "https://github.com/huggingface/lerobot",
+        "revision": null,
+        "root_env": null,
+        "source_markers": []
+      }
+    },
+    {
+      "adapter": {
+        "distribution": "groot-n17-iwm",
+        "entry_point": "groot_n17_iwm.adapter:GR00TN17Adapter",
+        "package_directory": "examples/groot_n17",
+        "source": "examples/groot_n17/groot_n17_iwm/adapter.py"
+      },
+      "backbone": "groot_n17",
+      "bootstrap": {
+        "asset_preparation": [
+          "python3",
+          "scripts/prepare_auxiliary_assets.py",
+          "prepare",
+          "groot",
+          "--root",
+          "<new-assets>"
+        ],
+        "command": [
+          "python3",
+          "scripts/bootstrap_vendor.py",
+          "install",
+          "groot",
+          "--target",
+          "rtx4090",
+          "--root",
+          "<new-output>"
+        ],
+        "install_guide": "INSTALL.rst",
+        "notes": [
+          "Use the separately pinned Linux/x86_64 RTX 4090 profile and original checkpoint/auxiliary assets. Installation, native extensions and actual GPU execution require their own checks.",
+          "The benchmark uses one RTX 4090; preserve the checkpoint schedule, action horizon and episode state unless explicitly selecting a changed execution policy."
+        ],
+        "qualification": null,
+        "recipe": "release/vendor/rtx4090/groot/bootstrap.json",
+        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "upstream_install_guide": "https://github.com/NVIDIA/Isaac-GR00T#readme"
+      },
+      "checkpoint": {
+        "model_id": "nvidia/GR00T-N1.7-3B",
+        "revision": "2fc962b973bccdd5d8ce4f67cc63b264d6886495"
+      },
+      "dependency_imports": [
+        {
+          "attributes": [],
+          "module": "torch"
+        },
+        {
+          "attributes": [],
+          "module": "numpy"
+        },
+        {
+          "attributes": [],
+          "module": "websockets"
+        },
+        {
+          "attributes": [],
+          "module": "msgpack"
+        },
+        {
+          "attributes": [],
+          "module": "transformers"
+        },
+        {
+          "attributes": [],
+          "module": "safetensors"
+        },
+        {
+          "attributes": [
+            "Gr00tPolicy"
+          ],
+          "module": "gr00t.policy.gr00t_policy"
+        }
+      ],
+      "deployment_target": "rtx4090",
+      "execution_modes": {
+        "native": {
+          "effective_schedule": {
+            "nfe": {
+              "action": 4,
+              "backbone": 1
+            },
+            "sampler": "checkpoint"
+          },
+          "environment": {},
+          "evidence_cell": "groot-runtime_selected",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "native",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "bitexact"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        }
+      },
+      "id": "groot",
+      "label": "GR00T N1.7",
+      "python": {
+        "historical_thor": "3.12",
+        "minimum_core": "3.10",
+        "other_vendor_versions": "not_qualified_by_this_profile",
+        "target": "3.12"
+      },
+      "release_gaps": [
+        "RTX 4090 installation, model residency, numerical comparison and measured latency are pending actual-device qualification."
+      ],
+      "source_only_modules": [],
+      "upstream": {
+        "pin_status": "public_commit_and_recorded_patch_bound",
+        "repository": "https://github.com/NVIDIA/Isaac-GR00T",
+        "revision": "51d4c89f72fda44cbf77285c6a8114b52676b8a1",
+        "root_env": "GR00T_ROOT",
+        "source_manifest": "release/vendor/groot/source.json",
+        "source_markers": [
+          "gr00t/policy/gr00t_policy.py"
+        ]
+      }
+    },
+    {
+      "adapter": {
+        "distribution": "cosmos3-iwm",
+        "entry_point": "cosmos3_iwm.adapter:Cosmos3PolicyAdapter",
+        "package_directory": "examples/cosmos3_policy",
+        "source": "examples/cosmos3_policy/cosmos3_iwm/adapter.py"
+      },
+      "backbone": "cosmos3_policy",
+      "bootstrap": {
+        "asset_preparation": [
+          "python3",
+          "scripts/prepare_auxiliary_assets.py",
+          "prepare",
+          "edge",
+          "--root",
+          "<new-assets>"
+        ],
+        "command": [
+          "python3",
+          "scripts/bootstrap_vendor.py",
+          "install",
+          "edge",
+          "--target",
+          "rtx4090",
+          "--root",
+          "<new-output>"
+        ],
+        "compiler_wheel": {
+          "distribution": "triton",
+          "sha256": "0075039ff27765480083b1a109999bf27110f3542f1f9fad95f0f9065a36da79",
+          "url": "https://download-r2.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "version": "3.6.0"
+        },
+        "install_guide": "INSTALL.rst",
+        "native_tool_preparation": "release/vendor/cosmos/hf_tool.json",
+        "notes": [
+          "Use the separately pinned Linux/x86_64 RTX 4090 profile and original checkpoint/auxiliary assets. Installation, native extensions and actual GPU execution require their own checks.",
+          "The benchmark uses one RTX 4090; preserve the checkpoint schedule, action horizon and episode state unless explicitly selecting a changed execution policy."
+        ],
+        "qualification": null,
+        "recipe": "release/vendor/rtx4090/edge/bootstrap.json",
+        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "upstream_install_guide": "https://github.com/NVIDIA/cosmos-framework#readme"
+      },
+      "checkpoint": {
+        "model_id": "nvidia/Cosmos3-Edge-Policy-DROID",
+        "revision": "f9fddb427fd7cff0bef7c73791be36f0ab52d81e"
+      },
+      "dependency_imports": [
+        {
+          "attributes": [],
+          "module": "torch"
+        },
+        {
+          "attributes": [],
+          "module": "numpy"
+        },
+        {
+          "attributes": [],
+          "module": "websockets"
+        },
+        {
+          "attributes": [],
+          "module": "msgpack"
+        },
+        {
+          "attributes": [],
+          "module": "PIL"
+        },
+        {
+          "attributes": [],
+          "module": "pydantic"
+        },
+        {
+          "attributes": [],
+          "module": "boto3"
+        },
+        {
+          "attributes": [],
+          "module": "pandas"
+        },
+        {
+          "attributes": [
+            "RobolabPolicyService",
+            "RobolabServerArgs"
+          ],
+          "module": "cosmos_framework.scripts.action_policy_server_robolab"
+        }
+      ],
+      "deployment_target": "rtx4090",
+      "execution_modes": {
+        "native": {
+          "effective_schedule": {
+            "guidance": 3.0,
+            "nfe": {
+              "action": 4,
+              "prefix": 1
+            },
+            "sampler": "unipc",
+            "shift": 5.0,
+            "steps": 4
+          },
+          "environment": {},
+          "evidence_cell": "edge-runtime_default",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "native",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "bitexact"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        },
+        "numeric": {
+          "effective_schedule": {
+            "guidance": 3.0,
+            "nfe": {
+              "action": 4,
+              "prefix": 1
+            },
+            "sampler": "unipc",
+            "shift": 5.0,
+            "steps": 4
+          },
+          "environment": {
+            "IFL_BF16_LINEAR_RELU2": "0",
+            "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+            "IFL_COSMOS3_GEN_REGIONS": "1",
+            "IFL_COSMOS3_SPLIT_PREFILL": "1",
+            "IFL_COSMOS3_TIMESTEP_CACHE": "1"
+          },
+          "evidence_cell": "edge-runtime_selected",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "native",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "numeric"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        }
+      },
+      "id": "edge",
+      "label": "Cosmos3 Edge DROID",
+      "python": {
+        "historical_thor": "3.13",
+        "minimum_core": "3.10",
+        "other_vendor_versions": "not_qualified_by_this_profile",
+        "target": "3.13"
+      },
+      "release_gaps": [
+        "RTX 4090 installation, model residency, numerical comparison and measured latency are pending actual-device qualification."
+      ],
+      "source_only_modules": [],
+      "upstream": {
+        "pin_status": "public_commit_and_recorded_patch_bound",
+        "repository": "https://github.com/NVIDIA/cosmos-framework",
+        "revision": "f734253f0f6af3e268372402f44435c38f55ef3e",
+        "root_env": null,
+        "source_manifest": "release/vendor/cosmos/source.json",
+        "source_markers": []
+      }
+    },
+    {
+      "adapter": {
+        "distribution": "cosmos3-iwm",
+        "entry_point": "cosmos3_iwm.adapter:Cosmos3PolicyAdapter",
+        "package_directory": "examples/cosmos3_policy",
+        "source": "examples/cosmos3_policy/cosmos3_iwm/adapter.py"
+      },
+      "backbone": "cosmos3_policy",
+      "bootstrap": {
+        "asset_preparation": [
+          "python3",
+          "scripts/prepare_auxiliary_assets.py",
+          "prepare",
+          "nano",
+          "--root",
+          "<new-assets>"
+        ],
+        "command": [
+          "python3",
+          "scripts/bootstrap_vendor.py",
+          "install",
+          "nano",
+          "--target",
+          "rtx4090",
+          "--root",
+          "<new-output>"
+        ],
+        "compiler_wheel": {
+          "distribution": "triton",
+          "sha256": "0075039ff27765480083b1a109999bf27110f3542f1f9fad95f0f9065a36da79",
+          "url": "https://download-r2.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "version": "3.6.0"
+        },
+        "install_guide": "INSTALL.rst",
+        "native_tool_preparation": "release/vendor/cosmos/hf_tool.json",
+        "notes": [
+          "Use the separately pinned Linux/x86_64 RTX 4090 profile and original checkpoint/auxiliary assets. Installation, native extensions and actual GPU execution require their own checks.",
+          "The benchmark uses one RTX 4090; preserve the checkpoint schedule, action horizon and episode state unless explicitly selecting a changed execution policy."
+        ],
+        "qualification": null,
+        "recipe": "release/vendor/rtx4090/nano/bootstrap.json",
+        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "upstream_install_guide": "https://github.com/NVIDIA/cosmos-framework#readme"
+      },
+      "checkpoint": {
+        "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+        "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e"
+      },
+      "dependency_imports": [
+        {
+          "attributes": [],
+          "module": "torch"
+        },
+        {
+          "attributes": [],
+          "module": "numpy"
+        },
+        {
+          "attributes": [],
+          "module": "websockets"
+        },
+        {
+          "attributes": [],
+          "module": "msgpack"
+        },
+        {
+          "attributes": [],
+          "module": "PIL"
+        },
+        {
+          "attributes": [],
+          "module": "pydantic"
+        },
+        {
+          "attributes": [],
+          "module": "boto3"
+        },
+        {
+          "attributes": [],
+          "module": "pandas"
+        },
+        {
+          "attributes": [
+            "RobolabPolicyService",
+            "RobolabServerArgs"
+          ],
+          "module": "cosmos_framework.scripts.action_policy_server_robolab"
+        }
+      ],
+      "deployment_target": "rtx4090",
+      "execution_modes": {
+        "native": {
+          "effective_schedule": {
+            "guidance": 3.0,
+            "nfe": {
+              "action": 4,
+              "prefix": 1
+            },
+            "sampler": "unipc",
+            "shift": 5.0,
+            "steps": 4
+          },
+          "environment": {},
+          "evidence_cell": "nano-runtime_default",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "native",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "bitexact"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        },
+        "numeric": {
+          "effective_schedule": {
+            "guidance": 3.0,
+            "nfe": {
+              "action": 4,
+              "prefix": 1
+            },
+            "sampler": "unipc",
+            "shift": 5.0,
+            "steps": 4
+          },
+          "environment": {
+            "IFL_BF16_LINEAR_RELU2": "0",
+            "IFL_COSMOS3_CONTIGUOUS_KV": "0",
+            "IFL_COSMOS3_GEN_REGIONS": "1",
+            "IFL_COSMOS3_SPLIT_PREFILL": "1",
+            "IFL_COSMOS3_TIMESTEP_CACHE": "1"
+          },
+          "evidence_cell": "nano-runtime_selected",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "native",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "numeric"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        }
+      },
+      "id": "nano",
+      "label": "Cosmos3 Nano DROID",
+      "python": {
+        "historical_thor": "3.13",
+        "minimum_core": "3.10",
+        "other_vendor_versions": "not_qualified_by_this_profile",
+        "target": "3.13"
+      },
+      "release_gaps": [
+        "RTX 4090 installation, model residency, numerical comparison and measured latency are pending actual-device qualification."
+      ],
+      "source_only_modules": [],
+      "upstream": {
+        "pin_status": "public_commit_and_recorded_patch_bound",
+        "repository": "https://github.com/NVIDIA/cosmos-framework",
+        "revision": "f734253f0f6af3e268372402f44435c38f55ef3e",
+        "root_env": null,
+        "source_manifest": "release/vendor/cosmos/source.json",
+        "source_markers": []
+      }
+    },
+    {
+      "adapter": {
+        "distribution": "dreamzero-iwm",
+        "entry_point": "dreamzero_iwm.adapter:DreamZeroAdapter",
+        "package_directory": "examples/dreamzero",
+        "source": "examples/dreamzero/dreamzero_iwm/adapter.py"
+      },
+      "backbone": "dreamzero",
+      "bootstrap": {
+        "asset_preparation": [
+          "python3",
+          "scripts/prepare_auxiliary_assets.py",
+          "prepare",
+          "dreamzero",
+          "--root",
+          "<new-assets>"
+        ],
+        "command": [
+          "python3",
+          "scripts/bootstrap_vendor.py",
+          "install",
+          "dreamzero",
+          "--target",
+          "rtx4090",
+          "--root",
+          "<new-output>"
+        ],
+        "install_guide": "INSTALL.rst",
+        "notes": [
+          "Use the separately pinned Linux/x86_64 RTX 4090 profile and original checkpoint/auxiliary assets. Installation, native extensions and actual GPU execution require their own checks.",
+          "The benchmark uses one RTX 4090; preserve the checkpoint schedule, action horizon and episode state unless explicitly selecting a changed execution policy."
+        ],
+        "qualification": null,
+        "recipe": "release/vendor/rtx4090/dreamzero/bootstrap.json",
+        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "upstream_install_guide": "https://github.com/dreamzero0/dreamzero#readme"
+      },
+      "checkpoint": {
+        "model_id": "GEAR-Dreams/DreamZero-DROID",
+        "revision": "96ad344138c66e82536422432ad742f015784942"
+      },
+      "dependency_imports": [
+        {
+          "attributes": [],
+          "module": "torch"
+        },
+        {
+          "attributes": [],
+          "module": "numpy"
+        },
+        {
+          "attributes": [],
+          "module": "websockets"
+        },
+        {
+          "attributes": [],
+          "module": "msgpack"
+        },
+        {
+          "attributes": [],
+          "module": "cv2"
+        },
+        {
+          "attributes": [],
+          "module": "tianshou"
+        },
+        {
+          "attributes": [],
+          "module": "openpi_client"
+        },
+        {
+          "attributes": [
+            "EmbodimentTag"
+          ],
+          "module": "groot.vla.data.schema"
+        },
+        {
+          "attributes": [
+            "ModalityConfig"
+          ],
+          "module": "groot.vla.data.dataset"
+        },
+        {
+          "attributes": [],
+          "module": "tyro"
+        },
+        {
+          "attributes": [
+            "DreamZeroWan225BPolicy",
+            "_get_expected_video_resolution",
+            "_maybe_init_distributed"
+          ],
+          "module": "eval_utils.serve_dreamzero_wan22"
+        }
+      ],
+      "deployment_target": "rtx4090",
+      "execution_modes": {
+        "dynamic-fp8": {
+          "effective_schedule": {
+            "checkpoint_dit_step_mask": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true,
+              true,
+              true
+            ],
+            "checkpoint_num_dit_steps": 8,
+            "guidance": 5.0,
+            "nfe": {
+              "video_action": 16
+            },
+            "profile": "dreamzero_velocity_v1",
+            "sampler": "checkpoint",
+            "solver_updates": 16,
+            "step_cache": "dynamic"
+          },
+          "environment": {},
+          "evidence_cell": "dreamzero-dynamic-fp8",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "fp8",
+            "step_cache": "dynamic",
+            "tier_ceiling": "behavioral"
+          },
+          "schedule_changed": true,
+          "task_quality_certified": false
+        },
+        "dynamic-native": {
+          "effective_schedule": {
+            "checkpoint_dit_step_mask": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true,
+              true,
+              true
+            ],
+            "checkpoint_num_dit_steps": 8,
+            "guidance": 5.0,
+            "nfe": {
+              "video_action": 16
+            },
+            "profile": "dreamzero_velocity_v1",
+            "sampler": "checkpoint",
+            "solver_updates": 16,
+            "step_cache": "dynamic"
+          },
+          "environment": {},
+          "evidence_cell": "dreamzero-dynamic-native",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "native",
+            "step_cache": "dynamic",
+            "tier_ceiling": "behavioral"
+          },
+          "schedule_changed": true,
+          "task_quality_certified": false
+        },
+        "fp8": {
+          "effective_schedule": {
+            "checkpoint_dit_step_mask": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true,
+              true,
+              true
+            ],
+            "checkpoint_num_dit_steps": 8,
+            "guidance": 5.0,
+            "nfe": {
+              "video_action": 16
+            },
+            "sampler": "checkpoint",
+            "solver_updates": 16,
+            "step_cache": "checkpoint"
+          },
+          "environment": {},
+          "evidence_cell": "dreamzero-runtime_selected",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "fp8",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "numeric"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        },
+        "native": {
+          "effective_schedule": {
+            "checkpoint_dit_step_mask": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true,
+              true,
+              true
+            ],
+            "checkpoint_num_dit_steps": 8,
+            "guidance": 5.0,
+            "nfe": {
+              "video_action": 16
+            },
+            "sampler": "checkpoint",
+            "solver_updates": 16,
+            "step_cache": "checkpoint"
+          },
+          "environment": {},
+          "evidence_cell": "dreamzero-runtime_default",
+          "evidence_kind": "pending_rtx4090_measurement",
+          "gpu_qualified_by_plan": false,
+          "native_requirements": [],
+          "runtime_kwargs": {
+            "device": "cuda:0",
+            "precision": "native",
+            "step_cache": "checkpoint",
+            "tier_ceiling": "bitexact"
+          },
+          "schedule_changed": false,
+          "task_quality_certified": false
+        }
+      },
+      "id": "dreamzero",
+      "label": "DreamZero DROID",
+      "python": {
+        "historical_thor": "3.12",
+        "minimum_core": "3.10",
+        "other_vendor_versions": "not_qualified_by_this_profile",
+        "target": "3.12"
+      },
+      "release_gaps": [
+        "RTX 4090 installation, model residency, numerical comparison and measured latency are pending actual-device qualification."
+      ],
+      "source_only_modules": [],
+      "upstream": {
+        "pin_status": "public_commit_and_recorded_patch_bound",
+        "repository": "https://github.com/dreamzero0/dreamzero",
+        "revision": "ab790c198fbce33503358efbbd4187ce9a89adf3",
+        "root_env": "DREAMZERO_ROOT",
+        "source_manifest": "release/vendor/dreamzero/source.json",
+        "source_markers": [
+          "eval_utils/serve_dreamzero_wan22.py"
+        ]
+      }
+    }
+  ],
+  "schema": "instinctflash.deployment_profiles.v1",
+  "target": "rtx4090"
+}

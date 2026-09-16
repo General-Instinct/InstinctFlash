@@ -1,6 +1,8 @@
 """Public serving qualification must exercise protocol and history, not just a port."""
-from copy import deepcopy
 import json
+import sys
+from copy import deepcopy
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -120,3 +122,26 @@ def test_error_text_is_not_a_valid_msgpack_result():
             return "server traceback"
     with pytest.raises(ValueError, match="error text"):
         smoke.receive(ErrorConnection(), 1)
+
+
+@pytest.mark.parametrize("name,allowed", [("NVIDIA GeForce RTX 4090", True), ("NVIDIA L40S", False)])
+def test_actual_server_launcher_probes_target_before_calling_public_cli(tmp_path, monkeypatch, name, allowed):
+    import instinctflash.cli
+    cuda = SimpleNamespace(get_device_properties=lambda index:
+        SimpleNamespace(name=name, uuid="unit-test-device", total_memory=24 << 30),
+        get_device_capability=lambda index: (8, 9))
+    monkeypatch.setitem(sys.modules, "torch", SimpleNamespace(cuda=cuda))
+    calls = []
+    monkeypatch.setattr(instinctflash.cli, "main", lambda argv: calls.append(argv) or 0)
+    output = tmp_path / "server_device.json"
+    config = tmp_path / "serve.json"
+    argv = ["_serve", "--target", "rtx4090", "--config", str(config), "--device-output", str(output)]
+    if allowed:
+        assert smoke.main(argv) == 0
+        assert calls == [["serve", f"--config_path={config}"]]
+    else:
+        with pytest.raises(ValueError, match="actual GPU"):
+            smoke.main(argv)
+        assert calls == []
+    observed = json.loads(output.read_text())
+    assert observed["name"] == name and observed["status"] == ("passed" if allowed else "failed")

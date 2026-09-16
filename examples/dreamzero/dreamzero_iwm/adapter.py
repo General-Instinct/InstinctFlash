@@ -25,6 +25,8 @@ from __future__ import annotations
 
 import os
 import sys
+import threading
+from contextlib import contextmanager
 from pathlib import Path
 
 from instinctflash import AdapterSpec, GuidanceRule, KVLifetime, KVStreamSpec, PhaseSpec
@@ -151,13 +153,28 @@ class DreamZeroAdapter:
         if str(root) not in sys.path:
             sys.path.insert(0, str(root))
         try:
-            from groot.vla.data.schema import EmbodimentTag  # noqa: F401
             from groot.vla.data.dataset import ModalityConfig  # noqa: F401
+            from groot.vla.data.schema import EmbodimentTag  # noqa: F401
         except Exception as error:  # noqa: BLE001 - import compatibility IS the host check
             return False, f"GEAR-Dreams cannot import from {root}: {type(error).__name__}: {error}"
         return True, f"the model stack imports and the GEAR-Dreams source is at {root}"
 
     def build_in_process(self, checkpoint, plan, *, device=None, nfe=None, step_cache=None):
+        return self._build_native(checkpoint, plan, device=device, nfe=nfe,
+                                  step_cache=step_cache)
+
+    def build_sm89_fp8(self, checkpoint, plan, *, device=None, nfe=None, step_cache=None):
+        """Pack explicit SM89 projections before bounded single-device residency."""
+        from instinctflash.runtime.precision import require_dreamzero_fp8_environment
+        from instinctflash.runtime.sm89_fp8 import _require_requested_recipe
+
+        require_dreamzero_fp8_environment()
+        _require_requested_recipe(plan, BACKBONE)
+        return self._build_native(checkpoint, plan, device=device, nfe=nfe,
+                                  step_cache=step_cache, sm89_fp8=True)
+
+    def _build_native(self, checkpoint, plan, *, device=None, nfe=None, step_cache=None,
+                      sm89_fp8=False):
         import torch
 
         if not torch.cuda.is_available():
@@ -182,13 +199,18 @@ class DreamZeroAdapter:
                 f"are SCREEN-tier: closed-loop gate before serving, never a latency flag.")
 
         from instinctflash.runtime.step_cache_policy import (
-            ResolvedStepCache, annotate_step_cache_plan, resolve_step_cache,
+            ResolvedStepCache,
+            annotate_step_cache_plan,
+            resolve_step_cache,
         )
         if step_cache is None:
             ceiling = getattr(getattr(plan, "tier_ceiling", None), "name", "BITEXACT").lower()
             step_cache = resolve_step_cache(checkpoint, tier_ceiling=ceiling, family="dreamzero")
         if not isinstance(step_cache, ResolvedStepCache):
             raise TypeError("DreamZero build requires a resolved step-cache selection")
+        if sm89_fp8:
+            from instinctflash.runtime.precision import require_dreamzero_fp8_schedule
+            require_dreamzero_fp8_schedule(step_cache)
         if plan is not None:
             annotate_step_cache_plan(plan, step_cache)
         elif step_cache.dynamic or step_cache.fixed_steps != 8:
@@ -205,30 +227,39 @@ class DreamZeroAdapter:
             sys.path.insert(0, str(root))
 
         from eval_utils.serve_dreamzero_wan22 import (
-            DreamZeroWan225BPolicy, _get_expected_video_resolution, _maybe_init_distributed,
+            DreamZeroWan225BPolicy,
+            _get_expected_video_resolution,
+            _maybe_init_distributed,
         )
-        from groot.vla.data.schema import EmbodimentTag
-        from groot.vla.model.n1_5.sim_policy import GrootSimPolicy
+
         # Native policy construction resolves this after loading its weights.
         # Check it first: missing video/data dependencies must fail before a
         # multi-gigabyte model is constructed.
         from groot.vla.data.dataset import ModalityConfig  # noqa: F401
+        from groot.vla.data.schema import EmbodimentTag
+        from groot.vla.model.n1_5.sim_policy import GrootSimPolicy
         from torch.distributed.device_mesh import init_device_mesh
 
         _maybe_init_distributed()
         mesh = init_device_mesh("cuda", mesh_shape=(1,), mesh_dim_names=("ip",))
         tag = str(extra.get("embodiment_tag") or "oxe_droid")
         model_path = _resolve_model_path(checkpoint)
+        from .residency import use_sm89_residency
+        low_memory = use_sm89_residency(dev)
+        if sm89_fp8 and not low_memory:
+            raise ValueError("DreamZero SM89 builder requires the single-device Ada residency path")
         return _build_owned_native_loop(
             model_path,
             lambda path: GrootSimPolicy(
                 embodiment_tag=EmbodimentTag(tag), model_path=str(path),
-                tokenizer_path_override=None, device="cuda", device_mesh=mesh),
+                tokenizer_path_override=None, device="cuda", device_mesh=mesh,
+                **({"lazy_load": True} if low_memory else {})),
             lambda policy: DreamZeroWan225BPolicy(
                 groot_policy=policy,
                 image_height=_get_expected_video_resolution(policy)[0],
                 image_width=_get_expected_video_resolution(policy)[1], embodiment_tag=tag),
             step_cache=step_cache,
+            residency_precision=("fp8" if sm89_fp8 else "native") if low_memory else None,
         )
 
     def build_fp8(self, checkpoint, *, device=None, nfe=None, plan=None, step_cache=None):
@@ -240,10 +271,14 @@ class DreamZeroAdapter:
         # The native loader honors LOAD_TRT_ENGINE independently of the enable
         # flag, including an empty value. Refuse before loading model weights.
         from instinctflash.runtime.precision import (
-            require_dreamzero_fp8_environment, require_dreamzero_fp8_schedule,
+            require_dreamzero_fp8_environment,
+            require_dreamzero_fp8_schedule,
         )
         require_dreamzero_fp8_environment()
-        from instinctflash.runtime.step_cache_policy import resolve_step_cache, ResolvedStepCache
+        from instinctflash.runtime.step_cache_policy import (
+            ResolvedStepCache,
+            resolve_step_cache,
+        )
         if step_cache is None:
             ceiling = getattr(getattr(plan, "tier_ceiling", None), "name", "BITEXACT").lower()
             step_cache = resolve_step_cache(checkpoint, tier_ceiling=ceiling, family="dreamzero")
@@ -259,8 +294,8 @@ class DreamZeroAdapter:
             if head.num_inference_steps != 16 or tuple(head.dit_step_mask) != SHIPPED_DIT_MASK:
                 raise ValueError("DreamZero FP8 requires the native fixed 8-of-16 mask or its dynamic profile")
             if loop._dynamic_cache:
-                from instinctflash.runtime.precision import require_transform_permission
                 from instinctflash.planners.planner import Tier
+                from instinctflash.runtime.precision import require_transform_permission
                 require_transform_permission(plan, Tier.BEHAVIORAL, "DreamZero FP8 dynamic step cache")
                 if loop._step_cache_hook is None:
                     raise ValueError("DreamZero FP8 dynamic cache requires the installed shared controller")
@@ -278,7 +313,8 @@ class _DreamZeroLoop:
     boundaries matter: reset() clears the upstream buffers and starts a new session id."""
 
     def __init__(self, wrapper, *, dynamic_cache: bool, build_declaration=None,
-                 checkpoint_view=None, loading_receipt=None, step_cache_hook=None):
+                 checkpoint_view=None, loading_receipt=None, step_cache_hook=None,
+                 residency=None):
         self._wrapper = wrapper
         self._dynamic_cache = bool(dynamic_cache)
         self._prompt = ""
@@ -288,8 +324,23 @@ class _DreamZeroLoop:
         self._checkpoint_view = checkpoint_view
         self._loading_receipt = loading_receipt
         self._step_cache_hook = step_cache_hook
+        self._residency = residency
+        self._call_lock = threading.Lock()
+
+    @contextmanager
+    def _call_scope(self):
+        if not self._call_lock.acquire(blocking=False):
+            raise RuntimeError("DreamZero requires serial predict/reset/close calls")
+        try:
+            yield
+        finally:
+            self._call_lock.release()
 
     def reset(self, **conditioning) -> None:
+        with self._call_scope():
+            self._reset(conditioning)
+
+    def _reset(self, conditioning):
         if self._wrapper is None:
             raise RuntimeError("DreamZero loop is closed")
         if self._step_cache_hook is not None:
@@ -303,6 +354,10 @@ class _DreamZeroLoop:
             raise ValueError("DreamZero's native wrapper does not accept executed-action overrides")
 
     def predict(self, observation, *, executed_action=None):
+        with self._call_scope():
+            return self._predict(observation, executed_action=executed_action)
+
+    def _predict(self, observation, *, executed_action=None):
         import numpy as np
 
         if self._wrapper is None:
@@ -332,6 +387,7 @@ class _DreamZeroLoop:
             "build": declared,
             "loading": copy.deepcopy(self._loading_receipt),
             "step_cache": self._step_cache_hook.report() if self._step_cache_hook else None,
+            "residency": self._residency.report() if self._residency else None,
         }
 
     def declaration(self):
@@ -343,6 +399,10 @@ class _DreamZeroLoop:
         return result
 
     def close(self) -> None:
+        with self._call_scope():
+            self._close()
+
+    def _close(self):
         hook = self._step_cache_hook
         released = hook is None
         try:
@@ -354,13 +414,17 @@ class _DreamZeroLoop:
             # are released. Active-generation refusal must retain the model.
             if released or getattr(hook, "closed", False) is True:
                 self._step_cache_hook = None
+                if self._residency is not None:
+                    self._residency.close()
+                    self._residency = None
                 self._wrapper = None
                 if self._checkpoint_view is not None:
                     self._checkpoint_view.cleanup()
                     self._checkpoint_view = None
 
 
-def _build_owned_native_loop(model_path, policy_factory, wrapper_factory, *, step_cache=None):
+def _build_owned_native_loop(model_path, policy_factory, wrapper_factory, *, step_cache=None,
+                             residency_precision=None):
     """Keep the checkpoint view alive for the policy, releasing it on all failures.
 
     Full native DiT values load directly as BF16, avoiding the discarded FP32
@@ -368,16 +432,26 @@ def _build_owned_native_loop(model_path, policy_factory, wrapper_factory, *, ste
     This preserves checkpoint values, not random-initialization RNG consumption.
     """
     import json
-    from instinctflash.runtime.dreamzero_checkpoint import DIT_TARGET, prepare_full_checkpoint
+
+    from instinctflash.runtime.dreamzero_checkpoint import (
+        DIT_TARGET,
+        prepare_full_checkpoint,
+    )
 
     config = json.loads((Path(model_path) / "config.json").read_text())
     head_config = config.get("action_head_cfg", {}).get("config", {})
     dit_config = head_config.get("diffusion_model_cfg", {})
-    view, receipt, hook = None, None, None
+    view, receipt, hook, residency = None, None, None, None
     try:
+        if residency_precision not in (None, "native", "fp8"):
+            raise ValueError("Unknown DreamZero residency precision")
+        if residency_precision is not None and step_cache is None:
+            raise ValueError("DreamZero residency requires an explicitly resolved native schedule")
         if (head_config.get("train_architecture") == "full"
                 and dit_config.get("_target_") == DIT_TARGET):
-            from groot.vla.model.dreamzero.modules.wan_video_dit_action_casual_chunk import CausalWanModel
+            from groot.vla.model.dreamzero.modules.wan_video_dit_action_casual_chunk import (
+                CausalWanModel,
+            )
             view, receipt = prepare_full_checkpoint(model_path, CausalWanModel, direct_bf16=True)
             receipt = {key: value for key, value in receipt.items() if key != "expected_shapes"}
             receipt["initialization_rng_equivalent"] = False
@@ -401,9 +475,24 @@ def _build_owned_native_loop(model_path, policy_factory, wrapper_factory, *, ste
                 _target_="dreamzero_iwm.schedule.build_head",
                 ifl_dynamic_cache_schedule=step_cache.dynamic,
                 ifl_fixed_dit_steps=step_cache.fixed_steps)
+            if residency_precision is not None:
+                owned_config["action_head_cfg"].update(
+                    _target_="dreamzero_iwm.residency.build_head",
+                    ifl_residency_precision=residency_precision)
             config_path.write_text(json.dumps(owned_config, indent=2) + "\n")
-        policy = policy_factory(Path(view.name) if view is not None else Path(model_path))
+        selected_path = Path(view.name) if view is not None else Path(model_path)
+        if residency_precision is not None:
+            from .residency import construction_scope
+            with construction_scope() as owners:
+                policy = policy_factory(selected_path)
+                residency = owners[0] if owners else None
+        else:
+            policy = policy_factory(selected_path)
         head = policy.trained_model.action_head
+        if residency_precision is not None:
+            residency = getattr(head, "_ifl_residency", None)
+            if residency is None or not residency.initialized:
+                raise RuntimeError("DreamZero native post-initialize did not install owned residency")
         if step_cache is not None:
             # Resolve once in preflight and bind to this owned instance. Native
             # construction's legacy environment reads cannot select serving math.
@@ -416,12 +505,17 @@ def _build_owned_native_loop(model_path, policy_factory, wrapper_factory, *, ste
         declaration = _head_declaration(head)
         if step_cache is not None:
             declaration["step_cache_selection"] = step_cache.to_dict()
-        return _DreamZeroLoop(wrapper, dynamic_cache=bool(head.dynamic_cache_schedule),
-                              build_declaration=declaration,
-                              checkpoint_view=view, loading_receipt=receipt, step_cache_hook=hook)
+        loop = _DreamZeroLoop(wrapper, dynamic_cache=bool(head.dynamic_cache_schedule),
+                             build_declaration=declaration, checkpoint_view=view,
+                             loading_receipt=receipt, step_cache_hook=hook, residency=residency)
+        if residency is not None:
+            loop._fp8_recipe = residency.fp8_recipe
+        return loop
     except Exception:
         if hook is not None:
             hook.close()
+        if residency is not None:
+            residency.close()
         if view is not None:
             view.cleanup()
         raise

@@ -7,17 +7,27 @@ fresh processes (plus an explicit operating point when its schedule changes).
 from __future__ import annotations
 
 import argparse
-from copy import deepcopy
 import hashlib
 import importlib.metadata
 import json
 import os
-from pathlib import Path
 import re
+import signal
 import subprocess
 import sys
+import time
 import traceback
+from copy import deepcopy
+from pathlib import Path
 
+from .hardware import (
+    DEFAULT_TARGET,
+    TARGETS,
+    bound_target,
+    positive_timeout,
+    target_record,
+    validate_device_receipt,
+)
 
 FIXTURE_SHA = "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
 ACTION_SHAPES = {"va": [16, 2, 16], "vla4": [25, 14], "vla2": [50, 14], "pi05": [7],
@@ -62,11 +72,14 @@ def new_directory(path):
     return path.resolve()
 
 
-def profiles_path():
-    packaged = Path(__file__).parent / "fixtures/deployment_profiles.json"
+def profiles_path(target=DEFAULT_TARGET):
+    target_record(target)
+    filename = "deployment_profiles.json" if target == DEFAULT_TARGET else f"deployment_profiles_{target}.json"
+    packaged = Path(__file__).parent / "fixtures" / filename
     if packaged.is_file():
         return packaged
-    source = Path(__file__).resolve().parents[2] / "release/deployment_profiles.json"
+    release = Path(__file__).resolve().parents[2] / "release"
+    source = release / "deployment_profiles.json" if target == DEFAULT_TARGET else release / target / "deployment_profiles.json"
     require(source.is_file(), "deployment profiles missing from installation")
     return source
 
@@ -84,12 +97,14 @@ def libraries_from_args(values):
     return result
 
 
-def make_plan(model, mode="native", *, catalog_path=None, libraries=None, library_bindings=None, extra_modes=()):
+def make_plan(model, mode="native", *, target=DEFAULT_TARGET, catalog_path=None, libraries=None, library_bindings=None, extra_modes=()):
     """Read metadata only. No directories, downloads, imports of Torch or device probes."""
-    catalog_path = Path(catalog_path) if catalog_path is not None else profiles_path()
+    hardware = target_record(target)
+    catalog_path = Path(catalog_path) if catalog_path is not None else profiles_path(target)
     catalog_bytes = catalog_path.read_bytes()
     catalog = json.loads(catalog_bytes)
     require(catalog.get("schema") == "instinctflash.deployment_profiles.v1", "unknown deployment profile schema")
+    require(catalog.get("target") == target, "deployment catalog target differs from requested benchmark target")
     matches = [value for value in catalog["models"] if model in (value["id"], value["checkpoint"]["model_id"])]
     require(len(matches) == 1, f"unknown or ambiguous model alias: {model}")
     profile = matches[0]
@@ -161,21 +176,21 @@ def make_plan(model, mode="native", *, catalog_path=None, libraries=None, librar
     for extra in extra_modes:
         extra_file_keys = {item["name"] for item in profile["execution_modes"][extra]["native_requirements"]
                            if item["kind"] == "file_env"}
-        extra_plan = make_plan(model, extra, catalog_path=catalog_path,
+        extra_plan = make_plan(model, extra, target=target, catalog_path=catalog_path,
                                library_bindings={key: value for key, value in bindings.items() if key in extra_file_keys})
         require(extra_plan["matrix"]["expected_operating_point_cells"] == 1,
                 "extra mode must have exactly one operating point")
         cells.append(extra_plan["matrix"]["cells"][-1])
         extra_requirements.extend(extra_plan["native_requirements"])
     require(len({cell["id"] for cell in cells}) == len(cells), "duplicate planned cell")
-    matrix = {"schema": 1, "require_observed_schedule": True, "expected_main_cells": 3,
+    matrix = {"schema": 1, "target": hardware, "require_observed_schedule": True, "expected_main_cells": 3,
               "expected_families": [family], "expected_operating_point_cells": len(cells) - 3,
               "expected_runtime_update_cells": 0, "quality_certified": False,
               "protocol": {"stateless": {"warmup": 5, "measured": 20},
                            "history": {"warmup_episodes": 1, "measured_episodes": 6, "cycles_per_episode": 3},
                            "pi05_queue_calls": 51},
               "bindings": [{"path": "inputs/recorded_inputs_v1.npz", "sha256": FIXTURE_SHA}], "cells": cells}
-    result = {"schema": SCHEMA, "model": family, "execution_mode": mode, "checkpoint": profile["checkpoint"],
+    result = {"schema": SCHEMA, "target": hardware, "model": family, "execution_mode": mode, "checkpoint": profile["checkpoint"],
             "profiles_sha256": hashlib.sha256(catalog_bytes).hexdigest(), "fixture_sha256": FIXTURE_SHA,
             "shape_provenance": SHAPE_PROVENANCE, "library_bindings": bindings,
             "unresolved_library_options": sorted(file_keys - set(supplied)),
@@ -185,7 +200,7 @@ def make_plan(model, mode="native", *, catalog_path=None, libraries=None, librar
             "scope": "Recorded cameras and synthetic state; public predict wall time; no network or simulator/task-success measurement.",
             "limitations": ["Each model requires its own compatible installed vendor environment.",
                             "prepare resolves the pinned primary checkpoint; auxiliary tokenizers/base weights must also be prepared in that environment.",
-                            "Runtime captures target Jetson Thor SM110 using the unchanged capture contract.",
+                            f"Runtime captures require the declared {target} device and unchanged capture contract.",
                             "Changed sampling policies are separate operating points, never architecture-only speedups."]}
     if extra_modes:
         result["extra_execution_modes"] = list(extra_modes)
@@ -195,18 +210,18 @@ def make_plan(model, mode="native", *, catalog_path=None, libraries=None, librar
     return result
 
 
-def prepare(model, mode, output, *, cache_dir=None, local_files_only=False, libraries=None, extra_modes=()):
-    plan = make_plan(model, mode, libraries=libraries, extra_modes=extra_modes)
+def prepare(model, mode, output, *, target=DEFAULT_TARGET, cache_dir=None, local_files_only=False, libraries=None, extra_modes=()):
+    plan = make_plan(model, mode, target=target, libraries=libraries, extra_modes=extra_modes)
     fixture = fixture_path()
     require(sha(fixture) == FIXTURE_SHA, "public fixture hash differs")
     root = new_directory(output)
-    profile_bytes = profiles_path().read_bytes()
+    profile_bytes = profiles_path(target).read_bytes()
     require(hashlib.sha256(profile_bytes).hexdigest() == plan["profiles_sha256"], "profiles changed during preparation")
     write_new(root / "plan.json", encoded(plan))
     write_new(root / "matrix.json", encoded(plan["matrix"]))
     write_new(root / "profiles.json", profile_bytes)
     write_new(root / "inputs/recorded_inputs_v1.npz", fixture.read_bytes())
-    receipt = {"schema": SCHEMA, "status": "failed", "plan_sha256": sha(root / "plan.json"),
+    receipt = {"schema": SCHEMA, "target": plan["target"], "status": "failed", "plan_sha256": sha(root / "plan.json"),
                "matrix_sha256": sha(root / "matrix.json"), "profiles_sha256": plan["profiles_sha256"],
                "fixture_sha256": FIXTURE_SHA, "checkpoint": plan["checkpoint"],
                "cache_dir": str(Path(cache_dir).expanduser().resolve()) if cache_dir else None,
@@ -239,9 +254,17 @@ def validate_bundle(root, *, check_libraries=True):
                       ("profiles.json", "profiles_sha256"), ("inputs/recorded_inputs_v1.npz", "fixture_sha256")):
         require(sha(root / name) == receipt[key], f"prepared artifact changed: {name}")
     plan = json.loads((root / "plan.json").read_text())
+    target = bound_target(plan.get("target"))
+    require(receipt.get("target") == plan.get("target"), "preparation target differs from plan")
     require(plan["fixture_sha256"] == FIXTURE_SHA and receipt["fixture_sha256"] == FIXTURE_SHA, "prepared fixture is not the fixed public input")
-    regenerated = make_plan(plan["model"], plan["execution_mode"], catalog_path=root / "profiles.json",
+    regenerated = make_plan(plan["model"], plan["execution_mode"], target=target["name"], catalog_path=root / "profiles.json",
                             library_bindings=plan["library_bindings"], extra_modes=plan.get("extra_execution_modes", ()))
+    if "target" not in plan:
+        # Keep previously frozen Thor preparations readable without rewriting them.
+        require("target" not in plan["matrix"], "legacy plan has a conflicting matrix target")
+        regenerated.pop("target")
+        regenerated["matrix"].pop("target")
+        regenerated["limitations"][2] = "Runtime captures target Jetson Thor SM110 using the unchanged capture contract."
     require(plan == regenerated and json.loads((root / "matrix.json").read_text()) == plan["matrix"], "prepared plan no longer matches its profiles/library bytes")
     if check_libraries:
         for binding in plan["library_bindings"].values():
@@ -284,11 +307,15 @@ def report(run_root, output):
                 require(receipt.get("matrix_sha256") == sha(root / "matrix.json")
                         and receipt.get("input_archive_sha256") == FIXTURE_SHA,
                         f"{cell['id']}: capture matrix/fixture binding differs")
+                if "target" in plan:
+                    require(receipt.get("target") == plan["target"], f"{cell['id']}: capture target differs")
+                    validate_device_receipt(receipt.get("hardware"), plan["target"])
             except (ValueError, KeyError) as error:
                 result["errors"].append(str(error))
                 result["status"] = "failed"
     destination = new_directory(output)
     result["reproduction_plan"] = {"sha256": sha(root / "plan.json"), "execution_mode": plan["execution_mode"]}
+    result["target"] = bound_target(plan.get("target"))
     if plan.get("extra_execution_modes"):
         result["reproduction_plan"]["extra_execution_modes"] = plan["extra_execution_modes"]
     write_new(destination / "report.json", encoded(result))
@@ -296,7 +323,45 @@ def report(run_root, output):
     return result
 
 
-def run(prepared, output):
+def _stop_owned_group(process):
+    """Terminate only the capture session created here, including helper workers."""
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        pass
+    try:
+        process.wait(timeout=15)
+    except subprocess.TimeoutExpired:
+        pass
+    finally:
+        # A parent may exit before a descendant. Both remain in our owned session.
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+    process.wait(timeout=10)
+
+
+def capture_process(command, *, cwd, env, log, timeout):
+    timeout = positive_timeout(timeout, name="cell timeout")
+    start = time.monotonic()
+    process = subprocess.Popen(command, cwd=cwd, env=env, stdout=log,
+                               stderr=subprocess.STDOUT, start_new_session=True)
+    timed_out = False
+    try:
+        process.wait(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        timed_out = True
+        _stop_owned_group(process)
+    except BaseException:
+        _stop_owned_group(process)
+        raise
+    return {"pid": process.pid, "exit_code": process.returncode, "timed_out": timed_out,
+            "elapsed_seconds": time.monotonic() - start, "timeout_seconds": timeout}
+
+
+def run(prepared, output, *, cell_timeout=7200):
+    cell_timeout = positive_timeout(cell_timeout, name="cell timeout")
     prepared = Path(prepared).resolve(strict=True)
     plan, preparation = validate_bundle(prepared)
     require(not plan["unresolved_library_options"], "selected mode requires explicit --library options during prepare")
@@ -304,7 +369,8 @@ def run(prepared, output):
     root = new_directory(output)
     for relative in ("plan.json", "matrix.json", "profiles.json", "preparation.json", "inputs/recorded_inputs_v1.npz"):
         write_new(root / relative, (prepared / relative).read_bytes())
-    record = {"schema": SCHEMA, "status": "failed", "prepared": str(prepared), "interpreter": sys.executable,
+    record = {"schema": SCHEMA, "target": bound_target(plan.get("target")), "status": "failed", "prepared": str(prepared), "interpreter": sys.executable,
+              "cell_timeout_seconds": cell_timeout,
               "plan_sha256": sha(root / "plan.json"), "attempts": [], "task_quality_validated": False}
     try:
         for cell in plan["matrix"]["cells"]:
@@ -315,14 +381,17 @@ def run(prepared, output):
             log_path = root / "logs" / (cell["id"] + ".log")
             log_path.parent.mkdir(exist_ok=True)
             with log_path.open("x") as log:
-                completed = subprocess.run(command, cwd=root, env=child_environment(plan, cell, preparation),
-                                           stdout=log, stderr=subprocess.STDOUT, check=False)
-            attempt.update(exit_code=completed.returncode, log_sha256=sha(log_path))
-            if completed.returncode:
+                outcome = capture_process(command, cwd=root, env=child_environment(plan, cell, preparation),
+                                          log=log, timeout=cell_timeout)
+            attempt.update(outcome, log_sha256=sha(log_path))
+            if outcome["timed_out"]:
+                attempt["error"] = "cell wall-clock deadline exceeded; owned process group stopped"
+            if outcome["exit_code"] or outcome["timed_out"]:
                 break
         result = report(root, root / "validated_report")
         completed_all = (len(record["attempts"]) == len(plan["matrix"]["cells"])
-                         and all(attempt.get("exit_code") == 0 for attempt in record["attempts"]))
+                         and all(attempt.get("exit_code") == 0 and not attempt.get("timed_out")
+                                 for attempt in record["attempts"]))
         record["status"] = "passed" if result["status"] == "passed" and completed_all else "failed_or_incomplete"
         record["report_status"] = result["status"]
     except BaseException as error:
@@ -340,6 +409,7 @@ def main(argv=None):
         command = commands.add_parser(name)
         command.add_argument("--model", required=True, help="profile alias or exact checkpoint Hub ID")
         command.add_argument("--mode", default="native", help="explicit profile execution mode; default native")
+        command.add_argument("--target", choices=TARGETS, default=DEFAULT_TARGET)
         command.add_argument("--extra-mode", action="append", default=[],
                              help="add a distinct schedule-changing operating point sharing the three main arms")
         command.add_argument("--library", action="append", default=[], metavar="NAME=PATH")
@@ -350,18 +420,20 @@ def main(argv=None):
     command = commands.add_parser("run")
     command.add_argument("--prepared", type=Path, required=True)
     command.add_argument("--output", type=Path, required=True)
+    command.add_argument("--cell-timeout", type=float, default=7200,
+                         help="Per-cell wall-clock bound in seconds, including setup; default 7200.")
     command = commands.add_parser("report")
     command.add_argument("--run", type=Path, required=True)
     command.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     if args.command == "plan":
-        result = make_plan(args.model, args.mode, libraries=libraries_from_args(args.library), extra_modes=args.extra_mode)
+        result = make_plan(args.model, args.mode, target=args.target, libraries=libraries_from_args(args.library), extra_modes=args.extra_mode)
     elif args.command == "prepare":
-        result = prepare(args.model, args.mode, args.output, cache_dir=args.cache_dir,
+        result = prepare(args.model, args.mode, args.output, target=args.target, cache_dir=args.cache_dir,
                          local_files_only=args.local_files_only, libraries=libraries_from_args(args.library),
                          extra_modes=args.extra_mode)
     elif args.command == "run":
-        result = run(args.prepared, args.output)
+        result = run(args.prepared, args.output, cell_timeout=args.cell_timeout)
     else:
         result = report(args.run, args.output)
     print(encoded(result).decode(), end="")

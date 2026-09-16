@@ -65,6 +65,11 @@ def require_dreamzero_fp8_schedule(step_cache):
 
 def install_requested_fp8(model, plan, family):
     """Native adapters never import or initialize the optional quantization implementation."""
+    if any(r.name == "engine_offload" and r.applies and
+           r.params.get("executor") == "sm89_torch_fp8"
+           for r in getattr(plan, "results", ())):
+        from .sm89_fp8 import maybe_install_sm89_fp8
+        return maybe_install_sm89_fp8(model, plan, family)
     if not any(r.name == "engine_offload" and r.applies and
                r.params.get("executor") == "h100_torch_fp8"
                for r in getattr(plan, "results", ())):

@@ -79,3 +79,16 @@ def test_numeric_stats_and_cleanup_follow_service_lifetime():
     loop.close()
     loop.close()
     assert closed == ['attention']
+
+
+def test_residency_stats_and_cleanup_follow_service_lifetime():
+    service = Service()
+    closed = []
+    service._ifl_sm89_residency = SimpleNamespace(
+        report=lambda: {"streamed_blocks": [20, 21], "device_validation": "pending"},
+        close=lambda: closed.append("residency"))
+    loop = CosmosDROIDLoop(service)
+    assert loop.backend_stats()["residency"]["streamed_blocks"] == [20, 21]
+    loop.close()
+    loop.close()
+    assert closed == ["residency"]

@@ -11,12 +11,15 @@ import hashlib
 import io
 import json
 import os
-from pathlib import Path
 import random
+import shutil
 import subprocess
 import sys
 import time
 import traceback
+from pathlib import Path
+
+from .hardware import bound_target, probe_device, validate_device_receipt
 
 
 def sha(path):
@@ -155,10 +158,12 @@ def fp8_weights(root):
 
 
 def gpu_competitors(torch):
-    smi = "/usr/sbin/nvidia-smi"
+    smi = shutil.which("nvidia-smi")
+    if smi is None:
+        raise RuntimeError("nvidia-smi is required on PATH for isolated GPU timing")
     uuid = str(torch.cuda.get_device_properties(0).uuid)
     output = subprocess.check_output([smi, "--query-compute-apps=gpu_uuid,pid",
-                                      "--format=csv,noheader,nounits"], text=True)
+                                      "--format=csv,noheader,nounits"], text=True, timeout=15)
     return [int(parts[1]) for line in output.splitlines()
             if len(parts := line.split(",")) == 2 and parts[0].strip() == uuid
             and int(parts[1]) != os.getpid()]
@@ -228,10 +233,12 @@ def native_schedule_override(cell):
 def capture(matrix_path, cell_id, output_root, fixture):
     import numpy as np
     import torch
-    from instinctflash import Runtime
     from huggingface_hub import snapshot_download
 
+    from instinctflash import Runtime
+
     matrix = json.loads(Path(matrix_path).read_text())
+    target = bound_target(matrix.get("target"))
     cell = next(row for row in matrix["cells"] if row["id"] == cell_id)
     native_nfe = native_schedule_override(cell)
     output = Path(output_root) / cell["receipt"]
@@ -246,7 +253,7 @@ def capture(matrix_path, cell_id, output_root, fixture):
     options = dict(cell.get("expected_runtime_kwargs", {}))
     family = cell["family"]
     history = family in ("va", "dreamzero")
-    report = dict(schema=1, cell_id=cell_id, family=family, arm=cell["arm"],
+    report = dict(schema=1, target=target, cell_id=cell_id, family=family, arm=cell["arm"],
         runtime_kwargs=options, optimizer_environment=optimizer_environment,
         model_id=cell["model_id"], revision=cell["revision"],
         precision=options.get("precision", "native"), device=torch.cuda.get_device_name(),
@@ -262,7 +269,9 @@ def capture(matrix_path, cell_id, output_root, fixture):
         report["native_nfe_override"] = native_nfe
     api = None
     try:
-        assert torch.cuda.get_device_capability() == (11, 0), "This study targets Jetson Thor"
+        report["hardware"] = probe_device(target, torch)
+        validate_device_receipt(report["hardware"], target)
+        report["nvidia_smi"] = shutil.which("nvidia-smi")
         assert not gpu_competitors(torch), "Unexpected competing GPU process"
         snapshot = Path(snapshot_download(cell["model_id"], revision=cell["revision"], local_files_only=True))
         assert snapshot.name == cell["revision"]
@@ -276,16 +285,21 @@ def capture(matrix_path, cell_id, output_root, fixture):
         start = time.perf_counter()
         if cell["arm"] == "eager_native":
             from instinctflash.descriptors.package import from_pretrained
+
             from .native_reference import build
             checkpoint = from_pretrained(cell["model_id"], revision=cell["revision"])
             if native_nfe is None:
-                api = build(family, checkpoint, output_dir=output.parent)
+                api = build(family, checkpoint, output_dir=output.parent,
+                            target=target, hardware=report["hardware"])
             else:
-                api = build(family, checkpoint, output_dir=output.parent, nfe=native_nfe)
+                api = build(family, checkpoint, output_dir=output.parent, nfe=native_nfe,
+                            target=target, hardware=report["hardware"])
         else:
             api = Runtime.from_pretrained(cell["model_id"], revision=cell["revision"], **options)
             report["observation_contract"] = api.observation.describe()
         report["package_path"] = str(api._checkpoint.path)
+        # Keep declared loading/residency changes even if the first reset fails.
+        report["execution_policy"] = api.execution_policy
         api.reset(prompt=prompt(0))
         torch.cuda.synchronize()
         report["setup_seconds"] = time.perf_counter() - start
@@ -379,6 +393,7 @@ def capture(matrix_path, cell_id, output_root, fixture):
         report["plan"] = api.plan.explain()
         report["applied_passes"] = [r.name for r in api.plan.results if r.applies]
         report["peak_allocated_bytes"] = torch.cuda.max_memory_allocated()
+        report["peak_reserved_bytes"] = torch.cuda.max_memory_reserved()
         report["numeric_environment"] = dict(matmul_tf32=torch.backends.cuda.matmul.allow_tf32,
             cudnn_tf32=torch.backends.cudnn.allow_tf32, cudnn_benchmark=torch.backends.cudnn.benchmark)
         archive = output.with_suffix(".npz")

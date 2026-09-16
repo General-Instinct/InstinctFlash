@@ -12,7 +12,8 @@ from pathlib import Path
 
 def build_droid_service(checkpoint, *, precision, format_prompt_as_json,
                         steps=4, guidance=3.0, seed=0, shift=5.0,
-                        image_height=540, image_width=640, policy_config=None):
+                        image_height=540, image_width=640, policy_config=None,
+                        model_finalizer=None):
     if precision not in ("native", "fp8"):
         raise ValueError("DROID precision must be native or fp8")
     if not isinstance(format_prompt_as_json, bool):
@@ -54,8 +55,8 @@ def build_droid_service(checkpoint, *, precision, format_prompt_as_json,
         image_height=image_height, image_width=image_width,
         format_prompt_as_json=format_prompt_as_json,
     ))
-    receipt = None
-    if precision == "fp8":
+    receipt = model_finalizer(service) if model_finalizer is not None else None
+    if precision == "fp8" and model_finalizer is None:
         from .cosmos_fp8 import install_cosmos_fp8, install_cosmos_dense_mlp_fp8
         receipt = install_cosmos_fp8(service.model)
         import torch
@@ -145,6 +146,8 @@ class CosmosDROIDLoop:
                     if getattr(service, "_ifl_generation_regions", None) is not None else None),
                 "numeric_attention": (service._ifl_numeric_attention.report()
                     if getattr(service, "_ifl_numeric_attention", None) is not None else None),
+                "residency": (service._ifl_sm89_residency.report()
+                    if getattr(service, "_ifl_sm89_residency", None) is not None else None),
                 "captured": bool(getattr(service, "_ifl_layer_graphs", {}).get("replays", 0)
                     or (cache_stats and any(g['replays'] for g in cache_stats['graph_stats'])))}
 
@@ -159,6 +162,10 @@ class CosmosDROIDLoop:
                 "evidence": "Native DROID service configuration with explicit MoT Q/K/V FP8 recipe"}
 
     def close(self):
+        residency = getattr(self._service, "_ifl_sm89_residency", None)
+        if residency is not None:
+            with self._service._lock:
+                residency.close()
         timestep_cache = getattr(self._service, "_ifl_timestep_cache", None)
         if timestep_cache is not None:
             timestep_cache.close()

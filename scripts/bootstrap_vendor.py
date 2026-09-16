@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Create a separate public-source inference environment; never load model weights.
 
-Each target is the recorded Linux/aarch64 Thor stack, not a universal CUDA
-lock. Source checkout and environment destinations must not already exist.
+Targets have separate, pinned vendor profiles; the default is Linux/aarch64
+Thor. Source checkout and environment destinations must not already exist.
 Public dependency resolution, both package checks, and the offline doctor are
 recorded separately. A successful package install is not GPU qualification.
 """
@@ -16,20 +16,23 @@ import hashlib
 import io
 import json
 import os
-from pathlib import Path
 import shlex
 import shutil
 import subprocess
 import sys
 import urllib.request
 import zipfile
+from pathlib import Path
 
-import repair_vendor_wheel
 import prepare_native_tools
-
+import repair_vendor_wheel
 
 CHECKOUT = Path(__file__).resolve().parents[1]
 FAMILIES = ("pi05", "vla4", "vla2", "groot", "va", "edge", "nano", "dreamzero")
+TARGETS = {
+    "jetson_thor": {"machine": "aarch64", "ptxas_target": "sm_110a", "ptx_version": "9.0"},
+    "rtx4090": {"machine": "x86_64", "ptxas_target": "sm_89", "ptx_version": "7.8"},
+}
 PURE_SDISTS = {
     "antlr4-python3-runtime": ("4.9.3", "f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b"),
     "iopath": ("0.1.10", "3311c16a4d9137223e20f141655759933e1eda24f8bff166af834af3c645ef01"),
@@ -55,12 +58,19 @@ def checked_path(base: Path, relative: str, expected: str | None = None) -> Path
     return p
 
 
-def load_profile(family: str, checkout: Path = CHECKOUT) -> dict:
+def load_profile(family: str, checkout: Path = CHECKOUT, *, target: str = "jetson_thor") -> dict:
+    if target not in TARGETS:
+        raise ValueError(f"unsupported deployment target: {target}")
     base = checkout / "release/vendor"
-    p = checked_path(base, f"{family}/bootstrap.json")
+    prefix = "" if target == "jetson_thor" else f"{target}/"
+    p = checked_path(base, f"{prefix}{family}/bootstrap.json")
     profile = json.loads(p.read_text())
     if profile["family"] != family or profile["schema"] != "instinctflash.vendor_bootstrap.v1":
         raise ValueError("invalid bootstrap profile")
+    if (profile["target"]["system"] != "Linux"
+            or profile["target"]["machine"] != TARGETS[target]["machine"]
+            or profile.get("deployment_target", "jetson_thor") != target):
+        raise ValueError("bootstrap profile does not match requested deployment target")
     for key in ("constraints", "requirements"):
         checked_path(base, profile[key]["path"], profile[key]["sha256"])
     source = profile["source_manifest"]
@@ -116,29 +126,34 @@ def activation_environment(profile: dict, vendor: Path) -> dict:
     return values
 
 
-def prepare_ptxas(path: Path, output: Path) -> dict:
-    """Check the selected Thor assembler without importing Torch or using a GPU."""
+def prepare_ptxas(path: Path, output: Path, *, target: str = "jetson_thor") -> dict:
+    """Check the selected target's assembler without importing Torch or using a GPU."""
+    if target not in TARGETS:
+        raise ValueError(f"unsupported deployment target: {target}")
+    architecture = TARGETS[target]["ptxas_target"]
     path = path.expanduser().resolve(strict=True)
     if not path.is_file() or not os.access(path, os.X_OK):
         raise ValueError("--ptxas must name an executable CUDA assembler")
     output.mkdir(exist_ok=False)
     source = output / "probe.ptx"
     binary = output / "probe.cubin"
-    source.write_text(".version 9.0\n.target sm_110a\n.address_size 64\n"
+    source.write_text(f".version {TARGETS[target]['ptx_version']}\n.target {architecture}\n.address_size 64\n"
                       ".visible .entry instinctflash_ptxas_probe() { ret; }\n")
-    command = [str(path), "--gpu-name=sm_110a", str(source), "-o", str(binary)]
+    command = [str(path), f"--gpu-name={architecture}", str(source), "-o", str(binary)]
     done = subprocess.run(command, capture_output=True, timeout=30, check=False)
     (output / "stdout.log").write_bytes(done.stdout)
     (output / "stderr.log").write_bytes(done.stderr)
-    values = {"TRITON_PTXAS_PATH": str(path), "TRITON_PTXAS_BLACKWELL_PATH": str(path)}
+    values = {"TRITON_PTXAS_PATH": str(path)}
+    if target == "jetson_thor":
+        values["TRITON_PTXAS_BLACKWELL_PATH"] = str(path)
     passed = done.returncode == 0 and binary.is_file() and binary.stat().st_size > 0
     receipt = {"status": "passed" if passed else "failed", "command": command,
                "returncode": done.returncode, "ptxas": str(path), "sha256": sha(path),
-               "environment": values, "target": "sm_110a", "GPU_used": False,
+               "environment": values, "target": architecture, "deployment_target": target, "GPU_used": False,
                "probe_sha256": sha(source), "cubin_sha256": sha(binary) if passed else None}
     write_json(output / "receipt.json", receipt)
     if not passed:
-        raise RuntimeError(f"ptxas cannot assemble sm_110a; see {output / 'stderr.log'}")
+        raise RuntimeError(f"ptxas cannot assemble {architecture}; see {output / 'stderr.log'}")
     (output / "run.env").write_text("".join(
         f"export {name}={shlex.quote(value)}\n" for name, value in values.items()))
     return receipt
@@ -214,6 +229,7 @@ class Bootstrap:
         self.env_dir = (args.env_dir or self.root / "env").expanduser().absolute()
         self.vendor = (args.vendor_dir or self.root / "vendor").expanduser().absolute()
         self.environment = clean_environment(args.cache_dir)
+        self.environment["UV_LINK_MODE"] = getattr(args, "link_mode", "copy")
         self.receipts = self.root / "receipts"
         self.python = self.env_dir / "bin/python"
         self.commands = []
@@ -338,7 +354,8 @@ class Bootstrap:
     def install(self) -> dict:
         self.prepare_roots()
         try:
-            compiler = (prepare_ptxas(self.args.ptxas, self.root / "compiler")
+            deployment_target = self.profile.get("deployment_target", "jetson_thor")
+            compiler = (prepare_ptxas(self.args.ptxas, self.root / "compiler", target=deployment_target)
                         if getattr(self.args, "ptxas", None) else None)
             if compiler:
                 self.environment.update(compiler["environment"])
@@ -347,16 +364,19 @@ class Bootstrap:
                  env=self.environment, text=True)
             target = self.profile["target"]
             if json.loads(probe) != [target["system"], target["machine"], target["python_minor"]]:
-                raise ValueError("interpreter does not match this explicitly supported historical target")
+                raise ValueError("interpreter does not match the selected target's system, machine and Python version")
             self.prepare_source()
             self.command("venv", [self.args.uv, "venv", "--python", self.args.python, str(self.env_dir)])
-            repaired = self.repaired_wheel()
+            repaired = self.repaired_wheel() if self.profile.get("wheel_metadata_repair") else None
+            if repaired is None and self.args.repaired_wheel:
+                raise ValueError("this target does not use a repaired dependency wheel")
             auxiliary_wheels = self.auxiliary_python_wheels()
             base = self.args.checkout / "release/vendor"
             requirements = checked_path(base, self.profile["requirements"]["path"], self.profile["requirements"]["sha256"])
             constraints = checked_path(base, self.profile["constraints"]["path"], self.profile["constraints"]["sha256"])
             deps = [self.args.uv, "pip", "install", "--python", str(self.python), "--index-url", "https://pypi.org/simple",
-                    "--only-binary", ":all:", "-c", str(constraints), "-r", str(requirements), str(repaired),
+                    "--only-binary", ":all:", "-c", str(constraints), "-r", str(requirements),
+                    *([str(repaired)] if repaired else []),
                     *[str(p) for p in auxiliary_wheels]]
             deps += [f"{name} @ {url}" for name, url in self.profile["public_wheel_overrides"].items()]
             for name, source in self.profile.get("audited_pure_python_sdists", {}).items():
@@ -424,8 +444,9 @@ class Bootstrap:
             doctor = None
             if not self.args.defer_doctor:
                 doctor = self.command("cpu_doctor", [str(self.python), str(self.args.checkout / "scripts/public_deploy.py"),
-                                       "doctor", self.profile["family"]], acceptable=(0, 1))
+                                       "doctor", self.profile["family"], "--target", deployment_target], acceptable=(0, 1))
             result = {"status": "packages_checked", "family": self.profile["family"], "python": str(self.python),
+                      "deployment_target": deployment_target,
                       "vendor": str(self.vendor) if self.profile["source_manifest"] else None,
                       "CPU_doctor_passed": None if doctor is None else doctor.returncode == 0,
                       "CPU_doctor_deferred": doctor is None, "GPU_verified": False, "model_constructed": False,
@@ -446,6 +467,7 @@ def main(argv=None) -> int:
     p = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     p.add_argument("command", choices=("plan", "install"))
     p.add_argument("model", choices=FAMILIES)
+    p.add_argument("--target", choices=tuple(TARGETS), default="jetson_thor")
     p.add_argument("--checkout", type=Path, default=CHECKOUT)
     p.add_argument("--root", type=Path)
     p.add_argument("--python", default=sys.executable)
@@ -453,11 +475,13 @@ def main(argv=None) -> int:
     p.add_argument("--env-dir", type=Path)
     p.add_argument("--vendor-dir", type=Path)
     p.add_argument("--cache-dir", type=Path)
+    p.add_argument("--link-mode", choices=("copy", "hardlink"), default="copy",
+                   help="Use hardlink only with an executable shared cache on the environment filesystem.")
     p.add_argument("--package-wheel-dir", type=Path)
     p.add_argument("--repaired-wheel", type=Path)
     p.add_argument("--repair-receipt", type=Path)
     p.add_argument("--ptxas", type=Path,
-                   help="CUDA assembler for Thor; verify sm_110a and persist both Triton compiler overrides.")
+                   help="CUDA assembler for the selected target; verify its architecture and persist Triton overrides.")
     p.add_argument("--defer-doctor", action="store_true", help="Install/check packages only; explicitly record the offline doctor as pending.")
     p.add_argument("--timeout", type=float, default=3600)
     p.add_argument("--json", action="store_true", help="Output is always structured JSON.")
@@ -470,7 +494,7 @@ def main(argv=None) -> int:
     if a.command == "install" and a.root is None:
         p.error("install requires --root at a new destination")
     try:
-        profile = load_profile(a.model, a.checkout)
+        profile = load_profile(a.model, a.checkout, target=a.target)
         result = profile if a.command == "plan" else Bootstrap(a, profile).install()
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0

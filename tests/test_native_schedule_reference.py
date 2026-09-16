@@ -72,6 +72,34 @@ def test_existing_native_constructor_call_is_unchanged(upstream_stub, tmp_path):
     assert calls[0].action_num_inference_steps == original.action_num_inference_steps == 50
 
 
+def test_rtx4090_routes_to_declared_residency_without_changing_schedule(upstream_stub, tmp_path):
+    from benchmarks.regression.hardware import target_record
+
+    calls, original = upstream_stub
+    target = target_record("rtx4090")
+    hardware = {"target": target, "status": "passed", "name": "NVIDIA GeForce RTX 4090",
+                "capability": [8, 9], "uuid": "CPU-route-test-only", "total_memory_bytes": 24 << 30}
+    installer = sys.modules["instinctflash.runtime.lingbot_install"]
+    residency_calls = []
+
+    def native_residency(module, config, *, device, expected_device):
+        residency_calls.append((device, deepcopy(expected_device)))
+        return module.VA_Server(config), {"schema": "instinctflash.native_va_residency.v1",
+            "device": {key: expected_device[key] for key in
+                       ("name", "capability", "uuid", "total_memory_bytes")}, "successful_resets": 0}
+
+    installer.build_native_reference_server = native_residency
+    declared = checkpoint()
+    api = native_reference.build("va", declared, output_dir=tmp_path, target=target, hardware=hardware)
+    assert residency_calls == [("cuda:0", hardware)]
+    assert calls[0].num_inference_steps == original.num_inference_steps == 25
+    assert calls[0].action_num_inference_steps == original.action_num_inference_steps == 50
+    assert calls[0].guidance_scale == original.guidance_scale == 5.0
+    assert calls[0].frame_chunk_size == original.frame_chunk_size
+    assert api.execution_policy["native_residency"]["device"]["uuid"] == hardware["uuid"]
+    assert "residency changes" in api.execution_policy["reference"]
+
+
 def test_groot_local_nfe_is_not_misread_as_a_native_override(monkeypatch, tmp_path):
     policy = SimpleNamespace(model=SimpleNamespace(action_head=SimpleNamespace(), config=SimpleNamespace()))
     monkeypatch.setattr(sys, "path", list(sys.path))

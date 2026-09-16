@@ -79,6 +79,25 @@ Use ``python -I`` for these installed benchmark commands, including when working
 inside the checkout. It prevents checkout modules or ``PYTHONPATH`` from
 shadowing the noneditable wheel that the runner validates.
 
+RTX 4090 uses its own installation and measurement target::
+
+    python -I -m benchmarks.regression.reproduce plan \
+      --target rtx4090 --model pi05 --mode fp8
+    python -I -m benchmarks.regression.reproduce prepare \
+      --target rtx4090 --model pi05 --mode fp8 --output pi05-4090-inputs
+    python -I -m benchmarks.regression.reproduce run \
+      --prepared pi05-4090-inputs --output pi05-4090-results
+
+Use the RTX 4090 bootstrap described in ``INSTALL.rst`` first. Preparation
+binds the target, checkpoint and protocol into the bundle. Execution verifies
+the selected card's model and SM89 capability; it does not reuse a Thor device
+receipt. The paired native/default/selected requests retain the same warmups,
+measurement counts, full observation shapes and history protocol. The native
+reference declares any CPU residency needed to run the full checkpoint on a
+24 GiB card. Those copies are included in latency, with actual peak allocated
+and reserved CUDA memory recorded. The Thor selections below are not measured
+RTX 4090 results; consult the target's qualified results before choosing a mode.
+
 Explicit execution selections
 -----------------------------
 

@@ -1,12 +1,16 @@
 """Direct upstream policy constructors. Shared wrappers only translate public I/O.
 
-No adapter build/install, graph, hoist, fast decode or GPU preprocessing is called.
-The checkpoint declaration is resolved without constructing a Runtime backend.
+No adapter build/install, graph, hoist or GPU preprocessing is called. The explicit
+RTX 4090 references declare any CPU weight/KV residency and unused module elision
+needed by larger models. Other native constructors retain their existing loading
+contracts. No Runtime backend is constructed.
 """
 import os
 import sys
 from collections.abc import Mapping
 from types import SimpleNamespace
+
+from .hardware import bound_target, validate_device_receipt
 
 
 def resolve_native_nfe(family, declared, nfe=None):
@@ -24,7 +28,19 @@ def resolve_native_nfe(family, declared, nfe=None):
     return {**steps, **nfe}
 
 
-def build(family, checkpoint, *, output_dir, nfe=None):
+def residency_declaration(family, hardware, description):
+    return {"schema": "instinctflash.native_device_residency.v1", "family": family,
+            "device": {key: hardware[key] for key in
+                       ("name", "uuid", "capability", "total_memory_bytes")},
+            "description": description, "transport_stats": "backend_stats.residency",
+            "precision": "native", "schedule_changed_by_residency": False}
+
+
+def build(family, checkpoint, *, output_dir, nfe=None, target=None, hardware=None):
+    target = bound_target(target)
+    if target["name"] == "rtx4090" or hardware is not None:
+        validate_device_receipt(hardware, target)
+    residency = None
     extra = dict(checkpoint.execution.extra or {})
     steps = resolve_native_nfe(family, checkpoint.execution.nfe, nfe)
     native_nfe = None if nfe is None else dict(nfe)
@@ -96,12 +112,21 @@ def build(family, checkpoint, *, output_dir, nfe=None):
         class EagerService(RobolabPolicyService):
             def _build_setup_args(self, args):
                 return super()._build_setup_args(args).model_copy(update={'guardrails': False, 'use_torch_compile': False})
-        service = EagerService(RobolabServerArgs(
+        service_args = RobolabServerArgs(
             checkpoint_path=str(_resolve_model_path(checkpoint)),
             **{k: extra[k] for k in ('domain_name', 'action_chunk_size', 'conditioning_fps',
                 'action_dim', 'image_height', 'image_width', 'format_prompt_as_json')},
             num_steps=int(steps['action']), guidance=3.0,
-            shift=float(extra.get('shift', 5.0)), seed=int(extra.get('seed', 0))))
+            shift=float(extra.get('shift', 5.0)), seed=int(extra.get('seed', 0)))
+        if target["name"] == "rtx4090":
+            from cosmos3_iwm.sm89_residency import build_native_service
+            service = build_native_service(lambda: EagerService(service_args),
+                                           nano=family == "nano", device=dev)
+            residency = residency_declaration(
+                family, hardware, "native CUDA compute with bounded CPU layer residency; "
+                "Nano omits its unused language output head")
+        else:
+            service = EagerService(service_args)
         loop = CosmosDROIDLoop(service)
     elif family == 'va':
         from copy import deepcopy
@@ -131,7 +156,12 @@ def build(family, checkpoint, *, output_dir, nfe=None):
         cfg.num_inference_steps = int(steps['video'])
         cfg.action_num_inference_steps = int(steps['action'])
         apply_declared_guidance(cfg, checkpoint.execution.guidance)
-        server = server_module.VA_Server(cfg)
+        if target["name"] == "rtx4090":
+            from instinctflash.runtime.lingbot_install import build_native_reference_server
+            server, residency = build_native_reference_server(
+                server_module, cfg, device=dev, expected_device=hardware)
+        else:
+            server = server_module.VA_Server(cfg)
         loop = _ControlLoop(server, tuple(cfg.obs_cam_keys), frame_chunk_size=cfg.frame_chunk_size)
     elif family == 'dreamzero':
         from dreamzero_iwm.adapter import _source_root, _resolve_model_path, _DreamZeroLoop, _head_declaration
@@ -144,6 +174,39 @@ def build(family, checkpoint, *, output_dir, nfe=None):
         mesh = init_device_mesh('cuda', mesh_shape=(1,), mesh_dim_names=('ip',))
         tag = str(extra.get('embodiment_tag') or 'oxe_droid')
         path = _resolve_model_path(checkpoint)
+        if target["name"] == "rtx4090":
+            if int(steps.get("video_action", 16)) != 16 or int(steps.get("kv_commit", 1)) != 1:
+                raise ValueError("DreamZero native reference requires its original 16-update/1-commit grid")
+            from dreamzero_iwm.adapter import _build_owned_native_loop
+            from instinctflash.runtime.step_cache_policy import ResolvedStepCache
+            from .native_loaded import verify_loaded
+            loaded_gates = []
+
+            def policy_factory(selected_path):
+                return GrootSimPolicy(embodiment_tag=EmbodimentTag(tag),
+                    model_path=str(selected_path), tokenizer_path_override=None,
+                    device='cuda', device_mesh=mesh, lazy_load=True)
+
+            def wrapper_factory(policy):
+                # Keep the all-stored-tensors native-value gate before any policy call.
+                loaded_gates.append(verify_loaded(policy, path, output_dir=output_dir))
+                height, width = _get_expected_video_resolution(policy)
+                return DreamZeroWan225BPolicy(groot_policy=policy, image_height=height,
+                    image_width=width, embodiment_tag=tag)
+
+            loop = _build_owned_native_loop(path, policy_factory, wrapper_factory,
+                step_cache=ResolvedStepCache(False, 8, None, "native_reference_checkpoint"),
+                residency_precision="native")
+            if len(loaded_gates) != 1:
+                loop.close()
+                raise RuntimeError("DreamZero native residency skipped the original loaded-value gate")
+            if loop._loading_receipt is not None:
+                loop._loading_receipt["loaded_value_gate"] = loaded_gates[0]
+            residency = residency_declaration(
+                family, hardware, "native BF16 CUDA compute with CPU layer weights and complete "
+                "native KV storage; original fixed 8-branch mask on the 16-update solver grid")
+            return Reference(checkpoint, loop, target=target, hardware=hardware,
+                             native_residency=residency)
         view = receipt = None
         if True:
             # Upstream's full-checkpoint option; materialize destination BF16 directly.
@@ -177,15 +240,36 @@ def build(family, checkpoint, *, output_dir, nfe=None):
             raise
     else:
         raise ValueError(f'No audited upstream constructor for {family}')
-    return Reference(checkpoint, loop, native_nfe=native_nfe)
+    return Reference(checkpoint, loop, native_nfe=native_nfe,
+                     target=target if target["name"] == "rtx4090" else None,
+                     hardware=hardware, native_residency=residency)
 
 
 class Reference:
-    def __init__(self, checkpoint, loop, *, native_nfe=None):
+    def __init__(self, checkpoint, loop, *, native_nfe=None, target=None, hardware=None,
+                 native_residency=None):
         self._checkpoint = checkpoint
         self._backend = SimpleNamespace(_impl=loop)
         self.plan = SimpleNamespace(results=[], explain=lambda: 'Upstream eager; no optimization passes installed')
         self.execution_policy = {'reference': 'upstream eager native policy; shared I/O translation only'}
+        if target is not None:
+            from copy import deepcopy
+            validate_device_receipt(hardware, target)
+            self.execution_policy.update(target=bound_target(target), hardware=deepcopy(hardware))
+        if native_residency is not None:
+            if target is None or target["name"] != "rtx4090":
+                raise ValueError("native residency receipt requires the RTX 4090 target")
+            if any(native_residency["device"].get(key) != hardware.get(key)
+                   for key in ("name", "uuid", "capability", "total_memory_bytes")):
+                raise ValueError("native residency receipt is bound to a different device")
+            self.execution_policy.update(
+                reference="upstream eager native policy with declared weight residency changes",
+                native_residency=native_residency)
+            description = native_residency.get("description", (
+                "native CUDA prompt encode; CPU T5 residency between resets; unchanged full "
+                "history allocation deferred until after prompt encoding; unused pixel decoders removed"))
+            self.plan.explain = lambda: (
+                "Upstream eager; " + description + ". No runtime compute optimizations installed.")
         if native_nfe is not None:
             declared = dict(checkpoint.execution.nfe or {})
             effective = resolve_native_nfe('va', declared, native_nfe)

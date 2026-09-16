@@ -1,4 +1,4 @@
-"""Explicit inference-only FP8 projection for audited Thor model call sites.
+"""Explicit inference-only FP8 projections for audited model call sites.
 
 This is not an automatic model converter. Callers must preserve native processors,
 attention, scheduling and any projections whose weights are read directly.
@@ -9,14 +9,26 @@ from torch import nn
 
 class ThorFP8Linear(nn.Module):
     recipe = "e4m3fn_weights_dynamic_per_tensor_activations_fp32_accum_bf16_output"
+    supported_capabilities = ((9, 0), (11, 0))
+    allow_cpu_source = False
 
-    def __init__(self, linear: nn.Linear):
+    def __init__(self, linear: nn.Linear, *, device=None, storage_device=None):
         super().__init__()
         if type(linear) is not nn.Linear:
             raise TypeError("FP8 packing requires a plain nn.Linear with no custom forward")
         w = linear.weight.detach()
-        if w.device.type != "cuda" or torch.cuda.get_device_capability(w.device) not in ((9, 0), (11, 0)):
-            raise ValueError("FP8 projections require an SM90 or SM110 CUDA device")
+        target = torch.device(device) if device is not None else w.device
+        if (target.type != "cuda"
+                or torch.cuda.get_device_capability(target) not in self.supported_capabilities):
+            raise ValueError(f"FP8 projections require CUDA capability in {self.supported_capabilities}")
+        storage = torch.device(storage_device) if storage_device is not None else target
+        if storage != target and not (self.allow_cpu_source and storage.type == "cpu"):
+            raise ValueError("Separate CPU packed storage is supported only by the SM89 recipe")
+        if w.device != target and not (self.allow_cpu_source and w.device.type == "cpu"):
+            # CUDA without an index and cuda:current identify the same target.
+            target_index = target.index if target.index is not None else torch.cuda.current_device()
+            if w.device != torch.device("cuda", target_index):
+                raise ValueError("Pack FP8 weights on their target device; CPU packing is SM89-only")
         if w.dtype != torch.bfloat16:
             raise ValueError("This FP8 recipe requires native BF16 projection weights")
         if linear.in_features % 16 or linear.out_features % 16:
@@ -26,12 +38,12 @@ class ThorFP8Linear(nn.Module):
         self.in_features, self.out_features = linear.in_features, linear.out_features
         scale = w.float().abs().amax().clamp_min(1e-12).reshape(1) / 448.0
         packed = (w.float() / scale).clamp(-448, 448).to(torch.float8_e4m3fn)
-        self.register_buffer("weight_fp8", packed.contiguous())
-        self.register_buffer("weight_scale", scale)
+        self.register_buffer("weight_fp8", packed.to(storage).contiguous())
+        self.register_buffer("weight_scale", scale.to(storage))
         bias = linear.bias.detach().clone() if linear.bias is not None else None
         if bias is not None and (bias.dtype != torch.bfloat16 or not torch.isfinite(bias).all()):
             raise ValueError("This FP8 recipe requires finite BF16 bias")
-        self.register_buffer("bias", bias)
+        self.register_buffer("bias", bias.to(storage) if bias is not None else None)
 
     @torch.no_grad()
     def forward(self, x):
@@ -57,3 +69,30 @@ class ThorFP8Linear(nn.Module):
             bias=self.bias, out_dtype=torch.bfloat16, use_fast_accum=False,
         )
         return out.reshape(shape)
+
+
+class SM89FP8Linear(ThorFP8Linear):
+    """SM89 E4M3 projection; CPU packing avoids a full BF16 CUDA loading peak.
+
+    Call after the native BF16 cast. A later model-wide dtype cast would corrupt
+    the packed buffers and is detected by forward(), just as for the Thor path.
+    CPU packing preserves this FP8 recipe, not the original BF16 arithmetic.
+    """
+
+    supported_capabilities = ((8, 9),)
+    allow_cpu_source = True
+
+    def __init__(self, linear: nn.Linear, *, device=None, storage_device=None):
+        if device is None and linear.weight.device.type == "cpu":
+            device = "cuda"
+        super().__init__(linear, device=device, storage_device=storage_device)
+
+    @property
+    def weight(self):
+        # Audited attention code may inspect dtype/device, but a direct-weight
+        # GEMM must fail instead of silently bypassing the quantized projection.
+        return torch.empty(0, device=self.weight_fp8.device, dtype=torch.bfloat16)
+
+    @torch.amp.custom_fwd(device_type="cuda", cast_inputs=torch.bfloat16)
+    def forward(self, x):
+        return super().forward(x)

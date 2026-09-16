@@ -59,7 +59,8 @@ def maybe_install_h100_fp8(model, plan, family):
     model._h100_fp8_recipe=recipe
 
 class H100Loop:
-    def __init__(self,loop,recipe):self.inner,self.recipe=loop,recipe
+    def __init__(self,loop,recipe,*,executor='h100_torch_fp8'):
+        self.inner,self.recipe,self.executor=loop,recipe,executor
     def reset(self,**kw):return self.inner.reset(**kw)
     def predict(self,obs,*,executed_action=None):
         validate=getattr(self.inner,'validate_executed_action',None)
@@ -81,7 +82,7 @@ class H100Loop:
         stats=getattr(self.inner,'backend_stats',{})
         if callable(stats):stats=stats()
         return {'native_backend':stats,'fp8_recipe':self.recipe}
-    def declaration(self):return {'precision':'fp8','executor':'h100_torch_fp8','recipe':self.recipe}
+    def declaration(self):return {'precision':'fp8','executor':self.executor,'recipe':self.recipe}
 
 
 def build_h100_loop(adapter,checkpoint,plan,*,device=None,nfe=None,step_cache=None):

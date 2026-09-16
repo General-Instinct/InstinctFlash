@@ -5,8 +5,8 @@ import torch
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA FP8 packing')
 def test_dynamic_pack_matches_reference_including_graph_replay():
-    if torch.cuda.get_device_capability() not in ((9, 0), (11, 0)):
-        pytest.skip('requires SM90/SM110')
+    if torch.cuda.get_device_capability() not in ((8, 9), (9, 0), (11, 0)):
+        pytest.skip('requires SM89/SM90/SM110')
     pytest.importorskip('triton')
     from instinctflash.runtime.fp8_pack import dynamic_pack_bf16_e4m3
     def check(x):

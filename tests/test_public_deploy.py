@@ -7,15 +7,14 @@ import hashlib
 import importlib.util
 import json
 import os
-from pathlib import Path
 import platform
 import struct
 import subprocess
 import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("public_deploy", ROOT / "scripts/public_deploy.py")
@@ -30,6 +29,35 @@ def catalog():
 
 def model(catalog, name):
     return next(row for row in catalog["models"] if row["id"] == name)
+
+
+def test_rtx4090_catalog_is_distinct_and_all_commands_keep_the_target(catalog):
+    rtx = deploy.load_profiles(target="rtx4090")
+    assert rtx["target"] == "rtx4090"
+    assert len(rtx["models"]) == 8
+    assert (ROOT / "release/rtx4090/deployment_profiles.json").read_bytes() == (
+        ROOT / "benchmarks/regression/fixtures/deployment_profiles_rtx4090.json").read_bytes()
+    for row in rtx["models"]:
+        assert row["checkpoint"] == model(catalog, row["id"])["checkpoint"]
+        plan = deploy.make_plan(row)
+        assert plan["target"] == "rtx4090"
+        assert plan["commands"]["doctor_before_weights"][-2:] == ["--target", "rtx4090"]
+        assert "rtx4090" in row["bootstrap"]["command"]
+        for mode in row["execution_modes"].values():
+            assert mode["evidence_kind"] == "pending_rtx4090_measurement"
+            assert mode["gpu_qualified_by_plan"] is False
+    with pytest.raises(ValueError, match="schema or target"):
+        deploy.load_profiles(ROOT / "release/deployment_profiles.json", target="rtx4090")
+
+
+def test_rtx4090_cli_plan_binds_correct_catalog_hash():
+    run = subprocess.run([sys.executable, str(ROOT / "scripts/public_deploy.py"),
+                          "plan", "all", "--target", "rtx4090"], capture_output=True, text=True, check=True)
+    receipt = json.loads(run.stdout)
+    assert receipt["ok"] and receipt["target"] == "rtx4090"
+    assert receipt["profiles_sha256"] == hashlib.sha256(
+        (ROOT / "release/rtx4090/deployment_profiles.json").read_bytes()).hexdigest()
+    assert len(receipt["results"]) == 8
 
 
 def test_eight_models_six_adapter_packages_seven_backbones(catalog):

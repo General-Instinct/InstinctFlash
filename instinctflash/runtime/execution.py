@@ -440,7 +440,8 @@ def choose_backend(placement: str, adapter, checkpoint, plan, **kw) -> tuple[Exe
         )
         eng_result = require_fp8_plan(plan, checkpoint.execution.backbone)
         eng_ok, eng_why = (engine_available(checkpoint.execution.backbone)
-                           if checkpoint.execution.backbone in ("cosmos3_policy", "dreamzero")
+                           if (checkpoint.execution.backbone in ("cosmos3_policy", "dreamzero")
+                               or eng_result.params.get("executor") == "sm89_torch_fp8")
                            else engine_available())
         if not eng_ok:
             raise RuntimeError(f"precision='fp8' unavailable: {eng_why}")
@@ -484,9 +485,9 @@ def _mark_plan_engine_executed(plan, eng_result) -> None:
         return
     from instinctflash.planners.planner import PassResult
 
-    # H100 wraps the native Torch adapter; its installed passes remain in effect.
+    # H100 and SM89 wrap native Torch adapters; their installed passes remain in effect.
     # Only the separate fused engine replaces that graph.
-    retains_torch_passes = eng_result.params.get("executor") == "h100_torch_fp8"
+    retains_torch_passes = eng_result.params.get("executor") in {"h100_torch_fp8", "sm89_torch_fp8"}
     for i, r in enumerate(results):
         if r.name == "engine_offload":
             if getattr(r, "excluded", False):

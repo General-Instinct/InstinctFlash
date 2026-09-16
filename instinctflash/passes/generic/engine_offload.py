@@ -22,17 +22,29 @@ from instinctflash.planners.planner import PassResult, Tier
 
 
 class EngineOffloadApplicable:
-    """Checks declared eligibility for the supported SM110 FP8 executor."""
+    """Checks declared eligibility for an explicit architecture's FP8 executor."""
 
     name = "engine_offload"
 
-    #: SM110 exactly, for now: the engine ships kernels for thor/sm120/sm89 and this repo has
-    #: measured it only on Thor. Widening to other capabilities requires measuring there first.
-    hardware = HardwareReq(min_capability=(9, 0), requires=("cuda", "fp8"))
+    #: Each architecture below has its own executor and qualification status.
+    hardware = HardwareReq(min_capability=(8, 9), requires=("cuda", "fp8"))
 
     def evaluate(self, spec: AdapterSpec, deployment: DeploymentSpec) -> PassResult:
         dev = getattr(deployment, "device", None)
         cap = getattr(dev, "capability", None) if dev is not None else None
+        if cap == (8, 9):
+            from instinctflash.runtime.sm89_fp8 import EXECUTOR, RECIPES
+            backbone = dict(spec.notes or {}).get("backbone")
+            recipe = RECIPES.get(backbone)
+            if recipe is None:
+                return PassResult(self.name, False, Tier.NUMERIC,
+                                  reason="No SM89 FP8 recipe for this backbone")
+            return PassResult(
+                self.name, True, Tier.NUMERIC,
+                reason="SM89 explicit per-family E4M3 projection recipe; native processing and "
+                       "schedule retained. Loading capacity and task quality require device qualification",
+                params={"backend": "engine", "executor": EXECUTOR,
+                        "recipe_id": recipe.recipe_id, "certification": "uncertified"})
         if cap == (9, 0):
             from instinctflash.runtime.engine_backend import ENGINE_BACKBONES
             backbone = dict(spec.notes or {}).get("backbone")

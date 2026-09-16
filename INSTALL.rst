@@ -35,6 +35,33 @@ Python interpreter and ``uv``; supply an existing executable with ``--uv``.
 target and saves both Triton compiler overrides in the activation. The measured
 installation uses CUDA 13.2; some bundled Triton assemblers do not support Thor.
 
+For RTX 4090, select the separate Linux/x86-64 profile explicitly::
+
+    python3 scripts/bootstrap_vendor.py plan pi05 --target rtx4090 --json
+    python3 scripts/bootstrap_vendor.py install pi05 --target rtx4090 \
+      --python python3.12 --root ~/ifl-pi05-4090 --ptxas /usr/local/cuda/bin/ptxas
+    source ~/ifl-pi05-4090/activate.sh
+    python scripts/public_deploy.py doctor pi05 --target rtx4090
+
+The same eight aliases are available. These profiles use x86-64 dependency
+wheels and test the assembler against ``sm_89``; the Thor wheel repair and
+Blackwell compiler override do not apply. ``release/rtx4090/deployment_profiles.json``
+records each model's qualification status. A prepared profile or a successful
+CPU doctor is not a completed GPU benchmark.
+
+Large models need CPU backing memory on a single 24 GiB card. VA stages its
+text encoder between resets. Cosmos and DreamZero can stream native layers;
+DreamZero also transports complete per-layer KV caches. Native arithmetic,
+checkpoint processors and history lengths remain intact, and transfer time is
+included in prediction measurements. Backend statistics report actual residency.
+The explicit SM89 FP8 path uses PyTorch/Triton projections; it does not load a
+Thor-only native library. FP8 remains a separate numerical choice.
+
+To share downloaded packages across separate compatible environments, use
+``--cache-dir /path/to/cache --link-mode hardlink``. The cache and environment
+must be on an executable filesystem that supports hard links. Model files can
+live on a different filesystem; do not put an environment on a ``noexec`` mount.
+
 If the required Python version is missing, ``uv python install 3.12`` (or
 ``3.13`` for Cosmos) installs it separately. Pass the path printed by
 ``uv python find 3.12`` as the bootstrap's ``--python`` argument.
