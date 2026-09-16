@@ -46,8 +46,9 @@ RTX 4090
 
 The pinned ``cu130`` environments require a CUDA 13-compatible NVIDIA driver
 (`R580 or newer <https://docs.nvidia.com/deploy/cuda-compatibility/minor-version-compatibility.html>`_).
-The test host uses driver 580.82.09 and ``ptxas`` 12.8.93. The ``--ptxas`` option
-selects the kernel assembler separately from PyTorch's CUDA runtime.
+The recorded environments use driver 580.82.09 with ``ptxas`` 12.8.93, or
+driver 580.159.04 with ``ptxas`` 13.0.88. The ``--ptxas`` option selects the
+kernel assembler separately from PyTorch's CUDA runtime.
 
 For RTX 4090, select the separate Linux/x86-64 profile explicitly::
 
@@ -72,6 +73,14 @@ checkpoint processors and history lengths remain intact, and transfer time is
 included in prediction measurements. Backend statistics report actual residency.
 The explicit SM89 FP8 path uses PyTorch/Triton projections; it does not load a
 Thor-only native library. FP8 remains a separate numerical choice.
+
+Host RAM also matters. DreamZero's tested processes reached 98.38–98.80 GiB
+``VmHWM``; this records observed process peaks, not a certified minimum.
+Nano was excluded from the replacement node with a 31 GB container limit:
+its FP8 conversion alone needs at least 41.79 GB of simultaneous original and
+packed weights, before temporary buffers and process overhead. Its native
+cold load was not tested at that memory limit. These capacity exclusions do
+not establish that a model is unsupported on RTX 4090 with more host memory.
 
 Model environments and assets
 -----------------------------

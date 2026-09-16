@@ -29,9 +29,29 @@ pip install ./examples/cosmos3_policy
 from instinctflash import Runtime
 
 runtime = Runtime.from_pretrained("nvidia/Cosmos3-Edge-Policy-DROID")
+observation = {
+    "observation/wrist_image_left": wrist_rgb,
+    "observation/exterior_image_1_left": exterior_left_rgb,
+    "observation/exterior_image_2_left": exterior_right_rgb,
+    "state": qpos8,
+}
 with runtime.episode(prompt="pick up the banana and place it in the bowl") as episode:
-    action = episode.predict({"image": frame_hw3_uint8, "state": qpos8})   # -> (32, 8)
+    result = episode.predict(observation)
+    action = result["action"]  # (32, 8)
 ```
+
+Use uint8 RGB camera arrays. For the released 540×640 input, `wrist_rgb` has
+shape `(360, 640, 3)`. The native service places the wrist view across the top,
+resizes each exterior view to `(180, 320, 3)`, and places them side by side below
+it. The `image` shortcut accepts this complete `(540, 640, 3)` camera mosaic.
+The native Cosmos exterior keys are numbered **1 and 2**. Supply ordinary
+instruction text for both checkpoints; the native processor constructs Edge's
+JSON prompt and keeps Nano's prompt plain.
+
+For RTX 4090 setup and its explicit NUMERIC recipe, use the
+[installation guide](../../INSTALL.rst#rtx-4090) and
+[RTX reproduction commands](../../REPRODUCE.rst#rtx-4090) in the activated vendor
+and asset environment.
 
 On Thor, `IFL_COSMOS3_CONDITIONING_CACHE=1` enables optional native text-conditioning
 reuse through the same Runtime interface. It checks the upstream source and actual

@@ -107,6 +107,30 @@ reference declares any CPU residency needed to run the full checkpoint on a
 and reserved CUDA memory recorded. The Thor selections below are not measured
 RTX 4090 results; consult the target's qualified results before choosing a mode.
 
+The RTX Edge/Nano ``numeric`` recipe preserves native BF16, UniPC4 and CFG3
+and explicitly uses cached timestep embeddings. Prepare it with::
+
+    python -I -m benchmarks.regression.reproduce prepare \
+      --target rtx4090 --model edge --mode numeric --output edge-4090-numeric-inputs
+
+Use ``nano`` for Nano. The prepared run and serving smoke apply the recorded
+``IFL_COSMOS3_TIMESTEP_CACHE=1`` setting. For a direct Runtime selection, set it
+before loading the prepared original checkpoint::
+
+    import os
+    from instinctflash import Runtime
+
+    os.environ["IFL_COSMOS3_TIMESTEP_CACHE"] = "1"
+    runtime = Runtime.from_pretrained(
+        "/path/to/prepared/cosmos-checkpoint",
+        precision="native", tier_ceiling="numeric", step_cache="checkpoint",
+    )
+
+``tier_ceiling="numeric"`` alone leaves this cache disabled on RTX 4090.
+This recipe uses no Thor shared BF16 library. Unset the timestep-cache option
+when selecting FP8, because the cache currently supports native precision.
+Keep the vendor and asset activations when running either recipe.
+
 Explicit execution selections
 -----------------------------
 
@@ -287,3 +311,16 @@ The `experimental SDE1 package <examples/cosmos3_sde1/README.rst>`_ provides the
 separate Edge student overlays and original-weight Nano recipe behind the
 earlier speed records. It pins their older base checkpoints and sampling
 contracts, and does not promote them to the UniPC4 quality profile.
+
+Follow a running comparison
+---------------------------
+
+Each capture writes its startup messages and completed predictions to
+``<output>/logs/<cell-id>.log``. For example, in another terminal::
+
+    tail -F pi05-results/logs/pi05-eager_native.log
+
+The final JSON/CSV report is written after the paired cells finish. The
+``--cell-timeout`` option bounds each cell, including checkpoint loading and
+warmup; its default is 7200 seconds. Completed calls in a live log are progress,
+not a completed comparison.

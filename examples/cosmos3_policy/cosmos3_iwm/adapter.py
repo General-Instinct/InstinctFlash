@@ -107,9 +107,9 @@ class Cosmos3PolicyAdapter:
             return False, (
                 f"{SERVER_MODULE} is not importable. This adapter needs the native "
                 f"cosmos-framework checkout containing the RoboLab "
-                f"policy server); install it into this interpreter, e.g. "
-                f"`uv sync --group=cu130-torch213` inside the patched cosmos-framework tree, "
-                f"and run from that venv.")
+                f"policy server. Use the pinned `scripts/bootstrap_vendor.py install` "
+                f"workflow in INSTALL.rst for `edge` or `nano`, select the matching "
+                f"`--target` and Python 3.13, then activate the generated environment.")
         return True, "the model stack imports and the patched cosmos-framework server is present"
 
     def build_in_process(self, checkpoint, plan, *, device=None, nfe=None):
