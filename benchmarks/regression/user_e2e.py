@@ -123,12 +123,17 @@ def _loop(api):
     return getattr(backend, "_loop", None) or getattr(backend, "_impl", None)
 
 
-def queue_length(api):
+def _generator_loop(api):
+    """Read the loaded generator beneath a generic FP8 execution wrapper."""
     loop = _loop(api)
+    return getattr(loop, "inner", loop)
+
+
+def queue_length(api):
+    loop = _generator_loop(api)
     if hasattr(loop, "_queue"):
         return len(loop._queue)
-    inner = getattr(loop, "inner", loop)
-    return len(inner._p._action_queue)
+    return len(loop._p._action_queue)
 
 
 def fp8_weights(root):
@@ -171,7 +176,7 @@ def gpu_competitors(torch):
 
 def dreamzero_contract(api, *, dynamic):
     from dreamzero_iwm.adapter import SHIPPED_DIT_MASK, _head_declaration
-    declaration = _head_declaration(_loop(api)._wrapper._policy.trained_model.action_head)
+    declaration = _head_declaration(_generator_loop(api)._wrapper._policy.trained_model.action_head)
     assert declaration["steps"] == {"video_action": 16, "kv_commit": 1}
     assert declaration["guidance"]["video_action"] == ("cfg", 5.0)
     assert tuple(declaration["dit_step_mask"]) == SHIPPED_DIT_MASK
@@ -181,8 +186,7 @@ def dreamzero_contract(api, *, dynamic):
 
 def observed_schedule(api, family, expected):
     """Read loaded generator settings independently of Runtime's request metadata."""
-    loop = _loop(api)
-    inner = getattr(loop, "inner", loop)
+    inner = _generator_loop(api)
     if family == "pi05":
         config = inner.config if hasattr(inner, "_queue") else inner._p.config
         result = {"action": int(config.num_inference_steps)}
@@ -197,8 +201,8 @@ def observed_schedule(api, family, expected):
         assert float(config.guidance) == 3.0 and float(config.shift) == 5.0
         result = dict(inner.declaration()["steps"])
     elif family == "va":
-        if hasattr(loop, "declaration"):
-            declaration = loop.declaration()
+        if hasattr(inner, "declaration"):
+            declaration = inner.declaration()
             result = dict(declaration["steps"])
             assert declaration["guidance"]["video"] == ("cfg", 5.0)
             assert float(declaration["guidance"]["action"][1]) == 1.0
@@ -208,7 +212,7 @@ def observed_schedule(api, family, expected):
                       "action": int(config.action_num_inference_steps)}
             assert float(config.guidance_scale) == 5.0 and float(config.action_guidance_scale) == 1.0
     else:
-        result = {"video_action": loop.declaration()["steps"]["video_action"]}
+        result = {"video_action": inner.declaration()["steps"]["video_action"]}
     assert result and all(expected.get(key) == value for key, value in result.items()), (result, expected)
     return result
 
@@ -340,7 +344,7 @@ def capture(matrix_path, cell_id, output_root, fixture):
             if family == "pi05":
                 call.update(queue_before=before, queue_after=queue_length(api))
             if family == "dreamzero":
-                call["step_cache"] = _loop(api).backend_stats.get("step_cache")
+                call["step_cache"] = _generator_loop(api).backend_stats.get("step_cache")
             print(json.dumps({**case, **call}), flush=True)
             return case, call, action.copy()
 
