@@ -14,7 +14,7 @@
 
 ## What's new 🔥
 
-- **Full source and eight model families.** Public install, paired inference and WebSocket serving paths are qualified for all eight models below.
+- **Full source and eight model families.** Public install, paired inference and WebSocket serving paths are qualified on Jetson Thor for all eight models below.
 - **Cosmos3 at full UniPC4/CFG3.** Edge: **1048.01 ms**; Nano: **4772.38 ms**, both native precision with NUMERIC optimizations.
 - **LingBot-VA @2V/4A.** **459.10 ms / 4.51×** versus native 2V/4A in early continuations; full 25V/50A FP8: **2891.74 ms**.
 - **pi05 FP8.** **51.85 ms / 7.88×** versus native, retaining NFE10.
@@ -53,18 +53,20 @@ python -m pip install . uv==0.12.5
 ```
 
 The Python 3.10+ core inspects checkpoints and plans without PyTorch or a GPU.
-Inference uses a separate, pinned environment for each model family:
+Inference uses a separate, pinned environment for each model family. For RTX 4090:
 
 ```bash
-python3 scripts/bootstrap_vendor.py install pi05 --python python3.12 --root ~/ifl-pi05 \
-  --ptxas /usr/local/cuda/bin/ptxas
-source ~/ifl-pi05/activate.sh
+python3 scripts/bootstrap_vendor.py install pi05 --target rtx4090 \
+  --python python3.12 --root ~/ifl-pi05-4090 --ptxas /usr/local/cuda/bin/ptxas
+source ~/ifl-pi05-4090/activate.sh
 ```
 
 Use `va`, `vla4`, `vla2`, `pi05`, `groot`, `edge`, `nano` or `dreamzero`.
+Edge and Nano use Python 3.13; the other families use Python 3.12.
 The bootstrap installs the upstream source, compatibility patches, core and adapter.
-Model weights are downloaded separately. See [installation and inference](INSTALL.rst)
-and the [Thor CUDA backend build](serving/README.rst) for accelerated execution.
+Model weights are downloaded separately. See [RTX 4090 setup](INSTALL.rst#rtx-4090)
+or [Jetson Thor setup](INSTALL.rst#jetson-thor), which selects `--target jetson_thor`
+and uses the [Thor CUDA backend build](serving/README.rst).
 
 ## Load a model
 
@@ -155,13 +157,14 @@ stamps the certificate into the package.
 
 ## Benchmark acceleration and quantization
 
-After the [vendor and auxiliary-asset preparation](REPRODUCE.rst) and
-[native backend installation](serving/README.rst), reproduce a model's paired
+After the [vendor and auxiliary-asset preparation](REPRODUCE.rst), reproduce paired
 eager/default/selected Runtime measurements with the included inputs and fixed
-checkpoint revision. Keep the model and asset environments activated:
+checkpoint revision. Thor also requires its [native backend](serving/README.rst).
+Keep the model and asset environments activated. For RTX 4090:
 
 ```bash
-python -I -m benchmarks.regression.reproduce prepare --model pi05 --mode fp8 --output pi05-inputs
+python -I -m benchmarks.regression.reproduce prepare --target rtx4090 \
+  --model pi05 --mode fp8 --output pi05-inputs
 python -I -m benchmarks.regression.reproduce run --prepared pi05-inputs --output pi05-results
 python -I -m benchmarks.regression.serve_smoke --prepared pi05-inputs --output pi05-serving
 ```

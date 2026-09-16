@@ -1,11 +1,13 @@
-Reproduce the Thor results
-==========================
+Reproduce public results
+========================
 
 The benchmark, CUDA kernels and model frontends are included as source.
 Each model runs in its own vendor environment. The fixed input archive contains
 recorded RGB cameras and synthetic robot states; it loads without pickle.
 Checkpoint commits, Runtime options, sample order and action shapes are explicit
-in ``release/deployment_profiles.json`` and the prepared run directory.
+in the target's profile (``release/deployment_profiles.json`` for Thor or
+``release/rtx4090/deployment_profiles.json`` for RTX 4090) and the prepared run
+directory.
 
 Install a model environment
 ---------------------------
@@ -13,17 +15,19 @@ Install a model environment
 First complete the CPU core and ``uv`` setup in `INSTALL.rst <INSTALL.rst>`_.
 The bootstrap requires Git, network access and the selected Python interpreter;
 that guide also explains installing Python 3.12 or 3.13 with ``uv``.
-From the checkout root, activate the core environment, then select one model
-and an empty output directory::
+Choose the `RTX 4090 <INSTALL.rst#rtx-4090>`_ or
+`Jetson Thor <INSTALL.rst#jetson-thor>`_ installation profile. For Thor, activate
+the core environment from the checkout root, then select one model and an empty
+output directory::
 
     source .venv-core/bin/activate
-    python3 scripts/bootstrap_vendor.py plan pi05 --json
-    python3 scripts/bootstrap_vendor.py install pi05 --python python3.12 --root ~/ifl-pi05 \
-      --ptxas /usr/local/cuda/bin/ptxas
+    python3 scripts/bootstrap_vendor.py plan pi05 --target jetson_thor --json
+    python3 scripts/bootstrap_vendor.py install pi05 --target jetson_thor \
+      --python python3.12 --root ~/ifl-pi05 --ptxas /usr/local/cuda/bin/ptxas
     source ~/ifl-pi05/activate.sh
 
 Other aliases are ``va``, ``vla4``, ``vla2``, ``groot``, ``edge``, ``nano`` and
-``dreamzero``. Edge and Nano use Python 3.13; the other Thor environments use
+``dreamzero``. Edge and Nano use Python 3.13; the other model environments use
 Python 3.12. The bootstrap uses fixed public package/source versions, applies
 the recorded compatibility patches in a new checkout, and installs noneditable
 core/adapter wheels. It retains installation errors and receipts.
@@ -32,7 +36,7 @@ Vendor compatibility patches define the Thor baseline. In particular, the VLA
 attention/MoE compatibility patches are disclosed separately from InstinctFlash
 transformations. Dependency checks must pass before loading a model.
 
-For the FP8 engine and Edge's shared BF16 fusion, install the published native
+For Thor's FP8 engine and Edge shared BF16 fusion, install the published native
 libraries or build them using `serving/README.rst <serving/README.rst>`_. Those builds retain
 source hashes and compiler commands; they do not change checkpoint precision
 until the caller explicitly selects an execution mode.
@@ -63,21 +67,24 @@ serving; the benchmark bundle does not replace the vendor and asset environment:
 For Cosmos, the vendor activation also restores the prepared offline ``uvx``
 tool used by its native loader. Keep both preparation directories available.
 
-For example, after preparing pi05's vendor environment and native engine::
+For Thor, after preparing pi05's vendor environment and native engine::
 
     python -I -m benchmarks.regression.reproduce prepare \
-      --model pi05 --mode fp8 --output pi05-inputs
+      --target jetson_thor --model pi05 --mode fp8 --output pi05-inputs
 
 ``--local-files-only`` reuses an already populated Hub cache without downloading.
 The output contains the exact plan, comparison matrix and safe input archive.
 Existing outputs are never overwritten. ``plan`` prints the same selection
 without downloading weights, importing PyTorch or probing a GPU::
 
-    python -I -m benchmarks.regression.reproduce plan --model pi05 --mode fp8
+    python -I -m benchmarks.regression.reproduce plan --target jetson_thor --model pi05 --mode fp8
 
 Use ``python -I`` for these installed benchmark commands, including when working
 inside the checkout. It prevents checkout modules or ``PYTHONPATH`` from
 shadowing the noneditable wheel that the runner validates.
+
+RTX 4090
+--------
 
 RTX 4090 uses its own installation and measurement target::
 
@@ -87,8 +94,10 @@ RTX 4090 uses its own installation and measurement target::
       --target rtx4090 --model pi05 --mode fp8 --output pi05-4090-inputs
     python -I -m benchmarks.regression.reproduce run \
       --prepared pi05-4090-inputs --output pi05-4090-results
+    python -I -m benchmarks.regression.serve_smoke \
+      --prepared pi05-4090-inputs --output pi05-4090-serving
 
-Use the RTX 4090 bootstrap described in ``INSTALL.rst`` first. Preparation
+Use the `RTX 4090 bootstrap <INSTALL.rst#rtx-4090>`_ first. Preparation
 binds the target, checkpoint and protocol into the bundle. Execution verifies
 the selected card's model and SM89 capability; it does not reuse a Thor device
 receipt. The paired native/default/selected requests retain the same warmups,

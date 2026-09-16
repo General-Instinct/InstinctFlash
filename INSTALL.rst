@@ -15,12 +15,15 @@ directories without setting PYTHONPATH. The ``models`` command reports known
 checkpoint declarations and adapter registration; registration alone does not
 verify that a model can run in the environment.
 
+Jetson Thor
+-----------
+
 For inference on Thor, use the family's pinned bootstrap from the checkout root::
 
     source .venv-core/bin/activate
-    python3 scripts/bootstrap_vendor.py plan pi05 --json
-    python3 scripts/bootstrap_vendor.py install pi05 --python python3.12 --root ~/ifl-pi05 \
-      --ptxas /usr/local/cuda/bin/ptxas
+    python3 scripts/bootstrap_vendor.py plan pi05 --target jetson_thor --json
+    python3 scripts/bootstrap_vendor.py install pi05 --target jetson_thor \
+      --python python3.12 --root ~/ifl-pi05 --ptxas /usr/local/cuda/bin/ptxas
     source ~/ifl-pi05/activate.sh
     python -m pip check
 
@@ -38,15 +41,20 @@ leaves that check pending; it does not certify an inference environment.
 target and saves both Triton compiler overrides in the activation. The measured
 installation uses CUDA 13.2; some bundled Triton assemblers do not support Thor.
 
+RTX 4090
+--------
+
 For RTX 4090, select the separate Linux/x86-64 profile explicitly::
 
+    source .venv-core/bin/activate
     python3 scripts/bootstrap_vendor.py plan pi05 --target rtx4090 --json
     python3 scripts/bootstrap_vendor.py install pi05 --target rtx4090 \
       --python python3.12 --root ~/ifl-pi05-4090 --ptxas /usr/local/cuda/bin/ptxas
     source ~/ifl-pi05-4090/activate.sh
     python scripts/public_deploy.py doctor pi05 --target rtx4090
 
-The same eight aliases are available. These profiles use x86-64 dependency
+The same eight aliases are available. Edge and Nano use Python 3.13; VA, VLA4,
+VLA2, pi05, GR00T and DreamZero use Python 3.12. These profiles use x86-64 dependency
 wheels and test the assembler against ``sm_89``; the Thor wheel repair and
 Blackwell compiler override do not apply. ``release/rtx4090/deployment_profiles.json``
 records each model's qualification status. A prepared profile or a successful
@@ -59,6 +67,9 @@ checkpoint processors and history lengths remain intact, and transfer time is
 included in prediction measurements. Backend statistics report actual residency.
 The explicit SM89 FP8 path uses PyTorch/Triton projections; it does not load a
 Thor-only native library. FP8 remains a separate numerical choice.
+
+Model environments and assets
+-----------------------------
 
 To share downloaded packages across separate compatible environments, use
 ``--cache-dir /path/to/cache --link-mode hardlink``. The cache and environment
@@ -130,7 +141,7 @@ core and adapter directly, for example::
 
    * - Family
      - Adapter directory
-     - Thor Python
+     - Python
      - Model stack and source
    * - LingBot-VA
      - Built into the core
@@ -169,9 +180,10 @@ core and adapter directly, for example::
      - The matching Cosmos Framework RoboLab policy environment,
        including its importable cosmos_framework package.
 
-The Python column records the Thor vendor stacks; the core's Python 3.10 floor
-does not imply that every vendor supports Python 3.10. The reviewed public
-source pins, inference dependencies and compatibility patches live in
+The Python versions apply to the separately pinned Thor and RTX 4090 vendor
+stacks; the core's Python 3.10 floor does not imply that every vendor supports
+Python 3.10. The reviewed public source pins, inference dependencies and
+compatibility patches live in
 `release/vendor <release/vendor/README.rst>`_. The older
 requirements-serving.txt is a LingBot-VA reference, not a universal Thor
 environment.
@@ -369,11 +381,11 @@ Do not send this field for DreamZero. All connections to one server share its
 single runtime episode; use one active robot observation stream per server.
 Adjust the receive timeout for the selected model's startup and prediction time.
 
-Native engine assets
---------------------
+Thor native engine assets
+-------------------------
 
-The repository includes the CUDA source and build tools for FlashRT, FA2,
-FMHA and shared BF16 fusion. Follow the complete
+For Thor, the repository includes the CUDA source and build tools for FlashRT,
+FA2, FMHA and shared BF16 fusion. Follow the complete
 `Thor source build <serving/README.rst#jetson-thor-build>`_: first build FA2,
 then build the remaining kernels against the pinned CUTLASS revision and
 install the resulting platform wheel into the model environment::
@@ -385,7 +397,7 @@ The build records source hashes, compiler commands, target architecture and
 library hashes. A pure Python FlashRT wheel does not contain the compiled
 accelerator. Build once for each compatible target/Python ABI; the Thor
 ``cp312`` wheel is for Python 3.12 on aarch64 and cannot be installed in Cosmos's
-Python 3.13 environment. Cosmos Edge's NUMERIC recipe instead uses the separate
+Python 3.13 environment. On Thor, Cosmos Edge's NUMERIC recipe uses the separate
 ``native/libinstinctflash_bf16.so`` output through
 ``IFL_BF16_KERNEL_LIBRARY``. That library has a C interface and no CPython ABI.
 
