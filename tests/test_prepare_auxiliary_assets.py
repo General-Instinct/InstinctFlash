@@ -54,6 +54,77 @@ def test_dreamzero_retains_native_external_initialization_weights():
     assert not plan["GPU_verified"]
 
 
+def test_groot_cold_constructor_assets_match_framework_reference():
+    catalog = assets.load_catalog(assets.CATALOG)
+    plan = assets.plan("groot", catalog)
+    repo = "nvidia/Cosmos-Reason2-2B"
+    assert set(plan["repositories"]) == {repo}
+    backbone = plan["repositories"][repo]
+    assert backbone["revision"] == "9ce19a195e423419c349abfc86fd07178b230561"
+    assert backbone["files"]["model.safetensors"] == {
+        "bytes": 4877470304,
+        "sha256": "fa5a6e6ef4fce40216b185cc48a3b24d31637ac3e2ba69c107ed1f389c1e6ede"}
+    assert set(backbone["files"]) == {
+        "chat_template.json", "config.json", "generation_config.json", "merges.txt",
+        "model.safetensors", "preprocessor_config.json", "tokenizer.json",
+        "tokenizer_config.json", "video_preprocessor_config.json", "vocab.json"}
+    assert plan["file_count"] == 10
+    assert plan["payload_bytes"] == 4888970298
+    frameworks = json.loads((ROOT / "benchmarks/regression/fixtures/frameworks/catalog.json").read_text())
+    reference = next(cell for cell in frameworks["cells"] if cell["family"] == "groot")
+    assert reference["auxiliary_repositories"][repo] == backbone
+    assert reference["assets"]["checkpoint"] == plan["requirements"]["primary_checkpoint"]
+
+
+def groot_cold_fixture(tmp_path):
+    data = assets.load_catalog(assets.CATALOG)
+    repo = "nvidia/Cosmos-Reason2-2B"
+    info = data["repositories"][repo]
+    cache = tmp_path / "original_cache"
+    source = assets.snapshot(cache, repo, info["revision"])
+    source.mkdir(parents=True)
+    for filename in info["files"]:
+        payload = ("cold-cache fixture: " + filename).encode()
+        (source / filename).write_bytes(payload)
+        info["files"][filename] = {"bytes": len(payload), "sha256": hashlib.sha256(payload).hexdigest()}
+    cat = tmp_path / "catalog.json"
+    cat.write_text(json.dumps(data))
+    return data, cat, cache, source
+
+
+def test_groot_prepares_complete_original_backbone_in_empty_cache(tmp_path, monkeypatch):
+    data, cat, cache, source = groot_cold_fixture(tmp_path)
+    monkeypatch.setitem(sys.modules, "huggingface_hub", None)
+    receipt = assets.prepare("groot", data, tmp_path / "new", cache_dir=cache,
+                             local_files_only=True, method="hardlink", catalog_path=cat)
+    hub = Path(receipt["environment"]["HF_HUB_CACHE"])
+    staged = assets.snapshot(hub, "nvidia/Cosmos-Reason2-2B", source.name)
+    assert {p.name for p in staged.iterdir()} == {p.name for p in source.iterdir()}
+    assert len(receipt["files"]) == 10
+    for row in receipt["files"]:
+        before = source / row["filename"]
+        after = staged / row["filename"]
+        assert after.stat().st_ino == before.stat().st_ino
+        assert hashlib.sha256(after.read_bytes()).hexdigest() == row["sha256"]
+    assert not (source.parent.parent / "refs").exists()
+    assert (staged.parent.parent / "refs/main").read_text() == source.name
+    assert receipt["model_constructed"] is receipt["GPU_verified"] is False
+    assert (tmp_path / "new/run.env").is_file()
+
+
+def test_groot_metadata_only_cache_cannot_be_admitted_for_cold_loading(tmp_path, monkeypatch):
+    data, cat, cache, source = groot_cold_fixture(tmp_path)
+    (source / "model.safetensors").unlink()
+    monkeypatch.setitem(sys.modules, "huggingface_hub", None)
+    with pytest.raises(FileNotFoundError, match="exact cached asset.*model.safetensors"):
+        assets.prepare("groot", data, tmp_path / "new", cache_dir=cache,
+                       local_files_only=True, method="hardlink", catalog_path=cat)
+    failure = json.loads((tmp_path / "new/failure.json").read_text())
+    assert failure["automatic_retry"] is False
+    assert not (tmp_path / "new/run.env").exists()
+    assert len(list(source.iterdir())) == 9
+
+
 def native_dreamzero_config(tmp_path):
     prefix = "groot.vla.model.dreamzero."
     config = {"action_head_cfg": {

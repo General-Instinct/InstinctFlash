@@ -97,7 +97,7 @@ SELECTED_CONTROLS: dict[str, str] = {
 }
 PUBLIC_VENDOR_FILES: dict[str, str] = {
     "release/vendor/README.rst": "5e6159d73dd42d682c22f1c1c73f9dd1f347f7c026e23312ef6c39ad790b99f7",
-    "release/vendor/asset_profiles.json": "ba58e0939bb1a00a96e0c4f341361d0842d5f74088c08ab970c665323d5b5304",
+    "release/vendor/asset_profiles.json": "706eb897ac27cd092adf86ab9f2f14539bf19bf6c803abc64705e51e52929794",
     "release/vendor/auxiliary_assets.json": "68c8d84e7290920bdcb090b2eb858668211463b7869e6dee5f78c2e51f3c5183",
     "release/vendor/cosmos/LICENSE": "6bd3fdb9356edb6e4c1f00ad9cd6639a1cf06ca0a415a5071fd70d68799209e6",
     "release/vendor/cosmos/NOTICE": "0a3ebe37fb632d02a6a4d1cfce96109bb026b7833d8a3f0853091bb303c21ad9",
