@@ -44,6 +44,11 @@ installation uses CUDA 13.2; some bundled Triton assemblers do not support Thor.
 RTX 4090
 --------
 
+The pinned ``cu130`` environments require a CUDA 13-compatible NVIDIA driver
+(`R580 or newer <https://docs.nvidia.com/deploy/cuda-compatibility/minor-version-compatibility.html>`_).
+The test host uses driver 580.82.09 and ``ptxas`` 12.8.93. The ``--ptxas`` option
+selects the kernel assembler separately from PyTorch's CUDA runtime.
+
 For RTX 4090, select the separate Linux/x86-64 profile explicitly::
 
     source .venv-core/bin/activate
