@@ -41,7 +41,11 @@ def test_rtx4090_profiles_preserve_vendor_source_and_bind_x86_wheels(family):
     assert rtx["wheel_metadata_repair"] is None
     assert rtx["qualification"]["GPU_verified"] is False
     assert rtx["source_manifest"] == thor["source_manifest"]
-    assert rtx["packaging_patch"] == thor["packaging_patch"]
+    if family in {"edge", "nano"}:
+        assert rtx["packaging_patch"]["path"] == "rtx4090/cosmos/inference_packaging.patch"
+        assert rtx["packaging_patch"]["before"] == thor["packaging_patch"]["before"]
+    else:
+        assert rtx["packaging_patch"] == thor["packaging_patch"]
     for name in ("torch", "torchvision"):
         assert "x86_64.whl#sha256=" in rtx["public_wheel_overrides"][name]
     assert all("aarch64" not in url for url in rtx["public_wheel_overrides"].values())
