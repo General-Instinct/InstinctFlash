@@ -113,6 +113,21 @@ def main() -> int:
              "cross-residual+AdaLayerNorm with exact PyTorch-2.9 Welford ordering. Requires "
              "--sm120-gated-residual and IFL_SM120_STAGE2_LIBRARY (or a packaged "
              "libinstinctflash_sm120_wan_stage2.so).")
+    ap.add_argument("--sm120-wan-stage3", action="store_true",
+        help="P009-A3: fuse norm1 FP32 LayerNorm + Ada scale/shift. Requires "
+             "--sm120-wan-stage2 and IFL_SM120_STAGE3_LIBRARY.")
+    ap.add_argument("--sm120-wan-qk-rope", action="store_true",
+        help="P009-A4: fuse self-attention Q/K RMSNorm + RoPE. Requires "
+             "--sm120-wan-stage3 and IFL_SM120_QK_ROPE_LIBRARY.")
+    ap.add_argument("--sm120-wan-gemm", action="store_true",
+        help="P009-A5: use certified no-split-K cuBLASLt tactics. Requires "
+             "--sm120-wan-qk-rope and IFL_SM120_GEMM_LIBRARY.")
+    ap.add_argument("--sm120-wan-ring-concat", action="store_true",
+        help="P009-A6: replace wrapped-ring K/V materialization with the exact SM120 copy. "
+             "Requires --sm120-wan-gemm and IFL_SM120_RING_CONCAT_LIBRARY.")
+    ap.add_argument("--sm120-wan-qkv-parallel", action="store_true",
+        help="P009-A7: run certified Q/K/V projections on three private streams. Requires "
+             "--sm120-wan-ring-concat and IFL_SM120_QKV_PARALLEL_LIBRARY.")
 
     ap.add_argument("--graph-blocks", action="store_true",
         help="[NOT SHIPPABLE -- 2.17x but NOT bit-exact, max|d action| 1.398 = 136%% of real "
@@ -186,6 +201,16 @@ def main() -> int:
         ap.error("--benchmark-receipt owns episode seeding and currently supports base weights only")
     if args.sm120_wan_stage2 and not args.sm120_gated_residual:
         ap.error("--sm120-wan-stage2 requires --sm120-gated-residual")
+    if args.sm120_wan_stage3 and not args.sm120_wan_stage2:
+        ap.error("--sm120-wan-stage3 requires --sm120-wan-stage2")
+    if args.sm120_wan_qk_rope and not args.sm120_wan_stage3:
+        ap.error("--sm120-wan-qk-rope requires --sm120-wan-stage3")
+    if args.sm120_wan_gemm and not args.sm120_wan_qk_rope:
+        ap.error("--sm120-wan-gemm requires --sm120-wan-qk-rope")
+    if args.sm120_wan_ring_concat and not args.sm120_wan_gemm:
+        ap.error("--sm120-wan-ring-concat requires --sm120-wan-gemm")
+    if args.sm120_wan_qkv_parallel and not args.sm120_wan_ring_concat:
+        ap.error("--sm120-wan-qkv-parallel requires --sm120-wan-ring-concat")
 
 
     # Every variant below calls the SAME installer that `plan.serve()` calls. They used to be
@@ -201,6 +226,11 @@ def main() -> int:
         install_obs_decode_elision,
         install_sm120_gated_residual,
         install_sm120_wan_stage2,
+        install_sm120_wan_stage3,
+        install_sm120_wan_qk_rope,
+        install_sm120_wan_gemm,
+        install_sm120_wan_ring_concat,
+        install_sm120_wan_qkv_parallel,
     )
 
     S = import_lingbot_server()
@@ -296,6 +326,21 @@ def main() -> int:
 
     if getattr(args, "sm120_wan_stage2", False):
         applied += install_sm120_wan_stage2(S, S.VA_Server)
+
+    if getattr(args, "sm120_wan_stage3", False):
+        applied += install_sm120_wan_stage3(S, S.VA_Server)
+
+    if getattr(args, "sm120_wan_qk_rope", False):
+        applied += install_sm120_wan_qk_rope(S, S.VA_Server)
+
+    if getattr(args, "sm120_wan_gemm", False):
+        applied += install_sm120_wan_gemm(S, S.VA_Server)
+
+    if getattr(args, "sm120_wan_ring_concat", False):
+        applied += install_sm120_wan_ring_concat(S, S.VA_Server)
+
+    if getattr(args, "sm120_wan_qkv_parallel", False):
+        applied += install_sm120_wan_qkv_parallel(S, S.VA_Server)
 
     if getattr(args, "conv_layout", False):
         from instinctflash.backends.conv.apply import install_conv_layout
@@ -561,6 +606,16 @@ def main() -> int:
             S.VA_CONFIGS[args.config_name].wan22_pretrained_model_name_or_path = checkpoint
         install_server(S, args.benchmark_receipt.resolve(), applied,
                        protocol="wan-va-libero-paused-v1" if args.config_name == "libero" else None)
+
+    # A managed single-GPU worker is not launched by torchrun, but the upstream
+    # server initializes NCCL through env:// even at world size one. Supply the
+    # same safe defaults as the in-process placement; explicit launcher values
+    # continue to win.
+    os.environ.setdefault("MASTER_ADDR", "127.0.0.1")
+    os.environ.setdefault("MASTER_PORT", "29531")
+    os.environ.setdefault("RANK", "0")
+    os.environ.setdefault("WORLD_SIZE", "1")
+    os.environ.setdefault("LOCAL_RANK", "0")
 
     S.init_logger()
     S.run(a)

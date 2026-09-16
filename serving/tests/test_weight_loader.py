@@ -137,17 +137,15 @@ def test_weight_loader_rejects_bad_spec():
     raise AssertionError("expected TypeError for non-ModelWeightSpec spec")
 
 
-def test_weight_loader_run_stub():
+def test_weight_loader_empty_spec_runs():
     src = _DictSource({})
     spec = ModelWeightSpec(framework="torch")
     loader = WeightLoader(source=src, target=None, spec=spec)
-    try:
-        loader.run()
-    except NotImplementedError as e:
-        _expect("7.1" in str(e) and "7.2" in str(e),
-                "stub message must reference stage 7.1/7.2")
-        return
-    raise AssertionError("stage-7.1 run() must raise NotImplementedError")
+    ctx = loader.run()
+    _expect(ctx.source is src and ctx.target is None,
+            "implemented runner must return its LoaderContext")
+    _expect(ctx.scales == {} and ctx.scratch == {},
+            "empty spec must leave loader state empty")
 
 
 TESTS = [

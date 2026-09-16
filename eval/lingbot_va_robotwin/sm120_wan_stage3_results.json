@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "model": "robbyant/lingbot-va-posttrain-robotwin",
+  "model_revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+  "device": "NVIDIA GeForce RTX 5090",
+  "capability": [
+    12,
+    0
+  ],
+  "torch": "2.9.0+cu128",
+  "cuda": "12.8",
+  "tier": "BITEXACT",
+  "operator_gate": {
+    "all_bitexact": true,
+    "compared_words": 15050304,
+    "differing_words": 0,
+    "patterns": [
+      "random",
+      "constant",
+      "alternating"
+    ],
+    "exponents": [
+      -4,
+      0,
+      4
+    ],
+    "rows": [
+      64,
+      480
+    ],
+    "all_invalid_inputs_rejected": true,
+    "timings_ms": {
+      "64": {
+        "eager_ms": 0.024159999564290047,
+        "fused_ms": 0.01089600007981062,
+        "speedup": 2.2173274033887456
+      },
+      "480": {
+        "eager_ms": 0.03240000084042549,
+        "fused_ms": 0.01228800043463707,
+        "speedup": 2.636718725131005
+      }
+    }
+  },
+  "real_model_abba42": {
+    "status": "pass",
+    "action_equality": {
+      "baseline_a": {
+        "equal_cycles": 42,
+        "all_equal": true,
+        "max_abs": 0.0
+      },
+      "candidate_b1": {
+        "equal_cycles": 42,
+        "all_equal": true,
+        "max_abs": 0.0
+      },
+      "candidate_b2": {
+        "equal_cycles": 42,
+        "all_equal": true,
+        "max_abs": 0.0
+      },
+      "baseline_a2": {
+        "equal_cycles": 42,
+        "all_equal": true,
+        "max_abs": 0.0
+      }
+    },
+    "full_cycles_0_41": {
+      "baseline_mean_ms": 409.4972023809524,
+      "candidate_mean_ms": 404.34286904761905,
+      "delta_ms": 5.154333333333341,
+      "speedup": 1.0127474322608279,
+      "latency_reduction_percent": 1.258698057853469,
+      "samples_per_arm": 42
+    },
+    "cold_cycles_0_3": {
+      "baseline_mean_ms": 377.17387499999995,
+      "candidate_mean_ms": 373.657125,
+      "delta_ms": 3.516749999999945,
+      "speedup": 1.0094117033095513,
+      "latency_reduction_percent": 0.9323949067256976,
+      "samples_per_arm": 4
+    },
+    "growing_cycles_4_36": {
+      "baseline_mean_ms": 406.52893939393937,
+      "candidate_mean_ms": 401.2292575757576,
+      "delta_ms": 5.299681818181796,
+      "speedup": 1.0132086125777633,
+      "latency_reduction_percent": 1.30364195623629,
+      "samples_per_arm": 33
+    },
+    "saturated_cycles_37_41": {
+      "baseline_mean_ms": 454.9464,
+      "candidate_mean_ms": 449.44129999999996,
+      "delta_ms": 5.505100000000027,
+      "speedup": 1.0122487630754005,
+      "latency_reduction_percent": 1.2100546350075625,
+      "samples_per_arm": 5
+    },
+    "arm_means_ms": {
+      "baseline_a": 408.97819047619043,
+      "candidate_b1": 404.4908333333333,
+      "candidate_b2": 404.1949047619048,
+      "baseline_a2": 410.0162142857142
+    },
+    "arm_spread_percent": {
+      "baseline": 0.25380908657138374,
+      "candidate": 0.07321432505508595
+    },
+    "kernel_calls": {
+      "baseline_a": 0,
+      "candidate_b1": 12540,
+      "candidate_b2": 12540,
+      "baseline_a2": 0
+    },
+    "peak_memory_gib": {
+      "baseline_a": 19.2217,
+      "candidate_b1": 19.3152,
+      "candidate_b2": 19.3158,
+      "baseline_a2": 19.2217
+    }
+  },
+  "reset_replay": {
+    "cycles": 3,
+    "all_actions_equal": true,
+    "max_abs": 0.0,
+    "buffer_pointers_stable": true
+  },
+  "artifacts": {
+    "source_sha256": "ae227b0f30ed0d5d281326a3f867597ddb677cbd7075f70bd36dba5f74ad104d",
+    "library_sha256": "7f61f5c2ad8d5891918b3861df15165285f779106ab8c1075c9d0bb266a2042a"
+  },
+  "status": "pass"
+}

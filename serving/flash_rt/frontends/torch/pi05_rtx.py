@@ -58,6 +58,28 @@ CHUNK_SIZE = 10
 IMG_HW = 224
 MAX_PROMPT_LEN_DEFAULT = 48
 
+# BF16 sources whose complete execution replacement is stored in ``_fp8_store``.  The keys name
+# stacked checkpoint tensors; together they produce 253 independently addressed FP8 matrices.
+# Biases, norms, embeddings, action projections, and time/style weights are intentionally absent.
+_EXPECTED_FP8_WEIGHT_COUNT = VIS_L * 4 + 1 + ENC_L * 4 + DEC_L * 4
+_FP8_REPLACED_BF16_KEYS = (
+    "vision_attn_qkv_w",
+    "vision_attn_o_w",
+    "vision_ffn_up_w",
+    "vision_ffn_down_w",
+    "encoder_multi_modal_projector_w",
+    "encoder_attn_qkv_w",
+    "encoder_attn_o_w",
+    "encoder_ffn_gate_w",
+    "encoder_ffn_up_w",
+    "encoder_ffn_down_w",
+    "decoder_attn_qkv_w",
+    "decoder_attn_o_w",
+    "decoder_ffn_gate_w",
+    "decoder_ffn_up_w",
+    "decoder_ffn_down_w",
+)
+
 
 # ════════════════════════════════════════════════════════════════════
 #   HF safetensors → pipeline weight dict (BF16 torch tensors)
@@ -346,22 +368,21 @@ def _quantize_fp8_e4m3(w_bf16: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor
 def _select_fp8_layout(hardware: Optional[str], fp8_layout: Optional[str]) -> str:
     """Choose the Pi0.5 FP8 weight layout.
 
-    ``kn`` is the existing SM120 path: weights are stored as [K,N] and use
-    ``fp8_nn_dev``. ``nk`` is the SM89-compatible path: weights are stored
-    as [N,K] and use ``fp8_nt_dev``.
+    ``nk`` is the consumer RTX path: weights are stored as [N,K] and use
+    ``fp8_nt_dev``. CUDA 12.8 cuBLASLt rejects the no-transpose ``kn``
+    descriptor for production Pi0.5 shapes on SM120, while the transpose-B
+    route is supported on both SM89 and SM120.
     """
     if fp8_layout is not None:
         if fp8_layout not in ("kn", "nk"):
             raise ValueError(f"fp8_layout must be 'kn' or 'nk', got {fp8_layout!r}")
         return fp8_layout
-    if hardware == "rtx_sm89":
+    if hardware in ("rtx_sm89", "rtx_sm120"):
         return "nk"
-    if hardware == "rtx_sm120":
-        return "kn"
     try:
         if torch.cuda.is_available():
             major, minor = torch.cuda.get_device_capability()
-            if major == 8 and minor == 9:
+            if (major, minor) in ((8, 9), (12, 0)):
                 return "nk"
     except Exception:
         pass
@@ -482,8 +503,8 @@ class Pi05TorchFrontendRtx:
         self._checkpoint_path = str(safetensors_path)
         raw_ckpt = convert_pi05_safetensors(safetensors_path)
 
-        # Move all tensors to CUDA bf16 (retain as member attrs so their
-        # memory stays alive across pipeline rebuilds).
+        # Move checkpoint tensors to CUDA BF16. Native keeps the complete store; FP8 releases
+        # only matrices with complete quantized replacements after decoder-style precomputation.
         self._ckpt_bf16 = {}
         for k, v in raw_ckpt.items():
             if isinstance(v, torch.Tensor):
@@ -508,6 +529,8 @@ class Pi05TorchFrontendRtx:
         # ── Pre-compute decoder styles (time MLP + style modulation) ──
         self._precomputed_styles = _precompute_decoder_styles(
             self._ckpt_bf16, self.chunk_size, num_steps=num_steps)
+        if self.use_fp8:
+            self._release_replaced_bf16_weights()
 
         # ── Attention backend (torch, owns Q/K/V/O) ──
         enc_seq_max = self.num_views * 256 + self.max_prompt_len
@@ -605,6 +628,35 @@ class Pi05TorchFrontendRtx:
 
         logger.info("FP8 quantized %d GEMM weights (layout=%s)", len(fp8), self.fp8_layout)
 
+    def _release_replaced_bf16_weights(self) -> None:
+        """Release BF16 matrices whose FP8 replacements are complete.
+
+        The FP8 execution path never reads its large BF16 fallback pointers, including during
+        dynamic activation calibration.  Retaining both stores made steady-state FP8 residency
+        about 2.8 GiB larger than native.  Prompt, CFG, and batched pipeline rebuilds remain legal:
+        :meth:`_build_pipeline_weights` publishes null fallback pointers while keeping every bias,
+        norm, embedding, action projection, and precomputed style tensor alive.
+        """
+        if len(self._fp8_weights) != _EXPECTED_FP8_WEIGHT_COUNT:
+            raise RuntimeError(
+                f"refusing BF16 release: expected {_EXPECTED_FP8_WEIGHT_COUNT} FP8 weights, "
+                f"got {len(self._fp8_weights)}"
+            )
+        released = 0
+        missing = []
+        for key in _FP8_REPLACED_BF16_KEYS:
+            tensor = self._ckpt_bf16.pop(key, None)
+            if tensor is None:
+                missing.append(key)
+                continue
+            released += tensor.numel() * tensor.element_size()
+        if missing:
+            raise RuntimeError(f"FP8 source tensors missing before release: {missing}")
+        self._released_bf16_bytes = released
+        self._released_bf16_keys = _FP8_REPLACED_BF16_KEYS
+        torch.cuda.empty_cache()
+        logger.info("Released %.3f GiB of replaced BF16 weights", released / (1 << 30))
+
     def _build_pipeline_weights(self) -> dict:
         """Produce the pointer dict that Pi05Pipeline expects."""
         W = self._ckpt_bf16
@@ -618,6 +670,12 @@ class Pi05TorchFrontendRtx:
             base = t.data_ptr()
             return [base + i * stride for i in range(t.shape[0])]
 
+        def fallback_p(key: str) -> int:
+            return 0 if self.use_fp8 else p(key)
+
+        def fallback_p_list(key: str, count: int) -> list[int]:
+            return [0] * count if self.use_fp8 else p_list(key)
+
         weights = {
             # Vision BF16
             "vision_patch_embedding_w": p("vision_patch_embedding_w"),
@@ -627,36 +685,36 @@ class Pi05TorchFrontendRtx:
             "vision_pre_attn_norm_b": p_list("vision_pre_attn_norm_b"),
             "vision_pre_ffn_norm_w": p_list("vision_pre_ffn_norm_w"),
             "vision_pre_ffn_norm_b": p_list("vision_pre_ffn_norm_b"),
-            "vision_attn_qkv_w": p_list("vision_attn_qkv_w"),  # BF16 fallback
+            "vision_attn_qkv_w": fallback_p_list("vision_attn_qkv_w", VIS_L),
             "vision_attn_qkv_b": p_list("vision_attn_qkv_b"),
-            "vision_attn_o_w": p_list("vision_attn_o_w"),
+            "vision_attn_o_w": fallback_p_list("vision_attn_o_w", VIS_L),
             "vision_attn_o_b": p_list("vision_attn_o_b"),
-            "vision_ffn_up_w": p_list("vision_ffn_up_w"),
+            "vision_ffn_up_w": fallback_p_list("vision_ffn_up_w", VIS_L),
             "vision_ffn_up_b": p_list("vision_ffn_up_b"),
-            "vision_ffn_down_w": p_list("vision_ffn_down_w"),
+            "vision_ffn_down_w": fallback_p_list("vision_ffn_down_w", VIS_L),
             "vision_ffn_down_b": p_list("vision_ffn_down_b"),
             "vision_final_norm_w": p("vision_final_norm_w"),
             "vision_final_norm_b": p("vision_final_norm_b"),
 
             # Encoder
-            "encoder_multi_modal_projector_w": p("encoder_multi_modal_projector_w"),
+            "encoder_multi_modal_projector_w": fallback_p("encoder_multi_modal_projector_w"),
             "encoder_multi_modal_projector_b": p("encoder_multi_modal_projector_b"),
-            "encoder_attn_qkv_w": p_list("encoder_attn_qkv_w"),
-            "encoder_attn_o_w": p_list("encoder_attn_o_w"),
-            "encoder_ffn_gate_w": p_list("encoder_ffn_gate_w"),
-            "encoder_ffn_up_w": p_list("encoder_ffn_up_w"),
-            "encoder_ffn_down_w": p_list("encoder_ffn_down_w"),
+            "encoder_attn_qkv_w": fallback_p_list("encoder_attn_qkv_w", ENC_L),
+            "encoder_attn_o_w": fallback_p_list("encoder_attn_o_w", ENC_L),
+            "encoder_ffn_gate_w": fallback_p_list("encoder_ffn_gate_w", ENC_L),
+            "encoder_ffn_up_w": fallback_p_list("encoder_ffn_up_w", ENC_L),
+            "encoder_ffn_down_w": fallback_p_list("encoder_ffn_down_w", ENC_L),
 
             # Decoder
             "decoder_action_in_proj_w": p("decoder_action_in_proj_w"),
             "decoder_action_in_proj_b": p("decoder_action_in_proj_b"),
             "decoder_action_out_proj_w": p("decoder_action_out_proj_w"),
             "decoder_action_out_proj_b": p("decoder_action_out_proj_b"),
-            "decoder_attn_qkv_w": p_list("decoder_attn_qkv_w"),
-            "decoder_attn_o_w": p_list("decoder_attn_o_w"),
-            "decoder_ffn_gate_w": p_list("decoder_ffn_gate_w"),
-            "decoder_ffn_up_w": p_list("decoder_ffn_up_w"),
-            "decoder_ffn_down_w": p_list("decoder_ffn_down_w"),
+            "decoder_attn_qkv_w": fallback_p_list("decoder_attn_qkv_w", DEC_L),
+            "decoder_attn_o_w": fallback_p_list("decoder_attn_o_w", DEC_L),
+            "decoder_ffn_gate_w": fallback_p_list("decoder_ffn_gate_w", DEC_L),
+            "decoder_ffn_up_w": fallback_p_list("decoder_ffn_up_w", DEC_L),
+            "decoder_ffn_down_w": fallback_p_list("decoder_ffn_down_w", DEC_L),
 
             # FP8 quantized weights
             "fp8": self._fp8_weights,

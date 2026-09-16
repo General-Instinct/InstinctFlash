@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python -m pip install '.[test,eval]'
+      - run: python -m pip install '.[test,eval,serve]'
       - run: >-
           python -m pytest -q tests/test_runtime_regression.py
           tests/test_cosmos_numeric_regression.py tests/test_user_report.py
@@ -40,7 +40,7 @@ jobs:
       - name: Install core and all adapter wheels in a Torch-free environment
         run: |
           python -m venv "$RUNNER_TEMP/ifl-core"
-          "$RUNNER_TEMP/ifl-core/bin/python" -m pip install '.[test]' \
+          "$RUNNER_TEMP/ifl-core/bin/python" -m pip install '.[test,eval]' \
             ./examples/pi05_vla ./examples/lingbot_vla ./examples/lingbot_vla_v2 \
             ./examples/groot_n17 ./examples/cosmos3_policy ./examples/dreamzero
       - name: Exercise the installed CLI and checkpoint metadata outside the checkout

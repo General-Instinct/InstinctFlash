@@ -71,6 +71,61 @@ reproduction and serving smoke commands in the model's vendor environment.
 The explicit reinstall replaces the source-only wheel of the same version
 while preserving the vendor environment's checked dependencies.
 
+RTX 5090 build
+--------------
+
+RTX 5090 uses Linux x86_64, CPython 3.10, CUDA 12.8 and ``GPU_ARCH=120``.
+It cannot reuse the Thor CPython 3.12/aarch64 wheel. Start from the
+LingBot-VA environment pins and install the complete verification extras::
+
+    python -m pip install -r requirements-serving.txt \
+      --extra-index-url https://download.pytorch.org/whl/cu126
+    python -m pip install -e '.[test,diffusion,serve,viz]'
+    python -m pip install -e './serving[all]'
+
+The legacy/GROOT attention import requires a local FlashAttention build on
+this ABI. FlashAttention 2.8.3 supports a native SM120-only build::
+
+    CUDA_HOME=/path/to/cuda-12.8 \
+    FLASH_ATTENTION_FORCE_BUILD=TRUE FLASH_ATTN_CUDA_ARCHS=120 MAX_JOBS=8 \
+      python -m pip wheel --no-build-isolation --no-deps \
+      --wheel-dir /path/to/wheels flash-attn==2.8.3
+    python -m pip install /path/to/wheels/flash_attn-2.8.3-*.whl
+
+Fetch the same CUTLASS revision used by the Thor release, then configure the
+full backend for SM120. ``FA2_ARCH_NATIVE_ONLY`` deliberately excludes other
+GPU architectures from this host-specific wheel::
+
+    git clone --depth 1 --branch v4.4.2 \
+      https://github.com/NVIDIA/cutlass.git serving/third_party/cutlass
+    cmake -S serving -B /path/to/flashrt-sm120-build -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_CUDA_COMPILER=/path/to/cuda-12.8/bin/nvcc \
+      -DPython3_EXECUTABLE="$(command -v python)" \
+      -DGPU_ARCH=120 -DFA2_ARCH_NATIVE_ONLY=ON \
+      -DFLASH_RT_BUILD_JAX_FFI=ON
+    cmake --build /path/to/flashrt-sm120-build --parallel 8
+    python -m pip wheel --no-build-isolation --no-deps \
+      --wheel-dir /path/to/wheels ./serving
+
+The resulting wheel contains ``flash_rt_kernels`` (SM120a),
+``flash_rt_fa2`` (SM120), and, when JAX is installed at configure time,
+``flash_rt_jax_ffi`` (SM120a). The separate ``flash_rt_fp4`` module remains
+SM100/SM110-only: compiling its SM100 multicast kernels for SM120 produces a
+loadable binary but its first GEMM is rejected at runtime. SM120 NVFP4/W4A4
+routes live in ``flash_rt_kernels`` and are selected independently.
+
+Build the LingBot-VA A1--A7 bit-exact native chain from the repository root::
+
+    cmake -S instinctflash/native -B /path/to/ifl-sm120-build \
+      -DCMAKE_CUDA_COMPILER=/path/to/cuda-12.8/bin/nvcc \
+      -DCMAKE_BUILD_TYPE=Release
+    cmake --build /path/to/ifl-sm120-build --parallel 8
+
+Export the seven library paths listed in ``instinctflash/native/README.md``.
+The planner will apply only the prefix whose ABI and exact Torch/CUDA/cuBLASLt
+requirements load successfully.
+
 Other platforms
 ---------------
 

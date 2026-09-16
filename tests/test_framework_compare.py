@@ -197,7 +197,8 @@ def test_completed_capture_without_real_clean_completion_is_rejected(tmp_path, m
 
 def test_exact_startup_patch_refuses_source_drift_and_is_not_implicit(tmp_path):
     module = bootstrap()
-    upstream = Path("/home/ubuntu/work_clones/vllm-omni-benchmark-20260913")
+    upstream = Path(os.environ.get(
+        "VLLM_OMNI_ROOT", "/home/ubuntu/work_clones/vllm-omni-benchmark-20260913"))
     if not upstream.is_dir():
         pytest.skip("Independent upstream source audit fixture not present")
     patch = json.loads((comparison.DATA / comparison.catalog()["startup_patch_file"]).read_text())

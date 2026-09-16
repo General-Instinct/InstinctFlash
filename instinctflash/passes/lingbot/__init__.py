@@ -16,6 +16,11 @@ from instinctflash.passes.lingbot.conv_layout_ndhwc import ConvLayoutAutotune
 from instinctflash.passes.lingbot.ring_kv import RingKVAddressing
 from instinctflash.passes.lingbot.sm120_gated_residual import SM120GatedResidual
 from instinctflash.passes.lingbot.sm120_wan_stage2 import SM120WanStage2
+from instinctflash.passes.lingbot.sm120_wan_stage3 import SM120WanStage3
+from instinctflash.passes.lingbot.sm120_wan_qk_rope import SM120WanQKRoPE
+from instinctflash.passes.lingbot.sm120_wan_gemm import SM120WanGEMM
+from instinctflash.passes.lingbot.sm120_wan_ring_concat import SM120WanRingConcat
+from instinctflash.passes.lingbot.sm120_wan_qkv_parallel import SM120WanParallelQKV
 from instinctflash.passes.lingbot.substrate import (
     AllocatorChurnElision,
     DebugDumpElision,
@@ -49,6 +54,11 @@ def default_passes() -> "list[OptimizationPass]":
         ActionTerminalForwardElision(),
         SM120GatedResidual(),
         SM120WanStage2(),
+        SM120WanStage3(),
+        SM120WanQKRoPE(),
+        SM120WanGEMM(),
+        SM120WanRingConcat(),
+        SM120WanParallelQKV(),
         ConvLayoutAutotune(),
         CFGBranchElision(),
     ]
@@ -67,5 +77,10 @@ __all__ = [
     "RingKVAddressing",
     "SM120GatedResidual",
     "SM120WanStage2",
+    "SM120WanStage3",
+    "SM120WanQKRoPE",
+    "SM120WanGEMM",
+    "SM120WanRingConcat",
+    "SM120WanParallelQKV",
     "default_passes",
 ]

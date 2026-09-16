@@ -1,0 +1,432 @@
+{
+  "schema_version": 1,
+  "model": "robbyant/lingbot-va-posttrain-robotwin",
+  "model_revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+  "device": "NVIDIA GeForce RTX 5090",
+  "capability": [
+    12,
+    0
+  ],
+  "torch": "2.9.0+cu128",
+  "cuda": "12.8",
+  "cublaslt": 120804,
+  "tier": "BITEXACT",
+  "operator_gate": {
+    "configs": {
+      "(480, 3072, 3072)": [
+        21,
+        15,
+        25,
+        0,
+        0
+      ],
+      "(64, 14336, 3072)": [
+        21,
+        18,
+        12,
+        0,
+        0
+      ]
+    },
+    "compared_words": 21528576,
+    "differing_words": 0,
+    "all_bitexact": true,
+    "all_deterministic": true,
+    "records": [
+      {
+        "M": 480,
+        "N": 3072,
+        "K": 3072,
+        "pattern": "random",
+        "exponent": -4,
+        "words": 1474560,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "N": 3072,
+        "K": 3072,
+        "pattern": "random",
+        "exponent": 0,
+        "words": 1474560,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "N": 3072,
+        "K": 3072,
+        "pattern": "random",
+        "exponent": 4,
+        "words": 1474560,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "N": 3072,
+        "K": 3072,
+        "pattern": "constant",
+        "exponent": -4,
+        "words": 1474560,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "N": 3072,
+        "K": 3072,
+        "pattern": "constant",
+        "exponent": 0,
+        "words": 1474560,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "N": 3072,
+        "K": 3072,
+        "pattern": "constant",
+        "exponent": 4,
+        "words": 1474560,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "N": 3072,
+        "K": 3072,
+        "pattern": "alternating",
+        "exponent": -4,
+        "words": 1474560,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "N": 3072,
+        "K": 3072,
+        "pattern": "alternating",
+        "exponent": 0,
+        "words": 1474560,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "N": 3072,
+        "K": 3072,
+        "pattern": "alternating",
+        "exponent": 4,
+        "words": 1474560,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "N": 14336,
+        "K": 3072,
+        "pattern": "random",
+        "exponent": -4,
+        "words": 917504,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "N": 14336,
+        "K": 3072,
+        "pattern": "random",
+        "exponent": 0,
+        "words": 917504,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "N": 14336,
+        "K": 3072,
+        "pattern": "random",
+        "exponent": 4,
+        "words": 917504,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "N": 14336,
+        "K": 3072,
+        "pattern": "constant",
+        "exponent": -4,
+        "words": 917504,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "N": 14336,
+        "K": 3072,
+        "pattern": "constant",
+        "exponent": 0,
+        "words": 917504,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "N": 14336,
+        "K": 3072,
+        "pattern": "constant",
+        "exponent": 4,
+        "words": 917504,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "N": 14336,
+        "K": 3072,
+        "pattern": "alternating",
+        "exponent": -4,
+        "words": 917504,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "N": 14336,
+        "K": 3072,
+        "pattern": "alternating",
+        "exponent": 0,
+        "words": 917504,
+        "differing_words": 0,
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "N": 14336,
+        "K": 3072,
+        "pattern": "alternating",
+        "exponent": 4,
+        "words": 917504,
+        "differing_words": 0,
+        "deterministic": true
+      }
+    ],
+    "guards": [
+      {
+        "label": "wrong_dtype",
+        "rejected": true,
+        "error": "x must be torch.bfloat16, got torch.float32"
+      },
+      {
+        "label": "wrong_m",
+        "rejected": true,
+        "error": "x must be contiguous with certified shape M=480,K=3072"
+      },
+      {
+        "label": "noncontiguous",
+        "rejected": true,
+        "error": "x must be contiguous with certified shape M=480,K=3072"
+      },
+      {
+        "label": "wrong_out",
+        "rejected": true,
+        "error": "out shape must equal x prefix plus certified N"
+      },
+      {
+        "label": "wrong_dtype",
+        "rejected": true,
+        "error": "x must be torch.bfloat16, got torch.float32"
+      },
+      {
+        "label": "wrong_m",
+        "rejected": true,
+        "error": "x must be contiguous with certified shape M=64,K=3072"
+      },
+      {
+        "label": "noncontiguous",
+        "rejected": true,
+        "error": "x must be contiguous with certified shape M=64,K=3072"
+      },
+      {
+        "label": "wrong_out",
+        "rejected": true,
+        "error": "out shape must equal x prefix plus certified N"
+      }
+    ],
+    "all_invalid_inputs_rejected": true,
+    "timings": {
+      "480x3072x3072": {
+        "baseline_arms": [
+          {
+            "median_us": 84.26240086555481,
+            "min_us": 84.13599729537964,
+            "spread_percent": 0.5733199538571414
+          },
+          {
+            "median_us": 84.31199789047241,
+            "min_us": 84.21279788017273,
+            "spread_percent": 0.7135634844669553
+          }
+        ],
+        "candidate_arms": [
+          {
+            "median_us": 70.13599872589111,
+            "min_us": 69.36320066452026,
+            "spread_percent": 3.35995397227724
+          },
+          {
+            "median_us": 70.09119987487793,
+            "min_us": 69.34400200843811,
+            "spread_percent": 2.800354211459579
+          }
+        ],
+        "baseline_mean_us": 84.28719937801361,
+        "candidate_mean_us": 70.11359930038452,
+        "delta_us": 14.17360007762909,
+        "speedup": 1.202151939410581
+      },
+      "64x14336x3072": {
+        "baseline_arms": [
+          {
+            "median_us": 73.35360050201416,
+            "min_us": 72.84799814224243,
+            "spread_percent": 1.541342772720542
+          },
+          {
+            "median_us": 73.45119714736938,
+            "min_us": 72.79679775238037,
+            "spread_percent": 2.2444637443971347
+          }
+        ],
+        "candidate_arms": [
+          {
+            "median_us": 43.43999922275543,
+            "min_us": 43.33919882774353,
+            "spread_percent": 4.164363137083979
+          },
+          {
+            "median_us": 43.54879856109619,
+            "min_us": 43.02560091018677,
+            "spread_percent": 3.3482579325941813
+          }
+        ],
+        "baseline_mean_us": 73.40239882469177,
+        "candidate_mean_us": 43.49439889192581,
+        "delta_us": 29.90799993276596,
+        "speedup": 1.6876287681795736
+      }
+    },
+    "kernel_calls": {
+      "(480, 3072, 3072)": 1297,
+      "(64, 14336, 3072)": 1297
+    }
+  },
+  "real_model_abba42": {
+    "cublaslt": 120804,
+    "library_sha256": "4d174c1cc579a5d7cc9196ed038b995b4f3da986b8023866d34d15400baa283e",
+    "registered_modules": 274,
+    "action_equality": {
+      "baseline_a": {
+        "all_equal": true,
+        "equal_cycles": 42,
+        "max_abs": 0.0
+      },
+      "candidate_b1": {
+        "all_equal": true,
+        "equal_cycles": 42,
+        "max_abs": 0.0
+      },
+      "candidate_b2": {
+        "all_equal": true,
+        "equal_cycles": 42,
+        "max_abs": 0.0
+      },
+      "baseline_a2": {
+        "all_equal": true,
+        "equal_cycles": 42,
+        "max_abs": 0.0
+      }
+    },
+    "arm_means_ms": {
+      "baseline_a": 395.8934083874781,
+      "candidate_b1": 387.9157154532593,
+      "candidate_b2": 388.56370936125694,
+      "baseline_a2": 394.1629473591179
+    },
+    "arm_spread_percent": {
+      "baseline": 0.438060149955993,
+      "candidate": 0.1669056222970622
+    },
+    "full_cycles_0_41": {
+      "baseline_mean_ms": 395.028177873298,
+      "candidate_mean_ms": 388.23971240725814,
+      "delta_ms": 6.788465466039838,
+      "speedup": 1.017485242362118,
+      "latency_reduction_percent": 1.7184762622724048,
+      "samples_per_arm": 42
+    },
+    "cold_cycles_0_3": {
+      "baseline_mean_ms": 351.4370948978467,
+      "candidate_mean_ms": 329.28648847155273,
+      "delta_ms": 22.15060642629396,
+      "speedup": 1.0672684947660935,
+      "latency_reduction_percent": 6.302865220511952,
+      "samples_per_arm": 4
+    },
+    "growing_cycles_4_36": {
+      "baseline_mean_ms": 393.23458045890385,
+      "candidate_mean_ms": 388.05041099178857,
+      "delta_ms": 5.184169467115282,
+      "speedup": 1.0133595257736372,
+      "latency_reduction_percent": 1.318340177780237,
+      "samples_per_arm": 33
+    },
+    "saturated_cycles_37_41": {
+      "baseline_mean_ms": 441.73878718866035,
+      "candidate_mean_ms": 436.6516808979213,
+      "delta_ms": 5.08710629073903,
+      "speedup": 1.0116502615546517,
+      "latency_reduction_percent": 1.151609602388481,
+      "samples_per_arm": 5
+    },
+    "kernel_calls": {
+      "baseline_a": {},
+      "candidate_b1": {
+        "(480, 3072, 3072)": 30227,
+        "(64, 14336, 3072)": 7530
+      },
+      "candidate_b2": {
+        "(480, 3072, 3072)": 30227,
+        "(64, 14336, 3072)": 7530
+      },
+      "baseline_a2": {}
+    },
+    "peak_memory_gib": {
+      "baseline_a": 19.5021653175354,
+      "candidate_b1": 20.06216287612915,
+      "candidate_b2": 20.06338357925415,
+      "baseline_a2": 20.0635666847229
+    },
+    "reset_replay": {
+      "cycles": 3,
+      "all_actions_equal": true,
+      "equal_cycles": 3,
+      "max_abs": 0.0,
+      "buffer_pointers_stable": true
+    }
+  },
+  "checkpoint_verification": {
+    "command": "hf cache verify robbyant/lingbot-va-posttrain-robotwin --revision 8c9dea8abbc5c91cc9e18bc3264b8915083bbe70 --local-dir /workspace/models/lingbot-va-posttrain-robotwin --fail-on-missing-files",
+    "checked_remote_files": 19,
+    "result": "pass",
+    "local_extra_files": 43
+  },
+  "artifacts": {
+    "source_sha256": "304bdc490daf22a4c147d2317dd07f1c6052d8ac215177738c80ab2a3593a4d3",
+    "library_sha256": "4d174c1cc579a5d7cc9196ed038b995b4f3da986b8023866d34d15400baa283e"
+  },
+  "status": "pass"
+}

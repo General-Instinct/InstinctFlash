@@ -224,8 +224,18 @@ class RingKVAddressing:
                 value_all = vp[:, start:start + count]
             else:
                 end = (start + count) - total
-                key_all = torch.cat([kp[:, :end], kp[:, start:]], dim=1)
-                value_all = torch.cat([vp[:, :end], vp[:, start:]], dim=1)
+                ring_concat = getattr(self, "_iwm_ring_concat", None)
+                if ring_concat is None:
+                    key_all = torch.cat([kp[:, :end], kp[:, start:]], dim=1)
+                    value_all = torch.cat([vp[:, :end], vp[:, start:]], dim=1)
+                else:
+                    key_all, value_all = ring_concat(
+                        kp,
+                        vp,
+                        start=start,
+                        count=count,
+                        total=total,
+                    )
 
             hidden_states = self.attn_op(query, key_all, value_all)
 

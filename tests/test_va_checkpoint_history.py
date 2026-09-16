@@ -52,6 +52,20 @@ class CheckpointHistory(unittest.TestCase):
             with self.assertRaises(ValueError):
                 _ControlLoop(Server(), ('camera',), frame_chunk_size=size)
 
+    def test_close_destroys_only_the_process_group_owned_by_runtime(self):
+        with patch("torch.distributed.is_initialized", return_value=True), patch(
+                "torch.distributed.destroy_process_group") as destroy:
+            owned = _ControlLoop(
+                Server(), ('camera',), owns_process_group=True)
+            owned.close()
+            owned.close()
+            destroy.assert_called_once_with()
+
+            external = _ControlLoop(
+                Server(), ('camera',), owns_process_group=False)
+            external.close()
+            destroy.assert_called_once_with()
+
     def test_public_observation_contract_uses_libero_history(self):
         execution = SimpleNamespace(extra={'obs_cam_keys': ['camera'], 'height': 128,
                                            'width': 128, 'env_type': 'none'})

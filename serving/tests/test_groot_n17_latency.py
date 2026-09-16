@@ -1,11 +1,15 @@
 """Phase 3d latency snapshot — eager infer (no CUDA Graph yet)."""
 import glob
+import os
 from pathlib import Path
 import pytest
 import torch
 
 
-_CKPT_GLOB = "/root/.cache/huggingface/hub/models--nvidia--GR00T-N1.7-3B/snapshots/*"
+_CKPT_GLOB = os.environ.get(
+    "GROOT_N17_CKPT",
+    "/root/.cache/huggingface/hub/models--nvidia--GR00T-N1.7-3B/snapshots/*",
+)
 _FIXTURE = Path(
     "/work/tests/fixtures/gr00t_n17_ref_oxe_droid_relative_eef_relative_joint_2v_traj1_step0_seed0.pt")
 _AUX = _FIXTURE.with_name(_FIXTURE.stem + "_llm_aux.pt")

@@ -110,7 +110,7 @@ RELEASED = (
               "certificate that fails closed",
         ),
     Released(
-        pid="P003", name="ring_kv_addressing", version="1.0.0", tier=Tier.BITEXACT,
+        pid="P003", name="ring_kv_addressing", version="1.0.1", tier=Tier.BITEXACT,
         step_speedup=1.40,
         gates="max|delta action| = 0 over 40 cycles past the wrap at ~36; 800/800 allocator "
               "parity checks across 5.6 full wraps; 3/3 bitwise-identical action streams on "
@@ -194,6 +194,79 @@ RELEASED = (
               "candidate-arm spread 0.00094%, no foreign GPU0 PID. Same-Runtime reset: 3/3 "
               "actions bitwise equal, all 30 blocks retained both buffer shapes and every pointer, "
               "with exact 1680 A2 and 840 A1 calls per episode. Adds about 0.187 GiB peak memory.",
+        measured_on="RTX 5090, author-measured",
+    ),
+    Released(
+        pid="P009-A3", name="sm120_wan_stage3", version="1.0.0", tier=Tier.BITEXACT,
+        step_speedup=1.0127,
+        gates="Independent SM120 ABI v1 fuses norm1 FP32 LayerNorm with Ada scale/shift while "
+              "reproducing PyTorch 2.9's D=3072 Welford order and final BF16 RNE. Operator gate: "
+              "0 differing words for output, mean, and rstd across random/constant/alternating "
+              "patterns, three exponent scales, and rows 64/480; dtype/shape/alias guards refused "
+              "invalid inputs; local region speedup 2.22x/2.64x. Real 5B model 42-cycle A-B-B-A: "
+              "168/168 actions bitwise equal, 409.50 -> 404.34 ms = 1.0127x; growing "
+              "406.53 -> 401.23 ms; saturated 454.95 -> 449.44 ms; candidate spread 0.073%. "
+              "Adds about 0.094 GiB peak memory and executes exactly 12,540 A3 calls per arm.",
+        measured_on="RTX 5090, author-measured",
+    ),
+    Released(
+        pid="P009-A4", name="sm120_wan_qk_rope", version="1.0.1", tier=Tier.BITEXACT,
+        step_speedup=1.0209,
+        gates="Independent SM120 ABI v1 fuses Torch 2.9's vec4/threads(32,4) BF16 RMSNorm, "
+              "its BF16 materialization boundary, and the following FP64-complex RoPE. Operator "
+              "gate: zero differing output/rstd words across random/constant/alternating patterns, "
+              "three exponent scales, rows 64/480; dtype/shape/alias guards refused invalid inputs; "
+              "local region 1.72x/1.75x. Real 5B model 42-cycle A-B-B-A: 168/168 actions bitwise "
+              "equal, 404.71 -> 396.42 ms = 1.0209x; growing 401.27 -> 393.12 ms; saturated "
+              "452.30 -> 442.12 ms; candidate spread 0.086%. Adds about 0.188 GiB peak memory "
+              "and executes exactly 25,080 fused Q/K calls per arm.",
+        measured_on="RTX 5090, author-measured",
+    ),
+    Released(
+        pid="P009-A5", name="sm120_wan_gemm", version="1.0.0", tier=Tier.BITEXACT,
+        step_speedup=1.0175,
+        gates="Independent SM120 ABI v1 pins two cuBLASLt BF16+bias tactics with split-K fixed "
+              "to one; all K=14336 and weak/noisy K=3072 candidates retain upstream PyTorch. "
+              "Exhaustive screen: 0 differences over 85,229,568 outputs across four candidate "
+              "shapes; the selected production gate rechecked 21,528,576 outputs over random, "
+              "constant, and alternating inputs at three exponent scales. The two selected shapes "
+              "measured 1.20x and 1.69x locally. Real 5B model 42-cycle A-B-B-A: 168/168 actions "
+              "bitwise equal, 395.03 -> 388.24 ms = 1.0175x; growing saves 5.18 ms and saturated "
+              "saves 5.09 ms; candidate-arm spread 0.167%. Static outputs add about 0.561 GiB peak "
+              "memory. Shape, module-count, dtype, contiguity, alignment, weight-version, pointer, "
+              "device, ABI, Torch/CUDA/cuBLASLt-version, no-workspace, and one-stream conditions fail closed.",
+        measured_on="RTX 5090, author-measured",
+    ),
+    Released(
+        pid="P009-A6", name="sm120_wan_ring_concat", version="1.0.0", tier=Tier.BITEXACT,
+        step_speedup=1.0053,
+        gates="Independent SM120 ABI v1 replaces only wrapped P003 K/V torch.cat pairs with one "
+              "uint4-vectorized CUDA copy into shared persistent scratch; physical-slot order and "
+              "every BF16 word are unchanged. Operator gate: 0 differing K/V words at counts "
+              "1000/4000/7000/9000; local speedups 4.64x/1.93x/1.72x/1.80x. Real 5B model "
+              "42-cycle A-B-B-A: 168/168 actions bitwise equal, 389.80 -> 387.73 ms = 1.0053x; "
+              "late cycles 426.60 -> 422.26 ms = 1.0103x. Candidate arms executed exactly 300 "
+              "A6 calls, both baseline arms executed zero; reset replay was bitwise equal with "
+              "stable scratch pointers. The scratch capacity is 0.224 GiB; observed peak allocation "
+              "was unchanged within 0.003 GiB. Shape, module-count, wrap-state, dtype, contiguity, "
+              "alignment, alias, device, ABI, Torch/CUDA-version, and one-stream conditions fail closed.",
+        measured_on="RTX 5090, author-measured",
+    ),
+    Released(
+        pid="P009-A7", name="sm120_wan_qkv_parallel", version="1.0.0", tier=Tier.BITEXACT,
+        step_speedup=1.0153,
+        gates="Independent SM120 ABI v1 retains the certified no-split-K cuBLASLt BF16+bias "
+              "tactics while running Q/K/V on three private non-blocking streams joined by events "
+              "to the one caller stream. Operator gate: 0 differing words over 45,121,536 outputs "
+              "across random/constant/alternating inputs, exponent scales -4/0/4, and rows 64/480; "
+              "all repeats deterministic. Local triplet speedups 1.413x/1.564x. Neutral-prewarmed "
+              "real 5B model 42-cycle A-B-B-A: 168/168 actions bitwise equal, 389.33 -> 383.45 ms "
+              "= 1.0153x; late cycles 423.91 -> 416.66 ms = 1.0174x. Candidate arms executed "
+              "exactly 12,540 A7 triplets each and baseline arms zero; arm spreads <=0.181%. Reset "
+              "replay was bitwise equal with stable output pointers. Static outputs add 0.280 GiB. "
+              "Shape, module-count, dtype, contiguity, alignment, alias, weight-version, pointer, "
+              "device, ABI, Torch/CUDA/cuBLASLt-version, split-K, workspace, and caller-stream "
+              "conditions fail closed.",
         measured_on="RTX 5090, author-measured",
     ),
     Released(
@@ -390,6 +463,26 @@ DISPOSITIONS = (
                 "P009-A1 library and its independent stage2 ABI. The planner auto-applies it only "
                 "when both native features are present; architecture-neutral serving and machines "
                 "without either extension remain unchanged."),
+    Disposition("P009-A3", AVAILABLE, ("--sm120-wan-stage3",),
+                "Correct and profitable on RTX 5090, but requires the A1/A2 chain and its own "
+                "independent stage3 ABI. The planner applies it only when all three native "
+                "features are present; other devices and builds remain unchanged."),
+    Disposition("P009-A4", AVAILABLE, ("--sm120-wan-qk-rope",),
+                "Correct and profitable on RTX 5090, but requires A1/A2/A3 and its independent "
+                "QK-RoPE ABI. The planner applies it only with the complete native feature chain; "
+                "other devices and builds remain unchanged."),
+    Disposition("P009-A5", AVAILABLE, ("--sm120-wan-gemm",),
+                "Correct and profitable on RTX 5090, but requires A1-A4 and its independent "
+                "pinned-cuBLASLt ABI. It applies only to two certified shapes with split-K=1; "
+                "all other Linear calls stay on the original PyTorch path."),
+    Disposition("P009-A6", AVAILABLE, ("--sm120-wan-ring-concat",),
+                "Correct and modestly profitable on RTX 5090, but requires A1-A5 and its "
+                "independent dual-K/V copy ABI. It replaces only wrapped P003 ring intervals; "
+                "non-wrapped intervals and all unsupported shapes retain the PyTorch path."),
+    Disposition("P009-A7", AVAILABLE, ("--sm120-wan-qkv-parallel",),
+                "Correct and profitable on RTX 5090, but requires A1-A6 and its independent "
+                "parallel-QKV ABI. It applies only to the two certified production row counts; "
+                "other shapes and changed parameters retain the prior projection path."),
     Disposition("P010", SERVED, ("--action-terminal-elision",),
                 "Bit-exact through the ring wrap on both allocators and both operating points (two "
                 "independent 48-cycle ABBA runs, max|delta action| = 0.000e+00 everywhere), so no "

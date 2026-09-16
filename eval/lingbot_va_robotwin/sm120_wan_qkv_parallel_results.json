@@ -1,0 +1,429 @@
+{
+  "schema_version": 1,
+  "model": "robbyant/lingbot-va-posttrain-robotwin",
+  "model_revision": "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70",
+  "device": "NVIDIA GeForce RTX 5090",
+  "capability": [
+    12,
+    0
+  ],
+  "torch": "2.9.0+cu128",
+  "cuda": "12.8",
+  "tier": "BITEXACT",
+  "operator_gate": {
+    "configs": {
+      "(64, 3072, 3072)": [
+        21,
+        11,
+        14,
+        0,
+        0
+      ],
+      "(480, 3072, 3072)": [
+        21,
+        15,
+        25,
+        0,
+        0
+      ]
+    },
+    "compared_words": 45121536,
+    "differing_words": 0,
+    "all_bitexact": true,
+    "all_deterministic": true,
+    "records": [
+      {
+        "M": 64,
+        "pattern": "random",
+        "exponent": -4,
+        "words": 589824,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "pattern": "random",
+        "exponent": 0,
+        "words": 589824,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "pattern": "random",
+        "exponent": 4,
+        "words": 589824,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "pattern": "constant",
+        "exponent": -4,
+        "words": 589824,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "pattern": "constant",
+        "exponent": 0,
+        "words": 589824,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "pattern": "constant",
+        "exponent": 4,
+        "words": 589824,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "pattern": "alternating",
+        "exponent": -4,
+        "words": 589824,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "pattern": "alternating",
+        "exponent": 0,
+        "words": 589824,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 64,
+        "pattern": "alternating",
+        "exponent": 4,
+        "words": 589824,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "pattern": "random",
+        "exponent": -4,
+        "words": 4423680,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "pattern": "random",
+        "exponent": 0,
+        "words": 4423680,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "pattern": "random",
+        "exponent": 4,
+        "words": 4423680,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "pattern": "constant",
+        "exponent": -4,
+        "words": 4423680,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "pattern": "constant",
+        "exponent": 0,
+        "words": 4423680,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "pattern": "constant",
+        "exponent": 4,
+        "words": 4423680,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "pattern": "alternating",
+        "exponent": -4,
+        "words": 4423680,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "pattern": "alternating",
+        "exponent": 0,
+        "words": 4423680,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      },
+      {
+        "M": 480,
+        "pattern": "alternating",
+        "exponent": 4,
+        "words": 4423680,
+        "differences": [
+          0,
+          0,
+          0
+        ],
+        "deterministic": true
+      }
+    ],
+    "guards": [
+      {
+        "label": "wrong_dtype",
+        "rejected": true,
+        "error": "x must be torch.bfloat16, got torch.float32"
+      },
+      {
+        "label": "wrong_rows",
+        "rejected": true,
+        "error": "A7 input or pinned QKV parameters changed"
+      },
+      {
+        "label": "aliased_outputs",
+        "rejected": true,
+        "error": "A7 outputs must be distinct and may not alias inputs or parameters"
+      },
+      {
+        "label": "mutated_weight",
+        "rejected": true,
+        "error": "A7 input or pinned QKV parameters changed"
+      }
+    ],
+    "all_invalid_inputs_rejected": true,
+    "timings": {
+      "64": {
+        "baseline_arms": [
+          {
+            "median_us": 67.80906518300374,
+            "min_us": 67.58613586425781,
+            "spread_percent": 0.7392549120742105
+          },
+          {
+            "median_us": 67.7887996037801,
+            "min_us": 67.74720350901286,
+            "spread_percent": 1.583561714558922
+          }
+        ],
+        "candidate_arms": [
+          {
+            "median_us": 48.01919857660929,
+            "min_us": 47.458132108052574,
+            "spread_percent": 2.733152385611016
+          },
+          {
+            "median_us": 47.971200942993164,
+            "min_us": 47.58079846700033,
+            "spread_percent": 1.6321965002123118
+          }
+        ],
+        "baseline_mean_us": 67.79893239339192,
+        "candidate_mean_us": 47.995199759801224,
+        "delta_us": 19.8037326335907,
+        "speedup": 1.412619027167327
+      },
+      "480": {
+        "baseline_arms": [
+          {
+            "median_us": 252.23679542541504,
+            "min_us": 239.71199989318848,
+            "spread_percent": 5.303436542136781
+          },
+          {
+            "median_us": 221.47413889567056,
+            "min_us": 221.27893765767416,
+            "spread_percent": 3.953533125735521
+          }
+        ],
+        "candidate_arms": [
+          {
+            "median_us": 152.5760014851888,
+            "min_us": 152.14079221089682,
+            "spread_percent": 0.7777203683483895
+          },
+          {
+            "median_us": 150.38506189982095,
+            "min_us": 150.0341256459554,
+            "spread_percent": 2.5675548660775105
+          }
+        ],
+        "baseline_mean_us": 236.8554671605428,
+        "candidate_mean_us": 151.48053169250488,
+        "delta_us": 85.3749354680379,
+        "speedup": 1.563603352286505
+      }
+    },
+    "kernel_calls": {
+      "64": 1920,
+      "480": 1920
+    },
+    "artifacts": {
+      "source_sha256": "4b3755b73ad5db65a8c05223abd979ccbf70ac3290c79edc49b98c05fb58f6f1",
+      "library_sha256": "6c04f846cb4b38e0e860c422021fb3925860231f4eed39a466d3eec2f99fac29"
+    }
+  },
+  "real_model_abba42": {
+    "registered_modules": 30,
+    "action_equality": {
+      "baseline_a": {
+        "all_equal": true,
+        "equal_cycles": 42,
+        "max_abs": 0.0
+      },
+      "candidate_b1": {
+        "all_equal": true,
+        "equal_cycles": 42,
+        "max_abs": 0.0
+      },
+      "candidate_b2": {
+        "all_equal": true,
+        "equal_cycles": 42,
+        "max_abs": 0.0
+      },
+      "baseline_a2": {
+        "all_equal": true,
+        "equal_cycles": 42,
+        "max_abs": 0.0
+      }
+    },
+    "arm_means_ms": {
+      "baseline_a": 389.07378615390155,
+      "candidate_b1": 383.79190922049537,
+      "candidate_b2": 383.0988313337522,
+      "baseline_a2": 389.58542454721675
+    },
+    "arm_spread_percent": {
+      "baseline": 0.13141522922576282,
+      "candidate": 0.1807500990929413
+    },
+    "full_cycles_0_41": {
+      "baseline_mean_ms": 389.3296053505592,
+      "candidate_mean_ms": 383.44537027712374,
+      "delta_ms": 5.884235073435434,
+      "speedup": 1.0153456933622194,
+      "latency_reduction_percent": 1.5113762201919285,
+      "samples_per_arm": 42
+    },
+    "cold_cycles_0_3": {
+      "baseline_mean_ms": 330.63736639451236,
+      "candidate_mean_ms": 325.0372997717932,
+      "delta_ms": 5.600066622719169,
+      "speedup": 1.0172289968771306,
+      "latency_reduction_percent": 1.6937186149847443,
+      "samples_per_arm": 4
+    },
+    "late_cycles_32_41": {
+      "baseline_mean_ms": 423.9131560723763,
+      "candidate_mean_ms": 416.6594823531341,
+      "delta_ms": 7.253673719242215,
+      "speedup": 1.0174091171003148,
+      "latency_reduction_percent": 1.7111225767203526,
+      "samples_per_arm": 10
+    },
+    "kernel_calls": {
+      "baseline_a": 0,
+      "candidate_b1": 12540,
+      "candidate_b2": 12540,
+      "baseline_a2": 0
+    },
+    "count_histogram": {
+      "480": 10680,
+      "64": 16080
+    },
+    "peak_memory_gib": {
+      "baseline_a": 20.574385166168213,
+      "candidate_b1": 20.575857639312744,
+      "candidate_b2": 20.575422763824463,
+      "baseline_a2": 20.575300693511963
+    },
+    "reset_replay": {
+      "cycles": 3,
+      "all_actions_equal": true,
+      "equal_cycles": 3,
+      "max_abs": 0.0,
+      "buffer_pointers_stable": true
+    }
+  },
+  "status": "pass"
+}

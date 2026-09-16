@@ -73,7 +73,7 @@ def test_pi05_rtx_fp8_layout_selection():
     from flash_rt.frontends.torch.pi05_rtx import _select_fp8_layout
 
     assert _select_fp8_layout("rtx_sm89", None) == "nk"
-    assert _select_fp8_layout("rtx_sm120", None) == "kn"
+    assert _select_fp8_layout("rtx_sm120", None) == "nk"
     assert _select_fp8_layout("rtx_sm120", "nk") == "nk"
 
 

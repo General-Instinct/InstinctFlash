@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "status": "SCREEN",
+  "generated_at": "2026-09-16T14:18:39.782864",
+  "hardware": {
+    "name": "NVIDIA GeForce RTX 5090",
+    "capability": [
+      12,
+      0
+    ],
+    "python": "3.10.20",
+    "torch": "2.9.0+cu128",
+    "cuda": "12.8"
+  },
+  "model": {
+    "repo": "lerobot/pi05_libero_finetuned_v044",
+    "revision": "8e174154ef5f6c60a8da12ae99c303d8963138c1",
+    "model_sha256": "877b3ec1130548b69af7f8aeef3ec9d3fc7738040f0b9beb490857ec970997ae",
+    "precision": "FP8 E4M3, SM120 nk layout",
+    "fp8_weight_count": 253
+  },
+  "simulator": {
+    "package": "hf-libero",
+    "package_version": "0.1.4",
+    "robosuite": "1.4.0",
+    "mujoco": "3.8.1",
+    "bddl": "1.0.1",
+    "assets_repo": "lerobot/libero-assets",
+    "assets_revision": "0b3ea86be5fe169d0fd036ae63d1070ec09e90f6",
+    "assets_tree_manifest_sha256": "e28af9ff7188b15559b3774a9f61c50474ff2766153c3f713604d6e2bb5824fd"
+  },
+  "protocol": {
+    "suite": "libero_spatial",
+    "task_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "trials_per_task": 3,
+    "seed": 7,
+    "framework": "torch",
+    "autotune": 3,
+    "replan_steps": 5,
+    "action_horizon": 10,
+    "num_denoise_steps": 10,
+    "max_steps": 220,
+    "wait_steps": 10,
+    "task_process_isolation": true,
+    "note": "30-episode engineering screen; not a statistical task-quality certificate"
+  },
+  "source_sha256": {
+    "serving/examples/thor/eval_libero.py": "3261d869624ec2608a0567a37e4fde2796d3c6ece2491ef78ee82f4bb343d330",
+    "serving/flash_rt/api.py": "f5ca83eb7373ed640e3af7a62152fe29268c50b34d46aed9ff177b20b92bef0b",
+    "serving/flash_rt/frontends/torch/pi05_rtx.py": "f259ecb3f27cce579093f8c033e7efa266a6b714d03b5e9772366fb1d5faf210",
+    "serving/flash_rt/models/pi05/pipeline_rtx.py": "c8f6b0a8fadb188ab8878f0ba2b451ae97d2836935c69f5bd28a7d46d4014e0d",
+    "serving/flash_rt/hardware/rtx/attn_backend.py": "9cb6224dc031edf3e2750e81acb883831194365f46f2f06cf1a19fdafbc6616b"
+  },
+  "binary_sha256": {
+    "flash_rt_kernels": "86ae023058b7d218badbfa8b853965825f7dad5ea8adef113a0158086bdf44e6",
+    "flash_rt_fa2": "aaaf05ad9d6eee0d19bb27425630970d40dcce35ee3397b84221208fef926ca6"
+  },
+  "summary": {
+    "successes": 21,
+    "episodes": 30,
+    "success_rate": 0.7
+  },
+  "tasks": [
+    {
+      "task_id": 0,
+      "task_description": "pick up the black bowl between the plate and the ramekin and place it on the plate",
+      "successes": 2,
+      "num_trials": 3,
+      "success_rate": 0.6666666666666666,
+      "mean_episode_time": 1.7904413186576373
+    },
+    {
+      "task_id": 1,
+      "task_description": "pick up the black bowl next to the ramekin and place it on the plate",
+      "successes": 1,
+      "num_trials": 3,
+      "success_rate": 0.3333333333333333,
+      "mean_episode_time": 2.7927474839962088
+    },
+    {
+      "task_id": 2,
+      "task_description": "pick up the black bowl from table center and place it on the plate",
+      "successes": 3,
+      "num_trials": 3,
+      "success_rate": 1.0,
+      "mean_episode_time": 1.2457590066672612
+    },
+    {
+      "task_id": 3,
+      "task_description": "pick up the black bowl on the cookie box and place it on the plate",
+      "successes": 3,
+      "num_trials": 3,
+      "success_rate": 1.0,
+      "mean_episode_time": 1.5142854996665847
+    },
+    {
+      "task_id": 4,
+      "task_description": "pick up the black bowl in the top drawer of the wooden cabinet and place it on the plate",
+      "successes": 2,
+      "num_trials": 3,
+      "success_rate": 0.6666666666666666,
+      "mean_episode_time": 2.2001395326612205
+    },
+    {
+      "task_id": 5,
+      "task_description": "pick up the black bowl on the ramekin and place it on the plate",
+      "successes": 2,
+      "num_trials": 3,
+      "success_rate": 0.6666666666666666,
+      "mean_episode_time": 2.36769231967628
+    },
+    {
+      "task_id": 6,
+      "task_description": "pick up the black bowl next to the cookie box and place it on the plate",
+      "successes": 3,
+      "num_trials": 3,
+      "success_rate": 1.0,
+      "mean_episode_time": 1.3537449540065911
+    },
+    {
+      "task_id": 7,
+      "task_description": "pick up the black bowl on the stove and place it on the plate",
+      "successes": 0,
+      "num_trials": 3,
+      "success_rate": 0.0,
+      "mean_episode_time": 2.866222470329376
+    },
+    {
+      "task_id": 8,
+      "task_description": "pick up the black bowl next to the plate and place it on the plate",
+      "successes": 3,
+      "num_trials": 3,
+      "success_rate": 1.0,
+      "mean_episode_time": 1.1168986249928519
+    },
+    {
+      "task_id": 9,
+      "task_description": "pick up the black bowl on the wooden cabinet and place it on the plate",
+      "successes": 2,
+      "num_trials": 3,
+      "success_rate": 0.6666666666666666,
+      "mean_episode_time": 2.300891214321988
+    }
+  ],
+  "limitations": [
+    "Three episodes per task are sufficient for an engineering screen, not non-inferiority.",
+    "No matched native-precision closed-loop arm was run in this screen.",
+    "The FP8 frontend calibrates on the first live observation of each task process."
+  ]
+}

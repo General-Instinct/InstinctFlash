@@ -104,7 +104,11 @@ def _cudnn_available() -> bool:
 #: `requires={"cudnn"}` came to be dormant-broken. Enforced by tests/test_hardware_probe.py.
 KNOWN_FEATURES = frozenset({
     "cpu", "cuda", "cuda_graphs", "triton", "fp8", "nvfp4", "wgmma", "tma", "cudnn", "cublas",
-    "sm120_kernels", "sm120_stage2_kernels",
+    "sm120_kernels", "sm120_stage2_kernels", "sm120_stage3_kernels",
+    "sm120_qk_rope_kernels",
+    "sm120_gemm_kernels",
+    "sm120_ring_concat_kernels",
+    "sm120_qkv_parallel_kernels",
 })
 
 
@@ -224,6 +228,45 @@ class DeviceProfile:
 
             if cap == (12, 0) and stage2_available():
                 feats.add("sm120_stage2_kernels")
+        except Exception:                                    # noqa: BLE001  never fail a probe
+            pass
+        try:
+            from instinctflash.backends.sm120_wan_stage3 import available as stage3_available
+
+            if cap == (12, 0) and stage3_available():
+                feats.add("sm120_stage3_kernels")
+        except Exception:                                    # noqa: BLE001  never fail a probe
+            pass
+        try:
+            from instinctflash.backends.sm120_wan_qk_rope import available as qk_rope_available
+
+            if cap == (12, 0) and qk_rope_available():
+                feats.add("sm120_qk_rope_kernels")
+        except Exception:                                    # noqa: BLE001  never fail a probe
+            pass
+        try:
+            from instinctflash.backends.sm120_wan_gemm import available as wan_gemm_available
+
+            if cap == (12, 0) and wan_gemm_available():
+                feats.add("sm120_gemm_kernels")
+        except Exception:                                    # noqa: BLE001  never fail a probe
+            pass
+        try:
+            from instinctflash.backends.sm120_wan_ring_concat import (
+                available as ring_concat_available,
+            )
+
+            if cap == (12, 0) and ring_concat_available():
+                feats.add("sm120_ring_concat_kernels")
+        except Exception:                                    # noqa: BLE001  never fail a probe
+            pass
+        try:
+            from instinctflash.backends.sm120_wan_qkv_parallel import (
+                available as qkv_parallel_available,
+            )
+
+            if cap == (12, 0) and qkv_parallel_available():
+                feats.add("sm120_qkv_parallel_kernels")
         except Exception:                                    # noqa: BLE001  never fail a probe
             pass
         return DeviceProfile(name=p.name, capability=cap, total_memory=p.total_memory,

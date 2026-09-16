@@ -26,6 +26,23 @@ skipped forward is materialized and the pass disables itself for that server; it
 `video_exec_step == -1`. Gate: `probe_action_terminal_elision.py`, 48 seeded cycles x ABBA on both
 allocators and both operating points, max|Δaction| = 0.000e+00 everywhere.
 
+### Optional RTX 5090 native chain
+
+The optional chain now has seven independently built SM120 ABIs. With the corresponding prefix
+present, the planner applies A1 through A7 in dependency order. A3 (`sm120_wan_stage3`) fuses the
+remaining `norm1(hidden.float()) * (1 + scale) + shift -> BF16` region with PyTorch 2.9's exact
+D3072 Welford order. Its operator gate compared 15,050,304 output/stat words with zero differences
+and measured the local region at 2.22x (rows 64) / 2.64x (rows 480). A 42-cycle real-model A-B-B-A
+measured 409.50 -> 404.34 ms (1.0127x), including 454.95 -> 449.44 ms after ring saturation;
+168/168 actions were bitwise equal and reset replay preserved every A3 buffer pointer. See
+`sm120_wan_stage3_results.json` and the two `verify_sm120_wan_stage3*.py` gates.
+
+A4 (`sm120_wan_qk_rope`) then fuses Q/K BF16 RMSNorm, the required BF16 materialization,
+and FP64-complex RoPE while retaining P003's ring-aware attention semantics. Its operator gate
+compared 15,045,408 output/rstd words with zero differences and measured 1.72x/1.75x locally.
+The real-model A-B-B-A measured 404.71 -> 396.42 ms (1.0209x), including 452.30 -> 442.12 ms
+after ring saturation; 168/168 actions were bitwise equal. See `sm120_wan_qk_rope_results.json`.
+
 ## What it is
 
 [LingBot-VA](https://github.com/robbyant/lingbot-va) is an autoregressive video-action
@@ -518,3 +535,61 @@ shape. Not chased further, because 0.5% of a cycle cannot justify it.
 A first pass apportioned GPU time by bytes and was wrong: 5.92 GB over 183.3 ms is 32 GB/s, ~100x
 under HBM, which is precisely the signal that these copies are overhead-bound rather than
 bandwidth-bound.
+
+## P009-A5 pinned bitexact GEMM tactics (RTX 5090)
+
+A complete cuBLASLt screen covered the six hot BF16 Linear shapes under the A1-A4 chain.
+Split-K candidates were faster but changed output bits and were rejected. The shipped A5 ABI
+pins only two no-split-K configurations: `(480,3072,3072)` and `(64,14336,3072)`. The two
+`K=14336` down projections and two weak/noisy candidates retain `torch.nn.Linear`.
+
+The exhaustive screen compared 85,229,568 BF16 words across four candidate shapes with zero
+differences; the final two-tactic production gate independently rechecked 21,528,576 words over
+random, constant, and alternating patterns at exponent scales -4/0/4. Real-model 42-cycle
+A-B-B-A gave 168/168 bitwise-identical actions and 395.03 -> 388.24 ms (1.0175x); growing
+cycles saved 5.18 ms and saturated cycles saved 5.09 ms. Persistent output buffers add about
+0.561 GiB.
+The pass is `AVAILABLE` only when SM120, Torch 2.9/CUDA 12.8, A1-A4, and the independent
+`sm120_gemm_kernels` ABI are all present.
+
+## P009-A6 bitexact wrapped ring concat (RTX 5090)
+
+Once P003 wraps, upstream materializes K and V separately with two `torch.cat` calls per
+self-attention layer. A6 replaces only that branch with one `uint4`-vectorized CUDA kernel that
+copies both tensors into persistent contiguous scratch. It preserves the exact logical ordering
+`pool[:, :end]` followed by `pool[:, start:]`; no floating-point operation or attention input word
+changes.
+
+The operator gate compared counts 1000/4000/7000/9000 and found zero differing K or V words. The
+respective local speedups were 4.64x/1.93x/1.72x/1.80x. The production 42-cycle A-B-B-A gate found
+168/168 bitwise-identical actions and 389.80 -> 387.73 ms (1.0053x) over all cycles. The late
+cycles, where wrapping is active, measured 426.60 -> 422.26 ms (1.0103x). Exactly 300 candidate
+kernel calls and zero baseline calls were observed; reset replay retained both scratch pointers
+and reproduced all actions bitwise. The persistent K/V scratch capacity is 0.224 GiB, while the
+observed peak allocation differed by less than 0.003 GiB because the allocator reused capacity.
+
+The pass is `AVAILABLE` only with the complete A1-A5 chain and the independent
+`sm120_ring_concat_kernels` ABI. Shape, wrap state, dtype, contiguity, alignment, alias, device,
+Torch/CUDA version, and single-stream mismatches fail closed. Reproduce the evidence with
+`verify_sm120_wan_ring_concat.py` and `verify_sm120_wan_ring_concat_model.py`; the checked-in
+result is `sm120_wan_ring_concat_results.json`.
+
+## P009-A7 bitexact parallel Q/K/V projections (RTX 5090)
+
+A7 keeps Q, K, and V as three independent `(M,3072,3072)` GEMMs, preserving their certified
+no-split-K cuBLASLt tactics and BF16 bias epilogues. A single native ABI call records input
+readiness, launches the three projections on private non-blocking streams, and joins them back to
+the caller stream. This avoids the wider fused-QKV GEMM that previously measured 0.2% slower.
+
+The operator gate compared 45,121,536 BF16 words over random/constant/alternating inputs, three
+exponent scales, and M=64/480 with zero differences and deterministic repeats. Triplet latency was
+67.80 -> 48.00 us (1.413x) at M=64 and 236.86 -> 151.48 us (1.564x) at M=480. A neutral-prewarmed
+42-cycle A-B-B-A real-model gate produced 168/168 bitwise-identical actions and 389.33 -> 383.45 ms
+(1.0153x); late cycles measured 423.91 -> 416.66 ms (1.0174x). Each candidate arm executed exactly
+12,540 A7 triplets, each baseline arm zero. Reset replay was bitwise identical with stable static
+output pointers. The two row-count output pools add 0.280 GiB.
+
+A7 is `AVAILABLE` only with A1-A6, SM120, Torch 2.9/CUDA 12.8/cuBLASLt 12.8.4, and the independent
+`sm120_qkv_parallel_kernels` ABI. Unsupported shapes, mutated parameters, aliases, device/version,
+or caller-stream mismatches fail closed. Reproduce with `verify_sm120_wan_qkv_parallel.py` and
+`verify_sm120_wan_qkv_parallel_model.py`; evidence is in `sm120_wan_qkv_parallel_results.json`.

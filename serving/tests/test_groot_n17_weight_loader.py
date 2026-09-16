@@ -24,7 +24,9 @@ from flash_rt.executors.torch_weights import Cat
 from flash_rt.frontends.torch._groot_n17_thor_spec import build_spec
 
 
-N17_CACHE_GLOB = (
+N17_CACHE_GLOB = os.path.join(
+    os.environ["GROOT_N17_CKPT"], "model-*.safetensors"
+) if os.environ.get("GROOT_N17_CKPT") else (
     "/root/.cache/huggingface/hub/models--nvidia--GR00T-N1.7-3B/"
     "snapshots/*/model-*.safetensors"
 )

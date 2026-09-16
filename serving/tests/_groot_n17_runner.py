@@ -24,7 +24,10 @@ from functools import lru_cache
 import torch
 
 
-_CKPT_GLOB = "/root/.cache/huggingface/hub/models--nvidia--GR00T-N1.7-3B/snapshots/*"
+_CKPT_GLOB = os.environ.get(
+    "GROOT_N17_CKPT",
+    "/root/.cache/huggingface/hub/models--nvidia--GR00T-N1.7-3B/snapshots/*",
+)
 
 
 @lru_cache(maxsize=1)
