@@ -36,7 +36,15 @@ class ThorFP8Linear(nn.Module):
         if not torch.isfinite(w).all():
             raise ValueError("Cannot quantize non-finite projection weights")
         self.in_features, self.out_features = linear.in_features, linear.out_features
-        scale = w.float().abs().amax().clamp_min(1e-12).reshape(1) / 448.0
+        maximum = w.float().abs().amax().clamp_min(1e-12).reshape(1)
+        if self.allow_cpu_source and w.device.type == "cpu":
+            # CUDA division by a host scalar multiplies by its FP32 reciprocal.
+            # CPU true division can differ by one ULP. Keep CPU preplacement
+            # on the same numerical recipe as the original CUDA weight packing.
+            reciprocal = torch.tensor(1.0 / 448.0, dtype=torch.float32, device=w.device)
+            scale = maximum * reciprocal
+        else:
+            scale = maximum / 448.0
         packed = (w.float() / scale).clamp(-448, 448).to(torch.float8_e4m3fn)
         self.register_buffer("weight_fp8", packed.to(storage).contiguous())
         self.register_buffer("weight_scale", scale.to(storage))

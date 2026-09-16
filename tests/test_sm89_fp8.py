@@ -45,6 +45,16 @@ def receipt(family="pi05"):
 
 
 class SM89Contracts(unittest.TestCase):
+    def test_cpu_weight_scale_keeps_cuda_host_scalar_rounding(self):
+        source = torch.nn.Linear(16, 16, bias=False, dtype=torch.bfloat16)
+        with torch.no_grad():
+            source.weight.fill_(0.0361328125)
+        with patch.object(torch.cuda, "get_device_capability", return_value=(8, 9)):
+            packed = SM89FP8Linear(source, device="cuda:0", storage_device="cpu")
+        # Actual SM89 CUDA scale is 0x38a92493; CPU division returns 0x38a92492.
+        self.assertEqual(packed.weight_scale.view(torch.int32).item(), 0x38A92493)
+        self.assertTrue(all(value.device.type == "cpu" for value in packed.buffers()))
+
     def test_planner_selects_explicit_registered_recipe_on_sm89(self):
         device = DeviceProfile(name="RTX 4090", capability=(8, 9), total_memory=24 << 30,
                                features=frozenset({"cuda", "fp8"}))
