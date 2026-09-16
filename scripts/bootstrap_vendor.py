@@ -35,7 +35,7 @@ FAMILIES = ("pi05", "vla4", "vla2", "groot", "va", "edge", "nano", "dreamzero")
 TARGETS = {
     "jetson_thor": {"machine": "aarch64", "ptxas_target": "sm_110a", "ptx_version": "9.0"},
     "rtx4090": {"machine": "x86_64", "ptxas_target": "sm_89", "ptx_version": "7.8"},
-    "rtx5090": {"machine": "x86_64", "ptxas_target": "sm_120", "ptx_version": "9.0"},
+    "rtx5090": {"machine": "x86_64", "ptxas_target": "sm_120", "ptx_version": "8.7"},
 }
 PURE_SDISTS = {
     "antlr4-python3-runtime": ("4.9.3", "f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b"),

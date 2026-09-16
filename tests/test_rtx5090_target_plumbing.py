@@ -134,7 +134,7 @@ def test_5090_assembler_request_binds_sm120_and_both_triton_paths(tmp_path, monk
     def assemble(command, **kwargs):
         assert command[0] == str(compiler) and command[1] == "--gpu-name=sm_120"
         source = Path(command[2]).read_text()
-        assert source.startswith(".version 9.0\n.target sm_120\n")
+        assert source.startswith(".version 8.7\n.target sm_120\n")
         assert kwargs["timeout"] == 30
         if exit_code == 0:
             Path(command[-1]).write_bytes(b"test-only cubin")
@@ -152,6 +152,15 @@ def test_5090_assembler_request_binds_sm120_and_both_triton_paths(tmp_path, monk
     assert receipt["GPU_used"] is False and receipt["deployment_target"] == "rtx5090"
     assert receipt["environment"] == {"TRITON_PTXAS_PATH": str(compiler),
                                       "TRITON_PTXAS_BLACKWELL_PATH": str(compiler)}
+
+
+def test_5090_minimum_ptx_does_not_change_thor_or_4090_probe():
+    assert {name: (value["ptxas_target"], value["ptx_version"])
+            for name, value in bootstrap.TARGETS.items()} == {
+        "jetson_thor": ("sm_110a", "9.0"),
+        "rtx4090": ("sm_89", "7.8"),
+        "rtx5090": ("sm_120", "8.7"),
+    }
 
 
 def test_5090_cli_plan_stays_cpu_only_without_creating_install_destination(tmp_path):

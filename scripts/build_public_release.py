@@ -178,7 +178,7 @@ SELECTED_CONTROLS: dict[str, str] = {
     "release/rtx4090/results/reproduce_manifest.json": "aa9b21510b0a95a255987a5fa08f0e396939c0bfc31f5345911301747dd5a25b",
     "release/rtx4090/results/results.json": "2daa1a9f2e3280e8f97abd2839cf894c0b4aa3722f1014a153ac8f0d8f06ba07",
     "release/rtx4090/results/results.rst": "7f618c1bd1f6bfd1bdaab10617e9c48275c91e566a2b620673a32b5a91a6f537",
-    "scripts/bootstrap_vendor.py": "010951263ba70ee994f48548febdab02e5baef9268db803eb7a7188e58aafdb8",
+    "scripts/bootstrap_vendor.py": "6501be460d950e35478b33435118f659aa7cd96f606c41a5790d85e7fb526d84",
     "scripts/prepare_auxiliary_assets.py": "e44be6692297d24984075c2d5b1aa11823ab361776a3407fc711224e053e3a2d",
     "scripts/prepare_native_tools.py": "1d19fa591864706071aa1c420b62fa6686655fe21dacb4c7f22d8123b1bd5ce9",
     "scripts/public_deploy.py": "d7ea22fc75d2ba949b6c3c8acce2a74d0eb4833a5ba29aa0ce9cb436985300ea",
