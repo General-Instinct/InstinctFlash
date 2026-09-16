@@ -14,7 +14,7 @@
 
 ## What's new 🔥
 
-- **RTX 4090.** VLA-4B **3.98×**, VLA-V2 **5.51×**. [Results](release/rtx4090/results/results.rst).
+- **RTX 4090 support.** Runtime inference and WebSocket serving. [Setup](INSTALL.rst#rtx-4090).
 - **Full source and eight model families.** Public install, paired inference and WebSocket serving paths are qualified on Jetson Thor for all eight models below.
 - **Cosmos3 at full UniPC4/CFG3.** Edge: **1048.01 ms**; Nano: **4772.38 ms**, both native precision with NUMERIC optimizations.
 - **LingBot-VA @2V/4A.** **459.10 ms / 4.51×** versus native 2V/4A in early continuations; full 25V/50A FP8: **2891.74 ms**.
@@ -22,28 +22,27 @@
 
 ## Results
 
-Prediction p50 (ms). Each cell shows the fastest measured setting on that device.
+Prediction p50 on **Jetson Thor** (ms), measured September 15, 2026.
 
 We’ve seen up to **33.78× speedup** with no observed loss in task performance in our real-robot tests.
 
-| Model | PyTorch<br>Jetson Thor | InstinctFlash<br>Jetson Thor | PyTorch<br>RTX 4090 | InstinctFlash<br>RTX 4090 |
-|:--|--:|--:|--:|--:|
-| LingBot-VA | 15506.32 | **2891.74 (5.36×)** · FP8 | — | — |
-| ↳ LingBot-VA @2V/4A | 2071.29 | **459.10 (4.51×)** · FP8 | — | — |
-| LingBot-VLA-4B | 624.22 | **221.53 (2.82×)** · FP8 | 808.11 | **203.10 (3.98×)** · Native |
-| LingBot-VLA-V2-6B | 734.56 | **394.11 (1.86×)** · FP8 | 959.83 | **174.32 (5.51×)** · FP8 |
-| Cosmos3 Edge DROID | 3393.78 | **1048.01 (3.24×)** · NUMERIC | 1276.81 | **1305.00 (0.98×)** · Native |
-| Cosmos3 Nano DROID | 10184.68 | **4772.38 (2.13×)** · NUMERIC | — | — |
-| pi05 | 408.58 | **51.85 (7.88×)** · FP8 | 308.72 | **109.77 (2.81×)** · Native |
-| GR00T N1.7 | 139.50 | **117.30 (1.19×)** · Native | 162.69 | **83.86 (1.94×)** · Native |
-| DreamZero DROID | 23563.08 | **11899.42 (1.98×)** · FP8 | — | — |
+| Model | PyTorch | InstinctFlash |
+|:--|--:|--:|
+| LingBot-VA | 15506.32 | **2891.74 (5.36×)** · FP8 |
+| ↳ LingBot-VA @2V/4A | 2071.29 | **459.10 (4.51×)** · FP8 |
+| LingBot-VLA-4B | 624.22 | **221.53 (2.82×)** · FP8 |
+| LingBot-VLA-V2-6B | 734.56 | **394.11 (1.86×)** · FP8 |
+| Cosmos3 Edge DROID | 3393.78 | **1048.01 (3.24×)** · NUMERIC |
+| Cosmos3 Nano DROID | 10184.68 | **4772.38 (2.13×)** · NUMERIC |
+| pi05 | 408.58 | **51.85 (7.88×)** · FP8 |
+| GR00T N1.7 | 139.50 | **117.30 (1.19×)** · Native |
+| DreamZero DROID | 23563.08 | **11899.42 (1.98×)** · FP8 |
 
-Measured September 15–16, 2026. **—**: insufficient capacity or requires CPU offload; offload timings are excluded.
-Each speedup uses a paired baseline on the same host and schedule. VA measures early continuations;
-the 33.78× headline includes 25V/50A → 2V/4A. Cosmos3 retains UniPC4/CFG3.
-FP8 and sampling changes are optional. RTX task quality remains unevaluated.
+VA measures early continuations; each row compares the same schedule.
+The 33.78× headline includes 25V/50A → 2V/4A. Cosmos3 retains UniPC4/CFG3.
+FP8 and sampling changes are optional.
 
-[Thor protocol and raw results](eval/public_release_2026-09-15/results.rst) · [Native VA 2V/4A](eval/va_native_2v4a_2026-09-15/README.rst) · [RTX 4090 raw results](release/rtx4090/results/results.rst) · [Reproduction commands](REPRODUCE.rst)
+[Protocol and raw results](eval/public_release_2026-09-15/results.rst) · [Native VA 2V/4A](eval/va_native_2v4a_2026-09-15/README.rst) · [Reproduction commands](REPRODUCE.rst)
 
 ## Install
 
