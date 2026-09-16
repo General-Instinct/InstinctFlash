@@ -6,10 +6,11 @@ frontends, CUDA kernels, training and distillation code, and benchmark tools.
 There is one public execution interface. No Instinct account or private
 accelerator package is required.
 
-Start with `installation <../INSTALL.rst>`_ and the
-`Thor reproduction guide <../REPRODUCE.rst>`_. The latter covers a fresh vendor
-environment, pinned checkpoint and auxiliary downloads, native backend
-installation, paired inference measurements, and actual CLI/WebSocket calls.
+Start with the `RTX 4090 <../INSTALL.rst#rtx-4090>`_ or
+`Jetson Thor <../INSTALL.rst#jetson-thor>`_ installation profile and the
+`reproduction guide <../REPRODUCE.rst>`_. They cover a fresh vendor environment,
+pinned checkpoint and auxiliary downloads, paired inference measurements,
+and actual CLI/WebSocket calls.
 The benchmark selects eight model variants; LingBot-VA at 2V/4A is an additional
 operating point. Compatible fine-tunes use their family's adapter and need their
 own action and task evaluation.
@@ -23,10 +24,12 @@ notices. Upstream model checkpoints, tokenizers and experimental student
 overlays retain their original access conditions and licenses. Checkpoint
 weights are obtained separately from source installation.
 
-`FlashRT build instructions <../serving/README.rst>`_ describe both the published
-Thor artifacts and a source build. The Python 3.12 native wheel is specific to
-Linux aarch64 and the recorded Torch/CUDA stack. Cosmos uses Python 3.13 and the
-separate BF16 C library. A different platform needs its own build and validation.
+The published native artifacts and `FlashRT source-build instructions
+<../serving/README.rst>`_ target Jetson Thor. Its Python 3.12 native wheel is
+specific to Linux aarch64 and the recorded Torch/CUDA stack. Edge and Nano use
+Python 3.13 and Thor's separate BF16 C library. For RTX 4090, use the
+``--target rtx4090`` bootstrap: its Linux x86-64 profiles select the SM89
+PyTorch/Triton execution path described in the installation guide.
 
 Native precision with a BITEXACT transformation ceiling is the default.
 NUMERIC, FP8 and sampling/cache changes are explicit choices through the same
@@ -45,6 +48,11 @@ policies. They do not establish task accuracy, every fine-tune's behavior, or
 performance on another device. Alternative-framework recipes retain their own
 step and history protocols. Experimental SDE1 results remain separate from the
 full UniPC4/CFG3 Cosmos selection.
+
+Full RTX 4090 qualification remains pending. The
+`RTX 4090 catalog <rtx4090/deployment_profiles.json>`_ records target status;
+prepared profiles and CPU packaging checks do not establish completed GPU
+measurements. The historical Thor results remain separate.
 
 The recorded RGB fixture has its RoboTwin license and attribution alongside
 it. Bulk model weights, machine-local caches and unreviewed simulator assets
