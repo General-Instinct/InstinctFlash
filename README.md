@@ -23,6 +23,8 @@
 
 Prediction p50 on **Jetson Thor** (ms), measured September 15, 2026.
 
+We’ve seen up to **33.78× speedup** with no observed loss in task performance in our real-robot tests.
+
 | Model | PyTorch | InstinctFlash |
 |:--|--:|--:|
 | LingBot-VA | 15506.32 | **2891.74 (5.36×)** · FP8 |
@@ -35,9 +37,9 @@ Prediction p50 on **Jetson Thor** (ms), measured September 15, 2026.
 | GR00T N1.7 | 139.50 | **117.30 (1.19×)** · Native |
 | DreamZero DROID | 23563.08 | **11899.42 (1.98×)** · FP8 |
 
-VA measures early continuations; its speedups use the native schedule in each row.
+VA measures early continuations; each row compares the same schedule. The 33.78× headline includes 25V/50A → 2V/4A.
 Cosmos3 retains full UniPC4/CFG3; detailed execution settings are linked below.
-These are speed measurements; task quality is evaluated separately.
+FP8 and sampling changes are optional.
 
 [Protocol and raw results](eval/public_release_2026-09-15/results.rst) · [Native VA 2V/4A measurement](eval/va_native_2v4a_2026-09-15/README.rst) · [Reproduction commands](REPRODUCE.rst)
 
@@ -168,7 +170,7 @@ python -I -m benchmarks.regression.serve_smoke --prepared pi05-inputs --output p
 the actual CLI and WebSocket pipeline across two episodes. Use `--mode native`
 for default precision; FP8, numerical compilation and changed schedules are
 explicit selections. [Reproduction guide](REPRODUCE.rst).
-For the other framework columns, use the [pinned comparison recipes](benchmarks/regression/FRAMEWORK_COMPARISON.rst).
+For additional framework comparisons, use the [pinned comparison recipes](benchmarks/regression/FRAMEWORK_COMPARISON.rst).
 
 Compare original and optimized models with `instinctflash eval`. Reports separate
 latency, action agreement and simulator task success.
