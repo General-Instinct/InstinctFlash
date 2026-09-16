@@ -39,6 +39,7 @@ PACKAGES = {
 REGRESSION_FILES = {
     "__init__.py",
     "user_e2e.py",
+    "hardware.py",
     "user_report.py",
     "user_provenance.py",
     "native_reference.py",
@@ -72,6 +73,11 @@ TOOL_FILES = {
 }
 SCOPE_PATH = "release/oss_scope.json"
 PROFILE_MIRROR = "benchmarks/regression/fixtures/deployment_profiles.json"
+PROFILE_MIRRORS = {
+    PROFILE_MIRROR: "release/deployment_profiles.json",
+    "benchmarks/regression/fixtures/deployment_profiles_rtx4090.json":
+        "release/rtx4090/deployment_profiles.json",
+}
 HELD_PREFIXES = ("instinctflash/train", "instinctflash/distill", "serving", "eval")
 WORKER = "instinctflash/runtime/lingbot_worker.py"
 WORKER_SOURCE = "eval/lingbot_va_robotwin/serve_variant.py"
@@ -88,14 +94,29 @@ FULL_TEST_FIXTURES: dict[str, str] = {
     "eval/cosmos3_task_quality_2026-09-14/rtx_preparation/robolab_smoke_live_bindings_v1.json": "cfa6614cba7051aa92bb7a75663c95555fb0fb581553e6b7deaeea66dc88e620",
 }
 SELECTED_CONTROLS: dict[str, str] = {
+    "release/rtx4090/deployment_profiles.json": "29b202760dfbd5b1924083d3c8b97792d11fe23ab6b16d935f6507492703d374",
+    "scripts/qualify_sm89_fp8.py": "7dd70fc40c3e9998fad2f693645b9c2742d094888d5c420749c7d1b368f83f7b",
     "release/deployment_profiles.json": "8187485677cb6ab1192960fa80481b913ab8e03d9cab9de8599589fc1038cfac",
-    "scripts/bootstrap_vendor.py": "2b50642ead7542aa7239fabd3da5f11a7c3e1b2e083ccf772826204acd1a28d8",
+    "scripts/bootstrap_vendor.py": "67e6209ea1a7996c73fc0d3e6b74adb8a817bc35d81fb185950b6bc8e1b7f8a2",
     "scripts/prepare_auxiliary_assets.py": "e44be6692297d24984075c2d5b1aa11823ab361776a3407fc711224e053e3a2d",
-    "scripts/prepare_native_tools.py": "243720e214c94b6a5030e275c0220c0fb0a0f5a123eeffea5927213942e7e3b7",
-    "scripts/public_deploy.py": "7f6ccb9e52683a7bab6cbabb86f80e110978af26473e9940c89853f3870f4fcc",
+    "scripts/prepare_native_tools.py": "05e1a722cb53cde4245601b41f0320b95622c1ab36e7931980cc582abaa64f4e",
+    "scripts/public_deploy.py": "305aab49024e9f100a9a0db1744ceba65e196d15eda66ff6362f1023ed70d92c",
     "scripts/repair_vendor_wheel.py": "1f62f053a37b29966202111da5262cb3da0464bba2d4697721cce97f1ea310ff"
 }
 PUBLIC_VENDOR_FILES: dict[str, str] = {
+    "release/vendor/rtx4090/cosmos/inference_packaging.patch": "82a8d6596d8ca8daa06ec33390453f205ec535fb1109b8b23a08f5176a6489c7",
+    "release/vendor/rtx4090/dreamzero/bootstrap.json": "7950205bf5e3f1747e7eaeeb2ded4142c22cd1907ba8ea96bb4d0ad2ce15f251",
+    "release/vendor/rtx4090/edge/bootstrap.json": "80d2666fddc1814622095e5f81ea5c57437106f59fcd9e7d485c09d4af245261",
+    "release/vendor/rtx4090/edge/constraints.txt": "3b488334f2a7d3501085155892e0af30fdadda9d2522f116d7e05189e7546c2e",
+    "release/vendor/rtx4090/edge/inference_requirements.txt": "7ac7a69235e63035c38e96fb6a34bcfc8d9c1cee6210f6374441f03776ea66e8",
+    "release/vendor/rtx4090/groot/bootstrap.json": "cf52c79801a47922ee60c1860898075f7f3783c999161a324cac626550637b7f",
+    "release/vendor/rtx4090/nano/bootstrap.json": "d539b55945f12834b5a3eb536e3f8b6a5bb4bd4250fdbfdce70d7f7292cd726c",
+    "release/vendor/rtx4090/nano/constraints.txt": "3b488334f2a7d3501085155892e0af30fdadda9d2522f116d7e05189e7546c2e",
+    "release/vendor/rtx4090/nano/inference_requirements.txt": "7ac7a69235e63035c38e96fb6a34bcfc8d9c1cee6210f6374441f03776ea66e8",
+    "release/vendor/rtx4090/pi05/bootstrap.json": "dba3b823d04dd0f907c9edfdfefa6975380f8aa679d49d1e00778338fc9bd5be",
+    "release/vendor/rtx4090/va/bootstrap.json": "4982a1816280cc871774b364a507639197efb7f2aeb6a190dd743bed3cbefaa9",
+    "release/vendor/rtx4090/vla2/bootstrap.json": "64066ce1ff7f3456d940f3efa3859bbb52ab4501db756945d3fa18ffe9474f66",
+    "release/vendor/rtx4090/vla4/bootstrap.json": "1d3709b89b3c73e61f7bbded316d9df25424f68de43b5cb31fa90f3bdb3b0e8e",
     "release/vendor/README.rst": "5e6159d73dd42d682c22f1c1c73f9dd1f347f7c026e23312ef6c39ad790b99f7",
     "release/vendor/asset_profiles.json": "706eb897ac27cd092adf86ab9f2f14539bf19bf6c803abc64705e51e52929794",
     "release/vendor/auxiliary_assets.json": "68c8d84e7290920bdcb090b2eb858668211463b7869e6dee5f78c2e51f3c5183",
@@ -487,7 +508,8 @@ def staged_pyproject(content, *, has_fixture=False):
     }
     data = {
         "benchmarks.vla": ["config/*.json"],
-        "benchmarks.regression": ["fixtures/deployment_profiles.json"],
+        "benchmarks.regression": [str(PurePosixPath(name).relative_to("benchmarks/regression"))
+                                  for name in PROFILE_MIRRORS],
     }
     if has_fixture:
         data["benchmarks.regression"].extend(
@@ -589,7 +611,7 @@ def create_stage(repository, output, *, scope="core"):
         )
         controls.update(PUBLIC_VENDOR_FILES)
         controls.update(FULL_TEST_FIXTURES)
-    selected.update(ROOT_FILES | ADAPTER_LICENSE_FILES | TOOL_FILES | {SCOPE_PATH, PROFILE_MIRROR})
+    selected.update(ROOT_FILES | ADAPTER_LICENSE_FILES | TOOL_FILES | {SCOPE_PATH, *PROFILE_MIRRORS})
     selected.update("benchmarks/vla/config/" + name for name in CONFIG_FILES)
     selected.update(SELECTED_DATA)
     selected.update(controls)
@@ -712,16 +734,15 @@ def create_stage(repository, output, *, scope="core"):
         contents[relative] = content
     require(all(contents[name] == contents["LICENSE"] for name in ADAPTER_LICENSE_FILES),
             "adapter license copy differs from the established root license")
-    profile_destination = PROFILE_MIRROR
-    profile_source = "release/deployment_profiles.json"
-    require(
-        contents[profile_destination] == contents[profile_source],
-        "packaged deployment profile mirror drifted",
-    )
-    entries[profile_destination]["canonical_source_path"] = profile_source
-    entries[profile_destination]["transforms"].append(
-        "checked source mirror equals canonical deployment profiles; no staged-only data injection"
-    )
+    for profile_destination, profile_source in PROFILE_MIRRORS.items():
+        require(
+            contents[profile_destination] == contents[profile_source],
+            f"packaged deployment profile mirror drifted: {profile_destination}",
+        )
+        entries[profile_destination]["canonical_source_path"] = profile_source
+        entries[profile_destination]["transforms"].append(
+            "checked source mirror equals canonical deployment profiles; no staged-only data injection"
+        )
     for distribution, (directory, module) in packages.items():
         metadata_path = (
             "pyproject.toml" if directory == "." else directory + "/pyproject.toml"

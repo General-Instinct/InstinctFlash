@@ -3,6 +3,9 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 import zipfile
 
@@ -12,6 +15,8 @@ import pytest
 spec = importlib.util.spec_from_file_location("public_builder", Path(__file__).resolve().parents[1] / "scripts/build_public_release.py")
 builder = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(builder)
+CURRENT_CONTROLS = dict(builder.SELECTED_CONTROLS)
+CURRENT_VENDOR_FILES = dict(builder.PUBLIC_VENDOR_FILES)
 
 
 def put(root, relative, content=b""):
@@ -59,10 +64,12 @@ def repository(tmp_path, monkeypatch):
     monkeypatch.setattr(builder, "SELECTED_DATA", {})
     monkeypatch.setattr(builder, "PUBLIC_VENDOR_FILES", {})
     monkeypatch.setattr(builder, "FULL_TEST_FIXTURES", {})
-    controls = {"scripts/public_deploy.py": "# selected control\n", "release/deployment_profiles.json": "{}"}
+    controls = {"scripts/public_deploy.py": "# selected control\n",
+                **{canonical: "{}" for canonical in builder.PROFILE_MIRRORS.values()}}
     for relative, content in controls.items():
         put(root, relative, content)
-    put(root, builder.PROFILE_MIRROR, controls["release/deployment_profiles.json"])
+    for mirror,canonical in builder.PROFILE_MIRRORS.items():
+        put(root, mirror, controls[canonical])
     monkeypatch.setattr(builder, "SELECTED_CONTROLS", {name: builder.sha(content.encode()) for name, content in controls.items()})
 
     def git(repo, *args):
@@ -153,7 +160,7 @@ def test_staged_pyproject_excludes_train_data_without_changing_source_metadata(r
     config = builder.tomllib.loads((Path(result["source"]) / "pyproject.toml").read_text())
     assert config["tool"]["setuptools"]["packages"]["find"]["exclude"] == ["instinctflash.train*", "instinctflash.distill*"]
     assert config["tool"]["setuptools"]["package-data"] == {"benchmarks.vla": ["config/*.json"],
-                                                            "benchmarks.regression": ["fixtures/deployment_profiles.json"]}
+                                                            "benchmarks.regression": ["fixtures/deployment_profiles.json", "fixtures/deployment_profiles_rtx4090.json"]}
     assert (repository / "pyproject.toml").read_bytes() == before
     assert result["files"]["pyproject.toml"]["source_sha256"] == builder.sha(before)
 
@@ -356,3 +363,71 @@ def test_experimental_wheel_must_include_the_reviewed_helper_namespace(tmp_path)
              for name in ("cosmos3_sde1/__init__.py", "instinct_compress/__init__.py")}
     with pytest.raises(ValueError, match="dropped"):
         builder.inspect_wheel(wheel, "instinctflash-cosmos3-sde1", "examples/cosmos3_sde1", "cosmos3_sde1", files, scope="full")
+
+
+@pytest.mark.parametrize("mirror", list(builder.PROFILE_MIRRORS))
+def test_each_profile_mirror_has_its_own_canonical_binding(repository, tmp_path, mirror):
+    put(repository, mirror, '{"other_target":true}')
+    with pytest.raises(ValueError, match="mirror drifted"):
+        builder.create_stage(repository, tmp_path / "stage")
+    assert not (tmp_path / "stage").exists()
+
+
+def test_full_staged_rtx_closure_plans_all_eight_without_installs(repository, tmp_path, monkeypatch):
+    original = Path(__file__).resolve().parents[1]
+    populate_full_source(repository)
+    for relative in {*CURRENT_CONTROLS, *CURRENT_VENDOR_FILES, *builder.PROFILE_MIRRORS,
+                     "benchmarks/regression/reproduce.py", "benchmarks/regression/hardware.py"}:
+        put(repository, relative, (original / relative).read_bytes())
+    monkeypatch.setattr(builder, "SELECTED_CONTROLS", CURRENT_CONTROLS)
+    monkeypatch.setattr(builder, "PUBLIC_VENDOR_FILES", CURRENT_VENDOR_FILES)
+    for relative in ("release/vendor/rtx4090/private.json", "release/rtx4090/unrelated.md", "scripts/private_wheelhouse.py"):
+        put(repository, relative, "unselected input")
+    result = builder.create_stage(repository, tmp_path / "full", scope="full")
+    stage = Path(result["source"])
+    assert all(relative not in result["files"] for relative in (
+        "release/vendor/rtx4090/private.json", "release/rtx4090/unrelated.md", "scripts/private_wheelhouse.py"))
+    assert "scripts/qualify_sm89_fp8.py" in result["files"]
+    assert "benchmarks/regression/hardware.py" in result["files"]
+    environment = dict(os.environ, CUDA_VISIBLE_DEVICES="", HF_HUB_OFFLINE="1", UV_OFFLINE="1")
+    environment.pop("PYTHONPATH", None)
+    for family in ("pi05", "va", "vla4", "vla2", "groot", "edge", "nano", "dreamzero"):
+        command = [sys.executable, str(stage / "scripts/bootstrap_vendor.py"), "plan", family, "--target", "rtx4090"]
+        completed = subprocess.run(command, capture_output=True, text=True, env=environment, timeout=15, check=True)
+        profile = json.loads(completed.stdout)
+        assert profile["deployment_target"] == "rtx4090" and profile["target"]["machine"] == "x86_64"
+        for reference in profile.get("python_metadata_overlays", []):
+            path = stage / "release/vendor" / reference["path"]
+            assert builder.sha(path.read_bytes()) == reference["sha256"]
+        completed = subprocess.run([sys.executable, str(stage / "scripts/prepare_auxiliary_assets.py"), "plan", family],
+                                   capture_output=True, text=True, env=environment, timeout=15, check=True)
+        assert json.loads(completed.stdout)["family"] == family
+    for target in ("jetson_thor", "rtx4090"):
+        completed = subprocess.run([sys.executable, str(stage / "scripts/public_deploy.py"), "plan", "all", "--target", target],
+                                   capture_output=True, text=True, env=environment, timeout=15, check=True)
+        assert json.loads(completed.stdout)["ok"] is True
+    code = (
+        "import sys; sys.path.insert(0, sys.argv[1]); "
+        "from benchmarks.regression.reproduce import make_plan; "
+        "models=('pi05','va','vla4','vla2','groot','edge','nano','dreamzero'); "
+        "assert all(make_plan(m,'native',target='rtx4090')['target']['capability']==[8,9] for m in models); "
+        "assert 'torch' not in sys.modules"
+    )
+    subprocess.run([sys.executable, "-I", "-c", code, str(stage)], env=environment, timeout=15, check=True)
+
+
+@pytest.mark.parametrize("omitted", ["benchmarks/regression/hardware.py",
+                                    "benchmarks/regression/fixtures/deployment_profiles_rtx4090.json"])
+def test_core_wheel_cannot_drop_rtx_dispatch_or_profile(tmp_path, omitted):
+    wheel = tmp_path / "core.whl"
+    members = {"instinctflash/__init__.py": b"", "benchmarks/regression/hardware.py": b"# explicit targets\n",
+               "benchmarks/regression/fixtures/deployment_profiles.json": b"{}",
+               "benchmarks/regression/fixtures/deployment_profiles_rtx4090.json": b'{"target":"rtx4090"}'}
+    files = {name: {"sha256": builder.sha(content), "wheel_required": True} for name, content in members.items()}
+    with zipfile.ZipFile(wheel, "w") as archive:
+        for name, content in members.items():
+            if name != omitted:
+                archive.writestr(name, content)
+        archive.writestr("instinctflash-0.1.dist-info/METADATA", "Name: instinctflash\nVersion: 0.1\n")
+    with pytest.raises(ValueError, match="dropped selected"):
+        builder.inspect_wheel(wheel, "instinctflash", ".", "instinctflash", files)
