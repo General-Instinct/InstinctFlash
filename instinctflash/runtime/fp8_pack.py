@@ -9,7 +9,23 @@ import triton.language as tl
 
 
 @triton.jit
-def _pack_kernel(X, SCALE, Y, N: tl.constexpr, BLOCK: tl.constexpr):
+def _e4m3_bytes_from_f32(value):
+    # SM89's FP8 conversion can lower through FP16 in Triton, rounding twice.
+    # Round the FP32 mantissa directly to E4M3, including ties to even. Below
+    # 2**-6, adding 2**14 makes one FP32 ULP equal one E4M3 subnormal (2**-9).
+    bits = value.to(tl.uint32, bitcast=True)
+    magnitude = bits & 0x7FFFFFFF
+    normal = ((magnitude + 0x7FFFF + ((magnitude >> 20) & 1)) >> 20) - 960
+    absolute = magnitude.to(tl.float32, bitcast=True)
+    subnormal = (absolute + 16384.0).to(tl.uint32, bitcast=True) - (141 << 23)
+    rounded = tl.where(magnitude < (121 << 23), subnormal, normal)
+    rounded = tl.where(magnitude >= 0x7F800000, 0x7F, rounded)
+    return (rounded | ((bits >> 24) & 0x80)).to(tl.uint8)
+
+
+@triton.jit
+def _pack_kernel(X, SCALE, Y, N: tl.constexpr, BLOCK: tl.constexpr,
+                 DIRECT_FP32: tl.constexpr = False):
     offsets = tl.program_id(0) * BLOCK + tl.arange(0, BLOCK)
     x = tl.load(X + offsets, offsets < N, other=0).to(tl.float32)
     scale = tl.load(SCALE)
@@ -22,7 +38,11 @@ def _pack_kernel(X, SCALE, Y, N: tl.constexpr, BLOCK: tl.constexpr):
         tl.maximum(divided, -448.0, propagate_nan=tl.PropagateNan.ALL),
         448.0, propagate_nan=tl.PropagateNan.ALL,
     )
-    tl.store(Y + offsets, clipped.to(tl.float8e4nv), offsets < N)
+    if DIRECT_FP32:
+        output_bytes = Y.to(tl.pointer_type(tl.uint8))
+        tl.store(output_bytes + offsets, _e4m3_bytes_from_f32(clipped), offsets < N)
+    else:
+        tl.store(Y + offsets, clipped.to(tl.float8e4nv), offsets < N)
 
 
 def pack_bf16_e4m3(x, scale):
@@ -34,7 +54,9 @@ def pack_bf16_e4m3(x, scale):
         raise ValueError('FP8 packing requires one FP32 scale on the input device')
     out = torch.empty_like(x, dtype=torch.float8_e4m3fn)
     if x.numel():
-        _pack_kernel[(triton.cdiv(x.numel(), 1024),)](x, scale, out, x.numel(), 1024)
+        _pack_kernel[(triton.cdiv(x.numel(), 1024),)](
+            x, scale, out, x.numel(), 1024,
+            DIRECT_FP32=torch.cuda.get_device_capability(x.device) == (8, 9))
     return out
 
 

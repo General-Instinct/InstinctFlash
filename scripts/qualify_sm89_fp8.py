@@ -13,9 +13,9 @@ import copy
 import datetime as dt
 import hashlib
 import json
-from pathlib import Path
 import sys
 import traceback
+from pathlib import Path
 
 
 def _sha(path):
@@ -35,6 +35,8 @@ def _equal_bytes(torch, actual, expected, label):
 
 
 def _check_packing(torch, pack, device, report):
+    from instinctflash.runtime.fp8_pack import pack_bf16_e4m3
+
     cases = []
     for shape, magnitude in (((40, 2048), 1), ((256, 5120), 1), ((1, 16), 0),
                              ((1, 16), 1e-20), ((1, 16), 1e30)):
@@ -53,6 +55,17 @@ def _check_packing(torch, pack, device, report):
     _equal_bytes(torch, actual, expected, "all finite BF16 pack")
     cases.append({"case": "all_finite_bf16_bit_patterns", "elements": finite.numel(),
                   "passed": True})
+    # Include exact E4M3 midpoints and FP32 scales immediately beside one.
+    # SM89 Triton formerly rounded FP32 through FP16, choosing the wrong FP8
+    # neighbor for two normal inputs in the all-finite dynamic-scale sweep.
+    scales = (1.0, 1.0 + 2.0**-23, 1.0 - 2.0**-24, 2.0**-16, 1.0 / 448.0)
+    for value in scales:
+        fixed_scale = torch.tensor([value], device=device, dtype=torch.float32)
+        actual = pack_bf16_e4m3(finite, fixed_scale)
+        expected = (finite.float() / fixed_scale).clamp(-448, 448).to(torch.float8_e4m3fn)
+        _equal_bytes(torch, actual, expected, "all finite BF16 fixed-scale rounding")
+        cases.append({"case": "fixed_scale_rounding", "scale": value,
+                      "elements": finite.numel(), "passed": True})
     x = torch.ones((4, 16), device=device, dtype=torch.bfloat16)
     for nonfinite in (float("nan"), float("inf"), -float("inf")):
         x[0, 0] = nonfinite
@@ -174,7 +187,13 @@ def qualify(device, report):
         raise RuntimeError("Qualification requires a visible SM89 CUDA device")
     torch.cuda.set_device(device)
     import triton
-    from instinctflash.runtime import fp8_pack, sm89_fp8, torch_fp8_linear, module_residency
+
+    from instinctflash.runtime import (
+        fp8_pack,
+        module_residency,
+        sm89_fp8,
+        torch_fp8_linear,
+    )
 
     report["runtime"]["triton"] = triton.__version__
     props = torch.cuda.get_device_properties(device)
