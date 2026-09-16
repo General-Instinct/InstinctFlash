@@ -1,0 +1,208 @@
+{
+  "GPU_used_by_audit": false,
+  "all_websocket_requests_paired": true,
+  "archive_sha256": "7c5f04c6586478e555f9406cb2947818154af9c4de93eb71b4c2053b98e17031",
+  "capture": {
+    "archive_sha256": "7c5f04c6586478e555f9406cb2947818154af9c4de93eb71b4c2053b98e17031",
+    "comparisons": [
+      {
+        "actions": {
+          "exact_bytes": true,
+          "max_abs": 0.0,
+          "rmse": 0.0
+        },
+        "baseline": "groot-eager_native",
+        "candidate": "groot-runtime_default",
+        "same_sampling_policy": true,
+        "speedup": 1.9401111484787117
+      },
+      {
+        "actions": {
+          "exact_bytes": false,
+          "max_abs": 0.1357421875,
+          "rmse": 0.01060485142073644
+        },
+        "baseline": "groot-eager_native",
+        "candidate": "groot-runtime_selected",
+        "same_sampling_policy": true,
+        "speedup": 1.7013877889149922
+      }
+    ],
+    "default_bitexact": true,
+    "family": "groot",
+    "metrics": {
+      "groot-eager_native": {
+        "p50_ms": 162.68939059227705,
+        "precision": "native",
+        "primary_samples": 20,
+        "schedule": {
+          "nfe": {
+            "action": 4,
+            "backbone": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "total_predictions": 25
+      },
+      "groot-runtime_default": {
+        "p50_ms": 83.85570626705885,
+        "precision": "native",
+        "primary_samples": 20,
+        "schedule": {
+          "nfe": {
+            "action": 4,
+            "backbone": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "total_predictions": 25
+      },
+      "groot-runtime_selected": {
+        "p50_ms": 95.62158118933439,
+        "precision": "fp8",
+        "primary_samples": 20,
+        "schedule": {
+          "nfe": {
+            "action": 4,
+            "backbone": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "total_predictions": 25
+      }
+    },
+    "passed": true,
+    "plan_sha256": "81a39fb7c9842963f59c5c7751c19904560442f46dddc189641c1bcea7f9dc67",
+    "schema": "instinctflash.rtx_archive_independent_audit.v1",
+    "scope": "Independent saved-byte, request, schedule, latency and action audit; no GPU recapture.",
+    "task_quality_validated": false
+  },
+  "family": "groot",
+  "original_asset_bytes": 11816340962,
+  "original_file_count": 37,
+  "outer_provenance_hashes": {
+    "assets_completion_sha256": "2eab7cc5c4f2e96f0dca5796e20aa1a8737f1862398c0e36de29f8fc560f4c5d",
+    "bootstrap_completion_sha256": "b2690ab936a692fe8a6ef6beb346d3d57dee7278ca93625a21d7c30488459cc1",
+    "capture_run_sha256": "b304cc91dd8f96c13cfe36dc1f39a72c59393312a63bb4957c1f42e963b82ef2",
+    "config_sha256": "4177a0d98da296930c45f11f161956462c12b4aef127163f59493d5b93f17d7a",
+    "core_upgrade_completion_sha256": "cc345ec59a426626d539fd998f3246429259ff44e4910dcb7b19de1cfddab81b",
+    "native_inputs_completion_sha256": "5c0a7fff4b4111afc8d0974d22c0b8b8a917bd86d38413a8494239919b15dede",
+    "plan_sha256": "81a39fb7c9842963f59c5c7751c19904560442f46dddc189641c1bcea7f9dc67"
+  },
+  "passed": true,
+  "retirement_performed": false,
+  "schema": "instinctflash.complete_pipeline_independent_audit.v1",
+  "serving": [
+    {
+      "action_archive_sha256": "af9d42dc372160e8aaacfec9bf46f58807ce25fc4531e75ec267562c1e38d88f",
+      "action_shape": [
+        6,
+        40,
+        17
+      ],
+      "calls": 6,
+      "cell": "groot-runtime_default",
+      "effective_nfe": {
+        "action": 4,
+        "backbone": 1
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "native",
+      "receipt_sha256": "58065ea1e409ce9f348314f0cd9c2d57d1cf5cb7639c3cce1d035ca3b50cdcb8",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "91378909b084394d118db494ae9da4a449cf7fee6e711c11730d8af97d5dbf14"
+        ],
+        [
+          0,
+          1,
+          "1543d42315293141d7e3d04475c221f5b073d98716fe7d3f1a89bd1e69cca9fa"
+        ],
+        [
+          0,
+          2,
+          "5b789a286828507d435f6ae283956e0adb3988a7582d35f0f52102e280e37cc8"
+        ],
+        [
+          1,
+          0,
+          "49ec45c5f02749f9ada0710bf32fd4edef416adb7a061ff372303f1dc8b5d235"
+        ],
+        [
+          1,
+          1,
+          "ae698632639187909a7f40101881dd17900bb142db0681dadf74e835eb64cc0d"
+        ],
+        [
+          1,
+          2,
+          "deadf75f86deda26b1e849e3b707cb5e4b9102a53f8333a74938dffec891bae7"
+        ]
+      ],
+      "rng_scope": "native serving constructor seed",
+      "task_quality_validated": false
+    },
+    {
+      "action_archive_sha256": "f5996fa05c78ca4b8be52cf9862686c9066f9ec6230c75b33b3acb92dde7f0e5",
+      "action_shape": [
+        6,
+        40,
+        17
+      ],
+      "calls": 6,
+      "cell": "groot-runtime_selected",
+      "effective_nfe": {
+        "action": 4,
+        "backbone": 1
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "fp8",
+      "receipt_sha256": "44ccf8a914f9303b561598a8db9831567efa13e196c23e5cf82ad43995fadeb7",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "91378909b084394d118db494ae9da4a449cf7fee6e711c11730d8af97d5dbf14"
+        ],
+        [
+          0,
+          1,
+          "1543d42315293141d7e3d04475c221f5b073d98716fe7d3f1a89bd1e69cca9fa"
+        ],
+        [
+          0,
+          2,
+          "5b789a286828507d435f6ae283956e0adb3988a7582d35f0f52102e280e37cc8"
+        ],
+        [
+          1,
+          0,
+          "49ec45c5f02749f9ada0710bf32fd4edef416adb7a061ff372303f1dc8b5d235"
+        ],
+        [
+          1,
+          1,
+          "ae698632639187909a7f40101881dd17900bb142db0681dadf74e835eb64cc0d"
+        ],
+        [
+          1,
+          2,
+          "deadf75f86deda26b1e849e3b707cb5e4b9102a53f8333a74938dffec891bae7"
+        ]
+      ],
+      "rng_scope": "unseeded FP8 transport check",
+      "task_quality_validated": false
+    }
+  ],
+  "source_commit": "a0dc86cc7447ce894663540adf49cfb6e96af97d",
+  "source_completion_sha256": "fee0a763447b0bf8f73b1f412976221bfc41b6518c681a0880985d3818e499e9",
+  "task_quality_validated": false,
+  "total_websocket_calls": 12,
+  "va_native_2v4a_supplement_included": false
+}

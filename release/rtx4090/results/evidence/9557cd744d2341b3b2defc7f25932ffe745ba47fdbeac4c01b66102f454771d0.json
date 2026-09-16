@@ -1,0 +1,144 @@
+{
+  "GPU_used_by_audit": false,
+  "all_requests_schedule_guidance_paired": true,
+  "archive_sha256": "cef0bc7b9b80b467f877fe1ff4cad6ece93ddcaaf6067f160780b7c76f9b71ec",
+  "comparisons": [
+    {
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 1.101563036441803,
+        "rmse": 0.1141767102499172
+      },
+      "baseline": "va-eager_native-2v4a",
+      "candidate": "va-2v4a-native",
+      "speedup": 2.535132591272081
+    },
+    {
+      "actions": {
+        "exact_bytes": false,
+        "exact_values": false,
+        "max_abs": 1.097656786441803,
+        "rmse": 0.09025788495308022
+      },
+      "baseline": "va-eager_native-2v4a",
+      "candidate": "va-2v4a-fp8",
+      "speedup": 1.8292106417010543
+    }
+  ],
+  "metrics": [
+    {
+      "actions_sha256": "63277dc2f55b078809e94f6a820c12fbd1e7178b63efcae33c86fc8964fa4320",
+      "cell": "va-eager_native-2v4a",
+      "nfe": {
+        "action": 4,
+        "video": 2
+      },
+      "p50_ms": 1147.5102766416967,
+      "precision": "native",
+      "primary_samples": 12,
+      "receipt_sha256": "604041528bb59efe8c1e0be209081a7d4f1b2f68dbed51bcfa6259eba1cf4159",
+      "total_calls": 21
+    },
+    {
+      "actions_sha256": "ac5ff6260a52ea25942a3c9f84c8608d95a5ef160c2ca8dd8bec1523c554ccc8",
+      "cell": "va-2v4a-native",
+      "nfe": {
+        "action": 4,
+        "video": 2
+      },
+      "p50_ms": 452.64310063794255,
+      "precision": "native",
+      "primary_samples": 12,
+      "receipt_sha256": "8ac73b3a2bac3aacec08b1e660a23ded49ed5b49b373e30efacda0e3f4e585a3",
+      "total_calls": 21
+    },
+    {
+      "actions_sha256": "94c850b37f1d6717562c06d819ee277b852a8ace3d335d814ed11da6eaa310ca",
+      "cell": "va-2v4a-fp8",
+      "nfe": {
+        "action": 4,
+        "video": 2
+      },
+      "p50_ms": 627.3253886029124,
+      "precision": "fp8",
+      "primary_samples": 12,
+      "receipt_sha256": "6a97a454b79ac7938897d07761791c9194cd1358abf6528b0ed1350cd0fead7a",
+      "total_calls": 21
+    }
+  ],
+  "new_api_predictions": 42,
+  "new_websocket_calls": 6,
+  "outer_completion_sha256_bindings": {
+    "bootstrap_completion_sha256": "a7380c7bcdbf5d6877600798f4439301378a209303b8aac6ce12f578ae819a36",
+    "config_sha256": "8d3fbe29c0c6173b47d74113d3209cfbc932317624d48a5d2e221c65a2e6afa9",
+    "core_upgrade_completion_sha256": "ebd922df47c0e7dd09430f7dc36556167dfd26bbaa5d4b2542c37369826af7d1",
+    "parent_completion_sha256": "d55d3fea9af7c56757c43d649154e0868fa104a3357c59344d02f161100864fa",
+    "serve_validation_sha256": "801f6ecc7076cd444007b18c128990fddd3538b52b1f185ddb366fb703819656",
+    "validation_sha256": "3ea9b2a1b70ea0283a20b16ac9013a95df58e9222ea08c6dd11860a8ee58fd08",
+    "worker_sha256": "e422e986a81bf087492e724ce2a15063c9308fb00a3766ef4ec3a0b050650ef2"
+  },
+  "parent_archive_sha256": "bee8d17d23609bbb37da1c1fcacf6a4402b6ac332afc5e58479b3b770af186ad",
+  "parent_completion_sha256": "d55d3fea9af7c56757c43d649154e0868fa104a3357c59344d02f161100864fa",
+  "parent_fp8_predictions_reused": 21,
+  "passed": true,
+  "retirement_performed": false,
+  "schema": "instinctflash.va_native_2v4a_archive_independent_audit.v1",
+  "serving": {
+    "action_archive_sha256": "6b533d1f5bc8bf403380949c524f019274489b2480811a643ac23ab58b3f6b5d",
+    "action_shape": [
+      6,
+      16,
+      2,
+      16
+    ],
+    "calls": 6,
+    "cell": "va-2v4a-native",
+    "effective_nfe": {
+      "action": 4,
+      "video": 2
+    },
+    "episodes": 2,
+    "finite_actions": true,
+    "latency_benchmark": false,
+    "precision": "native",
+    "receipt_sha256": "6d7201ac8f8a284f3d6243ededd12eba0251b59427547ee79ab19ad24780fb2a",
+    "request_signatures": [
+      [
+        0,
+        0,
+        "1d54b67ef7966972aeb4414942ffc32efc551108c433fdc4df0bfa058474b901"
+      ],
+      [
+        0,
+        1,
+        "0b8bbce683b1edf74b790be13a67de9f4ab75d6c292e9f5de4731a0022c7309a"
+      ],
+      [
+        0,
+        2,
+        "213a91872eb42c1d3aa4402c2bdb7bb4bc22993ded30421466321f9ff010f874"
+      ],
+      [
+        1,
+        0,
+        "e432cbcacb5a68cd598ee33686873d11abc17918fa6091ea19154de6e890cab3"
+      ],
+      [
+        1,
+        1,
+        "f6d12fce383b2ecb8dbd8a4abaf4c50ee686501865eb57931a96a8b694f6da33"
+      ],
+      [
+        1,
+        2,
+        "5021f43634401bea1027b383f00c32ba80c1a7b1a6f5957c8686e87b4ea7beb7"
+      ]
+    ],
+    "rng_scope": "native serving constructor seed",
+    "task_quality_validated": false
+  },
+  "source_commit": "a0dc86cc7447ce894663540adf49cfb6e96af97d",
+  "source_completion_sha256": "daf74b2f9f69f1772d34e220670e83354abec25896acccb418927e79b1f98be1",
+  "task_quality_validated": false
+}

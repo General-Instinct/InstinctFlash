@@ -1,0 +1,179 @@
+{
+  "schema": "instinctflash.capacity_exclusion.v1",
+  "recorded_utc": "2026-09-16T17:15:29.911550+00:00",
+  "family": "nano",
+  "deployment_target": "rtx4090",
+  "status": "memory_capacity_excluded_not_tested",
+  "scope": "entire_family_on_bound_host",
+  "excluded_modes": [
+    "native",
+    "numeric",
+    "fp8"
+  ],
+  "excluded_api_cells": [
+    "native_upstream",
+    "runtime_default",
+    "runtime_selected"
+  ],
+  "excluded_serving_modes": [
+    "native",
+    "numeric",
+    "fp8"
+  ],
+  "tested": false,
+  "passed": false,
+  "GPU_used": false,
+  "observed_OOM": false,
+  "unsupported": false,
+  "changes_to_runtime_or_model": false,
+  "qualification_evidence": false,
+  "scope_authorization": {
+    "user_instruction": "\u653e\u4e0d\u4e0b\u7684\u6a21\u578b\u5c31\u4e0d\u6d4b\u8bd5",
+    "parent_decision": "Exclude the entire Nano family on this 31GB node without OOM trial; FP8 exceeds the static capacity bound, native cold loading has not been verified with the remaining margin.",
+    "native_impossibility_claimed": false
+  },
+  "hardware": {
+    "hostname": "1d5e7cb595c7",
+    "boot_id": "1945f49a-b325-48e3-8cc0-d7bd2bd0e9e9",
+    "gpu_uuid": "GPU-cc9b08f5-0925-2946-48f6-a576bc6b28bc",
+    "driver": "580.159.04",
+    "memory_limit_bytes": 30999998464,
+    "memory_limit_GiB": 28.87099838256836,
+    "cgroup_version": 1,
+    "memory_limit_source_field": "/sys/fs/cgroup/memory/memory.limit_in_bytes",
+    "identity_evidence": {
+      "path": "/home/ubuntu/ifl_eval/rtx4090_20260916/nano_capacity_exclusion_580_v1/identity.stdout",
+      "sha256": "7a5a4cbfadd8e2cf821c88cbe50a58dcd96bf4a4fea9997c36dcac50bf6dbd58"
+    },
+    "memory_evidence": {
+      "path": "/home/ubuntu/ifl_eval/rtx4090_20260916/nano_capacity_exclusion_580_v1/memory_storage.stdout",
+      "sha256": "edcd88f5a98c33e03d16c501aa655fe20a402f13b21fccd7d81b414d1dd4ab92"
+    }
+  },
+  "frozen_inputs": {
+    "source_commit": "c5c1cbbdbc1579258be41cf1c621829dfeeb80f3",
+    "vendor_revision": "f734253f0f6af3e268372402f44435c38f55ef3e",
+    "checkpoint": {
+      "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+      "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e"
+    },
+    "bootstrap_profile": {
+      "path": "/home/ubuntu/InstinctFlash-rtx4090-20260916/release/vendor/rtx4090/nano/bootstrap.json",
+      "sha256": "d539b55945f12834b5a3eb536e3f8b6a5bb4bd4250fdbfdce70d7f7292cd726c"
+    },
+    "deployment_catalog": {
+      "path": "/home/ubuntu/InstinctFlash-rtx4090-20260916/release/rtx4090/deployment_profiles.json",
+      "sha256": "29b202760dfbd5b1924083d3c8b97792d11fe23ab6b16d935f6507492703d374"
+    },
+    "execution_modes": {
+      "fp8": {
+        "effective_schedule": {
+          "guidance": 3.0,
+          "nfe": {
+            "action": 4,
+            "prefix": 1
+          },
+          "sampler": "unipc",
+          "shift": 5.0,
+          "steps": 4
+        },
+        "environment": {},
+        "evidence_cell": "nano-rtx4090-fp8-pending",
+        "evidence_kind": "pending_rtx4090_measurement",
+        "gpu_qualified_by_plan": false,
+        "native_requirements": [],
+        "runtime_kwargs": {
+          "device": "cuda:0",
+          "precision": "fp8",
+          "step_cache": "checkpoint",
+          "tier_ceiling": "numeric"
+        },
+        "schedule_changed": false,
+        "task_quality_certified": false
+      },
+      "native": {
+        "effective_schedule": {
+          "guidance": 3.0,
+          "nfe": {
+            "action": 4,
+            "prefix": 1
+          },
+          "sampler": "unipc",
+          "shift": 5.0,
+          "steps": 4
+        },
+        "environment": {},
+        "evidence_cell": "nano-runtime_default",
+        "evidence_kind": "pending_rtx4090_measurement",
+        "gpu_qualified_by_plan": false,
+        "native_requirements": [],
+        "runtime_kwargs": {
+          "device": "cuda:0",
+          "precision": "native",
+          "step_cache": "checkpoint",
+          "tier_ceiling": "bitexact"
+        },
+        "schedule_changed": false,
+        "task_quality_certified": false
+      },
+      "numeric": {
+        "effective_schedule": {
+          "guidance": 3.0,
+          "nfe": {
+            "action": 4,
+            "prefix": 1
+          },
+          "sampler": "unipc",
+          "shift": 5.0,
+          "steps": 4
+        },
+        "environment": {
+          "IFL_COSMOS3_TIMESTEP_CACHE": "1"
+        },
+        "evidence_cell": "nano-runtime_selected",
+        "evidence_kind": "pending_rtx4090_measurement",
+        "gpu_qualified_by_plan": false,
+        "native_requirements": [],
+        "runtime_kwargs": {
+          "device": "cuda:0",
+          "precision": "native",
+          "step_cache": "checkpoint",
+          "tier_ceiling": "numeric"
+        },
+        "schedule_changed": false,
+        "task_quality_certified": false
+      }
+    },
+    "source_review": {
+      "path": "/home/ubuntu/ifl_eval/rtx4090_20260916/nano_capacity_exclusion_580_v1/source_review.json",
+      "sha256": "5b87ae1cb6517d77a980208ec21de5695287a61e9cfdebecd2799765c4452774"
+    },
+    "tensor_header_evidence": {
+      "path": "/home/ubuntu/ifl_eval/rtx4090_20260916/nano_capacity_exclusion_580_v1/tensor_headers.json",
+      "sha256": "f73933f7337d057ca0da028b3854ebc4cdf520b5f8a53c7a5eef3f69c5ee8ba9"
+    },
+    "original_asset_set_sha256": "d5333b1426ec40363a5442b31e8abd42c1c8c811ea0f9a0aa91ce2e0b541cacf"
+  },
+  "method": "Read only exact original safetensors headers, pinned loader/FP8 code and original Torch2.10 cu130 wheel reader member; bind pre-existing actual host identity and cgroup receipt. No full tensor loading, network, model or GPU execution.",
+  "capacity_basis": {
+    "native_CPU_parameter_bytes": 29101613440,
+    "native_remaining_for_all_other_memory_bytes": 1898385024,
+    "native_result": "Not measured at this limit; safe cold-load margin is unestablished. Family excluded under explicit no-OOM-trial decision, not a proof native must OOM.",
+    "FP8_retained_native_parameter_bytes": 29101613440,
+    "FP8_additional_packed_weight_bytes": 12683575296,
+    "FP8_live_weight_payload_lower_bound_bytes": 41785188736,
+    "FP8_lower_bound_over_memory_limit_bytes": 10785190272,
+    "FP8_bound_excludes": [
+      "FP32 packing temporaries",
+      "scales and bias buffers",
+      "Python/Torch/native-library RSS",
+      "allocator overhead",
+      "active mapped checkpoint pages",
+      "unrelated container memory"
+    ],
+    "FP8_result": "Required live CPU weight payload alone exceeds the bound memory limit.",
+    "mapped_file_handling": "Disk-backed mmap pages are reclaimable and not counted as a second permanent checkpoint copy. Original weight files must not be treated as free tmpfs storage.",
+    "minimum_system_RAM_certified": null
+  },
+  "coverage_rule": "Exclude only this explicitly bound requested scope; do not add any tested/passed cell, do not mark original full-eight-family/23-mode qualification complete, and preserve all six previously qualified cohorts."
+}

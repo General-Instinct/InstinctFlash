@@ -1,0 +1,75 @@
+{
+  "schema": "instinctflash.rtx_archive_independent_audit.v1",
+  "passed": true,
+  "family": "vla4",
+  "archive_sha256": "cd8677bd0fd3483e3366912ac51e116f2606563c607676ee7a9a9f894ec726af",
+  "plan_sha256": "b45c3764d5495f0ade6fbff15f0805e1dce148bfc17d7967d668f7c9cf81b504",
+  "metrics": {
+    "vla4-eager_native": {
+      "p50_ms": 808.1051269546151,
+      "primary_samples": 20,
+      "total_predictions": 25,
+      "precision": "native",
+      "schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      }
+    },
+    "vla4-runtime_default": {
+      "p50_ms": 203.09938956052065,
+      "primary_samples": 20,
+      "total_predictions": 25,
+      "precision": "native",
+      "schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      }
+    },
+    "vla4-runtime_selected": {
+      "p50_ms": 226.11527564004064,
+      "primary_samples": 20,
+      "total_predictions": 25,
+      "precision": "fp8",
+      "schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      }
+    }
+  },
+  "comparisons": [
+    {
+      "baseline": "vla4-eager_native",
+      "candidate": "vla4-runtime_default",
+      "same_sampling_policy": true,
+      "speedup": 3.9788653658843796,
+      "actions": {
+        "exact_bytes": true,
+        "max_abs": 0.0,
+        "rmse": 0.0
+      }
+    },
+    {
+      "baseline": "vla4-eager_native",
+      "candidate": "vla4-runtime_selected",
+      "same_sampling_policy": true,
+      "speedup": 3.573863484752179,
+      "actions": {
+        "exact_bytes": false,
+        "max_abs": 0.38786225765943527,
+        "rmse": 0.01790909361463996
+      }
+    }
+  ],
+  "default_bitexact": true,
+  "task_quality_validated": false,
+  "scope": "Independent saved-byte, request, schedule, latency and action audit; no GPU recapture."
+}

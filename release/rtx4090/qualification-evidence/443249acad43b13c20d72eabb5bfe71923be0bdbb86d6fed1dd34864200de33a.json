@@ -1,0 +1,141 @@
+{
+  "GPU_used": false,
+  "all_other_changed_paths": {
+    "documentation": [
+      "INSTALL.rst",
+      "README.md",
+      "REPRODUCE.rst",
+      "release/OSS_RELEASE.rst"
+    ],
+    "facade": [
+      "Runtime.reset",
+      "Runtime.episode",
+      "Episode"
+    ],
+    "regression_tests": [
+      "tests/test_bootstrap_vendor.py",
+      "tests/test_cosmos_target_packaging.py",
+      "tests/test_dependency_wheelhouse.py",
+      "tests/test_native_tool_wheelhouse.py",
+      "tests/test_observed_generator_schedule.py",
+      "tests/test_prepare_auxiliary_assets.py",
+      "tests/test_public_deploy.py",
+      "tests/test_public_release_builder.py",
+      "tests/test_user_e2e_fp8_weights.py",
+      "tests/test_vendor_source.py"
+    ]
+  },
+  "coverage_by_revision": {
+    "pi05": {
+      "measured_revision": "7d69e9c7fd46550a3a105faa53bd372f33db80d3",
+      "profile_inventory_changed": [
+        "benchmarks/regression/fixtures/frameworks/catalog.json",
+        "release/vendor/asset_profiles.json",
+        "release/vendor/rtx4090/edge/bootstrap.json",
+        "release/vendor/rtx4090/nano/bootstrap.json"
+      ],
+      "profile_inventory_files": 81,
+      "setup_changes_present": [
+        "benchmarks/regression/fixtures/frameworks/catalog.json",
+        "release/vendor/asset_profiles.json",
+        "release/vendor/rtx4090/cosmos/inference_packaging.patch",
+        "release/vendor/rtx4090/edge/bootstrap.json",
+        "release/vendor/rtx4090/nano/bootstrap.json",
+        "scripts/bootstrap_vendor.py",
+        "scripts/build_public_release.py",
+        "scripts/prepare_native_tools.py",
+        "scripts/public_deploy.py"
+      ],
+      "timed_region_bytes_identical": true
+    },
+    "remaining": {
+      "measured_revision": "a0dc86cc7447ce894663540adf49cfb6e96af97d",
+      "profile_inventory_changed": [],
+      "profile_inventory_files": 82,
+      "setup_changes_present": [
+        "scripts/bootstrap_vendor.py",
+        "scripts/build_public_release.py"
+      ],
+      "timed_region_bytes_identical": true
+    },
+    "vla4": {
+      "measured_revision": "fa31fb2e70d408f2ee260e793b5f15e98e36ee5b",
+      "profile_inventory_changed": [
+        "benchmarks/regression/fixtures/frameworks/catalog.json",
+        "release/vendor/asset_profiles.json",
+        "release/vendor/rtx4090/edge/bootstrap.json",
+        "release/vendor/rtx4090/nano/bootstrap.json"
+      ],
+      "profile_inventory_files": 81,
+      "setup_changes_present": [
+        "benchmarks/regression/fixtures/frameworks/catalog.json",
+        "release/vendor/asset_profiles.json",
+        "release/vendor/rtx4090/cosmos/inference_packaging.patch",
+        "release/vendor/rtx4090/edge/bootstrap.json",
+        "release/vendor/rtx4090/nano/bootstrap.json",
+        "scripts/bootstrap_vendor.py",
+        "scripts/build_public_release.py",
+        "scripts/prepare_native_tools.py",
+        "scripts/public_deploy.py"
+      ],
+      "timed_region_bytes_identical": true
+    }
+  },
+  "final_commit": "c5c1cbbdbc1579258be41cf1c621829dfeeb80f3",
+  "inference_environment_requalified": false,
+  "new_final_wheel_binary_audited": false,
+  "package_boundary": "This task binds the final source tree. Any subsequently built wheel/staged package should bind its own manifest to this tree; no future package file or installed environment is fabricated here.",
+  "passed": true,
+  "report_sha256": "a03ab6b328fe1028b4ce5cf7cdea0bb2089f6999f4123705a181d9e3543b87de",
+  "schema": "instinctflash.measured_source_continuity_review.v1",
+  "scoped_conclusion": "The final Git source preserves the measured owned inference implementations by byte comparison, except three facade docstrings whose remaining complete ASTs match. Retain original measurement source/environment identities; this is not a new latency or quality result.",
+  "setup_dependency_profile_changes": {
+    "benchmarks/regression/fixtures/frameworks/catalog.json": [
+      "Mirrors the same added GR00T original auxiliary model.safetensors size/hash. No replacement checkpoint or altered model computation is declared."
+    ],
+    "release/vendor/asset_profiles.json": [
+      "Adds the exact existing Cosmos-Reason2-2B model.safetensors required by the GR00T cold constructor: 4,877,470,304 bytes, SHA256 fa5a6e6ef4fce40216b185cc48a3b24d31637ac3e2ba69c107ed1f389c1e6ede. Existing revision and other asset entries remain."
+    ],
+    "release/vendor/rtx4090/cosmos/inference_packaging.patch": [
+      "New target-specific patch touches only upstream pyproject.toml. Compared with the previously selected generic patch, the sole changed dependency declaration is natten==0.21.6.dev6+cu130.torch210.gb300 to natten==0.21.6.dev6+cu130.torch210.",
+      "The patch description retains the word Thor in inherited package-description text; this is packaging text, not an executable target guard.",
+      "This packaging selection already existed at measured a0dc; no Cosmos profile/dependency file changed between a0dc and c5c1cbb."
+    ],
+    "release/vendor/rtx4090/edge/bootstrap.json": [
+      "Selects the dedicated RTX4090 Cosmos packaging patch and binds its before/after pyproject hashes. Other profile fields, inference requirements and constraints are unchanged."
+    ],
+    "release/vendor/rtx4090/nano/bootstrap.json": [
+      "Selects the same dedicated RTX4090 Cosmos packaging patch and binds its before/after pyproject hashes. Other profile fields, inference requirements and constraints are unchanged."
+    ],
+    "scripts/bootstrap_vendor.py": [
+      "Accepts an explicit local Git repository/bundle as transport for the same profile-pinned upstream commit; source and patch verification remain required.",
+      "Admits wheelhouse v2 original metadata-overlay wheels and audited pure-Python sdists against existing profile rules and full hashes.",
+      "Publishes shared dependency archives on dedicated copied inodes so caller hardlink changes do not invalidate UV ctime-based cache entries.",
+      "Carries admitted local overlay/sdist paths and PEP517 build constraints through dependency resolution and subsequent wheel installs.",
+      "Adds the separate pinned native-tool wheelhouse path for offline Cosmos CLI preparation.",
+      "Returns failure to shell automation when a required CPU doctor returns false; explicit deferred doctor None remains distinguishable."
+    ],
+    "scripts/build_public_release.py": [
+      "Includes the hardware helper and RTX4090 deployment-profile fixture/canonical mirror in the public staged package.",
+      "Includes the target-specific vendor profiles, Cosmos packaging patch and SM89 qualification helper in the selected release controls.",
+      "Updates hashes for reviewed setup helpers and auxiliary inventory; enforces both Thor and RTX4090 packaged profile mirrors."
+    ],
+    "scripts/prepare_native_tools.py": [
+      "Adds catalog/target-bound native-tool wheelhouse admission and offline first installation with exact original wheel bytes.",
+      "Stores original tool wheels in the owned tool lifecycle, writes persistent local constraints and records offline preparation/reuse evidence.",
+      "Checks interpreter architecture against the requested wheelhouse target and preserves the native Wan cache probe.",
+      "Adds CLI parameters for native-tool wheelhouse/target and explicit failure details; file hashing uses bounded streaming."
+    ],
+    "scripts/public_deploy.py": [
+      "CPU doctor admits only the two actual read-only fc-list queries made by Matplotlib font_manager through the system executable, with exact caller/cwd/environment checks."
+    ]
+  },
+  "task_quality_validated": false,
+  "user_e2e_changes": [
+    "_generator_loop reads through the existing generic FP8 wrapper; queue_length, observed_schedule and dreamzero_contract now inspect the underlying generator.",
+    "fp8_weights enumerates exact package/module namespaces including Wan and deployment policy bridges. It records packed-tensor metadata after timing and does not cast weights.",
+    "The per-call DreamZero step-cache receipt reads the underlying generator backend_stats instead of the outer wrapper.",
+    "The six statements spanning synchronize, timer start, predict, action conversion, synchronize and elapsed-ms calculation have identical bytes across all four source versions.",
+    "The whole user_e2e file is byte-identical between a0dc and c5c1cbb; no entire-harness semantic equivalence is asserted for the older pi05/VLA4 harnesses."
+  ]
+}

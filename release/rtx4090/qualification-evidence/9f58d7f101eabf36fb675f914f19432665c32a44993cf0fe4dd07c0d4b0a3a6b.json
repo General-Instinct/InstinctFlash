@@ -1,0 +1,212 @@
+{
+  "capacity_exclusions": [
+    {
+      "FP8_live_weight_payload_lower_bound_bytes": 41785188736,
+      "driver": "580.159.04",
+      "excluded_modes": [
+        "fp8",
+        "native",
+        "numeric"
+      ],
+      "family": "nano",
+      "gpu_uuid": "cc9b08f5-0925-2946-48f6-a576bc6b28bc",
+      "memory_limit_bytes": 30999998464,
+      "native_CPU_parameter_bytes": 29101613440,
+      "native_fit_measured": false,
+      "observed_OOM": false,
+      "passed": false,
+      "report": {
+        "path": "evidence/76b9fa956affc17951fb7a9fb77ff79a34d8edc8ab07fed90d2dc3a10a59ae80.json",
+        "sha256": "76b9fa956affc17951fb7a9fb77ff79a34d8edc8ab07fed90d2dc3a10a59ae80"
+      },
+      "scope_authorization": {
+        "native_impossibility_claimed": false,
+        "parent_decision": "Exclude the entire Nano family on this 31GB node without OOM trial; FP8 exceeds the static capacity bound, native cold loading has not been verified with the remaining margin.",
+        "user_instruction": "\u653e\u4e0d\u4e0b\u7684\u6a21\u578b\u5c31\u4e0d\u6d4b\u8bd5"
+      },
+      "status": "capacity_excluded_not_tested",
+      "support": {
+        "bootstrap": {
+          "path": "evidence/d539b55945f12834b5a3eb536e3f8b6a5bb4bd4250fdbfdce70d7f7292cd726c.json",
+          "sha256": "d539b55945f12834b5a3eb536e3f8b6a5bb4bd4250fdbfdce70d7f7292cd726c"
+        },
+        "identity": {
+          "path": "evidence/7a5a4cbfadd8e2cf821c88cbe50a58dcd96bf4a4fea9997c36dcac50bf6dbd58.json",
+          "sha256": "7a5a4cbfadd8e2cf821c88cbe50a58dcd96bf4a4fea9997c36dcac50bf6dbd58"
+        },
+        "memory": {
+          "path": "evidence/edcd88f5a98c33e03d16c501aa655fe20a402f13b21fccd7d81b414d1dd4ab92.json",
+          "sha256": "edcd88f5a98c33e03d16c501aa655fe20a402f13b21fccd7d81b414d1dd4ab92"
+        },
+        "profile": {
+          "path": "evidence/29b202760dfbd5b1924083d3c8b97792d11fe23ab6b16d935f6507492703d374.json",
+          "sha256": "29b202760dfbd5b1924083d3c8b97792d11fe23ab6b16d935f6507492703d374"
+        },
+        "source_review": {
+          "path": "evidence/5b87ae1cb6517d77a980208ec21de5695287a61e9cfdebecd2799765c4452774.json",
+          "sha256": "5b87ae1cb6517d77a980208ec21de5695287a61e9cfdebecd2799765c4452774"
+        },
+        "tensor_headers": {
+          "path": "evidence/f73933f7337d057ca0da028b3854ebc4cdf520b5f8a53c7a5eef3f69c5ee8ba9.json",
+          "sha256": "f73933f7337d057ca0da028b3854ebc4cdf520b5f8a53c7a5eef3f69c5ee8ba9"
+        }
+      },
+      "tested": false,
+      "unsupported": false
+    }
+  ],
+  "cohorts": {
+    "old_4x4090_cu130": {
+      "api_cell_count": 24,
+      "cgroup": {
+        "cpu_quota": 92.16,
+        "memory_limit_bytes": 367123234816,
+        "observed_paths": {
+          "/sys/fs/cgroup/cpu.max": "9216000 100000",
+          "/sys/fs/cgroup/memory.max": "367123234816"
+        },
+        "version": 2
+      },
+      "families": [
+        "dreamzero",
+        "groot",
+        "pi05",
+        "va",
+        "vla2",
+        "vla4"
+      ],
+      "gpu_uuids": [
+        "0b553faa-d888-a9df-2682-e87718330805",
+        "34f3da96-a7b2-ed04-c766-05e7862d940c",
+        "6f8e36bf-be4b-cb37-df91-86e3131de9f5",
+        "876145fd-b39a-eb99-f56a-07e82017d3d6"
+      ],
+      "hardware": {
+        "available_device_count": 4,
+        "cgroup_cpu_quota": 92.16,
+        "cpu_affinity_count": 192,
+        "driver": "580.82.09",
+        "effective_cgroup_memory_bytes": 367123234816,
+        "gpu": "NVIDIA GeForce RTX 4090",
+        "gpu_memory_mib": 24564,
+        "gpus_per_model_run": 1,
+        "logical_cpu_count": 192,
+        "minimum_host_memory_measured": false,
+        "pcie_max_generation": 4,
+        "pcie_max_width": 16,
+        "peak_host_memory_measured": false,
+        "physical_host_memory_bytes": 540824731648,
+        "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+        "power_limit_w": 425.0
+      },
+      "machine_context_sha256": "a7776a925f038a22d587ee4b6a470b7e1a34c43bb1698ddcb9fe045621b9385f",
+      "source_commits": [
+        "a0dc86cc7447ce894663540adf49cfb6e96af97d"
+      ],
+      "torch_versions": [
+        "2.11.0+cu130"
+      ]
+    },
+    "replacement_1x4090_cu130": {
+      "api_cell_count": 4,
+      "cgroup": {
+        "cpu_quota": 10.2,
+        "memory_limit_bytes": 30999998464,
+        "observed_paths": {
+          "/sys/fs/cgroup/cpu,cpuacct/cpu.cfs_period_us": "100000",
+          "/sys/fs/cgroup/cpu,cpuacct/cpu.cfs_quota_us": "1020000",
+          "/sys/fs/cgroup/cpu/cpu.cfs_period_us": "100000",
+          "/sys/fs/cgroup/cpu/cpu.cfs_quota_us": "1020000",
+          "/sys/fs/cgroup/memory/memory.limit_in_bytes": "30999998464"
+        },
+        "version": 1
+      },
+      "families": [
+        "edge"
+      ],
+      "gpu_uuids": [
+        "cc9b08f5-0925-2946-48f6-a576bc6b28bc"
+      ],
+      "hardware": {
+        "available_device_count": 1,
+        "cgroup_cpu_quota": 10.2,
+        "cpu_affinity_count": 96,
+        "driver": "580.159.04",
+        "effective_cgroup_memory_bytes": 30999998464,
+        "gpu": "NVIDIA GeForce RTX 4090",
+        "gpu_memory_mib": 24564,
+        "gpus_per_model_run": 1,
+        "logical_cpu_count": 96,
+        "minimum_host_memory_measured": false,
+        "pcie_max_generation": 4,
+        "pcie_max_width": 16,
+        "peak_host_memory_measured": false,
+        "physical_host_memory_bytes": 270075785216,
+        "platform": "Linux-6.8.0-117-generic-x86_64-with-glibc2.39",
+        "power_limit_w": 450.0
+      },
+      "machine_context_sha256": "49f69940bd67f937b4ab3a1683426ca3b5b322a0a0b76304e929cd79d095e71c",
+      "source_commits": [
+        "c5c1cbbdbc1579258be41cf1c621829dfeeb80f3"
+      ],
+      "torch_versions": [
+        "2.10.0+cu130"
+      ]
+    }
+  },
+  "full_qualification": false,
+  "requested_scope_qualification": true,
+  "scope_change_source": {
+    "kind": "user_instruction_in_active_task",
+    "text": "\u653e\u4e0d\u4e0b\u7684\u6a21\u578b\u5c31\u4e0d\u6d4b\u8bd5"
+  },
+  "scope_coverage": {
+    "catalog_families": [
+      "va",
+      "vla4",
+      "vla2",
+      "pi05",
+      "groot",
+      "edge",
+      "nano",
+      "dreamzero"
+    ],
+    "catalog_required_api_cells": 32,
+    "catalog_required_runtime_modes": 23,
+    "completed_requested_families": [
+      "dreamzero",
+      "edge",
+      "groot",
+      "pi05",
+      "va",
+      "vla2",
+      "vla4"
+    ],
+    "excluded_families": [
+      "nano"
+    ],
+    "pending_requested_families": [],
+    "requested_families": [
+      "va",
+      "vla4",
+      "vla2",
+      "pi05",
+      "groot",
+      "edge",
+      "dreamzero"
+    ],
+    "requested_required_api_cells": 28,
+    "requested_required_runtime_modes": 20,
+    "tested_api_cells": 28,
+    "tested_families": [
+      "dreamzero",
+      "edge",
+      "groot",
+      "pi05",
+      "va",
+      "vla2",
+      "vla4"
+    ],
+    "tested_runtime_modes": 20
+  }
+}

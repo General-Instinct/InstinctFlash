@@ -49,10 +49,13 @@ performance on another device. Alternative-framework recipes retain their own
 step and history protocols. Experimental SDE1 results remain separate from the
 full UniPC4/CFG3 Cosmos selection.
 
-Full RTX 4090 qualification remains pending. The
-`RTX 4090 catalog <rtx4090/deployment_profiles.json>`_ records target status;
-prepared profiles and CPU packaging checks do not establish completed GPU
-measurements. The historical Thor results remain separate.
+The `RTX 4090 results <rtx4090/results/results.rst>`_ cover seven tested families,
+20 Runtime modes and 28 paired API cells, with actual WebSocket checks. Nano
+was excluded from the replacement host's 31 GB RAM allocation and remains
+untested. Edge completed the pipeline but showed no speedup in this run.
+The `RTX 4090 catalog <rtx4090/deployment_profiles.json>`_ links the recorded
+qualification for each tested mode; all eight adapters remain available.
+The historical Thor results retain their separate hardware and settings.
 
 The recorded RGB fixture has its RoboTwin license and attribution alongside
 it. Bulk model weights, machine-local caches and unreviewed simulator assets

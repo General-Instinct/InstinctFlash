@@ -14,6 +14,7 @@
 
 ## What's new 🔥
 
+- **RTX 4090.** Seven model families tested end to end; VLA-4B **3.98×**, VLA-V2 **5.51×**. [Results](release/rtx4090/results/results.rst).
 - **Full source and eight model families.** Public install, paired inference and WebSocket serving paths are qualified on Jetson Thor for all eight models below.
 - **Cosmos3 at full UniPC4/CFG3.** Edge: **1048.01 ms**; Nano: **4772.38 ms**, both native precision with NUMERIC optimizations.
 - **LingBot-VA @2V/4A.** **459.10 ms / 4.51×** versus native 2V/4A in early continuations; full 25V/50A FP8: **2891.74 ms**.
@@ -42,6 +43,27 @@ Cosmos3 retains full UniPC4/CFG3; detailed execution settings are linked below.
 FP8 and sampling changes are optional.
 
 [Protocol and raw results](eval/public_release_2026-09-15/results.rst) · [Native VA 2V/4A measurement](eval/va_native_2v4a_2026-09-15/README.rst) · [Reproduction commands](REPRODUCE.rst)
+
+Prediction p50 on **RTX 4090** (ms), measured September 16, 2026. Fastest measured Runtime setting per row.
+
+| Model | PyTorch | InstinctFlash |
+|:--|--:|--:|
+| LingBot-VA | 8139.07 | **3411.92 (2.39×)** · Native |
+| ↳ LingBot-VA @2V/4A | 1147.51 | **452.64 (2.54×)** · NUMERIC |
+| LingBot-VLA-4B | 808.11 | **203.10 (3.98×)** · Native |
+| LingBot-VLA-V2-6B | 959.83 | **174.32 (5.51×)** · FP8 |
+| Cosmos3 Edge DROID | 1276.81 | **1305.00 (0.98×)** · Native |
+| Cosmos3 Nano DROID | — | Not tested: host RAM |
+| pi05 | 308.72 | **109.77 (2.81×)** · Native |
+| GR00T N1.7 | 162.69 | **83.86 (1.94×)** · Native |
+| DreamZero DROID | 113018.28 | **53556.88 (2.11×)** · FP8† |
+
+Each pair used the same host and environment; Edge used the replacement host.
+Edge showed no speedup in this run. Nano was skipped on its 31 GB RAM allocation.
+VA 2V/4A compares against native 2V/4A; † DreamZero uses dynamic step caching.
+These measurements verify latency and action comparisons; RTX task quality remains unevaluated.
+
+[RTX protocol, all modes and raw results](release/rtx4090/results/results.rst) · [RTX reproduction commands](REPRODUCE.rst#rtx-4090)
 
 ## Install
 

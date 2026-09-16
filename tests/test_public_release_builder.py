@@ -6,11 +6,10 @@ import json
 import os
 import subprocess
 import sys
-from pathlib import Path
 import zipfile
+from pathlib import Path
 
 import pytest
-
 
 spec = importlib.util.spec_from_file_location("public_builder", Path(__file__).resolve().parents[1] / "scripts/build_public_release.py")
 builder = importlib.util.module_from_spec(spec)
@@ -381,12 +380,17 @@ def test_full_staged_rtx_closure_plans_all_eight_without_installs(repository, tm
         put(repository, relative, (original / relative).read_bytes())
     monkeypatch.setattr(builder, "SELECTED_CONTROLS", CURRENT_CONTROLS)
     monkeypatch.setattr(builder, "PUBLIC_VENDOR_FILES", CURRENT_VENDOR_FILES)
-    for relative in ("release/vendor/rtx4090/private.json", "release/rtx4090/unrelated.md", "scripts/private_wheelhouse.py"):
+    for relative in ("release/vendor/rtx4090/private.json", "release/rtx4090/unrelated.md",
+                     "release/rtx4090/results/private.log", "scripts/private_wheelhouse.py"):
         put(repository, relative, "unselected input")
     result = builder.create_stage(repository, tmp_path / "full", scope="full")
     stage = Path(result["source"])
     assert all(relative not in result["files"] for relative in (
-        "release/vendor/rtx4090/private.json", "release/rtx4090/unrelated.md", "scripts/private_wheelhouse.py"))
+        "release/vendor/rtx4090/private.json", "release/rtx4090/unrelated.md",
+        "release/rtx4090/results/private.log", "scripts/private_wheelhouse.py"))
+    for relative in ("release/rtx4090/qualification.json", "release/rtx4090/results/results.json",
+                     "release/rtx4090/results/reproduce_manifest.json", "release/rtx4090/results/render_results.py"):
+        assert builder.sha((stage / relative).read_bytes()) == CURRENT_CONTROLS[relative]
     assert "scripts/qualify_sm89_fp8.py" in result["files"]
     assert "benchmarks/regression/hardware.py" in result["files"]
     environment = dict(os.environ, CUDA_VISIBLE_DEVICES="", HF_HUB_OFFLINE="1", UV_OFFLINE="1")

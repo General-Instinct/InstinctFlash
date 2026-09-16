@@ -1,0 +1,296 @@
+{
+  "GPU_used_by_audit": false,
+  "all_websocket_requests_paired": true,
+  "archive_sha256": "bee8d17d23609bbb37da1c1fcacf6a4402b6ac332afc5e58479b3b770af186ad",
+  "capture": {
+    "archive_sha256": "bee8d17d23609bbb37da1c1fcacf6a4402b6ac332afc5e58479b3b770af186ad",
+    "comparisons": [
+      {
+        "actions": {
+          "exact_bytes": true,
+          "max_abs": 0.0,
+          "rmse": 0.0
+        },
+        "baseline": "va-eager_native",
+        "candidate": "va-runtime_default",
+        "same_sampling_policy": true,
+        "speedup": 2.385481753922717
+      },
+      {
+        "actions": {
+          "exact_bytes": false,
+          "max_abs": 1.1210942268371582,
+          "rmse": 0.04021132435988507
+        },
+        "baseline": "va-eager_native",
+        "candidate": "va-runtime_selected",
+        "same_sampling_policy": true,
+        "speedup": 1.6490938858402306
+      },
+      {
+        "actions": {
+          "exact_bytes": false,
+          "max_abs": 1.1328130960464478,
+          "rmse": 0.1749224563629933
+        },
+        "baseline": "va-eager_native",
+        "candidate": "va-2v4a-fp8",
+        "same_sampling_policy": false,
+        "speedup": 12.974246039560349
+      }
+    ],
+    "default_bitexact": true,
+    "family": "va",
+    "metrics": {
+      "va-2v4a-fp8": {
+        "p50_ms": 627.3253886029124,
+        "precision": "fp8",
+        "primary_samples": 12,
+        "schedule": {
+          "action_steps": 4,
+          "nfe": {
+            "action": 4,
+            "video": 2
+          },
+          "sampler": "checkpoint",
+          "video_steps": 2
+        },
+        "total_predictions": 21
+      },
+      "va-eager_native": {
+        "p50_ms": 8139.073938596994,
+        "precision": "native",
+        "primary_samples": 12,
+        "schedule": {
+          "action_steps": 50,
+          "nfe": {
+            "action": 50,
+            "video": 25
+          },
+          "sampler": "checkpoint",
+          "video_steps": 25
+        },
+        "total_predictions": 21
+      },
+      "va-runtime_default": {
+        "p50_ms": 3411.920432932675,
+        "precision": "native",
+        "primary_samples": 12,
+        "schedule": {
+          "action_steps": 50,
+          "nfe": {
+            "action": 50,
+            "video": 25
+          },
+          "sampler": "checkpoint",
+          "video_steps": 25
+        },
+        "total_predictions": 21
+      },
+      "va-runtime_selected": {
+        "p50_ms": 4935.48245402053,
+        "precision": "fp8",
+        "primary_samples": 12,
+        "schedule": {
+          "action_steps": 50,
+          "nfe": {
+            "action": 50,
+            "video": 25
+          },
+          "sampler": "checkpoint",
+          "video_steps": 25
+        },
+        "total_predictions": 21
+      }
+    },
+    "passed": true,
+    "plan_sha256": "b247d3ba57b5ba12eb5e099401b1d88d8d79479b271bd3b3d21a4095e4bb0eae",
+    "schema": "instinctflash.rtx_archive_independent_audit.v1",
+    "scope": "Independent saved-byte, request, schedule, latency and action audit; no GPU recapture.",
+    "task_quality_validated": false
+  },
+  "family": "va",
+  "original_asset_bytes": 24382314342,
+  "original_file_count": 19,
+  "outer_provenance_hashes": {
+    "assets_completion_sha256": "72213195f8b209b98ea21e8ba5705a038cb68332e31fb12230ff7be3b3858149",
+    "bootstrap_completion_sha256": "a7380c7bcdbf5d6877600798f4439301378a209303b8aac6ce12f578ae819a36",
+    "capture_run_sha256": "1f1da9e3f46e960a38ca5e7be791ecb91a44dc4f1a6d69212f438b335003448f",
+    "config_sha256": "36005887c7a0f777548c62c1ff3bfaadf62b291aac80b09cf38dbeb746d0bb78",
+    "core_upgrade_completion_sha256": "ebd922df47c0e7dd09430f7dc36556167dfd26bbaa5d4b2542c37369826af7d1",
+    "native_inputs_completion_sha256": "9e49dd69d18c269e2a6254dcfb31c61014fd3b0ea6a5e9d55e2c7a8a28aefdb4",
+    "plan_sha256": "b247d3ba57b5ba12eb5e099401b1d88d8d79479b271bd3b3d21a4095e4bb0eae"
+  },
+  "passed": true,
+  "retirement_performed": false,
+  "schema": "instinctflash.complete_pipeline_independent_audit.v1",
+  "serving": [
+    {
+      "action_archive_sha256": "09446e7f2eb2a8e649f2ab086c491d0000a1a072edf8506549cb763603008d47",
+      "action_shape": [
+        6,
+        16,
+        2,
+        16
+      ],
+      "calls": 6,
+      "cell": "va-runtime_default",
+      "effective_nfe": {
+        "action": 50,
+        "video": 25
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "native",
+      "receipt_sha256": "0724d7c6e41f8f629bde5bf0063d0a2b5036effac277879dc03dbb5622e61127",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "1d54b67ef7966972aeb4414942ffc32efc551108c433fdc4df0bfa058474b901"
+        ],
+        [
+          0,
+          1,
+          "0b8bbce683b1edf74b790be13a67de9f4ab75d6c292e9f5de4731a0022c7309a"
+        ],
+        [
+          0,
+          2,
+          "213a91872eb42c1d3aa4402c2bdb7bb4bc22993ded30421466321f9ff010f874"
+        ],
+        [
+          1,
+          0,
+          "e432cbcacb5a68cd598ee33686873d11abc17918fa6091ea19154de6e890cab3"
+        ],
+        [
+          1,
+          1,
+          "f6d12fce383b2ecb8dbd8a4abaf4c50ee686501865eb57931a96a8b694f6da33"
+        ],
+        [
+          1,
+          2,
+          "5021f43634401bea1027b383f00c32ba80c1a7b1a6f5957c8686e87b4ea7beb7"
+        ]
+      ],
+      "rng_scope": "native serving constructor seed",
+      "task_quality_validated": false
+    },
+    {
+      "action_archive_sha256": "e956345e8d86c669a5e4eefac409aca27966a8d34cb57721964d6af22b5318fb",
+      "action_shape": [
+        6,
+        16,
+        2,
+        16
+      ],
+      "calls": 6,
+      "cell": "va-runtime_selected",
+      "effective_nfe": {
+        "action": 50,
+        "video": 25
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "fp8",
+      "receipt_sha256": "193a82c1e06b2dfe7066271807b42d5aeba25bc496a823874d85f59c758a0fb0",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "1d54b67ef7966972aeb4414942ffc32efc551108c433fdc4df0bfa058474b901"
+        ],
+        [
+          0,
+          1,
+          "0b8bbce683b1edf74b790be13a67de9f4ab75d6c292e9f5de4731a0022c7309a"
+        ],
+        [
+          0,
+          2,
+          "213a91872eb42c1d3aa4402c2bdb7bb4bc22993ded30421466321f9ff010f874"
+        ],
+        [
+          1,
+          0,
+          "e432cbcacb5a68cd598ee33686873d11abc17918fa6091ea19154de6e890cab3"
+        ],
+        [
+          1,
+          1,
+          "f6d12fce383b2ecb8dbd8a4abaf4c50ee686501865eb57931a96a8b694f6da33"
+        ],
+        [
+          1,
+          2,
+          "5021f43634401bea1027b383f00c32ba80c1a7b1a6f5957c8686e87b4ea7beb7"
+        ]
+      ],
+      "rng_scope": "unseeded FP8 transport check",
+      "task_quality_validated": false
+    },
+    {
+      "action_archive_sha256": "a8e9af7a9459328a769b79e340b3fd9468c681a6ec456808f864201e2a913731",
+      "action_shape": [
+        6,
+        16,
+        2,
+        16
+      ],
+      "calls": 6,
+      "cell": "va-2v4a-fp8",
+      "effective_nfe": {
+        "action": 4,
+        "video": 2
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "fp8",
+      "receipt_sha256": "c1325fd0ace26b742dde3184dc932fc3acc7000e384db1ce8adf265e37dc029a",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "1d54b67ef7966972aeb4414942ffc32efc551108c433fdc4df0bfa058474b901"
+        ],
+        [
+          0,
+          1,
+          "0b8bbce683b1edf74b790be13a67de9f4ab75d6c292e9f5de4731a0022c7309a"
+        ],
+        [
+          0,
+          2,
+          "213a91872eb42c1d3aa4402c2bdb7bb4bc22993ded30421466321f9ff010f874"
+        ],
+        [
+          1,
+          0,
+          "e432cbcacb5a68cd598ee33686873d11abc17918fa6091ea19154de6e890cab3"
+        ],
+        [
+          1,
+          1,
+          "f6d12fce383b2ecb8dbd8a4abaf4c50ee686501865eb57931a96a8b694f6da33"
+        ],
+        [
+          1,
+          2,
+          "5021f43634401bea1027b383f00c32ba80c1a7b1a6f5957c8686e87b4ea7beb7"
+        ]
+      ],
+      "rng_scope": "unseeded FP8 transport check",
+      "task_quality_validated": false
+    }
+  ],
+  "source_commit": "a0dc86cc7447ce894663540adf49cfb6e96af97d",
+  "source_completion_sha256": "d55d3fea9af7c56757c43d649154e0868fa104a3357c59344d02f161100864fa",
+  "task_quality_validated": false,
+  "total_websocket_calls": 18,
+  "va_native_2v4a_supplement_included": false
+}

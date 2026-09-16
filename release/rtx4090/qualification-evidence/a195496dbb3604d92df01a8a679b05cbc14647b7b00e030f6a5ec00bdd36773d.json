@@ -1,0 +1,62 @@
+{
+  "scope": "installed-wheel synthetic primitives in pinned Cosmos Torch2.10 environment; no full-model qualification",
+  "release_qualification": false,
+  "model_quality_evidence": false,
+  "started_utc": "2026-09-16T17:15:15.026928+00:00",
+  "worker_pid": 1297,
+  "worker_start_ticks": "59158234",
+  "gpu_uuid": "GPU-cc9b08f5-0925-2946-48f6-a576bc6b28bc",
+  "timeout_seconds": 900,
+  "automatic_retry": false,
+  "python": "/workspace/ifl_rtx4090_580_20260916/families/edge-v1/env/bin/python",
+  "source": "/workspace/ifl_rtx4090_580_20260916/source-c5",
+  "status": "complete",
+  "passed": true,
+  "script_sha256": "7dd70fc40c3e9998fad2f693645b9c2742d094888d5c420749c7d1b368f83f7b",
+  "cold_completion_sha256": "3668b0ca46a004d37c7262d6db151ceaefd017015d25a942e2ba6f3d9e74bf26",
+  "bootstrap_completion_sha256": "b6904fcc9668c63698d8858dd3a66f273b2b8376af5b5d04bc182fd7bfe8b5dd",
+  "admitted_runtime_files": {
+    "fp8_pack.py": "9b967b83b133f0d6dbb1613da56eca1ad99d9e8e8b532b456cf08befc6de3655",
+    "module_residency.py": "4f83face9a4d7718616538d0ba571ac1cc1ee3e81c573873f7b8d3d4db8f97fa",
+    "sm89_fp8.py": "49e4a4f4cabb3be35815aea69e4e8368fe774965ac4fa56eff35604bef1169be",
+    "torch_fp8_linear.py": "22288120d9362785ed01cb5c2e6d4c1193c3e4d6a1a0c137d9c117300e0820f5"
+  },
+  "pack_sha256": "9b967b83b133f0d6dbb1613da56eca1ad99d9e8e8b532b456cf08befc6de3655",
+  "lock_paths": [
+    "/workspace/ifl_rtx4090_580_20260916/host-timing.lock",
+    "/tmp/ifl-robolab-renderer-gpu0.lock",
+    "/workspace/ifl_rtx4090_580_20260916/gpu-leases/GPU-cc9b08f5-0925-2946-48f6-a576bc6b28bc.lock"
+  ],
+  "gpu_before_csv": "0, GPU-cc9b08f5-0925-2946-48f6-a576bc6b28bc, NVIDIA GeForce RTX 4090, 1, 0",
+  "compute_processes_before_csv": "",
+  "subprocess_environment_overrides": {
+    "CUDA_VISIBLE_DEVICES": "GPU-cc9b08f5-0925-2946-48f6-a576bc6b28bc",
+    "CUDA_DEVICE_ORDER": "PCI_BUS_ID",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "TRITON_CACHE_DIR": "/workspace/ifl_rtx4090_580_20260916/primitive_v1/triton-cache",
+    "TORCHINDUCTOR_CACHE_DIR": "/workspace/ifl_rtx4090_580_20260916/primitive_v1/inductor-cache",
+    "CUDA_CACHE_PATH": "/workspace/ifl_rtx4090_580_20260916/primitive_v1/cuda-cache",
+    "TORCH_EXTENSIONS_DIR": "/workspace/ifl_rtx4090_580_20260916/primitive_v1/extensions-cache",
+    "XDG_CACHE_HOME": "/workspace/ifl_rtx4090_580_20260916/primitive_v1/xdg-cache",
+    "TMPDIR": "/workspace/ifl_rtx4090_580_20260916/primitive_v1/tmp"
+  },
+  "argv": [
+    "/workspace/ifl_rtx4090_580_20260916/families/edge-v1/env/bin/python",
+    "-I",
+    "/workspace/ifl_rtx4090_580_20260916/source-c5/scripts/qualify_sm89_fp8.py",
+    "--output",
+    "/workspace/ifl_rtx4090_580_20260916/primitive_v1/report.json"
+  ],
+  "child_pid": 1316,
+  "child_start_ticks": "59158247",
+  "returncode": 0,
+  "report_sha256": "0f1f4b56a962ff964b014e78c659db05eb63048c0d5221ca50ad8d14f00fda8c",
+  "finished_utc": "2026-09-16T17:15:26.308871+00:00",
+  "elapsed_seconds": 11.28196457400918,
+  "gpu_after_csv": "0, GPU-cc9b08f5-0925-2946-48f6-a576bc6b28bc, 1, 0",
+  "compute_processes_after_csv": "",
+  "gpu_lease_released": true
+}

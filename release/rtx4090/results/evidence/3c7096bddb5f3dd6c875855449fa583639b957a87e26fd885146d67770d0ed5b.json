@@ -1,0 +1,85 @@
+{
+  "schema": "instinctflash.rtx_archive_independent_audit.v1",
+  "passed": true,
+  "family": "pi05",
+  "archive_sha256": "7a00e4ae42aaccecc42379e240936db8c2b19522ccbf4b40c0a562815451983d",
+  "plan_sha256": "4c7b8c5311b352ec94307b0eff3fe7292458423ad9b32db6b434ee527e948d26",
+  "metrics": {
+    "pi05-eager_native": {
+      "p50_ms": 308.7224061600864,
+      "primary_samples": 20,
+      "total_predictions": 25,
+      "precision": "native",
+      "schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      }
+    },
+    "pi05-runtime_default": {
+      "p50_ms": 109.77421142160892,
+      "primary_samples": 20,
+      "total_predictions": 25,
+      "precision": "native",
+      "schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      }
+    },
+    "pi05-runtime_selected": {
+      "p50_ms": 111.7191812954843,
+      "primary_samples": 20,
+      "total_predictions": 25,
+      "precision": "fp8",
+      "schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      }
+    }
+  },
+  "comparisons": [
+    {
+      "baseline": "pi05-eager_native",
+      "candidate": "pi05-runtime_default",
+      "same_sampling_policy": true,
+      "speedup": 2.8123400037407578,
+      "actions": {
+        "exact_bytes": true,
+        "max_abs": 0.0,
+        "rmse": 0.0
+      },
+      "queue": {
+        "exact_bytes": true,
+        "max_abs": 0.0,
+        "rmse": 0.0
+      }
+    },
+    {
+      "baseline": "pi05-eager_native",
+      "candidate": "pi05-runtime_selected",
+      "same_sampling_policy": true,
+      "speedup": 2.763378701671214,
+      "actions": {
+        "exact_bytes": false,
+        "max_abs": 0.032808005809783936,
+        "rmse": 0.005144926569825235
+      },
+      "queue": {
+        "exact_bytes": false,
+        "max_abs": 0.0789841040968895,
+        "rmse": 0.008695081638801028
+      }
+    }
+  ],
+  "default_bitexact": true,
+  "task_quality_validated": false,
+  "scope": "Independent saved-byte, request, schedule, latency and action audit; no GPU recapture."
+}

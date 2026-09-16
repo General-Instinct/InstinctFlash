@@ -1,0 +1,117 @@
+{
+  "schema": "instinctflash.nano_cpu_memory_source_review.v1",
+  "source_commit": "c5c1cbbdbc1579258be41cf1c621829dfeeb80f3",
+  "vendor_revision": "f734253f0f6af3e268372402f44435c38f55ef3e",
+  "checkpoint_revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e",
+  "asset_set_sha256": "d5333b1426ec40363a5442b31e8abd42c1c8c811ea0f9a0aa91ce2e0b541cacf",
+  "header_receipt_sha256": "f73933f7337d057ca0da028b3854ebc4cdf520b5f8a53c7a5eef3f69c5ee8ba9",
+  "GPU_used": false,
+  "remote_operations": false,
+  "tensor_payload_read": false,
+  "host_memory_limit_bytes_parent_observed": 30999998464,
+  "quantities": {
+    "checkpoint_transformer_BF16_bytes": 30346273152,
+    "elided_untied_lm_head_bytes": 1244659712,
+    "native_CPU_parameter_bytes_before_placement": 29101613440,
+    "native_CPU_parameter_GiB": 27.102989554405212,
+    "native_other_memory_budget_bytes": 1898385024,
+    "native_block_count": 36,
+    "native_block_bytes": 771785728,
+    "packed_projection_modules": 432,
+    "packed_E4M3_weight_bytes": 12683575296,
+    "retained_native_plus_all_packed_weight_bytes": 41785188736,
+    "retained_native_plus_all_packed_weight_GiB": 38.91548955440521,
+    "FP8_lower_bound_over_container_limit_bytes": 10785190272,
+    "largest_quantized_BF16_projection_bytes": 100663296,
+    "largest_quantized_FP32_temporary_bytes": 201326592,
+    "largest_native_checkpoint_tensor_bytes": 1244659712,
+    "unused_bundled_vision_BF16_bytes": 1152776672,
+    "unused_bundled_diffusers_VAE_BF16_bytes": 1409377336,
+    "configured_WanVAE_original_file_bytes": 2818839170
+  },
+  "findings": {
+    "FP8": "Current recipe cannot retain its required original+packed CPU weight tensors inside the 31GB RAM allowance without paging or a loader/packing design change. This is a source/header weight-byte lower bound, not measured RSS or a minimum-RAM certificate.",
+    "native": "Not proven impossible solely from parameter bytes; 29.10GB leaves 1.90GB for Python/Torch/native libraries, allocator overhead, metadata and active mapped checkpoint pages. No measured successful cold load at this limit; cannot claim reliable fit.",
+    "actual_loader": "HF diffusers branch calls DCP with safe_open metadata and the original Torch2.10 HuggingFaceStorageReader, thread_count=1. It copies individual mmap slices into separately materialized CPU parameters. It does not use the alternate MultiRank loader that accumulates whole-shard tensor dictionaries.",
+    "vision": "Nano config omits include_visual; the pinned config default is false, so bundled 1.153GB vision_encoder weights are not CPU network parameters for this native policy route. Planner skips absent visual targets.",
+    "VAE": "The configured Wan2.2 PTH VAE is loaded before net construction on CUDA and remains unchanged; the bundled diffusers VAE is not the selected loader. Do not add both files as simultaneous CPU master weight tensors.",
+    "KV": "OmniMoTModel.set_up_memory is a no-op; CosmosDROIDLoop has no persistent cross-request KV. No DreamZero full-history CPU-KV surcharge applies.",
+    "storage": "All originals cannot be stored in a 31GB RAM-backed filesystem. Disk-backed source/mmap pages are reclaimable; tmpfs backing occupies host/cgroup memory and must be accounted separately from process RSS.",
+    "residency": "CPU construction happens before finalizer. Native GPU residency moves a prefix only after complete load; FP8 packs all432 modules before replacing originals and only then installs residency. Thus final VRAM/CPU placement savings do not avoid the cold-load/packing peaks.",
+    "options": "More host RAM is the quickest route preserving frozen native/FP8 code. 64/96GB are candidate capacities for subsequent measurement, not certified minima. A lower-RAM implementation would require explicitly scoped streaming placement or file-backed masters and transactional per-block FP8 staging; that changes loader/packing behavior and needs qualification."
+  },
+  "sources": [
+    {
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/inference/model.py",
+      "sha256": "8fb46157f38080efc7b32419fe509abc4994b59f8f07e1cac377a1f82e87f3e1",
+      "matches_pinned_source_or_reviewed_patch": true
+    },
+    {
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/inference/inference.py",
+      "sha256": "78f09d605c99d3073bfb8cd29cbd555e76c1f15ecf067055e8fb7560db7279ca",
+      "matches_pinned_source_or_reviewed_patch": true
+    },
+    {
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/model/generator/omni_mot_model.py",
+      "sha256": "167e8c012d6ad243187a88e67facba8a681f8d2fa3406672cea0de9dac37c161",
+      "matches_pinned_source_or_reviewed_patch": true
+    },
+    {
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/model/generator/mot/unified_mot.py",
+      "sha256": "92fb455e597f4cdfbbde182dab192f370bebd1068f24d917e05f34268fcf7032",
+      "matches_pinned_source_or_reviewed_patch": true
+    },
+    {
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/model/generator/mot/cosmos3_vfm_network.py",
+      "sha256": "f155aee28da3d7b3164775f2c5c11a1084acdcd756363c92ffeddf97748fbb6b",
+      "matches_pinned_source_or_reviewed_patch": true
+    },
+    {
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/model/generator/tokenizers/wan2pt2_vae_4x16x16.py",
+      "sha256": "95676798c8efdceb8cebc5fcbb2271f204ea5489aad53ce4517ab1bd1cd46550",
+      "matches_pinned_source_or_reviewed_patch": true
+    },
+    {
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/configs/base/defaults/reasoner.py",
+      "sha256": "d38698a585c2f4d877d4ba894e494b53fbbe0dc4eac199631408a554888c5add",
+      "matches_pinned_source_or_reviewed_patch": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx4090-20260916/examples/cosmos3_policy/cosmos3_iwm/sm89_residency.py",
+      "sha256": "e47961b7be10f1823ef886dd7488c72527e26c6a873cdb7b34edc2c716106926",
+      "matches_clean_c5_source": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx4090-20260916/examples/cosmos3_policy/cosmos3_iwm/nano_action_only.py",
+      "sha256": "1e8cdcc9007c4b3a32b3ca35e9e01ea710d1a706b4a687bad826f51b0db81840",
+      "matches_clean_c5_source": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx4090-20260916/instinctflash/runtime/sm89_fp8.py",
+      "sha256": "49e4a4f4cabb3be35815aea69e4e8368fe774965ac4fa56eff35604bef1169be",
+      "matches_clean_c5_source": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx4090-20260916/instinctflash/runtime/module_residency.py",
+      "sha256": "4f83face9a4d7718616538d0ba571ac1cc1ee3e81c573873f7b8d3d4db8f97fa",
+      "matches_clean_c5_source": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx4090-20260916/instinctflash/runtime/torch_fp8_linear.py",
+      "sha256": "22288120d9362785ed01cb5c2e6d4c1193c3e4d6a1a0c137d9c117300e0820f5",
+      "matches_clean_c5_source": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx4090-20260916/instinctflash/runtime/cosmos_droid.py",
+      "sha256": "fbe72ce9ef5d6e21b2573211c1488649a280c0b85a20cbd592a803a4f22e0083",
+      "matches_clean_c5_source": true
+    },
+    {
+      "wheel": "/home/ubuntu/ifl_eval/rtx4090_20260916/wheelhouse_cosmos_v2/wheels/torch-2.10.0+cu130-cp313-cp313-manylinux_2_28_x86_64.whl",
+      "member": "torch/distributed/checkpoint/hf_storage.py",
+      "member_sha256": "d82ab88aaa39986eca4260848b9a42c3e49a6657fbd2aff95649c560fa52d264"
+    }
+  ],
+  "claimed_minimum_RAM": null,
+  "measured_RSS_HWM": null
+}

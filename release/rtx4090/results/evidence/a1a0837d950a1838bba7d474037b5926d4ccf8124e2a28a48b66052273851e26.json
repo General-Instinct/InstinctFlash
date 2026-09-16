@@ -1,0 +1,444 @@
+{
+  "GPU_used_by_audit": false,
+  "all_websocket_requests_paired": true,
+  "archive_sha256": "5bf96848ae2c1e8ae3d7620097e72bc509b306adc330de7fd66a69e8bcce96db",
+  "capture": {
+    "archive_sha256": "5bf96848ae2c1e8ae3d7620097e72bc509b306adc330de7fd66a69e8bcce96db",
+    "comparisons": [
+      {
+        "actions": {
+          "exact_bytes": true,
+          "max_abs": 0.0,
+          "rmse": 0.0
+        },
+        "baseline": "edge-eager_native",
+        "candidate": "edge-runtime_default",
+        "same_sampling_policy": true,
+        "speedup": 0.9783960622736405
+      },
+      {
+        "actions": {
+          "exact_bytes": false,
+          "max_abs": 0.3502351641654968,
+          "rmse": 0.06834033422092112
+        },
+        "baseline": "edge-eager_native",
+        "candidate": "edge-runtime_selected",
+        "same_sampling_policy": true,
+        "speedup": 0.9176834985899383
+      }
+    ],
+    "default_bitexact": true,
+    "family": "edge",
+    "metrics": {
+      "edge-eager_native": {
+        "p50_ms": 1276.8082760157995,
+        "precision": "native",
+        "primary_samples": 20,
+        "schedule": {
+          "guidance": 3.0,
+          "nfe": {
+            "action": 4,
+            "prefix": 1
+          },
+          "sampler": "unipc",
+          "shift": 5.0,
+          "steps": 4
+        },
+        "total_predictions": 25
+      },
+      "edge-runtime_default": {
+        "p50_ms": 1305.0014459877275,
+        "precision": "native",
+        "primary_samples": 20,
+        "schedule": {
+          "guidance": 3.0,
+          "nfe": {
+            "action": 4,
+            "prefix": 1
+          },
+          "sampler": "unipc",
+          "shift": 5.0,
+          "steps": 4
+        },
+        "total_predictions": 25
+      },
+      "edge-runtime_selected": {
+        "p50_ms": 1391.338384069968,
+        "precision": "fp8",
+        "primary_samples": 20,
+        "schedule": {
+          "guidance": 3.0,
+          "nfe": {
+            "action": 4,
+            "prefix": 1
+          },
+          "sampler": "unipc",
+          "shift": 5.0,
+          "steps": 4
+        },
+        "total_predictions": 25
+      }
+    },
+    "passed": true,
+    "plan_sha256": "3e655779fe594fa904d01ee3202a47bd407d9b81425203b49ec17130db11298d",
+    "schema": "instinctflash.rtx_archive_independent_audit.v1",
+    "scope": "Independent saved-byte, request, schedule, latency and action audit; no GPU recapture.",
+    "task_quality_validated": false
+  },
+  "cosmos_contracts": {
+    "edge-eager_native": {
+      "guidance_scale_check": "actual loaded cfg guidance=3 and shift=5 asserted by frozen user_e2e source",
+      "loaded_source_count": 41,
+      "loaded_sources_sha256": "e46a4465b73a6b686f1428c5ed02b7abc386ed4ad794505a69bef78ec1353d82",
+      "numeric_environment": {
+        "cudnn_benchmark": false,
+        "cudnn_tf32": false,
+        "matmul_tf32": false
+      },
+      "packed_projection_count": 0,
+      "precision": "native",
+      "schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "task_quality_validated": false
+    },
+    "edge-runtime_default": {
+      "guidance_scale_check": "actual loaded cfg guidance=3 and shift=5 asserted by frozen user_e2e source",
+      "loaded_source_count": 51,
+      "loaded_sources_sha256": "5b3cb38f42cd3812aef62180fbe5a58d71c468d9e7dead2b693d8d3e4a83ebf2",
+      "numeric_environment": {
+        "cudnn_benchmark": false,
+        "cudnn_tf32": false,
+        "matmul_tf32": false
+      },
+      "packed_projection_count": 0,
+      "precision": "native",
+      "schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "task_quality_validated": false
+    },
+    "edge-runtime_selected": {
+      "guidance_scale_check": "actual loaded cfg guidance=3 and shift=5 asserted by frozen user_e2e source",
+      "loaded_source_count": 54,
+      "loaded_sources_sha256": "b116a24f3259f32e5c771a7fb1c6a210e42ce4ef637b67c00dd5fe7ec6d0f9e0",
+      "numeric_environment": {
+        "cudnn_benchmark": false,
+        "cudnn_tf32": false,
+        "matmul_tf32": false
+      },
+      "packed_projection_count": 280,
+      "precision": "fp8",
+      "schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "task_quality_validated": false
+    }
+  },
+  "family": "edge",
+  "fresh_install": {
+    "GPU_used": false,
+    "bootstrap_execution_completion_sha256": "3668b0ca46a004d37c7262d6db151ceaefd017015d25a942e2ba6f3d9e74bf26",
+    "bootstrap_observation_kind": "actual new-host public bootstrap plus pre-capture and post-capture version equality",
+    "bootstrap_sha256": "b6904fcc9668c63698d8858dd3a66f273b2b8376af5b5d04bc182fd7bfe8b5dd",
+    "config_sha256": "e68cb618f101d1dae8b4ca49ddab2cb95e73489e653972fead708fe45dbe0008",
+    "dependency_manifest_sha256": "f0b44d52ef6d7809c2aecc24c6257d5aac9cfc1ab036ab949ef78fb593c56b5a",
+    "family": "edge",
+    "installed_versions_sha256": "a19825ada796b97eb97e375feeffce8a1679779a63f9e04d5367ecb5daa15675",
+    "passed": true,
+    "primitive_report_sha256": "0f1f4b56a962ff964b014e78c659db05eb63048c0d5221ca50ad8d14f00fda8c",
+    "schema": "instinctflash.cosmos_fresh_install_archive_audit.v1",
+    "source_wheels": {
+      "cosmos3_iwm-0.1.0-py3-none-any.whl": "1fc5ca596b8e263c3dec9c11eca22f5e6a46c38c10584a5a0d5b399de0547cdd",
+      "cosmos_framework-1.2.2-py3-none-any.whl": "21d2b0b0cd6c309ebda09d733f5c29151f690c193450f6e6aa70cbe655f2f96b",
+      "flash_rt-0.1.0-py3-none-any.whl": "e7c820e9b0e160d7a10ab889bce99b08e93b9da29c9367e212d9758b4a487dc4",
+      "instinctflash-0.1.0-py3-none-any.whl": "b12ae63f694e804df6d32fc16e57d22abe2bfff6ef394615cd30258838576cfe"
+    },
+    "torch_binding": {
+      "distribution_version": "2.10.0+cu130",
+      "runtime_version": "2.10.0+cu130",
+      "torch_imported": false,
+      "version_source_sha256": "fbd6ecefcebde9cfb435c195a1a58a26a904fdbb62c3bbc9ed84d606215b3d75"
+    },
+    "versions": {
+      "ImageIO": "2.37.2",
+      "Jinja2": "3.1.6",
+      "MarkupSafe": "3.0.3",
+      "NATTEN": "0.21.6.dev6+cu130.torch210",
+      "PyYAML": "6.0.3",
+      "absl-py": "2.4.0",
+      "accelerate": "1.13.0",
+      "annotated-types": "0.7.0",
+      "antlr4-python3-runtime": "4.9.3",
+      "anyio": "4.9.0",
+      "attrs": "25.4.0",
+      "av": "16.1.0",
+      "boto3": "1.43.80",
+      "botocore": "1.43.80",
+      "braceexpand": "0.1.7",
+      "bracex": "3.0.1",
+      "build": "1.6.1",
+      "cattrs": "26.1.0",
+      "certifi": "2026.2.25",
+      "cffi": "2.1.1",
+      "charset-normalizer": "3.4.4",
+      "click": "8.4.2",
+      "cosmos-framework": "1.2.2",
+      "cosmos3-iwm": "0.1.0",
+      "cuda-bindings": "13.0.3",
+      "cuda-pathfinder": "1.4.0",
+      "diffusers": "0.39.0",
+      "dm-tree": "0.1.9",
+      "docstring_parser": "0.17.0",
+      "einops": "0.8.2",
+      "filelock": "3.29.0",
+      "flash-rt": "0.1.0",
+      "fsspec": "2026.2.0",
+      "h11": "0.16.0",
+      "hf-xet": "1.3.2",
+      "httpcore": "1.0.9",
+      "httpx": "0.27.2",
+      "huggingface_hub": "0.36.2",
+      "hydra-core": "1.3.2",
+      "idna": "3.11",
+      "imageio-ffmpeg": "0.6.0",
+      "importlib_metadata": "8.7.1",
+      "instinctflash": "0.1.0",
+      "iopath": "0.1.10",
+      "jmespath": "1.1.0",
+      "jsonschema": "4.26.0",
+      "jsonschema-specifications": "2025.9.1",
+      "lark": "1.3.1",
+      "loguru": "0.7.3",
+      "mpmath": "1.3.0",
+      "msgpack": "1.1.2",
+      "multi-storage-client": "0.44.0",
+      "networkx": "3.6.1",
+      "numpy": "2.2.6",
+      "nvidia-cublas": "13.1.0.3",
+      "nvidia-cuda-cupti": "13.0.85",
+      "nvidia-cuda-nvrtc": "13.0.88",
+      "nvidia-cuda-runtime": "13.0.96",
+      "nvidia-cudnn-cu13": "9.15.1.9",
+      "nvidia-cudnn-frontend": "1.18.0",
+      "nvidia-cufft": "12.0.0.61",
+      "nvidia-cufile": "1.15.1.6",
+      "nvidia-curand": "10.4.0.35",
+      "nvidia-cusolver": "12.0.4.66",
+      "nvidia-cusparse": "12.6.3.3",
+      "nvidia-cusparselt-cu13": "0.8.0",
+      "nvidia-ml-py": "13.590.48",
+      "nvidia-nccl-cu13": "2.28.9",
+      "nvidia-nvjitlink": "13.0.88",
+      "nvidia-nvshmem-cu13": "3.4.5",
+      "nvidia-nvtx": "13.0.85",
+      "obstore": "0.8.2",
+      "omegaconf": "2.3.0",
+      "opentelemetry-api": "1.44.0",
+      "packaging": "25.0",
+      "pandas": "3.0.5",
+      "pillow": "12.2.0",
+      "pip": "26.2.1",
+      "platformdirs": "4.11.4",
+      "portalocker": "4.3.0",
+      "prettytable": "3.18.0",
+      "protobuf": "7.36.0",
+      "psutil": "7.2.2",
+      "pycparser": "3.0",
+      "pydantic": "2.12.5",
+      "pydantic_core": "2.41.5",
+      "pyproject_hooks": "1.3.0",
+      "python-dateutil": "2.9.0.post0",
+      "qwen-vl-utils": "0.0.14",
+      "referencing": "0.37.0",
+      "regex": "2026.2.28",
+      "requests": "2.32.5",
+      "rpds-py": "2026.6.3",
+      "s3transfer": "0.19.2",
+      "safetensors": "0.8.0",
+      "scipy": "1.17.1",
+      "sentry-sdk": "2.68.1",
+      "setuptools": "80.10.2",
+      "six": "1.17.0",
+      "sniffio": "1.3.1",
+      "sympy": "1.14.0",
+      "termcolor": "3.3.0",
+      "tokenizers": "0.22.2",
+      "torch": "2.10.0+cu130",
+      "torchcodec": "0.10.0+cu130",
+      "torchvision": "0.25.0+cu130",
+      "tqdm": "4.67.3",
+      "transformers": "4.57.6",
+      "triton": "3.6.0",
+      "typeguard": "4.5.1",
+      "typing-inspection": "0.4.2",
+      "typing_extensions": "4.15.0",
+      "tyro": "1.0.8",
+      "tzdata": "2025.3",
+      "urllib3": "2.6.3",
+      "uv": "0.12.5",
+      "wandb": "0.28.2",
+      "wcmatch": "10.2.1",
+      "wcwidth": "0.8.2",
+      "webdataset": "1.0.2",
+      "websockets": "16.0",
+      "wheel": "0.48.0",
+      "wrapt": "1.17.3",
+      "xattr": "1.3.0",
+      "zipp": "3.23.0"
+    }
+  },
+  "numeric_environment": {
+    "cudnn_benchmark": false,
+    "cudnn_tf32": false,
+    "matmul_tf32": false
+  },
+  "original_asset_bytes": 11990822717,
+  "original_file_count": 35,
+  "outer_provenance_hashes": {
+    "assets_completion_sha256": "e233438eec43df54267f57cb905aad6a5aa66ca460283293d9ec97063bccdda8",
+    "bootstrap_completion_sha256": "b6904fcc9668c63698d8858dd3a66f273b2b8376af5b5d04bc182fd7bfe8b5dd",
+    "capture_run_sha256": "cc7f883f7bf2265992833c746037b4837681cff4313266c03943c530b5243df2",
+    "config_sha256": "56f0e9cd1f29fa517d8dab5ce068d4538a189ee0962e2380dfd430fffa3c113f",
+    "native_inputs_completion_sha256": "8eca2d4557c1ffd4f86bcbdbb2124962f2b68b359cdfc17c705652adb5fff327",
+    "plan_sha256": "3e655779fe594fa904d01ee3202a47bd407d9b81425203b49ec17130db11298d"
+  },
+  "passed": true,
+  "retirement_performed": false,
+  "schema": "instinctflash.complete_pipeline_independent_audit.v1",
+  "serving": [
+    {
+      "action_archive_sha256": "d9c52530a166085a97e7ae0c3aa1cc1303661e6636bf373b9d724e34341d6adb",
+      "action_shape": [
+        6,
+        32,
+        8
+      ],
+      "calls": 6,
+      "cell": "edge-runtime_default",
+      "effective_nfe": {
+        "action": 4,
+        "prefix": 1
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "native",
+      "receipt_sha256": "298291e50a54d3e735bcfe03e80f314098542a5329cb60a329bc3bdbb42475f7",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "e88c404c5843a5e8f6014afa05973cf96bf71f034938f41fe9a1ee5ab8164877"
+        ],
+        [
+          0,
+          1,
+          "f00c330f8613b1ffbc34bbdb873a0287459832cf63cf8cbf113d60da83c23a16"
+        ],
+        [
+          0,
+          2,
+          "9096cc0a8e7d11c2dc9af1fa4b0899dfa83eef3099c23be199022c1e49c948d1"
+        ],
+        [
+          1,
+          0,
+          "42041aac26fd24419a64bd7b314039b8d39091412c2ef7b8dcefddd18b9b75bf"
+        ],
+        [
+          1,
+          1,
+          "708484f128a7fd3465b3b2554e7a327eea2c73a1e2dfdda536010eb3fb74f420"
+        ],
+        [
+          1,
+          2,
+          "6b40405a2c8e9cb1dabb1d59e8cdfa59259211d02b5197d7ecde70cc2c6d0736"
+        ]
+      ],
+      "rng_scope": "native serving constructor seed",
+      "task_quality_validated": false
+    },
+    {
+      "action_archive_sha256": "5051c8ed6cd5ced3e6adf6e5fa9142d2184566eddbaa3f9a09f2602dca6b64f8",
+      "action_shape": [
+        6,
+        32,
+        8
+      ],
+      "calls": 6,
+      "cell": "edge-runtime_selected",
+      "effective_nfe": {
+        "action": 4,
+        "prefix": 1
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "fp8",
+      "receipt_sha256": "5cb924b8ef847f35c092ea959934134fa80f62d61ec87781bf9dc9e921dec291",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "e88c404c5843a5e8f6014afa05973cf96bf71f034938f41fe9a1ee5ab8164877"
+        ],
+        [
+          0,
+          1,
+          "f00c330f8613b1ffbc34bbdb873a0287459832cf63cf8cbf113d60da83c23a16"
+        ],
+        [
+          0,
+          2,
+          "9096cc0a8e7d11c2dc9af1fa4b0899dfa83eef3099c23be199022c1e49c948d1"
+        ],
+        [
+          1,
+          0,
+          "42041aac26fd24419a64bd7b314039b8d39091412c2ef7b8dcefddd18b9b75bf"
+        ],
+        [
+          1,
+          1,
+          "708484f128a7fd3465b3b2554e7a327eea2c73a1e2dfdda536010eb3fb74f420"
+        ],
+        [
+          1,
+          2,
+          "6b40405a2c8e9cb1dabb1d59e8cdfa59259211d02b5197d7ecde70cc2c6d0736"
+        ]
+      ],
+      "rng_scope": "unseeded FP8 transport check",
+      "task_quality_validated": false
+    }
+  ],
+  "source_commit": "c5c1cbbdbc1579258be41cf1c621829dfeeb80f3",
+  "source_completion_sha256": "86ada5721f22afc496aab5655c6b0bae59a01afd2eb8166f2651b27ae857591e",
+  "task_quality_validated": false,
+  "total_websocket_calls": 12,
+  "va_native_2v4a_supplement_included": false
+}

@@ -1,0 +1,288 @@
+{
+  "device": {
+    "capability": [
+      8,
+      9
+    ],
+    "name": "NVIDIA GeForce RTX 4090",
+    "selected_device": "cuda:0",
+    "total_memory_bytes": 25250627584
+  },
+  "finished_at": "2026-09-16T17:15:25.720496+00:00",
+  "memory": {
+    "peak_allocated_bytes": 908938240,
+    "peak_reserved_bytes": 1371537408
+  },
+  "model_constructed": false,
+  "model_weights_downloaded": false,
+  "module_residency": [
+    {
+      "passed": true,
+      "precision": "native",
+      "residency": {
+        "arithmetic": "unchanged by residency",
+        "base_weight_bytes": 0,
+        "block_bytes": [
+          33024,
+          33024
+        ],
+        "block_paths": [
+          "0",
+          "1"
+        ],
+        "closed": false,
+        "device": "cuda:0",
+        "device_validation": "pending",
+        "host_to_device_bytes": 198144,
+        "inference_reserve_bytes": 0,
+        "outside_network_bytes": 0,
+        "planned_peak_weight_bytes": 33024,
+        "registered_buffer_policy": "preserve dtype; reject mutation, including nonpersistent buffers",
+        "resident_blocks": [],
+        "schema": "instinctflash.module_residency.v1",
+        "streamed_block_calls": 6,
+        "streamed_blocks": [
+          0,
+          1
+        ],
+        "transfer_policy": "CPU master tensors with transient CUDA decoder copies",
+        "weight_budget_bytes": 33024,
+        "weight_bytes": 66048
+      }
+    },
+    {
+      "passed": true,
+      "precision": "fp8",
+      "residency": {
+        "arithmetic": "unchanged by residency",
+        "base_weight_bytes": 0,
+        "block_bytes": [
+          16644,
+          16644
+        ],
+        "block_paths": [
+          "0",
+          "1"
+        ],
+        "closed": false,
+        "device": "cuda:0",
+        "device_validation": "pending",
+        "host_to_device_bytes": 99864,
+        "inference_reserve_bytes": 0,
+        "outside_network_bytes": 0,
+        "planned_peak_weight_bytes": 16644,
+        "registered_buffer_policy": "preserve dtype; reject mutation, including nonpersistent buffers",
+        "resident_blocks": [],
+        "schema": "instinctflash.module_residency.v1",
+        "streamed_block_calls": 6,
+        "streamed_blocks": [
+          0,
+          1
+        ],
+        "transfer_policy": "CPU master tensors with transient CUDA decoder copies",
+        "weight_budget_bytes": 16644,
+        "weight_bytes": 33288
+      }
+    }
+  ],
+  "packing": [
+    {
+      "magnitude": 1,
+      "passed": true,
+      "shape": [
+        40,
+        2048
+      ]
+    },
+    {
+      "magnitude": 1,
+      "passed": true,
+      "shape": [
+        256,
+        5120
+      ]
+    },
+    {
+      "magnitude": 0,
+      "passed": true,
+      "shape": [
+        1,
+        16
+      ]
+    },
+    {
+      "magnitude": 1e-20,
+      "passed": true,
+      "shape": [
+        1,
+        16
+      ]
+    },
+    {
+      "magnitude": 1e+30,
+      "passed": true,
+      "shape": [
+        1,
+        16
+      ]
+    },
+    {
+      "case": "all_finite_bf16_bit_patterns",
+      "elements": 65280,
+      "passed": true
+    },
+    {
+      "case": "fixed_scale_rounding",
+      "elements": 65280,
+      "passed": true,
+      "scale": 1.0
+    },
+    {
+      "case": "fixed_scale_rounding",
+      "elements": 65280,
+      "passed": true,
+      "scale": 1.0000001192092896
+    },
+    {
+      "case": "fixed_scale_rounding",
+      "elements": 65280,
+      "passed": true,
+      "scale": 0.9999999403953552
+    },
+    {
+      "case": "fixed_scale_rounding",
+      "elements": 65280,
+      "passed": true,
+      "scale": 1.52587890625e-05
+    },
+    {
+      "case": "fixed_scale_rounding",
+      "elements": 65280,
+      "passed": true,
+      "scale": 0.002232142857142857
+    },
+    {
+      "case": "nonfinite_propagation",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "projections": [
+    {
+      "bf16_difference_descriptive_only": {
+        "max_abs": 0.0361328125,
+        "relative_l2": 0.04298945143818855
+      },
+      "bias": false,
+      "changed_input_graph_replay_equal": true,
+      "cpu_gpu_packing_equal": true,
+      "in_features": 16,
+      "out_features": 16,
+      "passed": true,
+      "reference_recipe_equal": true,
+      "rows": 1
+    },
+    {
+      "bf16_difference_descriptive_only": {
+        "max_abs": 0.087890625,
+        "relative_l2": 0.036604125052690506
+      },
+      "bias": true,
+      "changed_input_graph_replay_equal": true,
+      "cpu_gpu_packing_equal": true,
+      "in_features": 768,
+      "out_features": 768,
+      "passed": true,
+      "reference_recipe_equal": true,
+      "rows": 7
+    },
+    {
+      "bf16_difference_descriptive_only": {
+        "max_abs": 0.1015625,
+        "relative_l2": 0.03656303882598877
+      },
+      "bias": false,
+      "changed_input_graph_replay_equal": true,
+      "cpu_gpu_packing_equal": true,
+      "in_features": 2048,
+      "out_features": 2048,
+      "passed": true,
+      "reference_recipe_equal": true,
+      "rows": 40
+    },
+    {
+      "bf16_difference_descriptive_only": {
+        "max_abs": 0.08984375,
+        "relative_l2": 0.03727470338344574
+      },
+      "bias": true,
+      "changed_input_graph_replay_equal": true,
+      "cpu_gpu_packing_equal": true,
+      "in_features": 3072,
+      "out_features": 3072,
+      "passed": true,
+      "reference_recipe_equal": true,
+      "rows": 16
+    },
+    {
+      "bf16_difference_descriptive_only": {
+        "max_abs": 0.083984375,
+        "relative_l2": 0.03719363734126091
+      },
+      "bias": false,
+      "changed_input_graph_replay_equal": true,
+      "cpu_gpu_packing_equal": true,
+      "in_features": 4096,
+      "out_features": 1024,
+      "passed": true,
+      "reference_recipe_equal": true,
+      "rows": 3
+    },
+    {
+      "bf16_difference_descriptive_only": {
+        "max_abs": 0.087890625,
+        "relative_l2": 0.03656318038702011
+      },
+      "bias": true,
+      "changed_input_graph_replay_equal": true,
+      "cpu_gpu_packing_equal": true,
+      "in_features": 5120,
+      "out_features": 13824,
+      "passed": true,
+      "reference_recipe_equal": true,
+      "rows": 7
+    }
+  ],
+  "recipe": "e4m3fn_weights_dynamic_per_tensor_activations_fp32_accum_bf16_output",
+  "runtime": {
+    "python": "3.13.14 (main, Jun 11 2026, 12:30:59) [GCC 13.3.0]",
+    "python_executable": "/workspace/ifl_rtx4090_580_20260916/families/edge-v1/env/bin/python",
+    "torch": "2.10.0+cu130",
+    "torch_cuda": "13.0",
+    "torch_git_version": "449b1768410104d3ed79d3bcfe4ba1d65c7f22c0",
+    "triton": "3.6.0"
+  },
+  "schema": "instinctflash.sm89_fp8_primitive_qualification.v1",
+  "scope": "synthetic primitives only",
+  "script_sha256": "7dd70fc40c3e9998fad2f693645b9c2742d094888d5c420749c7d1b368f83f7b",
+  "source": {
+    "fp8_pack.py": {
+      "path": "/workspace/ifl_rtx4090_580_20260916/families/edge-v1/env/lib/python3.13/site-packages/instinctflash/runtime/fp8_pack.py",
+      "sha256": "9b967b83b133f0d6dbb1613da56eca1ad99d9e8e8b532b456cf08befc6de3655"
+    },
+    "module_residency.py": {
+      "path": "/workspace/ifl_rtx4090_580_20260916/families/edge-v1/env/lib/python3.13/site-packages/instinctflash/runtime/module_residency.py",
+      "sha256": "4f83face9a4d7718616538d0ba571ac1cc1ee3e81c573873f7b8d3d4db8f97fa"
+    },
+    "sm89_fp8.py": {
+      "path": "/workspace/ifl_rtx4090_580_20260916/families/edge-v1/env/lib/python3.13/site-packages/instinctflash/runtime/sm89_fp8.py",
+      "sha256": "49e4a4f4cabb3be35815aea69e4e8368fe774965ac4fa56eff35604bef1169be"
+    },
+    "torch_fp8_linear.py": {
+      "path": "/workspace/ifl_rtx4090_580_20260916/families/edge-v1/env/lib/python3.13/site-packages/instinctflash/runtime/torch_fp8_linear.py",
+      "sha256": "22288120d9362785ed01cb5c2e6d4c1193c3e4d6a1a0c137d9c117300e0820f5"
+    }
+  },
+  "started_at": "2026-09-16T17:15:15.158644+00:00",
+  "task_quality_status": "unverified"
+}

@@ -1,0 +1,367 @@
+{
+  "GPU_used_by_audit": false,
+  "all_websocket_requests_paired": true,
+  "archive_sha256": "8e5fb3eee00f0c5dc1079879e322454926204566d0ff76edb8d0d25cca845e6e",
+  "capture": {
+    "archive_sha256": "8e5fb3eee00f0c5dc1079879e322454926204566d0ff76edb8d0d25cca845e6e",
+    "comparisons": [
+      {
+        "actions": {
+          "exact_bytes": true,
+          "max_abs": 0.0,
+          "rmse": 0.0
+        },
+        "baseline": "dreamzero-eager_native",
+        "candidate": "dreamzero-runtime_default",
+        "same_sampling_policy": true,
+        "speedup": 1.012180651143448
+      },
+      {
+        "actions": {
+          "exact_bytes": false,
+          "max_abs": 0.2207697629928589,
+          "rmse": 0.049464001391829354
+        },
+        "baseline": "dreamzero-eager_native",
+        "candidate": "dreamzero-runtime_selected",
+        "same_sampling_policy": true,
+        "speedup": 1.1660383286742706
+      },
+      {
+        "actions": {
+          "exact_bytes": false,
+          "max_abs": 0.40625,
+          "rmse": 0.0862281675067742
+        },
+        "baseline": "dreamzero-eager_native",
+        "candidate": "dreamzero-dynamic-fp8",
+        "same_sampling_policy": false,
+        "speedup": 2.1102476241825032
+      }
+    ],
+    "default_bitexact": true,
+    "family": "dreamzero",
+    "metrics": {
+      "dreamzero-dynamic-fp8": {
+        "p50_ms": 53556.880108080804,
+        "precision": "fp8",
+        "primary_samples": 12,
+        "schedule": {
+          "checkpoint_dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "checkpoint_num_dit_steps": 8,
+          "guidance": 5.0,
+          "nfe": {
+            "video_action": 16
+          },
+          "profile": "dreamzero_velocity_v1",
+          "sampler": "checkpoint",
+          "solver_updates": 16,
+          "step_cache": "dynamic"
+        },
+        "total_predictions": 21
+      },
+      "dreamzero-eager_native": {
+        "p50_ms": 113018.27900670469,
+        "precision": "native",
+        "primary_samples": 12,
+        "schedule": {
+          "checkpoint_dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "checkpoint_num_dit_steps": 8,
+          "guidance": 5.0,
+          "nfe": {
+            "video_action": 16
+          },
+          "sampler": "checkpoint",
+          "solver_updates": 16,
+          "step_cache": "checkpoint"
+        },
+        "total_predictions": 21
+      },
+      "dreamzero-runtime_default": {
+        "p50_ms": 111658.20931177586,
+        "precision": "native",
+        "primary_samples": 12,
+        "schedule": {
+          "checkpoint_dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "checkpoint_num_dit_steps": 8,
+          "guidance": 5.0,
+          "nfe": {
+            "video_action": 16
+          },
+          "sampler": "checkpoint",
+          "solver_updates": 16,
+          "step_cache": "checkpoint"
+        },
+        "total_predictions": 21
+      },
+      "dreamzero-runtime_selected": {
+        "p50_ms": 96925.01200642437,
+        "precision": "fp8",
+        "primary_samples": 12,
+        "schedule": {
+          "checkpoint_dit_step_mask": [
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "checkpoint_num_dit_steps": 8,
+          "guidance": 5.0,
+          "nfe": {
+            "video_action": 16
+          },
+          "sampler": "checkpoint",
+          "solver_updates": 16,
+          "step_cache": "checkpoint"
+        },
+        "total_predictions": 21
+      }
+    },
+    "passed": true,
+    "plan_sha256": "0fa45d230e12f964e32553b062e988abc9628046c7f7618efb1d38c4eaad0918",
+    "schema": "instinctflash.rtx_archive_independent_audit.v1",
+    "scope": "Independent saved-byte, request, schedule, latency and action audit; no GPU recapture.",
+    "task_quality_validated": false
+  },
+  "family": "dreamzero",
+  "original_asset_bytes": 62540389778,
+  "original_file_count": 28,
+  "outer_provenance_hashes": {
+    "assets_completion_sha256": "dd45c3735b20e5d00891a78dfdd565bfe12e506792176ea66463f09811f33df0",
+    "bootstrap_completion_sha256": "6a21dd0979d515a8dc41c05dfca3e8106de9bae34f5209f8143a4bbadbc39857",
+    "capture_run_sha256": "ab98460ff0c82f13443d3118f0df7df5db411c4179c56b115919aed956bfc8e3",
+    "config_sha256": "a614b42fde0633735a0b5415635c804c3e6a1acf75beed5d6e9f9e96612678ba",
+    "core_upgrade_completion_sha256": "226ee9c6684258c0b2f3aa428d907f8afbe6777396eabeb09eb4b8c3bc39293c",
+    "native_inputs_completion_sha256": "961de7087ca9cea8b4de839830ae072ffaeecfc24020f258841fc463586097fa",
+    "plan_sha256": "0fa45d230e12f964e32553b062e988abc9628046c7f7618efb1d38c4eaad0918"
+  },
+  "passed": true,
+  "retirement_performed": false,
+  "schema": "instinctflash.complete_pipeline_independent_audit.v1",
+  "serving": [
+    {
+      "action_archive_sha256": "f39c276f32a9de3866630aea2cea397eb0514da4c04b3d4ed5e4911091552e48",
+      "action_shape": [
+        6,
+        24,
+        8
+      ],
+      "calls": 6,
+      "cell": "dreamzero-runtime_default",
+      "effective_nfe": {
+        "video_action": 16
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "native",
+      "receipt_sha256": "ba59990647cd522fcb7300d463514bd1684fdb78b21819d08bf92f78fe34aa24",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "1af2929957615722c32d0e0fce7b303212c9e8053aae747ffad50a700be6dccc"
+        ],
+        [
+          0,
+          1,
+          "186e20743b224b0a620008b30dd29b00c098f2575d8c2a2b186c4de387bb5ee5"
+        ],
+        [
+          0,
+          2,
+          "998862e8327f8816ad09353ba6f0a3f1dfc2c0dd2d1ed24852628d39c4e950fe"
+        ],
+        [
+          1,
+          0,
+          "32666c46495c4c7d8695ba9b7aa38e89db0959cd58adc21222cec20ae9529d29"
+        ],
+        [
+          1,
+          1,
+          "33581579b3a7d27bca7a78d5628bd8d844d10a350b1738d45beffef70057df01"
+        ],
+        [
+          1,
+          2,
+          "2077f92b0bc695b3bb2dd1d7d3e7727bca647f2dca744e8e9b48baa4578ca56a"
+        ]
+      ],
+      "rng_scope": "native serving constructor seed",
+      "task_quality_validated": false
+    },
+    {
+      "action_archive_sha256": "4af0f7206e46778a2bc4783aedaddf1f42987de3f0b188aca18dec64ae2b7e1b",
+      "action_shape": [
+        6,
+        24,
+        8
+      ],
+      "calls": 6,
+      "cell": "dreamzero-runtime_selected",
+      "effective_nfe": {
+        "video_action": 16
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "fp8",
+      "receipt_sha256": "7e1dcc5de03e30ffa8982297b5b7c15c7e0a6b9f51cdb301254851860f5cab26",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "1af2929957615722c32d0e0fce7b303212c9e8053aae747ffad50a700be6dccc"
+        ],
+        [
+          0,
+          1,
+          "186e20743b224b0a620008b30dd29b00c098f2575d8c2a2b186c4de387bb5ee5"
+        ],
+        [
+          0,
+          2,
+          "998862e8327f8816ad09353ba6f0a3f1dfc2c0dd2d1ed24852628d39c4e950fe"
+        ],
+        [
+          1,
+          0,
+          "32666c46495c4c7d8695ba9b7aa38e89db0959cd58adc21222cec20ae9529d29"
+        ],
+        [
+          1,
+          1,
+          "33581579b3a7d27bca7a78d5628bd8d844d10a350b1738d45beffef70057df01"
+        ],
+        [
+          1,
+          2,
+          "2077f92b0bc695b3bb2dd1d7d3e7727bca647f2dca744e8e9b48baa4578ca56a"
+        ]
+      ],
+      "rng_scope": "unseeded FP8 transport check",
+      "task_quality_validated": false
+    },
+    {
+      "action_archive_sha256": "a91771d5857fc8e87605d9ad44a6d89b9a86ed4792bfd17934ce19e3352b0c0d",
+      "action_shape": [
+        6,
+        24,
+        8
+      ],
+      "calls": 6,
+      "cell": "dreamzero-dynamic-fp8",
+      "effective_nfe": {
+        "video_action": 16
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "fp8",
+      "receipt_sha256": "002583824691bed0475c81bd42dee8433cd87778d546a060d7957a0feec6f6bb",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "1af2929957615722c32d0e0fce7b303212c9e8053aae747ffad50a700be6dccc"
+        ],
+        [
+          0,
+          1,
+          "186e20743b224b0a620008b30dd29b00c098f2575d8c2a2b186c4de387bb5ee5"
+        ],
+        [
+          0,
+          2,
+          "998862e8327f8816ad09353ba6f0a3f1dfc2c0dd2d1ed24852628d39c4e950fe"
+        ],
+        [
+          1,
+          0,
+          "32666c46495c4c7d8695ba9b7aa38e89db0959cd58adc21222cec20ae9529d29"
+        ],
+        [
+          1,
+          1,
+          "33581579b3a7d27bca7a78d5628bd8d844d10a350b1738d45beffef70057df01"
+        ],
+        [
+          1,
+          2,
+          "2077f92b0bc695b3bb2dd1d7d3e7727bca647f2dca744e8e9b48baa4578ca56a"
+        ]
+      ],
+      "rng_scope": "unseeded FP8 transport check",
+      "task_quality_validated": false
+    }
+  ],
+  "source_commit": "a0dc86cc7447ce894663540adf49cfb6e96af97d",
+  "source_completion_sha256": "9b49f7b676e33eeaf67b15b18fec22d3ad094d121d3c250f4a71b0fe9f94c7e8",
+  "task_quality_validated": false,
+  "total_websocket_calls": 18,
+  "va_native_2v4a_supplement_included": false
+}

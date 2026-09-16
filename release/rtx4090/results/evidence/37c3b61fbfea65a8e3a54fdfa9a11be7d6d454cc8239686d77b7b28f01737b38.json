@@ -1,0 +1,208 @@
+{
+  "GPU_used_by_audit": false,
+  "all_websocket_requests_paired": true,
+  "archive_sha256": "3b6e6a581bece3203430cf1db7aa521ee59d4d96be08ee1a460de296fc73c786",
+  "capture": {
+    "archive_sha256": "3b6e6a581bece3203430cf1db7aa521ee59d4d96be08ee1a460de296fc73c786",
+    "comparisons": [
+      {
+        "actions": {
+          "exact_bytes": true,
+          "max_abs": 0.0,
+          "rmse": 0.0
+        },
+        "baseline": "vla2-eager_native",
+        "candidate": "vla2-runtime_default",
+        "same_sampling_policy": true,
+        "speedup": 1.0036877959603525
+      },
+      {
+        "actions": {
+          "exact_bytes": false,
+          "max_abs": 0.09173789620399475,
+          "rmse": 0.009279550733680952
+        },
+        "baseline": "vla2-eager_native",
+        "candidate": "vla2-runtime_selected",
+        "same_sampling_policy": true,
+        "speedup": 5.50606469500227
+      }
+    ],
+    "default_bitexact": true,
+    "family": "vla2",
+    "metrics": {
+      "vla2-eager_native": {
+        "p50_ms": 959.8313057795167,
+        "precision": "native",
+        "primary_samples": 20,
+        "schedule": {
+          "nfe": {
+            "action": 10,
+            "prefix": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "total_predictions": 25
+      },
+      "vla2-runtime_default": {
+        "p50_ms": 956.3046493567526,
+        "precision": "native",
+        "primary_samples": 20,
+        "schedule": {
+          "nfe": {
+            "action": 10,
+            "prefix": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "total_predictions": 25
+      },
+      "vla2-runtime_selected": {
+        "p50_ms": 174.3225622922182,
+        "precision": "fp8",
+        "primary_samples": 20,
+        "schedule": {
+          "nfe": {
+            "action": 10,
+            "prefix": 1
+          },
+          "sampler": "checkpoint"
+        },
+        "total_predictions": 25
+      }
+    },
+    "passed": true,
+    "plan_sha256": "d22a2e3f77c7aeba57485cb9f8ec2ddc360141a3168b37644b8ae259c6fcd730",
+    "schema": "instinctflash.rtx_archive_independent_audit.v1",
+    "scope": "Independent saved-byte, request, schedule, latency and action audit; no GPU recapture.",
+    "task_quality_validated": false
+  },
+  "family": "vla2",
+  "original_asset_bytes": 25530055942,
+  "original_file_count": 29,
+  "outer_provenance_hashes": {
+    "assets_completion_sha256": "b35a49e0cc529c71459f1d2d3a47d9b4158bfdaf4f44955d184ea5e7d6292900",
+    "bootstrap_completion_sha256": "be456369da40f1aa4c9e3796347301efe442f46f37e05543df206ae58ca80677",
+    "capture_run_sha256": "59615269b623a8d6d5a811d6a206d4bf6b966f680911cedce472b62f1f15f003",
+    "config_sha256": "21080d12e90c10da6e7ae1b2d09aa67840ecc445d366db6382bcf0b8df3426fe",
+    "core_upgrade_completion_sha256": "2f9713e6df1820a4eb7490ee079f16aaa41081def030f904f261f403038b8bb4",
+    "native_inputs_completion_sha256": "55fcfc2776616e78d447e737463cd85c498daef55ad11015a424833791462b3e",
+    "plan_sha256": "d22a2e3f77c7aeba57485cb9f8ec2ddc360141a3168b37644b8ae259c6fcd730"
+  },
+  "passed": true,
+  "retirement_performed": false,
+  "schema": "instinctflash.complete_pipeline_independent_audit.v1",
+  "serving": [
+    {
+      "action_archive_sha256": "4008e2c01e610c30485df52c4339cc33131c6cb236cc667f1572fd8bace30142",
+      "action_shape": [
+        6,
+        50,
+        14
+      ],
+      "calls": 6,
+      "cell": "vla2-runtime_default",
+      "effective_nfe": {
+        "action": 10,
+        "prefix": 1
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "native",
+      "receipt_sha256": "230734f91feeebf6f4117b053c5ab04cee8324451101072e22060fc5fd072563",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "0a0498f0cff7c8b83e04494c2b61f47c83a8310a1bd74f64316f54a1513d9d5c"
+        ],
+        [
+          0,
+          1,
+          "13137705e19f8ff81bcd97f66cad54caf4078d5908c2a7e8e7a31876831d3147"
+        ],
+        [
+          0,
+          2,
+          "a5695d64d7ccfa0cb81304cf45545778863d0524d9f19d18ad10fec2a3d4a26f"
+        ],
+        [
+          1,
+          0,
+          "54bae1e0c16f4faa3ab015a14311f19169960fe7447ffd956c40aad41716234e"
+        ],
+        [
+          1,
+          1,
+          "d0e36a9a804c9b79e590bcbe1d62fa1e015c34a5e780cba39edbd8b4eb96ef37"
+        ],
+        [
+          1,
+          2,
+          "8d96e49b4be233b8a1f2f9ed498db55dc716d10e4108f8b394226cd9c036889a"
+        ]
+      ],
+      "rng_scope": "native serving constructor seed",
+      "task_quality_validated": false
+    },
+    {
+      "action_archive_sha256": "f8821ad60d67b9f65ca9660e61c35983b32676558ed3b447815d413283e0f5fd",
+      "action_shape": [
+        6,
+        50,
+        14
+      ],
+      "calls": 6,
+      "cell": "vla2-runtime_selected",
+      "effective_nfe": {
+        "action": 10,
+        "prefix": 1
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "fp8",
+      "receipt_sha256": "c22c6034b66df3c9d590699a8003a0d6f4e239b87f5cf0ac93b92a48198556fb",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "0a0498f0cff7c8b83e04494c2b61f47c83a8310a1bd74f64316f54a1513d9d5c"
+        ],
+        [
+          0,
+          1,
+          "13137705e19f8ff81bcd97f66cad54caf4078d5908c2a7e8e7a31876831d3147"
+        ],
+        [
+          0,
+          2,
+          "a5695d64d7ccfa0cb81304cf45545778863d0524d9f19d18ad10fec2a3d4a26f"
+        ],
+        [
+          1,
+          0,
+          "54bae1e0c16f4faa3ab015a14311f19169960fe7447ffd956c40aad41716234e"
+        ],
+        [
+          1,
+          1,
+          "d0e36a9a804c9b79e590bcbe1d62fa1e015c34a5e780cba39edbd8b4eb96ef37"
+        ],
+        [
+          1,
+          2,
+          "8d96e49b4be233b8a1f2f9ed498db55dc716d10e4108f8b394226cd9c036889a"
+        ]
+      ],
+      "rng_scope": "unseeded FP8 transport check",
+      "task_quality_validated": false
+    }
+  ],
+  "source_commit": "a0dc86cc7447ce894663540adf49cfb6e96af97d",
+  "source_completion_sha256": "7a2f55746833705b235f0849ba01f57b8dd5076c9c760e3769a91e4789af4bdb",
+  "task_quality_validated": false,
+  "total_websocket_calls": 12,
+  "va_native_2v4a_supplement_included": false
+}

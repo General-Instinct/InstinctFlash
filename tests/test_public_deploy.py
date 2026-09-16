@@ -44,10 +44,36 @@ def test_rtx4090_catalog_is_distinct_and_all_commands_keep_the_target(catalog):
         assert plan["commands"]["doctor_before_weights"][-2:] == ["--target", "rtx4090"]
         assert "rtx4090" in row["bootstrap"]["command"]
         for mode in row["execution_modes"].values():
-            assert mode["evidence_kind"] == "pending_rtx4090_measurement"
+            expected = ("capacity_excluded_not_tested" if row["id"] == "nano"
+                        else "independently_audited_rtx4090_recorded_e2e")
+            assert mode["evidence_kind"] == expected
             assert mode["gpu_qualified_by_plan"] is False
+            assert mode["task_quality_certified"] is False
+        if row["id"] == "nano":
+            assert row["bootstrap"]["qualification"] is None
+            assert all(mode["recorded_e2e_qualification"]["tested"] is False
+                       for mode in row["execution_modes"].values())
     with pytest.raises(ValueError, match="schema or target"):
         deploy.load_profiles(ROOT / "release/deployment_profiles.json", target="rtx4090")
+
+
+def test_rtx4090_recorded_qualification_keeps_capacity_exclusion_unqualified():
+    rtx = deploy.load_profiles(target="rtx4090")
+    reference = rtx["recorded_e2e_qualification"]
+    data = (ROOT / reference["path"]).read_bytes()
+    assert hashlib.sha256(data).hexdigest() == reference["sha256"]
+    recorded = json.loads(data)
+    assert recorded["requested_scope_recorded_e2e_verified"] is True
+    assert recorded["all_eight_recorded_e2e_verified"] is False
+    assert recorded["task_quality_certified"] is False
+    assert recorded["new_release_wheel_GPU_measured"] is False
+    assert len(recorded["models"]) == 8
+    assert sum(row["recorded_e2e_verified"] for row in recorded["models"].values()) == 7
+    assert sum(len(row["modes"]) for name, row in recorded["models"].items() if name != "nano") == 20
+    excluded = recorded["models"]["nano"]
+    assert excluded["tested"] is False and excluded["observed_OOM"] is False
+    assert len(excluded["modes"]) == 3
+    assert all(row["tested"] is False and row["passed"] is False for row in excluded["modes"].values())
 
 
 def test_rtx4090_cli_plan_binds_correct_catalog_hash():

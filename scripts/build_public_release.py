@@ -10,16 +10,16 @@ from __future__ import annotations
 
 import argparse
 import ast
-from email.parser import BytesParser
 import fnmatch
 import hashlib
 import json
 import os
-from pathlib import Path, PurePosixPath
 import re
 import subprocess
 import sys
 import zipfile
+from email.parser import BytesParser
+from pathlib import Path, PurePosixPath
 
 try:
     import tomllib
@@ -94,14 +94,93 @@ FULL_TEST_FIXTURES: dict[str, str] = {
     "eval/cosmos3_task_quality_2026-09-14/rtx_preparation/robolab_smoke_live_bindings_v1.json": "cfa6614cba7051aa92bb7a75663c95555fb0fb581553e6b7deaeea66dc88e620",
 }
 SELECTED_CONTROLS: dict[str, str] = {
-    "release/rtx4090/deployment_profiles.json": "29b202760dfbd5b1924083d3c8b97792d11fe23ab6b16d935f6507492703d374",
-    "scripts/qualify_sm89_fp8.py": "7dd70fc40c3e9998fad2f693645b9c2742d094888d5c420749c7d1b368f83f7b",
     "release/deployment_profiles.json": "8187485677cb6ab1192960fa80481b913ab8e03d9cab9de8599589fc1038cfac",
+    "release/rtx4090/deployment_profiles.json": "500a5982270e3f1e1780e18622d167266dd117fd6b868adf36335d41fc168bce",
+    "release/rtx4090/qualification-evidence/0f1f4b56a962ff964b014e78c659db05eb63048c0d5221ca50ad8d14f00fda8c.json": "0f1f4b56a962ff964b014e78c659db05eb63048c0d5221ca50ad8d14f00fda8c",
+    "release/rtx4090/qualification-evidence/1db3da741844526604028812306a5fc8301cf11fa190e0ef10bc71f43d389643.json": "1db3da741844526604028812306a5fc8301cf11fa190e0ef10bc71f43d389643",
+    "release/rtx4090/qualification-evidence/443249acad43b13c20d72eabb5bfe71923be0bdbb86d6fed1dd34864200de33a.json": "443249acad43b13c20d72eabb5bfe71923be0bdbb86d6fed1dd34864200de33a",
+    "release/rtx4090/qualification-evidence/477dd8a4cc6cfc4ed8a694cd5e9e54e986c63950f433c08055ba103261ca0e7a.json": "477dd8a4cc6cfc4ed8a694cd5e9e54e986c63950f433c08055ba103261ca0e7a",
+    "release/rtx4090/qualification-evidence/6ebbf4b9269bb850bddb541ec6b9b807a6370a3713461ff9ca313f17e6d7ffbd.json": "6ebbf4b9269bb850bddb541ec6b9b807a6370a3713461ff9ca313f17e6d7ffbd",
+    "release/rtx4090/qualification-evidence/76ce05ea9806c15004a4d2b2020270f3bdbe73567172fc50ed4fe0a4ff18b6de.json": "76ce05ea9806c15004a4d2b2020270f3bdbe73567172fc50ed4fe0a4ff18b6de",
+    "release/rtx4090/qualification-evidence/7d8d2451deed05ccfe6bb7a7e9bef96a516d563f8892c2ebd6230493f54533d8.json": "7d8d2451deed05ccfe6bb7a7e9bef96a516d563f8892c2ebd6230493f54533d8",
+    "release/rtx4090/qualification-evidence/9f58d7f101eabf36fb675f914f19432665c32a44993cf0fe4dd07c0d4b0a3a6b.json": "9f58d7f101eabf36fb675f914f19432665c32a44993cf0fe4dd07c0d4b0a3a6b",
+    "release/rtx4090/qualification-evidence/a03ab6b328fe1028b4ce5cf7cdea0bb2089f6999f4123705a181d9e3543b87de.json": "a03ab6b328fe1028b4ce5cf7cdea0bb2089f6999f4123705a181d9e3543b87de",
+    "release/rtx4090/qualification-evidence/a195496dbb3604d92df01a8a679b05cbc14647b7b00e030f6a5ec00bdd36773d.json": "a195496dbb3604d92df01a8a679b05cbc14647b7b00e030f6a5ec00bdd36773d",
+    "release/rtx4090/qualification-evidence/ee12c49f20aaaa07603f391213ab743a9b1e4db6e92d67b30089b7c6a7339c4f.json": "ee12c49f20aaaa07603f391213ab743a9b1e4db6e92d67b30089b7c6a7339c4f",
+    "release/rtx4090/qualification-evidence/efd41bf10cce30b4dc0889512dacc613f70d07ab1ff6fe107c7358273955b8a9.json": "efd41bf10cce30b4dc0889512dacc613f70d07ab1ff6fe107c7358273955b8a9",
+    "release/rtx4090/qualification-evidence/f587492c0b868e78189d85429d5fa2873254587c8c06bdcb62239f841dc8671c.json": "f587492c0b868e78189d85429d5fa2873254587c8c06bdcb62239f841dc8671c",
+    "release/rtx4090/qualification-evidence/ffe34ade0ad3f2543a4bfc3ba8937c4e42aea329cc05542640b9219604072e0b.json": "ffe34ade0ad3f2543a4bfc3ba8937c4e42aea329cc05542640b9219604072e0b",
+    "release/rtx4090/qualification.json": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1",
+    "release/rtx4090/results/evidence/0b75b6067730073f72dea614576769654d7eb0a9e29e02a57c73fd87b91b6af4.json": "0b75b6067730073f72dea614576769654d7eb0a9e29e02a57c73fd87b91b6af4",
+    "release/rtx4090/results/evidence/0d41ed388c0ef8e6c4315b59e586e6ec25557e92c8798e4df1bd40c34ec3cea6.json": "0d41ed388c0ef8e6c4315b59e586e6ec25557e92c8798e4df1bd40c34ec3cea6",
+    "release/rtx4090/results/evidence/108a411bccb4d6ae2aa411295a7421ac1f08a788086a437cb5ed8fe9f33ce570.json": "108a411bccb4d6ae2aa411295a7421ac1f08a788086a437cb5ed8fe9f33ce570",
+    "release/rtx4090/results/evidence/1649130dc2d6ebfc0b04acc167bb9fb9726347a8d8fc5a0e907f99e5d0aad220.json": "1649130dc2d6ebfc0b04acc167bb9fb9726347a8d8fc5a0e907f99e5d0aad220",
+    "release/rtx4090/results/evidence/18887776fa929837105f467590af2eb3070375bc30bd05ec741f06aba92bb23f.json": "18887776fa929837105f467590af2eb3070375bc30bd05ec741f06aba92bb23f",
+    "release/rtx4090/results/evidence/1dd6114f2aa154b00cb188cdb510e2360f8cb057bf1bdf11e9dbe34f9c8fdb8c.json": "1dd6114f2aa154b00cb188cdb510e2360f8cb057bf1bdf11e9dbe34f9c8fdb8c",
+    "release/rtx4090/results/evidence/20cbb0560a3ba86aa4dca9d27c780f8ac971320af614ca30e56b768ac774cdd8.json": "20cbb0560a3ba86aa4dca9d27c780f8ac971320af614ca30e56b768ac774cdd8",
+    "release/rtx4090/results/evidence/214538aa99ddacd596c87ac7dcd4afe41fd8e238acc18a153246732407fd6ad6.json": "214538aa99ddacd596c87ac7dcd4afe41fd8e238acc18a153246732407fd6ad6",
+    "release/rtx4090/results/evidence/29b202760dfbd5b1924083d3c8b97792d11fe23ab6b16d935f6507492703d374.json": "29b202760dfbd5b1924083d3c8b97792d11fe23ab6b16d935f6507492703d374",
+    "release/rtx4090/results/evidence/378e980dbe1f310dd0b6c20c2d5f747340381a1f5f602e09028218151012649a.json": "378e980dbe1f310dd0b6c20c2d5f747340381a1f5f602e09028218151012649a",
+    "release/rtx4090/results/evidence/37c3b61fbfea65a8e3a54fdfa9a11be7d6d454cc8239686d77b7b28f01737b38.json": "37c3b61fbfea65a8e3a54fdfa9a11be7d6d454cc8239686d77b7b28f01737b38",
+    "release/rtx4090/results/evidence/3b6e6a581bece3203430cf1db7aa521ee59d4d96be08ee1a460de296fc73c786.tar.gz": "3b6e6a581bece3203430cf1db7aa521ee59d4d96be08ee1a460de296fc73c786",
+    "release/rtx4090/results/evidence/3c7096bddb5f3dd6c875855449fa583639b957a87e26fd885146d67770d0ed5b.json": "3c7096bddb5f3dd6c875855449fa583639b957a87e26fd885146d67770d0ed5b",
+    "release/rtx4090/results/evidence/3c9d905aea5269f3af91d1794d7efa776562a7955329ed5ab36366a0f7ab2006.json": "3c9d905aea5269f3af91d1794d7efa776562a7955329ed5ab36366a0f7ab2006",
+    "release/rtx4090/results/evidence/49f69940bd67f937b4ab3a1683426ca3b5b322a0a0b76304e929cd79d095e71c.json": "49f69940bd67f937b4ab3a1683426ca3b5b322a0a0b76304e929cd79d095e71c",
+    "release/rtx4090/results/evidence/4f38d56640662670851ae6abe79cd4b10a010338c871cde8b67f1c0fe9b03791.json": "4f38d56640662670851ae6abe79cd4b10a010338c871cde8b67f1c0fe9b03791",
+    "release/rtx4090/results/evidence/51d57799467ad817e46314eb5763b2512fccc1f533d4ad604906bd2714b97af0.json": "51d57799467ad817e46314eb5763b2512fccc1f533d4ad604906bd2714b97af0",
+    "release/rtx4090/results/evidence/574b4d32011367715d03ec1d9162fb7d7e757a42e3e6867ce37556b491991989.json": "574b4d32011367715d03ec1d9162fb7d7e757a42e3e6867ce37556b491991989",
+    "release/rtx4090/results/evidence/57e5cf49a0d7a24b0fe4bf0c433d8e9530467fd1ded0460b07be49114a907a84.json": "57e5cf49a0d7a24b0fe4bf0c433d8e9530467fd1ded0460b07be49114a907a84",
+    "release/rtx4090/results/evidence/5b52e8f81e739f5bdcb9f64099f21a8d712898ae6fb0eebc3e7d25b6723e0175.json": "5b52e8f81e739f5bdcb9f64099f21a8d712898ae6fb0eebc3e7d25b6723e0175",
+    "release/rtx4090/results/evidence/5b87ae1cb6517d77a980208ec21de5695287a61e9cfdebecd2799765c4452774.json": "5b87ae1cb6517d77a980208ec21de5695287a61e9cfdebecd2799765c4452774",
+    "release/rtx4090/results/evidence/5bf96848ae2c1e8ae3d7620097e72bc509b306adc330de7fd66a69e8bcce96db.tar.gz": "5bf96848ae2c1e8ae3d7620097e72bc509b306adc330de7fd66a69e8bcce96db",
+    "release/rtx4090/results/evidence/6176919cb49070c952def0dadd380f18152c73d62d1aca885367bcda614ca233.json": "6176919cb49070c952def0dadd380f18152c73d62d1aca885367bcda614ca233",
+    "release/rtx4090/results/evidence/66a7f5f7d9a1b1953f80fc2b31707047a4cfc65252f9525580398d3a925ab243.json": "66a7f5f7d9a1b1953f80fc2b31707047a4cfc65252f9525580398d3a925ab243",
+    "release/rtx4090/results/evidence/76b9fa956affc17951fb7a9fb77ff79a34d8edc8ab07fed90d2dc3a10a59ae80.json": "76b9fa956affc17951fb7a9fb77ff79a34d8edc8ab07fed90d2dc3a10a59ae80",
+    "release/rtx4090/results/evidence/77f5fc8a834e68cfefd23e96cababaafdb056b5808fe4e9434c8eaa147c020ee.tar.gz": "77f5fc8a834e68cfefd23e96cababaafdb056b5808fe4e9434c8eaa147c020ee",
+    "release/rtx4090/results/evidence/7a00e4ae42aaccecc42379e240936db8c2b19522ccbf4b40c0a562815451983d.tar.gz": "7a00e4ae42aaccecc42379e240936db8c2b19522ccbf4b40c0a562815451983d",
+    "release/rtx4090/results/evidence/7a5a4cbfadd8e2cf821c88cbe50a58dcd96bf4a4fea9997c36dcac50bf6dbd58.json": "7a5a4cbfadd8e2cf821c88cbe50a58dcd96bf4a4fea9997c36dcac50bf6dbd58",
+    "release/rtx4090/results/evidence/7c5f04c6586478e555f9406cb2947818154af9c4de93eb71b4c2053b98e17031.tar.gz": "7c5f04c6586478e555f9406cb2947818154af9c4de93eb71b4c2053b98e17031",
+    "release/rtx4090/results/evidence/7f38568f8961bcc6aa66f2fe691773e0fdead1d3db4d5eddf64e55297a82b02e.json": "7f38568f8961bcc6aa66f2fe691773e0fdead1d3db4d5eddf64e55297a82b02e",
+    "release/rtx4090/results/evidence/8416c702fad786cbbb7e7fa73c054fe88530b6f7c9eda8cda12a4a07b75a7cf7.json": "8416c702fad786cbbb7e7fa73c054fe88530b6f7c9eda8cda12a4a07b75a7cf7",
+    "release/rtx4090/results/evidence/858b4472999d9a617e3e1ab1d33cbee2ae998911f35893af642ca8c86fb89820.json": "858b4472999d9a617e3e1ab1d33cbee2ae998911f35893af642ca8c86fb89820",
+    "release/rtx4090/results/evidence/866469b33c604547f196ea5e7c286991e8104299427e0f36d38b191ebb36de3e.json": "866469b33c604547f196ea5e7c286991e8104299427e0f36d38b191ebb36de3e",
+    "release/rtx4090/results/evidence/8e1541d50240c9b8c9bfbd0e0b0eb1dece0807ae6dde173a9e87315af8207c1e.json": "8e1541d50240c9b8c9bfbd0e0b0eb1dece0807ae6dde173a9e87315af8207c1e",
+    "release/rtx4090/results/evidence/8e5fb3eee00f0c5dc1079879e322454926204566d0ff76edb8d0d25cca845e6e.tar.gz": "8e5fb3eee00f0c5dc1079879e322454926204566d0ff76edb8d0d25cca845e6e",
+    "release/rtx4090/results/evidence/9496c71c5259613891e0ad1aa5ba1069407462a9f90a87d79f9a47315fd248e3.json": "9496c71c5259613891e0ad1aa5ba1069407462a9f90a87d79f9a47315fd248e3",
+    "release/rtx4090/results/evidence/9557cd744d2341b3b2defc7f25932ffe745ba47fdbeac4c01b66102f454771d0.json": "9557cd744d2341b3b2defc7f25932ffe745ba47fdbeac4c01b66102f454771d0",
+    "release/rtx4090/results/evidence/978adbd7c64b0a16636153c6b697acdd7e4c12cee3a850fc6aa3f701f3bab8ed.tar.gz": "978adbd7c64b0a16636153c6b697acdd7e4c12cee3a850fc6aa3f701f3bab8ed",
+    "release/rtx4090/results/evidence/98212905d5f2b9807c4c5ae9089db679644e7777bd2b971149853c8d9a86f4fb.json": "98212905d5f2b9807c4c5ae9089db679644e7777bd2b971149853c8d9a86f4fb",
+    "release/rtx4090/results/evidence/a1a0837d950a1838bba7d474037b5926d4ccf8124e2a28a48b66052273851e26.json": "a1a0837d950a1838bba7d474037b5926d4ccf8124e2a28a48b66052273851e26",
+    "release/rtx4090/results/evidence/a3757cde2450909a654b2b5a8bc68c6a1da51c2680775445c105b52e3cfcf3fc.tar.gz": "a3757cde2450909a654b2b5a8bc68c6a1da51c2680775445c105b52e3cfcf3fc",
+    "release/rtx4090/results/evidence/a7776a925f038a22d587ee4b6a470b7e1a34c43bb1698ddcb9fe045621b9385f.json": "a7776a925f038a22d587ee4b6a470b7e1a34c43bb1698ddcb9fe045621b9385f",
+    "release/rtx4090/results/evidence/b639a0ffd04b065ca98e81d1bda58e5a23e220d29b390377f425c341b67d5a01.json": "b639a0ffd04b065ca98e81d1bda58e5a23e220d29b390377f425c341b67d5a01",
+    "release/rtx4090/results/evidence/b9ac62ae0080427935c5a96e12f451b3c6c6c51d8b6ddf23871a4f8de8ad798b.json": "b9ac62ae0080427935c5a96e12f451b3c6c6c51d8b6ddf23871a4f8de8ad798b",
+    "release/rtx4090/results/evidence/ba24a9800208535c994c87354b9be3321102866b819591b439b56be8fbf30503.json": "ba24a9800208535c994c87354b9be3321102866b819591b439b56be8fbf30503",
+    "release/rtx4090/results/evidence/bee8d17d23609bbb37da1c1fcacf6a4402b6ac332afc5e58479b3b770af186ad.tar.gz": "bee8d17d23609bbb37da1c1fcacf6a4402b6ac332afc5e58479b3b770af186ad",
+    "release/rtx4090/results/evidence/c1944dc8f4293dd48ba685df4ccee090315185460ff3db729d4bd2dcf9598edd.tar.gz": "c1944dc8f4293dd48ba685df4ccee090315185460ff3db729d4bd2dcf9598edd",
+    "release/rtx4090/results/evidence/c9078e5ae2e5123bf98b9c79968a405bb8a2be127fdf250e9fc9eb34ca720a1d.json": "c9078e5ae2e5123bf98b9c79968a405bb8a2be127fdf250e9fc9eb34ca720a1d",
+    "release/rtx4090/results/evidence/cd8677bd0fd3483e3366912ac51e116f2606563c607676ee7a9a9f894ec726af.tar.gz": "cd8677bd0fd3483e3366912ac51e116f2606563c607676ee7a9a9f894ec726af",
+    "release/rtx4090/results/evidence/cef0bc7b9b80b467f877fe1ff4cad6ece93ddcaaf6067f160780b7c76f9b71ec.tar.gz": "cef0bc7b9b80b467f877fe1ff4cad6ece93ddcaaf6067f160780b7c76f9b71ec",
+    "release/rtx4090/results/evidence/d539b55945f12834b5a3eb536e3f8b6a5bb4bd4250fdbfdce70d7f7292cd726c.json": "d539b55945f12834b5a3eb536e3f8b6a5bb4bd4250fdbfdce70d7f7292cd726c",
+    "release/rtx4090/results/evidence/e39108f9f2dc14041f222c531aabe791878b3ba68d6c50be6bc9cd183d4a614c.json": "e39108f9f2dc14041f222c531aabe791878b3ba68d6c50be6bc9cd183d4a614c",
+    "release/rtx4090/results/evidence/e68f0c0205a19de37339dddfe588bec23d91f86871a1ec184ac4b7d109234ef4.json": "e68f0c0205a19de37339dddfe588bec23d91f86871a1ec184ac4b7d109234ef4",
+    "release/rtx4090/results/evidence/e8dc8a2d91405eead62fddf7e9888f28edb811e684c49e9a440e765c20e486ef.json": "e8dc8a2d91405eead62fddf7e9888f28edb811e684c49e9a440e765c20e486ef",
+    "release/rtx4090/results/evidence/e9ae74299b8e71109fc747516d366f232daf83a7257e4523c62cb1fdeb489d10.py": "e9ae74299b8e71109fc747516d366f232daf83a7257e4523c62cb1fdeb489d10",
+    "release/rtx4090/results/evidence/edcd88f5a98c33e03d16c501aa655fe20a402f13b21fccd7d81b414d1dd4ab92.json": "edcd88f5a98c33e03d16c501aa655fe20a402f13b21fccd7d81b414d1dd4ab92",
+    "release/rtx4090/results/evidence/f2c3d418b85e032b45ff7fed74c0b3c022d00ef98b693213ac7fe1825abb5b91.json": "f2c3d418b85e032b45ff7fed74c0b3c022d00ef98b693213ac7fe1825abb5b91",
+    "release/rtx4090/results/evidence/f5ab1ecb247ebf8b0d660df9010900b8ae4b9f1c9883010fc84e959e43f91c96.json": "f5ab1ecb247ebf8b0d660df9010900b8ae4b9f1c9883010fc84e959e43f91c96",
+    "release/rtx4090/results/evidence/f73933f7337d057ca0da028b3854ebc4cdf520b5f8a53c7a5eef3f69c5ee8ba9.json": "f73933f7337d057ca0da028b3854ebc4cdf520b5f8a53c7a5eef3f69c5ee8ba9",
+    "release/rtx4090/results/evidence/f80ca559d7b5ee88e1cc920ff456047e85b6033b37e22c2c32bd0cd994a33c79.json": "f80ca559d7b5ee88e1cc920ff456047e85b6033b37e22c2c32bd0cd994a33c79",
+    "release/rtx4090/results/render_results.py": "e9ae74299b8e71109fc747516d366f232daf83a7257e4523c62cb1fdeb489d10",
+    "release/rtx4090/results/reproduce_manifest.json": "aa9b21510b0a95a255987a5fa08f0e396939c0bfc31f5345911301747dd5a25b",
+    "release/rtx4090/results/results.json": "2daa1a9f2e3280e8f97abd2839cf894c0b4aa3722f1014a153ac8f0d8f06ba07",
+    "release/rtx4090/results/results.rst": "7f618c1bd1f6bfd1bdaab10617e9c48275c91e566a2b620673a32b5a91a6f537",
     "scripts/bootstrap_vendor.py": "8d91862a99bba392ab2fba237e37cfa043533bfa538b547be4c0ac3a19fa6373",
     "scripts/prepare_auxiliary_assets.py": "e44be6692297d24984075c2d5b1aa11823ab361776a3407fc711224e053e3a2d",
     "scripts/prepare_native_tools.py": "05e1a722cb53cde4245601b41f0320b95622c1ab36e7931980cc582abaa64f4e",
     "scripts/public_deploy.py": "305aab49024e9f100a9a0db1744ceba65e196d15eda66ff6362f1023ed70d92c",
-    "scripts/repair_vendor_wheel.py": "1f62f053a37b29966202111da5262cb3da0464bba2d4697721cce97f1ea310ff"
+    "scripts/qualify_sm89_fp8.py": "7dd70fc40c3e9998fad2f693645b9c2742d094888d5c420749c7d1b368f83f7b",
+    "scripts/repair_vendor_wheel.py": "1f62f053a37b29966202111da5262cb3da0464bba2d4697721cce97f1ea310ff",
 }
 PUBLIC_VENDOR_FILES: dict[str, str] = {
     "release/vendor/rtx4090/cosmos/inference_packaging.patch": "82a8d6596d8ca8daa06ec33390453f205ec535fb1109b8b23a08f5176a6489c7",

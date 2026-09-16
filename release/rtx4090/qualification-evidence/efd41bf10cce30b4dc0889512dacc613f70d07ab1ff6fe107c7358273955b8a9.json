@@ -1,0 +1,68 @@
+{
+  "scope": "installed-wheel synthetic primitives in pinned pi05 Torch2.11 environment; no full-model qualification",
+  "release_qualification": false,
+  "model_quality_evidence": false,
+  "started_utc": "2026-09-16T03:31:42.447991+00:00",
+  "worker_pid": 19602,
+  "worker_start_ticks": "802399974",
+  "gpu_uuid": "GPU-34f3da96-a7b2-ed04-c766-05e7862d940c",
+  "timeout_seconds": 900,
+  "automatic_retry": false,
+  "python": "/workspace/ifl_rtx4090_20260916/families/pi05-v3/env/bin/python",
+  "source": "/workspace/ifl_rtx4090_20260916/source-v4",
+  "status": "finished",
+  "script_sha256": "7dd70fc40c3e9998fad2f693645b9c2742d094888d5c420749c7d1b368f83f7b",
+  "source_receipt": {
+    "source": "/workspace/ifl_rtx4090_20260916/source-v4",
+    "commit": "120b12134df7b85d88518ad5688ac0afea79861a",
+    "bundle_sha256": "0a448cda7c1cf1214ef7168082701303e446fbe63951967add13dc7b9fb00fdd",
+    "old_source_modified": false,
+    "sparse_directories": [
+      "instinctflash",
+      "scripts",
+      "benchmarks",
+      "release",
+      "tests"
+    ],
+    "scope": "core package build and primitive qualification; installed adapter/serving wheels retain prior source",
+    "created_at": "2026-09-16T03:29:21.946047+00:00"
+  },
+  "pack_sha256": "9b967b83b133f0d6dbb1613da56eca1ad99d9e8e8b532b456cf08befc6de3655",
+  "lock_paths": [
+    "/tmp/ifl-robolab-renderer-gpu0.lock",
+    "/workspace/ifl_rtx4090_20260916/gpu-leases/GPU-34f3da96-a7b2-ed04-c766-05e7862d940c.lock"
+  ],
+  "gpu_before_csv": "0, GPU-34f3da96-a7b2-ed04-c766-05e7862d940c, NVIDIA GeForce RTX 4090, 19, 0\n1, GPU-6f8e36bf-be4b-cb37-df91-86e3131de9f5, NVIDIA GeForce RTX 4090, 19, 0\n2, GPU-876145fd-b39a-eb99-f56a-07e82017d3d6, NVIDIA GeForce RTX 4090, 19, 0\n3, GPU-0b553faa-d888-a9df-2682-e87718330805, NVIDIA GeForce RTX 4090, 19, 0",
+  "compute_processes_before_csv": "",
+  "subprocess_environment_overrides": {
+    "CUDA_VISIBLE_DEVICES": "GPU-34f3da96-a7b2-ed04-c766-05e7862d940c",
+    "CUDA_DEVICE_ORDER": "PCI_BUS_ID",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "TRITON_CACHE_DIR": "/workspace/ifl_rtx4090_20260916/sm89-pinned-torch211-v1/triton-cache",
+    "TORCHINDUCTOR_CACHE_DIR": "/workspace/ifl_rtx4090_20260916/sm89-pinned-torch211-v1/inductor-cache",
+    "CUDA_CACHE_PATH": "/workspace/ifl_rtx4090_20260916/sm89-pinned-torch211-v1/cuda-cache",
+    "TORCH_EXTENSIONS_DIR": "/workspace/ifl_rtx4090_20260916/sm89-pinned-torch211-v1/extensions-cache",
+    "XDG_CACHE_HOME": "/workspace/ifl_rtx4090_20260916/sm89-pinned-torch211-v1/xdg-cache",
+    "TMPDIR": "/workspace/ifl_rtx4090_20260916/sm89-pinned-torch211-v1/tmp"
+  },
+  "argv": [
+    "/workspace/ifl_rtx4090_20260916/families/pi05-v3/env/bin/python",
+    "-I",
+    "/workspace/ifl_rtx4090_20260916/source-v4/scripts/qualify_sm89_fp8.py",
+    "--output",
+    "/workspace/ifl_rtx4090_20260916/sm89-pinned-torch211-v1/report.json"
+  ],
+  "child_pid": 19621,
+  "child_start_ticks": "802399998",
+  "returncode": 0,
+  "report_sha256": "f587492c0b868e78189d85429d5fa2873254587c8c06bdcb62239f841dc8671c",
+  "passed": true,
+  "finished_utc": "2026-09-16T03:31:52.486335+00:00",
+  "elapsed_seconds": 10.038368487730622,
+  "gpu_after_csv": "0, GPU-34f3da96-a7b2-ed04-c766-05e7862d940c, 19, 22\n1, GPU-6f8e36bf-be4b-cb37-df91-86e3131de9f5, 19, 0\n2, GPU-876145fd-b39a-eb99-f56a-07e82017d3d6, 19, 0\n3, GPU-0b553faa-d888-a9df-2682-e87718330805, 19, 0",
+  "compute_processes_after_csv": "",
+  "gpu_lease_released": true
+}
