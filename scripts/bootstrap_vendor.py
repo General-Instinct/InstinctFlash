@@ -650,6 +650,16 @@ class Bootstrap:
         self.prepare_roots()
         try:
             deployment_target = self.profile.get("deployment_target", "jetson_thor")
+            native_wheelhouse_dir = getattr(self.args, "native_tool_wheelhouse", None)
+            native_wheelhouse = None
+            if native_wheelhouse_dir:
+                tool = self.profile.get("native_tool")
+                if tool is None:
+                    raise ValueError("--native-tool-wheelhouse requires this family's native tool catalog")
+                catalog = checked_path(self.args.checkout / "release/vendor", tool["path"], tool["sha256"])
+                native_wheelhouse = prepare_native_tools.admit_wheelhouse(
+                    native_wheelhouse_dir, catalog, target=deployment_target)
+                write_json(self.root / "native_tool_wheelhouse_admission.json", native_wheelhouse)
             wheelhouse_dir = getattr(self.args, "dependency_wheelhouse", None)
             wheelhouse = (admit_dependency_wheelhouse(wheelhouse_dir, self.profile, checkout=self.args.checkout)
                           if wheelhouse_dir else None)
@@ -774,7 +784,8 @@ class Bootstrap:
                 tool = self.profile["native_tool"]
                 catalog = checked_path(base, tool["path"], tool["sha256"])
                 native_tool = prepare_native_tools.prepare(
-                    self.root / "native_tools", self.python, self.python.with_name("uvx"), catalog)
+                    self.root / "native_tools", self.python, self.python.with_name("uvx"), catalog,
+                    wheelhouse=native_wheelhouse_dir, target=deployment_target)
                 values.update(native_tool["environment"])
             env_text = ""
             for key, value in values.items():
@@ -797,6 +808,7 @@ class Bootstrap:
                       "CPU_doctor_deferred": doctor is None, "GPU_verified": False, "model_constructed": False,
                       "task_quality_certified": False, "weights_downloaded": False, "commands": self.commands,
                       "native_tool_preparation": native_tool,
+                      "native_tool_wheelhouse": native_wheelhouse,
                       "compiler_preparation": compiler,
                       "dependency_wheelhouse": wheelhouse,
                       "shared_dependency_artifacts": shared_artifacts,
@@ -831,6 +843,8 @@ def main(argv=None) -> int:
                    help="Use a manifest-bound, hash-verified dependency wheel cache; keep the selected recipe's pins.")
     p.add_argument("--dependency-artifact-cache", type=Path,
                    help="Give verified wheelhouse files stable shared paths for reuse across family environments.")
+    p.add_argument("--native-tool-wheelhouse", type=Path,
+                   help="Prepare Cosmos's pinned native HF subprocess offline from its separate verified wheel cache.")
     p.add_argument("--repaired-wheel", type=Path)
     p.add_argument("--repair-receipt", type=Path)
     p.add_argument("--ptxas", type=Path,
@@ -852,6 +866,13 @@ def main(argv=None) -> int:
             result = profile
             if a.vendor_source is not None:
                 result = {**profile, "vendor_source_transport": vendor_source_transport(profile, a.vendor_source)}
+            if a.native_tool_wheelhouse is not None:
+                tool = profile.get("native_tool")
+                if tool is None:
+                    raise ValueError("--native-tool-wheelhouse requires this family's native tool catalog")
+                catalog = checked_path(a.checkout / "release/vendor", tool["path"], tool["sha256"])
+                result = {**result, "native_tool_wheelhouse_admission": prepare_native_tools.admit_wheelhouse(
+                    a.native_tool_wheelhouse, catalog, target=a.target)}
         else:
             result = Bootstrap(a, profile).install()
         print(json.dumps(result, indent=2, sort_keys=True))

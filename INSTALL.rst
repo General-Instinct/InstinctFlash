@@ -73,6 +73,15 @@ When installing several families from transported caches, add
 wheels then use the same file URLs, so ``uv`` can reuse their extracted files.
 Combine this with the executable shared ``--cache-dir`` and ``--link-mode hardlink``.
 
+Cosmos also uses a separate pinned HF command-line tool. Add
+``--native-tool-wheelhouse /path/to/hf-tool-cache`` to prepare it offline.
+Its ``instinctflash.native_tool_wheelhouse.v1`` manifest binds the tool catalog,
+constraint hashes and all 23 original wheels; it is separate from the model's
+dependency wheelhouse. The bootstrap verifies file hashes and package metadata,
+keeps owned copies of these small archives, and checks the unchanged native
+``uvx --with click hf@1.16.4`` command offline. The transport directory can then
+be removed. Without this option, initial tool preparation uses the public index.
+
 To reuse an existing vendor Git checkout or a self-contained Git bundle, add
 ``--vendor-source /path/to/prior/vendor`` or ``--vendor-source /path/to/vendor.bundle``.
 The bootstrap fetches the profile's exact commit into its new destination and
