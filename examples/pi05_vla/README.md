@@ -97,11 +97,12 @@ bitwise-equal diffusion-noise tensors. SM120 must select the transpose-B `nk` la
 cuBLASLt rejects the previous `kn` descriptor for production Pi0.5 shapes.
 
 The checked-in gate used four real calibration frames and three held-out rows/seeds. All three
-FP8 action chunks cleared the preregistered cosine floor of 0.98; the minimum was **0.9999311** and
-the maximum absolute action delta was **0.026228**. Median replay latency was
-**31.70 ms native → 20.84 ms FP8 (1.521x)**. FP8 registered 253 quantized weights. Peak allocated
-memory was 6.33 GiB native and 9.15 GiB FP8 because the current frontend deliberately retains the
-BF16 checkpoint tensors alongside the FP8 weight store.
+FP8 action chunks cleared the preregistered cosine floor of 0.98; the minimum was **0.9999183** and
+the maximum absolute action delta was **0.021599**. Median replay latency was
+**31.85 ms native → 20.60 ms FP8 (1.546x)**. FP8 registered 253 quantized weights. The
+one-time quantization peak remains 9.15 GiB, but the frontend then releases 15 fully replaced BF16
+source tensors (5.04 GiB). Steady allocated memory is **6.33 GiB native vs 3.83 GiB FP8**, a
+2.50 GiB (39.4%) reduction; the qualification gate caps the FP8/native resident ratio at 0.75.
 
 This is the FlashRT `pi05` operating point: a 10-action, 7-dimensional LIBERO horizon. It is not
 the LeRobot Runtime adapter's checkpoint-native 50-action queue, which is separately exercised by
@@ -124,6 +125,29 @@ CUDA_VISIBLE_DEVICES=0 PYTHONPATH=serving:. python \
 
 The complete protocol, source hashes, per-arm memory/timing, and per-case comparisons are in
 `sm120_fp8_results.json`.
+
+### RTX 5090 LIBERO closed-loop screen
+
+The same FP8 binary and checkpoint completed a real `libero_spatial` simulator screen using
+`hf-libero==0.1.4`, robosuite 1.4.0, MuJoCo 3.8.1, and the immutable
+`lerobot/libero-assets@0b3ea86be5fe169d0fd036ae63d1070ec09e90f6` assets. Ten tasks × three
+episodes produced **21/30 successes (70.0%)**. Per-task successes were
+`[2, 1, 3, 3, 2, 2, 3, 0, 3, 2] / 3`; every task loaded, rendered non-blank EGL observations,
+calibrated, captured, and completed without a runtime failure.
+
+This is deliberately labelled a **SCREEN**: three episodes per task are not a statistical
+non-inferiority certificate, and this run did not include a matched native-precision arm. The
+complete protocol, package/source/binary hashes, task descriptions, timings, and limitations are
+in `sm120_libero_screen_results.json`. Reproduce after configuring the pinned LIBERO assets with:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 MUJOCO_GL=egl PYOPENGL_PLATFORM=egl \
+LIBERO_CONFIG_PATH=/path/to/libero-config PYTHONPATH=serving:. python \
+  serving/examples/thor/eval_libero.py \
+  --checkpoint /path/to/pi05_libero --task_suite libero_spatial \
+  --framework torch --num_trials 3 --replan_steps 5 --seed 7 \
+  --output /tmp/pi05-libero-sm120-screen.json
+```
 
 ## Run it
 

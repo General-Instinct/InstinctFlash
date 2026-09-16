@@ -40,6 +40,7 @@ def test_example_surface_stays_product_shaped():
         "reproduce_h100.sh",
         "run_pi05_end_to_end.py",
         "sm120_fp8_results.json",
+        "sm120_libero_screen_results.json",
         "verify_sm120_fp8.py",
         "static_capture_results.json",
         "verify_capture_equivalence.py",

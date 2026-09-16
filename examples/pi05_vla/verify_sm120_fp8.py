@@ -48,8 +48,12 @@ PROMPT = "pick up the black bowl next to the cookie box and place it on the plat
 CALIBRATION_INDICES = (0, 30, 60, 90)
 EVALUATION_INDICES = (10, 50, 100)
 SEEDS = (424242, 5090, 120120)
+TIMING_ITERATIONS = 9
 MIN_ACTION_COSINE = 0.98
 MIN_SPEEDUP = 1.05
+MAX_FP8_RESIDENT_RATIO = 0.75
+MIN_RELEASED_BF16_BYTES = 5_000_000_000
+EXPECTED_RELEASED_BF16_KEYS = 15
 
 
 def sha256(path: Path) -> str:
@@ -125,6 +129,8 @@ def run_arm(checkpoint: Path, dataset: Path, mode: str, output: Path) -> None:
     # The first replay after capture is deliberately not part of the timing or numeric pair.
     torch.manual_seed(1)
     runtime.infer(evaluation[0])
+    torch.manual_seed(2)
+    runtime.infer(evaluation[1])
     runtime.latency_records.clear()
 
     outputs, noises, latencies = [], [], []
@@ -137,6 +143,14 @@ def run_arm(checkpoint: Path, dataset: Path, mode: str, output: Path) -> None:
             raise AssertionError(f"{mode} produced non-finite actions for seed {seed}")
         outputs.append(actions)
         noises.append(runtime._noise_buf.float().cpu().numpy().copy())
+
+    paired_latency_ms = latencies
+    latencies = []
+    for index in range(TIMING_ITERATIONS):
+        torch.manual_seed(9000 + index)
+        started = time.perf_counter()
+        runtime.infer(evaluation[index % len(evaluation)])
+        latencies.append((time.perf_counter() - started) * 1000.0)
 
     actions = np.stack(outputs)
     np.savez(output.with_suffix(".npz"), actions=actions, noises=np.stack(noises))
@@ -155,9 +169,14 @@ def run_arm(checkpoint: Path, dataset: Path, mode: str, output: Path) -> None:
         },
         "load_ms": load_ms,
         "calibrate_ms": calibrate_ms,
+        "paired_case_latency_ms": paired_latency_ms,
         "latency_ms": latencies,
         "peak_allocated_bytes": torch.cuda.max_memory_allocated(),
         "peak_reserved_bytes": torch.cuda.max_memory_reserved(),
+        "resident_allocated_bytes": torch.cuda.memory_allocated(),
+        "resident_reserved_bytes": torch.cuda.memory_reserved(),
+        "released_bf16_bytes": getattr(runtime, "_released_bf16_bytes", 0),
+        "released_bf16_key_count": len(getattr(runtime, "_released_bf16_keys", ())),
         "action_shape": list(actions.shape),
         "action_min": float(actions.min()),
         "action_max": float(actions.max()),
@@ -261,6 +280,18 @@ def qualify(args) -> int:
         native_p50 = float(np.median(arms["native"]["latency_ms"]))
         fp8_p50 = float(np.median(arms["fp8"]["latency_ms"]))
         speedup = native_p50 / fp8_p50
+        resident_ratio = (
+            arms["fp8"]["resident_allocated_bytes"]
+            / arms["native"]["resident_allocated_bytes"]
+        )
+        if resident_ratio > MAX_FP8_RESIDENT_RATIO:
+            failures.append(
+                f"FP8 resident ratio {resident_ratio:.4f} > {MAX_FP8_RESIDENT_RATIO:.4f}"
+            )
+        if arms["fp8"]["released_bf16_bytes"] < MIN_RELEASED_BF16_BYTES:
+            failures.append("FP8 arm did not release the certified BF16 weight payload")
+        if arms["fp8"]["released_bf16_key_count"] != EXPECTED_RELEASED_BF16_KEYS:
+            failures.append("FP8 arm released an unexpected BF16 key set")
         if speedup < MIN_SPEEDUP:
             failures.append(f"FP8 speedup {speedup:.4f} < {MIN_SPEEDUP:.4f}")
         if arms["fp8"]["fp8_layout"] != "nk":
@@ -290,12 +321,16 @@ def qualify(args) -> int:
             },
             "protocol": {
                 "process_isolation": True,
-                "warmup_replays": 1,
+                "warmup_replays": 2,
+                "timing_replays": TIMING_ITERATIONS,
                 "seeds": list(SEEDS),
                 "action_operating_point": "FlashRT pi05 horizon 10, action dim 7",
                 "thresholds": {
                     "min_action_cosine": MIN_ACTION_COSINE,
                     "min_speedup": MIN_SPEEDUP,
+                    "max_fp8_resident_ratio": MAX_FP8_RESIDENT_RATIO,
+                    "min_released_bf16_bytes": MIN_RELEASED_BF16_BYTES,
+                    "expected_released_bf16_keys": EXPECTED_RELEASED_BF16_KEYS,
                     "noise_bitwise_equal": True,
                 },
             },
@@ -310,6 +345,11 @@ def qualify(args) -> int:
                 "native_p50_ms": native_p50,
                 "fp8_p50_ms": fp8_p50,
                 "speedup": speedup,
+                "fp8_to_native_resident_ratio": resident_ratio,
+                "resident_memory_reduction_bytes": (
+                    arms["native"]["resident_allocated_bytes"]
+                    - arms["fp8"]["resident_allocated_bytes"]
+                ),
             },
             "failures": failures,
         }
