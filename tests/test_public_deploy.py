@@ -331,6 +331,62 @@ def test_urllib3_exact_loopback_capability_probe_is_allowed(tmp_path):
     assert guard["allowed_cpu_import_plumbing"] == ["urllib3_ipv6_loopback_capability_probe"]
 
 
+def fontconfig_probe(tmp_path, body, *, function="_get_fontconfig_fonts", source_file=None):
+    package = tmp_path / "matplotlib"
+    package.mkdir()
+    (package / "__init__.py").write_text("")
+    source = "import subprocess\n" + f"def {function}():\n" + "".join(
+        f" {line}\n" for line in body.splitlines()) + f"value={function}()\n"
+    if source_file:
+        source = f"exec(compile({source!r}, {source_file!r}, 'exec'))\n"
+    (package / "font_manager.py").write_text(source)
+    result = deploy.run_probe(payload(tmp_path, [dependency("matplotlib.font_manager", "value")]), 10)
+    return (next(c for c in result["checks"] if c["name"] == "import:matplotlib.font_manager"),
+            next(c for c in result["checks"] if c["name"] == "offline_cpu_operation_guard"))
+
+
+@pytest.mark.skipif(not Path("/usr/bin/fc-list").exists(), reason="system fontconfig unavailable")
+def test_matplotlib_exact_system_font_queries_are_allowed(tmp_path):
+    check, guard = fontconfig_probe(tmp_path,
+        "assert b'--format' in subprocess.check_output(['fc-list', '--help'])\n"
+        "return subprocess.check_output(['fc-list', '--format=%{file}\\\\n'])")
+    assert check["status"] == guard["status"] == "passed"
+    assert guard["allowed_cpu_import_plumbing"] == ["matplotlib_system_fontconfig_discovery"]
+
+
+@pytest.mark.parametrize("body,function,source_file", [
+    ("return subprocess.check_output(['fc-list', '--version'])", "_get_fontconfig_fonts", None),
+    ("return subprocess.check_output(['fc-list', '--format=%{family}\\\\n'])", "_get_fontconfig_fonts", None),
+    ("return subprocess.check_output(['fc-list', '--help'], executable='/usr/bin/true')",
+     "_get_fontconfig_fonts", None),
+    ("return subprocess.check_output(['fc-list', '--help'], env={'PATH': '/usr/bin'})",
+     "_get_fontconfig_fonts", None),
+    ("return subprocess.check_output(['fc-list', '--help'], cwd='/tmp')", "_get_fontconfig_fonts", None),
+    ("return subprocess.check_output('fc-list --help', shell=True)", "_get_fontconfig_fonts", None),
+    ("return subprocess.check_output(['fc-list', '--help'])", "other_function", None),
+    ("return subprocess.check_output(['fc-list', '--help'])", "_get_fontconfig_fonts", "unrelated.py"),
+    ("subprocess.check_output(['fc-list', '--help'])\nreturn subprocess.check_output(['uname', '-p'])",
+     "_get_fontconfig_fonts", None),
+])
+def test_font_discovery_does_not_allow_other_processes_or_callers(tmp_path, body, function, source_file):
+    check, guard = fontconfig_probe(tmp_path, body, function=function, source_file=source_file)
+    assert check["status"] == guard["status"] == "failed"
+    assert "subprocess.Popen" in guard["blocked_operations"]
+
+
+def test_font_discovery_rejects_path_shadowing_without_running_it(tmp_path):
+    binary = tmp_path / "fc-list"
+    marker = tmp_path / "executed"
+    binary.write_text(f"#!/bin/sh\ntouch {marker}\n")
+    binary.chmod(0o755)
+    check, guard = fontconfig_probe(tmp_path,
+        f"import os\nos.environ['PATH']={str(tmp_path)!r}\n"
+        "return subprocess.check_output(['fc-list', '--help'])")
+    assert check["status"] == guard["status"] == "failed"
+    assert "subprocess.Popen" in guard["blocked_operations"]
+    assert not marker.exists()
+
+
 def test_vendor_cannot_hide_caught_network_attempt(tmp_path):
     (tmp_path / "catching_vendor.py").write_text(
         "import socket\ntry:\n socket.getaddrinfo('example.com',443)\nexcept RuntimeError:\n pass\n"

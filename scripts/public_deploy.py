@@ -241,6 +241,28 @@ def _probe_worker(payload: dict) -> dict:
         # Require the real system executable and the stdlib call site; neither
         # arbitrary commands nor shell/subprocess wrappers are admitted.
         argv = ([args[1]] if isinstance(args[1], str) else list(args[1])) if event == "subprocess.Popen" else []
+        # Matplotlib discovers installed font paths during its CPU-only import.
+        # Admit only its two read-only queries from the loaded font-manager
+        # source, through the real system fontconfig executable.
+        if event == "subprocess.Popen" and argv in (
+                ["fc-list", "--help"], ["fc-list", "--format=%{file}\\n"]):
+            if len(args) != 4 or args[2] is not None or args[3] is not None:
+                return None  # The native calls inherit cwd/env and do not redirect PATH.
+            binary = shutil.which(str(args[0]))
+            module = sys.modules.get("matplotlib.font_manager")
+            source = getattr(module, "__file__", None)
+            if (not binary or Path(binary).resolve() != Path("/usr/bin/fc-list").resolve()
+                    or not source):
+                return None
+            frame = caller
+            for _ in range(10):
+                if frame is None:
+                    break
+                if (frame.f_globals.get("__name__") == "matplotlib.font_manager" and
+                        frame.f_code.co_name == "_get_fontconfig_fonts" and
+                        Path(frame.f_code.co_filename).resolve() == Path(source).resolve()):
+                    return "matplotlib_system_fontconfig_discovery"
+                frame = frame.f_back
         if event == "subprocess.Popen" and argv in (["uname", "-p"], ["lscpu"]):
             binary = shutil.which(str(args[0]))
             expected = "/usr/bin/uname" if argv == ["uname", "-p"] else "/usr/bin/lscpu"
