@@ -58,11 +58,14 @@ jobs:
             -DPython3_EXECUTABLE="$(command -v python)"
           cmake --build "$RUNNER_TEMP/flashrt-sm120-build" --parallel 4 --target flash_rt_kernels flash_rt_fa2
       - name: Real FP8 numeric, speed and memory gate
+        # Runs against the freshly compiled extension, never a cached old wheel.
         run: >-
           python examples/pi05_vla/verify_sm120_fp8.py
           --checkpoint "$PI05_CHECKPOINT"
           --dataset "$PI05_DATASET/data/chunk-000/file-000.parquet"
           --output "$RUNNER_TEMP/pi05-sm120-numeric.json"
+      - name: Frozen GEMM cache correctness on real SM120
+        run: python -m pytest -q tests/test_pi05_frozen_gemm_cuda.py
       - name: Prepare immutable LIBERO assets and verify EGL
         if: ${{ inputs.matched_libero }}
         run: >-

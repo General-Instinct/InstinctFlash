@@ -9,6 +9,8 @@
 #include <string>
 #include <unordered_map>
 #include <functional>
+#include <tuple>
+#include <vector>
 
 // Check cuBLAS status
 #define CUBLAS_CHECK(expr)                                              \
@@ -37,6 +39,13 @@ class GemmRunner {
 public:
     GemmRunner();
     ~GemmRunner();
+
+    // Opaque algorithm bytes are portable only across the identical environment.
+    using AlgoRecord = std::tuple<int, int, int, int, std::string>;
+    std::string algo_cache_identity() const;
+    std::vector<AlgoRecord> export_algo_cache() const;
+    void import_algo_cache(const std::string& identity, const std::vector<AlgoRecord>& records);
+    void set_cache_policy(const std::string& policy);
 
     // BF16 GEMM: D = alpha * A @ B^T + beta * C
     // A: (M, K) row-major bf16
@@ -183,6 +192,9 @@ private:
     cublasLtHandle_t handle_;
     void* workspace_;
     size_t workspace_size_;
+    bool record_once_ = false;
+    bool cache_frozen_ = false;
+    void clear_cached_descriptors();
     // Pre-allocated device scale storage for fp8_run
     float* d_scale_a_;
     float* d_scale_b_;
@@ -217,6 +229,8 @@ private:
         cublasLtMatrixLayout_t A_desc, B_desc, C_desc, D_desc;
         cublasLtMatmulAlgo_t algo;
         bool has_C_desc = false;  // FP4 needs separate C descriptor (BF16 != FP4)
+        bool tuned = false;
+        bool restored = false;
     };
 
     std::unordered_map<GemmKey, CachedGemm, GemmKeyHash> gemm_cache_;

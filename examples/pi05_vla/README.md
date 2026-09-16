@@ -367,6 +367,115 @@ performance certificate. Geometric labels (4 cm lift / 7 cm proximity) are
 descriptive only: they never replace LIBERO's real `On` predicate, which also
 requires contact, vertical ordering and horizontal center separation below 3 cm.
 
+### Frozen execution state: explicit opt-in
+
+`FrozenPi05Frontend` adds cross-process persistence without changing the default
+`load_model()` route. It records the actual 250 FP32 activation scales as exact
+hexadecimal bits and serializes the cuBLASLt algorithms for each cached GEMM
+type/shape. The final encoder layer's unused output/FFN projections do not have
+activation scales; missing active scales or extra scales are rejected.
+
+In recording mode a shape is tuned once, so later CUDA Graph captures cannot
+silently replace choices already captured by earlier profiles. Calibration is
+measured again after its shapes have been registered, using the same fixed real
+frames and seed. Restoration locks the cache: unknown shapes, token lengths,
+prompts, checkpoint/source/binary identities or incompatible CUDA/cuBLAS/GPU
+identities fail explicitly. It does not silently recalibrate or retune.
+Algorithm serialization is restricted to the same cuBLAS version, as required
+by the [cuBLASLt API](https://docs.nvidia.com/cuda/archive/12.8.1/cublas/index.html#cublasltmatmulalgo-t).
+
+```python
+import torch
+from flash_rt.frontends.torch.pi05_frozen import FrozenPi05Frontend
+
+# Match the numeric settings used by the LIBERO workers.
+torch.backends.cuda.matmul.allow_tf32 = True
+torch.backends.cudnn.benchmark = True
+model = FrozenPi05Frontend(checkpoint_dir)
+model.set_prompt(task_prompt)
+# Each item has RGB uint8 image/wrist_image and a finite 8-dimensional state.
+model.calibrate(real_calibration_frames, percentile=99.0)
+# These synthetic token-length warmups register shapes, not calibration data.
+model.register_profiles(real_calibration_frames[0], range(128, 201))
+model.save_state("task-state.json")  # Atomic; refuses to overwrite an existing file.
+model.close()
+
+model = FrozenPi05Frontend(checkpoint_dir)
+model.load_state("task-state.json")  # Loads the prompt, scales and algorithm catalog.
+torch.manual_seed(123456)  # Policy RNG remains caller-owned.
+actions = model.infer(observation)["actions"]
+model.close()
+```
+
+The state is deliberately bound to the GPU UUID, CUDA runtime/driver API and
+cuBLAS versions, binary hashes, checkpoint/processors, tokenizer and Python
+sources. It is a reproducibility artifact for that environment, not a portable
+cache for arbitrary GPUs. Full FP8, two-view LIBERO and the checkpoint-default
+tokenizer are the validated scope; BF16 layer exceptions are not supported here.
+Rebuild `flash_rt_kernels` before using these interfaces.
+Keep the same PyTorch numeric settings and episode RNG when testing exact
+replay: the cache does not serialize every process-global PyTorch setting or
+replace the caller's seed discipline. The provided experiment drivers apply
+the numeric flags and seed Python, NumPy and Torch explicitly.
+
+The initial real-model experiment used eight held-out observations, three fresh
+processes per mode, the frozen percentile-99 calibration, and identical explicit
+noise. Restoring **both** scales and algorithms produced bit-exact actions,
+minimum BF16 action cosine **0.999959**, **1.572x** speedup, and a PyTorch peak
+allocation ratio of **0.629**. Two independent task-5 runs then produced
+**33/50 and 33/50**, with all 50 action digests, noise sequences, step counts
+and success outcomes identical.
+
+| Experiment | Same scales across 3 processes | Bit-exact actions |
+| --- | --- | --- |
+| Fresh per-shape-once recording | Yes, but different from the saved state | Yes in these three runs |
+| Restore scales only | Yes | No |
+| Restore algorithms, recalibrate fixed frames | Yes; identical to saved state | Yes |
+| Restore both | Yes; identical to saved state | Yes |
+
+The fresh arm is the new per-shape-once recorder, not the legacy repeatedly
+retuned implementation. Its three matching runs do not establish that fresh
+autotuning always picks the same catalog. The scale-only counterexample shows
+why freezing calibration values alone is insufficient. Partial restore modes
+are diagnostic controls; use the default `parts="both"` for strict replay.
+
+With the same locked environment and EGL variables as above:
+
+```bash
+PYTHONPATH=serving:. python -m benchmarks.vla.pi05_frozen_replay \
+  --baseline /path/to/completed-500-pair-campaign \
+  --output /path/to/frozen-replay --repeats 3
+PYTHONPATH=serving:. python -m benchmarks.vla.pi05_frozen_replay \
+  --baseline /path/to/completed-500-pair-campaign \
+  --output /path/to/frozen-replay --rollout
+PYTHONPATH=serving:. python -m benchmarks.vla.pi05_frozen_libero \
+  --baseline /path/to/completed-500-pair-campaign \
+  --catalog /path/to/frozen-replay/state.json \
+  --output /path/to/frozen-500
+PYTHONPATH=serving:. python scripts/summarize_pi05_frozen.py \
+  --replay /path/to/frozen-replay --qualification /path/to/frozen-500 \
+  --output /path/to/frozen-evidence.json
+```
+
+The fresh full campaign requires both prerequisite gates to pass, freezes all
+ten task-specific calibration states before any new task evaluation, and reruns
+Native and frozen FP8 on the current binary. It preserves the earlier evidence
+and never substitutes old task outcomes for new execution.
+
+The completed fresh campaign passed: **Native 472/500 (94.4%), frozen FP8
+480/500 (96.0%)**. The paired difference is **+1.6 percentage points**, with a
+central 95% interval of **[+0.154, +3.372] points** and a one-sided 95% lower
+bound of **+0.410 points**, above the declared -5-point non-inferiority margin.
+No task collapsed. These statements are conditional on this fixed Spatial
+suite; they are not a guarantee of higher success on other tasks/checkpoints.
+The campaign's task-5 FP8 arm also reproduced the previous two 33/50 runs
+with identical actions, noise and endings for every seed.
+
+`sm120_frozen_results.json` contains the replay ablations, repeated task-5
+comparison, fresh 500-pair outcomes, per-task state hashes, current binary and
+source identities. It is included in the adapter wheel. Actual frozen state
+files and raw campaign receipts remain in the chosen output directories.
+
 ## Run it
 
 ```bash

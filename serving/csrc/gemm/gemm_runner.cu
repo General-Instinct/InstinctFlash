@@ -1,6 +1,10 @@
 #include "gemm_runner.h"
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <cstring>
+#include <iomanip>
+#include <sstream>
 
 // ================================================================
 // GemmRunner: cuBLASLt-based GEMM for FP8/NVFP4 on Blackwell
@@ -17,6 +21,14 @@ GemmRunner::GemmRunner() {
 }
 
 GemmRunner::~GemmRunner() {
+    clear_cached_descriptors();
+    if (d_scale_b_) cudaFree(d_scale_b_);
+    if (d_scale_a_) cudaFree(d_scale_a_);
+    if (workspace_) cudaFree(workspace_);
+    if (handle_) cublasLtDestroy(handle_);
+}
+
+void GemmRunner::clear_cached_descriptors() {
     // Destroy cached descriptors
     for (auto& [key, entry] : gemm_cache_) {
         cublasLtMatrixLayoutDestroy(entry.A_desc);
@@ -26,10 +38,78 @@ GemmRunner::~GemmRunner() {
         cublasLtMatmulDescDestroy(entry.matmul_desc);
     }
     gemm_cache_.clear();
-    if (d_scale_b_) cudaFree(d_scale_b_);
-    if (d_scale_a_) cudaFree(d_scale_a_);
-    if (workspace_) cudaFree(workspace_);
-    if (handle_) cublasLtDestroy(handle_);
+}
+
+std::string GemmRunner::algo_cache_identity() const {
+    int device, driver, runtime;
+    cudaDeviceProp prop{};
+    CUDA_CHECK(cudaGetDevice(&device));
+    CUDA_CHECK(cudaGetDeviceProperties(&prop, device));
+    CUDA_CHECK(cudaDriverGetVersion(&driver));
+    CUDA_CHECK(cudaRuntimeGetVersion(&runtime));
+    std::ostringstream out;
+    out << "flashrt-gemm-v1:" << cublasLtGetVersion() << ':' << driver << ':' << runtime
+        << ':' << prop.major << '.' << prop.minor << ':' << prop.multiProcessorCount
+        << ':' << workspace_size_ << ':' << sizeof(cublasLtMatmulAlgo_t) << ':' << prop.name << ':';
+    for (unsigned char byte : prop.uuid.bytes)
+        out << std::hex << std::setw(2) << std::setfill('0') << static_cast<unsigned>(byte);
+    return out.str();
+}
+
+void GemmRunner::set_cache_policy(const std::string& policy) {
+    if (cache_frozen_ && policy != "frozen")
+        throw std::runtime_error("cannot unlock a frozen GEMM cache; create a new runner");
+    if (policy != "normal" && policy != "record" && policy != "frozen")
+        throw std::invalid_argument("unknown GEMM cache policy");
+    record_once_ = policy != "normal";
+    cache_frozen_ = policy == "frozen";
+}
+
+std::vector<GemmRunner::AlgoRecord> GemmRunner::export_algo_cache() const {
+    std::vector<AlgoRecord> records;
+    for (const auto& [key, entry] : gemm_cache_)
+        records.emplace_back(key.type, key.M, key.N, key.K,
+            std::string(reinterpret_cast<const char*>(&entry.algo), sizeof(entry.algo)));
+    std::sort(records.begin(), records.end());
+    return records;
+}
+
+void GemmRunner::import_algo_cache(const std::string& identity, const std::vector<AlgoRecord>& records) {
+    if (!gemm_cache_.empty() || cache_frozen_)
+        throw std::runtime_error("restore requires a fresh GEMM runner before graph capture");
+    if (identity != algo_cache_identity())
+        throw std::invalid_argument("GEMM cache environment differs (GPU/CUDA/cuBLAS/workspace)");
+    if (records.empty() || records.size() > 4096)
+        throw std::invalid_argument("invalid GEMM cache entry count");
+    try {
+        for (const auto& [type, M, N, K, bytes] : records) {
+            bool supported = type == BF16_NN || type == BF16_NN_RES || type == FP16_NN
+                             || type == FP8_NN_DEV || type == FP8_NT_DEV;
+#ifdef ENABLE_NVFP4
+            supported = supported || type == FP4_NN_DEV;
+#endif
+            if (!supported || M <= 0 || N <= 0 || K <= 0 || M > (1 << 20)
+                    || N > (1 << 20) || K > (1 << 20) || bytes.size() != sizeof(cublasLtMatmulAlgo_t))
+                throw std::invalid_argument("malformed GEMM cache record");
+            GemmKey key{type, M, N, K};
+            if (gemm_cache_.count(key)) throw std::invalid_argument("duplicate GEMM cache key");
+            auto& entry = get_or_create_cached(static_cast<GemmType>(type), M, N, K);
+            cublasLtMatmulAlgo_t algo{};
+            std::memcpy(&algo, bytes.data(), sizeof(algo));
+            cublasLtMatmulHeuristicResult_t checked{};
+            CUBLAS_CHECK(cublasLtMatmulAlgoCheck(handle_, entry.matmul_desc,
+                entry.A_desc, entry.B_desc, entry.has_C_desc ? entry.C_desc : entry.D_desc,
+                entry.D_desc, &algo, &checked));
+            if (checked.state != CUBLAS_STATUS_SUCCESS || checked.workspaceSize > workspace_size_)
+                throw std::invalid_argument("restored GEMM algorithm is not supported for this descriptor");
+            entry.algo = algo;
+            entry.restored = true;
+        }
+    } catch (...) {
+        clear_cached_descriptors();
+        throw;
+    }
+    set_cache_policy("frozen");
 }
 
 // ================================================================
@@ -39,6 +119,10 @@ GemmRunner::CachedGemm& GemmRunner::get_or_create_cached(GemmType type, int M, i
     GemmKey key{static_cast<int>(type), M, N, K};
     auto it = gemm_cache_.find(key);
     if (it != gemm_cache_.end()) return it->second;
+    if (cache_frozen_)
+        throw std::runtime_error("unregistered GEMM shape in frozen cache: "
+            + std::to_string(key.type) + ":" + std::to_string(M) + ","
+            + std::to_string(N) + "," + std::to_string(K));
 
     CachedGemm entry;
     cublasLtOrder_t row_order = CUBLASLT_ORDER_ROW;
@@ -136,7 +220,8 @@ GemmRunner::CachedGemm& GemmRunner::get_or_create_cached(GemmType type, int M, i
 // ================================================================
 void GemmRunner::autotune_cached(CachedGemm& entry, void* A, void* B, void* D,
                                   float alpha, float beta, int num_algos,
-                                  float* d_scale_a, float* d_scale_b) {
+                         float* d_scale_a, float* d_scale_b) {
+    if (cache_frozen_ || entry.restored || (record_once_ && entry.tuned)) return;
     // Update scale pointers if FP8
     if (d_scale_a) {
         CUBLAS_CHECK(cublasLtMatmulDescSetAttribute(entry.matmul_desc,
@@ -211,6 +296,7 @@ void GemmRunner::autotune_cached(CachedGemm& entry, void* A, void* B, void* D,
     CUDA_CHECK(cudaEventDestroy(stop));
 
     entry.algo = heuristics[best_idx].algo;
+    entry.tuned = true;
     std::cout << "  autotune: tested " << returned_results << " algos, best="
               << best_idx << " (" << best_ms * 1000.0f << " us)" << std::endl;
 }

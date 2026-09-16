@@ -180,6 +180,26 @@ PYBIND11_MODULE(flash_rt_kernels, m) {
     // ── GemmRunner ──
     py::class_<GemmRunner>(m, "GemmRunner")
         .def(py::init<>())
+        .def("algo_cache_identity", &GemmRunner::algo_cache_identity)
+        .def("set_cache_policy", &GemmRunner::set_cache_policy)
+        .def("export_algo_cache", [](GemmRunner& self) {
+            py::list out;
+            for (const auto& [type, M, N, K, blob] : self.export_algo_cache())
+                out.append(py::make_tuple(type, M, N, K, py::bytes(blob)));
+            return out;
+        })
+        .def("import_algo_cache", [](GemmRunner& self, const std::string& identity, py::list rows) {
+            if (rows.size() > 4096) throw std::invalid_argument("too many GEMM records");
+            std::vector<GemmRunner::AlgoRecord> records;
+            for (auto item : rows) {
+                auto row = py::cast<py::tuple>(item);
+                if (row.size() != 5 || !py::isinstance<py::bytes>(row[4]))
+                    throw std::invalid_argument("expected (type, M, N, K, algorithm_bytes)");
+                records.emplace_back(row[0].cast<int>(), row[1].cast<int>(), row[2].cast<int>(),
+                                     row[3].cast<int>(), row[4].cast<std::string>());
+            }
+            self.import_algo_cache(identity, records);
+        })
         .def("bf16_gemm", [](GemmRunner& self,
                               uintptr_t A, uintptr_t B, uintptr_t D,
                               int M, int N, int K,
