@@ -1,0 +1,141 @@
+{
+  "GPU_used_by_auditor": false,
+  "GPU_uuid": "GPU-004614f4-173a-187b-4e67-a2e1799e4d42",
+  "Torch_imported_by_auditor": false,
+  "actual_numeric_environment": {
+    "cudnn_benchmark": false,
+    "cudnn_tf32": false,
+    "matmul_tf32": true
+  },
+  "archive_sha256": "e58c087b20bb383c5d8c61d798bad97f374dc0ce108b257d5d65a179a77e217d",
+  "comparisons": [
+    {
+      "actions": {
+        "exact_bytes": true,
+        "max_abs": 0.0,
+        "rmse": 0.0
+      },
+      "baseline": "vla2-eager_native",
+      "candidate": "vla2-numeric-supplement/runtime_selected",
+      "same_sampling_policy": true,
+      "speedup": 6.753765855494851
+    },
+    {
+      "actions": {
+        "exact_bytes": true,
+        "max_abs": 0.0,
+        "rmse": 0.0
+      },
+      "baseline": "vla2-runtime_default",
+      "candidate": "vla2-numeric-supplement/runtime_selected",
+      "same_sampling_policy": true,
+      "speedup": 6.808930251764944
+    },
+    {
+      "actions": {
+        "exact_bytes": false,
+        "max_abs": 0.08982587046921253,
+        "rmse": 0.007267696128826789
+      },
+      "baseline": "vla2-runtime_selected",
+      "candidate": "vla2-numeric-supplement/runtime_selected",
+      "same_sampling_policy": true,
+      "speedup": 1.0220390505758061
+    }
+  ],
+  "completion_sha256": "b5aae59ea6ff5287b00bee5d170dfde9a5a18e01572e247f0e58a16dee82a905",
+  "config_sha256": "abd1f34294b3b04ed1284ea39d1954692e8ada79913094b08875997ec29486f1",
+  "family": "vla2",
+  "full_public_run_completed": false,
+  "metrics": {
+    "p50_ms": 145.18168500035245,
+    "precision": "native",
+    "primary_samples": 20,
+    "schedule": {
+      "nfe": {
+        "action": 10,
+        "prefix": 1
+      },
+      "sampler": "checkpoint"
+    },
+    "total_predictions": 25
+  },
+  "minimum_RAM_certified": false,
+  "mode": "numeric",
+  "parent_archive_sha256": "63a3e2cd5bf6b2821e271f6f293badb13cf7cbd76ad0bc0663881e54c3bc5ab8",
+  "parent_audit_sha256": "f890f3b08b22e689dc82a764773ea7c93d8374d59d39f036b319f2cb9cd4aafa",
+  "passed": true,
+  "primary_baselines_recaptured": false,
+  "schema": "instinctflash.rtx5090_numeric_independent_audit.v1",
+  "scope": "One additional NUMERIC cell+6callWS; actual parent three-cell results are separate. Runtime comparisons do not isolate FP8 arithmetic.",
+  "source_commit": "0a53125c5af6d76260be96e39077cdcc3c01126d",
+  "target": {
+    "capability": [
+      12,
+      0
+    ],
+    "name": "rtx5090"
+  },
+  "task_quality_validated": false,
+  "vendor_cpu_provenance_sha256": "55c6c73d69ef48e176f38ea009da48b53134d3b43ab3a8c9245f30144d6692e0",
+  "websockets": [
+    {
+      "action_archive_sha256": "5e31156eca7a5ace4f5a48f2f6977818fcb534c053551e40eaff77214abd174a",
+      "action_shape": [
+        6,
+        50,
+        14
+      ],
+      "calls": 6,
+      "cell": "vla2-runtime_selected",
+      "effective_nfe": {
+        "action": 10,
+        "prefix": 1
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "native",
+      "receipt_sha256": "75a99870ad0dbcb9282c99bb72f3d4c2e703e080a0a9d0b408f3a157438202cf",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "0a0498f0cff7c8b83e04494c2b61f47c83a8310a1bd74f64316f54a1513d9d5c"
+        ],
+        [
+          0,
+          1,
+          "13137705e19f8ff81bcd97f66cad54caf4078d5908c2a7e8e7a31876831d3147"
+        ],
+        [
+          0,
+          2,
+          "a5695d64d7ccfa0cb81304cf45545778863d0524d9f19d18ad10fec2a3d4a26f"
+        ],
+        [
+          1,
+          0,
+          "54bae1e0c16f4faa3ab015a14311f19169960fe7447ffd956c40aad41716234e"
+        ],
+        [
+          1,
+          1,
+          "d0e36a9a804c9b79e590bcbe1d62fa1e015c34a5e780cba39edbd8b4eb96ef37"
+        ],
+        [
+          1,
+          2,
+          "8d96e49b4be233b8a1f2f9ed498db55dc716d10e4108f8b394226cd9c036889a"
+        ]
+      ],
+      "rng_scope": "native serving constructor seed",
+      "task_quality_validated": false
+    }
+  ],
+  "worker": {
+    "exited": true,
+    "pid": 65302,
+    "start_ticks": "2330516"
+  }
+}

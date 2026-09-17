@@ -14,7 +14,7 @@
 
 ## What's new 🔥
 
-- **RTX 4090 support.** Runtime inference and WebSocket serving. [Setup](INSTALL.rst#rtx-4090).
+- **RTX 4090 and RTX 5090 support.** Runtime inference and WebSocket serving. [4090 setup](INSTALL.rst#rtx-4090) · [5090 setup](INSTALL.rst#rtx-5090).
 - **Full source and eight model families.** Public install, paired inference and WebSocket serving paths are qualified on Jetson Thor for all eight models below.
 - **Cosmos3 at full UniPC4/CFG3.** Edge: **1048.01 ms**; Nano: **4772.38 ms**, both native precision with NUMERIC optimizations.
 - **LingBot-VA @2V/4A.** **459.10 ms / 4.51×** versus native 2V/4A in early continuations; full 25V/50A FP8: **2891.74 ms**.
@@ -65,7 +65,8 @@ source ~/ifl-pi05-4090/activate.sh
 Use `va`, `vla4`, `vla2`, `pi05`, `groot`, `edge`, `nano` or `dreamzero`.
 Edge and Nano use Python 3.13; the other families use Python 3.12.
 The bootstrap installs the upstream source, compatibility patches, core and adapter.
-Model weights are downloaded separately. See [RTX 4090 setup](INSTALL.rst#rtx-4090)
+Model weights are downloaded separately. See [RTX 5090 setup](INSTALL.rst#rtx-5090),
+[RTX 4090 setup](INSTALL.rst#rtx-4090)
 or [Jetson Thor setup](INSTALL.rst#jetson-thor), which selects `--target jetson_thor`
 and uses the [Thor CUDA backend build](serving/README.rst).
 
@@ -127,10 +128,9 @@ with runtime.episode(prompt="put the bottle in the dustbin") as episode:
         action = result["action"]
 ```
 
-`observation` is a dict in the model's own format; `result["action"]` contains its action array. No
-server to start, no optimization to choose. If a safety layer changed the action before it
-reached the robot, pass `executed_action=...` and the model conditions on what actually
-happened.
+`observation` is a dict in the model's own format; `result["action"]` contains its action array.
+For LingBot-VA, pass `executed_action=...` when the controller changes a predicted action
+chunk, so the next prediction uses the actions actually executed.
 
 **Over the network** — the `serve` command above hosts the same runtime behind the
 msgpack-over-websocket wire protocol the pi0/openpi ecosystem already speaks, so existing

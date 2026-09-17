@@ -1,0 +1,54 @@
+{
+  "cell_id": "edge-runtime_selected",
+  "continuation": {
+    "capture_validation_path": "/workspace/ifl_rtx5090_20260916/edge-numeric-cpu-validation-v2/capture_validation.json",
+    "capture_validation_sha256": "63af3ac53e720ddb87a209fd9c907c55cbe0acfe283feb1f748c7361b82f0f67",
+    "cpu_completion_path": "/workspace/ifl_rtx5090_20260916/edge-numeric-cpu-validation-v2/completion.json",
+    "cpu_completion_sha256": "92cefd6085d5e15a2e3a18e32ddb0969e7d176e2e1e385fbb2c12abc8e8968aa",
+    "original_failure_sha256": "47133917912f1ac738f448a1fa1dee776f66c4108f62a3b52de94bea85244ea2",
+    "readback_manifest_sha256": "bdc227f82ed94338a89b0869ae8e157d9922339f1bf9b99cc521ae3c6beb96dc",
+    "source_run": "/workspace/ifl_rtx5090_20260916/edge-numeric-supplement-v1"
+  },
+  "expected_plan_sha256": "8d5b3b791a2727dc4e71cc99c32f6f3f0cb3bfee2b4313e7edc035f889dd7fa6",
+  "family": "edge",
+  "gpu_uuid": "GPU-004614f4-173a-187b-4e67-a2e1799e4d42",
+  "helper_sha256": "e84ca51dcd978e3fcea972cf69839d28ddbfc5b25063b25a83d93b77e69d2888",
+  "mode": "numeric",
+  "output": "/workspace/ifl_rtx5090_20260916/edge-numeric-continuation-v1",
+  "parent": {
+    "capture_run_sha256": "03dd86185cc88ebd4dd9f9c57c68a83741771053b5511521496dd056a51f35cb",
+    "cell_receipts": {
+      "edge-eager_native": "c79c7d4b79d167e75dcd788aa9c9648936e87abd59cbe88aec3df8cbf21ba91f",
+      "edge-runtime_default": "d19c32107c92ca53b016f19049b0447c73c1c0678ad967fb7097d3528069d1eb",
+      "edge-runtime_selected": "a7d784d716cd1321344496bfab051950ba5d713029b993971c798b3a2323f490"
+    },
+    "completion_sha256": "efc2752390361b934cc671d600c097bda9cd7c8d905a8bcc406bd755bc487a92",
+    "config_sha256": "a635c19a10b737dd7c505a76194a943cb1e09e7dc529f125460096f9d57bdafc",
+    "installed_source_sha256": "b2c217c0b9b73b96986c49c34c9bf81a77638a01157780a52b09078417236de2",
+    "run": "/workspace/ifl_rtx5090_20260916/edge-model-e2e-v1",
+    "worker_pid": 83550,
+    "worker_start_ticks": "4258210"
+  },
+  "schema": "instinctflash.rtx5090_numeric_supplement_config.v1",
+  "scope": "Reuse one immutable25-call NUMERIC API; execute only the never-started six-call WebSocket and corrected CPU serving validation. Original producer remains failed.",
+  "serving_seed": 9173,
+  "shared_worker": {
+    "path": "/workspace/ifl_rtx5090_20260916/prepared-first-model-worker-v1/model_worker.py",
+    "sha256": "fbd9c063cbcbb49aca1304aa256ab8a85441a39e6fa99afb78c5b94bdfbf2709"
+  },
+  "source_commit": "0a53125c5af6d76260be96e39077cdcc3c01126d",
+  "target": {
+    "capability": [
+      12,
+      0
+    ],
+    "name": "rtx5090"
+  },
+  "timeouts": {
+    "admit": 300,
+    "capture": 7200,
+    "prepare": 1200,
+    "serve": 6000,
+    "validate": 300
+  }
+}

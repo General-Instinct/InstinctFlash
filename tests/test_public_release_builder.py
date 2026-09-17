@@ -381,18 +381,23 @@ def test_full_staged_rtx_closure_plans_all_eight_without_installs(repository, tm
     monkeypatch.setattr(builder, "SELECTED_CONTROLS", CURRENT_CONTROLS)
     monkeypatch.setattr(builder, "PUBLIC_VENDOR_FILES", CURRENT_VENDOR_FILES)
     for relative in ("release/vendor/rtx4090/private.json", "release/rtx4090/unrelated.md",
-                     "release/rtx4090/results/private.log", "scripts/private_wheelhouse.py"):
+                     "release/rtx4090/results/private.log", "scripts/private_wheelhouse.py",
+                     "release/vendor/rtx5090/private.json", "release/rtx5090/results/private.log"):
         put(repository, relative, "unselected input")
     result = builder.create_stage(repository, tmp_path / "full", scope="full")
     stage = Path(result["source"])
     assert all(relative not in result["files"] for relative in (
         "release/vendor/rtx4090/private.json", "release/rtx4090/unrelated.md",
-        "release/rtx4090/results/private.log", "scripts/private_wheelhouse.py"))
+        "release/rtx4090/results/private.log", "scripts/private_wheelhouse.py",
+        "release/vendor/rtx5090/private.json", "release/rtx5090/results/private.log"))
     for relative in ("release/rtx4090/qualification.json", "release/rtx4090/results/results.json",
-                     "release/rtx4090/results/reproduce_manifest.json", "release/rtx4090/results/render_results.py"):
+                     "release/rtx4090/results/reproduce_manifest.json", "release/rtx4090/results/render_results.py",
+                     "release/rtx5090/qualification.json", "release/rtx5090/results/results.json",
+                     "release/rtx5090/results/reproduce_manifest.json", "release/rtx5090/results/render_results.py"):
         assert builder.sha((stage / relative).read_bytes()) == CURRENT_CONTROLS[relative]
     assert "scripts/qualify_sm89_fp8.py" in result["files"]
     assert "scripts/qualify_sm120_fp8.py" in result["files"]
+    assert result["files"]["scripts/reproduce_va_2v4a.py"]["sha256"] == CURRENT_CONTROLS["scripts/reproduce_va_2v4a.py"]
     assert "benchmarks/regression/hardware.py" in result["files"]
     environment = dict(os.environ, CUDA_VISIBLE_DEVICES="", HF_HUB_OFFLINE="1", UV_OFFLINE="1")
     environment.pop("PYTHONPATH", None)

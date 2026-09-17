@@ -1,0 +1,64 @@
+{
+  "FP8_nested_native_settings_checked": true,
+  "GPU_used": false,
+  "Torch_imported": false,
+  "actual_API_cells": 3,
+  "actual_Runtime_modes": 2,
+  "actual_websocket_records": 2,
+  "input_entry": {
+    "archives": [
+      {
+        "path": "archive.tar.gz",
+        "sha256": "b289507b8345fcd5cb9a78534917c2553bec07c667cace2ca9cdd9147c63efd6"
+      }
+    ],
+    "audit": {
+      "path": "edge.independent_audit_v3.json",
+      "sha256": "c67c06d3e6b2ae50f39573a2a85e1d6b8d025b051bad3eefedd124eb4ed321d4"
+    },
+    "cohort": "node5090",
+    "family": "edge",
+    "kind": "primary"
+  },
+  "model_recaptured": false,
+  "new_complete_bundle_created": false,
+  "numeric_pending": true,
+  "original_no_offload_counters": [
+    {
+      "host_to_device_bytes": 0,
+      "mode": "pytorch",
+      "receipt_sha256": "c79c7d4b79d167e75dcd788aa9c9648936e87abd59cbe88aec3df8cbf21ba91f",
+      "resident_blocks": 28,
+      "streamed_block_calls": 0,
+      "streamed_blocks": 0
+    },
+    {
+      "host_to_device_bytes": 0,
+      "mode": "native",
+      "receipt_sha256": "d19c32107c92ca53b016f19049b0447c73c1c0678ad967fb7097d3528069d1eb",
+      "resident_blocks": 28,
+      "streamed_block_calls": 0,
+      "streamed_blocks": 0
+    },
+    {
+      "host_to_device_bytes": 0,
+      "mode": "fp8",
+      "receipt_sha256": "a7d784d716cd1321344496bfab051950ba5d713029b993971c798b3a2323f490",
+      "resident_blocks": 28,
+      "streamed_block_calls": 0,
+      "streamed_blocks": 0
+    }
+  ],
+  "p50_ms": {
+    "fp8": 1168.9710399950854,
+    "native": 958.2232570028282,
+    "pytorch": 951.2399915001879
+  },
+  "passed": true,
+  "primary_archive_sha256": "b289507b8345fcd5cb9a78534917c2553bec07c667cace2ca9cdd9147c63efd6",
+  "primary_audit_sha256": "c67c06d3e6b2ae50f39573a2a85e1d6b8d025b051bad3eefedd124eb4ed321d4",
+  "reader_sha256": "9e79c1039f77a40f0e3eecb17f1a7d8c4fb889f8ba99e338e77e6b60531066f1",
+  "reader_v5_needed": false,
+  "source_inventory_normalization_passed": true,
+  "status": "actual_primary_only_reader_admission_passed"
+}

@@ -1,0 +1,223 @@
+{
+  "GPU_used_by_auditor": false,
+  "GPU_uuid": "GPU-004614f4-173a-187b-4e67-a2e1799e4d42",
+  "Torch_imported_by_auditor": false,
+  "actual_launch_binding_sha256": "9bb6d13d90795381227f7ccd978ac500aa5c07124a2df20f48ea8584205a21cd",
+  "archive_sha256": "069c921535d17902d2d758af0d641d2627723fc2bd662e9713cf7a8d2842895d",
+  "comparisons": [
+    {
+      "actions": {
+        "exact_bytes": true,
+        "max_abs": 0.0,
+        "rmse": 0.0
+      },
+      "baseline": "va-eager_native",
+      "candidate": "va-runtime_default",
+      "same_sampling_policy": true,
+      "speedup": 2.424969398300238
+    },
+    {
+      "actions": {
+        "exact_bytes": false,
+        "max_abs": 1.128906786441803,
+        "rmse": 0.01975082873668907
+      },
+      "baseline": "va-eager_native",
+      "candidate": "va-runtime_selected",
+      "same_sampling_policy": true,
+      "speedup": 1.5691631393685748
+    }
+  ],
+  "completion_sha256": "cf1c3e18472708f23d01e473b9add915d9bfaf41828d54ba2f825cce6ac71d95",
+  "config_sha256": "93cc5b5a44ece7ffa6fd5e51ab7900de718a95abf90383f7460e7ceace24d9cc",
+  "default_bitexact": true,
+  "family": "va",
+  "installed_source_members": 420,
+  "metrics": {
+    "va-eager_native": {
+      "p50_ms": 8143.990757498614,
+      "precision": "native",
+      "primary_samples": 12,
+      "schedule": {
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        },
+        "sampler": "checkpoint",
+        "video_steps": 25
+      },
+      "total_predictions": 21
+    },
+    "va-runtime_default": {
+      "p50_ms": 3358.3890845002315,
+      "precision": "native",
+      "primary_samples": 12,
+      "schedule": {
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        },
+        "sampler": "checkpoint",
+        "video_steps": 25
+      },
+      "total_predictions": 21
+    },
+    "va-runtime_selected": {
+      "p50_ms": 5190.021708498534,
+      "precision": "fp8",
+      "primary_samples": 12,
+      "schedule": {
+        "action_steps": 50,
+        "nfe": {
+          "action": 50,
+          "video": 25
+        },
+        "sampler": "checkpoint",
+        "video_steps": 25
+      },
+      "total_predictions": 21
+    }
+  },
+  "minimum_RAM_certified": false,
+  "original_inputs": {
+    "bytes": 24382314342,
+    "files": 19,
+    "full_file_sha_receipts_verified": true,
+    "post_load_tensor_value_comparison": "not part of the existing va contract",
+    "scope": "Exact original byte receipts plus pinned native-loader and installed source; no new weight read or tensor load."
+  },
+  "original_wheel_source_commit": "2f38d095fc2a222a7b51ace7219e4cbeed4d7123",
+  "passed": true,
+  "plan_sha256": "7277310cc908f12a1c372f078737e45f3b3dedd4faf909901cd8041e831a0c41",
+  "schema": "instinctflash.rtx5090_va_independent_audit.v1",
+  "scope": "Actual 5090 saved arrays/timings, fixed input/RNG/reset/full action blocks, exact installed source and two WebSockets; no recapture or task-success claim.",
+  "source_commit": "0a53125c5af6d76260be96e39077cdcc3c01126d",
+  "source_continuity_sha256": "4032e4e28ba3c28aed038b30c5c1dd20b566deee2848ba5a952afd3ffae8b5ae",
+  "target": {
+    "capability": [
+      12,
+      0
+    ],
+    "name": "rtx5090"
+  },
+  "task_quality_validated": false,
+  "vendor_cpu_provenance_sha256": "266c103bd8e00e4102c54ed9b77efe5dd5d6622d599fd25df8383f4b5860ee8b",
+  "vendor_source_scope": "Pre-model CPU wheel/member check; actual public scanner remains limited to its original module prefixes",
+  "websockets": [
+    {
+      "action_archive_sha256": "3bae3bdf4f73508553240040673bed84aba7a6ab126fe0c4ce379a73ce453cfb",
+      "action_shape": [
+        6,
+        16,
+        2,
+        16
+      ],
+      "calls": 6,
+      "cell": "va-runtime_default",
+      "effective_nfe": {
+        "action": 50,
+        "video": 25
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "native",
+      "receipt_sha256": "de48be049e98d84284e3b16e84e626ad969808020c13255d14ade141d32ba599",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "1d54b67ef7966972aeb4414942ffc32efc551108c433fdc4df0bfa058474b901"
+        ],
+        [
+          0,
+          1,
+          "0b8bbce683b1edf74b790be13a67de9f4ab75d6c292e9f5de4731a0022c7309a"
+        ],
+        [
+          0,
+          2,
+          "213a91872eb42c1d3aa4402c2bdb7bb4bc22993ded30421466321f9ff010f874"
+        ],
+        [
+          1,
+          0,
+          "e432cbcacb5a68cd598ee33686873d11abc17918fa6091ea19154de6e890cab3"
+        ],
+        [
+          1,
+          1,
+          "f6d12fce383b2ecb8dbd8a4abaf4c50ee686501865eb57931a96a8b694f6da33"
+        ],
+        [
+          1,
+          2,
+          "5021f43634401bea1027b383f00c32ba80c1a7b1a6f5957c8686e87b4ea7beb7"
+        ]
+      ],
+      "rng_scope": "native serving constructor seed",
+      "task_quality_validated": false
+    },
+    {
+      "action_archive_sha256": "005274bafdd551565438a4ac4137aa938c1d132fc8062bf597915deabbba6fae",
+      "action_shape": [
+        6,
+        16,
+        2,
+        16
+      ],
+      "calls": 6,
+      "cell": "va-runtime_selected",
+      "effective_nfe": {
+        "action": 50,
+        "video": 25
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "fp8",
+      "receipt_sha256": "32786a33c581c3103ab26d767212f6c82d6547001554c04a9d64de2ee841fe7d",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "1d54b67ef7966972aeb4414942ffc32efc551108c433fdc4df0bfa058474b901"
+        ],
+        [
+          0,
+          1,
+          "0b8bbce683b1edf74b790be13a67de9f4ab75d6c292e9f5de4731a0022c7309a"
+        ],
+        [
+          0,
+          2,
+          "213a91872eb42c1d3aa4402c2bdb7bb4bc22993ded30421466321f9ff010f874"
+        ],
+        [
+          1,
+          0,
+          "e432cbcacb5a68cd598ee33686873d11abc17918fa6091ea19154de6e890cab3"
+        ],
+        [
+          1,
+          1,
+          "f6d12fce383b2ecb8dbd8a4abaf4c50ee686501865eb57931a96a8b694f6da33"
+        ],
+        [
+          1,
+          2,
+          "5021f43634401bea1027b383f00c32ba80c1a7b1a6f5957c8686e87b4ea7beb7"
+        ]
+      ],
+      "rng_scope": "unseeded FP8 transport check",
+      "task_quality_validated": false
+    }
+  ],
+  "worker": {
+    "exited": true,
+    "pid": 72462,
+    "start_ticks": "2649501"
+  }
+}

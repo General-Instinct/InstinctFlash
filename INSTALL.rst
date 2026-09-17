@@ -69,8 +69,9 @@ CPU doctor is not a completed GPU benchmark.
 Large models need CPU backing memory on a single 24 GiB card. VA stages its
 text encoder between resets. Cosmos and DreamZero can stream native layers;
 DreamZero also transports complete per-layer KV caches. Native arithmetic,
-checkpoint processors and history lengths remain intact, and transfer time is
-included in prediction measurements. Backend statistics report actual residency.
+checkpoint processors and history lengths remain intact. Transfers during
+prediction are included in its latency; VA's text-encoder staging occurs during
+reset, outside the prediction timer. Backend statistics report actual residency.
 The explicit SM89 FP8 path uses PyTorch/Triton projections; it does not load a
 Thor-only native library. FP8 remains a separate numerical choice.
 
@@ -81,6 +82,44 @@ its FP8 conversion alone needs at least 41.79 GB of simultaneous original and
 packed weights, before temporary buffers and process overhead. Its native
 cold load was not tested at that memory limit. These capacity exclusions do
 not establish that a model is unsupported on RTX 4090 with more host memory.
+
+RTX 5090
+--------
+
+Select the separate Linux/x86-64 SM120 profile::
+
+    source .venv-core/bin/activate
+    python3 scripts/bootstrap_vendor.py plan pi05 --target rtx5090 --json
+    python3 scripts/bootstrap_vendor.py install pi05 --target rtx5090 \
+      --python python3.12 --root ~/ifl-pi05-5090 --ptxas /usr/local/cuda/bin/ptxas
+    source ~/ifl-pi05-5090/activate.sh
+    python scripts/public_deploy.py doctor pi05 --target rtx5090
+
+Point ``--ptxas`` at an assembler supporting ``sm_120`` and PTX 8.7; the path
+above is a typical toolkit location. The tested assembler is Triton 3.6's
+``ptxas-blackwell`` 12.9. Its version is independent of the pinned PyTorch
+``cu130`` runtime, which requires a CUDA 13-compatible NVIDIA driver. Activation
+sets both Triton assembler overrides. Thor and SM89 compiler settings are separate.
+
+All eight aliases and 23 explicit execution modes have RTX 5090 profiles.
+Edge/Nano use Python 3.13 and Torch 2.10; the other families use Python 3.12 and
+Torch 2.11. Keep the profile's original dependency pins. Native precision and
+FP8 remain separate choices; FP8 does not imply faster inference or task-quality
+equivalence. Large checkpoints may also require substantial host RAM.
+
+The recorded 5090 node has a 54 GB host-memory limit. DreamZero was excluded by
+its loading-memory assessment. Nano's original BF16 comparison requires layer
+streaming with the existing memory reserve, so its paired benchmark was also
+skipped. Neither exclusion is an observed OOM or a claim that FP8 is unsupported.
+Historical VA measurements include reset-time text-encoder staging; these are
+retained in the raw records. New benchmarks exclude CPU-offloaded inference.
+The README presents Thor results only.
+
+Profiles live in ``release/rtx5090/deployment_profiles.json``. The
+`RTX 5090 results <release/rtx5090/results/results.rst>`_ list measured model
+coverage, execution modes and capacity exclusions. Continue with the
+`RTX 5090 reproduction workflow <REPRODUCE.rst#rtx-5090>`_ for original assets,
+paired predictions and WebSocket checks.
 
 Model environments and assets
 -----------------------------
@@ -134,8 +173,8 @@ Use the selected model alias in both commands. Model downloads use your normal
 Hugging Face authentication; accept any required upstream access conditions
 first. Cosmos preparation includes the external Wan VAE. Keep the generated
 asset activation alongside the vendor activation for subsequent sessions.
-For RTX 4090, also pass ``--target rtx4090`` to the doctor command; asset
-preparation uses the same original checkpoints on both devices.
+For RTX 4090 or RTX 5090, also pass ``--target rtx4090`` or ``--target rtx5090``
+to the doctor command; asset preparation uses the same original checkpoints.
 
 For Thor, install the published native libraries or build them using
 `the backend guide <serving/README.rst>`_. The CPU core
@@ -194,7 +233,7 @@ core and adapter directly, for example::
      - The matching Cosmos Framework RoboLab policy environment,
        including its importable cosmos_framework package.
 
-The Python versions apply to the separately pinned Thor and RTX 4090 vendor
+The Python versions apply to the separately pinned Thor, RTX 4090 and RTX 5090 vendor
 stacks; the core's Python 3.10 floor does not imply that every vendor supports
 Python 3.10. The reviewed public source pins, inference dependencies and
 compatibility patches live in

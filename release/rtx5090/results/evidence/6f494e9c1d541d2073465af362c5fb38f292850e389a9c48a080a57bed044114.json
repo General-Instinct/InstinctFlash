@@ -1,0 +1,45 @@
+{
+  "cell_id": "edge-runtime_selected",
+  "expected_plan_sha256": "8d5b3b791a2727dc4e71cc99c32f6f3f0cb3bfee2b4313e7edc035f889dd7fa6",
+  "family": "edge",
+  "gpu_uuid": "GPU-004614f4-173a-187b-4e67-a2e1799e4d42",
+  "helper_sha256": "a354fad5dc315aed48df44eee16fe0531e5088f12ca26092ac6c98f7988edfa1",
+  "mode": "numeric",
+  "output": "/workspace/ifl_rtx5090_20260916/edge-numeric-supplement-v1",
+  "parent": {
+    "capture_run_sha256": null,
+    "cell_receipts": {
+      "edge-eager_native": null,
+      "edge-runtime_default": null,
+      "edge-runtime_selected": null
+    },
+    "completion_sha256": null,
+    "config_sha256": null,
+    "installed_source_sha256": null,
+    "run": "/workspace/ifl_rtx5090_20260916/edge-model-e2e-v1",
+    "worker_pid": null,
+    "worker_start_ticks": null
+  },
+  "schema": "instinctflash.rtx5090_numeric_supplement_config.v1",
+  "scope": "One NUMERIC cell plus one six-request WebSocket smoke; reuse original parent baselines, no task-quality admission.",
+  "serving_seed": 9173,
+  "shared_worker": {
+    "path": "/workspace/ifl_rtx5090_20260916/prepared-first-model-worker-v1/model_worker.py",
+    "sha256": "fbd9c063cbcbb49aca1304aa256ab8a85441a39e6fa99afb78c5b94bdfbf2709"
+  },
+  "source_commit": "0a53125c5af6d76260be96e39077cdcc3c01126d",
+  "target": {
+    "capability": [
+      12,
+      0
+    ],
+    "name": "rtx5090"
+  },
+  "timeouts": {
+    "admit": 300,
+    "capture": 7200,
+    "prepare": 1200,
+    "serve": 6000,
+    "validate": 300
+  }
+}

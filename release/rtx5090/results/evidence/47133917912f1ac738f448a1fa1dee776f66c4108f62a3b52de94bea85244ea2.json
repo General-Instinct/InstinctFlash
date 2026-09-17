@@ -1,0 +1,160 @@
+{
+  "GPU_before_csv": "GPU-004614f4-173a-187b-4e67-a2e1799e4d42, NVIDIA GeForce RTX 5090, 2, 0\n",
+  "GPU_uuid": "GPU-004614f4-173a-187b-4e67-a2e1799e4d42",
+  "automatic_retries": 0,
+  "compute_before_csv": "",
+  "config_sha256": "2b30af1c7543a3d963f655bf2df03214fb994c4d115d227149a0d370dccf510a",
+  "error": "validate_numeric failed; preserved logs",
+  "error_type": "ValueError",
+  "family": "edge",
+  "finished_at": "2026-09-17T01:22:52.803329+00:00",
+  "full_public_run_completed": false,
+  "lease_released": true,
+  "memory_samples_sha256": "828bd54eaf8c09e7b8f61e1aa56d93b81d2bc0ebf5e33d83418e90a4973d73cc",
+  "minimum_host_RAM_certified": false,
+  "mode": "numeric",
+  "owned_cleanup": [
+    {
+      "at": "2026-09-17T01:20:47.461789+00:00",
+      "targets": []
+    },
+    {
+      "at": "2026-09-17T01:20:47.584096+00:00",
+      "targets": []
+    },
+    {
+      "at": "2026-09-17T01:22:52.517674+00:00",
+      "targets": []
+    },
+    {
+      "at": "2026-09-17T01:22:52.790155+00:00",
+      "targets": []
+    },
+    {
+      "at": "2026-09-17T01:22:52.802170+00:00",
+      "targets": []
+    }
+  ],
+  "owned_processes_terminal": true,
+  "parent_completion_sha256": "efc2752390361b934cc671d600c097bda9cd7c8d905a8bcc406bd755bc487a92",
+  "parent_run": "/workspace/ifl_rtx5090_20260916/edge-model-e2e-v1",
+  "passed": false,
+  "primary_baselines_recaptured": false,
+  "schema": "instinctflash.rtx5090_numeric_supplement.v1",
+  "shared_runner_sha256": "fbd9c063cbcbb49aca1304aa256ab8a85441a39e6fa99afb78c5b94bdfbf2709",
+  "source_commit": "0a53125c5af6d76260be96e39077cdcc3c01126d",
+  "stages": [
+    {
+      "command": [
+        "/workspace/ifl_rtx5090_20260916/families/edge-v1/env/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.reproduce",
+        "prepare",
+        "--model",
+        "edge",
+        "--mode",
+        "numeric",
+        "--target",
+        "rtx5090",
+        "--cache-dir",
+        "/workspace/ifl_rtx5090_20260916/checkpoints/edge-public-assets-v1/hf/hub",
+        "--local-files-only",
+        "--output",
+        "/workspace/ifl_rtx5090_20260916/edge-numeric-supplement-v1/prepared"
+      ],
+      "elapsed_seconds": 0.2682554689963581,
+      "exit_code": 0,
+      "log_sha256": "a78a4fa25f88a34c75424db57d29fcb59caf5798e8cfe574b17a2892de2a2bd5",
+      "name": "prepare_numeric",
+      "pid": 85131,
+      "start_ticks": "4360551",
+      "started_at": "2026-09-17T01:20:47.194523+00:00",
+      "timeout_seconds": 1200
+    },
+    {
+      "command": [
+        "/workspace/ifl_rtx5090_20260916/families/edge-v1/env/bin/python",
+        "-I",
+        "/workspace/ifl_rtx5090_20260916/prepared-edge-numeric-supplement-v1/selected.py",
+        "admit",
+        "--config",
+        "/workspace/ifl_rtx5090_20260916/edge-numeric-launch-v1/edge.bound.json",
+        "--prepared",
+        "/workspace/ifl_rtx5090_20260916/edge-numeric-supplement-v1/prepared",
+        "--output",
+        "/workspace/ifl_rtx5090_20260916/edge-numeric-supplement-v1/admission.json"
+      ],
+      "elapsed_seconds": 0.1193808970056125,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "admit_numeric",
+      "pid": 85132,
+      "start_ticks": "4360578",
+      "started_at": "2026-09-17T01:20:47.465384+00:00",
+      "timeout_seconds": 300
+    },
+    {
+      "command": [
+        "/workspace/ifl_rtx5090_20260916/families/edge-v1/env/bin/python",
+        "-I",
+        "-m",
+        "benchmarks.regression.user_e2e",
+        "--matrix",
+        "/workspace/ifl_rtx5090_20260916/edge-numeric-supplement-v1/capture/matrix.json",
+        "--cell",
+        "edge-runtime_selected",
+        "--output-root",
+        "/workspace/ifl_rtx5090_20260916/edge-numeric-supplement-v1/capture",
+        "--fixture",
+        "/workspace/ifl_rtx5090_20260916/edge-numeric-supplement-v1/prepared/inputs/recorded_inputs_v1.npz"
+      ],
+      "elapsed_seconds": 124.82406891400024,
+      "exit_code": 0,
+      "log_sha256": "ca87649ee06230fe917571399c7b7623e493746561a84a32e28e34965b0117da",
+      "name": "capture_numeric",
+      "pid": 85137,
+      "start_ticks": "4360601",
+      "started_at": "2026-09-17T01:20:47.694198+00:00",
+      "timeout_seconds": 7200
+    },
+    {
+      "command": [
+        "/workspace/ifl_rtx5090_20260916/families/edge-v1/env/bin/python",
+        "-I",
+        "/workspace/ifl_rtx5090_20260916/prepared-edge-numeric-supplement-v1/selected.py",
+        "capture",
+        "--config",
+        "/workspace/ifl_rtx5090_20260916/edge-numeric-launch-v1/edge.bound.json",
+        "--prepared",
+        "/workspace/ifl_rtx5090_20260916/edge-numeric-supplement-v1/prepared",
+        "--output",
+        "/workspace/ifl_rtx5090_20260916/edge-numeric-supplement-v1/validation.json"
+      ],
+      "elapsed_seconds": 0.2691131530009443,
+      "exit_code": 1,
+      "log_sha256": "4a0d3dee3784e43c27bf8fc9d1823c55b3bf7b97a95041ba0e468fdb5585ea62",
+      "name": "validate_numeric",
+      "pid": 85401,
+      "start_ticks": "4373084",
+      "started_at": "2026-09-17T01:22:52.521561+00:00",
+      "timeout_seconds": 300
+    }
+  ],
+  "started_at": "2026-09-17T01:20:47.185460+00:00",
+  "status": "failed_preserved",
+  "supplemental_api_cells": 1,
+  "supplemental_serve_cells": 1,
+  "target": {
+    "capability": [
+      12,
+      0
+    ],
+    "name": "rtx5090"
+  },
+  "task_quality_validated": false,
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/ifl_rtx5090_20260916/prepared-edge-numeric-supplement-v1/runner.py\", line 201, in main\n    execute(config, config_path, shared, runner, run, parent, model)\n  File \"/workspace/ifl_rtx5090_20260916/prepared-edge-numeric-supplement-v1/runner.py\", line 166, in execute\n    runner.stage(\"validate_numeric\", [*base, \"capture\", *args, \"--output\", str(runner.output / \"validation.json\")], cpu, config[\"timeouts\"][\"validate\"])\n  File \"/workspace/ifl_rtx5090_20260916/prepared-first-model-worker-v1/model_worker.py\", line 259, in stage\n    require(self.child.returncode == 0, name + \" failed; preserved logs\")\n  File \"/workspace/ifl_rtx5090_20260916/prepared-first-model-worker-v1/model_worker.py\", line 41, in require\n    raise ValueError(message)\nValueError: validate_numeric failed; preserved logs\n",
+  "worker_pid": 85130,
+  "worker_sha256": "2abeb0cbffa68e54511e4958643f82f33cef598611c8a2bfb7a27380ded8476d",
+  "worker_start_ticks": "4360539"
+}

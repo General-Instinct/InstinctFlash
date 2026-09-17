@@ -1,0 +1,197 @@
+{
+  "schema": "instinctflash.nano_static_gpu_residency_review.v1",
+  "status": "reviewed_no_mandatory_overflow_identified",
+  "source_commit": "0a53125c5af6d76260be96e39077cdcc3c01126d",
+  "checkpoint_revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e",
+  "vendor_revision": "f734253f0f6af3e268372402f44435c38f55ef3e",
+  "hardware": {
+    "receipt": "/home/ubuntu/ifl_eval/rtx5090_admission_20260916/refresh_v2/host_probe.json",
+    "receipt_sha256": "cc601711706b2f6445beeb56578b01ca3aa1882cd46598af5a882959d8eaf2f0",
+    "gpu_uuid": "GPU-004614f4-173a-187b-4e67-a2e1799e4d42",
+    "memory_total_MiB": 32607,
+    "memory_total_bytes": 34190917632,
+    "fresh_gpu_probe_performed": false
+  },
+  "header_evidence": {
+    "path": "/home/ubuntu/ifl_eval/rtx4090_20260916/nano_capacity_exclusion_580_v1/tensor_headers.json",
+    "sha256": "f73933f7337d057ca0da028b3854ebc4cdf520b5f8a53c7a5eef3f69c5ee8ba9",
+    "read_original_weight_payloads": false
+  },
+  "existing_host_review": {
+    "path": "/home/ubuntu/ifl_eval/rtx5090_20260916/nano_capacity_review_v1/review.json",
+    "sha256": "88955a3c718b884574e79324977832059df70a11367e54f5e09c1fb4567fbd7e",
+    "scope_distinct": true
+  },
+  "parameter_arithmetic": {
+    "native_CPU_net_before_placement_bytes": 29101613440,
+    "elided_unused_untied_lm_head_bytes": 1244659712,
+    "native_non_layer_parameter_bytes": 1317327232,
+    "decoder_layer_count": 36,
+    "native_parameter_bytes_per_layer": 771785728,
+    "native_non_layer_plus_one_layer_bytes": 2089112960,
+    "fp8_replaced_projection_count": 432,
+    "original_BF16_replaced_projection_bytes": 25367150592,
+    "packed_FP8_projection_bytes": 12683575296,
+    "FP32_weight_scales_bytes": 1728,
+    "FP8_net_parameter_and_packed_buffer_bytes_after_commit": 16418039872,
+    "FP8_layer_parameter_and_packed_buffer_bytes": 419464240,
+    "FP8_base_plus_one_layer_bytes": 1736791472,
+    "inference_reserve_bytes": 8589934592,
+    "arithmetic_excludes": "analytical/noncheckpoint registered buffers, VAE, activations, prefix/KV tensors, runtime workspaces and allocator state"
+  },
+  "placement_findings": {
+    "native": "Complete original net first materializes on CPU. The scheduler moves a resident prefix and keeps remaining CPU masters, borrowing at most one layer per serial forward. Minimum known network parameter condition is base + largest streaming layer, not the full CPU master byte count.",
+    "fp8": "All 432 projections are packed in CPU storage before transactional replacement. After installation returns, removed BF16 projections are not registered in the network. The 41.785GB original+packed CPU construction quantity is not simultaneous device residency.",
+    "budget": "install_module_residency computes actual CUDA total minus current outside-network allocation minus 8GiB. resident_prefix includes largest streamed layer; no sufficient count causes an explicit refusal. The reserve is not a fit certificate.",
+    "transient_cleanup": "Each streamed layer restores original CPU dictionary tensors after its forward, records streams on temporary CUDA copies, then clears owned copies. Allocator completion/workspace peaks still require actual measurement.",
+    "vae": "Original native Wan VAE initialization/encoding remains unchanged. Its CUDA allocation is outside model.net and deducted by actual residency budgeting. No VAE offload, spare decode GPU or freed VAE memory is assumed here. The checkpoint serialized file size is not an exact VRAM byte bound.",
+    "call_order": "Original action-only lm_head elision, declared prefix=1 then action=4 at CFG3, and native VAE conditioning before the sampling loop remain unchanged. No proposal to overlap/reorder phases or alter Wan placement.",
+    "history": "OmniMoTModel.set_up_memory is a no-op on this route; this does not imply absence of request-local prefix/KV or activation tensors."
+  },
+  "decision": {
+    "mandatory_over_actual_VRAM_lower_bound_found": false,
+    "skip_before_large_inputs_from_this_review": false,
+    "device_fit_proven": false,
+    "transient_peak_measured": false,
+    "minimum_VRAM_certified": false,
+    "observed_OOM": false,
+    "tested": false,
+    "recommendation": "No early exclusion on the known mandatory device-weight arithmetic alone. Keep original residency and runtime guards; actual cold placement and original requests remain unmeasured."
+  },
+  "sources": [
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx5090-from4090-20260916/instinctflash/runtime/module_residency.py",
+      "sha256": "4f83face9a4d7718616538d0ba571ac1cc1ee3e81c573873f7b8d3d4db8f97fa",
+      "lines": [
+        35,
+        101,
+        149,
+        181,
+        230
+      ],
+      "matches_measured_source_commit": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx5090-from4090-20260916/examples/cosmos3_policy/cosmos3_iwm/sm89_residency.py",
+      "sha256": "3e3ed7c9302f39de454d50e43b117d6fd358136d19418fe4b7a7cb275e32d56e",
+      "lines": [
+        35,
+        117,
+        120,
+        128
+      ],
+      "matches_measured_source_commit": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx5090-from4090-20260916/examples/cosmos3_policy/cosmos3_iwm/nano_action_only.py",
+      "sha256": "1e8cdcc9007c4b3a32b3ca35e9e01ea710d1a706b4a687bad826f51b0db81840",
+      "lines": [
+        48,
+        83
+      ],
+      "matches_measured_source_commit": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx5090-from4090-20260916/examples/cosmos3_policy/cosmos3_iwm/adapter.py",
+      "sha256": "e3b1bf76f9cb1c9cb651eeb8404dc0527006244a5f2d878312ec773d9e151668",
+      "lines": [
+        44,
+        178,
+        187,
+        202
+      ],
+      "matches_measured_source_commit": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx5090-from4090-20260916/instinctflash/runtime/sm120_fp8.py",
+      "sha256": "9601a1275a92bcde4f5c099ca6df4e806077c01f703b63f833a32bc145ef0f57",
+      "lines": [
+        27
+      ],
+      "matches_measured_source_commit": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx5090-from4090-20260916/instinctflash/runtime/sm89_fp8.py",
+      "sha256": "605a7d10e8cae2a297503596efce933678bfb2bfd8ed0a07fd3989a32cf001c4",
+      "lines": [
+        146,
+        158,
+        175
+      ],
+      "matches_measured_source_commit": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx5090-from4090-20260916/instinctflash/runtime/torch_fp8_linear.py",
+      "sha256": "02ab9a120a8df5d6e2b30fd08d9a2e014bfbc63354426d7a10ad94e4f153b2b4",
+      "lines": [
+        44,
+        53
+      ],
+      "matches_measured_source_commit": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx5090-from4090-20260916/instinctflash/runtime/cosmos_droid.py",
+      "sha256": "fbe72ce9ef5d6e21b2573211c1488649a280c0b85a20cbd592a803a4f22e0083",
+      "lines": [
+        52,
+        58,
+        102
+      ],
+      "matches_measured_source_commit": true
+    },
+    {
+      "path": "/home/ubuntu/InstinctFlash-rtx5090-from4090-20260916/benchmarks/regression/native_reference.py",
+      "sha256": "4a65eadf116e71066ef5fadbe905d060c1e3397ac93c51b2fb13e6792bf92466",
+      "lines": [
+        108,
+        121
+      ],
+      "matches_measured_source_commit": true
+    },
+    {
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/inference/model.py",
+      "sha256": "8fb46157f38080efc7b32419fe509abc4994b59f8f07e1cac377a1f82e87f3e1",
+      "lines": [
+        495,
+        546
+      ],
+      "matches_prior_pinned_vendor_source_review": true
+    },
+    {
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/inference/inference.py",
+      "sha256": "78f09d605c99d3073bfb8cd29cbd555e76c1f15ecf067055e8fb7560db7279ca",
+      "lines": [
+        1286,
+        1299,
+        1316
+      ],
+      "matches_prior_pinned_vendor_source_review": true
+    },
+    {
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/model/generator/omni_mot_model.py",
+      "sha256": "167e8c012d6ad243187a88e67facba8a681f8d2fa3406672cea0de9dac37c161",
+      "lines": [
+        397,
+        2243,
+        2266,
+        2906
+      ],
+      "matches_prior_pinned_vendor_source_review": true
+    },
+    {
+      "path": "/home/ubuntu/cosmos-framework/cosmos_framework/model/generator/tokenizers/wan2pt2_vae_4x16x16.py",
+      "sha256": "95676798c8efdceb8cebc5fcbb2271f204ea5489aad53ce4517ab1bd1cd46550",
+      "lines": [
+        988,
+        1006,
+        1156,
+        1167
+      ],
+      "matches_prior_pinned_vendor_source_review": true
+    }
+  ],
+  "GPU_used": false,
+  "model_imported": false,
+  "network_used": false,
+  "new_tests_or_framework": false
+}

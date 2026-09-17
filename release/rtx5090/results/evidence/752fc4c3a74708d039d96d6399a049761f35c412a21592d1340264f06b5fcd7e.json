@@ -1,0 +1,241 @@
+{
+  "API_recaptured_by_continuation": false,
+  "GPU_used_by_auditor": false,
+  "GPU_uuid": "GPU-004614f4-173a-187b-4e67-a2e1799e4d42",
+  "Torch_imported_by_auditor": false,
+  "actual_new_native_baseline": "va-eager_native-2v4a",
+  "archive_sha256": "0fc5e26a70ba7afc626d0fca261ca1a69b0565748fd64a33f34e6879becceabf",
+  "comparisons": [
+    {
+      "actions": {
+        "exact_bytes": false,
+        "max_abs": 1.1250004768371582,
+        "rmse": 0.09495306049545306
+      },
+      "baseline": "va-eager_native-2v4a",
+      "candidate": "va-2v4a-native",
+      "same_sampling_policy": true,
+      "speedup": 2.633269577622449
+    },
+    {
+      "actions": {
+        "exact_bytes": false,
+        "max_abs": 1.121094286441803,
+        "rmse": 0.03225498460724299
+      },
+      "baseline": "va-eager_native-2v4a",
+      "candidate": "va-2v4a-fp8",
+      "same_sampling_policy": true,
+      "speedup": 1.7766340947822945
+    }
+  ],
+  "completion_sha256": "1665f8edf461b17472894158c99b4b0ac3ec561899df2486f082125f70852014",
+  "config_sha256": "01e74c0f283a9634b6f9187159bef5147a0b5b791daf344ff02c23cf5fe72281",
+  "default_checkpoint_nfe": {
+    "action": 50,
+    "video": 25
+  },
+  "family": "va",
+  "matched_effective_nfe": {
+    "action": 4,
+    "video": 2
+  },
+  "metrics": {
+    "va-2v4a-fp8": {
+      "p50_ms": 621.4777200002572,
+      "precision": "fp8",
+      "primary_samples": 12,
+      "schedule": {
+        "action_steps": 4,
+        "nfe": {
+          "action": 4,
+          "video": 2
+        },
+        "sampler": "checkpoint",
+        "video_steps": 2
+      },
+      "total_predictions": 21
+    },
+    "va-2v4a-native": {
+      "p50_ms": 419.3032554976526,
+      "precision": "native",
+      "primary_samples": 12,
+      "schedule": {
+        "action_steps": 4,
+        "nfe": {
+          "action": 4,
+          "video": 2
+        },
+        "sampler": "checkpoint",
+        "video_steps": 2
+      },
+      "total_predictions": 21
+    },
+    "va-eager_native-2v4a": {
+      "p50_ms": 1104.1385065000213,
+      "precision": "native",
+      "primary_samples": 12,
+      "schedule": {
+        "action_steps": 4,
+        "nfe": {
+          "action": 4,
+          "video": 2
+        },
+        "sampler": "checkpoint",
+        "video_steps": 2
+      },
+      "total_predictions": 21
+    }
+  },
+  "minimum_RAM_certified": false,
+  "mode": "2v4a",
+  "original_producer": {
+    "config_sha256": "902a2e45dd1fce42e2bcbca059308f0c351d92c63cdd9e6d0ac61244cf110b03",
+    "descriptive_scope_carryover_sha256": "1e1919ecdcea86cbb9b312b29a55abdc96ff351012320220df7c12c72325af4f",
+    "failure_sha256": "c35ad4cf3d9d2364e91703394699c176c513aeb010207e5a0b3b0db46a46c87f",
+    "readback_archive_sha256": "66fbd9db07ef91a08472aff70b7b8adfc99011a73b236eb1860d0e66fcd616d3",
+    "readback_manifest_sha256": "4fb559b2af26700d99a11a66584514c38ae39478b75321034c51aad069f9ce7d",
+    "readback_packet_sha256": "a802e4e729460dd833fa02efbbb43e7ebe4cf2e42519a827e8d59581dda0ccb8",
+    "recipe_sha256": "8aac392d7e539c0488dbc6c3528c42d16014aaa6a7f5ac6d9a3b9fb93255ce45",
+    "source_run": "/workspace/ifl_rtx5090_20260916/va-2v4a-supplement-v1",
+    "worker": {
+      "exited": true,
+      "passed": false,
+      "pid": 75148,
+      "start_ticks": "2787820"
+    },
+    "worker_sha256": "bddbc426143f78ea0b79ca697192de264256bf7f72bf5daa454c1fb6ac187836"
+  },
+  "original_producer_remains_failed": true,
+  "parent_archive_sha256": "069c921535d17902d2d758af0d641d2627723fc2bd662e9713cf7a8d2842895d",
+  "parent_independent_audit_sha256": "d8d30bb958b0424fac60c6bf1f5527cc4fb0efe2e812fbef40f9a320626e40ea",
+  "passed": true,
+  "primary_baselines_recaptured": false,
+  "schema": "instinctflash.rtx5090_va_2v4a_independent_audit.v1",
+  "scope": "Three original21-call API processes from the preserved failed producer plus2WS from its distinct successful continuation; native2V4 baseline is fresh and full-schedule parent remains separate.",
+  "source_commit": "0a53125c5af6d76260be96e39077cdcc3c01126d",
+  "supplemental_API_cells": 3,
+  "target": {
+    "capability": [
+      12,
+      0
+    ],
+    "name": "rtx5090"
+  },
+  "task_quality_validated": false,
+  "websockets": [
+    {
+      "action_archive_sha256": "725ca61a779b9420aee2d65d5878f0c2652e2b55d2ba755d2ec96210085680b3",
+      "action_shape": [
+        6,
+        16,
+        2,
+        16
+      ],
+      "calls": 6,
+      "cell": "va-2v4a-native",
+      "effective_nfe": {
+        "action": 4,
+        "video": 2
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "native",
+      "receipt_sha256": "47aa2a48ef1ede2d4a50b5a8e01abc93b6d6572626fe08f9b1d421cfcfd9c01f",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "1d54b67ef7966972aeb4414942ffc32efc551108c433fdc4df0bfa058474b901"
+        ],
+        [
+          0,
+          1,
+          "0b8bbce683b1edf74b790be13a67de9f4ab75d6c292e9f5de4731a0022c7309a"
+        ],
+        [
+          0,
+          2,
+          "213a91872eb42c1d3aa4402c2bdb7bb4bc22993ded30421466321f9ff010f874"
+        ],
+        [
+          1,
+          0,
+          "e432cbcacb5a68cd598ee33686873d11abc17918fa6091ea19154de6e890cab3"
+        ],
+        [
+          1,
+          1,
+          "f6d12fce383b2ecb8dbd8a4abaf4c50ee686501865eb57931a96a8b694f6da33"
+        ],
+        [
+          1,
+          2,
+          "5021f43634401bea1027b383f00c32ba80c1a7b1a6f5957c8686e87b4ea7beb7"
+        ]
+      ],
+      "rng_scope": "native serving constructor seed",
+      "task_quality_validated": false
+    },
+    {
+      "action_archive_sha256": "552bf938fa8a6d2cbad16d2cb926ff88bcf85015aaa2e7549f8c3ee260a9f688",
+      "action_shape": [
+        6,
+        16,
+        2,
+        16
+      ],
+      "calls": 6,
+      "cell": "va-2v4a-fp8",
+      "effective_nfe": {
+        "action": 4,
+        "video": 2
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "fp8",
+      "receipt_sha256": "a261902f6c3220dc76e263c2465a952c78ce206b14bfdb5cf29f7a54d97bf591",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "1d54b67ef7966972aeb4414942ffc32efc551108c433fdc4df0bfa058474b901"
+        ],
+        [
+          0,
+          1,
+          "0b8bbce683b1edf74b790be13a67de9f4ab75d6c292e9f5de4731a0022c7309a"
+        ],
+        [
+          0,
+          2,
+          "213a91872eb42c1d3aa4402c2bdb7bb4bc22993ded30421466321f9ff010f874"
+        ],
+        [
+          1,
+          0,
+          "e432cbcacb5a68cd598ee33686873d11abc17918fa6091ea19154de6e890cab3"
+        ],
+        [
+          1,
+          1,
+          "f6d12fce383b2ecb8dbd8a4abaf4c50ee686501865eb57931a96a8b694f6da33"
+        ],
+        [
+          1,
+          2,
+          "5021f43634401bea1027b383f00c32ba80c1a7b1a6f5957c8686e87b4ea7beb7"
+        ]
+      ],
+      "rng_scope": "unseeded FP8 transport check",
+      "task_quality_validated": false
+    }
+  ],
+  "worker": {
+    "exited": true,
+    "pid": 76163,
+    "start_ticks": "2891241"
+  }
+}

@@ -1,0 +1,215 @@
+{
+  "GPU_used_by_auditor": false,
+  "GPU_uuid": "GPU-004614f4-173a-187b-4e67-a2e1799e4d42",
+  "Torch_imported_by_auditor": false,
+  "actual_launch_binding_sha256": "4c856d54851acf5a702c40ff0c0d8768d54e6f9a1ad3ca85521718aba55c7593",
+  "archive_sha256": "63a3e2cd5bf6b2821e271f6f293badb13cf7cbd76ad0bc0663881e54c3bc5ab8",
+  "comparisons": [
+    {
+      "actions": {
+        "exact_bytes": true,
+        "max_abs": 0.0,
+        "rmse": 0.0
+      },
+      "baseline": "vla2-eager_native",
+      "candidate": "vla2-runtime_default",
+      "same_sampling_policy": true,
+      "speedup": 0.9918982286158984
+    },
+    {
+      "actions": {
+        "exact_bytes": false,
+        "max_abs": 0.08982587046921253,
+        "rmse": 0.007267696128826789
+      },
+      "baseline": "vla2-eager_native",
+      "candidate": "vla2-runtime_selected",
+      "same_sampling_policy": true,
+      "speedup": 6.608128966980126
+    }
+  ],
+  "completion_sha256": "2e39cb9b94840cc491a1edcea75ab354611a709e9ddfb0fd2d2baf768f551a63",
+  "config_sha256": "1c3018da6ab936889f9e56656c5a71f0b210d1a9a039fe4a14ba1eb66a67764a",
+  "default_bitexact": true,
+  "family": "vla2",
+  "installed_source_members": 427,
+  "metrics": {
+    "vla2-eager_native": {
+      "p50_ms": 980.5231069985894,
+      "precision": "native",
+      "primary_samples": 20,
+      "schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "total_predictions": 25
+    },
+    "vla2-runtime_default": {
+      "p50_ms": 988.5319670011086,
+      "precision": "native",
+      "primary_samples": 20,
+      "schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "total_predictions": 25
+    },
+    "vla2-runtime_selected": {
+      "p50_ms": 148.38135149875598,
+      "precision": "fp8",
+      "primary_samples": 20,
+      "schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "total_predictions": 25
+    }
+  },
+  "minimum_RAM_certified": false,
+  "original_inputs": {
+    "bytes": 25530055942,
+    "files": 29,
+    "full_file_sha_receipts_verified": true,
+    "post_load_tensor_value_comparison": "not part of the existing vla2 contract",
+    "scope": "Exact original byte receipts plus pinned native-loader and installed source; no new weight read or tensor load."
+  },
+  "original_wheel_source_commit": "2f38d095fc2a222a7b51ace7219e4cbeed4d7123",
+  "passed": true,
+  "plan_sha256": "7bb8e62d237eff9181894d52e5dd9cec9203be72567bcf20f58f3ecb174e4cbc",
+  "schema": "instinctflash.rtx5090_vla2_independent_audit.v1",
+  "scope": "Actual 5090 saved arrays/timings, fixed input/RNG/reset/full action blocks, exact installed source and two WebSockets; no recapture or task-success claim.",
+  "source_commit": "0a53125c5af6d76260be96e39077cdcc3c01126d",
+  "source_continuity_sha256": "4032e4e28ba3c28aed038b30c5c1dd20b566deee2848ba5a952afd3ffae8b5ae",
+  "target": {
+    "capability": [
+      12,
+      0
+    ],
+    "name": "rtx5090"
+  },
+  "task_quality_validated": false,
+  "vendor_cpu_provenance_sha256": "55c6c73d69ef48e176f38ea009da48b53134d3b43ab3a8c9245f30144d6692e0",
+  "vendor_source_scope": "Pre-model CPU wheel/member check; actual public scanner remains limited to its original module prefixes",
+  "websockets": [
+    {
+      "action_archive_sha256": "5e31156eca7a5ace4f5a48f2f6977818fcb534c053551e40eaff77214abd174a",
+      "action_shape": [
+        6,
+        50,
+        14
+      ],
+      "calls": 6,
+      "cell": "vla2-runtime_default",
+      "effective_nfe": {
+        "action": 10,
+        "prefix": 1
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "native",
+      "receipt_sha256": "d8ad30b2df24f565eb4194633658f8a72bf3831cc198460dd9ca7a339400c102",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "0a0498f0cff7c8b83e04494c2b61f47c83a8310a1bd74f64316f54a1513d9d5c"
+        ],
+        [
+          0,
+          1,
+          "13137705e19f8ff81bcd97f66cad54caf4078d5908c2a7e8e7a31876831d3147"
+        ],
+        [
+          0,
+          2,
+          "a5695d64d7ccfa0cb81304cf45545778863d0524d9f19d18ad10fec2a3d4a26f"
+        ],
+        [
+          1,
+          0,
+          "54bae1e0c16f4faa3ab015a14311f19169960fe7447ffd956c40aad41716234e"
+        ],
+        [
+          1,
+          1,
+          "d0e36a9a804c9b79e590bcbe1d62fa1e015c34a5e780cba39edbd8b4eb96ef37"
+        ],
+        [
+          1,
+          2,
+          "8d96e49b4be233b8a1f2f9ed498db55dc716d10e4108f8b394226cd9c036889a"
+        ]
+      ],
+      "rng_scope": "native serving constructor seed",
+      "task_quality_validated": false
+    },
+    {
+      "action_archive_sha256": "4195047a8128bfe155018027814d99c05fc3c777cbe5186e85c0edce55765324",
+      "action_shape": [
+        6,
+        50,
+        14
+      ],
+      "calls": 6,
+      "cell": "vla2-runtime_selected",
+      "effective_nfe": {
+        "action": 10,
+        "prefix": 1
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "fp8",
+      "receipt_sha256": "edbb3a6521b8afdfafb167c10773636ed75a15db44f7735e0113824757caaf8e",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "0a0498f0cff7c8b83e04494c2b61f47c83a8310a1bd74f64316f54a1513d9d5c"
+        ],
+        [
+          0,
+          1,
+          "13137705e19f8ff81bcd97f66cad54caf4078d5908c2a7e8e7a31876831d3147"
+        ],
+        [
+          0,
+          2,
+          "a5695d64d7ccfa0cb81304cf45545778863d0524d9f19d18ad10fec2a3d4a26f"
+        ],
+        [
+          1,
+          0,
+          "54bae1e0c16f4faa3ab015a14311f19169960fe7447ffd956c40aad41716234e"
+        ],
+        [
+          1,
+          1,
+          "d0e36a9a804c9b79e590bcbe1d62fa1e015c34a5e780cba39edbd8b4eb96ef37"
+        ],
+        [
+          1,
+          2,
+          "8d96e49b4be233b8a1f2f9ed498db55dc716d10e4108f8b394226cd9c036889a"
+        ]
+      ],
+      "rng_scope": "unseeded FP8 transport check",
+      "task_quality_validated": false
+    }
+  ],
+  "worker": {
+    "exited": true,
+    "pid": 62950,
+    "start_ticks": "2216101"
+  }
+}

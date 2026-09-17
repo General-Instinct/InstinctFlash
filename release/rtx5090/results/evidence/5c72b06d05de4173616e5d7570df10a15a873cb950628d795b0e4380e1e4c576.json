@@ -1,0 +1,29 @@
+{
+  "GPU_used": false,
+  "actual_continuation_not_yet_audited": true,
+  "all_other_protocol_math_source_array_and_WS_gate_AST_unchanged": true,
+  "corrected_source": {
+    "path": "/home/ubuntu/ifl_eval/rtx5090_20260916/edge_numeric_continuation_v1/selected_v2.py",
+    "sha256": "e84ca51dcd978e3fcea972cf69839d28ddbfc5b25063b25a83d93b77e69d2888"
+  },
+  "different_valid_GPU_UUID_rejected": true,
+  "equal_original_GPU_representations_match": true,
+  "exact_AST_delta": [
+    "one standard-library uuid import",
+    "one canonical_uuid helper using uuid.UUID(value.removeprefix(\"GPU-\"))",
+    "two UUID equality assertions wrap both operands"
+  ],
+  "malformed_UUID_rejected": true,
+  "missing_WS_calls": 6,
+  "model_recaptured": false,
+  "new_API_calls": 0,
+  "original_failure_sha256": "47133917912f1ac738f448a1fa1dee776f66c4108f62a3b52de94bea85244ea2",
+  "original_source": {
+    "path": "/home/ubuntu/ifl_eval/rtx5090_20260916/edge_numeric_supplement_v1/selected.py",
+    "sha256": "a354fad5dc315aed48df44eee16fe0531e5088f12ca26092ac6c98f7988edfa1"
+  },
+  "passed": true,
+  "schema": "instinctflash.edge_numeric_UUID_control_review.v1",
+  "status": "source_only_two_identity_assertions_reviewed",
+  "validate_device_receipt_still_required_before_UUID_checks": true
+}

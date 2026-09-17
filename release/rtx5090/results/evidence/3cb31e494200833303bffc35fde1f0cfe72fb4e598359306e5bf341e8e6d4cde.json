@@ -1,0 +1,116 @@
+{
+  "FP8_device_impossibility_claimed": false,
+  "GPU_used": false,
+  "catalog": {
+    "path": "/home/ubuntu/ifl_eval/rtx5090_20260916/public_package_v2/stage_full/source/release/rtx5090/deployment_profiles.json",
+    "sha256": "91f40e2bd3c79fac4c0940f14e0025661ef63bce573920adf8beba0944dc1e61"
+  },
+  "catalog_excluded_modes": [
+    "fp8",
+    "native",
+    "numeric"
+  ],
+  "checkpoint": {
+    "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+    "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e"
+  },
+  "family": "nano",
+  "new_model_or_capacity_measurement": false,
+  "observed_OOM": false,
+  "original_exclusion": {
+    "path": "/home/ubuntu/ifl_eval/rtx5090_20260916/no_offload_scope_v1/nano/exclusion.json",
+    "sha256": "804c13e10b54ec0f2bfeecce2b92ef18cd6ff765121c7feeae0bef180b612d65"
+  },
+  "original_scope": "entire_Nano_paired_benchmark_on_bound_RTX5090_with_original_8GiB_reserve",
+  "passed": false,
+  "schema": "instinctflash.no_offload_catalog_mapping.v1",
+  "scope_authorization_unchanged": {
+    "do_not_launch_model_or_download_weights": true,
+    "interpretation": "Do not time CPU-offloaded inference. Skip all Nano paired benchmark modes because their unchanged native PyTorch comparison arm necessarily streams decoder weights under its declared residency policy.",
+    "kind": "user_instruction_in_active_task",
+    "publish_excluded_cells_as": "-",
+    "standalone_FP8_feasibility_not_decided": true,
+    "user_instruction": "Results的表格我希望你变成一个 然后超过RAM的就不测 不要测cpu offload的速度 直接 - 就可以"
+  },
+  "source_commit": "0a53125c5af6d76260be96e39077cdcc3c01126d",
+  "status": "catalog_mapping_only",
+  "target": "rtx5090",
+  "tested": false,
+  "unchanged_execution_modes": {
+    "fp8": {
+      "effective_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "environment": {},
+      "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+      "gpu_qualified_by_plan": false,
+      "native_requirements": [],
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "fp8",
+        "step_cache": "checkpoint",
+        "tier_ceiling": "numeric"
+      },
+      "schedule_changed": false,
+      "task_quality_certified": false
+    },
+    "native": {
+      "effective_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "environment": {},
+      "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+      "gpu_qualified_by_plan": false,
+      "native_requirements": [],
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "native",
+        "step_cache": "checkpoint",
+        "tier_ceiling": "bitexact"
+      },
+      "schedule_changed": false,
+      "task_quality_certified": false
+    },
+    "numeric": {
+      "effective_schedule": {
+        "guidance": 3.0,
+        "nfe": {
+          "action": 4,
+          "prefix": 1
+        },
+        "sampler": "unipc",
+        "shift": 5.0,
+        "steps": 4
+      },
+      "environment": {
+        "IFL_COSMOS3_TIMESTEP_CACHE": "1"
+      },
+      "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+      "gpu_qualified_by_plan": false,
+      "native_requirements": [],
+      "runtime_kwargs": {
+        "device": "cuda:0",
+        "precision": "native",
+        "step_cache": "checkpoint",
+        "tier_ceiling": "numeric"
+      },
+      "schedule_changed": false,
+      "task_quality_certified": false
+    }
+  },
+  "unsupported": false
+}

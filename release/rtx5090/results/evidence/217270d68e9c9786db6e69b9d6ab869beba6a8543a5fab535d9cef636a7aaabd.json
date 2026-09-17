@@ -1,0 +1,46 @@
+{
+  "GPU_used": false,
+  "catalog": {
+    "bytes": 49594,
+    "path": "/home/ubuntu/InstinctFlash-rtx5090-from4090-20260916/release/rtx5090/deployment_profiles.json",
+    "sha256": "91f40e2bd3c79fac4c0940f14e0025661ef63bce573920adf8beba0944dc1e61"
+  },
+  "catalog_excluded_modes": [
+    "dynamic-fp8",
+    "dynamic-native",
+    "fp8",
+    "native"
+  ],
+  "dynamic_native_basis": "Included by the original entire-family decision; no separate mode trial or additional impossibility claim.",
+  "family": "dreamzero",
+  "mode_aliases": {
+    "fp8-dynamic": "dynamic-fp8"
+  },
+  "native_impossibility_claimed": false,
+  "new_model_or_capacity_measurement": false,
+  "nonreclaimable_RAM_lower_bound_claimed": false,
+  "observed_OOM": false,
+  "original_exclusion": {
+    "bytes": 2146,
+    "path": "/home/ubuntu/ifl_eval/rtx5090_20260916/capacity_preflight_v1/dreamzero_exclusion.json",
+    "sha256": "04a58d4e9dbb59bb8e9ba79bc7acc1324477881cdc1e4f50be2a8aacfd925390"
+  },
+  "original_named_modes": [
+    "native",
+    "fp8",
+    "fp8-dynamic"
+  ],
+  "original_scope": "entire_family_on_bound_54GB_host",
+  "passed": false,
+  "schema": "instinctflash.private_capacity_catalog_mapping.v1",
+  "scope_authorization_unchanged": {
+    "native_impossibility_claimed": false,
+    "parent_decision": "Skip this family conservatively because current FP8 construction retains original plus packed payload exceeding available host memory, and reliable native cold-load/history headroom has not been established. No low-memory trial or loader redesign is requested.",
+    "user_instruction": "\u653e\u4e0d\u4e0b\u7684\u6a21\u578b\u5c31\u4e0d\u6d4b\u8bd5"
+  },
+  "source_commit_as_recorded_in_original": "2f38d095fc2a222a7b51ace7219e4cbeed4d7123",
+  "status": "catalog_mapping_only",
+  "target": "rtx5090",
+  "tested": false,
+  "unsupported": false
+}

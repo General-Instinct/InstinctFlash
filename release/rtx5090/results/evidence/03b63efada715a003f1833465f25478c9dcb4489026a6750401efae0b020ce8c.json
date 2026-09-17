@@ -1,0 +1,48 @@
+{
+  "GPU_used": false,
+  "actual_deployed_source_changed": false,
+  "actual_settings": {
+    "action_chunk_size": 32,
+    "action_steps": 4,
+    "conditioning_fps": 15.0,
+    "guidance": 3.0
+  },
+  "all_other_math_source_protocol_request_and_WS_gate_AST_unchanged": true,
+  "archive_sha256": "b289507b8345fcd5cb9a78534917c2553bec07c667cace2ca9cdd9147c63efd6",
+  "inventory_correction_retained_sha256": "751a17ef6a4c5f25f87ef96088d1ac657c7f07f2ca3822bec6e1f80dcb73b070",
+  "model_recaptured": false,
+  "new_audit_result": null,
+  "new_auditor_sha256": "b396c68485c023f0bc5947dfc89cb1b1fdacf376447e264f8f5f0301c7918675",
+  "original_failures_preserved": [
+    {
+      "error": "Vendor installed/source Python bytes differ",
+      "path": "/home/ubuntu/ifl_eval/rtx5090_20260916/edge_model_archive_execution_v1/edge.independent_audit.json.failure.json",
+      "sha256": "983717f975dd2b97732f344ea8d87eaff265e965f1260628de283b5f89c62db9"
+    },
+    {
+      "error": "'action_chunk_size'",
+      "path": "/home/ubuntu/ifl_eval/rtx5090_20260916/edge_model_archive_execution_v1/edge.independent_audit_v2.json.failure.json",
+      "sha256": "167365132b3d9075f5a68b297e5dc7337a33c650a06c07f4bd5457614d659b5f"
+    }
+  ],
+  "original_shared_wrapper_source_refs": [
+    {
+      "path": "instinctflash/runtime/h100_fp8.py",
+      "sha256": "e698e477a51a15b7044c11d1d2d53834e507b7af308627346a3f67dd5e307007"
+    },
+    {
+      "path": "instinctflash/runtime/sm89_fp8.py",
+      "sha256": "605a7d10e8cae2a297503596efce933678bfb2bfd8ed0a07fd3989a32cf001c4"
+    },
+    {
+      "path": "instinctflash/runtime/cosmos_droid.py",
+      "sha256": "fbe72ce9ef5d6e21b2573211c1488649a280c0b85a20cbd592a803a4f22e0083"
+    }
+  ],
+  "passed": true,
+  "previous_auditor_sha256": "e4604ecf9d5b93648637ec265917df7fab34643f0757fd4aed4d668ac6adf411",
+  "schema": "instinctflash.edge_FP8_stats_reader_correction.v1",
+  "sole_AST_delta": "native_stats assignment uses backend.stats.native_backend for exactly runtime_selected, retaining original eager/native paths",
+  "source_commit": "0a53125c5af6d76260be96e39077cdcc3c01126d",
+  "status": "explicit_original_wrapper_path_only"
+}

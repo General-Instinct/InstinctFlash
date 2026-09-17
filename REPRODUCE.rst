@@ -5,9 +5,9 @@ The benchmark, CUDA kernels and model frontends are included as source.
 Each model runs in its own vendor environment. The fixed input archive contains
 recorded RGB cameras and synthetic robot states; it loads without pickle.
 Checkpoint commits, Runtime options, sample order and action shapes are explicit
-in the target's profile (``release/deployment_profiles.json`` for Thor or
-``release/rtx4090/deployment_profiles.json`` for RTX 4090) and the prepared run
-directory.
+in the target's profile (``release/deployment_profiles.json`` for Thor,
+``release/rtx4090/deployment_profiles.json`` for RTX 4090, or
+``release/rtx5090/deployment_profiles.json`` for RTX 5090) and the prepared run directory.
 
 Install a model environment
 ---------------------------
@@ -15,7 +15,7 @@ Install a model environment
 First complete the CPU core and ``uv`` setup in `INSTALL.rst <INSTALL.rst>`_.
 The bootstrap requires Git, network access and the selected Python interpreter;
 that guide also explains installing Python 3.12 or 3.13 with ``uv``.
-Choose the `RTX 4090 <INSTALL.rst#rtx-4090>`_ or
+Choose the `RTX 5090 <INSTALL.rst#rtx-5090>`_, `RTX 4090 <INSTALL.rst#rtx-4090>`_ or
 `Jetson Thor <INSTALL.rst#jetson-thor>`_ installation profile. For Thor, activate
 the core environment from the checkout root, then select one model and an empty
 output directory::
@@ -103,8 +103,9 @@ the selected card's model and SM89 capability; it does not reuse a Thor device
 receipt. The paired native/default/selected requests retain the same warmups,
 measurement counts, full observation shapes and history protocol. The native
 reference declares any CPU residency needed to run the full checkpoint on a
-24 GiB card. Those copies are included in latency, with actual peak allocated
-and reserved CUDA memory recorded. The Thor selections below are not measured
+24 GiB card. Copies during prediction are included in latency; reset-only
+text-encoder staging is reported separately. Actual peak allocated and reserved
+CUDA memory are recorded. The Thor selections below are not measured
 RTX 4090 results; consult the target's qualified results before choosing a mode.
 
 The RTX Edge/Nano ``numeric`` recipe preserves native BF16, UniPC4 and CFG3
@@ -130,6 +131,96 @@ before loading the prepared original checkpoint::
 This recipe uses no Thor shared BF16 library. Unset the timestep-cache option
 when selecting FP8, because the cache currently supports native precision.
 Keep the vendor and asset activations when running either recipe.
+
+RTX 5090
+--------
+
+Complete the `RTX 5090 install <INSTALL.rst#rtx-5090>`_, then prepare the original
+checkpoint and run the same public pipeline from the checkout root::
+
+    source ~/ifl-pi05-5090/activate.sh
+    python scripts/prepare_auxiliary_assets.py prepare pi05 \
+      --root ~/ifl-pi05-5090-assets --include-primary
+    source ~/ifl-pi05-5090-assets/run.env
+    python -I -m benchmarks.regression.reproduce prepare \
+      --target rtx5090 --model pi05 --mode fp8 --local-files-only \
+      --cache-dir ~/ifl-pi05-5090-assets/hf/hub --output pi05-5090-inputs
+    python -I -m benchmarks.regression.reproduce run \
+      --prepared pi05-5090-inputs --output pi05-5090-results
+    python -I -m benchmarks.regression.serve_smoke \
+      --prepared pi05-5090-inputs --cell pi05-runtime_default \
+      --output pi05-5090-serving-native
+    python -I -m benchmarks.regression.serve_smoke \
+      --prepared pi05-5090-inputs --cell pi05-runtime_selected \
+      --output pi05-5090-serving-fp8
+
+This compares native PyTorch, default native-precision Runtime and explicitly
+selected SM120 FP8. Use ``--mode native`` with new output directories to keep
+the selected Runtime at checkpoint precision. Target/model checks require an
+actual RTX 5090; Thor and RTX 4090 receipts remain separate. The original paired
+inputs, warmups, measurement counts, full actions and history checks are retained.
+See the `RTX 5090 results <release/rtx5090/results/results.rst>`_ for measured
+configurations and raw action comparisons. Capacity-limited or CPU-offloaded
+pairs are excluded from new benchmarks. Historical offload records remain
+available for inspection; the README displays Thor measurements only.
+
+Keep ``--target rtx5090`` when preparing other models or modes. Use
+``--mode numeric`` for the NUMERIC selections of VLA-V2, Edge and Nano;
+their model-specific environment and original assets are still required.
+
+RTX VA 2V/4A with a matching native baseline
+-------------------------------------------
+
+The archived RTX 2V/4A measurements use a fresh upstream PyTorch 2V/4A baseline.
+VA stages its text encoder through CPU on these desktop cards; this historical
+comparison is outside the current no-offload benchmark scope.
+The checkpoint still declares 25V/50A. After the VA bootstrap and original
+asset preparation above, restore both activation files and run from the
+checkout root. Choose ``rtx4090`` or ``rtx5090`` explicitly and use new output
+paths on an otherwise idle selected GPU::
+
+    source ~/ifl-va/activate.sh
+    source ~/ifl-va-assets/run.env
+    ifl_target=rtx5090
+    for ifl_mode in 2v4a-native 2v4a-fp8; do
+      python -I -m benchmarks.regression.reproduce prepare \
+        --target "$ifl_target" --model va --mode "$ifl_mode" \
+        --local-files-only --cache-dir "$HF_HUB_CACHE" \
+        --output "va-$ifl_target-$ifl_mode-inputs"
+    done
+    python -I scripts/reproduce_va_2v4a.py run \
+      --target "$ifl_target" \
+      --native-prepared "va-$ifl_target-2v4a-native-inputs" \
+      --fp8-prepared "va-$ifl_target-2v4a-fp8-inputs" \
+      --output "va-$ifl_target-2v4a-results"
+
+The helper uses the existing public capture with explicit ``native_nfe`` for
+upstream PyTorch, followed by Runtime native and Runtime FP8. Each fresh process
+uses the same 21 requests; ratios use the twelve measured continuation calls.
+``matched_report.json`` compares every saved action, checks actual steps and GPU
+identity, and retains the original checkpoint declaration. Numerical agreement
+is reported, not assumed. These ratios do not establish task quality.
+The full-schedule baseline is not repeated.
+
+To recheck these saved arrays on CPU, with the installed benchmark and NumPy::
+
+    python -I scripts/reproduce_va_2v4a.py report \
+      --target "$ifl_target" \
+      --native-prepared "va-$ifl_target-2v4a-native-inputs" \
+      --fp8-prepared "va-$ifl_target-2v4a-fp8-inputs" \
+      --capture "va-$ifl_target-2v4a-results" \
+      --output "va-$ifl_target-2v4a-report.json"
+
+The two separate six-request WebSocket checks use the same prepared modes::
+
+    for ifl_mode in 2v4a-native 2v4a-fp8; do
+      python -I -m benchmarks.regression.serve_smoke \
+        --prepared "va-$ifl_target-$ifl_mode-inputs" --cell "va-$ifl_mode" \
+        --output "va-$ifl_target-$ifl_mode-serving"
+    done
+
+Native serving uses seed 9173 by default; FP8 serving is an unseeded transport
+check. Keep these serving receipts separate from the API comparison report.
 
 Explicit execution selections
 -----------------------------
@@ -180,7 +271,7 @@ For Edge on Thor, bind the library produced by the native build during preparati
       --model edge --mode numeric --output edge-inputs \
       --library IFL_BF16_KERNEL_LIBRARY=/path/to/native/libinstinctflash_bf16.so
 
-For LingBot-VA, reproduce the full-schedule native reference and both
+For LingBot-VA on Thor, reproduce the full-schedule native reference and both
 InstinctFlash operating points::
 
     python -I -m benchmarks.regression.reproduce prepare \
@@ -232,7 +323,7 @@ run directory. Recheck an existing run without using a GPU::
 
 Absolute latency depends on clocks, temperature, background load and the
 declared request protocol. Compare the same checkpoint, inputs, steps, precision
-and cache policy. README historical LeRobot/vLLM-Omni cells use separately pinned
+and cache policy. Archived LeRobot/vLLM-Omni comparisons use separately pinned
 protocols; they are not matched architecture-only ratios.
 
 The separate `framework comparison guide <benchmarks/regression/FRAMEWORK_COMPARISON.rst>`_ records

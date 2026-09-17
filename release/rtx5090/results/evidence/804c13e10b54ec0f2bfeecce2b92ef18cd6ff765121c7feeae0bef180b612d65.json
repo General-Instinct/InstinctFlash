@@ -1,0 +1,112 @@
+{
+  "FP8_scope_caveat": "The prior static review estimated 16,418,039,872 bytes of FP8 network parameters and packed buffers. This review does not establish an FP8 fit, failure, speed, or unsupported-device result. FP8 is untested because the paired original BF16 baseline requires excluded offload.",
+  "GPU_used": false,
+  "capacity_basis": {
+    "arithmetic_excludes": "Registered analytical buffers, Wan VAE, activations, prefix/KV tensors, workspaces and allocator state. Omitting them only enlarges the allowed budget; the positive overflow already forces streaming.",
+    "decoder_layer_count": 36,
+    "generous_device_weight_budget_upper_bound_bytes": 25600983040,
+    "host_RAM_overflow_claimed": false,
+    "maximum_resident_layers_at_generous_zero_outside_budget": 30,
+    "maximum_resident_layers_at_recorded_torch_zero_outside_budget": 29,
+    "minimum_streamed_layers_at_generous_zero_outside_budget": 6,
+    "minimum_streamed_layers_at_recorded_torch_zero_outside_budget": 7,
+    "native_action_only_parameter_bytes": 29101613440,
+    "native_base_parameter_bytes": 1317327232,
+    "native_parameter_bytes_per_layer": 771785728,
+    "native_serialized_generator_payload_bytes": 30346273152,
+    "native_total_exceeds_physical_device_memory_claimed": false,
+    "original_elided_lm_head_bytes": 1244659712,
+    "original_inference_reserve_bytes": 8589934592,
+    "outside_network_allocation_lower_bound_used_bytes": 0,
+    "parameters_over_generous_weight_budget_bytes": 3500630400,
+    "recorded_nvidia_smi_total_bytes": 34190917632,
+    "recorded_torch_device_total_bytes": 33670758400,
+    "recorded_torch_weight_budget_before_outside_bytes": 25080823808,
+    "unchanged_reserve_required_for_this_exclusion": true
+  },
+  "catalog_at_exclusion": {
+    "path": "/home/ubuntu/ifl_eval/rtx5090_20260916/public_package_v2/stage_full/source/release/rtx5090/deployment_profiles.json",
+    "sha256": "91f40e2bd3c79fac4c0940f14e0025661ef63bce573920adf8beba0944dc1e61"
+  },
+  "changes_to_model_loader": false,
+  "changes_to_reserve_precision_or_schedule": false,
+  "checkpoint": {
+    "model_id": "nvidia/Cosmos3-Nano-Policy-DROID",
+    "revision": "6706d7680581c255ff61e0f3bb49d90eac55c79e"
+  },
+  "code_path_findings": [
+    "native_reference.py uses build_native_service on RTX 5090 for Nano; that wrapper elides the same unused language output head and calls finalize_service with precision native.",
+    "The Runtime adapter selects desktop residency on SM120 and calls the same finalize_service for native, NUMERIC and FP8 modes.",
+    "finalize_service always calls install_module_residency with the original 8 GiB reserve. NUMERIC does not replace BF16 weights. Only explicit FP8 packs projections before residency selection.",
+    "install_module_residency budgets CUDA total minus nonnegative outside-network allocation minus reserve. resident_prefix includes the largest transient streaming block when selecting a resident prefix.",
+    "The original native PyTorch pair is therefore ineligible under the new no-offload benchmark policy even if explicit FP8 parameters could fit without streaming."
+  ],
+  "deployment_target": "rtx5090",
+  "excluded_modes": [
+    "fp8",
+    "native",
+    "numeric"
+  ],
+  "family": "nano",
+  "model_imported": false,
+  "native_comparison_arm": "Original BF16 PyTorch baseline at UniPC4 / CFG3, prefix NFE 1 and action NFE 4",
+  "new_model_or_capacity_measurement": false,
+  "observed_OOM": false,
+  "passed": false,
+  "previous_CPU_bootstrap_and_primitive_evidence_preserved": true,
+  "previous_model_fit_qualification_claimed": false,
+  "prior_vram_review": {
+    "path": "/home/ubuntu/ifl_eval/rtx5090_20260916/nano_vram_review_v1/review.json",
+    "sha256": "af54673af235fb496f4b24eb4f7f48c97da40f3a2bc32b72ddddf89303cf42a2"
+  },
+  "qualification_evidence": false,
+  "recorded_device_receipt": {
+    "path": "/home/ubuntu/ifl_eval/rtx5090_20260916/public_results_five_complete_v1/bundle/evidence/9b0356c5eb81bde8f397cf4ccce66537b4c86e020dd10db87975ab36c25df04b.json",
+    "sha256": "9b0356c5eb81bde8f397cf4ccce66537b4c86e020dd10db87975ab36c25df04b"
+  },
+  "schema": "instinctflash.no_offload_pair_exclusion.v1",
+  "scope": "entire_Nano_paired_benchmark_on_bound_RTX5090_with_original_8GiB_reserve",
+  "scope_authorization": {
+    "do_not_launch_model_or_download_weights": true,
+    "interpretation": "Do not time CPU-offloaded inference. Skip all Nano paired benchmark modes because their unchanged native PyTorch comparison arm necessarily streams decoder weights under its declared residency policy.",
+    "kind": "user_instruction_in_active_task",
+    "publish_excluded_cells_as": "-",
+    "standalone_FP8_feasibility_not_decided": true,
+    "user_instruction": "Results的表格我希望你变成一个 然后超过RAM的就不测 不要测cpu offload的速度 直接 - 就可以"
+  },
+  "source_commit": "0a53125c5af6d76260be96e39077cdcc3c01126d",
+  "source_files": [
+    {
+      "matches_original_source_commit": true,
+      "path": "instinctflash/runtime/module_residency.py",
+      "sha256": "4f83face9a4d7718616538d0ba571ac1cc1ee3e81c573873f7b8d3d4db8f97fa"
+    },
+    {
+      "matches_original_source_commit": true,
+      "path": "examples/cosmos3_policy/cosmos3_iwm/sm89_residency.py",
+      "sha256": "3e3ed7c9302f39de454d50e43b117d6fd358136d19418fe4b7a7cb275e32d56e"
+    },
+    {
+      "matches_original_source_commit": true,
+      "path": "examples/cosmos3_policy/cosmos3_iwm/adapter.py",
+      "sha256": "e3b1bf76f9cb1c9cb651eeb8404dc0527006244a5f2d878312ec773d9e151668"
+    },
+    {
+      "matches_original_source_commit": true,
+      "path": "examples/cosmos3_policy/cosmos3_iwm/nano_action_only.py",
+      "sha256": "1e8cdcc9007c4b3a32b3ca35e9e01ea710d1a706b4a687bad826f51b0db81840"
+    },
+    {
+      "matches_original_source_commit": true,
+      "path": "benchmarks/regression/native_reference.py",
+      "sha256": "4a65eadf116e71066ef5fadbe905d060c1e3397ac93c51b2fb13e6792bf92466"
+    }
+  ],
+  "status": "no_offload_pair_excluded_not_tested",
+  "tensor_headers": {
+    "path": "/home/ubuntu/ifl_eval/rtx4090_20260916/nano_capacity_exclusion_580_v1/tensor_headers.json",
+    "sha256": "f73933f7337d057ca0da028b3854ebc4cdf520b5f8a53c7a5eef3f69c5ee8ba9"
+  },
+  "tested": false,
+  "unsupported": false
+}

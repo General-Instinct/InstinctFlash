@@ -57,8 +57,13 @@ def test_rtx4090_catalog_is_distinct_and_all_commands_keep_the_target(catalog):
         deploy.load_profiles(ROOT / "release/deployment_profiles.json", target="rtx4090")
 
 
-def test_rtx4090_recorded_qualification_keeps_capacity_exclusion_unqualified():
-    rtx = deploy.load_profiles(target="rtx4090")
+@pytest.mark.parametrize("target,excluded_families,tested_modes,excluded_modes", [
+    ("rtx4090", {"nano"}, 20, 3),
+    ("rtx5090", {"dreamzero", "nano"}, 16, 7),
+])
+def test_recorded_rtx_qualification_keeps_capacity_exclusion_unqualified(
+        target, excluded_families, tested_modes, excluded_modes):
+    rtx = deploy.load_profiles(target=target)
     reference = rtx["recorded_e2e_qualification"]
     data = (ROOT / reference["path"]).read_bytes()
     assert hashlib.sha256(data).hexdigest() == reference["sha256"]
@@ -68,21 +73,25 @@ def test_rtx4090_recorded_qualification_keeps_capacity_exclusion_unqualified():
     assert recorded["task_quality_certified"] is False
     assert recorded["new_release_wheel_GPU_measured"] is False
     assert len(recorded["models"]) == 8
-    assert sum(row["recorded_e2e_verified"] for row in recorded["models"].values()) == 7
-    assert sum(len(row["modes"]) for name, row in recorded["models"].items() if name != "nano") == 20
-    excluded = recorded["models"]["nano"]
-    assert excluded["tested"] is False and excluded["observed_OOM"] is False
-    assert len(excluded["modes"]) == 3
-    assert all(row["tested"] is False and row["passed"] is False for row in excluded["modes"].values())
+    assert sum(row["recorded_e2e_verified"] for row in recorded["models"].values()) == 8 - len(excluded_families)
+    assert recorded["target"] == target
+    assert sum(len(row["modes"]) for name, row in recorded["models"].items()
+               if name not in excluded_families) == tested_modes
+    excluded = [recorded["models"][family] for family in excluded_families]
+    assert all(row["tested"] is False and row["observed_OOM"] is False for row in excluded)
+    assert sum(len(row["modes"]) for row in excluded) == excluded_modes
+    assert all(mode["tested"] is False and mode["passed"] is False
+               for row in excluded for mode in row["modes"].values())
 
 
-def test_rtx4090_cli_plan_binds_correct_catalog_hash():
+@pytest.mark.parametrize("target", ["rtx4090", "rtx5090"])
+def test_rtx_cli_plan_binds_correct_catalog_hash(target):
     run = subprocess.run([sys.executable, str(ROOT / "scripts/public_deploy.py"),
-                          "plan", "all", "--target", "rtx4090"], capture_output=True, text=True, check=True)
+                          "plan", "all", "--target", target], capture_output=True, text=True, check=True)
     receipt = json.loads(run.stdout)
-    assert receipt["ok"] and receipt["target"] == "rtx4090"
+    assert receipt["ok"] and receipt["target"] == target
     assert receipt["profiles_sha256"] == hashlib.sha256(
-        (ROOT / "release/rtx4090/deployment_profiles.json").read_bytes()).hexdigest()
+        (ROOT / "release" / target / "deployment_profiles.json").read_bytes()).hexdigest()
     assert len(receipt["results"]) == 8
 
 

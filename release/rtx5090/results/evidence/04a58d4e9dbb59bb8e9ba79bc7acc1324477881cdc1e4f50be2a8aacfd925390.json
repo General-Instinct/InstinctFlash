@@ -1,0 +1,44 @@
+{
+  "schema": "instinctflash.capacity_exclusion.v1",
+  "recorded_utc": "2026-09-16T18:10:34.785117+00:00",
+  "deployment_target": "rtx5090",
+  "family": "dreamzero",
+  "status": "capacity_excluded_not_tested",
+  "scope": "entire_family_on_bound_54GB_host",
+  "excluded_modes": [
+    "native",
+    "fp8",
+    "fp8-dynamic"
+  ],
+  "tested": false,
+  "passed": false,
+  "GPU_used": false,
+  "observed_OOM": false,
+  "unsupported": false,
+  "source_commit": "2f38d095fc2a222a7b51ace7219e4cbeed4d7123",
+  "memory_limit_bytes": 53999996928,
+  "hardware_evidence": {
+    "path": "/home/ubuntu/ifl_eval/rtx5090_admission_20260916/refresh_v2/host_probe.json",
+    "sha256": "cc601711706b2f6445beeb56578b01ca3aa1882cd46598af5a882959d8eaf2f0"
+  },
+  "static_review": {
+    "path": "/home/ubuntu/ifl_eval/rtx5090_20260916/capacity_preflight_v1/review.json",
+    "sha256": "dd881f97dcef4ae789777cb178c6a4ad45de3b8c27664280a92ac0483ec08ec5"
+  },
+  "scope_authorization": {
+    "user_instruction": "\u653e\u4e0d\u4e0b\u7684\u6a21\u578b\u5c31\u4e0d\u6d4b\u8bd5",
+    "parent_decision": "Skip this family conservatively because current FP8 construction retains original plus packed payload exceeding available host memory, and reliable native cold-load/history headroom has not been established. No low-memory trial or loader redesign is requested.",
+    "native_impossibility_claimed": false
+  },
+  "capacity_basis": {
+    "original_bf16_payload_bytes": 45848344232,
+    "additional_fp8_payload_bytes": 8808038400,
+    "combined_payload_bytes": 54656382632,
+    "combined_payload_over_limit_bytes": 656385704,
+    "absolute_nonreclaimable_RAM_lower_bound_claimed": false,
+    "mmap_caveat": "Payload arithmetic only: direct-BF16 construction uses mmap assignment before native copy loading. Whether and when all pages become anonymous is not established by header arithmetic. No proof that native must OOM, and no GPU/OOM trial was run.",
+    "native_result": "Fit is not verified on this host; excluded under the explicit skip policy, not proof that every native execution must OOM."
+  },
+  "changes_to_model_loader": false,
+  "qualification_evidence": false
+}

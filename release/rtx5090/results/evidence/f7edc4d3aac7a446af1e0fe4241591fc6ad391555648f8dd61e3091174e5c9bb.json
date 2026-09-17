@@ -1,0 +1,214 @@
+{
+  "GPU_used_by_auditor": false,
+  "GPU_uuid": "GPU-004614f4-173a-187b-4e67-a2e1799e4d42",
+  "Torch_imported_by_auditor": false,
+  "archive_sha256": "7e5ee9e9beb991c61beec30c1e4244bc092555e45d07863da5bac31746a960f4",
+  "comparisons": [
+    {
+      "actions": {
+        "exact_bytes": true,
+        "max_abs": 0.0,
+        "rmse": 0.0
+      },
+      "baseline": "vla4-eager_native",
+      "candidate": "vla4-runtime_default",
+      "same_sampling_policy": true,
+      "speedup": 7.81267395553098
+    },
+    {
+      "actions": {
+        "exact_bytes": false,
+        "max_abs": 0.5770335868000984,
+        "rmse": 0.019603175794990216
+      },
+      "baseline": "vla4-eager_native",
+      "candidate": "vla4-runtime_selected",
+      "same_sampling_policy": true,
+      "speedup": 7.692354638446647
+    }
+  ],
+  "completion_sha256": "118be2c7c9a5db04f4dae9c29886f3b55359249a694a1ab6aadd0d5be776b3eb",
+  "config_sha256": "9bd0904303469de348a29cd000a13c30f13629768a605f56717967c275b7af9f",
+  "default_bitexact": true,
+  "family": "vla4",
+  "installed_source_members": 425,
+  "metrics": {
+    "vla4-eager_native": {
+      "p50_ms": 803.4877575009887,
+      "precision": "native",
+      "primary_samples": 20,
+      "schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "total_predictions": 25
+    },
+    "vla4-runtime_default": {
+      "p50_ms": 102.84414300076605,
+      "precision": "native",
+      "primary_samples": 20,
+      "schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "total_predictions": 25
+    },
+    "vla4-runtime_selected": {
+      "p50_ms": 104.45277100006933,
+      "precision": "fp8",
+      "primary_samples": 20,
+      "schedule": {
+        "nfe": {
+          "action": 10,
+          "prefix": 1
+        },
+        "sampler": "checkpoint"
+      },
+      "total_predictions": 25
+    }
+  },
+  "minimum_RAM_certified": false,
+  "original_inputs": {
+    "bytes": 16804634071,
+    "files": 14,
+    "full_file_sha_receipts_verified": true,
+    "post_load_tensor_value_comparison": "not part of the existing vla4 contract",
+    "scope": "Exact original byte receipts plus pinned native-loader and installed source; no new weight read or tensor load."
+  },
+  "original_wheel_source_commit": "2f38d095fc2a222a7b51ace7219e4cbeed4d7123",
+  "passed": true,
+  "plan_sha256": "c9f1c1cfad5d3d71707d94b9bb3406d0a0d816f61568a229b000832c66339ab8",
+  "schema": "instinctflash.rtx5090_vla4_independent_audit.v1",
+  "scope": "Actual 5090 saved arrays/timings, fixed input/RNG/reset/full action blocks, exact installed source and two WebSockets; no recapture or task-success claim.",
+  "source_commit": "0a53125c5af6d76260be96e39077cdcc3c01126d",
+  "source_continuity_sha256": "4032e4e28ba3c28aed038b30c5c1dd20b566deee2848ba5a952afd3ffae8b5ae",
+  "target": {
+    "capability": [
+      12,
+      0
+    ],
+    "name": "rtx5090"
+  },
+  "task_quality_validated": false,
+  "vendor_cpu_provenance_sha256": "f486b11cac1ce849cc60d581fa47b6ae5313fed7cb55618092eb95a40ad30d62",
+  "vendor_source_scope": "Pre-model CPU wheel/member check; actual public scanner remains limited to its original module prefixes",
+  "websockets": [
+    {
+      "action_archive_sha256": "0950ce350921578405d79828fea6e3ce1e5acdce31a0320df0d1bd1b7e3c8a39",
+      "action_shape": [
+        6,
+        25,
+        14
+      ],
+      "calls": 6,
+      "cell": "vla4-runtime_default",
+      "effective_nfe": {
+        "action": 10,
+        "prefix": 1
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "native",
+      "receipt_sha256": "44faa0772e2e79b08e522a965fd0c3fde86e1b2b9c7fa4a5081272869055a6f8",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "0a0498f0cff7c8b83e04494c2b61f47c83a8310a1bd74f64316f54a1513d9d5c"
+        ],
+        [
+          0,
+          1,
+          "13137705e19f8ff81bcd97f66cad54caf4078d5908c2a7e8e7a31876831d3147"
+        ],
+        [
+          0,
+          2,
+          "a5695d64d7ccfa0cb81304cf45545778863d0524d9f19d18ad10fec2a3d4a26f"
+        ],
+        [
+          1,
+          0,
+          "54bae1e0c16f4faa3ab015a14311f19169960fe7447ffd956c40aad41716234e"
+        ],
+        [
+          1,
+          1,
+          "d0e36a9a804c9b79e590bcbe1d62fa1e015c34a5e780cba39edbd8b4eb96ef37"
+        ],
+        [
+          1,
+          2,
+          "8d96e49b4be233b8a1f2f9ed498db55dc716d10e4108f8b394226cd9c036889a"
+        ]
+      ],
+      "rng_scope": "native serving constructor seed",
+      "task_quality_validated": false
+    },
+    {
+      "action_archive_sha256": "0826bac9c1c0e9b02b0568954348874fffa5905ad658a025c3e0e040c17c09e4",
+      "action_shape": [
+        6,
+        25,
+        14
+      ],
+      "calls": 6,
+      "cell": "vla4-runtime_selected",
+      "effective_nfe": {
+        "action": 10,
+        "prefix": 1
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "fp8",
+      "receipt_sha256": "8587f432de72684327968fe4d336a0a541b68f3435edb0bf1720fe9ef72e9f4e",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "0a0498f0cff7c8b83e04494c2b61f47c83a8310a1bd74f64316f54a1513d9d5c"
+        ],
+        [
+          0,
+          1,
+          "13137705e19f8ff81bcd97f66cad54caf4078d5908c2a7e8e7a31876831d3147"
+        ],
+        [
+          0,
+          2,
+          "a5695d64d7ccfa0cb81304cf45545778863d0524d9f19d18ad10fec2a3d4a26f"
+        ],
+        [
+          1,
+          0,
+          "54bae1e0c16f4faa3ab015a14311f19169960fe7447ffd956c40aad41716234e"
+        ],
+        [
+          1,
+          1,
+          "d0e36a9a804c9b79e590bcbe1d62fa1e015c34a5e780cba39edbd8b4eb96ef37"
+        ],
+        [
+          1,
+          2,
+          "8d96e49b4be233b8a1f2f9ed498db55dc716d10e4108f8b394226cd9c036889a"
+        ]
+      ],
+      "rng_scope": "unseeded FP8 transport check",
+      "task_quality_validated": false
+    }
+  ],
+  "worker": {
+    "exited": true,
+    "pid": 60801,
+    "start_ticks": "2010824"
+  }
+}

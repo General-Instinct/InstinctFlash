@@ -1,0 +1,161 @@
+{
+  "API_recaptured_by_continuation": false,
+  "GPU_used_by_auditor": false,
+  "GPU_uuid": "GPU-004614f4-173a-187b-4e67-a2e1799e4d42",
+  "Torch_imported_by_auditor": false,
+  "actual_numeric_environment": {
+    "cudnn_benchmark": false,
+    "cudnn_tf32": false,
+    "matmul_tf32": false
+  },
+  "archive_sha256": "06ad513c1ab3571917e35ab315892a5939dcf9e798ce1b4c7ff3266e33b9afd4",
+  "comparisons": [
+    {
+      "actions": {
+        "exact_bytes": true,
+        "max_abs": 0.0,
+        "rmse": 0.0
+      },
+      "baseline": "edge-eager_native",
+      "candidate": "edge-numeric-supplement/runtime_selected",
+      "same_sampling_policy": true,
+      "speedup": 0.9913983844290185
+    },
+    {
+      "actions": {
+        "exact_bytes": true,
+        "max_abs": 0.0,
+        "rmse": 0.0
+      },
+      "baseline": "edge-runtime_default",
+      "candidate": "edge-numeric-supplement/runtime_selected",
+      "same_sampling_policy": true,
+      "speedup": 0.9986764616747386
+    },
+    {
+      "actions": {
+        "exact_bytes": false,
+        "max_abs": 0.38365471363067627,
+        "rmse": 0.07365911568900164
+      },
+      "baseline": "edge-runtime_selected",
+      "candidate": "edge-numeric-supplement/runtime_selected",
+      "same_sampling_policy": true,
+      "speedup": 1.2183213603832261
+    }
+  ],
+  "completion_sha256": "c1c1870c95e946b4dd51c34c41a2f7827f5359dd689ef5580fd1aead37158584",
+  "config_sha256": "fd3849f0c154239864661087d68db1cb407ac0a5c01f58def462212f75b0eaea",
+  "family": "edge",
+  "full_public_run_completed": false,
+  "metrics": {
+    "p50_ms": 959.4931830033602,
+    "precision": "native",
+    "primary_samples": 20,
+    "schedule": {
+      "guidance": 3.0,
+      "nfe": {
+        "action": 4,
+        "prefix": 1
+      },
+      "sampler": "unipc",
+      "shift": 5.0,
+      "steps": 4
+    },
+    "total_predictions": 25
+  },
+  "minimum_RAM_certified": false,
+  "mode": "numeric",
+  "original_producer": {
+    "config_sha256": "2b30af1c7543a3d963f655bf2df03214fb994c4d115d227149a0d370dccf510a",
+    "failure_sha256": "47133917912f1ac738f448a1fa1dee776f66c4108f62a3b52de94bea85244ea2",
+    "readback_manifest_sha256": "bdc227f82ed94338a89b0869ae8e157d9922339f1bf9b99cc521ae3c6beb96dc",
+    "readback_packet_sha256": "3a63485be9e078ee3454f1f7a0014f91a6eadc7c73da1dc53bb05568b6015e61",
+    "selected_sha256": "a354fad5dc315aed48df44eee16fe0531e5088f12ca26092ac6c98f7988edfa1",
+    "source_run": "/workspace/ifl_rtx5090_20260916/edge-numeric-supplement-v1",
+    "worker": {
+      "exited": true,
+      "passed": false,
+      "pid": 85130,
+      "start_ticks": "4360539"
+    },
+    "worker_sha256": "2abeb0cbffa68e54511e4958643f82f33cef598611c8a2bfb7a27380ded8476d"
+  },
+  "original_producer_remains_failed": true,
+  "parent_archive_sha256": "b289507b8345fcd5cb9a78534917c2553bec07c667cace2ca9cdd9147c63efd6",
+  "parent_audit_sha256": "c67c06d3e6b2ae50f39573a2a85e1d6b8d025b051bad3eefedd124eb4ed321d4",
+  "passed": true,
+  "primary_baselines_recaptured": false,
+  "schema": "instinctflash.rtx5090_numeric_independent_audit.v1",
+  "scope": "One immutable NUMERIC API from the failed original producer and one six-call WS from the distinct successful continuation; original producer remains failed. Parent results and task quality remain separate.",
+  "source_commit": "0a53125c5af6d76260be96e39077cdcc3c01126d",
+  "target": {
+    "capability": [
+      12,
+      0
+    ],
+    "name": "rtx5090"
+  },
+  "task_quality_validated": false,
+  "vendor_cpu_provenance_sha256": "ee77cfea78330468b4537dcb03d9dfd543725811afad38af6b4a6d17c760e184",
+  "websockets": [
+    {
+      "action_archive_sha256": "13ef0f02199be95cf34d7041dfeccb13f031734c031d8f71311a3f0323b40be8",
+      "action_shape": [
+        6,
+        32,
+        8
+      ],
+      "calls": 6,
+      "cell": "edge-runtime_selected",
+      "effective_nfe": {
+        "action": 4,
+        "prefix": 1
+      },
+      "episodes": 2,
+      "finite_actions": true,
+      "latency_benchmark": false,
+      "precision": "native",
+      "receipt_sha256": "8636999e854eb575bcdd349e7807c15666b179ba6c92424141abdc9c626e1d4c",
+      "request_signatures": [
+        [
+          0,
+          0,
+          "e88c404c5843a5e8f6014afa05973cf96bf71f034938f41fe9a1ee5ab8164877"
+        ],
+        [
+          0,
+          1,
+          "f00c330f8613b1ffbc34bbdb873a0287459832cf63cf8cbf113d60da83c23a16"
+        ],
+        [
+          0,
+          2,
+          "9096cc0a8e7d11c2dc9af1fa4b0899dfa83eef3099c23be199022c1e49c948d1"
+        ],
+        [
+          1,
+          0,
+          "42041aac26fd24419a64bd7b314039b8d39091412c2ef7b8dcefddd18b9b75bf"
+        ],
+        [
+          1,
+          1,
+          "708484f128a7fd3465b3b2554e7a327eea2c73a1e2dfdda536010eb3fb74f420"
+        ],
+        [
+          1,
+          2,
+          "6b40405a2c8e9cb1dabb1d59e8cdfa59259211d02b5197d7ecde70cc2c6d0736"
+        ]
+      ],
+      "rng_scope": "native serving constructor seed",
+      "task_quality_validated": false
+    }
+  ],
+  "worker": {
+    "exited": true,
+    "pid": 85589,
+    "start_ticks": "4402779"
+  }
+}

@@ -4,7 +4,7 @@
     "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
   },
   "default_execution": "native",
-  "evidence_scope": "Prepared RTX 5090 execution profiles using pinned original checkpoints and CUDA 13 dependencies. Installation, GPU execution, latency, memory capacity, and task quality await actual-device evaluation.",
+  "evidence_scope": "Six recorded pipeline families,16 Runtime modes,23 API cells and16 six-call WebSocket records; Nano three paired modes and DreamZero four modes excluded and untested. Historical VA results retain measured CPU staging; recorded coverage is separate from no-offload headline eligibility.; Recorded requests, episodes and schedules only; task quality, long-episode saturation and minimum host RAM are not certified.",
   "models": [
     {
       "adapter": {
@@ -38,9 +38,9 @@
           "Use the separately declared Linux/x86_64 RTX 5090 profile with the pinned original checkpoint and auxiliary assets. Dependency bytes and vendor contracts are shared with the CUDA 13 x86_64 profiles; prior device results do not qualify this target.",
           "The benchmark uses one RTX 5090. Preserve checkpoint precision, schedule, action horizon and episode state unless selecting an explicit execution policy."
         ],
-        "qualification": null,
+        "qualification": "release/rtx5090/qualification.json",
         "recipe": "release/vendor/rtx5090/va/bootstrap.json",
-        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "status": "recorded_rtx5090_e2e_verified_original_install_receipts_retained",
         "upstream_install_guide": "https://github.com/robbyant/lingbot-va#readme"
       },
       "checkpoint": {
@@ -106,9 +106,19 @@
             "video_steps": 2
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "va-2v4a-fp8",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "va",
+            "mode": "2v4a-fp8",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "5d059d4286a1798d66b9068b05a352a46e9b582b0675688e2600f01180520f11",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "exclude_passes": [
@@ -136,9 +146,19 @@
             "video_steps": 2
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "va-2v4a-native",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "va",
+            "mode": "2v4a-native",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "72858c91e8791ba25113c98186efc8cdc19c125af2b25078e3392724b8406fdb",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "exclude_passes": [
@@ -166,9 +186,19 @@
             "video_steps": 25
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "va-runtime_selected",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "va",
+            "mode": "fp8",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "d6cb00db6671a635cebf51c4e11c9309a1ae77c0eb34dfd20586175f5597918c",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "exclude_passes": [
@@ -192,9 +222,19 @@
             "video_steps": 25
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "va-runtime_default",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "va",
+            "mode": "native",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "2b2a3a3ab88aafeabe736c661bbce59d306b1584bdc765d1601fa428b786afb9",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "native",
@@ -214,7 +254,7 @@
         "target": "3.12"
       },
       "release_gaps": [
-        "RTX 5090 installation, model residency, numerical comparison, measured latency, and WebSocket execution are pending actual-device qualification. Task quality, long-episode saturation, and minimum host RAM are not certified."
+        "Recorded requests, episodes and schedules only; task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [],
       "upstream": {
@@ -260,9 +300,9 @@
           "Use the separately declared Linux/x86_64 RTX 5090 profile with the pinned original checkpoint and auxiliary assets. Dependency bytes and vendor contracts are shared with the CUDA 13 x86_64 profiles; prior device results do not qualify this target.",
           "The benchmark uses one RTX 5090. Preserve checkpoint precision, schedule, action horizon and episode state unless selecting an explicit execution policy."
         ],
-        "qualification": null,
+        "qualification": "release/rtx5090/qualification.json",
         "recipe": "release/vendor/rtx5090/vla4/bootstrap.json",
-        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "status": "recorded_rtx5090_e2e_verified_original_install_receipts_retained",
         "upstream_install_guide": "https://github.com/robbyant/lingbot-vla#readme"
       },
       "checkpoint": {
@@ -340,9 +380,19 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "vla4-runtime_selected",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "vla4",
+            "mode": "fp8",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "c4f6fb3b90a0b7b7661703e5f35d510e4e638b8d80c0db0e13c7c9bcfd6bab4f",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "fp8",
@@ -361,9 +411,19 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "vla4-runtime_default",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "vla4",
+            "mode": "native",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "9439d3efa9a8dca263d1059674e38653326012aa78d0946417fec2762da3d119",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "native",
@@ -383,7 +443,7 @@
         "target": "3.12"
       },
       "release_gaps": [
-        "RTX 5090 installation, model residency, numerical comparison, measured latency, and WebSocket execution are pending actual-device qualification. Task quality, long-episode saturation, and minimum host RAM are not certified."
+        "Recorded requests, episodes and schedules only; task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [],
       "upstream": {
@@ -429,9 +489,9 @@
           "Use the separately declared Linux/x86_64 RTX 5090 profile with the pinned original checkpoint and auxiliary assets. Dependency bytes and vendor contracts are shared with the CUDA 13 x86_64 profiles; prior device results do not qualify this target.",
           "The benchmark uses one RTX 5090. Preserve checkpoint precision, schedule, action horizon and episode state unless selecting an explicit execution policy."
         ],
-        "qualification": null,
+        "qualification": "release/rtx5090/qualification.json",
         "recipe": "release/vendor/rtx5090/vla2/bootstrap.json",
-        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "status": "recorded_rtx5090_e2e_verified_original_install_receipts_retained",
         "upstream_install_guide": "https://github.com/robbyant/lingbot-vla-v2#readme"
       },
       "checkpoint": {
@@ -508,9 +568,19 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "vla2-runtime_selected",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "vla2",
+            "mode": "fp8",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "ca624510ede9a9d2517b8096e2e9a3f1def0092b1d37d9fa3a4aabf60a35d002",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "fp8",
@@ -529,9 +599,19 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "vla2-runtime_default",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "vla2",
+            "mode": "native",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "b315f76374ebb4368b1f111c2e017cde3da5d29a803564096a0ab6c7ebec32b3",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "native",
@@ -550,9 +630,19 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "vla2-runtime_selected",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "vla2",
+            "mode": "numeric",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "829b338023730cdb54c7c708fd148cf21c3332402715b88d843105593f2f74d5",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "native",
@@ -572,7 +662,7 @@
         "target": "3.12"
       },
       "release_gaps": [
-        "RTX 5090 installation, model residency, numerical comparison, measured latency, and WebSocket execution are pending actual-device qualification. Task quality, long-episode saturation, and minimum host RAM are not certified."
+        "Recorded requests, episodes and schedules only; task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [
         "deploy.lingbot_vla_v2_policy"
@@ -620,9 +710,9 @@
           "Use the separately declared Linux/x86_64 RTX 5090 profile with the pinned original checkpoint and auxiliary assets. Dependency bytes and vendor contracts are shared with the CUDA 13 x86_64 profiles; prior device results do not qualify this target.",
           "The benchmark uses one RTX 5090. Preserve checkpoint precision, schedule, action horizon and episode state unless selecting an explicit execution policy."
         ],
-        "qualification": null,
+        "qualification": "release/rtx5090/qualification.json",
         "recipe": "release/vendor/rtx5090/pi05/bootstrap.json",
-        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "status": "recorded_rtx5090_e2e_verified_original_install_receipts_retained",
         "upstream_install_guide": "https://github.com/huggingface/lerobot#readme"
       },
       "checkpoint": {
@@ -680,9 +770,19 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "pi05-runtime_selected",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "pi05",
+            "mode": "fp8",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "3a479d0bf3809dbf30d967e3fc43d05c4555df6cae8c91751fda1eb1e01f9216",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "fp8",
@@ -701,9 +801,19 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "pi05-runtime_default",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "pi05",
+            "mode": "native",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "cc73c42392527bd1fcff6ac66edc3be58f1dd7ade5dcbc37efe4e6f5706cecff",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "native",
@@ -723,7 +833,7 @@
         "target": "3.12"
       },
       "release_gaps": [
-        "RTX 5090 installation, model residency, numerical comparison, measured latency, and WebSocket execution are pending actual-device qualification. Task quality, long-episode saturation, and minimum host RAM are not certified."
+        "Recorded requests, episodes and schedules only; task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [],
       "upstream": {
@@ -770,9 +880,9 @@
           "Use the separately declared Linux/x86_64 RTX 5090 profile with the pinned original checkpoint and auxiliary assets. Dependency bytes and vendor contracts are shared with the CUDA 13 x86_64 profiles; prior device results do not qualify this target.",
           "The benchmark uses one RTX 5090. Preserve checkpoint precision, schedule, action horizon and episode state unless selecting an explicit execution policy."
         ],
-        "qualification": null,
+        "qualification": "release/rtx5090/qualification.json",
         "recipe": "release/vendor/rtx5090/groot/bootstrap.json",
-        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "status": "recorded_rtx5090_e2e_verified_original_install_receipts_retained",
         "upstream_install_guide": "https://github.com/NVIDIA/Isaac-GR00T#readme"
       },
       "checkpoint": {
@@ -822,9 +932,19 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "groot-runtime_selected",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "groot",
+            "mode": "fp8",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "0a893f151c9543aecc02dae9b8026e4b627c325971915a1ca54a233c8119cb72",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "fp8",
@@ -843,9 +963,19 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "groot-runtime_default",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "groot",
+            "mode": "native",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "933119b5d55a9da8005d6632a14f52c8cb643853df750d2911d1d050d6608bc0",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "native",
@@ -865,7 +995,7 @@
         "target": "3.12"
       },
       "release_gaps": [
-        "RTX 5090 installation, model residency, numerical comparison, measured latency, and WebSocket execution are pending actual-device qualification. Task quality, long-episode saturation, and minimum host RAM are not certified."
+        "Recorded requests, episodes and schedules only; task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [],
       "upstream": {
@@ -918,9 +1048,9 @@
           "Use the separately declared Linux/x86_64 RTX 5090 profile with the pinned original checkpoint and auxiliary assets. Dependency bytes and vendor contracts are shared with the CUDA 13 x86_64 profiles; prior device results do not qualify this target.",
           "The benchmark uses one RTX 5090. Preserve checkpoint precision, schedule, action horizon and episode state unless selecting an explicit execution policy."
         ],
-        "qualification": null,
+        "qualification": "release/rtx5090/qualification.json",
         "recipe": "release/vendor/rtx5090/edge/bootstrap.json",
-        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "status": "recorded_rtx5090_e2e_verified_original_install_receipts_retained",
         "upstream_install_guide": "https://github.com/NVIDIA/cosmos-framework#readme"
       },
       "checkpoint": {
@@ -982,9 +1112,19 @@
             "steps": 4
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "edge-runtime_selected",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "edge",
+            "mode": "fp8",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "a7d784d716cd1321344496bfab051950ba5d713029b993971c798b3a2323f490",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "fp8",
@@ -1006,9 +1146,19 @@
             "steps": 4
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "edge-runtime_default",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "edge",
+            "mode": "native",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "d19c32107c92ca53b016f19049b0447c73c1c0678ad967fb7097d3528069d1eb",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "native",
@@ -1032,9 +1182,19 @@
           "environment": {
             "IFL_COSMOS3_TIMESTEP_CACHE": "1"
           },
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_cell": "edge-runtime_selected",
+          "evidence_kind": "independently_audited_rtx5090_recorded_e2e",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "cell_identity_note": "Use mode and receipt together; a shared cell name does not relabel NUMERIC as native.",
+            "family": "edge",
+            "mode": "numeric",
+            "path": "release/rtx5090/qualification.json",
+            "receipt_sha256": "5426843d9bbfab44a014e3844d36bfce8d614f5c274b0ec1092bf8131f71ac07",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": true
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "native",
@@ -1054,7 +1214,7 @@
         "target": "3.13"
       },
       "release_gaps": [
-        "RTX 5090 installation, model residency, numerical comparison, measured latency, and WebSocket execution are pending actual-device qualification. Task quality, long-episode saturation, and minimum host RAM are not certified."
+        "Recorded requests, episodes and schedules only; task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [],
       "upstream": {
@@ -1169,9 +1329,16 @@
             "steps": 4
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_kind": "no_offload_pair_excluded_not_tested",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "family": "nano",
+            "mode": "fp8",
+            "path": "release/rtx5090/qualification.json",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": false
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "fp8",
@@ -1193,9 +1360,16 @@
             "steps": 4
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_kind": "no_offload_pair_excluded_not_tested",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "family": "nano",
+            "mode": "native",
+            "path": "release/rtx5090/qualification.json",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": false
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "native",
@@ -1219,9 +1393,16 @@
           "environment": {
             "IFL_COSMOS3_TIMESTEP_CACHE": "1"
           },
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_kind": "no_offload_pair_excluded_not_tested",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "family": "nano",
+            "mode": "numeric",
+            "path": "release/rtx5090/qualification.json",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": false
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "native",
@@ -1381,9 +1562,16 @@
             "step_cache": "dynamic"
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_kind": "capacity_excluded_not_tested",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "family": "dreamzero",
+            "mode": "dynamic-fp8",
+            "path": "release/rtx5090/qualification.json",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": false
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "fp8",
@@ -1424,9 +1612,16 @@
             "step_cache": "dynamic"
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_kind": "capacity_excluded_not_tested",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "family": "dreamzero",
+            "mode": "dynamic-native",
+            "path": "release/rtx5090/qualification.json",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": false
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "native",
@@ -1466,9 +1661,16 @@
             "step_cache": "checkpoint"
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_kind": "capacity_excluded_not_tested",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "family": "dreamzero",
+            "mode": "fp8",
+            "path": "release/rtx5090/qualification.json",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": false
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "fp8",
@@ -1508,9 +1710,16 @@
             "step_cache": "checkpoint"
           },
           "environment": {},
-          "evidence_kind": "target_profile_prepared_install_and_GPU_checks_pending",
+          "evidence_kind": "capacity_excluded_not_tested",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
+          "recorded_e2e_qualification": {
+            "family": "dreamzero",
+            "mode": "native",
+            "path": "release/rtx5090/qualification.json",
+            "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+            "tested": false
+          },
           "runtime_kwargs": {
             "device": "cuda:0",
             "precision": "native",
@@ -1545,6 +1754,10 @@
       }
     }
   ],
+  "recorded_e2e_qualification": {
+    "path": "release/rtx5090/qualification.json",
+    "sha256": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14"
+  },
   "schema": "instinctflash.deployment_profiles.v1",
   "target": "rtx5090"
 }
