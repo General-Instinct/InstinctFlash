@@ -112,8 +112,10 @@ class Cosmos3PolicyAdapter:
                 f"`--target` and Python 3.13, then activate the generated environment.")
         return True, "the model stack imports and the patched cosmos-framework server is present"
 
-    def build_in_process(self, checkpoint, plan, *, device=None, nfe=None):
-        return self._build_droid(checkpoint, device=device, nfe=nfe, precision="native", plan=plan)
+    def build_in_process(self, checkpoint, plan, *, device=None, nfe=None,
+                         seed: int | None = None):
+        return self._build_droid(checkpoint, device=device, nfe=nfe, precision="native",
+                                 plan=plan, seed=seed)
 
     def build_fp8(self, checkpoint, *, device=None, nfe=None):
         return self._build_droid(checkpoint, device=device, nfe=nfe, precision="fp8")
@@ -129,7 +131,8 @@ class Cosmos3PolicyAdapter:
         _require_requested_recipe(plan, "cosmos3_policy")
         return self._build_droid(checkpoint, device=device, nfe=nfe, precision="fp8", plan=plan)
 
-    def _build_droid(self, checkpoint, *, device, nfe, precision, plan=None):
+    def _build_droid(self, checkpoint, *, device, nfe, precision, plan=None,
+                     seed: int | None = None):
         import torch
         from instinctflash.runtime.cosmos_droid import build_droid_service, CosmosDROIDLoop
         from instinctflash.runtime.engine_backend import requested_operating_point
@@ -207,7 +210,8 @@ class Cosmos3PolicyAdapter:
                 _resolve_model_path(checkpoint), precision=precision,
                 format_prompt_as_json=extra["format_prompt_as_json"],
                 steps=steps["action"], guidance=scale if mode == "cfg" else 1.0,
-                seed=int(extra.get("seed", 0)), shift=float(extra.get("shift", 5.0)),
+                seed=int(extra.get("seed", 0) if seed is None else seed),
+                shift=float(extra.get("shift", 5.0)),
                 image_height=int(extra["image_height"]), image_width=int(extra["image_width"]),
                 policy_config={k: extra[k] for k in
                                ("domain_name", "action_chunk_size", "conditioning_fps")},
