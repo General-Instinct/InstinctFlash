@@ -99,7 +99,7 @@ SELECTED_CONTROLS: dict[str, str] = {
     "scripts/reproduce_va_2v4a.py": "63d58ece4d0504a6b4bd2b832d217cc0744dd83e686e774492f23dcd6adb6b9c",
     "release/deployment_profiles.json": "8187485677cb6ab1192960fa80481b913ab8e03d9cab9de8599589fc1038cfac",
     "release/rtx4090/deployment_profiles.json": "500a5982270e3f1e1780e18622d167266dd117fd6b868adf36335d41fc168bce",
-    "release/rtx5090/deployment_profiles.json": "dc56bae52a2e048723451534e49891fc367c5debf6f179da775f09a764770079",
+    "release/rtx5090/deployment_profiles.json": "01c2e9a441bb3cf77abc1e79a6c3dec433bd5d555eb6038a856ff38d40372df9",
     "release/rtx4090/qualification-evidence/0f1f4b56a962ff964b014e78c659db05eb63048c0d5221ca50ad8d14f00fda8c.json": "0f1f4b56a962ff964b014e78c659db05eb63048c0d5221ca50ad8d14f00fda8c",
     "release/rtx4090/qualification-evidence/1db3da741844526604028812306a5fc8301cf11fa190e0ef10bc71f43d389643.json": "1db3da741844526604028812306a5fc8301cf11fa190e0ef10bc71f43d389643",
     "release/rtx4090/qualification-evidence/443249acad43b13c20d72eabb5bfe71923be0bdbb86d6fed1dd34864200de33a.json": "443249acad43b13c20d72eabb5bfe71923be0bdbb86d6fed1dd34864200de33a",
@@ -186,7 +186,7 @@ SELECTED_CONTROLS: dict[str, str] = {
     "scripts/qualify_sm89_fp8.py": "7dd70fc40c3e9998fad2f693645b9c2742d094888d5c420749c7d1b368f83f7b",
     "scripts/qualify_sm120_fp8.py": "7c7240e2f03f37be6bc410b4b713152c3fd0593e3d364f23b47f9e66bb953640",
     "scripts/repair_vendor_wheel.py": "1f62f053a37b29966202111da5262cb3da0464bba2d4697721cce97f1ea310ff",
-    "release/rtx5090/qualification.json": "2ed99d1331bdf5727a77c60b3d092e20f7f2be6992eaff7920dcaf928fe86b14",
+    "release/rtx5090/qualification.json": "ae93eeb9e897f820aeb126d688d5c75a716621df193b39dd288b2a7010a7d699",
     "release/rtx5090/results/evidence/005866b2e79f19e81ea7d3d04fbe01da7263d31af7fde916bbc5b52035d5411c.json": "005866b2e79f19e81ea7d3d04fbe01da7263d31af7fde916bbc5b52035d5411c",
     "release/rtx5090/results/evidence/033b3552d134400728af82c6f8fdef223b91b6ca7a63562a8c6a2e3a9ba01e1f.tar.gz": "033b3552d134400728af82c6f8fdef223b91b6ca7a63562a8c6a2e3a9ba01e1f",
     "release/rtx5090/results/evidence/03b63efada715a003f1833465f25478c9dcb4489026a6750401efae0b020ce8c.json": "03b63efada715a003f1833465f25478c9dcb4489026a6750401efae0b020ce8c",
@@ -273,6 +273,7 @@ SELECTED_CONTROLS: dict[str, str] = {
     "release/rtx5090/results/reproduce_manifest.json": "cce09a82794ef86721deeb7fcc79f023a376d5f87f5e0a3238db29ff65d4dfe4",
     "release/rtx5090/results/results.json": "ca6a72cfa16f64257f94eb43aefea73bfd525f5382d612875c0413dcd6557c9c",
     "release/rtx5090/results/results.rst": "7d97438e3226e6bcb56890208538753f0b37ec5cfe76002ca44d662d92de4932",
+    "release/rtx5090/qualification-evidence/fc7d78ab7d9aea31d306db8e87be16e20a64afed9cdd4ea546ef4b281c3be9b9.json": "fc7d78ab7d9aea31d306db8e87be16e20a64afed9cdd4ea546ef4b281c3be9b9",
 }
 PUBLIC_VENDOR_FILES: dict[str, str] = {
     "release/vendor/rtx4090/cosmos/inference_packaging.patch": "82a8d6596d8ca8daa06ec33390453f205ec535fb1109b8b23a08f5176a6489c7",
