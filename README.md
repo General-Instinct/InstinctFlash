@@ -14,9 +14,10 @@
 
 ## What's new 🔥
 
-- **InstinctFlash is fully open source.** Deploy eight robotics model families through one Runtime, with acceleration kernels and Python / WebSocket serving included. [Get started](#install).
-- **RTX 4090 and RTX 5090 support.** Deploy on your workstation with the same Runtime API used on Jetson Thor. [Setup](INSTALL.rst).
-- **New Jetson Thor benchmarks.** Up to **33.78×** speedup with LingBot-VA @2V/4A, using FP8 and fewer sampling steps. [Results](#results) · [Reproduce](REPRODUCE.rst).
+- **[2026/09/17] RTX 5090 support.** Deploy on your workstation with the same Runtime API used on Jetson Thor. [Setup](INSTALL.rst#rtx-5090) · [Reproduce](REPRODUCE.rst#rtx-5090).
+- **[2026/09/16] RTX 4090 support.** Desktop inference and WebSocket serving with dedicated installation profiles. [Setup](INSTALL.rst#rtx-4090) · [Reproduce](REPRODUCE.rst#rtx-4090).
+- **[2026/09/15] Full-source release.** Eight robotics model families, acceleration kernels, and Python / WebSocket serving through one Runtime. [Get started](#install).
+- **[2026/09/15] Jetson Thor benchmarks.** Up to **33.78×** speedup with LingBot-VA @2V/4A, using FP8 and fewer sampling steps. [Results](#results) · [Reproduce](REPRODUCE.rst).
 
 ## Results
 
@@ -26,15 +27,15 @@ We’ve seen up to **33.78× speedup** with no observed loss in task performance
 
 | Model | PyTorch | InstinctFlash |
 |:--|--:|--:|
-| LingBot-VA | 15506.32 | **2891.74 (5.36×)** · FP8 |
-| ↳ LingBot-VA @2V/4A | 2071.29 | **459.10 (4.51×)** · FP8 |
-| LingBot-VLA-4B | 624.22 | **221.53 (2.82×)** · FP8 |
-| LingBot-VLA-V2-6B | 734.56 | **394.11 (1.86×)** · FP8 |
-| Cosmos3 Edge DROID | 3393.78 | **1048.01 (3.24×)** · NUMERIC |
-| Cosmos3 Nano DROID | 10184.68 | **4772.38 (2.13×)** · NUMERIC |
-| pi05 | 408.58 | **51.85 (7.88×)** · FP8 |
-| GR00T N1.7 | 139.50 | **117.30 (1.19×)** · Native |
-| DreamZero DROID | 23563.08 | **11899.42 (1.98×)** · FP8 |
+| **[LingBot-VA](https://huggingface.co/robbyant/lingbot-va-posttrain-robotwin)** · [code](instinctflash/adapters/lingbot_va.py) | 15506.32 | **2891.74 (5.36×)** · FP8 |
+| ↳ **LingBot-VA @2V/4A** | 2071.29 | **459.10 (4.51×)** · FP8 |
+| **[LingBot-VLA-4B](https://huggingface.co/robbyant/lingbot-vla-4b-posttrain-robotwin)** · [code](examples/lingbot_vla) | 624.22 | **221.53 (2.82×)** · FP8 |
+| **[LingBot-VLA-V2-6B](https://huggingface.co/robbyant/lingbot-vla-v2-6b-robotwin)** · [code](examples/lingbot_vla_v2) | 734.56 | **394.11 (1.86×)** · FP8 |
+| **[Cosmos3 Edge DROID](https://huggingface.co/nvidia/Cosmos3-Edge-Policy-DROID)** · [code](examples/cosmos3_policy) | 3393.78 | **1048.01 (3.24×)** · NUMERIC |
+| **[Cosmos3 Nano DROID](https://huggingface.co/nvidia/Cosmos3-Nano-Policy-DROID)** · [code](examples/cosmos3_policy) | 10184.68 | **4772.38 (2.13×)** · NUMERIC |
+| **[pi05](https://huggingface.co/lerobot/pi05_libero_finetuned_v044)** · [code](examples/pi05_vla) | 408.58 | **51.85 (7.88×)** · FP8 |
+| **[GR00T N1.7](https://huggingface.co/nvidia/GR00T-N1.7-3B)** · [code](examples/groot_n17) | 139.50 | **117.30 (1.19×)** · Native |
+| **[DreamZero DROID](https://huggingface.co/GEAR-Dreams/DreamZero-DROID)** · [code](examples/dreamzero) | 23563.08 | **11899.42 (1.98×)** · FP8 |
 
 VA measures early continuations; each row compares the same schedule.
 The 33.78× headline includes 25V/50A → 2V/4A. Cosmos3 retains UniPC4/CFG3.
