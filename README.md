@@ -14,11 +14,9 @@
 
 ## What's new 🔥
 
-- **RTX 4090 and RTX 5090 support.** Runtime inference and WebSocket serving. [4090 setup](INSTALL.rst#rtx-4090) · [5090 setup](INSTALL.rst#rtx-5090).
-- **Full source and eight model families.** Public install, paired inference and WebSocket serving paths are qualified on Jetson Thor for all eight models below.
-- **Cosmos3 at full UniPC4/CFG3.** Edge: **1048.01 ms**; Nano: **4772.38 ms**, both native precision with NUMERIC optimizations.
-- **LingBot-VA @2V/4A.** **459.10 ms / 4.51×** versus native 2V/4A in early continuations; full 25V/50A FP8: **2891.74 ms**.
-- **pi05 FP8.** **51.85 ms / 7.88×** versus native, retaining NFE10.
+- **InstinctFlash is fully open source.** Deploy eight robotics model families through one Runtime, with acceleration kernels and Python / WebSocket serving included. [Get started](#install).
+- **RTX 4090 and RTX 5090 support.** Deploy on your workstation with the same Runtime API used on Jetson Thor. [Setup](INSTALL.rst).
+- **New Jetson Thor benchmarks.** Up to **33.78×** speedup with LingBot-VA @2V/4A, using FP8 and fewer sampling steps. [Results](#results) · [Reproduce](REPRODUCE.rst).
 
 ## Results
 
