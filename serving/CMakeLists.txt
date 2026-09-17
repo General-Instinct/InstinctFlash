@@ -586,6 +586,19 @@ target_compile_options(flash_rt_kernels PRIVATE
 
 install(TARGETS flash_rt_kernels DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/flash_rt)
 
+if(GPU_ARCH STREQUAL "120")
+  pybind11_add_module(flash_rt_pi05_sm120_fusion
+    csrc/kernels/pi05_sm120_fusion.cu csrc/pi05_sm120_fusion_bindings.cpp)
+  target_include_directories(flash_rt_pi05_sm120_fusion PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/csrc/kernels)
+  target_link_libraries(flash_rt_pi05_sm120_fusion PRIVATE CUDA::cudart)
+  target_compile_options(flash_rt_pi05_sm120_fusion PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr -O3 --ftz=true --prec-div=false --prec-sqrt=false ${GPU_GENCODE}>)
+  set_target_properties(flash_rt_pi05_sm120_fusion PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/flash_rt
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/flash_rt)
+  install(TARGETS flash_rt_pi05_sm120_fusion DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/flash_rt)
+endif()
+
 
 # ──────────────────────────────────────────────────────────────────────
 #  NVFP4 add-on module (separate .so, additive, does NOT touch flash_rt_kernels)

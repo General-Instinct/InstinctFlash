@@ -45,6 +45,7 @@ def test_example_surface_stays_product_shaped():
         "sm120_libero_matched_results.json",
         "sm120_task5_diagnostic_results.json",
         "sm120_frozen_results.json",
+        "sm120_fusion_results.json",
         "reproduce_sm120_libero.py",
         "requirements-sm120.lock",
         "verify_checkpoint_reference.py",

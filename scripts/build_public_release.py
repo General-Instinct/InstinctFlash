@@ -74,6 +74,7 @@ TOOL_FILES = {
     "scripts/summarize_pi05_sm120.py",
     "scripts/analyze_pi05_diagnostic.py",
     "scripts/summarize_pi05_frozen.py",
+    "scripts/summarize_pi05_sm120_fusion.py",
     "examples/pi05_vla/requirements-sm120.lock",
     "examples/pi05_vla/verify_checkpoint_reference.py",
     "examples/pi05_vla/sm120_fp8_results.json",
@@ -82,6 +83,7 @@ TOOL_FILES = {
     "examples/pi05_vla/sm120_libero_matched_results.json",
     "examples/pi05_vla/sm120_task5_diagnostic_results.json",
     "examples/pi05_vla/sm120_frozen_results.json",
+    "examples/pi05_vla/sm120_fusion_results.json",
     "examples/pi05_vla/verify_sm120_fp8.py",
     "examples/pi05_vla/reproduce_sm120_libero.py",
 }
