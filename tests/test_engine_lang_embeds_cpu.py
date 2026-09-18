@@ -48,7 +48,11 @@ class CudaCalls:
     def __getattr__(self, name):
         if name not in self.functions:
             def call(*args):
-                if name in ("cudaMalloc", "cudaMallocManaged"):
+                if name == "cudaGetDevice":
+                    ctypes.cast(args[0], ctypes.POINTER(ctypes.c_int))[0] = 0
+                elif name in ("cudaGraphDestroy", "cudaGraphExecDestroy"):
+                    self.graphs.pop(_address(args[0]))
+                elif name in ("cudaMalloc", "cudaMallocManaged"):
                     pointer = self.handle()
                     self.memory[pointer] = bytearray(_address(args[1]))
                     ctypes.cast(args[0], ctypes.POINTER(ctypes.c_void_p))[0] = pointer
