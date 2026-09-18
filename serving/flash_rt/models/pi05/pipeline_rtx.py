@@ -1280,26 +1280,37 @@ class Pi05Pipeline:
             self.calibrate_fp8()
         self.autotune_gemms()
 
-        self._graph = CUDAGraph()
-        if external_stream_int is None:
-            stream = self._graph.create_stream()
-            stream_int = stream.value or 0
-            stream_handle = stream
-        else:
-            stream_int = int(external_stream_int)
-            stream_handle = ctypes.c_void_p(stream_int)
-        self._graph_stream = stream_handle
+        if self._graph is not None:
+            self._graph.close()
+        self._graph = self._graph_stream = None
+        graph = CUDAGraph()
+        try:
+            if external_stream_int is None:
+                stream = graph.create_stream()
+                stream_int = stream.value or 0
+                stream_handle = stream
+            else:
+                stream_int = int(external_stream_int)
+                stream_handle = ctypes.c_void_p(stream_int)
 
-        # Warmup on the capture stream to stabilize allocations
-        for _ in range(3):
+            # Warmup on the capture stream to stabilize allocations
+            for _ in range(3):
+                self.run_pipeline(stream=stream_int)
+            graph.sync(stream_handle)
+
+            # Capture
+            graph.begin_capture(stream_handle)
             self.run_pipeline(stream=stream_int)
-        self._cudart.cudaStreamSynchronize(stream_handle)
-
-        # Capture
-        self._graph.begin_capture(stream_handle)
-        self.run_pipeline(stream=stream_int)
-        self._graph.end_capture(stream_handle)
-        self._cudart.cudaStreamSynchronize(stream_handle)
+            graph.end_capture(stream_handle)
+            graph.sync(stream_handle)
+        except BaseException:
+            # End a failed capture before returning control to the caller.
+            try:
+                graph.close()
+            except Exception:
+                logger.debug("Failed capture cleanup", exc_info=True)
+            raise
+        self._graph, self._graph_stream = graph, stream_handle
         logger.info("CUDA Graph captured for Pi05Pipeline")
 
     # ══════════════════════════════════════════════════════════════════
