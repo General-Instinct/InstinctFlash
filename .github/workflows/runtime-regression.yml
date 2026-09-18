@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python -m pip install '.[test,eval]'
+      - run: python -m pip install '.[test,eval,serve]'
       - run: >-
           python -m pytest -q tests/test_runtime_regression.py
           tests/test_cosmos_numeric_regression.py tests/test_user_report.py
@@ -30,6 +30,7 @@ jobs:
           tests/test_thor_native_builder.py tests/test_public_schedule_ranking.py
           tests/test_prepare_auxiliary_assets.py tests/test_framework_compare.py
           tests/test_public_cosmos_sde1.py tests/test_public_screen_replay.py
+          tests/test_cosmos_runtime_seed.py
   installed-user-flow:
     runs-on: ubuntu-latest
     steps:

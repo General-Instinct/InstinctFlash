@@ -87,6 +87,7 @@ FP8_METADATA_VALUES = {
         '("dreamzero_causal_qkv_ffn_" if include_ffn else "dreamzero_causal_qkv_") + ThorFP8Linear.recipe',
     ),
     "instinctflash/runtime/h100_fp8.py": ('ThorFP8Linear.recipe', 'self.recipe'),
+    "instinctflash/runtime/sm89_fp8.py": ('linear_type.recipe',),
 }
 # This one assignment combines the two locally produced FP8 installation
 # receipts. Its exact AST is required, including the receiver of the read.

@@ -194,6 +194,8 @@ def test_new_single_cell_recipe_preserves_public_history_protocol():
 
 @pytest.fixture
 def synthetic_validation_capture(tmp_path):
+    if importlib.util.find_spec("numpy") is None:
+        pytest.skip("NumPy is required for synthetic validation captures")
     import numpy as np
 
     parent = Path(__file__).resolve().parents[1] / "eval/va_native_2v4a_2026-09-15"
