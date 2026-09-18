@@ -25,20 +25,20 @@ Prediction p50 on **Jetson Thor** (ms), measured September 15, 2026.
 
 We’ve seen up to **33.78× speedup** with no observed loss in task performance in our real-robot tests.
 
-| Model | PyTorch | InstinctFlash |
-|:--|--:|--:|
-| **[LingBot-VA](https://huggingface.co/robbyant/lingbot-va-posttrain-robotwin)** · [code](instinctflash/adapters/lingbot_va.py) | 15506.32 | **2891.74 (5.36×)** · FP8 |
-| ↳ **LingBot-VA @2V/4A** | 2071.29 | **459.10 (4.51×)** · FP8 |
-| **[LingBot-VLA-4B](https://huggingface.co/robbyant/lingbot-vla-4b-posttrain-robotwin)** · [code](examples/lingbot_vla) | 624.22 | **221.53 (2.82×)** · FP8 |
-| **[LingBot-VLA-V2-6B](https://huggingface.co/robbyant/lingbot-vla-v2-6b-robotwin)** · [code](examples/lingbot_vla_v2) | 734.56 | **394.11 (1.86×)** · FP8 |
-| **[Cosmos3 Edge DROID](https://huggingface.co/nvidia/Cosmos3-Edge-Policy-DROID)** · [code](examples/cosmos3_policy) | 3393.78 | **1048.01 (3.24×)** · NUMERIC |
-| **[Cosmos3 Nano DROID](https://huggingface.co/nvidia/Cosmos3-Nano-Policy-DROID)** · [code](examples/cosmos3_policy) | 10184.68 | **4772.38 (2.13×)** · NUMERIC |
-| **[pi05](https://huggingface.co/lerobot/pi05_libero_finetuned_v044)** · [code](examples/pi05_vla) | 408.58 | **51.85 (7.88×)** · FP8 |
-| **[GR00T N1.7](https://huggingface.co/nvidia/GR00T-N1.7-3B)** · [code](examples/groot_n17) | 139.50 | **117.30 (1.19×)** · Native |
-| **[DreamZero DROID](https://huggingface.co/GEAR-Dreams/DreamZero-DROID)** · [code](examples/dreamzero) | 23563.08 | **11899.42 (1.98×)** · FP8 |
+| Model | Acceleration line | PyTorch | InstinctFlash | Speedup |
+|:--|:--|--:|--:|--:|
+| LingBot-VA | FP8 · 25V/50A | 15506.32 | **2891.74** | **5.36×** |
+| ↳ LingBot-VA | FP8 · 2V/4A | 2071.29 | **459.10** | **4.51×** |
+| LingBot-VLA-4B | FP8 | 624.22 | **221.53** | **2.82×** |
+| LingBot-VLA-V2-6B | FP8 | 734.56 | **394.11** | **1.86×** |
+| Cosmos3 Edge DROID | NUMERIC · UniPC4 / CFG3 | 3393.78 | **1048.01** | **3.24×** |
+| Cosmos3 Nano DROID | NUMERIC · UniPC4 / CFG3 | 10184.68 | **4772.38** | **2.13×** |
+| pi05 | FP8 | 408.58 | **51.85** | **7.88×** |
+| GR00T N1.7 | BITEXACT | 139.50 | **117.30** | **1.19×** |
+| DreamZero DROID | FP8 · 16 steps · dynamic cache | 23563.08 | **11899.42** | **1.98×** |
 
 VA measures early continuations; each row compares the same schedule.
-The 33.78× headline includes 25V/50A → 2V/4A. Cosmos3 retains UniPC4/CFG3.
+The 33.78× headline includes 25V/50A → 2V/4A.
 FP8 and sampling changes are optional.
 
 [Protocol and raw results](eval/public_release_2026-09-15/results.rst) · [Native VA 2V/4A](eval/va_native_2v4a_2026-09-15/README.rst) · [Reproduction commands](REPRODUCE.rst)
