@@ -219,17 +219,23 @@ class DreamZeroAdapter:
         mesh = init_device_mesh("cuda", mesh_shape=(1,), mesh_dim_names=("ip",))
         tag = str(extra.get("embodiment_tag") or "oxe_droid")
         model_path = _resolve_model_path(checkpoint)
-        return _build_owned_native_loop(
+        from .sm120_native import selected
+        native_residency = selected(torch.cuda.get_device_capability(), plan,
+            os.environ.get("IFL_DREAMZERO_SM120_RESIDENCY", "auto"))
+        loop = _build_owned_native_loop(
             model_path,
             lambda path: GrootSimPolicy(
                 embodiment_tag=EmbodimentTag(tag), model_path=str(path),
-                tokenizer_path_override=None, device="cuda", device_mesh=mesh),
+                tokenizer_path_override=None, device="cuda", device_mesh=mesh,
+                **({"lazy_load": True} if native_residency else {})),
             lambda policy: DreamZeroWan225BPolicy(
                 groot_policy=policy,
                 image_height=_get_expected_video_resolution(policy)[0],
                 image_width=_get_expected_video_resolution(policy)[1], embodiment_tag=tag),
             step_cache=step_cache,
+            sm120_residency=native_residency,
         )
+        return loop
 
     def build_fp8(self, checkpoint, *, device=None, nfe=None, plan=None, step_cache=None):
         """Build the native policy, then install the audited causal Q/K/V recipe.
@@ -288,6 +294,7 @@ class _DreamZeroLoop:
         self._checkpoint_view = checkpoint_view
         self._loading_receipt = loading_receipt
         self._step_cache_hook = step_cache_hook
+        self._native_residency = None
 
     def reset(self, **conditioning) -> None:
         if self._wrapper is None:
@@ -315,7 +322,9 @@ class _DreamZeroLoop:
         obs["prompt"] = prompt
         # the wrapper resets itself on a session change; ride our episode counter on its logic
         obs.setdefault("session_id", f"instinctflash-{self._session}")
-        action = self._wrapper.infer(obs)
+        from contextlib import nullcontext
+        with (self._native_residency.request() if self._native_residency else nullcontext()):
+            action = self._wrapper.infer(obs)
         return {"action": np.asarray(action, dtype=np.float32)}
 
     @property
@@ -332,6 +341,7 @@ class _DreamZeroLoop:
             "build": declared,
             "loading": copy.deepcopy(self._loading_receipt),
             "step_cache": self._step_cache_hook.report() if self._step_cache_hook else None,
+            "residency": self._native_residency.report() if self._native_residency else None,
         }
 
     def declaration(self):
@@ -343,6 +353,8 @@ class _DreamZeroLoop:
         return result
 
     def close(self) -> None:
+        if self._native_residency is not None:
+            self._native_residency.close()
         hook = self._step_cache_hook
         released = hook is None
         try:
@@ -360,7 +372,8 @@ class _DreamZeroLoop:
                     self._checkpoint_view = None
 
 
-def _build_owned_native_loop(model_path, policy_factory, wrapper_factory, *, step_cache=None):
+def _build_owned_native_loop(model_path, policy_factory, wrapper_factory, *, step_cache=None,
+                             sm120_residency=False):
     """Keep the checkpoint view alive for the policy, releasing it on all failures.
 
     Full native DiT values load directly as BF16, avoiding the discarded FP32
@@ -373,7 +386,7 @@ def _build_owned_native_loop(model_path, policy_factory, wrapper_factory, *, ste
     config = json.loads((Path(model_path) / "config.json").read_text())
     head_config = config.get("action_head_cfg", {}).get("config", {})
     dit_config = head_config.get("diffusion_model_cfg", {})
-    view, receipt, hook = None, None, None
+    view, receipt, hook, native_owner = None, None, None, None
     try:
         if (head_config.get("train_architecture") == "full"
                 and dit_config.get("_target_") == DIT_TARGET):
@@ -398,11 +411,24 @@ def _build_owned_native_loop(model_path, policy_factory, wrapper_factory, *, ste
             if owned_config["action_head_cfg"].get("_target_") != native_target:
                 raise ValueError("DreamZero native head target changed; re-audit schedule construction")
             owned_config["action_head_cfg"].update(
-                _target_="dreamzero_iwm.schedule.build_head",
+                _target_=("dreamzero_iwm.sm120_native.build_head" if sm120_residency
+                          else "dreamzero_iwm.schedule.build_head"),
                 ifl_dynamic_cache_schedule=step_cache.dynamic,
                 ifl_fixed_dit_steps=step_cache.fixed_steps)
             config_path.write_text(json.dumps(owned_config, indent=2) + "\n")
+        if sm120_residency and step_cache is None:
+            raise ValueError("Native SM120 residency requires a frozen native schedule")
+        if sm120_residency:
+            from .sm120_native import prepare_streaming_view
+            prepare_streaming_view(view.name)
         policy = policy_factory(Path(view.name) if view is not None else Path(model_path))
+        if sm120_residency:
+            from .sm120_native import anchor_policy_device
+            anchor_policy_device(policy)
+            native_owner = policy.trained_model.action_head._instinctflash_native_residency
+            receipt = dict(receipt or {}, streamed_full_checkpoint=True,
+                verified_full_tensors=policy.trained_model._instinctflash_streamed_tensors,
+                scope="Native modules with complete BF16 shard assignment and bounded SM120 weight residency")
         head = policy.trained_model.action_head
         if step_cache is not None:
             # Resolve once in preflight and bind to this owned instance. Native
@@ -416,10 +442,14 @@ def _build_owned_native_loop(model_path, policy_factory, wrapper_factory, *, ste
         declaration = _head_declaration(head)
         if step_cache is not None:
             declaration["step_cache_selection"] = step_cache.to_dict()
-        return _DreamZeroLoop(wrapper, dynamic_cache=bool(head.dynamic_cache_schedule),
-                              build_declaration=declaration,
-                              checkpoint_view=view, loading_receipt=receipt, step_cache_hook=hook)
+        loop = _DreamZeroLoop(wrapper, dynamic_cache=bool(head.dynamic_cache_schedule),
+                             build_declaration=declaration,
+                             checkpoint_view=view, loading_receipt=receipt, step_cache_hook=hook)
+        loop._native_residency = getattr(head, "_instinctflash_native_residency", None)
+        return loop
     except Exception:
+        if native_owner is not None:
+            native_owner.close()
         if hook is not None:
             hook.close()
         if view is not None:

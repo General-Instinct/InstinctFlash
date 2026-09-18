@@ -26,6 +26,13 @@ SOURCE_ROOT_CANDIDATES = (
 DEFAULT_EMBODIMENT = "OXE_DROID_RELATIVE_EEF_RELATIVE_JOINT"
 
 
+def _default_gpu_collate(capability, plan):
+    # Reuse the Thor collator and its six live byte checks. Do not change the
+    # separate experimental GEMM path while qualifying native SM120 execution.
+    return tuple(capability) in {(9, 0), (11, 0)} or (
+        tuple(capability) == (12, 0) and not getattr(plan, "resolved_gemm_backend", None))
+
+
 class GR00TN17Adapter:
     """N1.7: one vision/language backbone pass plus four action-flow steps."""
 
@@ -195,7 +202,7 @@ class GR00TN17Adapter:
         gpu_collate = None
         if _env_flag(
             self.GPU_COLLATE_ENV,
-            default=torch.cuda.get_device_capability() in {(9, 0), (11, 0)},
+            default=_default_gpu_collate(torch.cuda.get_device_capability(), plan),
         ):
             try:
                 from .gpu_collate import install_gpu_collate

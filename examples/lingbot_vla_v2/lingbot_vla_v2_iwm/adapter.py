@@ -158,6 +158,13 @@ class LingBotVLAV2Adapter:
         schedule = {**dict(checkpoint.execution.nfe or {}), **dict(nfe or {})}
         server.vla.model.config.num_steps = int(schedule.get("action", 10))
 
+        from .sm120_native import NativeSDPA, selected
+        if selected(plan, torch.cuda.get_device_capability(), mode,
+                    enabled=_env_flag("IFL_VLA2_SM120_SDPA", default=False)):
+            if os.environ.get(CAPTURE_KILL_SWITCH) == "1":
+                raise ValueError("SM120 native SDPA conflicts with disabled graph capture")
+            server._instinctflash_native_sdpa = NativeSDPA(server.vla.model)
+
         from instinctflash.runtime.precision import install_requested_fp8
         install_requested_fp8(server.vla.model, plan, "lingbot_vla_v2")
         driver = self.install(server, plan, mode=mode, device=dev)
@@ -365,6 +372,8 @@ class _LingBotVLAV2Loop:
             "prefill_graph": bool(prefix and prefix.prefill.graph is not None),
             "prefill_replays": int(prefix.prefill.replays if prefix else 0),
             "ptxas": getattr(self._server, "_instinctflash_ptxas", {}),
+            "native_sm120": (self._server._instinctflash_native_sdpa.report()
+                             if getattr(self._server, "_instinctflash_native_sdpa", None) else None),
         }
 
     def close(self) -> None:
@@ -379,6 +388,9 @@ class _LingBotVLAV2Loop:
         preprocess = getattr(self._server, "_instinctflash_gpu_preprocess", None)
         if preprocess is not None:
             preprocess.close()
+        native_sdpa = getattr(self._server, "_instinctflash_native_sdpa", None)
+        if native_sdpa is not None:
+            native_sdpa.close()
         self._server = None
 
 
@@ -412,6 +424,10 @@ def _release_prefix_graphs_on_fail(recorder, server):
             print("InstinctFlash LingBot-VLA-V2: vision/prefill graphs released with the "
                   "rejected denoise graph — the whole capture arm falls back together.",
                   file=sys.stderr, flush=True)
+        native_sdpa = getattr(server, "_instinctflash_native_sdpa", None)
+        if native_sdpa is not None:
+            native_sdpa.close()
+            server._instinctflash_native_sdpa = None
     return on_verdict
 
 
