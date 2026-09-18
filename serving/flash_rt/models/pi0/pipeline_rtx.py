@@ -1078,7 +1078,15 @@ class Pi0Pipeline:
         assert lang_embeds_np.shape[1] == ENC_D
 
         arr = np.ascontiguousarray(lang_embeds_np)
-        self._lang_embeds_buf = CudaBuffer.from_numpy(arr)
+        buf = getattr(self, "_lang_embeds_buf", None)
+        if buf is not None and buf.nbytes == arr.nbytes:
+            # run_pipeline captures a copy from this address. Keep it alive
+            # across same-length prompt changes and update its contents.
+            buf.upload(arr)
+        else:
+            if buf is not None and getattr(self, "_graph", None) is not None:
+                self._graph = None  # The old source pointer/size is no longer valid.
+            self._lang_embeds_buf = CudaBuffer.from_numpy(arr)
         self._current_prompt_len = prompt_len
 
         self._set_decoder_rope_for_prompt(prompt_len)
