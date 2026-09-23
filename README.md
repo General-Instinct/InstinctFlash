@@ -256,3 +256,40 @@ your package — see [`examples/external_plugin/`](examples/external_plugin/).
       [Results and evidence](eval/edge_defaults_2026-09-06/README.md).
       Execution-bound budget selection is available; the expanded V2 H100
       evaluation remains [SCREEN](eval/precision_evidence_2026-09-06/README.md).
+
+## Acknowledgements
+
+We thank the following projects and their contributors for the code, models, tools,
+and ideas that InstinctFlash builds on:
+
+- **[Cosmos](https://github.com/NVIDIA/cosmos-framework)**,
+  **[DreamZero](https://github.com/dreamzero0/dreamzero)**,
+  **[Isaac GR00T](https://github.com/NVIDIA/Isaac-GR00T)**,
+  **[LingBot-VA](https://github.com/robbyant/lingbot-va)**,
+  **[LingBot-VLA](https://github.com/robbyant/lingbot-vla)**, and
+  **[LingBot-VLA-V2](https://github.com/robbyant/lingbot-vla-v2)** — upstream model
+  implementations and checkpoints.
+- **[FlashAttention](https://github.com/Dao-AILab/flash-attention)** and
+  **[NVIDIA CUTLASS](https://github.com/NVIDIA/cutlass)** — attention kernels,
+  matrix-multiplication templates, and supporting backend code.
+- **[FlashRT](https://github.com/flashrt-project/FlashRT)** — substantial portions
+  of our `serving/` backend are derived from and adapted from FlashRT, including
+  runtime components, CUDA kernels, and weight-processing utilities.
+- **[Hugging Face](https://huggingface.co)**,
+  **[PyTorch](https://github.com/pytorch/pytorch)**, and
+  **[Triton](https://github.com/triton-lang/triton)** — framework, compiler, and model tooling.
+- **[LeRobot](https://github.com/huggingface/lerobot)** — model implementations,
+  preprocessing, and robotics tooling.
+- **[LIBERO](https://github.com/Lifelong-Robot-Learning/LIBERO)**,
+  **[RoboLab](https://github.com/NVlabs/RoboLab)**, and
+  **[RoboTwin](https://github.com/RoboTwin-Platform/RoboTwin)** — simulation environments and
+  evaluation infrastructure.
+- **[msgpack-numpy](https://github.com/lebedov/msgpack-numpy)** and
+  **[OpenPI](https://github.com/Physical-Intelligence/openpi)** — π0/π0.5 model code
+  and client serialization from OpenPI, whose serialization implementation adapts
+  msgpack-numpy.
+- **[vLLM-Omni](https://github.com/vllm-project/vllm-omni)** — design references for
+  KV-cache and conditioning-cache management.
+
+Third-party code and model assets remain subject to their respective licenses.
+See the license and attribution notices accompanying each component.
