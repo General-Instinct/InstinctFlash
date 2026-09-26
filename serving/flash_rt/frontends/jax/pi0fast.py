@@ -500,33 +500,48 @@ class Pi0FastJaxFrontend:
     # -------------------------------------------------------------------
 
     def set_prompt(self, prompt_text, state=None):
-        S_sig = self.sig_S
-        nv = self.num_views
-
-        # Tokenize prefix
         if isinstance(prompt_text, (np.ndarray, list)):
             token_ids = np.asarray(prompt_text, dtype=np.int64)
+            task = None  # Pretokenized prefixes remain caller-controlled.
         else:
             token_ids = self._tokenize_prefix(prompt_text, state)
+            task = prompt_text
 
+        self._set_prefix(token_ids)
+        self._prompt_text = task
+
+    def _set_prefix(self, token_ids, *, reuse_graphs=False):
+        S_sig = self.sig_S
         prompt_len = len(token_ids)
+        # Se must be EVEN for cuBLASLt FP8. Check before changing GPU state.
+        Se = (S_sig + prompt_len + 1) // 2 * 2
+        if Se > self.Se_max:
+            raise ValueError(
+                f"Pi0-FAST prefix length {Se} exceeds capacity {self.Se_max}")
+        actual_lang = Se - S_sig
 
         # Embed prefix tokens
         token_ids_t = torch.from_numpy(token_ids).long().cuda()
         embeds = F.embedding(token_ids_t, self.embedding_weight)
         embeds = embeds * float(self.De ** 0.5)
 
-        # Se must be EVEN for cuBLASLt FP8
-        Se = S_sig + prompt_len
-        if Se % 2 != 0:
-            Se += 1
-        self.Se = Se
-        self.prefill_len = Se  # KV cache positions 0..Se-1 filled by prefill
-        actual_lang = Se - S_sig
         if actual_lang > prompt_len:
             embeds = torch.cat([embeds, embeds[-1:]], dim=0)
+
+        if reuse_graphs and Se == self.Se:
+            # The captured vision graph holds this buffer's address. Replacing
+            # the tensor would leave it reading the previous state embeddings.
+            self._lang_emb.copy_(embeds)
+            self._prefix_token_ids = token_ids.copy()
+            return
+
+        self.Se = Se
+        self.prefill_len = Se  # KV cache positions 0..Se-1 filled by prefill
         self._lang_emb = embeds
         self._S_lang = actual_lang
+        # Full setup replaces calibration scales; infer must calibrate these
+        # graphs with the current observation before replaying prefill.
+        self._real_data_calibrated = False
 
         # RoPE for prefill
         self._enc_rope[:Se].copy_(self._full_rope[:Se])
@@ -545,7 +560,15 @@ class Pi0FastJaxFrontend:
 
         self.graph_captured = True
         self.calibrated = True
-        logger.info("set_prompt done: %d tokens, Se=%d", prompt_len, Se)
+        self._prefix_token_ids = token_ids.copy()
+        logger.info("Prefix ready: %d tokens, Se=%d", prompt_len, Se)
+
+    def _refresh_state(self, state):
+        if state is None or self._prompt_text is None:
+            return
+        token_ids = self._tokenize_prefix(self._prompt_text, state)
+        if not np.array_equal(token_ids, self._prefix_token_ids):
+            self._set_prefix(token_ids, reuse_graphs=True)
 
     def _tokenize_prefix(self, prompt_text, state=None):
         # Match JAX FASTTokenizer.tokenize exactly: prefix ends in ";\n", NOT
@@ -1132,6 +1155,9 @@ class Pi0FastJaxFrontend:
 
     def infer(self, observation, max_steps=None, temperature=0.0):
         t0 = time.perf_counter()
+        # A shape change recaptures vision with dummy images, so refresh before
+        # uploading this observation. Same-shape updates preserve graph storage.
+        self._refresh_state(observation.get('state'))
         nv = self.num_views
         max_steps = max_steps or self.max_decode_steps
 
