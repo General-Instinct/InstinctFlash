@@ -14,7 +14,7 @@
 
 ## What's new 🔥
 
-- **[2026/09/26] InstinctFlash engines.** FP8 pi05, LingBot-VLA, LingBot-VA and GR00T N1.7 now run on InstinctFlash's own engines and Triton kernels on Jetson Thor. [Engines](instinctflash/engines) · [Reproduce](REPRODUCE.rst).
+- **[2026/09/26] Purpose-built engines on Jetson Thor.** FP8 pi05, LingBot-VLA, LingBot-VA and GR00T N1.7 now run on custom engines with fused Triton kernels, with no calibration pass or native build. [Engines](instinctflash/engines) · [Reproduce](REPRODUCE.rst).
 - **[2026/09/17] RTX 5090 support.** Deploy on your workstation with the same Runtime API used on Jetson Thor. [Setup](INSTALL.rst#rtx-5090) · [Reproduce](REPRODUCE.rst#rtx-5090).
 - **[2026/09/16] RTX 4090 support.** Desktop inference and WebSocket serving with dedicated installation profiles. [Setup](INSTALL.rst#rtx-4090) · [Reproduce](REPRODUCE.rst#rtx-4090).
 - **[2026/09/15] Full-source release.** Eight robotics model families, acceleration kernels, and Python / WebSocket serving through one Runtime. [Get started](#install).
