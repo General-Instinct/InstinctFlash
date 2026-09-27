@@ -30,7 +30,8 @@ Both endpoints must attest identical checkpoint bytes and all execution settings
 that pass list. Use `--legacy-passes` on both endpoints to disable default generic rewrites.
 Do not enable NDHWC, FP8, reduced NFE or guidance changes in this campaign.
 
-Use `serve_variant.py --config-name libero --benchmark-receipt <receipt>` with the explicit
+Use `python -m instinctflash.runtime.lingbot_worker --config-name libero --benchmark-receipt <receipt>`
+with the explicit
 `LINGBOT_CKPT` snapshot path. The benchmark entrypoint supplies that path to upstream's LIBERO
 configuration (which otherwise contains a placeholder). The model's existing loader selects
 Torch attention; the downloaded snapshot is not edited. A second endpoint uses the same

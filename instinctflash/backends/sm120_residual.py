@@ -2,8 +2,8 @@
 
 This is the first narrow part of the LingBot-VA SM120 engine.  It replaces two eager chains per
 Transformer block with one CUDA launch while preserving the eager FP32 multiply/add boundaries and
-the final BF16 rounding bit-for-bit.  The raw-pointer ABI mirrors FlashRT and deliberately avoids a
-PyTorch C++ ABI dependency.
+the final BF16 rounding bit-for-bit.  The raw-pointer C ABI deliberately avoids a PyTorch C++ ABI
+dependency.
 """
 
 from __future__ import annotations

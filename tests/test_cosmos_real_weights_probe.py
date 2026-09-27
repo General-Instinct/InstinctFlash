@@ -3,9 +3,11 @@ import importlib.util
 from pathlib import Path
 import pytest
 
-spec = importlib.util.spec_from_file_location(
-    "cosmos_real_weights_probe",
-    Path(__file__).resolve().parents[1] / "eval/cosmos3_edge/probe_real_weights.py")
+_PROBE = Path(__file__).resolve().parents[1] / "eval/cosmos3_edge/probe_real_weights.py"
+if not _PROBE.is_file():
+    pytest.skip("requires the internal evaluation records", allow_module_level=True)
+
+spec = importlib.util.spec_from_file_location("cosmos_real_weights_probe", _PROBE)
 probe = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(probe)
 

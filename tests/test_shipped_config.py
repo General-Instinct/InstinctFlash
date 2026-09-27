@@ -15,9 +15,10 @@ No GPU, no torch, no model. Pure text and registry.
 """
 from __future__ import annotations
 
-import re
 import sys
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -28,6 +29,11 @@ from instinctflash.verify.released import (  # noqa: E402
     served_tier, shipped_configuration, shipped_pids,
 )
 
+# The launchers, serve_variant.py and the shipped-configuration document live with the internal
+# LingBot-VA evaluation records; the checks that read them skip where those records are absent.
+_RECORDS = ROOT / "eval" / "lingbot_va_robotwin"
+requires_records = pytest.mark.skipif(not _RECORDS.is_dir(),
+                                      reason="requires the internal evaluation records")
 LAUNCHERS = ("eval/lingbot_va_robotwin/run_pdd_cert.sh", "eval/lingbot_va_robotwin/run_sweep.sh")
 SERVE = "eval/lingbot_va_robotwin/serve_variant.py"
 
@@ -54,6 +60,7 @@ def test_every_released_pass_has_a_disposition():
         check(bool(d.note.strip()), f"{d.pid} states WHY it holds that status today")
 
 
+@requires_records
 def test_launch_scripts_match_the_registry():
     print("\n=== 2. THE ONE THAT CAUGHT THE REAL BUG: launchers == shipped_configuration() ===")
     want = shipped_configuration()
@@ -74,6 +81,7 @@ def test_launch_scripts_match_the_registry():
                                   f"NOT RECOMMENDED)")
 
 
+@requires_records
 def test_serve_variant_defines_every_shipped_flag():
     print("\n=== 3. every shipped flag actually exists on serve_variant.py ===")
     text = (ROOT / SERVE).read_text()
@@ -81,6 +89,7 @@ def test_serve_variant_defines_every_shipped_flag():
         check(f'"{flag}"' in text, f"serve_variant.py defines {flag}")
 
 
+@requires_records
 def test_not_recommended_passes_say_so_where_a_reader_will_look():
     print("\n=== 4. a NOT RECOMMENDED pass warns at the point of use ===")
     text = (ROOT / SERVE).read_text()
@@ -97,6 +106,7 @@ def test_not_recommended_passes_say_so_where_a_reader_will_look():
                   f"{flag} help warns the reader ({d.pid})")
 
 
+@requires_records
 def test_readme_states_the_same_configuration():
     print("\n=== 5. the README architecture chapter describes the shipped configuration, THIS one ===")
     # This used to assert against the README. The README is now the product front page -- what
@@ -105,8 +115,9 @@ def test_readme_states_the_same_configuration():
     # states the shipped configuration must state THIS one.
     # 2026-08-26: the front-page README sheds serving-flag detail (user decision — the front page
     # is install/load/actions/results). The invariant is unchanged: whatever document states the
-    # shipped configuration must state THIS one. That document is now the LingBot eval README.
-    text = (ROOT / "eval" / "lingbot_va_robotwin" / "README.md").read_text()
+    # shipped configuration must state THIS one. That document is now the LingBot-VA evaluation
+    # README kept with the internal evaluation records.
+    text = (_RECORDS / "README.md").read_text()
     check("shipped_configuration()" in text or "SHIPPED CONFIGURATION" in text.upper(),
           "the LingBot eval README has a shipped-configuration section")
     for flag in shipped_configuration():
@@ -140,7 +151,6 @@ def test_every_pass_module_is_classified():
     is how `forward_scratch` and `static_partition_hoist` sat next to `ring_kv` looking equally live.
     """
     print("\n=== 7. every pass module declares runtime status ===")
-    served_names = {r.name for r in RELEASED}
     # modules that back a registry entry, by the pass's own module name
     registry_backed = {
         "substrate", "conditioning_prefill", "hoist_invariant_casts", "graph_capture",
@@ -160,17 +170,23 @@ def test_every_pass_module_is_classified():
 def main() -> int:
     print(f"shipped: {', '.join(shipped_pids())}  tier {served_tier().name}")
     test_every_released_pass_has_a_disposition()
-    test_launch_scripts_match_the_registry()
-    test_serve_variant_defines_every_shipped_flag()
-    test_not_recommended_passes_say_so_where_a_reader_will_look()
-    test_readme_states_the_same_configuration()
+    if _RECORDS.is_dir():
+        test_launch_scripts_match_the_registry()
+        test_serve_variant_defines_every_shipped_flag()
+        test_not_recommended_passes_say_so_where_a_reader_will_look()
+        test_readme_states_the_same_configuration()
+    else:
+        print("\n=== 2-5 skipped: the internal evaluation records are not present ===")
     test_served_tier_is_stated_honestly()
     test_every_pass_module_is_classified()
     print("\n" + "=" * 78)
     if FAILED:
         print(f"FAILED {len(FAILED)}: {FAILED}")
         return 1
-    print("PASS: the registry, both launch scripts, serve_variant and the README agree.")
+    if _RECORDS.is_dir():
+        print("PASS: the registry, both launch scripts, serve_variant and the README agree.")
+    else:
+        print("PASS: the registry checks agree (launcher and README checks skipped).")
     return 0
 
 

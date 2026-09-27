@@ -56,8 +56,7 @@ Cross-process reproducibility remains unresolved: later native runs differ from
 an earlier run even when the earlier source is restored. A same-process control
 of old/new FP8 scale reduction preserves action bytes for the tested inputs;
 it does not explain the cross-process drift. Current task quality and a controlled
-speedup remain unqualified. See the
-[current evidence](../../eval/thor_precision_completion_2026-09-09/README.md).
+speedup remain unqualified.
 
 ## Optional dynamic step cache
 
@@ -86,13 +85,10 @@ Dynamic DiT counts vary and can exceed the baseline's eight; existing timings
 do not establish how much of the Omni gap comes from this mechanism. This is an
 **OPERATING-POINT with BEHAVIORAL permission and SCREEN evidence**, without a
 task-quality certificate. The final combined CPU suite has 215 passing tests.
-The [Thor screen](../../eval/dynamic_step_cache_integration_2026-09-14/results.md)
-measured 1.78× native and 1.76× FP8 cache speedups, with same-dynamic-policy action/KV
-parity checks. Task-quality qualification relative to the fixed baseline is pending.
-The [runtime guide](../../docs/dynamic-step-cache.md) covers the implemented API,
-reset boundaries and actual-call telemetry. The
-[source audit and design RFC](../../docs/rfc/dynamic-step-cache.md) retain the
-upstream comparison and future integration proposals.
+The Thor screen measured 1.78× native and 1.76× FP8 cache speedups, with
+same-dynamic-policy action/KV parity checks. Task-quality qualification relative
+to the fixed baseline is pending. The [runtime guide](../../docs/dynamic-step-cache.md)
+covers the implemented API, reset boundaries and actual-call telemetry.
 
 `cfg_batch.py` / `verify_cfg_batch.py` / `diag_batch.py` are the CFG-batching research arm
 (gates and honest negative results); they are not part of the served path.

@@ -55,11 +55,8 @@ def repository(tmp_path, monkeypatch):
         put(root, "benchmarks/regression/" + name)
     put(root, "benchmarks/__init__.py")
     put(root, "benchmarks/vla/__init__.py")
-    put(root, builder.WORKER_SOURCE, "value = 'reviewed worker'\n")
-    worker = root / builder.WORKER
-    worker.parent.mkdir(parents=True, exist_ok=True)
-    worker.symlink_to("../../" + builder.WORKER_SOURCE)
-    monkeypatch.setattr(builder, "WORKER_SHA", builder.sha((root / builder.WORKER_SOURCE).read_bytes()))
+    put(root, builder.WORKER, "value = 'reviewed worker'\n")
+    monkeypatch.setattr(builder, "WORKER_SHA", builder.sha((root / builder.WORKER).read_bytes()))
     monkeypatch.setattr(builder, "SELECTED_DATA", {})
     monkeypatch.setattr(builder, "PUBLIC_VENDOR_FILES", {})
     monkeypatch.setattr(builder, "FULL_TEST_FIXTURES", {})
@@ -100,14 +97,14 @@ def test_materializes_only_exact_reviewed_worker_and_preserves_source(repository
     result = builder.create_stage(repository, tmp_path / "stage")
     original = repository / builder.WORKER
     staged = Path(result["source"]) / builder.WORKER
-    assert original.is_symlink() and not staged.is_symlink()
+    assert not original.is_symlink() and not staged.is_symlink()
     assert original.read_bytes() == staged.read_bytes()
     assert result["files"][builder.WORKER]["source_sha256"] == builder.WORKER_SHA
-    assert result["files"][builder.WORKER]["resolved_source_path"] == builder.WORKER_SOURCE
+    assert result["files"][builder.WORKER]["resolved_source_path"] == builder.WORKER
 
 
 def test_worker_changed_bytes_fail_before_creating_output(repository, tmp_path):
-    (repository / builder.WORKER_SOURCE).write_text("changed = True\n")
+    (repository / builder.WORKER).write_text("changed = True\n")
     with pytest.raises(ValueError, match="worker source/hash"):
         builder.create_stage(repository, tmp_path / "stage")
     assert not (tmp_path / "stage").exists()
@@ -211,10 +208,6 @@ def test_deployment_control_alias_is_not_an_additional_source_exception(reposito
 def populate_full_source(repository):
     for name in builder.FULL_FILES:
         put(repository, name, "# explicitly selected public build/test source\n" if name.endswith(".py") else "source fixture\n")
-    put(repository, "serving/pyproject.toml", '[build-system]\nrequires=["setuptools>=64"]\nbuild-backend="setuptools.build_meta"\n[project]\nname="flash-rt"\nversion="0.1.0"\nreadme="README.rst"\n[tool.setuptools.package-data]\n"flash_rt.configs"=["*.yaml"]\n')
-    put(repository, "serving/README.rst", "Explicit serving guide\n")
-    put(repository, "serving/flash_rt/__init__.py")
-    put(repository, "serving/flash_rt/configs/model.yaml", "model: fixture\n")
     put(repository, "examples/cosmos3_sde1/pyproject.toml", '[build-system]\nrequires=["setuptools>=64"]\nbuild-backend="setuptools.build_meta"\n[project]\nname="instinctflash-cosmos3-sde1"\nversion="0.1.0"\n')
     put(repository, "examples/cosmos3_sde1/cosmos3_sde1/__init__.py")
     put(repository, "examples/cosmos3_sde1/instinct_compress/__init__.py")
@@ -225,14 +218,12 @@ def test_full_source_scope_includes_current_internal_code_and_vendor_notices(rep
     included = {
         "instinctflash/train/trainer.py": "value = 1\n",
         "instinctflash/distill/evidence/frontier.json": "{}",
-        "instinctflash/native/bf16/kernel.cu": "// source\n",
-        "serving/csrc/attention/flash_attn_2_src/flash_attn/kernel.h": "// vendored source\n",
-        "serving/csrc/attention/flash_attn_2_src/flash_attn/LICENSE": "original license\n",
-        "serving/training/_vendor/openpi_pi0_pytorch/VENDOR.md": "original provenance\n",
-        "serving/training/_vendor/openpi_pi0_pytorch/LICENSE.openpi": "original upstream license\n",
+        "instinctflash/native/wan_residual_sm120.cu": "// source\n",
+        "instinctflash/native/CMakeLists.txt": "# build\n",
+        "examples/cosmos3_sde1/instinct_compress/LICENSE": "original license\n",
     }
-    excluded = ["serving/third_party/cutlass/include/large.h", "serving/flash_rt/kernel.so",
-                "serving/flash_rt/model.safetensors", "serving/flash_rt/.env", "serving/training/_runs/host_job.py"]
+    excluded = ["instinctflash/native/kernel.so", "instinctflash/runtime/model.safetensors",
+                "instinctflash/runtime/.env", "examples/cosmos3_sde1/cosmos3_sde1/weights.bin"]
     for name, content in included.items():
         put(repository, name, content)
     for name in excluded:
@@ -241,18 +232,17 @@ def test_full_source_scope_includes_current_internal_code_and_vendor_notices(rep
     result = builder.create_stage(repository, tmp_path / "full", scope="full")
     assert set(included) <= result["files"].keys()
     assert not set(excluded) & result["files"].keys()
-    assert result["source_scope"] == "full" and len(result["packages"]) == 9
+    assert result["source_scope"] == "full" and len(result["packages"]) == 8
     assert (Path(result["source"]) / "pyproject.toml").read_bytes() == before
     assert result["files"][builder.PROFILE_MIRROR]["canonical_source_path"] == "release/deployment_profiles.json"
-    assert result["files"]["serving/flash_rt/configs/model.yaml"]["wheel_required"] is True
     assert result["files"]["examples/cosmos3_sde1/instinct_compress/__init__.py"]["wheel_required"] is True
     assert result["publication_ready"] is result["pipeline_validated"] is False
 
 
-def test_full_source_scope_still_rejects_alias_to_excluded_downloaded_tree(repository, tmp_path):
+def test_full_source_scope_still_rejects_alias_to_held_evaluation_tree(repository, tmp_path):
     populate_full_source(repository)
-    target = put(repository, "serving/third_party/private.py", "value = 1\n")
-    (repository / "serving/flash_rt/alias.py").symlink_to(target)
+    target = put(repository, "eval/study/private.py", "value = 1\n")
+    (repository / "instinctflash/alias.py").symlink_to(target)
     with pytest.raises(ValueError, match="held symlink"):
         builder.create_stage(repository, tmp_path / "full", scope="full")
 
@@ -390,10 +380,7 @@ def test_full_staged_rtx_closure_plans_all_eight_without_installs(repository, tm
         "release/vendor/rtx4090/private.json", "release/rtx4090/unrelated.md",
         "release/rtx4090/results/private.log", "scripts/private_wheelhouse.py",
         "release/vendor/rtx5090/private.json", "release/rtx5090/results/private.log"))
-    for relative in ("release/rtx4090/qualification.json", "release/rtx4090/results/results.json",
-                     "release/rtx4090/results/reproduce_manifest.json", "release/rtx4090/results/render_results.py",
-                     "release/rtx5090/qualification.json", "release/rtx5090/results/results.json",
-                     "release/rtx5090/results/reproduce_manifest.json", "release/rtx5090/results/render_results.py"):
+    for relative in ("release/rtx4090/qualification.json", "release/rtx4090/results/results.rst"):
         assert builder.sha((stage / relative).read_bytes()) == CURRENT_CONTROLS[relative]
     assert "scripts/qualify_sm89_fp8.py" in result["files"]
     assert "scripts/qualify_sm120_fp8.py" in result["files"]

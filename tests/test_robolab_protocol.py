@@ -11,8 +11,8 @@ import pytest
 from benchmarks.vla import robolab_protocol as rp
 from instinctflash.verify.certify import Outcome, certify
 
-INVENTORY = Path(__file__).resolve().parents[1] / (
-    "eval/cosmos3_task_quality_2026-09-14/preflight/robolab120_task_inventory.json")
+FIXTURES = Path(__file__).resolve().parents[1] / "benchmarks/vla/fixtures/robolab"
+INVENTORY = FIXTURES / "robolab120_task_inventory.json"
 
 
 @pytest.fixture
@@ -289,8 +289,7 @@ def test_native_renderer_pairing_is_prospective_and_keeps_frozen_legacy_valid(in
     assert native["acceptance"] == legacy["acceptance"]
     assert native["episodes"] == legacy["episodes"]
     assert rp.validate_protocol(native) == rp.digest(native)
-    historical = json.loads((INVENTORY.parent.parent / "rtx_preparation" /
-                             "robolab_smoke_live_bindings_v1.json").read_text())
+    historical = json.loads((FIXTURES / "robolab_smoke_live_bindings_v1.json").read_text())
     assert rp.validate_protocol(historical) == "1328c20ebc76c02eaf02cadedfe9a8e5b1dd8a1c97aa377481382ad6a70e610f"
 
 

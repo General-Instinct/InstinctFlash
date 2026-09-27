@@ -1,298 +1,387 @@
 {
-  "date": "2026-09-15",
-  "models": {
-    "dreamzero": {
-      "GPU_verified_by_package_check": false,
-      "bootstrap_command_executed": true,
-      "checked_packages": 116,
-      "completion_sha256": "5bcc8c5cd5a657e2c5126e011130dc7c39f557bd3c004cafb345747064c6f5ea",
-      "installed_wheels": [
-        {
-          "filename": "dreamzero-1.0.0-py3-none-any.whl",
-          "sha256": "948ee66e437f97c9b1722429a0c0ee1203b8796568ee4d997f4a2c6c5f8ccfec"
-        },
-        {
-          "filename": "dreamzero_iwm-0.1.0-py3-none-any.whl",
-          "sha256": "2b9f097d9012e8f56cc398db69adf0044b6249f16ddf394c2bb867d1ebdc15c2"
-        },
-        {
-          "filename": "flash_rt-0.1.0-py3-none-any.whl",
-          "sha256": "99437d039cc7faab1fa289fad41edbc83084df5f08d914bce5680f8d64c15b68"
-        },
-        {
-          "filename": "instinctflash-0.1.0-py3-none-any.whl",
-          "sha256": "ccc45dda33195ff61bb01ed2740b3bd7bd954bef511b0ba5966402e10afa16c9"
-        }
-      ],
-      "pip_check": true,
-      "pip_check_log_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
-      "status": "fresh_package_checks_passed",
-      "task_quality_certified": false,
-      "uv_pip_check": true,
-      "uv_pip_check_log_sha256": "92ff0cd19072ec0d529512c12adf13bb593d59f4612f1cf8ae19826d5c35b919"
+ "schema": "instinctflash.public_vendor_package_qualification.v2",
+ "date": "2026-09-26/2026-09-27",
+ "time_basis": "Thor-local (UTC-7) dates of each family's window; receipt timestamps are UTC",
+ "target": "Linux aarch64 / Jetson Thor",
+ "scope": "Clean-install package qualification per model (new environment, both package checks, CPU doctor), a static audit for previous-backend artifacts, and a public reproduction run, serving smoke and, where applicable, FP8 endpoint checks, every step under a /proc maps monitor. Latency and task quality are not certified here.",
+ "source_note": "The commit named here is the internal source commit each run cloned. The public release carries the same package, adapter, benchmark and script code without the internal evaluation records; its records, documentation and tests were updated after the runs.",
+ "models": {
+  "pi05": {
+   "status": "fresh_package_checks_passed",
+   "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+   "utc": [
+    "2026-09-27T04:41:18.746857+00:00",
+    "2026-09-27T04:56:32Z"
+   ],
+   "date": "2026-09-26",
+   "environment": "new environment built by scripts/bootstrap_vendor.py from a clean clone of 218c193 without the previous backend; the family's own XDG, Triton and Inductor caches for its install and for its steps; a uv cache created empty for this queue (2026-09-27T04:41:18Z) and shared by its installs",
+   "reproduction": {
+    "mode": "fp8",
+    "extra_mode": null
+   },
+   "uv_cache_previous_backend_entries": 0,
+   "checked_packages": 82,
+   "installed_wheels": [
+    {
+     "filename": "instinctflash-0.1.0-py3-none-any.whl",
+     "sha256": "1c50f59d69bb63663fbb95621ccc7d7ce16718fc59945b12bf1eda4e375d308a"
     },
-    "edge": {
-      "GPU_verified_by_package_check": false,
-      "bootstrap_command_executed": true,
-      "checked_packages": 125,
-      "completion_sha256": "e4df12e4e29de77d466d2d4756ffc9dd1534cfa9bca0870503bf31c80a47adbc",
-      "initial_checked_packages": 121,
-      "installed_wheels": [
-        {
-          "filename": "cosmos3_iwm-0.1.0-py3-none-any.whl",
-          "sha256": "1e57f221c58b728ad1e67742e0aca14bc974254530c88eedfcb26bb1d8ea57f5"
-        },
-        {
-          "filename": "cosmos_framework-1.2.2-py3-none-any.whl",
-          "sha256": "a8d0ddf19e8aeeb53f58b3219d6a129a9791c16d43f8b90b2f0a74a87e775384"
-        },
-        {
-          "filename": "flash_rt-0.1.0-py3-none-any.whl",
-          "sha256": "99437d039cc7faab1fa289fad41edbc83084df5f08d914bce5680f8d64c15b68"
-        },
-        {
-          "filename": "instinctflash-0.1.0-py3-none-any.whl",
-          "sha256": "ccc45dda33195ff61bb01ed2740b3bd7bd954bef511b0ba5966402e10afa16c9"
-        }
-      ],
-      "native_import_dependency_closure": {
-        "GPU_verified": false,
-        "bootstrap_rerun": false,
-        "cpu_full_server_entrypoint_import_passed": true,
-        "cpu_import_receipt_sha256": "1dfe1de469bd3235debe4cc506b48fb5ca2ea39d7944ad89272117c378966768",
-        "evidence": "eval/public_release_2026-09-15/cosmos_missing_dependencies_v1/completed_closure_evidence.json",
-        "evidence_sha256": "bac200917c9f42d51fbfa45e6f017d922bb47c211afcaf21eea6068a90f5b58b",
-        "mandatory_packages": {
-          "boto3": "1.43.80",
-          "pandas": "3.0.5"
-        },
-        "model_constructed": false,
-        "pip_check": true,
-        "pip_check_log_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
-        "shared_stack": "edge/nano",
-        "source_module_origin_kind": "actual installed noneditable public vendor wheel; host path retained in private evidence only",
-        "uv_pip_check": true,
-        "uv_pip_check_log_sha256": "4fdd14c56c6e1d79e4375144c7518931ae6ad2d3a294aeda21e4d8d6b15c692f"
-      },
-      "pip_check": true,
-      "pip_check_log_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
-      "status": "fresh_package_checks_passed",
-      "task_quality_certified": false,
-      "uv_pip_check": true,
-      "uv_pip_check_log_sha256": "135f17c513da621928a0b089f0a3ee51240539f8c5f3c15c895710a06925e9e2"
-    },
-    "groot": {
-      "GPU_verified_by_package_check": false,
-      "bootstrap_command_executed": true,
-      "checked_packages": 121,
-      "completion_sha256": "e7315b5507e3fcc5037d420d8d74294e4b2fb4c74ea93c5a6b5d16a2e9cc42cf",
-      "installed_wheels": [
-        {
-          "filename": "flash_rt-0.1.0-py3-none-any.whl",
-          "sha256": "99437d039cc7faab1fa289fad41edbc83084df5f08d914bce5680f8d64c15b68"
-        },
-        {
-          "filename": "gr00t-0.1.0-py3-none-any.whl",
-          "sha256": "50f10bbdd426a39d542a03450ee2b9345ba4c8294cff72a6d5bd73f987671539"
-        },
-        {
-          "filename": "groot_n17_iwm-0.1.0-py3-none-any.whl",
-          "sha256": "953210dcebc7b6243deb4f91aa2b2d524b546cc9bb1d02617cc94bc4b86f4942"
-        },
-        {
-          "filename": "instinctflash-0.1.0-py3-none-any.whl",
-          "sha256": "ccc45dda33195ff61bb01ed2740b3bd7bd954bef511b0ba5966402e10afa16c9"
-        }
-      ],
-      "pip_check": true,
-      "pip_check_log_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
-      "status": "fresh_package_checks_passed",
-      "task_quality_certified": false,
-      "uv_pip_check": true,
-      "uv_pip_check_log_sha256": "4ccd679bc2732f3d56553fdeb0891467b7f37cff87a1550a3282bb1bd918c057"
-    },
-    "nano": {
-      "GPU_verified_by_package_check": false,
-      "bootstrap_command_executed": false,
-      "checked_packages": 125,
-      "completion_sha256": "e4df12e4e29de77d466d2d4756ffc9dd1534cfa9bca0870503bf31c80a47adbc",
-      "initial_checked_packages": 121,
-      "installed_wheels": [
-        {
-          "filename": "cosmos3_iwm-0.1.0-py3-none-any.whl",
-          "sha256": "1e57f221c58b728ad1e67742e0aca14bc974254530c88eedfcb26bb1d8ea57f5"
-        },
-        {
-          "filename": "cosmos_framework-1.2.2-py3-none-any.whl",
-          "sha256": "a8d0ddf19e8aeeb53f58b3219d6a129a9791c16d43f8b90b2f0a74a87e775384"
-        },
-        {
-          "filename": "flash_rt-0.1.0-py3-none-any.whl",
-          "sha256": "99437d039cc7faab1fa289fad41edbc83084df5f08d914bce5680f8d64c15b68"
-        },
-        {
-          "filename": "instinctflash-0.1.0-py3-none-any.whl",
-          "sha256": "ccc45dda33195ff61bb01ed2740b3bd7bd954bef511b0ba5966402e10afa16c9"
-        }
-      ],
-      "native_import_dependency_closure": {
-        "GPU_verified": false,
-        "bootstrap_rerun": false,
-        "cpu_full_server_entrypoint_import_passed": true,
-        "cpu_import_receipt_sha256": "1dfe1de469bd3235debe4cc506b48fb5ca2ea39d7944ad89272117c378966768",
-        "evidence": "eval/public_release_2026-09-15/cosmos_missing_dependencies_v1/completed_closure_evidence.json",
-        "evidence_sha256": "bac200917c9f42d51fbfa45e6f017d922bb47c211afcaf21eea6068a90f5b58b",
-        "mandatory_packages": {
-          "boto3": "1.43.80",
-          "pandas": "3.0.5"
-        },
-        "model_constructed": false,
-        "pip_check": true,
-        "pip_check_log_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
-        "shared_stack": "edge/nano",
-        "source_module_origin_kind": "actual installed noneditable public vendor wheel; host path retained in private evidence only",
-        "uv_pip_check": true,
-        "uv_pip_check_log_sha256": "4fdd14c56c6e1d79e4375144c7518931ae6ad2d3a294aeda21e4d8d6b15c692f"
-      },
-      "pip_check": true,
-      "pip_check_log_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
-      "shared_environment_with": "edge",
-      "status": "fresh_package_checks_passed",
-      "task_quality_certified": false,
-      "uv_pip_check": true,
-      "uv_pip_check_log_sha256": "135f17c513da621928a0b089f0a3ee51240539f8c5f3c15c895710a06925e9e2"
-    },
-    "pi05": {
-      "GPU_verified_by_package_check": false,
-      "bootstrap_command_executed": false,
-      "checked_packages": 81,
-      "evidence": "Root independent fresh public install and exact shared cuSPARSELt wheel repair; separate model/API/benchmark evidence retained by the reproduction workflow.",
-      "pip_check": true,
-      "scope": "Equivalent fresh pinned package installation executed independently by root; bootstrap command was not rerun over the existing passing environment.",
-      "status": "fresh_package_checks_passed",
-      "task_quality_certified": false,
-      "uv_pip_check": true
-    },
-    "va": {
-      "GPU_verified_by_package_check": false,
-      "bootstrap_command_executed": true,
-      "checked_packages": 72,
-      "completion_sha256": "4a5a3d3aba7cb3a678e2b13be86c15439889f75f20e08d7ec52fd4d1094e9ee2",
-      "installed_wheels": [
-        {
-          "filename": "flash_rt-0.1.0-py3-none-any.whl",
-          "sha256": "99437d039cc7faab1fa289fad41edbc83084df5f08d914bce5680f8d64c15b68"
-        },
-        {
-          "filename": "instinctflash-0.1.0-py3-none-any.whl",
-          "sha256": "ccc45dda33195ff61bb01ed2740b3bd7bd954bef511b0ba5966402e10afa16c9"
-        },
-        {
-          "filename": "lingbot_va-0.0.0-py3-none-any.whl",
-          "sha256": "e072a01896bffcdcdc2134fc2cb5150753e91b29c1e6336eecfa7701afcb4875"
-        }
-      ],
-      "pip_check": true,
-      "pip_check_log_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
-      "status": "fresh_package_checks_passed",
-      "task_quality_certified": false,
-      "uv_pip_check": true,
-      "uv_pip_check_log_sha256": "33cdd57ccb0628897c941f072945ad0533fdb5b118e8ef467b3c261d3a18d668"
-    },
-    "vla2": {
-      "GPU_verified_by_package_check": false,
-      "bootstrap_command_executed": true,
-      "checked_packages": 110,
-      "completion_sha256": "27676fe17a28e6dfb41abd48ec9e28c6600bef2bfef117ca2a77d48f3f6de44a",
-      "initial_checked_packages": 105,
-      "installed_wheels": [
-        {
-          "filename": "flash_rt-0.1.0-py3-none-any.whl",
-          "sha256": "99437d039cc7faab1fa289fad41edbc83084df5f08d914bce5680f8d64c15b68"
-        },
-        {
-          "filename": "instinctflash-0.1.0-py3-none-any.whl",
-          "sha256": "ccc45dda33195ff61bb01ed2740b3bd7bd954bef511b0ba5966402e10afa16c9"
-        },
-        {
-          "filename": "lingbot_vla_v2_iwm-0.1.0-py3-none-any.whl",
-          "sha256": "11dc70fabac18d99d4c4c0f1afc7c1614419ced6e82b140a6f47766e51d9599a"
-        },
-        {
-          "filename": "lingbotvla-0.0.1-py3-none-any.whl",
-          "sha256": "11931c5e4b37d4532b9437ba561c5c504a5c90cbd4719471bffddefc62399c92"
-        }
-      ],
-      "native_import_dependency_closure": {
-        "actual_device_import": {
-          "model_loaded": false,
-          "qualification_actor": "root independent device gate",
-          "receipt_sha256": "186cf2883bb5eedeb473f04fff974f76f24687d2f98cf2ca1b6207882462e41b",
-          "returncode": 0
-        },
-        "bootstrap_rerun": false,
-        "cpu_full_import_status": "deferred_gpu_properties_required",
-        "evidence": "eval/public_release_2026-09-15/vla2_missing_dependencies_v1/completed_closure_evidence.json",
-        "evidence_sha256": "f8eaef80ddb3a3224621a0d6931f58abfddaa84e28754586695837776b932f6c",
-        "mandatory_packages": {
-          "pydantic": "2.13.4",
-          "torchdata": "0.11.0"
-        },
-        "pip_check": true,
-        "pip_check_log_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
-        "scope": "Initial fresh bootstrap preserved, then exact public mandatory dependencies installed additively. CPU doctor never fabricates GPU properties; separate native import uses real device metadata. No model action or quality inference from this dependency gate.",
-        "uv_pip_check": true,
-        "uv_pip_check_log_sha256": "4a8c504becea071d6b8efe192ff6242c02ea92f30c003cc6b92abc529470a637"
-      },
-      "pip_check": true,
-      "pip_check_log_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
-      "status": "fresh_package_checks_passed",
-      "task_quality_certified": false,
-      "uv_pip_check": true,
-      "uv_pip_check_log_sha256": "b11a882c0394a9f382b11ee4731af7b48d47f25726be28eff3647910f4885531"
-    },
-    "vla4": {
-      "GPU_verified_by_package_check": false,
-      "bootstrap_command_executed": true,
-      "checked_packages": 127,
-      "completion_sha256": "bb261648212d80a361fcb285a8851a61bd68743036d86a9c012655363fa6ef15",
-      "initial_checked_packages": 105,
-      "installed_wheels": [
-        {
-          "filename": "flash_rt-0.1.0-py3-none-any.whl",
-          "sha256": "99437d039cc7faab1fa289fad41edbc83084df5f08d914bce5680f8d64c15b68"
-        },
-        {
-          "filename": "instinctflash-0.1.0-py3-none-any.whl",
-          "sha256": "ccc45dda33195ff61bb01ed2740b3bd7bd954bef511b0ba5966402e10afa16c9"
-        },
-        {
-          "filename": "lingbot_vla_iwm-0.1.0-py3-none-any.whl",
-          "sha256": "5e10ab15b33594774c8edbbfcc2940e28f25e6702232169e755557bba0f5e7b1"
-        },
-        {
-          "filename": "lingbotvla-0.0.1-py3-none-any.whl",
-          "sha256": "4780aee9a0d0871c461a4336731c58b1c8da2ca83bd597f4303d294d0c16b03c"
-        }
-      ],
-      "mandatory_native_import_closure": {
-        "closure_receipt_sha256": "d8add3bdfcb172099df187e6c07eb3503383535ab51219959863e08338a38593",
-        "doctor_sha256": "3261e1e6fe0044f1b8c6219f83c168a9916731be99cb3efec6b8b8e141cdc1c2",
-        "ipdb": "0.13.13",
-        "pydantic": "2.13.4",
-        "scope": "Additional exact pinned public dependencies installed into the fresh environment after actual native host imports exposed missing dependencies. Both package checks and native FP8 CPU doctor passed; no model/GPU execution by this check. Initial bootstrap completion is preserved.",
-        "status": "passed_cpu_fp8_doctor",
-        "torchdata": "0.11.0"
-      },
-      "pip_check": true,
-      "pip_check_log_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
-      "status": "fresh_package_checks_passed",
-      "task_quality_certified": false,
-      "uv_pip_check": true,
-      "uv_pip_check_log_sha256": "cd0a55ca45ab2dbc66786bc8ba56db050aaa97285f9980e45ade40dd98035689"
+    {
+     "filename": "pi05_iwm-0.1.0-py3-none-any.whl",
+     "sha256": "80752f26012e4e3946c655231ee142beb77af1328c6dfead1993a62e777e5607"
     }
+   ],
+   "completion_sha256": "0836fb345990373d8e298b8faa735b01200fb7a30a6b3821e50513425911850d",
+   "pip_check": true,
+   "uv_pip_check": true,
+   "cpu_doctor_passed": true,
+   "previous_backend_absent": true,
+   "gpu_runtime_screen": {
+    "reproduction_command": true,
+    "public_reproduction_run": true,
+    "serving_smoke": true,
+    "served_cells": [
+     "selected"
+    ],
+    "fp8_endpoints": null,
+    "receipts": "internal clean-install evidence for this commit and family"
+   },
+   "compiler_wheel": null,
+   "GPU_verified_by_package_check": false,
+   "task_quality_certified": false
   },
-  "schema": "instinctflash.public_vendor_package_qualification.v1",
-  "scope": "Fresh separate public-source inference environments, noneditable package wheels and package metadata checks. CUDA model execution, API/latency and task quality are independent per-model gates.",
-  "target": "Linux aarch64 / Jetson Thor"
+  "vla4": {
+   "status": "fresh_package_checks_passed",
+   "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+   "utc": [
+    "2026-09-27T04:56:37.948276+00:00",
+    "2026-09-27T05:04:51Z"
+   ],
+   "date": "2026-09-26",
+   "environment": "new environment built by scripts/bootstrap_vendor.py from a clean clone of 218c193 without the previous backend; the family's own XDG, Triton and Inductor caches for its install and for its steps; a uv cache created empty for this queue (2026-09-27T04:41:18Z) and shared by its installs",
+   "reproduction": {
+    "mode": "fp8",
+    "extra_mode": null
+   },
+   "uv_cache_previous_backend_entries": 0,
+   "checked_packages": 126,
+   "installed_wheels": [
+    {
+     "filename": "instinctflash-0.1.0-py3-none-any.whl",
+     "sha256": "a4df836e80f563a29c0c0007f33e5822c5197e7a01e44bb746741c656ca6addf"
+    },
+    {
+     "filename": "lingbot_vla_iwm-0.1.0-py3-none-any.whl",
+     "sha256": "3b9bbdcb9e671f549ce0abbd95ad17d164bd5c1d24b5fa1eb8a5acb511cb7cd4"
+    },
+    {
+     "filename": "lingbotvla-0.0.1-py3-none-any.whl",
+     "sha256": "50a7da6ebab74dab8452394d7b92f6b0076457d887f9a50faa53aaffe01c8a31"
+    }
+   ],
+   "completion_sha256": "4307d4a78192ace2c0de34627a1678e5457909c1974ef42a0beb95d291130c60",
+   "pip_check": true,
+   "uv_pip_check": true,
+   "cpu_doctor_passed": true,
+   "previous_backend_absent": true,
+   "gpu_runtime_screen": {
+    "reproduction_command": true,
+    "public_reproduction_run": true,
+    "serving_smoke": true,
+    "served_cells": [
+     "selected"
+    ],
+    "fp8_endpoints": true,
+    "receipts": "internal clean-install evidence for this commit and family"
+   },
+   "compiler_wheel": null,
+   "GPU_verified_by_package_check": false,
+   "task_quality_certified": false
+  },
+  "vla2": {
+   "status": "fresh_package_checks_passed",
+   "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+   "utc": [
+    "2026-09-27T05:05:16.182276+00:00",
+    "2026-09-27T05:14:31Z"
+   ],
+   "date": "2026-09-26",
+   "environment": "new environment built by scripts/bootstrap_vendor.py from a clean clone of 218c193 without the previous backend; the family's own XDG, Triton and Inductor caches for its install and for its steps; a uv cache created empty for this queue (2026-09-27T04:41:18Z) and shared by its installs",
+   "reproduction": {
+    "mode": "fp8",
+    "extra_mode": null
+   },
+   "uv_cache_previous_backend_entries": 0,
+   "checked_packages": 109,
+   "installed_wheels": [
+    {
+     "filename": "instinctflash-0.1.0-py3-none-any.whl",
+     "sha256": "d766a3326532da0a274d21d3f88375169ec9d09a5a631c041ba2fdcc03a6e539"
+    },
+    {
+     "filename": "lingbot_vla_v2_iwm-0.1.0-py3-none-any.whl",
+     "sha256": "5b4a4bd693974dd781234e31b7a48f3f7cd9e2b49dd462f8dcb2737da1567a13"
+    },
+    {
+     "filename": "lingbotvla-0.0.1-py3-none-any.whl",
+     "sha256": "d67d25c5181617011ed6722f82d2fb1399f40695f8c4d0e826b51873c778a794"
+    }
+   ],
+   "completion_sha256": "76e76e0d9b9532b88c921808508df83e1e26b4cb7a8d503f6316ad2eee6f23ac",
+   "pip_check": true,
+   "uv_pip_check": true,
+   "cpu_doctor_passed": true,
+   "previous_backend_absent": true,
+   "gpu_runtime_screen": {
+    "reproduction_command": true,
+    "public_reproduction_run": true,
+    "serving_smoke": true,
+    "served_cells": [
+     "selected"
+    ],
+    "fp8_endpoints": true,
+    "receipts": "internal clean-install evidence for this commit and family"
+   },
+   "compiler_wheel": null,
+   "GPU_verified_by_package_check": false,
+   "task_quality_certified": false
+  },
+  "groot": {
+   "status": "fresh_package_checks_passed",
+   "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+   "utc": [
+    "2026-09-27T05:14:31.851275+00:00",
+    "2026-09-27T05:19:29Z"
+   ],
+   "date": "2026-09-26",
+   "environment": "new environment built by scripts/bootstrap_vendor.py from a clean clone of 218c193 without the previous backend; the family's own XDG, Triton and Inductor caches for its install and for its steps; a uv cache created empty for this queue (2026-09-27T04:41:18Z) and shared by its installs",
+   "reproduction": {
+    "mode": "native",
+    "extra_mode": null
+   },
+   "uv_cache_previous_backend_entries": 0,
+   "checked_packages": 120,
+   "installed_wheels": [
+    {
+     "filename": "gr00t-0.1.0-py3-none-any.whl",
+     "sha256": "9308184b78f3dec2b8a98fbd86c14c0a9d9f1ea8fad3dcaf0955fdecf36f635c"
+    },
+    {
+     "filename": "groot_n17_iwm-0.1.0-py3-none-any.whl",
+     "sha256": "3b3664e54cdc3c331038e3d265974e2978349e3be9f960a2417a081118dbdf55"
+    },
+    {
+     "filename": "instinctflash-0.1.0-py3-none-any.whl",
+     "sha256": "4c7b2275a13f2afb022dec3d665466fb28475607ae85ea35de7cba2133490812"
+    }
+   ],
+   "completion_sha256": "4d34074a3477c47ba25104da66409672a2520e663bca875ad25ff2e2e2e88397",
+   "pip_check": true,
+   "uv_pip_check": true,
+   "cpu_doctor_passed": true,
+   "previous_backend_absent": true,
+   "gpu_runtime_screen": {
+    "reproduction_command": true,
+    "public_reproduction_run": true,
+    "serving_smoke": true,
+    "served_cells": [
+     "selected"
+    ],
+    "fp8_endpoints": true,
+    "receipts": "internal clean-install evidence for this commit and family"
+   },
+   "compiler_wheel": null,
+   "GPU_verified_by_package_check": false,
+   "task_quality_certified": false
+  },
+  "va": {
+   "status": "fresh_package_checks_passed",
+   "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+   "utc": [
+    "2026-09-27T05:19:52.201934+00:00",
+    "2026-09-27T05:37:36Z"
+   ],
+   "date": "2026-09-26",
+   "environment": "new environment built by scripts/bootstrap_vendor.py from a clean clone of 218c193 without the previous backend; the family's own XDG, Triton and Inductor caches for its install and for its steps; a uv cache created empty for this queue (2026-09-27T04:41:18Z) and shared by its installs",
+   "reproduction": {
+    "mode": "fp8",
+    "extra_mode": "2v4a-fp8"
+   },
+   "uv_cache_previous_backend_entries": 0,
+   "checked_packages": 71,
+   "installed_wheels": [
+    {
+     "filename": "instinctflash-0.1.0-py3-none-any.whl",
+     "sha256": "857e35dcb5439a37401415936bd03daac68ad382e1fc4aee0a2a221fe33131fd"
+    },
+    {
+     "filename": "lingbot_va-0.0.0-py3-none-any.whl",
+     "sha256": "d076bfd8accfa1e1bf49bbca091e6e90c20a9a77883232ee664b892a1eeb79e1"
+    }
+   ],
+   "completion_sha256": "df7783f393a2782bdfeaab9f933acfa75bb08800886ef532bb0b4fa46f0ae597",
+   "pip_check": true,
+   "uv_pip_check": true,
+   "cpu_doctor_passed": true,
+   "previous_backend_absent": true,
+   "gpu_runtime_screen": {
+    "reproduction_command": true,
+    "public_reproduction_run": true,
+    "serving_smoke": true,
+    "served_cells": [
+     "va-2v4a-fp8",
+     "va-runtime_selected"
+    ],
+    "fp8_endpoints": true,
+    "receipts": "internal clean-install evidence for this commit and family"
+   },
+   "compiler_wheel": null,
+   "GPU_verified_by_package_check": false,
+   "task_quality_certified": false
+  },
+  "edge": {
+   "status": "fresh_package_checks_passed",
+   "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+   "utc": [
+    "2026-09-27T05:37:59.125286+00:00",
+    "2026-09-27T05:49:43Z"
+   ],
+   "date": "2026-09-26",
+   "environment": "new environment built by scripts/bootstrap_vendor.py from a clean clone of 218c193 without the previous backend; the family's own XDG, Triton and Inductor caches for its install and for its steps; a uv cache created empty for this queue (2026-09-27T04:41:18Z) and shared by its installs",
+   "reproduction": {
+    "mode": "numeric",
+    "extra_mode": null
+   },
+   "uv_cache_previous_backend_entries": 0,
+   "checked_packages": 124,
+   "installed_wheels": [
+    {
+     "filename": "cosmos3_iwm-0.1.0-py3-none-any.whl",
+     "sha256": "9ba8d2d4508b887d300e615b5a44c4d2f3f7102c69c074b53bdaf79a78f72b03"
+    },
+    {
+     "filename": "cosmos_framework-1.2.2-py3-none-any.whl",
+     "sha256": "96a541d92eb2ca243f0d2676135627174a33241daedc3b4dcc61b20dd3380547"
+    },
+    {
+     "filename": "instinctflash-0.1.0-py3-none-any.whl",
+     "sha256": "7664a908de5d86fd0b9d5570795b13136fa27a60481e626634fcf23b4668e89c"
+    }
+   ],
+   "completion_sha256": "49f087e4c94e76b5dfccf96a3296a67f74cd63c1e0ea23ad9a5ace51af35daf9",
+   "pip_check": true,
+   "uv_pip_check": true,
+   "cpu_doctor_passed": true,
+   "previous_backend_absent": true,
+   "gpu_runtime_screen": {
+    "reproduction_command": true,
+    "public_reproduction_run": true,
+    "serving_smoke": true,
+    "served_cells": [
+     "selected"
+    ],
+    "fp8_endpoints": null,
+    "receipts": "internal clean-install evidence for this commit and family"
+   },
+   "compiler_wheel": "triton==3.6.0 (from https://download.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl#sha256=58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09)",
+   "GPU_verified_by_package_check": false,
+   "task_quality_certified": false
+  },
+  "nano": {
+   "status": "fresh_package_checks_passed",
+   "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+   "utc": [
+    "2026-09-27T05:50:12.372175+00:00",
+    "2026-09-27T06:07:54Z"
+   ],
+   "date": "2026-09-26",
+   "environment": "new environment built by scripts/bootstrap_vendor.py from a clean clone of 218c193 without the previous backend; the family's own XDG, Triton and Inductor caches for its install and for its steps; a uv cache created empty for this queue (2026-09-27T04:41:18Z) and shared by its installs",
+   "reproduction": {
+    "mode": "numeric",
+    "extra_mode": null
+   },
+   "uv_cache_previous_backend_entries": 0,
+   "checked_packages": 124,
+   "installed_wheels": [
+    {
+     "filename": "cosmos3_iwm-0.1.0-py3-none-any.whl",
+     "sha256": "732c7afc671c3d00d47ebdbc539030158bd5464b779f2b64d84158801bf7164b"
+    },
+    {
+     "filename": "cosmos_framework-1.2.2-py3-none-any.whl",
+     "sha256": "d4ae1568e7f2aa6127aaf492d9d2aa09dbc0db32a89b2334da4a95cee54d90fc"
+    },
+    {
+     "filename": "instinctflash-0.1.0-py3-none-any.whl",
+     "sha256": "14be61d8d0d0817d9c291e2b99dec5b5d86095edcf96e3469ce486b28932b17f"
+    }
+   ],
+   "completion_sha256": "69b8cf73b09e4718d74b13723c701b6205d03756116ae7e716b9d0ae827d3b8a",
+   "pip_check": true,
+   "uv_pip_check": true,
+   "cpu_doctor_passed": true,
+   "previous_backend_absent": true,
+   "gpu_runtime_screen": {
+    "reproduction_command": true,
+    "public_reproduction_run": true,
+    "serving_smoke": true,
+    "served_cells": [
+     "selected"
+    ],
+    "fp8_endpoints": null,
+    "receipts": "internal clean-install evidence for this commit and family"
+   },
+   "compiler_wheel": "triton==3.6.0 (from https://download.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl#sha256=58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09)",
+   "GPU_verified_by_package_check": false,
+   "task_quality_certified": false
+  },
+  "dreamzero": {
+   "status": "fresh_package_checks_passed",
+   "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+   "utc": [
+    "2026-09-27T06:07:59.993585+00:00",
+    "2026-09-27T07:15:01Z"
+   ],
+   "date": "2026-09-26/2026-09-27",
+   "environment": "new environment built by scripts/bootstrap_vendor.py from a clean clone of 218c193 without the previous backend; the family's own XDG, Triton and Inductor caches for its install and for its steps; a uv cache created empty for this queue (2026-09-27T04:41:18Z) and shared by its installs; dropped before this family's GPU steps",
+   "reproduction": {
+    "mode": "dynamic-fp8",
+    "extra_mode": null
+   },
+   "uv_cache_previous_backend_entries": 0,
+   "checked_packages": 118,
+   "installed_wheels": [
+    {
+     "filename": "dreamzero-1.0.0-py3-none-any.whl",
+     "sha256": "2735821f4bd9f5f26a174c93f4a88ae522c670de41f4b19e8023535d091c6f1d"
+    },
+    {
+     "filename": "dreamzero_iwm-0.1.0-py3-none-any.whl",
+     "sha256": "e85ae8d32d4e1018097529369a7774318ff1c6607cb4f2bf3d235837e8d55666"
+    },
+    {
+     "filename": "instinctflash-0.1.0-py3-none-any.whl",
+     "sha256": "bd49849ddf131a3f5ee2d3df5fa4a5af8561c552ac07609fd16c4ece4c5382ce"
+    }
+   ],
+   "completion_sha256": "3305f872169690e00c5e2f9a6ed6dbea4fcf2394cdbeaee1d3646417cba59045",
+   "pip_check": true,
+   "uv_pip_check": true,
+   "cpu_doctor_passed": true,
+   "previous_backend_absent": true,
+   "gpu_runtime_screen": {
+    "reproduction_command": true,
+    "public_reproduction_run": true,
+    "serving_smoke": true,
+    "served_cells": [
+     "dreamzero-dynamic-fp8"
+    ],
+    "fp8_endpoints": null,
+    "receipts": "internal clean-install evidence for this commit and family"
+   },
+   "compiler_wheel": null,
+   "GPU_verified_by_package_check": false,
+   "task_quality_certified": false
+  }
+ }
 }

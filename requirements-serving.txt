@@ -8,9 +8,11 @@
 #   ~/.venv-lingbot/bin/pip install -r requirements-serving.txt \
 #       --extra-index-url https://download.pytorch.org/whl/cu126
 #
-# NOT installable from here, and both are required:
-#   * the upstream lingbot-va checkout, pointed at by LINGBOT_ROOT (default /home/ubuntu/lingbot-va)
-#   * a `flash_attn` shim on PYTHONPATH if real flash-attn is not built for this box
+# NOT installable from here, but required:
+#   * the upstream lingbot-va checkout, at LINGBOT_ROOT or ~/.cache/instinctflash/lingbot-va
+#
+# A real flash-attn wheel is optional: without one, InstinctFlash adds its import-only `flash_attn`
+# stub (instinctflash/runtime/_shims) to sys.path; this path runs attn_mode='torch' and never calls it.
 #
 # The weights are NOT a dependency. `Runtime.from_pretrained` fetches the package, and the frozen
 # stack resolves from the checkpoint's own `execution.base_weights` pointer.

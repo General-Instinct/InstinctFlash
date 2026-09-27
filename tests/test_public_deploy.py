@@ -44,12 +44,11 @@ def test_rtx4090_catalog_is_distinct_and_all_commands_keep_the_target(catalog):
         assert plan["commands"]["doctor_before_weights"][-2:] == ["--target", "rtx4090"]
         assert "rtx4090" in row["bootstrap"]["command"]
         for mode in row["execution_modes"].values():
-            expected = ("capacity_excluded_not_tested" if row["id"] == "nano"
-                        else "independently_audited_rtx4090_recorded_e2e")
-            assert mode["evidence_kind"] == expected
+            assert mode["evidence_kind"] in {"rtx4090_clean_install_reproduction", "not_measured_on_current_source",
+                                             "rtx4090_capacity_excluded"}
             assert mode["gpu_qualified_by_plan"] is False
             assert mode["task_quality_certified"] is False
-        if row["id"] == "nano":
+        if row["bootstrap"]["status"] != "fresh_rtx4090_clean_install_verified":
             assert row["bootstrap"]["qualification"] is None
             assert all(mode["recorded_e2e_qualification"]["tested"] is False
                        for mode in row["execution_modes"].values())
@@ -57,31 +56,41 @@ def test_rtx4090_catalog_is_distinct_and_all_commands_keep_the_target(catalog):
         deploy.load_profiles(ROOT / "release/deployment_profiles.json", target="rtx4090")
 
 
-@pytest.mark.parametrize("target,excluded_families,tested_modes,excluded_modes", [
-    ("rtx4090", {"nano"}, 20, 3),
-    ("rtx5090", {"dreamzero", "nano"}, 16, 7),
-])
-def test_recorded_rtx_qualification_keeps_capacity_exclusion_unqualified(
-        target, excluded_families, tested_modes, excluded_modes):
-    rtx = deploy.load_profiles(target=target)
+def test_rtx4090_record_binds_every_tested_mode_and_keeps_exclusions_untested():
+    rtx = deploy.load_profiles(target="rtx4090")
     reference = rtx["recorded_e2e_qualification"]
     data = (ROOT / reference["path"]).read_bytes()
     assert hashlib.sha256(data).hexdigest() == reference["sha256"]
     recorded = json.loads(data)
-    assert recorded["requested_scope_recorded_e2e_verified"] is True
-    assert recorded["all_eight_recorded_e2e_verified"] is False
-    assert recorded["task_quality_certified"] is False
-    assert recorded["new_release_wheel_GPU_measured"] is False
-    assert len(recorded["models"]) == 8
-    assert sum(row["recorded_e2e_verified"] for row in recorded["models"].values()) == 8 - len(excluded_families)
-    assert recorded["target"] == target
-    assert sum(len(row["modes"]) for name, row in recorded["models"].items()
-               if name not in excluded_families) == tested_modes
-    excluded = [recorded["models"][family] for family in excluded_families]
-    assert all(row["tested"] is False and row["observed_OOM"] is False for row in excluded)
-    assert sum(len(row["modes"]) for row in excluded) == excluded_modes
-    assert all(mode["tested"] is False and mode["passed"] is False
-               for row in excluded for mode in row["modes"].values())
+    assert recorded["target"] == "rtx4090" and recorded["task_quality_certified"] is False
+    assert len(recorded["commits"]) == 1
+    for row in rtx["models"]:
+        entry = recorded["models"].get(row["id"])
+        for name, mode in row["execution_modes"].items():
+            pointer = mode["recorded_e2e_qualification"]
+            assert pointer["family"] == row["id"] and pointer["mode"] == name
+            if pointer["tested"]:
+                assert entry["status"] == row["bootstrap"]["status"] == "fresh_rtx4090_clean_install_verified"
+                assert pointer["path"] == reference["path"] and pointer["sha256"] == reference["sha256"]
+                cell = entry["runs"][pointer["run"]]["cells"][pointer["cell"]]
+                assert pointer["cell"] == mode["evidence_cell"] and cell["status"] == "passed"
+                assert cell["precision"] == mode["runtime_kwargs"]["precision"]
+                assert all(entry["checks"].values()) and entry["previous_backend_absent"] is True
+            else:
+                assert pointer["path"] is pointer["sha256"] is pointer["cell"] is pointer["run"] is None
+        if entry and entry["status"] == "rtx4090_capacity_excluded":
+            assert entry["tested"] is False and row["bootstrap"]["qualification"] is None
+
+
+def test_rtx5090_profiles_are_pending_requalification():
+    rtx = deploy.load_profiles(target="rtx5090")
+    assert rtx["recorded_e2e_qualification"] is None
+    for row in rtx["models"]:
+        assert row["bootstrap"]["status"] == "rtx5090_clean_install_qualification_pending"
+        assert row["bootstrap"]["qualification"] is None
+        for mode in row["execution_modes"].values():
+            assert mode["recorded_e2e_qualification"]["tested"] is False
+            assert mode["evidence_kind"] == "not_measured_on_current_source"
 
 
 @pytest.mark.parametrize("target", ["rtx4090", "rtx5090"])
@@ -109,13 +118,24 @@ def test_eight_models_six_adapter_packages_seven_backbones(catalog):
             assert len(profile["upstream"]["revision"]) == 40
             assert (ROOT / profile["upstream"]["source_manifest"]).is_file()
         if profile["id"] in {"edge", "nano"}:
-            assert profile["bootstrap"]["status"] == "compiler_wheel_origin_corrected_installation_pending"
-            assert profile["bootstrap"]["prior_recipe_status"] == "fresh_thor_package_checks_passed"
             assert profile["bootstrap"]["compiler_wheel"]["sha256"] == (
                 "58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09"
             )
-        else:
-            assert profile["bootstrap"]["status"] == "fresh_thor_package_checks_passed"
+        # Package status comes only from the clean-install qualification: either pending, or passed
+        # with exactly that run's public record for this model (no status carried over from earlier installs).
+        assert "prior_recipe_status" not in profile["bootstrap"]
+        status = profile["bootstrap"]["status"]
+        assert status in {"clean_install_qualification_pending", "fresh_thor_package_checks_passed"}
+        if status == "fresh_thor_package_checks_passed":
+            clean = profile["bootstrap"]["clean_install"]
+            record = json.loads((ROOT / "release/vendor/qualification.json").read_text())["models"][profile["id"]]
+            assert record["status"] == "fresh_package_checks_passed" and record["commit"] == clean["commit"]
+            assert record["date"] == clean["date"] and record["previous_backend_absent"] is True
+            assert clean["previous_backend_absent"] is True
+            assert clean["checks"] and all(v is not False for v in clean["checks"].values())
+            assert (ROOT / clean["evidence"]).is_file()
+            recipe = json.loads((ROOT / "release/vendor" / profile["id"] / "bootstrap.json").read_text())
+            assert recipe["qualification"]["clean_install"] == {k: clean[k] for k in ("date", "commit", "evidence")}
 
 
 def test_dreamzero_empty_legacy_trt_variable_is_still_an_explicit_request(catalog, monkeypatch):
@@ -145,10 +165,7 @@ def test_checkpoint_and_recipe_values_are_from_actual_matrix(catalog):
             for key, value in cell["expected_runtime_kwargs"].items():
                 assert mode["runtime_kwargs"][key] == value, (profile["id"], name, key)
             for key, value in cell["expected_optimizer_environment"].items():
-                if key == "IFL_BF16_KERNEL_LIBRARY":
-                    assert any(req["name"] == key for req in mode["native_requirements"])
-                else:
-                    assert mode["environment"][key] == value
+                assert mode["environment"][key] == value
     assert model(catalog, "pi05")["checkpoint"]["model_id"] == "lerobot/pi05_libero_finetuned_v044"
 
 
@@ -177,13 +194,13 @@ def test_portable_catalog_and_native_dependency_scope(catalog):
     text = json.dumps(catalog)
     assert "/home/" not in text and "/workspace/" not in text
     edge = deploy.make_plan(model(catalog, "edge"), "numeric")["selected_execution"]
-    nano = deploy.make_plan(model(catalog, "nano"), "numeric")["selected_execution"]
-    assert edge["native_requirements"][0]["name"] == "IFL_BF16_KERNEL_LIBRARY"
+    assert edge["environment"]["IFL_BF16_LINEAR_RELU2"] == "1"
     assert "IFL_BF16_KERNEL_LIBRARY" not in edge["environment"]
-    assert nano["native_requirements"] == []
-    for name in ("vla4", "vla2"):
-        requirements = deploy.make_plan(model(catalog, name), "fp8")["selected_execution"]["native_requirements"]
-        assert any(r["name"] == "flash_rt.flash_rt_fa2" for r in requirements)
+    # FP8 engines and the Edge ReLU^2 linear are Python + Triton: no native artifact to bind.
+    for profile in catalog["models"]:
+        for execution in profile["execution_modes"]:
+            assert deploy.make_plan(profile, execution)["selected_execution"]["native_requirements"] == []
+    assert "IFL_BF16_KERNEL_LIBRARY" not in text
 
 
 def test_planned_cli_configs_match_current_public_parser(catalog, tmp_path):
@@ -252,7 +269,7 @@ def test_successful_cpu_probe_never_claims_gpu_or_fresh_install(catalog):
         return {"checks": [deploy._check("test_CPU_import", True)]}
     report = deploy.doctor(model(catalog, "pi05"), probe_runner=fake)
     assert report["ok"] and report["status"] == "cpu_preflight_passed"
-    assert report["bootstrap_status"] == "fresh_thor_package_checks_passed"
+    assert report["bootstrap_status"] in {"clean_install_qualification_pending", "fresh_thor_package_checks_passed"}
     assert not report["GPU_verified"] and not report["weights_downloaded"]
     assert not report["model_constructed"] and not report["task_quality_certified"]
 

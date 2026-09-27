@@ -4,7 +4,6 @@ from unittest.mock import Mock, patch
 
 import numpy as np
 import pytest
-import torch
 
 from benchmarks.vla.groot_policy_server import Arm, KEYS, startup_observation
 from benchmarks.vla.util import ConfigurationError
@@ -31,16 +30,25 @@ def test_runtime_arms_share_decoding_and_explicit_precision(mode,precision,tier)
     policy.close.assert_called_once()
 
 
-@pytest.mark.parametrize('dtype,replays,reported',[
-    (torch.bfloat16,1,'fp8'),(torch.float8_e4m3fn,0,'fp8'),
-    (torch.float8_e4m3fn,1,'native')])
-def test_fp8_requires_packed_weights_execution_and_matching_stats(dtype,replays,reported):
+GI_BACKEND='fp8_text_gi_action_head_native_vision'
+
+
+@pytest.mark.parametrize('backend,replays,reported',[
+    ('fp8_text_vlsa_native_vision_bf16_dit',1,'fp8'),(GI_BACKEND,0,'fp8'),(GI_BACKEND,1,'native')])
+def test_fp8_requires_gi_action_head_execution_and_matching_stats(backend,replays,reported):
     arm=Arm.__new__(Arm);arm.precision='fp8'
-    loop=SimpleNamespace(_frontend=SimpleNamespace(_vlsa_q_w=[SimpleNamespace(dtype=dtype)]*4),
-                         _runner=SimpleNamespace(replays=replays),backend_stats={'precision':reported})
+    loop=SimpleNamespace(backend_stats={'precision':reported,'backend':backend,'action_head_replays':replays})
     arm.policy=SimpleNamespace(_backend=SimpleNamespace(_loop=loop))
     with pytest.raises(ConfigurationError,match='did not execute'):
         arm.precision_receipt()
+
+
+def test_fp8_receipt_reports_gi_action_head():
+    arm=Arm.__new__(Arm);arm.precision='fp8'
+    loop=SimpleNamespace(backend_stats={'precision':'fp8','backend':GI_BACKEND,'action_head_replays':3})
+    arm.policy=SimpleNamespace(_backend=SimpleNamespace(_loop=loop))
+    receipt=arm.precision_receipt()
+    assert receipt['backend']==GI_BACKEND and receipt['startup_action_head_replays']==3
 
 
 def test_unknown_mode_does_not_silently_load_native():

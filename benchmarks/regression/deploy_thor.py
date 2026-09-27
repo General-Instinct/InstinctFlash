@@ -23,6 +23,10 @@ def main():
     parser.add_argument('--remote-root', required=True)
     parser.add_argument('--python', required=True, help='Existing Thor Cosmos interpreter')
     parser.add_argument('--output-root', type=Path, required=True)
+    parser.add_argument('--fixture', required=True,
+                        help='recorded DROID observation archive, as a path inside the snapshot')
+    parser.add_argument('--reference', required=True,
+                        help='directory with the eager reference constructor upstream.py, as a path inside the snapshot')
     args = parser.parse_args()
     if args.host.startswith('-') or not re.fullmatch(r'[A-Za-z0-9_.@-]+', args.host):
         parser.error('Invalid SSH host')
@@ -56,7 +60,8 @@ def run_once(args):
     remote_path = subprocess.check_output(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15', args.host, 'printf %s "$HOME/.local/bin:$PATH"'], text=True)
     command = 'cd ' + shlex.quote(remote + '/source') + ' && ' + shlex.join([
         'env', 'PATH=' + str(Path(args.python).parent) + ':/usr/local/cuda/bin:' + remote_path,
-        'PYTHONPATH=' + remote + '/source', args.python, '-m', 'benchmarks.regression.run_cosmos', remote + '/results'])
+        'PYTHONPATH=' + remote + '/source', args.python, '-m', 'benchmarks.regression.run_cosmos', remote + '/results',
+        '--fixture', remote + '/source/' + args.fixture, '--reference', remote + '/source/' + args.reference])
     with (local / 'controller.log').open('w') as log:
         run = subprocess.run(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15', args.host, command], stdout=log, stderr=subprocess.STDOUT)
     fetched = subprocess.run(['rsync', '-a', args.host + ':' + remote + '/results/', str(local / 'results')])

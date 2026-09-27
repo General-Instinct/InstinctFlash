@@ -5,8 +5,7 @@ THE FIX FOR THE REJECTION documented in `surface.py`. The region was rejected be
 clone — the region allocates and mutates a Python container per call, so a replay computes with
 the K/V of whatever step the capture was taken from (measured: max |d| 2.116e-01 on a new x_t).
 
-The serving engine's answer (serving/, and every CUDA-graph serving stack): make the memory the
-graph touches STATIC. Here that is one K/V buffer per layer of extent prefix+suffix, allocated
+The answer of every CUDA-graph serving stack: make the memory the graph touches STATIC. Here that is one K/V buffer per layer of extent prefix+suffix, allocated
 once:
 
     slots [0, prefix)                written OUTSIDE the graph, once per chunk (the prefill copy)
@@ -55,10 +54,9 @@ class _TableDense(torch.nn.Module):
     """Stands in for an AdaRMS `dense` projection inside the captured region.
 
     The projection's input is the time conditioning, which for a fixed Euler schedule takes ten
-    values ever — so its output is a per-step CONSTANT. The serving engine precomputes exactly
-    these (step, layer) modulation tables offline and slices them by baked pointer offset
-    (serving/flash_rt/frontends/torch/pi05_rtx.py:371-430, models/pi05/pipeline_rtx.py:422-443);
-    this is the torch-level equivalent: the module returns a static buffer that the step loop
+    values ever — so its output is a per-step CONSTANT. The fused pi05 engine
+    (instinctflash/engines/pi05) precomputes exactly these (step, layer) modulation tables at
+    weight load; this is the torch-level equivalent: the module returns a static buffer that the step loop
     fills OUTSIDE the graph from a table of outputs the REAL projection produced during warmup on
     the same conditioning bytes. The swap moves WHEN the GEMV runs (once per timestep per model
     lifetime, not once per step), never WHAT it produces, so bitexactness is preserved by
@@ -84,13 +82,11 @@ class _TableDense(torch.nn.Module):
 class _StaticKV:
     """The Cache interface `GemmaAttention.update` needs, over fixed-extent buffers.
 
-    This is the same memory discipline the serving engine uses for its enc+dec cache: one
-    fixed-extent K and V per layer, the decoder's fresh entries written AT AN OFFSET into the
-    shared buffer, attention reading the full extent with zero concat and zero copy per step
-    (serving/flash_rt/hardware/rtx/attn_backend.py:249-270 allocates K/V each
-    (layers, enc_seq_max+chunk, 1, head_dim); models/pi05/pipeline_rtx.py:1011-1029 writes the
-    chunk K/V at token offset enc_seq and attends over enc_seq+dec_seq). Here `update` is that
-    offset write — suffix slots at [prefix, prefix+suffix) — and returning the whole buffer is
+    This is the memory discipline of a fused engine's prefix+chunk cache: one fixed-extent K
+    and V per layer, the decoder's fresh entries written AT AN OFFSET into the shared buffer,
+    attention reading the full extent with zero concat and zero copy per step (the fused pi05
+    engine writes the chunk K/V after the prefix and attends over prefix+chunk). Here `update`
+    is that offset write — suffix slots at [prefix, prefix+suffix) — and returning the whole buffer is
     the zero-materialization read. The `torch.cat` upstream keeps in its Q/K/V head-stacking is
     untouched: capture-pool allocations are replay-stable; it is the CACHE join that must not
     reallocate, and here it never does."""

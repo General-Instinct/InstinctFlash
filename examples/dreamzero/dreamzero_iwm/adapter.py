@@ -16,8 +16,7 @@ BEHAVIORAL permission. The pinned vLLM-Omni backend implements the same decision
 video similarity controls reuse of both video and conditional action predictions.
 This changes computation, is off by default and carries no task-quality certificate.
 Native and FP8 share the explicitly selected controller. See
-INSTALL.rst for the API and
-eval/dynamic_step_cache_integration_2026-09-14/audit.json for the bounded
+INSTALL.rst for the API and docs/dynamic-step-cache.md for the bounded
 integration screen; historical H100 timing is not a Thor claim.
 """
 

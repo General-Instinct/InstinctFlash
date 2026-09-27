@@ -3,10 +3,14 @@ import importlib.util
 from pathlib import Path
 
 import pytest
-import torch
-from instinctflash.runtime.h100_fp8 import H100FP8Linear
 
 path = Path(__file__).resolve().parents[1] / 'eval/numeric_extension_2026-09-10/fp8_evidence.py'
+if not path.is_file():
+    pytest.skip('requires the internal evaluation records', allow_module_level=True)
+
+import torch  # noqa: E402
+from instinctflash.runtime.h100_fp8 import H100FP8Linear  # noqa: E402
+
 spec = importlib.util.spec_from_file_location('fp8_projection_evidence', path)
 evidence = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(evidence)

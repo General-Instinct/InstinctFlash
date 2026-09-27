@@ -2,7 +2,7 @@
 """The VA conv-layout autotune site, CPU-checkable parts.
 
 The GPU half -- that the bench measures real kernels and the cache round-trips on real silicon
--- is eval/lingbot_va_robotwin/probe_conv_autotune.py, run on one idle GPU. What is pinned here
+-- is checked by an end-to-end smoke probe run on one idle GPU. What is pinned here
 is the wiring that must hold everywhere: the site's declaration (NUMERIC candidate carries the
 555-episode certificate as evidence, the baseline is the stock layout), the Decision -> ConvPlan
 mapping, the no-CUDA fallback, and the plan surfacing with its tier consequence.

@@ -5,7 +5,7 @@ from instinctflash.backends.bf16_linear import BF16LinearActivation, supports, _
 from instinctflash.planners.planner import Tier
 
 
-def test_permission_precedes_device_or_library_access():
+def test_permission_precedes_device_access():
     with pytest.raises(ValueError, match='numeric'):
         BF16LinearActivation(None, None, activation_name='relu2',
                              plan=SimpleNamespace(tier_ceiling=Tier.BITEXACT))
@@ -41,8 +41,8 @@ def test_raw_op_rejects_cpu_before_pointer_launch():
         _validate(torch.empty(3, 4), torch.empty(8, 4))
 
 
-def test_fallback_does_not_resolve_optional_library(monkeypatch):
-    monkeypatch.setenv('IFL_BF16_KERNEL_LIBRARY', '/not/a/library.so')
-    wrapped = BF16LinearActivation(torch.nn.Linear(4,8), torch.relu, activation_name='relu',
-                                  plan=SimpleNamespace(tier_ceiling=Tier.NUMERIC))
-    assert wrapped(torch.zeros(1,4)).shape == (1,8)
+def test_fallback_needs_no_native_library():
+    wrapped = BF16LinearActivation(torch.nn.Linear(4, 8), torch.relu, activation_name='relu',
+                                   plan=SimpleNamespace(tier_ceiling=Tier.NUMERIC))
+    assert wrapped(torch.zeros(1, 4)).shape == (1, 8)
+    assert wrapped.report()['kernel'] is None

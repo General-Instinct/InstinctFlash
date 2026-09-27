@@ -19,7 +19,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 LINGBOT_ROOT = os.environ.get("LINGBOT_ROOT", "/home/ubuntu/lingbot-va")
 sys.path.insert(0, os.path.join(LINGBOT_ROOT, "wan_va"))
 sys.path.insert(0, LINGBOT_ROOT)
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "eval", "lingbot_va_robotwin"))
+_TRACE = os.path.join(os.path.dirname(__file__), "..", "eval", "lingbot_va_robotwin")
+if not os.path.isfile(os.path.join(_TRACE, "trace_block.py")):
+    import pytest
+    pytest.skip("requires the internal evaluation records", allow_module_level=True)
+sys.path.insert(0, _TRACE)
 
 import torch
 import trace_block

@@ -18,7 +18,7 @@ The two loops are NOT symmetric in what happens to that write:
 
 So in closed-loop serving the action terminal forward is 1 of 10 forwards per cycle at the shipped
 2V/4A operating point (1 of 8 at 2V/2A) whose value is never read. Skipping it outright is bit-exact
-PRE-saturation; `eval/lingbot_va_robotwin/probe_terminal_forward.py` measured max|delta action| = 0.
+PRE-saturation; a terminal-forward skip probe measured max|delta action| = 0.
 
 Why a naive skip was REFUTED (2026-08-09), and what this pass does instead
 -------------------------------------------------------------------------
@@ -31,7 +31,7 @@ first. The action pred write's eviction is a side effect that `clear_pred_cache`
 `clear_pred_cache` rolls back COUNT (drops the pred slots) but not the eviction. With the forward
 skipped, the oldest action block of cycle c-36 survives into the video commit forward of cycle c,
 which then attends 32 stale keys the ON arm never saw. Measured: 0 through cycle ~37, then 0.0297 /
-0.0234 / 0.266 / 0.406 / 0.266 / 0.102 (probe_action_terminal.py docstring).
+0.0234 / 0.266 / 0.406 / 0.266 / 0.102.
 
 This pass therefore elides the FORWARD -- the 30-layer compute, ~1,860 launches -- and REPLAYS ITS
 BOOKKEEPING: the slot allocation with its eviction, and the mask / id / is_pred writes, without the
@@ -39,8 +39,8 @@ K/V write. The K/V those slots would have held is never read: `clear_pred_cache`
 before the next forward, and the action commit of the same cycle overwrites them before any later
 read window includes them. See `reserve_provisional_slots` for the two allocator variants (stock
 mask allocator; `RingKVAddressing` interval ring). Traced to be bit-exact past the wrap; the GPU A/B
-that decides the tier is `eval/lingbot_va_robotwin/probe_action_terminal_elision.py`, and the
-allocator-level proof is `tests/test_ring_allocator.py::test_elision_bookkeeping`.
+that decides the tier is the wrap-crossing ABBA run recorded below, and the allocator-level proof is
+`tests/test_ring_allocator.py::test_elision_bookkeeping`.
 
 Two fail-closed gates, both required
 ------------------------------------
@@ -306,7 +306,7 @@ class ActionTerminalForwardElision:
     hardware = HardwareReq()            # a control-flow change; no arch requirement
     requires_capabilities = frozenset({"backbone:wan_va"})
 
-    #: True since the wrap-crossing A/B (probe_action_terminal_elision.py, 2026-09-02) was recorded in
+    #: True since the wrap-crossing A/B (2026-09-02) was recorded in
     #: verify/released.py as P010. While False the planner never auto-applies the pass and the CLI flag
     #: is the only way in; set it back to False if the vendor server or the ring allocator changes and
     #: the A/B has not been re-run.
@@ -318,7 +318,7 @@ class ActionTerminalForwardElision:
             return PassResult(
                 self.name, False, PlanTier.BITEXACT,
                 "opt-in until the wrap-crossing A/B is recorded: enable with "
-                "serve_variant --action-terminal-elision", params=app.params)
+                "the LingBot worker's --action-terminal-elision", params=app.params)
         expected = "one forward per cycle (the action pred-commit): 1 of 10 at 2V/4A, 1 of 8 at 2V/2A"
         if app.applies and deployment.device is not None:
             expected += f" (cost model: {self.expected_delta_ms(spec, deployment.device):.1f} ms)"
@@ -358,7 +358,7 @@ class ActionTerminalForwardElision:
                     "gates": ["message_pattern", f"{VIDEO_EXEC_STEP_FIELD}=={VIDEO_EXEC_STEP_REQUIRED}"]})
 
     def expected_delta_ms(self, spec: AdapterSpec, device: DeviceProfile) -> float:
-        """One DiT forward per cycle. MEASURED on H100 (probe_action_terminal_elision.py, ABBA): 22.9 ms on
+        """One DiT forward per cycle. MEASURED on H100 (wrap-crossing ABBA A/B): 22.9 ms on
         the shipped chain at 2V/4A@w5, 23.6 at 2V/2A@w1, ~35 on the stock allocator. Thor: 68.4 ms is the
         per-forward slope of the h2 design's two-point fit (section 1.3) -- PROJECTED, not measured.
         Any other device is unmeasured and gets the H100 figure."""

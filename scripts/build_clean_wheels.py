@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Freeze package sources outside the checkout and build core, adapter and serving wheels.
+"""Freeze package sources outside the checkout and build core and adapter wheels.
 
 Tracked Markdown is read from HEAD. Untracked Markdown, evaluation receipts,
 build directories and native binaries are excluded. Native binaries may only
@@ -28,9 +28,8 @@ PACKAGES = {
     "groot_n17_iwm": "examples/groot_n17",
     "dreamzero_iwm": "examples/dreamzero",
     "cosmos3_iwm": "examples/cosmos3_policy",
-    "flash_rt": "serving",
 }
-SOURCE_ROOTS = {"instinctflash", "benchmarks", "examples", "serving", "scripts", "tests"}
+SOURCE_ROOTS = {"instinctflash", "benchmarks", "examples", "scripts", "tests"}
 ROOT_FILES = {"pyproject.toml", "setup.py", "setup.cfg", "MANIFEST.in", "LICENSE", "LICENSE.txt",
               "LICENSE.rst", "NOTICE", "INSTALL.rst", "uv.lock", ".gitignore"}
 GENERATED_PARTS = {".git", "__pycache__", "build", "dist", "results", "logs", "runs",
@@ -51,8 +50,6 @@ def _source_file(relative: str) -> bool:
         return False
     if path.suffix.lower() in EXCLUDED_SUFFIXES or re.search(r"\.so(?:\.\d+)*$", path.name):
         return False
-    if path.parts[:3] == ("serving", "third_party", "cutlass"):
-        return False
     if len(path.parts) == 1:
         return path.name in ROOT_FILES or (path.name.startswith("requirements") and path.suffix in {".txt", ".in"})
     return path.parts[0] in SOURCE_ROOTS
@@ -62,7 +59,7 @@ def _native_destination(relative: str) -> bool:
     path = PurePosixPath(relative)
     return (not path.is_absolute() and "\\" not in relative
             and not any(part in {"", ".", ".."} for part in relative.split("/"))
-            and path.parts[:2] in {("serving", "flash_rt"), ("instinctflash", "native")}
+            and path.parts[:2] == ("instinctflash", "native")
             and bool(re.search(r"\.so(?:\.\d+)*$", path.name)))
 
 
@@ -161,8 +158,8 @@ def build_wheels(manifest: dict, output: Path, *, python: str) -> None:
         if len(created) != 1:
             raise RuntimeError(f"{name}: expected exactly one new wheel, found {created}")
         wheel = created.pop()
-        has_native = any(path.startswith("serving/flash_rt/" if name == "flash_rt" else "instinctflash/")
-                         for path in manifest["native_files"]) if name in {"flash_rt", "instinctflash"} else False
+        has_native = name == "instinctflash" and any(path.startswith("instinctflash/")
+                                                     for path in manifest["native_files"])
         if has_native and wheel.name.endswith("-any.whl"):
             raise RuntimeError(f"native binaries were packaged into a platform-independent wheel: {wheel.name}")
         manifest["wheels"].append({"package": name, "path": str(wheel), "bytes": wheel.stat().st_size,

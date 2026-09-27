@@ -34,7 +34,7 @@ def prepare(groot_root, libero_root, output, *, task=0, seed=9173):
     for key, value in loaded.items():
         if value.dtype != snapshots[1][key].dtype or value.tobytes() != snapshots[1][key].tobytes():
             raise ConfigurationError('startup observation bytes changed on serialization')
-    report = dict(purpose='calibration/startup only; exclude this task/seed from evaluation',
+    report = dict(purpose='startup probe only; exclude this task/seed from evaluation',
                   suite='libero_10', task=task, seed=seed, prompt=prompt,
                   observation_sha256=sha256_file(path), native_observation_digest=digests[0],
                   repeated_native_reset_byte_equal=True,

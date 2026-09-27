@@ -11,6 +11,8 @@ import pytest
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "eval/user_e2e_2026-09-14/assemble_provenance.py"
+if not SCRIPT.is_file():
+    pytest.skip("requires the internal evaluation records", allow_module_level=True)
 SPEC = importlib.util.spec_from_file_location("assemble_user_provenance", SCRIPT)
 ASSEMBLER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ASSEMBLER)

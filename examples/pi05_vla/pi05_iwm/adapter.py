@@ -127,9 +127,10 @@ class Pi05Adapter:
         if isinstance(op, dict):
             notes["tf32_hardware"] = op.get("hardware")
         # ACTION geometry, for the planner's engine gate (one rule, two surfaces: the runtime's
-        # EngineBackend enforces the same fact via the same helper). The engine's pi05 frontend
-        # serves LIBERO's 7-dim actions as built and used to silently truncate a 32-dim
-        # checkpoint's chunks to (10, 7); the pass can only decline that at plan time if the
+        # EngineBackend enforces the same fact via the same helper). The GI pi05 engine serves
+        # declared action dims 1..32 (PI05_ENGINE_MAX_ACTION_DIM); an earlier engine frontend
+        # served LIBERO's 7-dim actions as built and silently truncated a 32-dim checkpoint's
+        # chunks to (10, 7). The pass can only decline an unsupported geometry at plan time if the
         # declared dimensionality is a fact on the spec. Unresolved stays fail-closed at the
         # pass: notes carry the reason instead of a number.
         from instinctflash.runtime.engine_backend import declared_action_dim
@@ -502,7 +503,8 @@ def _neutralize_compile_model_on_sm110a(config, device_capability) -> bool:
 
     ``lerobot/pi05_libero_finetuned_v044`` publishes ``compile_model: true`` in its config, and
     on Thor (sm_110a) ``torch.compile`` dies inside triton with ``ptxas-blackwell: 'sm_110a' is
-    not defined`` — triton simply cannot emit for this arch (established; the previous
+    not defined`` — the assembler bundled with the Triton wheel rejects this arch, and compile has
+    no Thor qualification with a Thor-capable ptxas either (established; the previous
     workaround was ``TORCH_COMPILE_DISABLE=1`` in the caller's environment, which nobody who
     just loads the checkpoint knows to set). ``compile_model`` is a publisher's deployment
     assumption, not model semantics: the eager module computes the same function, so
@@ -517,9 +519,9 @@ def _neutralize_compile_model_on_sm110a(config, device_capability) -> bool:
         return False
     config.compile_model = False
     print("InstinctFlash pi05: the checkpoint publishes compile_model=true, but torch.compile "
-          "is dead on this device (sm_110a: triton fails with \"ptxas-blackwell: 'sm_110a' is "
-          "not defined\"). compile_model neutralized — running the eager module, which computes "
-          "the same function without the crash.")
+          "is not qualified on this device (sm_110a: Triton's bundled assembler fails with "
+          "\"ptxas-blackwell: 'sm_110a' is not defined\"). compile_model neutralized — running "
+          "the eager module, which computes the same function without the crash.")
     return True
 
 

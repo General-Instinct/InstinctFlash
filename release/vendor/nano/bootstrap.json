@@ -18,7 +18,7 @@
     "bytes": 176135525,
     "distribution": "triton",
     "installation_scope": "Install this complete official cp313 aarch64 wheel. The same-version PyPI build has different compiler libraries; do not swap individual native files.",
-    "qualification_scope": "Source-origin pin and CPU command checks only; numerical impact and fresh installation remain separate gates.",
+    "qualification_scope": "Source-origin pin. Installed by the 2026-09-26 clean install (release/vendor/qualification.json) and exercised by its NUMERIC reproduction run and serving smoke; its numerical difference from the PyPI build was not measured.",
     "sha256": "58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09",
     "upstream_source": "Cosmos pyproject.toml tool.uv.sources.triton selects the pytorch index.",
     "url": "https://download.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl",
@@ -30,7 +30,7 @@
   },
   "explicit_exclusions": [
     "Training, hardware robot drivers, visualization UI, vendor TensorRT builders, CUDA source compilation are not installed by this inference-only bootstrap.",
-    "FlashAttention/native acceleration remains a separately built and qualified dependency where selected.",
+    "FlashAttention and other upstream compiled dependencies come only from the pinned wheels above; the FP8 engines and Triton kernels ship in the InstinctFlash package and compile on first GPU use.",
     "openpi-client/openpi-server are required only by the upstream standalone websocket main(); InstinctFlash uses its own public websocket server and calls the native policy class directly. They are not imported by that policy module at import time."
   ],
   "family": "nano",
@@ -64,9 +64,13 @@
   "qualification": {
     "GPU_verified": false,
     "evidence": "release/vendor/qualification.json",
-    "prior_recipe_status": "fresh_package_checks_passed",
-    "status": "compiler_wheel_origin_corrected_installation_pending",
-    "task_quality_certified": false
+    "status": "fresh_package_checks_passed",
+    "task_quality_certified": false,
+    "clean_install": {
+      "date": "2026-09-26",
+      "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+      "evidence": "release/vendor/qualification.json"
+    }
   },
   "requirements": {
     "path": "nano/inference_requirements.txt",

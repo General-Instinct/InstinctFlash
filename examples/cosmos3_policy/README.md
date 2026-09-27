@@ -12,7 +12,6 @@ use checked pointwise fusion and shared-pool decoder graphs; Nano also reuses
 its action-only weight loader. Matched upstream A / candidate / upstream B runs
 measured **3,398 → 2,554 ms (1.33×)** for Edge and **10,237 → 8,673 ms (1.18×)**
 for Nano, with byte-identical complete actions on all recorded inputs.
-[Results and reproduction](../../eval/cosmos3_thor_2026-09-11/README.md) ·
 [Automatic regression](../../benchmarks/regression/README.md).
 
 FP8 remains an explicit separate choice. H100 defaults are unchanged. The
@@ -57,7 +56,6 @@ On Thor, `IFL_COSMOS3_CONDITIONING_CACHE=1` enables optional native text-conditi
 reuse through the same Runtime interface. It checks the upstream source and actual
 first-use output bytes before cached replay, falls back on rejection, and reports
 admission/check/rejection statistics. It uses extra memory and is off by default in BITEXACT mode.
-[Runtime measurements and regression](../../eval/cosmos3_thor_2026-09-11/runtime-conditioning/README.md).
 
 For faster native **BF16** on Thor, explicitly permit numerical transformations:
 
@@ -76,14 +74,13 @@ BITEXACT default remains available. Numerical changes are **not** a task-quality
 certificate; backend statistics report the selected route and screening status.
 Matched Thor p50: **Edge 2469 → 1390 ms (1.78×)** and
 **Nano 8305 → 5537 ms (1.50×)** versus our strict path with the same cache enabled.
-[Measurements and action differences](../../eval/cosmos3_thor_2026-09-12/runtime-numeric/README.md) ·
 [Paired numerical regression](../../benchmarks/regression/README.md#native-numerical-screen).
 
 For explicit FP8, add `precision="fp8"` to the same Runtime call, or `--fp8`
 to `instinctflash serve`. On Thor this selects FP8 Q/K/V and dense MLP projections in both MoT towers,
 while preserving native vision, attention, output projections, processors and
 schedule. H100 retains the Q/K/V recipe. Omit it for native precision. The expanded
-Thor recipe requires its own quality evaluation; see the [execution scope](../../eval/thor_fp8_complete_2026-09-10/PROTOCOL.md).
+Thor recipe requires its own quality evaluation.
 
 The input `state` contains seven joint positions and one gripper position in the
 native RoboLab convention. The service owns gripper conversion. Native RoboLab
@@ -144,9 +141,8 @@ video, and sound bypass or refuse the optimization.
 
 The cache defaults on only for SM120 and can be disabled with
 `IFL_COSMOS3_PROMPT_KV_CACHE=0`. Other architectures retain their previous default unless the
-operator explicitly opts in. Reproduce with
-`eval/cosmos3_edge_5090/benchmark_persistent_text_kv.py`; the ABBA evidence and rejected graph
-ablations are in `eval/cosmos3_edge_5090/persistent_text_kv_results.json`.
+operator explicitly opts in. CUDA-graph alternatives screened under the same protocol were
+rejected: capture failed, actions differed numerically, or latency did not improve.
 
 ## RTX 5090 Nano action-only residency
 
@@ -161,9 +157,7 @@ The real Nano checkpoint completed inference at `(16, 8)` with 28.46 GiB allocat
 reserved after the six-case gate. A full-checkpoint A/B keeps the original BF16 `lm_head.weight`
 on CPU in the reference arm and uses the sentinel in the candidate; all 768 float32 action values
 match bit-for-bit (`max_abs=0`). The candidate's four-step p50 was 702.36 ms versus 701.26 ms for
-the CPU-head reference, so this is a residency fix rather than a claimed kernel speedup. Reproduce
-with `eval/cosmos3_nano_5090/verify_action_only_residency.py`; the exact hashes, protocol, and
-memory evidence are in `eval/cosmos3_nano_5090/action_only_results.json`.
+the CPU-head reference, so this is a residency fix rather than a claimed kernel speedup.
 Text logits and prompt upsampling fail loudly instead of silently running without their head.
 Disable the action-only path with `IFL_COSMOS3_NANO_ACTION_ONLY=0`; other architectures and the
 Edge checkpoint retain their previous residency.

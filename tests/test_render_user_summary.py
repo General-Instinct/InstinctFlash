@@ -12,7 +12,10 @@ import sys
 import pytest
 
 
-SCRIPT = Path(__file__).resolve().parents[1] / "eval/user_e2e_2026-09-14/render_summary.py"
+_EVAL = Path(__file__).resolve().parents[1] / "eval"
+if not (_EVAL / "user_e2e_2026-09-14").exists():
+    pytest.skip("requires the internal evaluation records", allow_module_level=True)
+SCRIPT = _EVAL / "user_e2e_2026-09-14/render_summary.py"
 SPEC = importlib.util.spec_from_file_location("render_user_summary", SCRIPT)
 RENDERER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(RENDERER)

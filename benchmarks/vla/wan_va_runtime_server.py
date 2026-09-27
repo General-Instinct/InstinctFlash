@@ -12,7 +12,7 @@ import inspect
 import os
 from pathlib import Path
 
-from .util import ConfigurationError, load_json, sha256_file, sha256_json, write_json_atomic
+from .util import ConfigurationError, load_json, sha256_file, sha256_json, wait_for_stop_signal, write_json_atomic
 from .wan_va_runtime_policy import RuntimePolicy
 
 PROTOCOL = 'wan-va-runtime-observed-history-v1'
@@ -136,7 +136,7 @@ async def serve_policy(policy, port, receipt):
     async with serve(handle, '127.0.0.1', port, compression=None, max_size=None, ping_interval=None):
         write_json_atomic(receipt, policy.identity)
         print('ready', receipt, flush=True)
-        await asyncio.Future()
+        await wait_for_stop_signal()
 
 
 def main(argv=None):
@@ -190,16 +190,16 @@ def main(argv=None):
         validate_config(cfg, family)
         weights = verify_checkpoint(Path(cfg.wan22_pretrained_model_name_or_path),
                                     load_json(a.checkpoint_manifest), a.revision)
-        import flash_rt
         runtime_root = Path(instinctflash.__file__).parent
-        kernel_root = Path(flash_rt.__file__).parent
+        # The GI FP8 engine and its Triton kernels ship inside the runtime package.
+        engine_source = sha256_json({name: source_digest(runtime_root / name) for name in ('engines', 'kernels')})
         upstream_root = native_source_root(native)
         windows = load_windows(a.startup_observation, cfg)
         identity = {'schema_version': 1, 'protocol': PROTOCOL, 'model_id': a.model,
                     'model_revision': a.revision, 'checkpoint_sha256': weights,
                     'precision': a.precision, 'seed_mode': 'episode_plus_frame', 'synthetic': False,
                     'runtime_source_sha256': source_digest(runtime_root),
-                    'engine_source_sha256': source_digest(kernel_root),
+                    'engine_source_sha256': engine_source,
                     'upstream_source_sha256': source_digest(upstream_root),
                     'execution': execution_identity(cfg, [x.name for x in runtime._plan.applied]),
                     'pipeline_sha256': pipeline_digest(), 'runtime_explanation': runtime.explain(),
@@ -216,12 +216,15 @@ def main(argv=None):
         shape = (7, 4, 4) if family == 'libero' else (16, 2, 16)
         outputs = startup(policy, windows, a.startup_prompt, shape)
         if a.precision == 'fp8':
-            packed = [w for group in server.frontend._blk.values() for w in group
-                      if w.dtype == torch.float8_e4m3fn]
-            if not packed or not server.calibrated or not server.frontend._graphs:
-                raise ConfigurationError('FP8 packed weights/calibration/graphs not observed')
-            identity['fp8'] = {'packed_e4m3_tensors': len(packed), 'declaration': server.frontend.declaration(),
-                               'graphs': len(server.frontend._graphs)}
+            engine = runtime._backend._loop
+            transformer = getattr(engine, '_transformer', None)
+            packed = [] if transformer is None else [
+                w.w for block in transformer.w.blocks for w in vars(block).values()
+                if getattr(getattr(w, 'w', None), 'dtype', None) == torch.float8_e4m3fn]
+            if not packed or not transformer._graphs.graphs:
+                raise ConfigurationError('FP8 packed weights/graphs not observed')
+            identity['fp8'] = {'packed_e4m3_tensors': len(packed), 'declaration': engine.declaration(),
+                               'graphs': len(transformer._graphs.graphs)}
         a.receipt.parent.mkdir(parents=True, exist_ok=True)
         np.savez_compressed(actions_path, actions=outputs)
         identity['startup'] = {'calls': 6, 'seed': 9173, 'repeat_byte_equal': True,

@@ -1,6 +1,7 @@
 """Regression: a caller's exclude of engine_offload must never resurrect the engine.
 
-The reported scenario (confirmed end to end on the shipped Thor + pi05 + flash_rt deployment):
+The reported scenario (confirmed end to end on the shipped Thor + pi05 deployment of the previous
+engine backend):
 
   1. The optimizer compiles with its default BITEXACT ceiling, which demotes engine_offload
      (NUMERIC by construction) to applies=False while KEEPING params['backend']=='engine'.
@@ -49,7 +50,7 @@ class _FakeEngine:
 @contextmanager
 def _engine_looks_available():
     orig = eb.engine_available, eb.EngineBackend
-    eb.engine_available = lambda: (True, "test stub: pretend SM110 + engine kernels")
+    eb.engine_available = lambda backbone=None: (True, "test stub: pretend SM110 + engine kernels")
     eb.EngineBackend = _FakeEngine
     try:
         yield

@@ -14,6 +14,7 @@
 
 ## What's new 🔥
 
+- **[2026/09/26] InstinctFlash engines on Jetson Thor.** FP8 pi05, LingBot-VLA-4B, LingBot-VLA-V2, LingBot-VA and the GR00T N1.7 action head run on InstinctFlash's own engines ([`instinctflash/engines`](instinctflash/engines)). Their attention (with rotary embeddings), normalization, gated-activation and MoE-routing kernels are written for InstinctFlash in Triton, most with per-token FP8 activation quantization fused in, so there is no calibration pass and no native build. The primitives underneath are not InstinctFlash's: the FP8 matrix multiplies are PyTorch's `torch._scaled_mm`; PyTorch also runs the remaining non-FP8 projections (state, action, time, text and patch embeddings and output heads, in FP32, FP16 or BF16), elementwise and indexing operations and CUDA-graph capture; and Triton compiles the kernels on first GPU use. Checkpoint preprocessing, the LingBot-VLA vision towers, LingBot-VA's T5 encoder, VAE and sampling loop (only its DiT is replaced) and GR00T's Qwen3-VL backbone (whose text projections use InstinctFlash's per-tensor FP8 linear over `torch._scaled_mm`) remain the upstream implementations; GR00T's engine computes the state embedding itself, and RTC/inpainting requests fall back to the upstream action loop. Cosmos3 Edge's NUMERIC fused linear + ReLU² is an InstinctFlash Triton kernel as well. All eight Thor models install from a clean clone of the current source and pass their reproduction and serving checks. [Setup](INSTALL.rst#jetson-thor) · [Reproduce](REPRODUCE.rst).
 - **[2026/09/17] RTX 5090 support.** Deploy on your workstation with the same Runtime API used on Jetson Thor. [Setup](INSTALL.rst#rtx-5090) · [Reproduce](REPRODUCE.rst#rtx-5090).
 - **[2026/09/16] RTX 4090 support.** Desktop inference and WebSocket serving with dedicated installation profiles. [Setup](INSTALL.rst#rtx-4090) · [Reproduce](REPRODUCE.rst#rtx-4090).
 - **[2026/09/15] Full-source release.** Eight robotics model families, acceleration kernels, and Python / WebSocket serving through one Runtime. [Get started](#install).
@@ -41,7 +42,9 @@ VA measures early continuations; each row compares the same schedule.
 The 33.78× headline includes 25V/50A → 2V/4A.
 FP8 and sampling changes are optional.
 
-[Protocol and raw results](eval/public_release_2026-09-15/results.rst) · [Native VA 2V/4A](eval/va_native_2v4a_2026-09-15/README.rst) · [Reproduction commands](REPRODUCE.rst)
+The LingBot-VA, LingBot-VLA and pi05 FP8 rows and the Cosmos3 Edge row were measured on September 15 with the engines and kernels that InstinctFlash's own engines and Triton kernels have since replaced; the current source's clean-install checks run these modes but have not repeated this table's measurements.
+
+[Reproduction commands](REPRODUCE.rst)
 
 ## Install
 
@@ -66,8 +69,8 @@ Edge and Nano use Python 3.13; the other families use Python 3.12.
 The bootstrap installs the upstream source, compatibility patches, core and adapter.
 Model weights are downloaded separately. See [RTX 5090 setup](INSTALL.rst#rtx-5090),
 [RTX 4090 setup](INSTALL.rst#rtx-4090)
-or [Jetson Thor setup](INSTALL.rst#jetson-thor), which selects `--target jetson_thor`
-and uses the [Thor CUDA backend build](serving/README.rst).
+or [Jetson Thor setup](INSTALL.rst#jetson-thor), which selects `--target jetson_thor`.
+The Thor FP8 engines are Python and Triton, compiled on first use; no native build is needed.
 
 ## Load a model
 
@@ -109,12 +112,10 @@ Fine-tunes reuse their family's adapter; quality is evaluated per checkpoint.
 The same `Runtime` defaults to `precision="native"` with a BITEXACT transformation ceiling.
 Use `tier_ceiling="numeric"` to allow numerical changes, or `precision="fp8"`
 (CLI: `--fp8`) to explicitly enable FP8. Step schedules are selected separately.
-See [precision policy](INSTALL.rst#load-and-predict) and
-[FP8 support and validation](eval/thor_precision_completion_2026-09-09/README.md).
+See [precision policy](INSTALL.rst#load-and-predict).
 
 DreamZero's opt-in [dynamic step cache](INSTALL.rst#load-and-predict) requires
-`tier_ceiling="behavioral"` with either precision. See the
-[Thor measurements](eval/dynamic_step_cache_integration_2026-09-14/results.md).
+`tier_ceiling="behavioral"` with either precision.
 
 ## Get actions
 
@@ -159,7 +160,7 @@ stamps the certificate into the package.
 
 After the [vendor and auxiliary-asset preparation](REPRODUCE.rst), reproduce paired
 eager/default/selected Runtime measurements with the included inputs and fixed
-checkpoint revision. Thor also requires its [native backend](serving/README.rst).
+checkpoint revision. The Thor FP8 engines need no native build.
 Keep the model and asset environments activated. For RTX 4090:
 
 ```bash
@@ -186,19 +187,13 @@ instinctflash eval --registry plan.registry.json report --run /path/to/run
 
 See the [evaluation guide](benchmarks/vla/SIMULATOR_EVALUATION.md) to create and run
 paired LIBERO / RoboTwin experiments, or [benchmark details](benchmarks/vla/README.md)
-for acceleration and quantization protocols. Results: [simulator screening](eval/simulator_quality_2026-09-06/README.md)
-and [repeatability, checkpoints and edge latency](eval/simulator_next_steps_2026-09-06/README.md).
-The [expanded V2 evaluation](eval/precision_evidence_2026-09-06/README.md) binds
-latency and quality evidence to execution profiles and checks explicit control budgets.
+for acceleration and quantization protocols.
 The [native qualification workflow](benchmarks/regression/README.md)
 adds fresh-start admission, retained failures and checkpoint-specific evidence for each device.
 LingBot-VA Hub IDs retain native step counts; 2V/4A requires an explicit `nfe` selection.
-The [September 9 Thor comparison](eval/thor_precision_completion_2026-09-09/COMPARISON.md)
-separates native acceleration, FP8 Runtime gains and paired task outcomes;
-[historical engine controls](eval/fp8_comparison_2026-09-09/README.md) isolate additional implementation effects.
 
-[Shared BF16 fusion](instinctflash/native/bf16/README.md) provides an opt-in NUMERIC path, with per-model compatibility and paired Thor regression results.
-[Shared tensor caching and prefill separation](eval/shared_tensor_cache_2026-09-13/README.md) extend native Cosmos optimization to Edge and Nano; exact caching and NUMERIC compilation remain separate options.
+Shared BF16 fusion, a Triton fused linear + ReLU², provides an opt-in NUMERIC path for Cosmos Edge.
+Shared tensor caching and prefill separation extend native Cosmos optimization to Edge and Nano; exact caching and NUMERIC compilation remain separate options.
 
 ## Framework overview
 
@@ -224,9 +219,9 @@ Optimization is organized in six layers, by what each one changes:
 | 1 | **MODEL** | what is computed — distillation, step reduction, checkpoint compression ([InstinctCompress](https://github.com/General-Instinct/InstinctCompress), [instinct-pdd](https://github.com/General-Instinct/instinct-pdd)) |
 | 2 | **GRAPH** | when work is issued — prefill extraction, CUDA-graph capture, memory planning |
 | 3 | **CACHE** | what is recomputed — KV reuse, cross-attention and episode caches |
-| 4 | **ATTENTION** | how tokens mix — FlashAttention, hybrid and linear attention |
-| 5 | **KERNEL** | how a kernel is written — backend and layout dispatch, fusion |
-| 6 | **HARDWARE** | what it executes on — fp8/int8, TensorRT, Jetson-class edge devices ([`serving/`](serving/)) |
+| 4 | **ATTENTION** | how tokens mix — fused Triton attention, hybrid and linear attention |
+| 5 | **KERNEL** | how a kernel is written — backend and layout dispatch, fusion ([`instinctflash/kernels`](instinctflash/kernels)) |
+| 6 | **HARDWARE** | what it executes on — FP8, device-specific kernel targets, Jetson-class edge devices ([`instinctflash/engines`](instinctflash/engines)) |
 
 Layer 1 changes the *weights* and produces a checkpoint; it lives in the companion repos. Layers
 2–6 change *how the weights execute* and produce a plan; they are the runtime in this repo. The
@@ -253,9 +248,8 @@ your package — see [`examples/external_plugin/`](examples/external_plugin/).
       select a verified path within the caller's precision constraints. LingBot-VLA-V2
       native Thor capture and LingBot-VA saturation profiling are complete; selective
       VA action capture showed no speedup and stays experimental.
-      [Results and evidence](eval/edge_defaults_2026-09-06/README.md).
       Execution-bound budget selection is available; the expanded V2 H100
-      evaluation remains [SCREEN](eval/precision_evidence_2026-09-06/README.md).
+      evaluation remains a SCREEN.
 
 ## Acknowledgements
 
@@ -270,11 +264,8 @@ and ideas that InstinctFlash builds on:
   **[LingBot-VLA-V2](https://github.com/robbyant/lingbot-vla-v2)** — upstream model
   implementations and checkpoints.
 - **[FlashAttention](https://github.com/Dao-AILab/flash-attention)** and
-  **[NVIDIA CUTLASS](https://github.com/NVIDIA/cutlass)** — attention kernels,
-  matrix-multiplication templates, and supporting backend code.
-- **[FlashRT](https://github.com/flashrt-project/FlashRT)** — substantial portions
-  of our `serving/` backend are derived from and adapted from FlashRT, including
-  runtime components, CUDA kernels, and weight-processing utilities.
+  **[NVIDIA CUTLASS](https://github.com/NVIDIA/cutlass)** — attention kernels and
+  matrix-multiplication templates used by the upstream models and frameworks.
 - **[Hugging Face](https://huggingface.co)**,
   **[PyTorch](https://github.com/pytorch/pytorch)**, and
   **[Triton](https://github.com/triton-lang/triton)** — framework, compiler, and model tooling.

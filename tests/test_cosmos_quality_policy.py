@@ -15,6 +15,12 @@ from benchmarks.vla import cosmos_quality_policy as quality
 from instinctflash.runtime.cosmos_droid import CosmosDROIDLoop
 
 
+CHECKPOINT_MATRIX = (
+    Path(__file__).resolve().parents[1]
+    / "benchmarks/regression/fixtures/checkpoint_matrix.json"
+)
+
+
 @dataclass(frozen=True)
 class Config:
     checkpoint_path: str
@@ -166,11 +172,7 @@ def build(tmp_path, monkeypatch):
     for key in list(__import__("os").environ):
         if key.startswith("IFL_"):
             monkeypatch.delenv(key)
-    source = (
-        Path(__file__).resolve().parents[1]
-        / "eval/user_e2e_2026-09-14/matrix_final.json"
-    )
-    original = json.loads(source.read_text())
+    original = json.loads(CHECKPOINT_MATRIX.read_text())
     calls = []
     source_fixture = tmp_path / "native_source.py"
     source_fixture.write_text("# frozen CPU source fixture\n")
@@ -193,15 +195,6 @@ def build(tmp_path, monkeypatch):
         cell = next(
             row.copy() for row in original["cells"] if row["id"] == f"{family}-{arm}"
         )
-        cell["expected_optimizer_environment"] = dict(
-            cell["expected_optimizer_environment"]
-        )
-        library = tmp_path / "libbf16.so"
-        if "IFL_BF16_KERNEL_LIBRARY" in cell["expected_optimizer_environment"]:
-            library.write_bytes(b"CPU fixture native library")
-            cell["expected_optimizer_environment"]["IFL_BF16_KERNEL_LIBRARY"] = str(
-                library
-            )
         path = tmp_path / f"matrix_{len(calls)}.json"
         path.write_text(json.dumps({"cells": [cell]}))
         snapshot = tmp_path / cell["revision"]
@@ -481,6 +474,27 @@ def test_matrix_and_environment_binding(build, monkeypatch, tmp_path):
             output_dir=tmp_path / "bad-env",
         )
     assert not (tmp_path / "bad-env").exists()
+
+
+def test_edge_numeric_refuses_undeclared_optimizer_setting(tmp_path):
+    cell = next(
+        row
+        for row in json.loads(CHECKPOINT_MATRIX.read_text())["cells"]
+        if row["id"] == "edge-runtime_selected"
+    )
+    measured = tmp_path / "measured.json"
+    measured.write_text(json.dumps({"cells": [cell]}))
+    assert quality.frozen_cell(
+        measured, cell["id"], matrix_sha256=quality._sha(measured)
+    ) == cell
+    cell["expected_optimizer_environment"] = {
+        **cell["expected_optimizer_environment"],
+        "IFL_UNDECLARED_OPTIMIZER": "1",
+    }
+    path = tmp_path / "extended.json"
+    path.write_text(json.dumps({"cells": [cell]}))
+    with pytest.raises(ValueError, match="Optimizer settings"):
+        quality.frozen_cell(path, cell["id"], matrix_sha256=quality._sha(path))
 
 
 def test_receipt_directory_cannot_be_reopened_and_identity_is_hash_bound(

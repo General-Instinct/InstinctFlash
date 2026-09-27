@@ -100,7 +100,8 @@ def test_deployment_rejects_shell_metacharacters_before_ssh(tmp_path):
     root = Path(__file__).resolve().parents[1]
     run = subprocess.run([sys.executable, str(root / 'benchmarks/regression/deploy_thor.py'),
         '--host', 'host;bad', '--remote-root', '/tmp/results', '--python', '/env/bin/python',
-        '--output-root', str(tmp_path)], capture_output=True, text=True)
+        '--output-root', str(tmp_path), '--fixture', 'fixtures/droid.npz', '--reference', 'reference'],
+        capture_output=True, text=True)
     assert run.returncode == 2 and 'Invalid SSH host' in run.stderr
 
 
@@ -109,7 +110,8 @@ def test_failed_deployment_replaces_stale_green_status(tmp_path, monkeypatch):
     import sys
     (tmp_path / 'latest.json').write_text('{"status":"PASS","exit_code":0}')
     monkeypatch.setattr(sys, 'argv', ['deploy', '--host', 'host', '--remote-root', '/tmp/results',
-                                    '--python', '/env/bin/python', '--output-root', str(tmp_path)])
+                                    '--python', '/env/bin/python', '--output-root', str(tmp_path),
+                                    '--fixture', 'fixtures/droid.npz', '--reference', 'reference'])
     def fail(args):
         raise OSError('Connection failed')
     monkeypatch.setattr(deploy_thor, 'run_once', fail)

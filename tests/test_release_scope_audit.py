@@ -23,8 +23,8 @@ def scope():
         "rules": [
             {"prefix": "instinctflash", "classification": "public_candidate", "group": "runtime"},
             {"prefix": "instinctflash/distill", "classification": "hold", "group": "trainer"},
-            {"prefix": "benchmarks", "classification": "public_candidate", "group": "eval"},
-            {"prefix": "eval", "classification": "hold", "group": "study"},
+            {"prefix": "benchmarks", "classification": "public_candidate", "group": "benchmark"},
+            {"prefix": "studies", "classification": "hold", "group": "study"},
             {"prefix": "pyproject.toml", "classification": "release_review", "group": "package"},
         ],
     }
@@ -86,10 +86,10 @@ def test_current_wheel_discovery_exposes_trainer_until_explicitly_excluded(tmp_p
 
 
 def test_worker_symlink_into_withheld_study_is_not_a_public_source_closure(tmp_path):
-    put(tmp_path, "eval/study/worker.py", "value = 1\n")
+    put(tmp_path, "studies/withheld/worker.py", "value = 1\n")
     worker = tmp_path / "instinctflash/runtime/worker.py"
     worker.parent.mkdir(parents=True)
-    worker.symlink_to("../../eval/study/worker.py")
+    worker.symlink_to("../../studies/withheld/worker.py")
     report = auditor.audit(tmp_path, scope(), ["instinctflash/runtime/worker.py"])
     assert report["files"]["instinctflash/runtime/worker.py"]["target_classification"] == "hold"
     assert report["findings"][0]["kind"] == "public_symlink_crosses_boundary"

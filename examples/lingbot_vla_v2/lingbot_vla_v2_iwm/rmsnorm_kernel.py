@@ -195,13 +195,14 @@ def install_lingbot_rmsnorm_kernel(
 
 
 def _refuse_on_sm110() -> None:
-    """Triton is measured-dead on Thor sm_110a (PTXAS internal codegen error), and the vendor
-    fallback path crashes (undefined ``logger`` in the MoE except-handler; the RMSNorm patch has
-    no try/except). Installing here would fail later and worse; refuse up front instead."""
+    """These kernels are unqualified on Thor: Triton codegen for sm_110a failed with a PTXAS
+    internal error in the 2026-08 Thor measurement, and the vendor fallback path crashes
+    (undefined ``logger`` in the MoE except-handler; the RMSNorm patch has no try/except).
+    Installing here would fail later and worse; refuse up front instead."""
     if torch.cuda.is_available() and torch.cuda.get_device_capability() == (11, 0):
         raise RuntimeError(
-            "LingBot-VLA-V2 Triton kernels are not supported on SM110 (Thor); use the Thor "
-            "engine arm instead.")
+            "LingBot-VLA-V2 Triton kernels are not supported on SM110 (Thor); use the native Thor "
+            "route or precision='fp8' instead.")
 
 
 __all__ = [

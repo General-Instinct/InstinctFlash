@@ -1,13 +1,19 @@
 Reproduce public results
 ========================
 
-The benchmark, CUDA kernels and model frontends are included as source.
+The benchmark, model adapters, inference engines and their Triton kernels are
+included as source.
 Each model runs in its own vendor environment. The fixed input archive contains
 recorded RGB cameras and synthetic robot states; it loads without pickle.
 Checkpoint commits, Runtime options, sample order and action shapes are explicit
 in the target's profile (``release/deployment_profiles.json`` for Thor,
 ``release/rtx4090/deployment_profiles.json`` for RTX 4090, or
 ``release/rtx5090/deployment_profiles.json`` for RTX 5090) and the prepared run directory.
+
+The README table was measured September 15, 2026. Its LingBot-VA, LingBot-VLA
+and pi05 FP8 cells and Edge's NUMERIC cell used the earlier Thor engines. The
+same selections now run on InstinctFlash's own engines and Triton kernels, so
+these commands measure the current implementation.
 
 Install a model environment
 ---------------------------
@@ -36,9 +42,9 @@ Vendor compatibility patches define the Thor baseline. In particular, the VLA
 attention/MoE compatibility patches are disclosed separately from InstinctFlash
 transformations. Dependency checks must pass before loading a model.
 
-For Thor's FP8 engine and Edge shared BF16 fusion, install the published native
-libraries or build them using `serving/README.rst <serving/README.rst>`_. Those builds retain
-source hashes and compiler commands; they do not change checkpoint precision
+The FP8 engines and Edge's shared BF16 fusion are Python code and Triton
+kernels in the installed package; the kernels compile on first GPU use and no
+native library is built or installed. They do not change checkpoint precision
 until the caller explicitly selects an execution mode.
 
 Prepare the checkpoint and inputs
@@ -67,7 +73,7 @@ serving; the benchmark bundle does not replace the vendor and asset environment:
 For Cosmos, the vendor activation also restores the prepared offline ``uvx``
 tool used by its native loader. Keep both preparation directories available.
 
-For Thor, after preparing pi05's vendor environment and native engine::
+For Thor, after preparing pi05's vendor environment and assets::
 
     python -I -m benchmarks.regression.reproduce prepare \
       --target jetson_thor --model pi05 --mode fp8 --output pi05-inputs
@@ -128,8 +134,9 @@ before loading the prepared original checkpoint::
     )
 
 ``tier_ceiling="numeric"`` alone leaves this cache disabled on RTX 4090.
-This recipe uses no Thor shared BF16 library. Unset the timestep-cache option
-when selecting FP8, because the cache currently supports native precision.
+This recipe does not use the Thor-only fused BF16 linear kernel. Unset the
+timestep-cache option when selecting FP8, because the cache currently supports
+native precision.
 Keep the vendor and asset activations when running either recipe.
 
 RTX 5090
@@ -159,10 +166,8 @@ selected SM120 FP8. Use ``--mode native`` with new output directories to keep
 the selected Runtime at checkpoint precision. Target/model checks require an
 actual RTX 5090; Thor and RTX 4090 receipts remain separate. The original paired
 inputs, warmups, measurement counts, full actions and history checks are retained.
-See the `RTX 5090 results <release/rtx5090/results/results.rst>`_ for measured
-configurations and raw action comparisons. Capacity-limited or CPU-offloaded
-pairs are excluded from new benchmarks. Historical offload records remain
-available for inspection; the README displays Thor measurements only.
+Re-qualification of the current source on an RTX 5090 is pending; the README
+displays Thor measurements only.
 
 Keep ``--target rtx5090`` when preparing other models or modes. Use
 ``--mode numeric`` for the NUMERIC selections of VLA-V2, Edge and Nano;
@@ -171,9 +176,11 @@ their model-specific environment and original assets are still required.
 RTX VA 2V/4A with a matching native baseline
 -------------------------------------------
 
-The archived RTX 2V/4A measurements use a fresh upstream PyTorch 2V/4A baseline.
-VA stages its text encoder through CPU on these desktop cards; this historical
-comparison is outside the current no-offload benchmark scope.
+This comparison pairs the 2V/4A operating point with a fresh upstream PyTorch
+2V/4A baseline. The current RTX 4090 record measures 2V/4A FP8 only as an extra
+cell of the VA FP8 run; this matched comparison has not been repeated on the
+current source. VA stages its text encoder through CPU on these desktop cards
+during reset, outside the prediction timer.
 The checkpoint still declares 25V/50A. After the VA bootstrap and original
 asset preparation above, restore both activation files and run from the
 checkout root. Choose ``rtx4090`` or ``rtx5090`` explicitly and use new output
@@ -251,7 +258,7 @@ Explicit execution selections
      - Original action NFE4
    * - edge
      - numeric
-     - Original BF16, UniPC4, CFG3; shared BF16 library required
+     - Original BF16, UniPC4, CFG3; shared BF16 fusion
    * - nano
      - numeric
      - Original BF16, UniPC4, CFG3
@@ -265,12 +272,6 @@ transformations; action agreement is measured against the separate eager
 reference. FP8, NUMERIC and changed schedules have distinct selections and
 never imply a task-quality certificate.
 
-For Edge on Thor, bind the library produced by the native build during preparation::
-
-    python -I -m benchmarks.regression.reproduce prepare \
-      --model edge --mode numeric --output edge-inputs \
-      --library IFL_BF16_KERNEL_LIBRARY=/path/to/native/libinstinctflash_bf16.so
-
 For LingBot-VA on Thor, reproduce the full-schedule native reference and both
 InstinctFlash operating points::
 
@@ -281,9 +282,11 @@ InstinctFlash operating points::
 
 This report compares both candidates against original 25V/50A eager execution
 and labels 2V/4A as a different sampling policy. The README's 2V/4A row uses an
-additional native 2V/4A measurement for its same-schedule ratio; run the
-`native 2V/4A recipe <eval/va_native_2v4a_2026-09-15/README.rst>`_
-from the current source installation to reproduce that cell.
+additional native 2V/4A measurement for its same-schedule ratio: the unmodified
+upstream ``VA_Server`` at two video and four action steps in the checkpoint's
+BF16 precision, with no InstinctFlash passes and the same recorded inputs,
+prompts, seeds and executed-action feedback. The commands above do not produce
+that native cell.
 
 For DreamZero, limit concurrent compiler workers before running or serving::
 
@@ -375,10 +378,10 @@ and its prepared cell environment::
     PY
 
 Replace the two directory arguments for another prepared model. This preserves
-the selected runtime flags and applies its exact optimizer environment, including
-the bound Edge BF16 library. A bare ``instinctflash serve`` command does not read
-the benchmark profile or those environment settings. The server keeps running
-until interrupted; its checkpoint, cache and library paths must remain available.
+the selected runtime flags and applies its exact optimizer environment. A bare
+``instinctflash serve`` command does not read the benchmark profile or those
+environment settings. The server keeps running until interrupted; its checkpoint
+and cache paths must remain available.
 
 For your robot, inspect ``runtime.observation.describe()`` and replace the
 recorded fixture with current cameras and robot state. Reset at episode

@@ -1,12 +1,13 @@
 InstinctFlash full-source release
 ================================
 
-The public repository includes the Runtime, CLI, model adapters, FlashRT
-frontends, CUDA kernels, training and distillation code, and benchmark tools.
+The public repository includes the Runtime, CLI, model adapters, the General
+Instinct FP8 engines and their Triton kernels, optional CUDA kernels, training and
+distillation code, and benchmark tools.
 There is one public execution interface. No Instinct account or private
 accelerator package is required.
 
-Start with the `RTX 4090 <../INSTALL.rst#rtx-4090>`_ or
+Start with the `RTX 5090 <../INSTALL.rst#rtx-5090>`_, `RTX 4090 <../INSTALL.rst#rtx-4090>`_ or
 `Jetson Thor <../INSTALL.rst#jetson-thor>`_ installation profile and the
 `reproduction guide <../REPRODUCE.rst>`_. They cover a fresh vendor environment,
 pinned checkpoint and auxiliary downloads, paired inference measurements,
@@ -18,22 +19,25 @@ own action and task evaluation.
 Source, binaries and model assets
 --------------------------------
 
-The root package and adapters retain the root AGPL license. FlashRT retains its
-Apache license; bundled third-party code and native wheels carry their own
-notices. Upstream model checkpoints, tokenizers and experimental student
-overlays retain their original access conditions and licenses. Checkpoint
-weights are obtained separately from source installation.
+The root package and adapters retain the root AGPL license. Bundled
+third-party code and vendor patches carry their own notices. Upstream model
+checkpoints, tokenizers and experimental student overlays retain their original
+access conditions and licenses. Checkpoint weights are obtained separately
+from source installation.
 
-The published native artifacts and `FlashRT source-build instructions
-<../serving/README.rst>`_ target Jetson Thor. Its Python 3.12 native wheel is
-specific to Linux aarch64 and the recorded Torch/CUDA stack. Edge and Nano use
-Python 3.13 and Thor's separate BF16 C library. For RTX 4090, use the
-``--target rtx4090`` bootstrap: its Linux x86-64 profiles select the SM89
-PyTorch/Triton execution path described in the installation guide.
+The Thor FP8 engines and Cosmos Edge's NUMERIC BF16 linear are Python with
+Triton kernels compiled on first use. They need only the model environment's
+Torch (with ``torch._scaled_mm``) and Triton; no native wheel or C library is
+built or installed. On Thor, point Triton at a CUDA 13 ``ptxas`` that supports
+``sm_110a`` (the bootstrap's ``--ptxas``); some bundled Triton assemblers do
+not. For RTX 4090 and RTX 5090, use the ``--target rtx4090`` or ``--target rtx5090``
+bootstrap: their Linux x86-64 profiles select the SM89 or SM120 PyTorch/Triton
+execution path described in the installation guide. A different platform needs
+its own validation.
 
 Native precision with a BITEXACT transformation ceiling is the default.
 NUMERIC, FP8 and sampling/cache changes are explicit choices through the same
-Runtime. Installing a backend does not select any of those choices.
+Runtime. Building an optional kernel library does not select any of those choices.
 
 Reproducible evidence
 ---------------------
@@ -49,12 +53,12 @@ performance on another device. Alternative-framework recipes retain their own
 step and history protocols. Experimental SDE1 results remain separate from the
 full UniPC4/CFG3 Cosmos selection.
 
-The `RTX 4090 results <rtx4090/results/results.rst>`_ cover seven tested families,
-20 Runtime modes and 28 paired API cells, with actual WebSocket checks. Nano
-was excluded from the replacement host's 31 GB RAM allocation and remains
-untested. Edge completed the pipeline but showed no speedup in this run.
-The `RTX 4090 catalog <rtx4090/deployment_profiles.json>`_ links the recorded
-qualification for each tested mode; all eight adapters remain available.
+The `RTX 4090 results <rtx4090/results/results.rst>`_ record the clean-install
+qualification of the current source on one RTX 4090 node, with actual WebSocket
+checks; DreamZero exceeded that node's model storage and was not tested. The
+`RTX 4090 catalog <rtx4090/deployment_profiles.json>`_ links the record for each
+measured mode; all eight adapters remain available. RTX 5090 profiles are pending
+re-qualification of the current source.
 The historical Thor results retain their separate hardware and settings.
 
 The recorded RGB fixture has its RoboTwin license and attribution alongside
@@ -71,9 +75,9 @@ From the repository root, using the documented development dependencies::
       --output /tmp/instinctflash-public-candidate --build-wheels
 
 The output directory must be new. The builder checks selected source hashes,
-materializes reviewed in-repository symlinks, builds nine Python distributions
-and verifies their contents. It excludes downloaded build trees and model
-weights; native CUDA binaries have their own source-build procedure.
+materializes reviewed in-repository symlinks, builds eight Python distributions
+and verifies their contents. It excludes build trees and model weights; the
+optional SM120 CUDA libraries have their own source-build procedure.
 
 A successful CPU build checks packaging, not inference speed or task success.
 Run the reproduction and serving commands in each model's pinned environment

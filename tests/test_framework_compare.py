@@ -46,10 +46,13 @@ print(json.dumps(m.plan('vllm-omni-nano')['cell']['effective_schedule']))
     assert list(tmp_path.iterdir()) == []
 
 
+HISTORICAL_FIXTURE = ROOT / "eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
+HISTORICAL_RECEIPTS = ROOT / "eval/framework_comparison_2026-09-13/receipts"
+
+
+@pytest.mark.skipif(not HISTORICAL_FIXTURE.is_file(), reason="requires the internal evaluation records")
 def test_safe_fixture_is_exact_historical_decoding_and_feedback():
-    old = ROOT / "eval/native_total_2026-09-10/fixtures/va_eval_obs.npz"
-    if not old.is_file():
-        pytest.skip("Historical conversion evidence is not a public runtime dependency")
+    old = HISTORICAL_FIXTURE
     assert comparison.sha(old) == comparison.catalog()["historical_fixture_sha256"]
     current = comparison.Inputs(FIXTURE)
     with np.load(old, allow_pickle=True) as data:
@@ -62,10 +65,9 @@ def test_safe_fixture_is_exact_historical_decoding_and_feedback():
         assert data["actions_0"].tobytes() == current.feedback.tobytes()
 
 
+@pytest.mark.skipif(not HISTORICAL_RECEIPTS.is_dir(), reason="requires the internal evaluation records")
 def test_all_six_historical_medians_replay_exactly():
-    receipts = ROOT / "eval/framework_comparison_2026-09-13/receipts"
-    if not receipts.is_dir():
-        pytest.skip("Original receipts are audit evidence, not runtime dependencies")
+    receipts = HISTORICAL_RECEIPTS
     for cell in comparison.catalog()["cells"]:
         path = receipts / cell["historical"]["receipt_name"]
         assert comparison.sha(path) == cell["historical"]["receipt_sha256"]

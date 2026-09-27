@@ -37,9 +37,9 @@ class Environment:
 
 class Server:
     def __init__(self, bad=False):
-        self.native = SimpleNamespace(job_config=SimpleNamespace(
+        self.job_config = SimpleNamespace(
             obs_cam_keys=('observation.images.agentview_rgb',
-                          'observation.images.eye_in_hand_rgb'), frame_chunk_size=4))
+                          'observation.images.eye_in_hand_rgb'), frame_chunk_size=4)
         self.events = []
         self.cycle = 0
         self.bad = bad
@@ -129,14 +129,14 @@ def test_runtime_initial_scene_drift_refused_before_reset():
 class PositionedServer(Server):
     def __init__(self):
         super().__init__()
-        self.native.frame_st_id = 0
+        self.frame_st_id = 0
 
     def infer(self, payload):
         result = super().infer(payload)
         if payload.get('reset'):
-            self.native.frame_st_id = 0
+            self.frame_st_id = 0
         elif payload.get('compute_kv_cache'):
-            self.native.frame_st_id += 4
+            self.frame_st_id += 4
         return result
 
 

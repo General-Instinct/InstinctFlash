@@ -11,7 +11,7 @@ import argparse
 import asyncio
 from pathlib import Path
 
-from .util import ConfigurationError, write_json_atomic
+from .util import ConfigurationError, wait_for_stop_signal, write_json_atomic
 
 
 class QualitySession:
@@ -88,7 +88,7 @@ async def serve_policy(policy, *, port, ready_receipt):
             "note": "Socket readiness is not a completed simulator episode or certificate.",
         })
         print(f"ready: {ready_receipt}", flush=True)
-        await asyncio.Future()
+        await wait_for_stop_signal()
 
 
 def main(argv=None):

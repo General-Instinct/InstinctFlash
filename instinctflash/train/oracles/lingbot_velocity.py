@@ -5,7 +5,7 @@ stays a general single-stream algorithm. Every fact below is cited to the source
 `docs/PDD_ADAPTER_SOURCE_MAP.raw.json`, which is the canonical reference and should not be
 regenerated.
 
-WHY CHUNK 0 ONLY. Measured with `eval/lingbot_va_robotwin/probe_chunk0_cache.py`: after a reset the
+WHY CHUNK 0 ONLY. Measured with a chunk-0 KV-cache occupancy probe: after a reset the
 KV cache holds 0 occupied slots, and it still holds 0 through every forward of the first chunk's
 VIDEO denoise, because those run `update_cache=0` which writes slots and then restores them. So a
 chunk-0 video training context carries no history term -- it is exactly (observation, prompt). The
@@ -241,7 +241,7 @@ class LingBotChunk0VideoOracle:
 
         `update_cache=0` is what keeps this a chunk-0 call: slots are written and then restored, so
         the cache stays empty and consecutive calls do not condition on each other. Measured by
-        probe_chunk0_cache.py.
+        the chunk-0 KV-cache occupancy probe.
         """
         from utils.utils import data_seq_to_patch
         out = self.S.transformer(d, update_cache=0, cache_name=self.S.cache_name,

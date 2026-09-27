@@ -88,19 +88,22 @@ def test_bad_startup_observations_refused(tmp_path, corruption):
 
 @pytest.mark.parametrize('backbone', ['lingbot_vla', 'lingbot_vla_v2'])
 @pytest.mark.parametrize('fault', [None, 'native', 'weight_dtype', 'empty_weights',
-                                  'missing_group', 'vision_dtype', 'no_capture', 'no_replay'])
+                                  'vision_dtype', 'no_capture', 'no_replay'])
 def test_fp8_receipt_requires_weights_native_vision_and_execution(backbone, fault):
-    weights = [] if fault == 'empty_weights' else [NS(dtype=(
-        torch.bfloat16 if fault == 'weight_dtype' else torch.float8_e4m3fn))]
-    frontend = NS(_l_qkv_w=weights, _e_qkv_w=weights,
-                  _moe={'gateup_fp8': weights, 'down_fp8': weights})
-    if fault == 'missing_group':
-        frontend._e_qkv_w = []
-        frontend._moe['down_fp8'] = []
+    from dataclasses import dataclass
+
+    @dataclass
+    class Weight:
+        w: object
+
+    dtype = torch.bfloat16 if fault == 'weight_dtype' else torch.float8_e4m3fn
+    layers = [] if fault == 'empty_weights' else [Weight(torch.zeros(2, dtype=dtype)),
+                                                  Weight(torch.zeros(2, dtype=dtype))]
+    engine = NS(w={'layers': layers, 'norm': torch.ones(2)})
     vision = NS(model=NS(parameters=lambda: iter([NS(dtype=(
         torch.float16 if fault == 'vision_dtype' else torch.bfloat16))])))
-    generator = NS(frontend=frontend, vision=vision,
-                   engine=NS(frontend=frontend, vision=vision))
+    generator = NS(frontend=NS(engine=engine), vision=vision,
+                   engine=NS(engine=engine, vision=vision))
     loop = NS(_server=NS(vla=NS(model=generator)), graph_stats={
         'captured': fault != 'no_capture', 'replays': 0 if fault == 'no_replay' else 8})
     runtime = NS(precision='native' if fault == 'native' else 'fp8', _backend=NS(_loop=loop))

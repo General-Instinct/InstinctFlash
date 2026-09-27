@@ -10,7 +10,7 @@ tags:
 
 This is a **layout example**, not real weights (`model.safetensors` is a single null byte). It exists
 so a checkpoint author can see exactly what a publishable package looks like, and so
-`tests/test_example_checkpoint.py` can validate a real artifact rather than a fixture invented inside
+`tests/test_checkpoint_platform.py` can validate a real artifact rather than a fixture invented inside
 the test.
 
 ## Validate it

@@ -1,6 +1,6 @@
 """RULED OUT ON LINGBOT-VA BY MEASUREMENT (2026-08-02). Do not enable.
 
-A two-axis liveness test (eval/lingbot_va_robotwin/probe_cfg_liveness.py) found the
+A two-axis liveness test (a CFG-branch liveness probe) found the
 action stream's CFG branch 1 live on BOTH axes: corrupting its returned value moved the
 final actions by 5.64, and suppressing only its writes to the shared KV pool moved them by
 5.39, against a chunk-to-chunk movement of 1.03.
@@ -63,7 +63,7 @@ NUMERIC, not BITEXACT, and the distinction is real. The arithmetic is identical 
 tensor that was being sliced away regardless. But the surviving branch moves from a batch-2 GEMM
 to a batch-1 GEMM, and cuBLAS may select different tiling, which can change the floating-point
 reduction order. That is a bounded, structurally-justified difference rather than an
-approximation, which is exactly what the NUMERIC tier is for. `probe_bitexact.py` settles it
+approximation, which is exactly what the NUMERIC tier is for. The bit-exactness probe settles it
 empirically: if it reports 0, the pass is promoted to BITEXACT for this model+hardware and
 recorded as such.
 
@@ -71,7 +71,6 @@ STATUS: NEGATIVE RESULT
 Branch 1 is LIVE on both axes -- 5.64 corrupting its returned value, 5.39 suppressing
 only its writes to the shared KV pool, against a chunk-to-chunk movement of 1.03. `action_guidance_scale=1`
 makes `dead_outputs` a true statement about OUTPUT USAGE; it is not a statement about dead compute.
-See HISTORICAL.md.
 """
 
 from __future__ import annotations

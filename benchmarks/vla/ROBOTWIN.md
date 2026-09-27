@@ -29,7 +29,7 @@ On each model host, use a pinned Hugging Face snapshot containing the actual che
 export LINGBOT_ROOT=/absolute/path/to/lingbot-va
 export LINGBOT_CKPT=/absolute/path/to/models--robbyant--lingbot-va-posttrain-robotwin/snapshots/8c9dea8abbc5c91cc9e18bc3264b8915083bbe70
 CUDA_VISIBLE_DEVICES=0 MASTER_PORT=29601 /path/to/model/python \
-  eval/lingbot_va_robotwin/serve_variant.py --config-name robotwin \
+  -m instinctflash.runtime.lingbot_worker --config-name robotwin \
   --port 29061 --save_root /absolute/path/to/server-output \
   --benchmark-receipt /absolute/path/to/control.receipt.json
 ```
@@ -41,7 +41,7 @@ two arms may use the same endpoint sequentially. The server accepts only one act
 and acknowledges the episode noise seed on every reset. Connection/inference timeouts and
 identity mismatches fail the job, leaving incomplete evidence rather than a quality pass.
 
-This entrypoint supports the existing PyTorch `serve_variant` path, including compatible
+This entrypoint supports the existing PyTorch `lingbot_worker` path, including compatible
 optimization flags, on its supported hardware. Native Thor engine serving still needs this
 identity/reset protocol implemented; it is not made compatible merely by supplying a URL.
 Block-head checkpoints are not supported by this first server bridge.

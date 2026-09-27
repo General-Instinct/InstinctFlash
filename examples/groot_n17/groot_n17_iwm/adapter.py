@@ -91,9 +91,9 @@ class GR00TN17Adapter:
                 "family": "vla",
                 # "backbone" identifies this spec to backbone-keyed planner checks (the engine
                 # operating-point gate in passes/generic/engine_offload.py keys on it: the
-                # groot_n17_thor frontend captures its DiT graphs at 4 steps, and a plan at
-                # any other nfe must decline the engine rather than print one schedule and
-                # run another).
+                # GI GR00T engine (instinctflash/engines/groot_n17) bakes and captures 4 flow
+                # steps, and a plan at any other nfe must decline the engine rather than print
+                # one schedule and run another).
                 "backbone": BACKBONE,
                 "action_horizon": "40",
                 "default_embodiment": DEFAULT_EMBODIMENT,

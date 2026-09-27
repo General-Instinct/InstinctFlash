@@ -119,3 +119,20 @@ def command_output(argv: list[str], cwd: Path, timeout: int = 10) -> str | None:
     except (OSError, subprocess.TimeoutExpired):
         return None
     return completed.stdout.strip() if completed.returncode == 0 else None
+
+
+async def wait_for_stop_signal() -> None:
+    """Wait until SIGTERM, so an endpoint's own cleanup (closing its Runtime) runs on stop.
+
+    A supervisor stops endpoints with SIGTERM; one started from a non-interactive shell with ``&``
+    also inherits SIGINT as ignored, so SIGINT cannot be relied on.
+    """
+    import asyncio
+    import signal
+    loop = asyncio.get_running_loop()
+    stop = loop.create_future()
+    loop.add_signal_handler(signal.SIGTERM, lambda: stop.done() or stop.set_result(None))
+    try:
+        await stop
+    finally:
+        loop.remove_signal_handler(signal.SIGTERM)

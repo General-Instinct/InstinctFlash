@@ -1,10 +1,10 @@
 {
   "checkpoint_revision_source": {
-    "path": "eval/user_e2e_2026-09-14/matrix_final.json",
-    "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+    "path": "benchmarks/regression/fixtures/checkpoint_matrix.json",
+    "sha256": "f1cb76bdaff3331fe409fafd88bd19022aca9161c1722fa767e838358348b88f"
   },
   "default_execution": "native",
-  "evidence_scope": "Seven tested families, 20 recorded Runtime modes and 28 paired API cells; Nano capacity excluded and untested; task quality and minimum RAM remain unverified.",
+  "evidence_scope": "RTX 4090 clean-install qualification (2026-09-27): 7 families (edge, groot, nano, pi05, va, vla2, vla4) installed from a clean clone and reproduced in their recorded modes; modes not listed in the record are not measured on the current source; DreamZero exceeded the node's model storage. Task quality is not certified.",
   "models": [
     {
       "adapter": {
@@ -40,7 +40,7 @@
         ],
         "qualification": "release/rtx4090/qualification.json",
         "recipe": "release/vendor/rtx4090/va/bootstrap.json",
-        "status": "recorded_rtx4090_e2e_verified_original_install_receipts_retained",
+        "status": "fresh_rtx4090_clean_install_verified",
         "upstream_install_guide": "https://github.com/robbyant/lingbot-va#readme"
       },
       "checkpoint": {
@@ -107,14 +107,17 @@
           },
           "environment": {},
           "evidence_cell": "va-2v4a-fp8",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "va",
             "mode": "2v4a-fp8",
+            "tested": true,
+            "run": "fp8",
+            "cell": "va-2v4a-fp8",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -143,15 +146,18 @@
             "video_steps": 2
           },
           "environment": {},
-          "evidence_cell": "va-2v4a-native",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_cell": null,
+          "evidence_kind": "not_measured_on_current_source",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "va",
             "mode": "2v4a-native",
-            "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "tested": false,
+            "run": null,
+            "cell": null,
+            "path": null,
+            "sha256": null
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -181,14 +187,17 @@
           },
           "environment": {},
           "evidence_cell": "va-runtime_selected",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "va",
             "mode": "fp8",
+            "tested": true,
+            "run": "fp8",
+            "cell": "va-runtime_selected",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -214,14 +223,17 @@
           },
           "environment": {},
           "evidence_cell": "va-runtime_default",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "va",
             "mode": "native",
+            "tested": true,
+            "run": "fp8",
+            "cell": "va-runtime_default",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -242,7 +254,7 @@
         "target": "3.12"
       },
       "release_gaps": [
-        "Qualification covers the recorded requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
+        "Qualification covers the recorded modes' requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [],
       "upstream": {
@@ -290,7 +302,7 @@
         ],
         "qualification": "release/rtx4090/qualification.json",
         "recipe": "release/vendor/rtx4090/vla4/bootstrap.json",
-        "status": "recorded_rtx4090_e2e_verified_original_install_receipts_retained",
+        "status": "fresh_rtx4090_clean_install_verified",
         "upstream_install_guide": "https://github.com/robbyant/lingbot-vla#readme"
       },
       "checkpoint": {
@@ -368,15 +380,18 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_cell": "vla4-runtime_update",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_cell": "vla4-runtime_selected",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "vla4",
             "mode": "fp8",
+            "tested": true,
+            "run": "fp8",
+            "cell": "vla4-runtime_selected",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -397,14 +412,17 @@
           },
           "environment": {},
           "evidence_cell": "vla4-runtime_default",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "vla4",
             "mode": "native",
+            "tested": true,
+            "run": "fp8",
+            "cell": "vla4-runtime_default",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -425,7 +443,7 @@
         "target": "3.12"
       },
       "release_gaps": [
-        "Qualification covers the recorded requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
+        "Qualification covers the recorded modes' requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [],
       "upstream": {
@@ -473,7 +491,7 @@
         ],
         "qualification": "release/rtx4090/qualification.json",
         "recipe": "release/vendor/rtx4090/vla2/bootstrap.json",
-        "status": "recorded_rtx4090_e2e_verified_original_install_receipts_retained",
+        "status": "fresh_rtx4090_clean_install_verified",
         "upstream_install_guide": "https://github.com/robbyant/lingbot-vla-v2#readme"
       },
       "checkpoint": {
@@ -550,15 +568,18 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_cell": "vla2-runtime_update",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_cell": "vla2-runtime_selected",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "vla2",
             "mode": "fp8",
+            "tested": true,
+            "run": "fp8",
+            "cell": "vla2-runtime_selected",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -579,14 +600,17 @@
           },
           "environment": {},
           "evidence_cell": "vla2-runtime_default",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "vla2",
             "mode": "native",
+            "tested": true,
+            "run": "fp8",
+            "cell": "vla2-runtime_default",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -606,15 +630,18 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_cell": "vla2-runtime_numeric",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_cell": "vla2-runtime_selected",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "vla2",
             "mode": "numeric",
+            "tested": true,
+            "run": "numeric",
+            "cell": "vla2-runtime_selected",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -635,7 +662,7 @@
         "target": "3.12"
       },
       "release_gaps": [
-        "Qualification covers the recorded requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
+        "Qualification covers the recorded modes' requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [
         "deploy.lingbot_vla_v2_policy"
@@ -685,7 +712,7 @@
         ],
         "qualification": "release/rtx4090/qualification.json",
         "recipe": "release/vendor/rtx4090/pi05/bootstrap.json",
-        "status": "recorded_rtx4090_e2e_verified_original_install_receipts_retained",
+        "status": "fresh_rtx4090_clean_install_verified",
         "upstream_install_guide": "https://github.com/huggingface/lerobot#readme"
       },
       "checkpoint": {
@@ -744,14 +771,17 @@
           },
           "environment": {},
           "evidence_cell": "pi05-runtime_selected",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "pi05",
             "mode": "fp8",
+            "tested": true,
+            "run": "fp8",
+            "cell": "pi05-runtime_selected",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -772,14 +802,17 @@
           },
           "environment": {},
           "evidence_cell": "pi05-runtime_default",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "pi05",
             "mode": "native",
+            "tested": true,
+            "run": "fp8",
+            "cell": "pi05-runtime_default",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -800,7 +833,7 @@
         "target": "3.12"
       },
       "release_gaps": [
-        "Qualification covers the recorded requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
+        "Qualification covers the recorded modes' requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [],
       "upstream": {
@@ -849,7 +882,7 @@
         ],
         "qualification": "release/rtx4090/qualification.json",
         "recipe": "release/vendor/rtx4090/groot/bootstrap.json",
-        "status": "recorded_rtx4090_e2e_verified_original_install_receipts_retained",
+        "status": "fresh_rtx4090_clean_install_verified",
         "upstream_install_guide": "https://github.com/NVIDIA/Isaac-GR00T#readme"
       },
       "checkpoint": {
@@ -899,15 +932,18 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_cell": "groot-rtx4090-fp8-pending",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_cell": "groot-runtime_selected",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "groot",
             "mode": "fp8",
+            "tested": true,
+            "run": "fp8",
+            "cell": "groot-runtime_selected",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -927,15 +963,18 @@
             "sampler": "checkpoint"
           },
           "environment": {},
-          "evidence_cell": "groot-runtime_selected",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_cell": "groot-runtime_default",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "groot",
             "mode": "native",
+            "tested": true,
+            "run": "fp8",
+            "cell": "groot-runtime_default",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -956,7 +995,7 @@
         "target": "3.12"
       },
       "release_gaps": [
-        "Qualification covers the recorded requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
+        "Qualification covers the recorded modes' requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [],
       "upstream": {
@@ -1011,7 +1050,7 @@
         ],
         "qualification": "release/rtx4090/qualification.json",
         "recipe": "release/vendor/rtx4090/edge/bootstrap.json",
-        "status": "recorded_rtx4090_e2e_verified_original_install_receipts_retained",
+        "status": "fresh_rtx4090_clean_install_verified",
         "upstream_install_guide": "https://github.com/NVIDIA/cosmos-framework#readme"
       },
       "checkpoint": {
@@ -1073,15 +1112,18 @@
             "steps": 4
           },
           "environment": {},
-          "evidence_cell": "edge-rtx4090-fp8-pending",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_cell": "edge-runtime_selected",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "edge",
             "mode": "fp8",
+            "tested": true,
+            "run": "fp8",
+            "cell": "edge-runtime_selected",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -1105,14 +1147,17 @@
           },
           "environment": {},
           "evidence_cell": "edge-runtime_default",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "edge",
             "mode": "native",
+            "tested": true,
+            "run": "fp8",
+            "cell": "edge-runtime_default",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -1138,14 +1183,17 @@
             "IFL_COSMOS3_TIMESTEP_CACHE": "1"
           },
           "evidence_cell": "edge-runtime_selected",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "edge",
             "mode": "numeric",
+            "tested": true,
+            "run": "numeric",
+            "cell": "edge-runtime_selected",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -1166,7 +1214,7 @@
         "target": "3.13"
       },
       "release_gaps": [
-        "Qualification covers the recorded requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
+        "Qualification covers the recorded modes' requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [],
       "upstream": {
@@ -1217,9 +1265,9 @@
           "Use the separately pinned Linux/x86_64 RTX 4090 profile and original checkpoint/auxiliary assets. Installation, native extensions and actual GPU execution require their own checks.",
           "The benchmark uses one RTX 4090; preserve the checkpoint schedule, action horizon and episode state unless explicitly selecting a changed execution policy."
         ],
-        "qualification": null,
+        "qualification": "release/rtx4090/qualification.json",
         "recipe": "release/vendor/rtx4090/nano/bootstrap.json",
-        "status": "target_profile_prepared_install_and_GPU_checks_pending",
+        "status": "fresh_rtx4090_clean_install_verified",
         "upstream_install_guide": "https://github.com/NVIDIA/cosmos-framework#readme"
       },
       "checkpoint": {
@@ -1281,17 +1329,18 @@
             "steps": 4
           },
           "environment": {},
-          "evidence_cell": "nano-rtx4090-fp8-pending",
-          "evidence_kind": "capacity_excluded_not_tested",
+          "evidence_cell": null,
+          "evidence_kind": "not_measured_on_current_source",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "nano",
             "mode": "fp8",
-            "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1",
-            "status": "capacity_excluded_not_tested",
-            "tested": false
+            "tested": false,
+            "run": null,
+            "cell": null,
+            "path": null,
+            "sha256": null
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -1315,16 +1364,17 @@
           },
           "environment": {},
           "evidence_cell": "nano-runtime_default",
-          "evidence_kind": "capacity_excluded_not_tested",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "nano",
             "mode": "native",
+            "tested": true,
+            "run": "numeric",
+            "cell": "nano-runtime_default",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1",
-            "status": "capacity_excluded_not_tested",
-            "tested": false
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -1350,16 +1400,17 @@
             "IFL_COSMOS3_TIMESTEP_CACHE": "1"
           },
           "evidence_cell": "nano-runtime_selected",
-          "evidence_kind": "capacity_excluded_not_tested",
+          "evidence_kind": "rtx4090_clean_install_reproduction",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "nano",
             "mode": "numeric",
+            "tested": true,
+            "run": "numeric",
+            "cell": "nano-runtime_selected",
             "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1",
-            "status": "capacity_excluded_not_tested",
-            "tested": false
+            "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -1380,7 +1431,7 @@
         "target": "3.13"
       },
       "release_gaps": [
-        "RTX 4090 installation, model residency, numerical comparison and measured latency are pending actual-device qualification."
+        "Qualification covers the recorded modes' requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [],
       "upstream": {
@@ -1424,9 +1475,9 @@
           "Use the separately pinned Linux/x86_64 RTX 4090 profile and original checkpoint/auxiliary assets. Installation, native extensions and actual GPU execution require their own checks.",
           "The benchmark uses one RTX 4090; preserve the checkpoint schedule, action horizon and episode state unless explicitly selecting a changed execution policy."
         ],
-        "qualification": "release/rtx4090/qualification.json",
+        "qualification": null,
         "recipe": "release/vendor/rtx4090/dreamzero/bootstrap.json",
-        "status": "recorded_rtx4090_e2e_verified_original_install_receipts_retained",
+        "status": "rtx4090_capacity_excluded",
         "upstream_install_guide": "https://github.com/dreamzero0/dreamzero#readme"
       },
       "checkpoint": {
@@ -1520,15 +1571,18 @@
             "step_cache": "dynamic"
           },
           "environment": {},
-          "evidence_cell": "dreamzero-dynamic-fp8",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_cell": null,
+          "evidence_kind": "rtx4090_capacity_excluded",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "dreamzero",
             "mode": "dynamic-fp8",
-            "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "tested": false,
+            "run": null,
+            "cell": null,
+            "path": null,
+            "sha256": null
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -1570,15 +1624,18 @@
             "step_cache": "dynamic"
           },
           "environment": {},
-          "evidence_cell": "dreamzero-dynamic-native",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_cell": null,
+          "evidence_kind": "rtx4090_capacity_excluded",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "dreamzero",
             "mode": "dynamic-native",
-            "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "tested": false,
+            "run": null,
+            "cell": null,
+            "path": null,
+            "sha256": null
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -1619,15 +1676,18 @@
             "step_cache": "checkpoint"
           },
           "environment": {},
-          "evidence_cell": "dreamzero-runtime_selected",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_cell": null,
+          "evidence_kind": "rtx4090_capacity_excluded",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "dreamzero",
             "mode": "fp8",
-            "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "tested": false,
+            "run": null,
+            "cell": null,
+            "path": null,
+            "sha256": null
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -1668,15 +1728,18 @@
             "step_cache": "checkpoint"
           },
           "environment": {},
-          "evidence_cell": "dreamzero-runtime_default",
-          "evidence_kind": "independently_audited_rtx4090_recorded_e2e",
+          "evidence_cell": null,
+          "evidence_kind": "rtx4090_capacity_excluded",
           "gpu_qualified_by_plan": false,
           "native_requirements": [],
           "recorded_e2e_qualification": {
             "family": "dreamzero",
             "mode": "native",
-            "path": "release/rtx4090/qualification.json",
-            "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+            "tested": false,
+            "run": null,
+            "cell": null,
+            "path": null,
+            "sha256": null
           },
           "runtime_kwargs": {
             "device": "cuda:0",
@@ -1697,7 +1760,7 @@
         "target": "3.12"
       },
       "release_gaps": [
-        "Qualification covers the recorded requests, episodes and schedules only. Task quality, long-episode saturation and minimum host RAM are not certified."
+        "Not tested on RTX 4090: the pinned model files exceed the qualification node's model storage. Task quality, long-episode saturation and minimum host RAM are not certified."
       ],
       "source_only_modules": [],
       "upstream": {
@@ -1714,7 +1777,7 @@
   ],
   "recorded_e2e_qualification": {
     "path": "release/rtx4090/qualification.json",
-    "sha256": "c9cf88bd047f7045aea15d0e492ece5075a67516d99d903484f0713b697dbde1"
+    "sha256": "a842c22d0b84cb39a445c5338edbe4a616e4eb59d4fe9c0f8a935e0260633fee"
   },
   "schema": "instinctflash.deployment_profiles.v1",
   "target": "rtx4090"

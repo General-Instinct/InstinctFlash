@@ -20,7 +20,7 @@ def install_groot_backbone_fp8(backbone):
                    projections=[dict(path=f'{path}.{name}', in_features=source.in_features,
                                      out_features=source.out_features)
                                 for path, _, name, source in targets],
-                   scope='Qwen3 text attention and MLP, plus existing FP8 VLSA; native vision and BF16 DiT',
+                   scope='Qwen3 text attention and MLP; GI engine FP8 VLSA and 4-step DiT; native vision',
                    quality_certificate=None)
     for (_, parent, name, _), replacement in zip(targets, packed):
         setattr(parent, name, replacement)

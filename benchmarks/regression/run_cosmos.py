@@ -32,6 +32,10 @@ def main():
     parser.add_argument('--python', default=sys.executable)
     parser.add_argument('--families', nargs='+', choices=['edge', 'nano'], default=['edge', 'nano'])
     parser.add_argument('--iterations', type=int, default=20)
+    parser.add_argument('--fixture', type=Path, required=True,
+                        help='recorded DROID observation archive passed to every arm')
+    parser.add_argument('--reference', type=Path, required=True,
+                        help='directory with the eager reference constructor upstream.py, passed to every arm')
     parser.add_argument('--candidate', choices=['default', 'pointwise', 'graphs', 'reuse', 'conditioning'], default='default')
     args = parser.parse_args()
     args.output = args.output.resolve()
@@ -78,7 +82,9 @@ def main():
                 with output.with_suffix('.log').open('x') as log:
                     try:
                         result = subprocess.run([args.python, '-m', 'benchmarks.regression.cosmos', family,
-                            arm, str(output), '--iterations', str(args.iterations)], cwd=root, env=current_env,
+                            arm, str(output), '--iterations', str(args.iterations),
+                            '--fixture', str(args.fixture.resolve()), '--reference', str(args.reference.resolve())],
+                            cwd=root, env=current_env,
                             stdout=log, stderr=subprocess.STDOUT, timeout=900)
                         job.update(exit_code=result.returncode, status='PASS' if result.returncode == 0 else 'FAIL')
                     except subprocess.TimeoutExpired:

@@ -46,9 +46,10 @@ def execution_profile(receipt):
         raise ConfigurationError('step schedule and guidance must be explicit')
     if ex['precision']=='fp8' or ex.get('graph_stats',{}).get('cuda_kernels'):
         artifacts=ex.get('artifacts',{})
-        required=('engine_sha256','calibration_sha256') if ex['precision']=='fp8' else ('kernel_sha256',)
+        # The FP8 engines compute activation scales per token, so there is no calibration artifact.
+        required=('engine_sha256',) if ex['precision']=='fp8' else ('kernel_sha256',)
         if any(not isinstance(artifacts.get(k),str) or not HASH.fullmatch(artifacts[k]) for k in required):
-            raise ConfigurationError('custom kernels/FP8 require binary and calibration artifact identities')
+            raise ConfigurationError('custom kernels/FP8 require engine or kernel artifact identities')
     facts={key:deepcopy(receipt[key]) for key in PROFILE_FIELDS}
     # Logs and changing counters can differ between fresh endpoints of the same execution.
     facts['execution'].pop('runtime_explanation',None)

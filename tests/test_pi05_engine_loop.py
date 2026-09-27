@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import numpy as np
 import torch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from instinctflash.runtime.pi05_engine import Pi05EngineLoop
+from instinctflash.engines.pi05.loop import GiPi05Loop
 
 
 def fixture(dim=7, bad_shape=False):
@@ -13,10 +13,10 @@ def fixture(dim=7, bad_shape=False):
     class Engine:
         def set_prompt(self, ids):
             calls.append(('tokens',ids.tolist()))
-        def infer(self, obs):
-            calls.append(('images',[float(x[0,0,0]) for x in obs['images']]))
+        def infer(self, images):
+            calls.append(('images',[float(x[0,0,0]) for x in images]))
             width=7 if bad_shape else 32
-            return {'actions':np.arange(3*width,dtype=np.float32).reshape(3,width)}
+            return torch.arange(3*width,dtype=torch.float32).reshape(3,width)
     def pre(batch):
         state=int(batch['observation.state'][0].item())
         return {'observation.language.tokens':torch.tensor([[state,8,999]]),
@@ -24,11 +24,15 @@ def fixture(dim=7, bad_shape=False):
     def images(batch):
         return ([torch.full((1,3,4,4),v) for v in (0.25,0.5,0.75)],
                 [torch.tensor([v]) for v in (True,False,True)])
+    engines={}
     def build(views):
-        calls.append(('build',views));return Engine()
+        if views not in engines:
+            calls.append(('build',views));engines[views]=Engine()
+        return engines[views]
     cfg=SimpleNamespace(output_features={'action':SimpleNamespace(shape=[dim])},
                         chunk_size=3,n_action_steps=2)
-    loop=Pi05EngineLoop(cfg,pre,lambda x:2*x+1,images,build,'cpu')
+    loop=GiPi05Loop(cfg,pre,lambda x:2*x+1,images,None,'cpu')
+    loop._engine=build
     return loop,calls
 
 

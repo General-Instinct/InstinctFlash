@@ -1,4 +1,4 @@
-"""Freeze a held-out native RoboTwin reset for joint-policy startup/calibration."""
+"""Freeze a held-out native RoboTwin reset for the joint-policy startup probe."""
 import argparse
 import copy
 from pathlib import Path
@@ -47,7 +47,7 @@ def prepare(robotwin, lingbot, request, output, seed):
             raise ConfigurationError('startup observation reset/serialization is not byte-repeatable')
     if sources != sim.source_identity(robotwin, lingbot):
         raise ConfigurationError('simulator sources changed during preparation')
-    report = {'purpose': 'startup/calibration only; exclude this task/seed from evaluation',
+    report = {'purpose': 'startup probe only; exclude this task/seed from evaluation',
               'scene': scene, 'sources': sources, 'assets_sha256': assets,
               'observation_sha256': sha256_file(path), 'repeated_native_reset_byte_equal': True,
               'preparation_source_sha256': sha256_file(Path(__file__)),

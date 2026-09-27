@@ -11,7 +11,7 @@ from instinctflash.runtime.wan_va_engine import WanVaEngineLoop
 
 class Server:
     def __init__(self):
-        self.native = SimpleNamespace(job_config=SimpleNamespace(obs_cam_keys=['camera'], frame_chunk_size=2))
+        self.job_config = SimpleNamespace(obs_cam_keys=['camera'], frame_chunk_size=2)
         self.events = []
         self.cycle = 0
 

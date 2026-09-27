@@ -2,7 +2,7 @@
 
 Today the "runtime" is the upstream server plus runtime patches. That is deliberate and
 temporary: it keeps every pass verifiable against the existing bit-exactness gate
-(`probe_bitexact.py`) before anything is rewritten, and it keeps the vendored upstream tree
+(the bit-exactness probe) before anything is rewritten, and it keeps the vendored upstream tree
 clean so `git diff` stays reviewable. When the multi-stream KV core exists these installers get
 replaced by real backend methods; the *passes* do not change, which is the point of the layering.
 
@@ -29,7 +29,7 @@ from instinctflash.runtime.sm120_install import install_sm120_gated_residual
 from instinctflash.runtime.sm120_stage2_install import install_sm120_wan_stage2
 
 # --- substrate passes -------------------------------------------------------------------
-# These substrate passes used to live as inline patches in eval/lingbot_va_robotwin/serve_variant.py.
+# These substrate passes used to live as inline patches in the A/B launcher script.
 # They are here so the A/B harness and `plan.serve()` apply the SAME code: a measured
 # speedup that came from a different patch than the one production installs is not a
 # measurement of anything.
@@ -631,7 +631,7 @@ def install_ring_kv_addressing(server_module, va_server_cls) -> list[str]:
 def install_action_terminal_forward_elision(server_module, va_server_cls) -> list[str]:
     """Install the action pred-commit elision once on the upstream transformer + server classes.
 
-    Opt-in (serve_variant `--action-terminal-elision`) until its wrap-crossing A/B is recorded in
+    Opt-in (the LingBot worker's `--action-terminal-elision`) until its wrap-crossing A/B is recorded in
     verify/released.py. Works under both allocators: the pass detects RingKVAddressing per cache at
     the first reservation, so it may be installed before or after `--ring-kv`.
     """

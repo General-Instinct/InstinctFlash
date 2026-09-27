@@ -9,9 +9,18 @@
 # directories keep `test` honest and keep the switches instant.
 #
 #   .venv          test extra only -- the one that must stay torch-free
-#   .venv-dev      test + runtime + eval, from uv.lock
-#   .venv-server   from eval/lingbot_va_robotwin/server-requirements.txt, a
-#                  SEPARATE lock on purpose (see that file's header)
+#   .venv-dev      test + runtime + eval extras, from uv.lock
+#   .venv-server   from the LingBot-VA server requirements lock named by
+#                  IFL_SERVER_REQUIREMENTS, a SEPARATE lock on purpose: its torch pin
+#                  must not reach the development environments through uv.lock
+#
+# The server-env tasks take their inputs explicitly (absolute paths, or relative to the
+# repository root); neither ships with this repository:
+#   IFL_SERVER_REQUIREMENTS  compiled server lock (.txt); lock-server compiles the .in
+#                            file next to it into this path
+#   IFL_SERVER_ENV           shell file to source that exports LINGBOT_ROOT,
+#                            ROBOTWIN_ROOT, LINGBOT_CKPT, IFL_SERVER_PY, IFL_CLIENT_PY
+#                            and IFL_FA_SHIM_DIR
 set -euo pipefail
 
 IFL_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -20,8 +29,9 @@ cd "$IFL_ROOT"
 CORE_VENV="$IFL_ROOT/.venv"
 DEV_VENV="$IFL_ROOT/.venv-dev"
 SERVER_VENV="$IFL_ROOT/.venv-server"
-SERVER_IN="$IFL_ROOT/eval/lingbot_va_robotwin/server-requirements.in"
-SERVER_TXT="$IFL_ROOT/eval/lingbot_va_robotwin/server-requirements.txt"
+SERVER_TXT="${IFL_SERVER_REQUIREMENTS:-}"
+SERVER_IN="${SERVER_TXT%.txt}.in"
+SERVER_ENV="${IFL_SERVER_ENV:-}"
 
 usage() {
   cat <<'EOF'
@@ -34,11 +44,38 @@ usage: ./scripts/task.sh <task>
 
   test-lingbot       the 12-pass run against the real LingBot-VA server
   parity-allocator   the documented 200-cycle allocator sweep
-  env-check          print the resolved eval paths
+  env-check          print the resolved server-environment paths
 
   lock               refresh uv.lock
-  lock-server        refresh eval/lingbot_va_robotwin/server-requirements.txt
+  lock-server        refresh the server lock named by IFL_SERVER_REQUIREMENTS
+
+  The server-env tasks need IFL_SERVER_REQUIREMENTS (test-lingbot,
+  parity-allocator, lock-server) and IFL_SERVER_ENV (test-lingbot,
+  parity-allocator, env-check); see this script's header.
 EOF
+}
+
+# require_input VAR DESCRIPTION -- fail clearly when an explicit input is unset.
+require_input() {
+  if [ -z "${!1:-}" ]; then
+    echo "error: set $1 to $2" >&2
+    exit 2
+  fi
+}
+
+require_server_requirements() {
+  require_input IFL_SERVER_REQUIREMENTS "the LingBot-VA server requirements lock (.txt)"
+  case "$SERVER_TXT" in
+    *.txt) ;;
+    *) echo "error: IFL_SERVER_REQUIREMENTS must name a .txt lock" >&2; exit 2 ;;
+  esac
+}
+
+source_server_env() {
+  require_input IFL_SERVER_ENV "the server environment file to source (exports LINGBOT_ROOT, ...)"
+  [ -f "$SERVER_ENV" ] || { echo "error: IFL_SERVER_ENV=$SERVER_ENV does not exist" >&2; exit 2; }
+  # shellcheck source=/dev/null
+  source "$SERVER_ENV"
 }
 
 if ! command -v uv >/dev/null 2>&1; then
@@ -52,6 +89,7 @@ fi
 # because the point of the env is to BE the lock -- a stray package left behind from
 # an earlier revision is a drifted baseline, which is a mismeasured optimization.
 sync_server() {
+  require_server_requirements
   [ -f "$SERVER_TXT" ] || {
     echo "missing $SERVER_TXT -- run './scripts/task.sh lock-server' first" >&2
     exit 1
@@ -79,34 +117,33 @@ case "${1:-}" in
       python -c "import torch; print('torch', torch.__version__, '| cuda', torch.version.cuda, '| gpus', torch.cuda.device_count())"
     ;;
 
-  # Server-env tasks source env.sh rather than restating LINGBOT_ROOT / the shim dir.
-  # env.sh is the declared single source of truth for eval paths and it already had to
-  # survive the tree moving once; a second copy of those paths here is precisely the
-  # drift it was written to avoid. Sync BEFORE sourcing, or env.sh warns about the
-  # interpreter sync_server is in the middle of creating.
+  # Server-env tasks source IFL_SERVER_ENV rather than restating LINGBOT_ROOT / the shim
+  # dir. That file is the single source of truth for the server-environment paths; a
+  # second copy of those paths here is precisely the drift it exists to avoid. Sync
+  # BEFORE sourcing, or the environment file may warn about the interpreter sync_server
+  # is in the middle of creating.
   test-lingbot)
     # The 12-pass run: needs the lingbot-va checkout, so it exercises the real upstream
     # WanAttention allocator rather than a stand-in.
+    require_input IFL_SERVER_ENV "the server environment file to source (exports LINGBOT_ROOT, ...)"
     sync_server
-    # shellcheck source=eval/lingbot_va_robotwin/env.sh
-    source eval/lingbot_va_robotwin/env.sh
+    source_server_env
     export PYTHONPATH="$IFL_FA_SHIM_DIR"
     exec "$IFL_SERVER_PY" tests/run_tests.py
     ;;
 
   parity-allocator)
-    # the eval README (7b) quotes 200 cycles / 800 checks; the file's own default is 120 / 480.
+    # The documented sweep is 200 cycles / 800 checks; the file's own default is 120 / 480.
     # Pin the documented sweep so the published number is the one that gets reproduced.
+    require_input IFL_SERVER_ENV "the server environment file to source (exports LINGBOT_ROOT, ...)"
     sync_server
-    # shellcheck source=eval/lingbot_va_robotwin/env.sh
-    source eval/lingbot_va_robotwin/env.sh
+    source_server_env
     export PYTHONPATH="$IFL_FA_SHIM_DIR" CYCLES=200
     exec "$IFL_SERVER_PY" tests/test_ring_allocator.py
     ;;
 
   env-check)
-    # shellcheck source=eval/lingbot_va_robotwin/env.sh
-    source eval/lingbot_va_robotwin/env.sh
+    source_server_env
     echo "IFL_ROOT      $IFL_ROOT"
     echo "LINGBOT_ROOT  $LINGBOT_ROOT"
     echo "ROBOTWIN_ROOT $ROBOTWIN_ROOT"
@@ -122,6 +159,8 @@ case "${1:-}" in
   # --python-version 3.10 pins the solve to the floor in requires-python. Without it
   # the lock would silently describe whatever interpreter happened to run it.
   lock-server)
+    require_server_requirements
+    [ -f "$SERVER_IN" ] || { echo "error: missing $SERVER_IN next to IFL_SERVER_REQUIREMENTS" >&2; exit 2; }
     exec uv pip compile "$SERVER_IN" \
       --python-version 3.10 \
       --output-file "$SERVER_TXT"

@@ -159,7 +159,7 @@ def apply_declared_guidance(cfg, guidance) -> dict:
     with it the batch-2 forward); a declared scale is written as the served w -- 1.0 included,
     which is the campaign's guidance-off point; `cfg` by name leaves the model's configured scale
     alone (it is the family default, recorded as inherited). Numeric scales arrive as CLI STRINGS
-    on the worker path (`serve_variant --guidance video=3`); before 2026-08-31 they fell through
+    on the worker path (`lingbot_worker --guidance video=3`); before 2026-08-31 they fell through
     every case and the flag silently applied NOTHING while the operator believed the scale was
     re-tuned. An unreadable value is now refused (GuidanceDeclarationError), never ignored.
     """
@@ -382,7 +382,7 @@ class LingBotVA:
 
     The upstream server is patched at runtime rather than forked. That keeps `git status` in
     the lingbot-va checkout clean, keeps every variant one flag away from stock, and keeps the
-    bit-exactness gate (`eval/lingbot_va_robotwin/probe_bitexact.py`) meaningful.
+    bit-exactness gate (the bit-exactness probe) meaningful.
     """
 
     model_id = "lingbot-va-posttrain-robotwin"
@@ -669,10 +669,11 @@ class LingBotVA:
                        seed=None):
         """How to start this model as a managed worker. Returns (argv, env-overrides).
 
-        Reuses `serve_variant.py` -- the entry point the project already gates and measures -- rather
-        than adding a second serving path that would need its own bit-exactness evidence. Flags start
-        from `shipped_configuration()` and are filtered by the compiled plan, so worker and in-process
-        placements honor the same device gates, tier ceiling and caller exclusions.
+        Reuses `instinctflash.runtime.lingbot_worker` -- the entry point the project already gates and
+        measures -- rather than adding a second serving path that would need its own bit-exactness
+        evidence. Flags start from `shipped_configuration()` and are filtered by the compiled plan, so
+        worker and in-process placements honor the same device gates, tier ceiling and caller
+        exclusions.
         """
         import os
         from pathlib import Path
@@ -682,7 +683,7 @@ class LingBotVA:
         # Geometry follows the same declaration > IFL_CFG > fail-loud rule as build_in_process.
         # The named config rides on --config-name (previously hardcoded to robotwin, so
         # IFL_CFG=fans plus worker placement silently served robotwin geometry); declared keys
-        # ride on --geometry as JSON overrides, resolved by serve_variant in the worker where the
+        # ride on --geometry as JSON overrides, resolved by lingbot_worker in the worker where the
         # upstream configs actually import.
         import json as _json
 
@@ -749,7 +750,7 @@ class LingBotVA:
                                              for k in sorted(g) if k in resolved)]
 
         if seed is not None:
-            # the same per-request seeding as build_in_process, installed by serve_variant
+            # the same per-request seeding as build_in_process, installed by lingbot_worker
             argv += ["--deterministic-seed", str(int(seed))]
 
         env = {"PYTHONUNBUFFERED": "1"}

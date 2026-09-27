@@ -3,10 +3,10 @@
   "target": "jetson_thor",
   "default_execution": "native",
   "checkpoint_revision_source": {
-    "path": "eval/user_e2e_2026-09-14/matrix_final.json",
-    "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d"
+    "path": "benchmarks/regression/fixtures/checkpoint_matrix.json",
+    "sha256": "f1cb76bdaff3331fe409fafd88bd19022aca9161c1722fa767e838358348b88f"
   },
-  "evidence_scope": "Pinned historical runtime recipes plus fresh public package-install and CPU import checks. Doctor does not construct models, execute GPUs, prove latency or certify task quality; per-model execution receipts are separate.",
+  "evidence_scope": "Pinned historical runtime recipes. Package status comes only from the clean-install qualification (2026-09-26/2026-09-27; release/vendor/qualification.json): a new environment per model built by scripts/bootstrap_vendor.py from a clean checkout without the previous backend, both package checks, the CPU doctor, a static audit for previous-backend artifacts, a public reproduction run, a serving smoke and, where applicable, FP8 benchmark-endpoint checks, with every step's processes' mapped files recorded. Doctor itself does not construct models, execute GPUs, prove latency or certify task quality.",
   "models": [
     {
       "id": "va",
@@ -109,7 +109,28 @@
           "--root",
           "<new-assets>"
         ],
-        "qualification": "release/vendor/qualification.json"
+        "qualification": "release/vendor/qualification.json",
+        "clean_install": {
+          "date": "2026-09-26",
+          "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+          "utc": [
+            "2026-09-27T05:19:52.201934+00:00",
+            "2026-09-27T05:37:36Z"
+          ],
+          "evidence": "release/vendor/qualification.json",
+          "previous_backend_absent": true,
+          "checks": {
+            "run_context_clean_checkout": true,
+            "reproduction_command": true,
+            "install_and_package_checks": true,
+            "static_audit": true,
+            "public_reproduction_run": true,
+            "serving_smoke": true,
+            "fp8_endpoints": true,
+            "process_maps_complete_and_clean": true,
+            "mapped_files_in_own_or_system_locations": true
+          }
+        }
       },
       "execution_modes": {
         "native": {
@@ -147,13 +168,7 @@
             "step_cache": "checkpoint"
           },
           "environment": {},
-          "native_requirements": [
-            {
-              "kind": "extension",
-              "name": "flash_rt.flash_rt_kernels",
-              "remedy": "Build/install serving/ for this interpreter, CUDA toolkit and Thor SM110; a source-only wheel is insufficient."
-            }
-          ],
+          "native_requirements": [],
           "effective_schedule": {
             "sampler": "checkpoint",
             "video_steps": 25,
@@ -215,13 +230,7 @@
             "step_cache": "checkpoint"
           },
           "environment": {},
-          "native_requirements": [
-            {
-              "kind": "extension",
-              "name": "flash_rt.flash_rt_kernels",
-              "remedy": "Build/install serving/ for this interpreter, CUDA toolkit and Thor SM110; a source-only wheel is insufficient."
-            }
-          ],
+          "native_requirements": [],
           "effective_schedule": {
             "sampler": "checkpoint",
             "video_steps": 2,
@@ -356,7 +365,28 @@
           "--root",
           "<new-assets>"
         ],
-        "qualification": "release/vendor/qualification.json"
+        "qualification": "release/vendor/qualification.json",
+        "clean_install": {
+          "date": "2026-09-26",
+          "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+          "utc": [
+            "2026-09-27T04:56:37.948276+00:00",
+            "2026-09-27T05:04:51Z"
+          ],
+          "evidence": "release/vendor/qualification.json",
+          "previous_backend_absent": true,
+          "checks": {
+            "run_context_clean_checkout": true,
+            "reproduction_command": true,
+            "install_and_package_checks": true,
+            "static_audit": true,
+            "public_reproduction_run": true,
+            "serving_smoke": true,
+            "fp8_endpoints": true,
+            "process_maps_complete_and_clean": true,
+            "mapped_files_in_own_or_system_locations": true
+          }
+        }
       },
       "execution_modes": {
         "native": {
@@ -389,18 +419,7 @@
             "step_cache": "checkpoint"
           },
           "environment": {},
-          "native_requirements": [
-            {
-              "kind": "extension",
-              "name": "flash_rt.flash_rt_kernels",
-              "remedy": "Build/install serving/ for this interpreter, CUDA toolkit and Thor SM110; a source-only wheel is insufficient."
-            },
-            {
-              "kind": "extension",
-              "name": "flash_rt.flash_rt_fa2",
-              "remedy": "Build/install the public serving native wheel including flash_rt_fa2 for this Python/CUDA/Thor SM110; extension presence alone is not GPU qualification."
-            }
-          ],
+          "native_requirements": [],
           "effective_schedule": {
             "sampler": "checkpoint",
             "nfe": {
@@ -521,7 +540,28 @@
           "--root",
           "<new-assets>"
         ],
-        "qualification": "release/vendor/qualification.json"
+        "qualification": "release/vendor/qualification.json",
+        "clean_install": {
+          "date": "2026-09-26",
+          "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+          "utc": [
+            "2026-09-27T05:05:16.182276+00:00",
+            "2026-09-27T05:14:31Z"
+          ],
+          "evidence": "release/vendor/qualification.json",
+          "previous_backend_absent": true,
+          "checks": {
+            "run_context_clean_checkout": true,
+            "reproduction_command": true,
+            "install_and_package_checks": true,
+            "static_audit": true,
+            "public_reproduction_run": true,
+            "serving_smoke": true,
+            "fp8_endpoints": true,
+            "process_maps_complete_and_clean": true,
+            "mapped_files_in_own_or_system_locations": true
+          }
+        }
       },
       "execution_modes": {
         "native": {
@@ -554,18 +594,7 @@
             "step_cache": "checkpoint"
           },
           "environment": {},
-          "native_requirements": [
-            {
-              "kind": "extension",
-              "name": "flash_rt.flash_rt_kernels",
-              "remedy": "Build/install serving/ for this interpreter, CUDA toolkit and Thor SM110; a source-only wheel is insufficient."
-            },
-            {
-              "kind": "extension",
-              "name": "flash_rt.flash_rt_fa2",
-              "remedy": "Build/install the public serving native wheel including flash_rt_fa2 for this Python/CUDA/Thor SM110; extension presence alone is not GPU qualification."
-            }
-          ],
+          "native_requirements": [],
           "effective_schedule": {
             "sampler": "checkpoint",
             "nfe": {
@@ -715,7 +744,28 @@
           "--root",
           "<new-assets>"
         ],
-        "qualification": "release/vendor/qualification.json"
+        "qualification": "release/vendor/qualification.json",
+        "clean_install": {
+          "date": "2026-09-26",
+          "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+          "utc": [
+            "2026-09-27T04:41:18.746857+00:00",
+            "2026-09-27T04:56:32Z"
+          ],
+          "evidence": "release/vendor/qualification.json",
+          "previous_backend_absent": true,
+          "checks": {
+            "run_context_clean_checkout": true,
+            "reproduction_command": true,
+            "install_and_package_checks": true,
+            "static_audit": true,
+            "public_reproduction_run": true,
+            "serving_smoke": true,
+            "fp8_endpoints": null,
+            "process_maps_complete_and_clean": true,
+            "mapped_files_in_own_or_system_locations": true
+          }
+        }
       },
       "execution_modes": {
         "native": {
@@ -748,18 +798,7 @@
             "step_cache": "checkpoint"
           },
           "environment": {},
-          "native_requirements": [
-            {
-              "kind": "extension",
-              "name": "flash_rt.flash_rt_kernels",
-              "remedy": "Build/install serving/ for this interpreter, CUDA toolkit and Thor SM110; a source-only wheel is insufficient."
-            },
-            {
-              "kind": "package_file",
-              "name": "flash_rt/libfmha_fp16_strided.so",
-              "remedy": "Build/install the FMHA library from serving/ for Thor. Doctor checks the portable packaged location only, not old absolute-path fallbacks."
-            }
-          ],
+          "native_requirements": [],
           "effective_schedule": {
             "sampler": "checkpoint",
             "nfe": {
@@ -864,7 +903,28 @@
           "--root",
           "<new-assets>"
         ],
-        "qualification": "release/vendor/qualification.json"
+        "qualification": "release/vendor/qualification.json",
+        "clean_install": {
+          "date": "2026-09-26",
+          "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+          "utc": [
+            "2026-09-27T05:14:31.851275+00:00",
+            "2026-09-27T05:19:29Z"
+          ],
+          "evidence": "release/vendor/qualification.json",
+          "previous_backend_absent": true,
+          "checks": {
+            "run_context_clean_checkout": true,
+            "reproduction_command": true,
+            "install_and_package_checks": true,
+            "static_audit": true,
+            "public_reproduction_run": true,
+            "serving_smoke": true,
+            "fp8_endpoints": true,
+            "process_maps_complete_and_clean": true,
+            "mapped_files_in_own_or_system_locations": true
+          }
+        }
       },
       "execution_modes": {
         "native": {
@@ -891,7 +951,7 @@
         }
       },
       "release_gaps": [
-        "Keep native fastest route; FP8 is not the measured winner here."
+        "Native remains the published route. The current FP8 route (FP8 Qwen3 text projections and the InstinctFlash FP8 action-head engine) has no certified action agreement or task quality and has not been measured under the reproduction protocol; the earlier finding that FP8 was not faster predates this route."
       ]
     },
     {
@@ -964,7 +1024,7 @@
       ],
       "source_only_modules": [],
       "bootstrap": {
-        "status": "compiler_wheel_origin_corrected_installation_pending",
+        "status": "fresh_thor_package_checks_passed",
         "install_guide": "INSTALL.rst",
         "upstream_install_guide": "https://github.com/NVIDIA/cosmos-framework#readme",
         "notes": [
@@ -972,7 +1032,7 @@
           "CPU doctor imports the actual RoboLab policy-service entrypoint under the offline/no-GPU guard and checks both service/argument APIs; model construction and inference remain separate gates.",
           "Retain released prompt formatting, four UniPC steps, CFG3, horizon32 and native processing. External Wan2.2 VAE revision/content is separately pinned.",
           "Bootstrap installs uv0.12.5 and prepares the native hf1.16.4 subprocess in an isolated pinned cache. Source bootstrap/run.env before inference; UV_OFFLINE prevents tool downloads at model load. Asset preparation remains explicit and does not inherit Hub-offline mode.",
-          "Triton 3.6.0 is selected from the complete official PyTorch cp313/aarch64 wheel, not the distinct same-version PyPI build. This restores the pinned Cosmos upstream index selection; no individual library replacement is used. Installation and numerical qualification of this corrected compiler build are pending separately from earlier recipe evidence."
+          "Triton 3.6.0 is selected from the complete official PyTorch cp313/aarch64 wheel, not the distinct same-version PyPI build. This restores the pinned Cosmos upstream index selection; no individual library replacement is used. The 2026-09-26 clean install installed this wheel (sha256 58d57d67\u2026, release/vendor/qualification.json) and passed the NUMERIC reproduction run and serving smoke; its numerical difference from the PyPI build was not measured."
         ],
         "recipe": "release/vendor/edge/bootstrap.json",
         "command": [
@@ -993,12 +1053,32 @@
         ],
         "qualification": "release/vendor/qualification.json",
         "native_tool_preparation": "release/vendor/cosmos/hf_tool.json",
-        "prior_recipe_status": "fresh_thor_package_checks_passed",
         "compiler_wheel": {
           "distribution": "triton",
           "version": "3.6.0",
           "url": "https://download.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl",
           "sha256": "58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09"
+        },
+        "clean_install": {
+          "date": "2026-09-26",
+          "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+          "utc": [
+            "2026-09-27T05:37:59.125286+00:00",
+            "2026-09-27T05:49:43Z"
+          ],
+          "evidence": "release/vendor/qualification.json",
+          "previous_backend_absent": true,
+          "checks": {
+            "run_context_clean_checkout": true,
+            "reproduction_command": true,
+            "install_and_package_checks": true,
+            "static_audit": true,
+            "public_reproduction_run": true,
+            "serving_smoke": true,
+            "fp8_endpoints": null,
+            "process_maps_complete_and_clean": true,
+            "mapped_files_in_own_or_system_locations": true
+          }
         }
       },
       "execution_modes": {
@@ -1041,13 +1121,7 @@
             "IFL_COSMOS3_CONTIGUOUS_KV": "0",
             "IFL_BF16_LINEAR_RELU2": "1"
           },
-          "native_requirements": [
-            {
-              "kind": "file_env",
-              "name": "IFL_BF16_KERNEL_LIBRARY",
-              "remedy": "Build the BF16 library for this target using instinctflash/native/bf16; set the path explicitly. No binary distribution is selected by this plan."
-            }
-          ],
+          "native_requirements": [],
           "effective_schedule": {
             "sampler": "unipc",
             "steps": 4,
@@ -1067,7 +1141,7 @@
       },
       "release_gaps": [
         "Two-task SCREEN is complete but does not meet the chosen 5pp/95% certification criterion.",
-        "Build and bind the selected BF16 library for this platform; package checks do not execute its GPU kernels."
+        "The NUMERIC ReLU^2 linear is a Triton kernel compiled on first GPU use; package checks do not execute it."
       ]
     },
     {
@@ -1140,7 +1214,7 @@
       ],
       "source_only_modules": [],
       "bootstrap": {
-        "status": "compiler_wheel_origin_corrected_installation_pending",
+        "status": "fresh_thor_package_checks_passed",
         "install_guide": "INSTALL.rst",
         "upstream_install_guide": "https://github.com/NVIDIA/cosmos-framework#readme",
         "notes": [
@@ -1148,7 +1222,7 @@
           "CPU doctor imports the actual RoboLab policy-service entrypoint under the offline/no-GPU guard and checks both service/argument APIs; model construction and inference remain separate gates.",
           "Preserve Nano plain-prompt, original trained heads, action-only residency, four UniPC steps/CFG3/horizon32 and primary processor. Do not substitute a Qwen4B tokenizer.",
           "Bootstrap installs uv0.12.5 and prepares the native hf1.16.4 subprocess in an isolated pinned cache. Source bootstrap/run.env before inference; UV_OFFLINE prevents tool downloads at model load. Asset preparation remains explicit and does not inherit Hub-offline mode.",
-          "Triton 3.6.0 is selected from the complete official PyTorch cp313/aarch64 wheel, not the distinct same-version PyPI build. This restores the pinned Cosmos upstream index selection; no individual library replacement is used. Installation and numerical qualification of this corrected compiler build are pending separately from earlier recipe evidence."
+          "Triton 3.6.0 is selected from the complete official PyTorch cp313/aarch64 wheel, not the distinct same-version PyPI build. This restores the pinned Cosmos upstream index selection; no individual library replacement is used. The 2026-09-26 clean install installed this wheel (sha256 58d57d67\u2026, release/vendor/qualification.json) and passed the NUMERIC reproduction run and serving smoke; its numerical difference from the PyPI build was not measured."
         ],
         "recipe": "release/vendor/nano/bootstrap.json",
         "command": [
@@ -1169,12 +1243,32 @@
         ],
         "qualification": "release/vendor/qualification.json",
         "native_tool_preparation": "release/vendor/cosmos/hf_tool.json",
-        "prior_recipe_status": "fresh_thor_package_checks_passed",
         "compiler_wheel": {
           "distribution": "triton",
           "version": "3.6.0",
           "url": "https://download.pytorch.org/whl/triton-3.6.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl",
           "sha256": "58d57d6796b0004076315433526fe9d4af42044d430afdee1e6cd42a76bd6d09"
+        },
+        "clean_install": {
+          "date": "2026-09-26",
+          "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+          "utc": [
+            "2026-09-27T05:50:12.372175+00:00",
+            "2026-09-27T06:07:54Z"
+          ],
+          "evidence": "release/vendor/qualification.json",
+          "previous_backend_absent": true,
+          "checks": {
+            "run_context_clean_checkout": true,
+            "reproduction_command": true,
+            "install_and_package_checks": true,
+            "static_audit": true,
+            "public_reproduction_run": true,
+            "serving_smoke": true,
+            "fp8_endpoints": null,
+            "process_maps_complete_and_clean": true,
+            "mapped_files_in_own_or_system_locations": true
+          }
         }
       },
       "execution_modes": {
@@ -1350,7 +1444,28 @@
           "--root",
           "<new-assets>"
         ],
-        "qualification": "release/vendor/qualification.json"
+        "qualification": "release/vendor/qualification.json",
+        "clean_install": {
+          "date": "2026-09-26/2026-09-27",
+          "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+          "utc": [
+            "2026-09-27T06:07:59.993585+00:00",
+            "2026-09-27T07:15:01Z"
+          ],
+          "evidence": "release/vendor/qualification.json",
+          "previous_backend_absent": true,
+          "checks": {
+            "run_context_clean_checkout": true,
+            "reproduction_command": true,
+            "install_and_package_checks": true,
+            "static_audit": true,
+            "public_reproduction_run": true,
+            "serving_smoke": true,
+            "fp8_endpoints": null,
+            "process_maps_complete_and_clean": true,
+            "mapped_files_in_own_or_system_locations": true
+          }
+        }
       },
       "execution_modes": {
         "native": {

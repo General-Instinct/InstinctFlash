@@ -10,8 +10,11 @@ import numpy as np
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location(
-    'native_coverage_compare', ROOT / 'eval/native_coverage_2026-09-10/compare.py')
+COMPARE = ROOT / 'eval/native_coverage_2026-09-10/compare.py'
+if not COMPARE.is_file():
+    pytest.skip('requires the internal evaluation records', allow_module_level=True)
+
+spec = importlib.util.spec_from_file_location('native_coverage_compare', COMPARE)
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
@@ -64,7 +67,7 @@ def test_cli_cannot_report_success_for_a_variable_reference(tmp_path):
     receipts(tmp_path, (1, 1, 2))
     output = tmp_path / 'comparison.json'
     run = subprocess.run(
-        [sys.executable, str(ROOT / 'eval/native_coverage_2026-09-10/compare.py'),
+        [sys.executable, str(COMPARE),
          str(tmp_path), 'edge', '--output', str(output)], capture_output=True, text=True)
     assert run.returncode == 1
     assert json.loads(output.read_text())['status'] == 'BASELINE_VARIABLE'

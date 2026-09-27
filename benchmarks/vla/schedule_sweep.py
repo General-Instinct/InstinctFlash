@@ -61,9 +61,9 @@ SWEEP_SCHEMA_VERSION = 1
 
 #: The interval methods a sweep may declare; these are `verify.certify`'s methods. The hand
 #: campaign decided on the most conservative of three intervals (McNemar-SE / iid bootstrap /
-#: task-cluster bootstrap, `eval/lingbot_va_robotwin/certify_operating_point.py`); porting that
-#: analysis into `verify.certify` is an open item in the RFC. Until then a sweep declares ONE
-#: method up front, which keeps the discipline (declared before the run) if not the exact rule.
+#: task-cluster bootstrap); porting that analysis into `verify.certify` is an open item in
+#: the RFC. Until then a sweep declares ONE method up front, which keeps the discipline
+#: (declared before the run) if not the exact rule.
 INTERVALS = ("wald_central95", "tango_one_sided95")
 
 #: Note stamped into every generated treatment arm's gates.

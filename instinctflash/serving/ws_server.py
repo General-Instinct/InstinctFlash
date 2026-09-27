@@ -30,7 +30,7 @@ costs a no-op reset.
 
 FAIL LOUDLY. `WebsocketClientPolicy._wait_for_server` retries a refused connection every 5 s
 forever, so a server that half-starts (or dies and leaves a script looping) is worse than one that
-crashes — the documented dead-port trap in eval/lingbot_va_robotwin/README.md. Consequences here:
+crashes — a client aimed at a dead port hangs instead of failing. Consequences here:
 the caller loads the model BEFORE the port binds (a doomed checkpoint exits with the loader's
 error, port never open); a busy port raises at startup instead of wedging; a request that throws
 sends the traceback as a text frame (exactly what 0.1.1 turns into `RuntimeError`) and closes that

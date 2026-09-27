@@ -33,7 +33,7 @@
       "repositories": [
         "nvidia/Cosmos-Reason2-2B"
       ],
-      "role": "Original GR00T checkpoint model_name; base-model weights and processor assets required by the native constructor, in addition to the primary checkpoint."
+      "role": "Original GR00T checkpoint model_name. The upstream Qwen3 backbone constructor loads its weights before the primary checkpoint's weights replace them, so the weights file is required."
     },
     "nano": {
       "overrides": {},

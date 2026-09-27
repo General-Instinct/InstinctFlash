@@ -114,10 +114,12 @@ select FP8; an explicit bit-exact ceiling conflicts with FP8.
 The measured BASE and LIBERO v044 routes retain native processing, ten denoise
 steps, the checkpoint's 50-action queue and reset behavior. Their native dtypes
 and workloads differ, so compare speed within each checkpoint. The v044 paired
-LIBERO screen measured native 16/20 and FP8 17/20 successes; this small sample
-does not establish no loss, and does not certify BASE task quality. Current
-speed measurements, startup costs and limitations are in the
-[Thor comparison](../../eval/thor_precision_completion_2026-09-09/COMPARISON.md).
+LIBERO screen measured native 16/20 successes and FP8 on the engine in
+`instinctflash/engines/pi05` 15/20 on the same scenes and seeds. On twelve
+recorded observations with identical inputs and noise, the FP8 engine's mean
+absolute action error against the native FP32 reference was 0.0199 in the
+checkpoint's normalized action space (native BF16: 0.0046). These small samples
+do not establish no loss, and do not certify BASE task quality.
 
 ## Attribution
 

@@ -6,7 +6,7 @@ THREE PILLARS, TWO HOMES. The framework is (1) schedule screening, (2) the train
 certification. Screening lives in `benchmarks/vla/schedule_sweep.py` and certification in
 `instinctflash/verify/certify.py` + `descriptors/distillation.py`.
 This package contains the training interfaces and currently available recipes. Nothing
-under `instinctflash/runtime/` or `serving/` imports it; a distilled checkpoint is served through its declaration exactly like
+under `instinctflash/runtime/` or `instinctflash/engines/` imports it; a distilled checkpoint is served through its declaration exactly like
 any other checkpoint (CHECKPOINTS doctrine: recipes make checkpoints, never runtimes).
 
 WHAT ADAPTS TO ALL MODELS. A model family joins the framework by declaring, in a

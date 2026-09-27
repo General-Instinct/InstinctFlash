@@ -439,10 +439,7 @@ def choose_backend(placement: str, adapter, checkpoint, plan, **kw) -> tuple[Exe
             EngineBackend, engine_available,
         )
         eng_result = require_fp8_plan(plan, checkpoint.execution.backbone)
-        eng_ok, eng_why = (engine_available(checkpoint.execution.backbone)
-                           if (checkpoint.execution.backbone in ("cosmos3_policy", "dreamzero")
-                               or eng_result.params.get("executor") in {"sm89_torch_fp8", "sm120_torch_fp8"})
-                           else engine_available())
+        eng_ok, eng_why = engine_available(checkpoint.execution.backbone)
         if not eng_ok:
             raise RuntimeError(f"precision='fp8' unavailable: {eng_why}")
         if kw.get("seed") is not None:

@@ -180,8 +180,10 @@ def test_runtime_loop_preserves_upstream_keys_and_maps_prompt():
 
 
 def test_triton_kernels_are_refused_on_sm110():
-    # Triton is measured-dead on Thor sm_110a and the vendor fallback path crashes
-    # (undefined logger / no try-except); the guard must refuse rather than die later.
+    # Triton codegen for the upstream MoE kernels failed on Thor sm_110a (PTXAS internal error)
+    # and the vendor fallback path crashes (undefined logger / no try-except); the guard must
+    # refuse this plugin's Triton kernels rather than die later. The GI engine kernels
+    # (instinctflash/kernels) are a separate path and do run on SM110.
     from lingbot_vla_v2_iwm.adapter import _triton_kernels_allowed
 
     with patch("torch.cuda.is_available", return_value=True), patch(

@@ -6,7 +6,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-source = Path(__file__).resolve().parents[1]/'eval/thor_precision_completion_2026-09-09/compare_va_saturated_stress.py'
+_EVAL = Path(__file__).resolve().parents[1] / "eval"
+if not (_EVAL / "thor_precision_completion_2026-09-09").exists():
+    pytest.skip("requires the internal evaluation records", allow_module_level=True)
+source = _EVAL / 'thor_precision_completion_2026-09-09/compare_va_saturated_stress.py'
 spec = importlib.util.spec_from_file_location('va_stress_compare', source)
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)

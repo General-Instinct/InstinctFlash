@@ -38,9 +38,8 @@ def fixture(tmp_path, monkeypatch):
 
 @pytest.mark.parametrize("name", list(replay.CELLS))
 def test_exact_matrix_contract_accepted_by_existing_policy(name, tmp_path):
-    library = tmp_path / "bf16.so"
-    library.write_bytes(b"CPU binding fixture")
-    cell = replay.matrix_cell(name, library if name == "edge-runtime_selected" else None)
+    cell = replay.matrix_cell(name)
+    assert not any(key.endswith("_LIBRARY") for key in cell["expected_optimizer_environment"])
     path = tmp_path / "matrix.json"
     replay.write(path, {"cells": [cell]})
     assert frozen_cell(path, name, matrix_sha256=replay.sha(path)) == cell

@@ -1,4 +1,4 @@
-# LingBot-VLA-V2 Runtime + FlashRT backend
+# LingBot-VLA-V2 Runtime integration
 
 This integration serves `robbyant/lingbot-vla-v2-6b-robotwin` through both public APIs.
 It needs the upstream checkout (`LINGBOT_VLA_V2_ROOT`) and the checkpoint; there are no
@@ -22,29 +22,11 @@ result = runtime.predict({
 actions = result["action"]  # (50, 14)
 ```
 
-```python
-import flash_rt
-
-model = flash_rt.load_model(
-    "/path/to/hf_ckpt",
-    config="lingbot_vla_v2",
-    framework="torch",
-    source_root="/path/to/lingbot-vla-v2",   # or set LINGBOT_VLA_V2_ROOT
-    qwen3vl_path="Qwen/Qwen3-VL-4B-Instruct",  # or set QWEN3VL_PATH
-)
-actions = model.predict(
-    [top_hwc_uint8, left_hwc_uint8, right_hwc_uint8],
-    prompt="Use the left arm to pick up the block",
-    state=state_float32_14,
-)
-```
-
 Install the external Runtime adapter in the model environment:
 
 ```bash
 uv pip install -e .
 uv pip install -e ./examples/lingbot_vla_v2
-uv pip install -e ./serving
 ```
 
 `IFL_VLA2_BACKEND=static` is the default. `compile` selects upstream `torch.compile`; `eager`
@@ -82,28 +64,31 @@ these two graphs with `IFL_VLA2_PREFIX_GRAPH=0`; the denoise static-KV graph rem
 
 ## What the backend is
 
-The FlashRT route is a BF16 backend with static-KV CUDA Graph replay (plus the optional kernels
+The static route is a BF16 backend with static-KV CUDA Graph replay (plus the optional kernels
 above). It retains the official Qwen3-VL processor, `FeatureTransform`, and action
-un-normalisation. Thor also has a native SDPA route and an opt-in engine with
-FP8 experts and BF16 vision under `serving/flash_rt/models/vla2/`. Select the
-engine with `precision="fp8"` or CLI `--fp8`; native precision remains the default.
+un-normalisation. Thor also has a native SDPA route and an opt-in FP8 engine
+(`instinctflash/engines/vla2`: FP8 prefix and dense-routed MoE experts, native BF16 vision).
+Select the engine with `precision="fp8"` or CLI `--fp8`; native precision remains the default.
 
 The graph owns fixed `[prefix | suffix]` K/V allocations for all 36 layers. At each observation it
 refills the 286-token prefix and Qwen3-VL 3D-RoPE position ids. At each flow step it overwrites the
 51-token state/action suffix, noisy action, and timestep, then replays the same graph. MoE routing
 remains data-dependent and is recomputed on device during replay.
 
-## Current Thor evidence
+## Thor evidence
 
-With the same native processing, ten denoise steps and 50-action chunks,
-short-run median latency measured 764.29 ms native eager, 423.50 ms native
-NUMERIC capture and 238.98 ms FP8. FP8 is 1.77× faster than the measured
-capture alternative; that native comparison explicitly permits NUMERIC capture.
-Prompt-reset FP8 calls exceeded one second, so the median is not a deadline guarantee.
+On 2026-09-09, with the same native processing, ten denoise steps and 50-action chunks,
+short-run median latency measured 764.29 ms native eager and 423.50 ms native
+NUMERIC capture; that native comparison explicitly permits NUMERIC capture.
+The FP8 engine's prefix and ten denoise steps, MoE experts included, take a
+129.5 ms engine-level median on Thor. On twelve recorded observations with identical
+inputs and noise, its mean absolute action error against the upstream reference
+was 0.0276 in the checkpoint's normalized action space.
 
-The complete 40-pair RoboTwin screen measured clean 17/20 → 18/20 and randomized
-16/20 → 18/20 successes. These small samples establish neither superiority nor
-non-inferiority. [Current measurements and paired results](../../eval/thor_precision_completion_2026-09-09/COMPARISON.md).
+The complete 40-pair RoboTwin screen of the earlier FP8 engine measured clean
+17/20 → 18/20 and randomized 16/20 → 18/20 successes; the current engine has no
+RoboTwin screen yet. These small samples establish neither superiority nor
+non-inferiority.
 
 ## Graph capture requires the NUMERIC tier
 

@@ -1,4 +1,4 @@
-"""Opt-in identity and episode seeding for serve_variant's real single-GPU VA server.
+"""Opt-in identity and episode seeding for the LingBot-VA worker's real single-GPU VA server.
 
 Installed only for benchmark serving. The checkpoint must be a pinned Hub snapshot;
 the receipt is generated from the loaded config, source and weight bytes, never from
@@ -10,10 +10,9 @@ import importlib.metadata
 import os
 from pathlib import Path
 import re
-import sys
 import types
 
-from .util import ConfigurationError, sha256_file, sha256_json, write_json_atomic
+from .util import ConfigurationError, sha256_file, sha256_json, wait_for_stop_signal, write_json_atomic
 
 
 def snapshot_identity(path):
@@ -98,8 +97,7 @@ def install_server(server_module, receipt, applied, protocol=None):
                         if ".venv" not in p.parts}),
                     "optimization_source_sha256": sha256_json({
                         str(p.relative_to(Path(__file__).resolve().parents[2])): sha256_file(p)
-                        for folder in ("instinctflash", "eval/lingbot_va_robotwin")
-                        for p in sorted((Path(__file__).resolve().parents[2] / folder).rglob("*.py"))}),
+                        for p in sorted((Path(__file__).resolve().parents[2] / "instinctflash").rglob("*.py"))}),
                     "device": torch.cuda.get_device_name(0), "torch": torch.__version__,
                     "cuda": torch.version.cuda,
                     "packages_sha256": sha256_json(sorted(
@@ -139,7 +137,7 @@ def install_server(server_module, receipt, applied, protocol=None):
                 # Receipt means the socket is bound and the actual model has finished loading.
                 write_json_atomic(Path(receipt), identity)
                 print(f"benchmark server ready; receipt: {receipt}", flush=True)
-                await asyncio.Future()
+                await wait_for_stop_signal()
         asyncio.run(run())
 
     server_module.run_async_server_mode = serve

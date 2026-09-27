@@ -98,11 +98,11 @@ def test_va_import_alias_does_not_hide_defining_namespace(monkeypatch, namespace
         "backend.transformer._modules.q_proj._buffers.weight_fp8")
 
 
-def test_cycles_aliases_and_fused_frontend_containers_are_read_only():
+def test_cycles_aliases_and_fused_engine_containers_are_read_only():
     model = packed_model()
     weight = model.q_proj.weight_fp8
     before, version = weight.view(torch.uint8).clone(), weight._version
-    root = plain("flash_rt.frontends.torch.pi05", "Frontend", weights={"blocks": [model]})
+    root = plain("instinctflash.engines.pi05.engine", "Pi05Engine", weights={"blocks": [model]})
     root.self = root
     root.weights["same_tensor"] = (weight,)
     root.weights["parent"] = root.weights

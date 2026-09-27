@@ -5,9 +5,13 @@ import json
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('numeric_total', ROOT / 'eval/numeric_total_2026-09-10/compare.py')
+_EVAL = ROOT / "eval"
+if not (_EVAL / "numeric_total_2026-09-10").exists():
+    pytest.skip("requires the internal evaluation records", allow_module_level=True)
+spec = importlib.util.spec_from_file_location('numeric_total', _EVAL / 'numeric_total_2026-09-10/compare.py')
 comparison = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(comparison)
 

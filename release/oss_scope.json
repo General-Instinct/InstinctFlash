@@ -19,7 +19,7 @@
     "commercial_speed_gap_measured": false,
     "default_configuration_diagnostics_and_offline_inference_are_public": true
   },
-  "inventory_roots": ["instinctflash", "benchmarks", "examples", "serving", "scripts", "tests", "pyproject.toml", "INSTALL.rst", "LICENSE", "README.md", "requirements-serving.txt", "requirements-serving.in", "uv.lock"],
+  "inventory_roots": ["instinctflash", "benchmarks", "examples", "scripts", "tests", "pyproject.toml", "INSTALL.rst", "LICENSE", "README.md", "requirements-serving.txt", "requirements-serving.in", "uv.lock"],
   "package_roots": [
     {"path": "instinctflash", "module": "instinctflash"},
     {"path": "benchmarks", "module": "benchmarks"},
@@ -28,8 +28,7 @@
     {"path": "examples/lingbot_vla_v2/lingbot_vla_v2_iwm", "module": "lingbot_vla_v2_iwm"},
     {"path": "examples/groot_n17/groot_n17_iwm", "module": "groot_n17_iwm"},
     {"path": "examples/cosmos3_policy/cosmos3_iwm", "module": "cosmos3_iwm"},
-    {"path": "examples/dreamzero/dreamzero_iwm", "module": "dreamzero_iwm"},
-    {"path": "serving/flash_rt", "module": "flash_rt"}
+    {"path": "examples/dreamzero/dreamzero_iwm", "module": "dreamzero_iwm"}
   ],
   "rules": [
     {"prefix": "instinctflash", "classification": "public_candidate", "group": "runtime_contracts_defaults_and_validation"},
@@ -55,11 +54,6 @@
     {"prefix": "examples/dreamzero/dreamzero_iwm", "classification": "public_candidate", "group": "dreamzero_adapter"},
     {"prefix": "examples/dreamzero/pyproject.toml", "classification": "public_candidate", "group": "dreamzero_adapter"},
     {"prefix": "examples/external_plugin", "classification": "public_candidate", "group": "external_adapter_example"},
-    {"prefix": "serving", "classification": "implementation_review", "group": "optional_executor_implementation"},
-    {"prefix": "serving/training", "classification": "hold", "group": "training_producer"},
-    {"prefix": "serving/tools", "classification": "hold", "group": "internal_tuning_and_operations"},
-    {"prefix": "serving/scripts", "classification": "release_review", "group": "executor_build_and_operations_selection"},
-    {"prefix": "serving/csrc/attention/flash_attn_2_src", "classification": "release_review", "group": "third_party_provenance"},
     {"prefix": "scripts", "classification": "public_candidate", "group": "installation_and_release_tooling"},
     {"prefix": "tests", "classification": "release_review", "group": "public_contract_test_selection"},
     {"prefix": "eval", "classification": "hold", "group": "historical_studies_select_evidence_individually"},

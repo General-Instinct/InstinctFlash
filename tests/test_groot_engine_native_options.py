@@ -21,10 +21,9 @@ def test_native_options_forwarding_and_cleanup(override):
         _state_dims={'arm': 7}, reset=Mock(), predict=Mock(return_value={'action': 'decoded'}), close=Mock(),
         backend_stats={'fast_decode': True, 'backbone_fastpath': True, 'backbone_cache_hits': 3,
                        'cpu_threads': 4, 'precision': 'bfloat16'})
-    generator = SimpleNamespace(get_action=Mock())
-    frontend = SimpleNamespace(_dit_graphs={'signature': object()})
-    runner = SimpleNamespace(graph=object(), replays=5)
-    loop = _GrootEngineLoop(native, frontend, runner, generator, 'cuda:0')
+    engine = SimpleNamespace(graph_captured=True, replays=5, _graphs=SimpleNamespace(graphs={'s': object()}))
+    generator = SimpleNamespace(get_action=Mock(), engine=engine)
+    loop = _GrootEngineLoop(native, generator, 'cuda:0')
     assert loop._state_dims is native._state_dims
     assert head.get_action is generator.get_action
     loop.reset(prompt='new task')
@@ -50,7 +49,7 @@ def test_native_options_forwarding_and_cleanup(override):
         assert head.get_action is original
     else:
         assert 'get_action' not in head.__dict__ and head.get_action() == 'native'
-    assert loop._frontend is loop._runner is loop._generator is None
+    assert loop._generator is None
     native._policy = None
     assert loop.backend_stats['text_graphs'] == 0
     with pytest.raises(RuntimeError, match='closed'):
@@ -74,14 +73,10 @@ def test_builder_reuses_native_construction_and_closes_it_on_failure(fail, monke
         embodiment_tag=SimpleNamespace(value='droid')), _model_path=Path('/weights'), close=Mock())
     build = Mock(return_value=native)
     monkeypatch.setattr(GR00TN17Adapter, 'build_in_process', build)
-    frontend = Mock(side_effect=RuntimeError('engine failed')) if fail else Mock(return_value=object())
-    module = ModuleType('flash_rt.frontends.torch.groot_n17_thor')
-    module.GrootN17TorchFrontendThor = frontend
-    monkeypatch.setitem(sys.modules, module.__name__, module)
-    runner_module = ModuleType('flash_rt.models.groot_n17.vlsa_runner')
-    runner_module.GrootN17VlsaRunner = Mock(return_value=object())
-    monkeypatch.setitem(sys.modules, runner_module.__name__, runner_module)
-    monkeypatch.setattr(groot_engine, 'GrootActionGenerator', Mock(return_value=SimpleNamespace(get_action=Mock())))
+    from instinctflash.engines.groot_n17 import frontend as gi_frontend
+    build_generator = (Mock(side_effect=RuntimeError('engine failed')) if fail
+                       else Mock(return_value=SimpleNamespace(get_action=Mock(), engine=None)))
+    monkeypatch.setattr(gi_frontend.GiGrootActionGenerator, 'from_checkpoint', build_generator)
     from instinctflash.runtime import groot_fp8
     monkeypatch.setattr(groot_fp8, "install_groot_backbone_fp8", Mock(return_value={"recipe": "test"}))
     checkpoint = object()

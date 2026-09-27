@@ -17,20 +17,25 @@ from PIL import Image
 import torch
 from instinctflash import Runtime
 
-ROOT = Path(__file__).resolve().parents[2]
-
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('family', choices=['edge', 'nano'])
     parser.add_argument('arm', choices=['baseline_a', 'current', 'baseline_b'])
     parser.add_argument('output', type=Path)
-    parser.add_argument('--fixture', type=Path, default=ROOT / 'eval/native_total_2026-09-10/fixtures/va_eval_obs.npz')
+    parser.add_argument('--fixture', type=Path, required=True,
+                        help='recorded DROID observation archive (NPZ whose jpeg_0 rows hold JPEG camera frames)')
+    parser.add_argument('--reference', type=Path,
+                        help='directory containing the eager reference constructor upstream.py '
+                             '(build(family, runtime)); required by the baseline arms. Pass the '
+                             'same directory to every arm of one comparison')
     parser.add_argument('--tier-ceiling', choices=['bitexact', 'numeric'], default='bitexact')
     parser.add_argument('--iterations', type=int, default=20)
     args = parser.parse_args()
     if args.iterations < 10:
         parser.error('At least 10 measured requests are required')
+    if args.arm != 'current' and args.reference is None:
+        parser.error('Baseline arms require --reference')
     if args.output.exists() or args.output.with_suffix('.npz').exists():
         parser.error('Output already exists')
     assert torch.cuda.get_device_capability() == (11, 0), 'This protocol targets Thor'
@@ -53,7 +58,8 @@ def main():
     report = {'family': args.family, 'arm': args.arm, 'model_id': model_id,
               'revision': snapshot.name, 'precision': 'native', 'device': torch.cuda.get_device_name(),
               'torch': torch.__version__, 'input_archive_sha256': hashlib.sha256(args.fixture.read_bytes()).hexdigest(),
-              'reference_constructor_sha256': hashlib.sha256((ROOT / 'eval/native_total_2026-09-10/upstream.py').read_bytes()).hexdigest(),
+              'reference_constructor_sha256': None if args.reference is None else
+                  hashlib.sha256((args.reference / 'upstream.py').read_bytes()).hexdigest(),
               'benchmark_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
               'cases': cases, 'calls': [], 'competing_gpu_processes': [], 'ok': False}
     api = None
@@ -69,7 +75,7 @@ def main():
             raise RuntimeError('Thor is occupied')
         api = Runtime.from_pretrained(model_id, revision=snapshot.name, precision='native', tier_ceiling=args.tier_ceiling)
         if args.arm != 'current':
-            sys.path.insert(0, str(ROOT / 'eval/native_total_2026-09-10'))
+            sys.path.insert(0, str(args.reference.resolve()))
             from upstream import build
             api = build(args.family, api)
         api.reset(prompt=prompts[0])

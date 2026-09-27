@@ -1,6 +1,7 @@
 # Optional SM120 kernels
 
-The core InstinctFlash package remains CUDA-free. Build this small raw-pointer library only on an
+The core InstinctFlash package installs without CUDA and ships no compiled CUDA code; its Thor
+engines use Triton kernels compiled on first use. Build this small raw-pointer library only on an
 RTX 5090 / SM120 host:
 
 ```bash

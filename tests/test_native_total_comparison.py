@@ -3,11 +3,14 @@ import importlib.util
 import json
 import hashlib
 from pathlib import Path
-from types import SimpleNamespace
 
 import numpy as np
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
+_EVAL = ROOT / "eval"
+if not all((_EVAL / name).exists() for name in ("native_coverage_2026-09-10", "native_total_2026-09-10")):
+    pytest.skip("requires the internal evaluation records", allow_module_level=True)
 
 def load(name, path):
     spec = importlib.util.spec_from_file_location(name, ROOT / path)
@@ -62,7 +65,6 @@ def test_loading_heap_trim_preserves_live_values_rng_and_stops(tmp_path):
     import ctypes
     import time
     import torch
-    import pytest
     if not hasattr(ctypes.CDLL(None), 'malloc_trim'):
         pytest.skip('glibc heap trimming unavailable')
     memory = load('total_loading_memory', 'eval/native_total_2026-09-10/load_memory.py')

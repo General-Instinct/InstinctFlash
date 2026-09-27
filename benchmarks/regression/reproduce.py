@@ -32,8 +32,8 @@ from .hardware import (
 FIXTURE_SHA = "37843e22fa6dd9a2abf2bae390ccb8e5c4319446e3d3fab5d0d477860065f411"
 ACTION_SHAPES = {"va": [16, 2, 16], "vla4": [25, 14], "vla2": [50, 14], "pi05": [7],
                  "groot": [40, 17], "edge": [32, 8], "nano": [32, 8], "dreamzero": [24, 8]}
-SHAPE_PROVENANCE = {"path": "eval/user_e2e_2026-09-14/matrix_final.json",
-                    "sha256": "346154c84a871fd48addd23f563935c29ec0f90a7cbd5b7ef813b7739bf8077d",
+SHAPE_PROVENANCE = {"path": "benchmarks/regression/fixtures/checkpoint_matrix.json",
+                    "sha256": "f1cb76bdaff3331fe409fafd88bd19022aca9161c1722fa767e838358348b88f",
                     "scope": "Public action shapes only; historical outcomes and machine paths are not inputs."}
 MAIN_ARMS = ("eager_native", "runtime_default", "runtime_selected")
 SCHEMA = "instinctflash.public_reproduction.v1"

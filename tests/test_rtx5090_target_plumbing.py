@@ -33,6 +33,8 @@ def test_5090_preserves_exact_original_dependency_contracts(family):
     current = bootstrap.load_profile(family, target="rtx5090")
     restored = copy.deepcopy(current)
     restored["deployment_target"] = "rtx4090"
+    # Each target records its own qualification; the dependency contract is otherwise identical.
+    restored["qualification"] = previous["qualification"]
     if family in {"edge", "nano"}:
         for key in ("requirements", "constraints", "packaging_patch"):
             before = previous[key]
@@ -50,27 +52,14 @@ def test_5090_preserves_exact_original_dependency_contracts(family):
 def test_all_5090_modes_keep_full_pair_and_original_policy(family):
     catalog = deploy.load_profiles(target="rtx5090")
     row = next(row for row in catalog["models"] if row["id"] == family)
-    recorded = json.loads((ROOT / catalog["recorded_e2e_qualification"]["path"]).read_bytes())
-    excluded = family in {"dreamzero", "nano"}
-    if excluded:
-        assert row["bootstrap"]["qualification"] is None
-    else:
-        assert row["bootstrap"]["qualification"] == "release/rtx5090/qualification.json"
+    # Pending re-qualification on the current source: no mode carries recorded evidence.
+    assert row["bootstrap"]["qualification"] is None
     for name, mode in row["execution_modes"].items():
         reference = mode["recorded_e2e_qualification"]
-        assert reference["tested"] is (not excluded)
+        assert reference["tested"] is False
         assert reference["family"] == family and reference["mode"] == name
-        assert reference["sha256"] == catalog["recorded_e2e_qualification"]["sha256"]
-        assert reference["path"] == catalog["recorded_e2e_qualification"]["path"]
-        if excluded:
-            assert "evidence_cell" not in mode
-            assert mode["evidence_kind"] == ("capacity_excluded_not_tested" if family == "dreamzero"
-                                             else "no_offload_pair_excluded_not_tested")
-        else:
-            evidence = recorded["models"][family]["modes"][name]
-            assert reference["receipt_sha256"] == evidence["receipt"]["sha256"]
-            assert mode["evidence_cell"] == evidence["cell"]
-            assert mode["evidence_kind"] == "independently_audited_rtx5090_recorded_e2e"
+        assert reference["path"] is reference["sha256"] is None
+        assert mode["evidence_kind"] == "not_measured_on_current_source"
         assert mode["gpu_qualified_by_plan"] is mode["task_quality_certified"] is False
         previous = reproduce.make_plan(family, name, target="rtx4090")
         current = reproduce.make_plan(family, name, target="rtx5090")
@@ -87,12 +76,9 @@ def test_all_5090_modes_keep_full_pair_and_original_policy(family):
 def test_5090_catalog_keeps_all_23_modes_and_is_mirrored_into_wheel():
     catalog = deploy.load_profiles(target="rtx5090")
     assert sum(len(row["execution_modes"]) for row in catalog["models"]) == 23
-    assert catalog["recorded_e2e_qualification"]["path"] == "release/rtx5090/qualification.json"
-    recorded = json.loads((ROOT / catalog["recorded_e2e_qualification"]["path"]).read_bytes())
-    assert recorded["recorded_source_commits"] == ["0a53125c5af6d76260be96e39077cdcc3c01126d"]
-    assert recorded["recorded_source_commits_relabelled"] is False
+    assert catalog["recorded_e2e_qualification"] is None
     raw = (ROOT / "release/rtx5090/deployment_profiles.json").read_bytes()
-    assert b"rtx4090" not in raw and b"capacity_excluded_not_tested" in raw
+    assert b"rtx4090" not in raw and b"rtx5090_clean_install_qualification_pending" in raw
     assert raw == reproduce.profiles_path("rtx5090").read_bytes()
     assert builder.SELECTED_CONTROLS["release/rtx5090/deployment_profiles.json"] == builder.sha(raw)
     staged = builder.tomllib.loads(builder.staged_pyproject((ROOT / "pyproject.toml").read_bytes()).decode())

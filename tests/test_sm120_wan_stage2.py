@@ -129,7 +129,7 @@ def test_native_source_and_worker_surface_are_explicit():
         assert needle in source
     cmake = (root / "instinctflash" / "native" / "CMakeLists.txt").read_text()
     assert "instinctflash_sm120_wan_stage2" in cmake
-    worker = (root / "eval" / "lingbot_va_robotwin" / "serve_variant.py").read_text()
+    worker = (root / "instinctflash" / "runtime" / "lingbot_worker.py").read_text()
     assert '"--sm120-wan-stage2"' in worker
     assert "--sm120-wan-stage2 requires --sm120-gated-residual" in worker
 

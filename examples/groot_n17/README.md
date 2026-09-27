@@ -19,23 +19,22 @@ opt-in host configuration, never a package default.
 
 Thor has separate qualification: native DiT capture passes exact startup and
 retained-action checks, but increases latency about 7.2% in its paired test and
-remains disabled. The earlier VLSA-only DROID FP8 builder shared native fast
-decoding and backbone metadata caching. Caching repeated FP32 weight casts further
-reduced that recipe to about 127 ms versus 110 ms native, using about 447 MiB of additional
-weight storage. Observations and KV remain live; retained FP8 actions match the
-prior implementation byte for byte. These timings and the H100
-gate above do not certify current FP8 task quality. See the
-[current Thor report](../../eval/thor_precision_completion_2026-09-09/COMPARISON.md).
+remains disabled. The H100 gate above does not certify FP8 task quality.
 
-The current Thor recipe additionally quantizes Qwen3 text attention and MLP
-projections. Native vision and BF16 DiT remain; the earlier VLSA-only quality
-results do not certify this expanded recipe. See the [execution scope](../../eval/thor_fp8_complete_2026-09-10/PROTOCOL.md).
+The Thor FP8 recipe quantizes Qwen3 text attention and MLP projections and
+runs the action head's VLSA blocks and four-step DiT in FP8 on the engine in
+`instinctflash/engines/groot_n17`; vision and processors remain native. On
+Thor, the action head's VLSA blocks and four-step DiT take a 27.4 ms engine-level
+median. On twelve recorded observations with identical inputs and noise, its
+mean absolute action error against the upstream reference was 0.050 in the
+checkpoint's normalized action space. These are action-agreement and latency
+screens, not task-quality certificates.
 
 Use `precision="fp8"` in the same Runtime call, or add `--fp8` when serving, to
-select FP8 explicitly. Omit it to keep native precision. Current Thor interface
-checks cover DROID (40×17 actions), G1 (40×53) and four R1 variants (40×62); these are
-input/reset checks, not task-success certificates. Receipts and reproduction are in the
-[embodiment report](../../eval/thor_precision_completion_2026-09-09/GROOT_EMBODIMENTS.md).
+select FP8 explicitly. Omit it to keep native precision. The 2026-09-09 Thor
+interface checks, run in native precision and with the earlier FP8 engine, cover
+DROID (40×17 actions), G1 (40×53) and four R1 variants (40×62); these are
+input/reset checks, not task-success certificates.
 
 For another embodiment, set `execution.embodiment_tag` in the checkpoint's
 `instinctflash.json`. FP8 reads its weight slot from that checkpoint's
@@ -94,32 +93,12 @@ GPU collation defaults on for native H100 and Thor, and the explicitly selected 
 `IFL_GROOT_GPU_COLLATE=0` restores upstream collation. This is independent of full
 backbone capture, which failed qualification and is refused by the public Runtime.
 The full-capture module remains an offline experiment. Native pairs measured 66 → 61 ms on H100 and 135 → 127 ms on Thor.
-[Protocol and receipts](../../eval/native_optimization_2026-09-10/README.md).
 
 `fast_decode` and `backbone_fastpath` default to true in this package and can be
 disabled with their environment variables set to `0`. `IFL_GROOT_CPU_THREADS` is
 opt-in host configuration (unset by default; `auto` caps at min(16, cores)).
 The backbone fastpath performs a GPU->CPU sync per forward and must stay off
 engine-side CUDA-graph capture paths.
-
-The public FlashRT baseline uses the same upstream policy:
-
-```python
-import flash_rt
-
-model = flash_rt.load_model(
-    "/path/to/GR00T-N1.7-3B",
-    config="groot_n17",
-    framework="torch",
-    source_root="/path/to/Isaac-GR00T",   # or set GR00T_ROOT
-    use_cuda_graph=True,
-)
-actions = model.predict([exterior_rgb, wrist_rgb], prompt="pick up the object", state=state_17d)
-```
-
-`model.action_dict` retains the last split action dictionary. The compact
-single-frame image form repeats the current frame to fill the OXE DROID
-`[-15, 0]` video history; real evaluation should supply both temporal frames.
 
 Compare the upstream eager control with the same BF16 model using DiT capture:
 

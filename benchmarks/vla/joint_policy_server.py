@@ -6,7 +6,7 @@ import importlib.metadata
 import os
 import uuid
 
-from .util import ConfigurationError, load_json, sha256_file, sha256_json, write_json_atomic
+from .util import ConfigurationError, sha256_file, sha256_json, wait_for_stop_signal, write_json_atomic
 
 MODELS = {
     'robbyant/lingbot-vla-4b-posttrain-robotwin': ('lingbot_vla',25,'LINGBOT_VLA_ROOT'),
@@ -45,6 +45,28 @@ def load_startup_observation(path, prompt):
     return obs
 
 
+def _e4m3_tensors(root):
+    """Every E4M3 tensor reachable from a GI engine's prepared weights."""
+    import dataclasses
+    import torch
+    found, stack, seen = [], [root], set()
+    while stack:
+        value = stack.pop()
+        if id(value) in seen:
+            continue
+        seen.add(id(value))
+        if isinstance(value, torch.Tensor):
+            if value.dtype == torch.float8_e4m3fn:
+                found.append(value)
+        elif dataclasses.is_dataclass(value):
+            stack.extend(getattr(value, f.name) for f in dataclasses.fields(value))
+        elif isinstance(value, (list, tuple)):
+            stack.extend(value)
+        elif isinstance(value, dict):
+            stack.extend(value.values())
+    return found
+
+
 def fp8_execution_receipt(runtime, backbone):
     import torch
     if runtime.precision != 'fp8':
@@ -53,17 +75,13 @@ def fp8_execution_receipt(runtime, backbone):
     stats = loop.graph_stats
     generator = loop._server.vla.model
     if backbone == 'lingbot_vla':
-        frontend = generator.frontend
-        groups = [list(frontend._l_qkv_w), list(frontend._e_qkv_w)]
-        vision = generator.vision
+        engine, vision = generator.frontend.engine, generator.vision
     elif backbone == 'lingbot_vla_v2':
-        frontend = generator.engine.frontend
-        groups = [list(frontend._moe['gateup_fp8']), list(frontend._moe['down_fp8'])]
-        vision = generator.engine.vision
+        engine, vision = generator.engine.engine, generator.engine.vision
     else:
         raise ConfigurationError('unsupported FP8 joint-policy backbone')
-    weights = [weight for group in groups for weight in group]
-    if any(not group for group in groups) or any(w.dtype != torch.float8_e4m3fn for w in weights):
+    weights = _e4m3_tensors(engine.w)
+    if not weights:
         raise ConfigurationError('expected packed E4M3 weights are absent')
     if {p.dtype for p in vision.model.parameters()} != {torch.bfloat16}:
         raise ConfigurationError('joint-policy FP8 requires the corrected native BF16 vision path')
@@ -219,7 +237,7 @@ def main(argv=None):
         async with serve(handle,'127.0.0.1',a.port,compression=None,max_size=None,ping_interval=None):
             write_json_atomic(a.receipt,identity)
             print('ready',a.receipt,flush=True)
-            await asyncio.Future()
+            await wait_for_stop_signal()
     try:asyncio.run(run())
     finally:arm.close()
 

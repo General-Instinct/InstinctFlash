@@ -24,7 +24,7 @@ def test_snapshot_keeps_head_markdown_and_current_source_only(tmp_path, monkeypa
         "instinctflash/runtime/build/generated.py": b"generated",
         "instinctflash/native/kernel.so": b"binary",
         "eval/results.json": b"measurement",
-        "serving/build/generated.py": b"generated",
+        "examples/pi05_vla/build/generated.py": b"generated",
         "benchmarks/regression/runtime_bundle.py": b"source",
         ".env": b"not package input",
     }
@@ -60,8 +60,8 @@ def test_snapshot_keeps_head_markdown_and_current_source_only(tmp_path, monkeypa
     assert (repository / "README.md").read_bytes() == b"unpublished edits"
 
 
-@pytest.mark.parametrize("relative", ["/tmp/lib.so", "../lib.so", "serving/flash_rt/../lib.so",
-                                      "serving/flash_rt/weights.bin", "other/lib.so"])
+@pytest.mark.parametrize("relative", ["/tmp/lib.so", "../lib.so", "instinctflash/native/../lib.so",
+                                      "instinctflash/native/weights.bin", "other/lib.so"])
 def test_native_injection_cannot_escape_package_or_copy_weights(relative):
     assert not builder._native_destination(relative)
 
@@ -72,7 +72,7 @@ def test_native_injection_is_explicit_and_hash_bound(tmp_path, monkeypatch):
     native = tmp_path / "cached.so"
     native.write_bytes(b"native bytes for a CPU packaging fixture")
     monkeypatch.setattr(builder, "_git", lambda *args: b"abc\n" if args[1] == "rev-parse" else b"")
-    destination = "serving/flash_rt/flash_rt_kernels.so"
+    destination = "instinctflash/native/libinstinctflash_sm120.so"
     manifest = builder.create_snapshot(repository, tmp_path / "snapshot", native_files=[(native, destination)])
     assert manifest["native_files"] == [destination]
     assert manifest["files"][destination]["origin"] == "explicit_native_file"

@@ -40,13 +40,15 @@ certificate.json
 examples/external_plugin/my-world-model/
 examples/external_plugin/*.egg-info/
 dist/
-serving/third_party/cutlass/
 
 # Local packaging output.
 /build/
 /examples/*/build/
 # Rebuildable local benchmark logs, source bundles and profiler traces.
 /eval/**/*.log
+# The clean-install qualification keeps its logs: its README cites them.
+!/eval/clean_install_2026-09-25/evidence/**/logs/
+!/eval/clean_install_2026-09-25/evidence/**/*.log
 /eval/**/*.jsonl
 /eval/**/*.tar.gz
 /eval/**/*.trace.json.gz

@@ -9,8 +9,11 @@ import numpy as np
 import pytest
 
 
+_EVAL = Path(__file__).resolve().parents[1] / "eval"
+if not (_EVAL / "user_e2e_2026-09-14").exists():
+    pytest.skip("requires the internal evaluation records", allow_module_level=True)
 spec = importlib.util.spec_from_file_location("prompt_update_gate",
-    Path(__file__).resolve().parents[1] / "eval/user_e2e_2026-09-14/prompt_update_gate.py")
+    _EVAL / "user_e2e_2026-09-14/prompt_update_gate.py")
 gate = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(gate)
 
@@ -20,15 +23,15 @@ def pair():
         revision="revision", cases=[dict(i=i) for i in range(25)], runtime_kwargs={"precision": "fp8"},
         optimizer_environment={}, effective_schedule={"nfe": 10}, guidance="none", ok=True)
     new = deepcopy(old)
-    new.update(sources={"/env/flash_rt/frontend.py": "a"*64},
+    new.update(sources={"/env/instinctflash/engines/vla2/frontend.py": "a"*64},
         graph_stats=dict(captured=True, captures=1, reuses=24, calibrations=25))
     actions = np.arange(25*50*14, dtype=np.float32).reshape(25, 50, 14)
     return old, new, actions, actions.copy()
 
 
 def check(values):
-    return gate.check_update(*values, source_suffix="/flash_rt/frontend.py", source_sha256="a"*64,
-                             counters=dict(captures=1, reuses=24, calibrations=25))
+    return gate.check_update(*values, source_suffix="/instinctflash/engines/vla2/frontend.py",
+                             source_sha256="a"*64, counters=dict(captures=1, reuses=24, calibrations=25))
 
 
 def test_exact_full_horizon_with_observation_recalibration_passes():
@@ -71,7 +74,7 @@ def test_redundant_capture_or_removed_calibration_fails(counter, value):
 
 def test_declared_but_not_loaded_frontend_does_not_pass():
     values = list(pair())
-    values[1]["sources"]["/env/flash_rt/frontend.py"] = "b"*64
+    values[1]["sources"]["/env/instinctflash/engines/vla2/frontend.py"] = "b"*64
     assert check(values)["status"] == "failed"
 
 

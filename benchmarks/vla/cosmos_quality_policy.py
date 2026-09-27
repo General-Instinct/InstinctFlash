@@ -82,7 +82,7 @@ def _source_inventory():
             )
     prefixes = (
         "instinctflash",
-        "flash_rt",
+        "triton",
         "cosmos3_iwm",
         "cosmos_framework",
         "benchmarks.regression",
@@ -266,11 +266,6 @@ def frozen_cell(matrix_path, cell_id, *, matrix_sha256):
             "IFL_BF16_LINEAR_RELU2": "1" if family == "edge" else "0",
         }
     )
-    if family == "edge" and arm == "runtime_selected":
-        library = (environment or {}).get("IFL_BF16_KERNEL_LIBRARY")
-        if not isinstance(library, str) or not Path(library).is_absolute():
-            raise ValueError("Edge requires its bound absolute BF16 library path")
-        expected["IFL_BF16_KERNEL_LIBRARY"] = library
     if environment != expected:
         raise ValueError("Optimizer settings differ from the measured matrix cell")
     return cell
@@ -605,10 +600,6 @@ class CosmosQualityPolicy:
                 "TORCHDYNAMO_DISABLE must match eager/reference versus Runtime execution"
             )
         numeric = _numeric_environment()
-        native = {}
-        for key, value in actual_env.items():
-            if key.endswith("_LIBRARY"):
-                native[key] = {"path": value, "sha256": _sha(value)}
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=False)
         runtime = None
@@ -641,7 +632,6 @@ class CosmosQualityPolicy:
                 "runtime_kwargs": cell["expected_runtime_kwargs"],
                 "optimizer_environment": actual_env,
                 "torchdynamo_disable": compiler_environment,
-                "native_libraries": native,
                 "checkpoint_artifacts": checkpoint_artifacts,
                 "observed_external_assets": runtime_assets,
                 "source_inventory": source_inventory,

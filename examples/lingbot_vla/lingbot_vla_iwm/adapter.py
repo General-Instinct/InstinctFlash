@@ -82,8 +82,9 @@ class LingBotVLA4BAdapter:
                 "family": "vla",
                 # "backbone" identifies this spec to backbone-keyed planner checks (the engine
                 # operating-point gate in passes/generic/engine_offload.py keys on it: the
-                # vla4b_thor frontend bakes a 10-step schedule, and a plan at any other nfe
-                # must decline the engine rather than print one schedule and run another).
+                # GI VLA4 engine (instinctflash/engines/vla4) bakes a 10-step schedule, and a
+                # plan at any other nfe must decline the engine rather than print one schedule
+                # and run another).
                 "backbone": BACKBONE,
                 "chunk_size": "50",
                 "action_reply": "(use_length, 14); the shipped declaration serves use_length=25",

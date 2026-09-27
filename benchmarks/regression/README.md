@@ -9,8 +9,17 @@ warmed before steady-state timing.
 
 ```bash
 # Use the existing Cosmos environment on an idle Thor.
-python -m benchmarks.regression.run_cosmos /absolute/path/to/new-results
+python -m benchmarks.regression.run_cosmos /absolute/path/to/new-results \
+  --fixture /path/to/droid_observations.npz --reference /path/to/reference
 ```
+
+Each arm is one `python -m benchmarks.regression.cosmos FAMILY ARM OUTPUT`
+process. It reads a recorded DROID observation archive (`--fixture`, an NPZ
+whose `jpeg_0` rows hold JPEG camera frames); the reference arms also import
+the eager reference constructor from `--reference`, a directory whose
+`upstream.py` provides `build(family, runtime)`. Neither input ships with this
+repository. Give all three arms the same paths: both digests are part of the
+compared protocol.
 
 Each run saves the request protocol, source and checkpoint identities, per-call
 latencies, complete action arrays, execution statistics and an A/B/A comparison.
@@ -18,12 +27,13 @@ The runner holds `/tmp/thor_gpu.lock`; foreign compute processes are checked
 before loading and before each request. It does not install dependencies or
 change GPU clocks.
 
-Before deploying a benchmark bundle that uses compiled extensions, inventory the
-source and required native artifacts together:
+Before deploying a benchmark bundle, inventory its source together with any
+optional compiled libraries it must carry (the Thor engines and Edge's BF16
+fusion are Triton and need none; the SM120 kernels are an example):
 
 ```bash
 python -m benchmarks.regression.runtime_bundle /path/to/bundle /path/to/manifest.json \
-  --require-binary 'serving/flash_rt/flash_rt_kernels*.so'
+  --require-binary 'instinctflash/native/libinstinctflash_sm120*.so'
 python -m benchmarks.regression.runtime_bundle /path/to/bundle /path/to/manifest.json --verify
 ```
 
@@ -49,7 +59,9 @@ python benchmarks/regression/deploy_thor.py \
   --host user@thor \
   --remote-root /home/user/ifl-regression \
   --python /home/user/cosmos-framework/.venv/bin/python \
-  --output-root /absolute/path/to/local-results
+  --output-root /absolute/path/to/local-results \
+  --fixture path/in/snapshot/droid_observations.npz \
+  --reference path/in/snapshot/reference
 ```
 
 The deployer archives `git HEAD`, runs that isolated source snapshot on Thor,
@@ -75,7 +87,8 @@ nightly runs use the default Runtime configuration.
 
 The `systemd/` templates schedule a nightly run at 03:00 UTC with up to 15 minutes
 of jitter. Configure `~/.config/instinctflash/thor-regression.env` with
-`REGRESSION_PYTHON`, `THOR_HOST`, `THOR_RESULTS`, `THOR_PYTHON` and `LOCAL_RESULTS`;
+`REGRESSION_PYTHON`, `THOR_HOST`, `THOR_RESULTS`, `THOR_PYTHON`, `LOCAL_RESULTS`,
+`REGRESSION_FIXTURE` and `REGRESSION_REFERENCE` (the `--fixture` and `--reference` paths);
 copy the units to `~/.config/systemd/user/`, then enable the timer with
 `systemctl --user enable --now instinctflash-thor-regression.timer`.
 The template assumes the checkout is `~/InstinctFlash`. Inspect the journal and
@@ -84,11 +97,14 @@ The template assumes the checkout is `~/InstinctFlash`. Inspect the journal and
 ## Native numerical screen
 
 ```bash
-python -m benchmarks.regression.run_cosmos_numeric /absolute/path/to/new-results
+python -m benchmarks.regression.run_cosmos_numeric /absolute/path/to/new-results \
+  --fixture /path/to/droid_observations.npz
 ```
 
 On the screened Thor stack this runs Edge and Nano, each with a fresh native
-BITEXACT / native NUMERIC pair through `Runtime.from_pretrained`. Both arms use
+BITEXACT / native NUMERIC pair through `Runtime.from_pretrained`
+(`benchmarks.regression.cosmos_numeric`, which takes the same explicit
+`--fixture` archive as the A/B/A arms). Both arms use
 guarded conditioning reuse; only the numerical arm enables cuDNN BF16 attention.
 It records six warmup and ten measured full 32×8 action chunks per arm, checks
 source/protocol agreement, finiteness, actual backend execution and cache replay,
@@ -107,8 +123,7 @@ gate. Quantization and fewer denoising steps are not enabled by this command.
 The shared step-cache controller and public selection have CPU regressions in
 `tests/test_step_cache.py`, `tests/test_step_cache_policy.py` and
 `tests/test_dreamzero_step_cache.py`. Public execution snapshots are covered by
-`tests/test_runtime_telemetry.py`. The bounded
-[Thor integration study](../../eval/dynamic_step_cache_integration_2026-09-14/README.md)
-compares native/FP8 arithmetic with fixed/dynamic scheduling and independently
-audits the actual prediction counts, actions and retained native-state hashes.
+`tests/test_runtime_telemetry.py`. A bounded Thor integration study compared
+native/FP8 arithmetic with fixed/dynamic scheduling and independently audited
+the actual prediction counts, actions and retained native-state hashes.
 Task-quality acceptance remains a separate gate for every checkpoint/profile.

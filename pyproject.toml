@@ -62,7 +62,7 @@ include = ["instinctflash*", "benchmarks", "benchmarks.vla*", "benchmarks.regres
 [tool.setuptools.package-data]
 "benchmarks.vla" = ["config/*.json", "*.md"]
 "benchmarks.regression" = ["systemd/*.service", "systemd/*.timer", "fixtures/*.json", "fixtures/*.txt", "fixtures/*.npz", "fixtures/frameworks/*.json"]
-"instinctflash.native" = ["*.cu", "*.md", "CMakeLists.txt", "bf16/*.cu", "bf16/*.sh", "bf16/CMakeLists.txt"]
+"instinctflash.native" = ["*.cu", "*.md", "CMakeLists.txt"]
 # the distill evidence base: the campaigns' measured frontiers as data (distill/evidence/)
 "instinctflash.distill.evidence" = ["*.json"]
 
@@ -93,9 +93,8 @@ pythonpath = [".", "tests"]
 # ---------------------------------------------------------------------------
 
 # --- the LingBot-VA policy server is NOT in this file ------------------------
-# Its pins live in eval/lingbot_va_robotwin/server-requirements.in, locked to
-# server-requirements.txt, and are deliberately kept OUT of this project's
-# dependency graph. That is not tidiness, it is the one thing this layout has to
+# Its pins live in a separate server requirements lock and are deliberately
+# kept OUT of this project's dependency graph. That is not tidiness, it is the one thing this layout has to
 # get right.
 #
 # The server pins torch==2.9.0; the `runtime` extra above floats on torch>=2.4.
@@ -106,6 +105,7 @@ pythonpath = [".", "tests"]
 # does not help; it governs what may be INSTALLED together, not what gets
 # RESOLVED together.
 #
-# A single torch across both is precisely the coupling the websocket in eval/
-# exists to prevent -- see env.sh: "Never try to merge these". A second lockfile
-# is the price of keeping the two solves genuinely independent.
+# A single torch across both is precisely the coupling the websocket between the
+# LingBot-VA server and the RoboTwin client exists to prevent: the two stacks are
+# dependency-incompatible and must never be merged. A second lockfile is the
+# price of keeping the two solves genuinely independent.

@@ -143,7 +143,7 @@ def fp8_weights(root):
     # Plain policy/server objects bridge the public loop to its nn.Module. Use
     # their defining namespaces: sys.modules aliases do not change __module__.
     packages = (
-        "instinctflash", "flash_rt", "lingbotvla", "lingbot_vla_iwm",
+        "instinctflash", "lingbotvla", "lingbot_vla_iwm",
         "lingbot_vla_v2_iwm", "groot_n17_iwm", "gr00t", "groot",
         "cosmos3_iwm", "cosmos_framework", "dreamzero_iwm", "pi05_iwm",
         "eval_utils", "wan_va",
@@ -428,7 +428,7 @@ def capture(matrix_path, cell_id, output_root, fixture):
                 report.update(ok=False, close_error=traceback.format_exc())
         report["sources"] = {str(Path(module.__file__).resolve()): sha(module.__file__)
             for name, module in list(sys.modules.items())
-            if name.startswith(("instinctflash", "flash_rt", "pi05_iwm", "lingbot_vla", "groot_n17_iwm",
+            if name.startswith(("instinctflash", "pi05_iwm", "lingbot_vla", "groot_n17_iwm",
                 "cosmos3_iwm", "dreamzero_iwm", "benchmarks.regression", "lerobot", "gr00t", "groot",
                 "cosmos_framework", "wan_va", "deploy", "eval_utils"))
             and getattr(module, "__file__", None) and str(module.__file__).endswith((".py", ".so"))

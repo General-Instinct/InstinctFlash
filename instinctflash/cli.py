@@ -672,8 +672,8 @@ def cmd_serve(argv: list[str]) -> int:
     all announced, so the one command from "training output" to "server up" stays inspectable.
     Preflight prints BEFORE any weight moves. Then load-then-bind, in that order: a checkpoint
     that cannot load exits here with the loader's error and the port never opens, because the
-    openpi client retries a dead port forever and a half-started server is the documented worst
-    case (eval/lingbot_va_robotwin/README.md).
+    openpi client retries a dead port forever (every 5 s, on any exception), so a half-started
+    server is the worst case: the client hangs instead of failing.
     """
     from instinctflash.cli_config import (
         CommandReport, ConfigError, UnsupportedCapability, execute,
@@ -748,10 +748,7 @@ def cmd_serve(argv: list[str]) -> int:
             print(f"loaded {rt.model_id!r}; binding ws://{s.host}:{s.port} "
                   f"(clients: openpi_client.WebsocketClientPolicy, or GET /healthz)",
                   file=sys.stderr)
-            try:
-                server.serve_forever()
-            except KeyboardInterrupt:
-                pass
+            _serve_until_stopped(server)
         finally:
             if viz is not None:
                 viz.close()
@@ -764,6 +761,27 @@ def cmd_serve(argv: list[str]) -> int:
                                "openpi wire protocol (--serve.dry_run / --serve.smoke stop "
                                "early). A local directory with no declaration scaffolds its "
                                "own first and stops before any download if facts are missing.")
+
+
+def _serve_until_stopped(server) -> None:
+    """Serve until Ctrl-C or SIGTERM; either way the caller's cleanup (Runtime.close) runs.
+
+    SIGTERM is what supervisors send, and a server started from a non-interactive shell with
+    ``&`` inherits SIGINT as ignored, so SIGINT alone cannot be relied on to stop it cleanly.
+    """
+    import signal
+    import threading
+
+    previous = None
+    if threading.current_thread() is threading.main_thread():
+        previous = signal.signal(signal.SIGTERM, lambda signum, frame: server.shutdown())
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        if previous is not None:
+            signal.signal(signal.SIGTERM, previous)
 
 
 def cmd_certify(argv: list[str]) -> int:

@@ -8,14 +8,17 @@ import pytest
 from benchmarks.vla import wan_va_runtime_robotwin_scene as scene
 from benchmarks.vla.util import ConfigurationError
 
+_RECEIPT = (Path(__file__).resolve().parents[1] / 'eval' / 'thor_precision_completion_2026-09-09'
+            / 'va-runtime-libero-native-serve-v2.json')
+requires_receipt = pytest.mark.skipif(not _RECEIPT.is_file(),
+                                      reason='requires the internal evaluation records')
+
 
 @pytest.fixture
 def identity():
     # Use the actual endpoint receipt schema, changing the checkpoint-specific
     # fields for this unit fixture. This fixture is not a Thor startup receipt.
-    root = Path(__file__).resolve().parents[1]
-    value = json.loads((root / 'eval/thor_precision_completion_2026-09-09/'
-                       'va-runtime-libero-native-serve-v2.json').read_text())
+    value = json.loads(_RECEIPT.read_text())
     value['model_id'], value['model_revision'] = scene.MODEL, scene.REVISION
     value['execution'].update(nfe={'video': 25, 'action': 50},
         grid_shifts={'video': 5., 'action': 1.},
@@ -25,12 +28,14 @@ def identity():
     return value
 
 
+@requires_receipt
 def test_native_and_explicit_fp8_admission(identity):
     scene.validate_identity(identity)
     identity.update(precision='fp8', fp8={'packed_e4m3_tensors': 180})
     scene.validate_identity(identity)
 
 
+@requires_receipt
 @pytest.mark.parametrize('path,value', [
     (('protocol',), scene.driver.PROTOCOL),
     (('model_revision',), 'wrong'),
@@ -50,6 +55,7 @@ def test_incompatible_endpoint_is_refused(identity, path, value):
         scene.validate_identity(modified)
 
 
+@requires_receipt
 @pytest.mark.parametrize('count', [None, 0, -1, True, '180'])
 def test_fp8_requires_real_packed_weight_count(identity, count):
     identity.update(precision='fp8', fp8={'packed_e4m3_tensors': count})
@@ -57,6 +63,7 @@ def test_fp8_requires_real_packed_weight_count(identity, count):
         scene.validate_identity(identity)
 
 
+@requires_receipt
 def test_episode_records_normal_failure_and_closes_transport(identity, tmp_path, monkeypatch):
     from test_robotwin_driver import job, seal
     from benchmarks.vla.util import write_json_atomic

@@ -4,7 +4,8 @@ Public Thor inference environments
 From the public checkout, create one isolated environment per vendor family::
 
     python3 scripts/bootstrap_vendor.py plan vla4 --json
-    python3 scripts/bootstrap_vendor.py install vla4 --python python3.12 --root ./deploy-vla4
+    python3 scripts/bootstrap_vendor.py install vla4 --python python3.12 --root ./deploy-vla4 \
+        --ptxas /usr/local/cuda/bin/ptxas
     source ./deploy-vla4/activate.sh
     python scripts/prepare_auxiliary_assets.py prepare vla4 --root ./assets-vla4 --include-primary
     source ./assets-vla4/run.env
@@ -12,16 +13,16 @@ From the public checkout, create one isolated environment per vendor family::
 
 Targets are pi05, vla4, vla2, groot, va, edge, nano and dreamzero. Cosmos Edge
 and Nano require Python 3.13 and may share their vendor environment; the others
-use Python 3.12. These recipes target Linux aarch64 / Jetson Thor. Install a
-matching CUDA toolkit/native serving wheel for selected GPU kernels; a CPU
-dependency check does not execute them. See INSTALL.rst for native builds and
-REPRODUCE.rst for primary checkpoint preparation, actions and latency reports.
+use Python 3.12. These recipes target Linux aarch64 / Jetson Thor. The FP8
+engines and Edge's NUMERIC ReLU² linear are Python with Triton kernels compiled
+on first GPU use; they need only the recipe's Torch and Triton, not a separate
+native wheel or library. A CPU dependency check does not execute them. On Thor,
+pass ``--ptxas`` with a CUDA 13 assembler that supports ``sm_110a``; some
+bundled Triton assemblers do not. See REPRODUCE.rst for primary checkpoint
+preparation, actions and latency reports.
 Install ``uv`` first, or pass its executable with ``--uv``. If the required
 interpreter is missing, use ``uv python install 3.12`` (``3.13`` for Cosmos)
 and pass the result of ``uv python find`` as ``--python``.
-Replace the bootstrap's same-version pure ``flash_rt`` wheel explicitly with
-``python -m pip install --force-reinstall --no-deps /path/to/native/flash_rt.whl``
-and rerun ``python -m pip check``; an ordinary install can skip that replacement.
 
 The bootstrap creates new source/environment directories, checks out a pinned
 public Git commit, verifies the recorded source patch, and builds noneditable
@@ -31,13 +32,16 @@ package checks and failures. Both pip check and uv pip check must pass; no
 --no-deps bypass is used. No weights or GPU operations run during bootstrap or
 doctor. ``--defer-doctor`` records an explicit deferred CPU check.
 
-All eight profiles now have fresh public package-install evidence; Edge/Nano
-share the same qualified package stack. Six separate source checkouts passed
-both package checks. The model-specific count and receipt hashes are recorded
-in qualification.json. These package results are separate from native action,
-WebSocket, latency and task-quality qualification. Historical pins.json records
-observed interpreter precedence; bootstrap.json and inference_requirements.txt
-are the actual public install recipe.
+Package statuses come only from a clean-install qualification of the current
+source: a new environment per model built by bootstrap_vendor.py from a clean
+clone, with its own caches, both package checks, the CPU doctor, a static audit
+of the installed distributions, files, linked libraries and imports, and a public
+reproduction run and serving smoke with every step's mapped files recorded.
+qualification.json records the per-model result, package counts, installed wheels
+and receipt hashes; until a model is qualified its status is pending. These package
+results are separate from latency and task-quality qualification. Historical pins.json records observed
+interpreter precedence; bootstrap.json and inference_requirements.txt are the
+actual public install recipe.
 
 The shared public Torch 2.11.0 wheel imports as 2.11.0+cu130. Its public NVIDIA
 cuSPARSELt 0.8.0 wheel has a packaging defect: its filename says aarch64 while
@@ -60,8 +64,8 @@ historical vendor baseline is not untouched upstream. These changes and their
 scope are recorded in each recipe; they do not establish action equivalence.
 VLA4's native package initializers also require pinned ipdb, torchdata and
 pydantic. These were added after actual imports exposed the missing dependencies;
-the resulting 127-package environment passes both checkers and its CPU FP8
-doctor. Earlier failed import receipts remain preserved.
+the resulting environment passed both checkers and its CPU FP8 doctor. Earlier
+failed import receipts remain preserved.
 VLA2 likewise requires torchdata 0.11.0 and pydantic 2.13.4. Its complete
 deployment module queries CUDA device properties while importing the native
 grouped-GEMM tuning table. CPU doctor checks the mandatory dependencies and

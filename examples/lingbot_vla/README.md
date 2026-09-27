@@ -86,14 +86,17 @@ Use the same Runtime API with `precision="native"` (the default) or explicit
 selection preserves the checkpoint's ten denoise steps and native action
 processing; it does not select a shorter schedule.
 
-The corrected FP8 route keeps vision in BF16. The old FP16-vision speed result
+The FP8 engine (`instinctflash/engines/vla4`: FP8 language prefix and action
+expert) keeps vision in BF16. The old FP16-vision speed result
 is invalid for deployment because real images exposed overflow and
-image-insensitive actions. Current short Runtime measurements are 355.00 ms
-for native capture and 217.97 ms for FP8 per 25-action chunk (1.63×).
-The 40-pair RoboTwin screen measured clean 15/20 → 14/20 and randomized
-15/20 → 16/20 successes; all four `handover_block` scenes succeeded only
-with native. These samples do not establish non-inferiority or sustained
-real-time performance. [Current evidence](../../eval/thor_precision_completion_2026-09-09/COMPARISON.md).
+image-insensitive actions. On Thor the engine's prefix and ten denoise steps
+take a 54.2 ms engine-level median. On twelve recorded observations with
+identical inputs and noise, its mean absolute action error against the upstream
+reference was 0.0267 in the checkpoint's normalized action space. The earlier
+FP8 engine's 40-pair RoboTwin screen measured clean 15/20 → 14/20 and randomized
+15/20 → 16/20 successes; all four `handover_block` scenes succeeded only with
+native. The current engine has no RoboTwin screen of its own yet. These
+measurements do not establish non-inferiority or sustained real-time performance.
 
 The same six-case harness reproduces the SM120 full arm with an explicit full-path selection:
 
@@ -111,6 +114,6 @@ LingBot-VLA and its RoboTwin post-train checkpoint are Apache-2.0 (© their auth
 vendored here — the adapter imports the upstream checkout and patches one instance-level method
 at runtime, gated on bitexactness.
 
-The 2026-09-10 native Runtime pairs measured H100 184 → 99 ms and Thor 364 → 262 ms, with identical finite action bytes. Thor retains upstream eager vision attention. [Protocol and receipts](../../eval/native_optimization_2026-09-10/README.md).
+The 2026-09-10 native Runtime pairs measured H100 184 → 99 ms and Thor 364 → 262 ms, with identical finite action bytes. Thor retains upstream eager vision attention.
 
-The same checked image preprocessor also defaults on inside the explicitly selected Thor FP8 engine (161.5 → 155.3 ms; identical FP8 action bytes). `IFL_VLA4B_GPU_PREPROCESS=0` disables it in either precision mode. This is not native/FP8 quality equivalence.
+The same checked image preprocessor also defaults on inside the explicitly selected Thor FP8 engine. `IFL_VLA4B_GPU_PREPROCESS=0` disables it in either precision mode.

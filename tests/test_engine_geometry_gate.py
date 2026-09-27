@@ -159,8 +159,8 @@ def test_the_pi05_adapter_puts_the_geometry_facts_on_the_spec():
 
 
 def test_the_planner_and_runtime_gates_cannot_drift_from_the_engine_source():
-    source = (ROOT / "serving/flash_rt/frontends/torch/pi05_thor.py").read_text()
-    m = re.search(r"^\s+MODEL_ACTION_DIM\s*=\s*(\d+)", source, re.M)
+    source = (ROOT / "instinctflash/engines/pi05/engine.py").read_text()
+    m = re.search(r"^MAX_ACTION_DIM\s*=\s*(\d+)", source, re.M)
     assert m and int(m.group(1)) == PI05_ENGINE_MAX_ACTION_DIM
 
 
@@ -203,7 +203,7 @@ class _Adapter:
 @contextmanager
 def _engine_looks_available():
     orig = eb.engine_available
-    eb.engine_available = lambda: (True, "test stub: pretend SM110 + engine kernels")
+    eb.engine_available = lambda backbone=None: (True, "test stub: pretend SM110 + engine kernels")
     try:
         yield
     finally:

@@ -1,16 +1,17 @@
-"""Whether this device should execute through the fused serving engine instead of torch passes.
+"""Whether this device should execute through an InstinctFlash FP8 engine instead of torch passes.
 
 A PLANNER pass, like `graph_capture`'s planner half: it decides from the declaration and the
-device profile alone, with no torch and no engine import. The runtime-side gate — is the engine
-package actually importable, does it have a frontend for this backbone — lives in
-`runtime/engine_backend.py`, where failing has a cheap, honest fallback (the torch path).
+device profile alone, with no torch and no engine import. The runtime-side gate — does this
+interpreter have what the engine needs (device capability, Triton, torch._scaled_mm), is an
+engine registered for this backbone — lives in `runtime/engine_backend.py`, where failing has a
+cheap, honest fallback (the torch path).
 
 This pass checks the supported device and declared dimensions/denoise schedule.
 The Runtime precision policy separately requires an explicit FP8 request.
 Performance depends on the checkpoint, action horizon and measured input/output
-boundary. The old 56.9/1111 ms pi05 comparison mixed action horizons and must not
-be advertised as the gain for a caller's execution. Matched measurements and
-current integration limits are in eval/fp8_comparison_2026-09-09/README.md.
+boundary, so no fixed speedup is advertised as the gain for a caller's execution.
+The InstinctFlash engines' paired Thor measurements cover the dedicated engine path;
+they do not certify the generic Runtime's observation and control contract.
 """
 
 from __future__ import annotations
@@ -61,8 +62,8 @@ class EngineOffloadApplicable:
         if cap != (11, 0):
             return PassResult(
                 self.name, False, Tier.NUMERIC,
-                reason=(f"device capability {cap} is not SM110: this engine route is supported "
-                        "on Thor only; other devices require their own implementation and measurements"))
+                reason=(f"device capability {cap} is neither SM110 nor SM90: FP8 execution is supported "
+                        "on Thor (SM110) and H100 (SM90) only; other devices require their own implementation and measurements"))
         geometry_problem = self._action_geometry_problem(spec)
         if geometry_problem is not None:
             # Declined ON THE MERITS: no params['backend'], so choose_backend('auto') falls back
@@ -94,8 +95,8 @@ class EngineOffloadApplicable:
             },
             expected_win=(
                 "Measure this checkpoint with matched views, action horizon, denoise steps and "
-                "timing scope. The matched Thor study separates native capture, FP16 engine "
-                "and FP8 arithmetic; it does not establish robot-facing Runtime parity."),
+                "timing scope. Paired Thor engine measurements do not establish robot-facing "
+                "Runtime parity."),
         )
 
     @staticmethod
@@ -120,10 +121,11 @@ class EngineOffloadApplicable:
         """Why the engine build cannot serve this plan's operating point — or the point it serves.
 
         The engine bakes its denoise schedule and serves no CFG (``ENGINE_BAKED_OPERATING_POINTS``
-        in ``runtime/engine_backend.py``: pi05_thor pre-scales ``action_out_proj`` by −1/10,
-        sizes its time tables for 10 steps and captures ``'steps': 10`` graphs; the VLA-4B, V2
-        and GROOT frontends bake theirs the same way). The plan, on the other hand, is priced at
-        the operating point the checkpoint declares and the caller overrides
+        in ``runtime/engine_backend.py``: the GI pi05 engine folds ``dt = -1/10`` into
+        ``action_out_proj``, sizes its AdaRMS time tables for 10 steps and runs the 10-step loop
+        inside its captured CUDA graphs; the VLA-4B, V2 and GR00T engines bake theirs the same
+        way). The plan, on the other hand, is priced at the operating point the checkpoint
+        declares and the caller overrides
         (``spec.with_nfe`` / ``with_guidance`` in ``facade._compile_declaration``). Before this
         check, ``nfe={"action": 1}`` on Thor printed ``schedule {prefix=1 + action=1}`` and
         the engine ran 11 forwards (iwm_distill/fewstep/cert_pi05_nfe1_thor.md §2).

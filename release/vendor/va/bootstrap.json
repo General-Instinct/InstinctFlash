@@ -6,7 +6,7 @@
   },
   "explicit_exclusions": [
     "Training, hardware robot drivers, visualization UI, vendor TensorRT builders, CUDA source compilation are not installed by this inference-only bootstrap.",
-    "FlashAttention/native acceleration remains a separately built and qualified dependency where selected."
+    "FlashAttention and other upstream compiled dependencies come only from the pinned wheels above; the FP8 engines and Triton kernels ship in the InstinctFlash package and compile on first GPU use."
   ],
   "family": "va",
   "packaging_patch": {
@@ -25,7 +25,12 @@
     "GPU_verified": false,
     "evidence": "release/vendor/qualification.json",
     "status": "fresh_package_checks_passed",
-    "task_quality_certified": false
+    "task_quality_certified": false,
+    "clean_install": {
+      "date": "2026-09-26",
+      "commit": "218c1938930e78464e18b4c6fa7ce442159ef8fe",
+      "evidence": "release/vendor/qualification.json"
+    }
   },
   "requirements": {
     "path": "va/inference_requirements.txt",

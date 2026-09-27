@@ -37,7 +37,7 @@ MISSING_RE = re.compile(r"ModuleNotFoundError: No module named '([^']+)'$")
 # not an absent optional dependency. Keep local source (including *_iwm) out of this set.
 OPTIONAL_MODULES = frozenset({
     "PIL", "accelerate", "cosmos_framework", "cv2", "diffusers", "easydict",
-    "einops", "flash_attn", "flash_rt", "ftfy", "gr00t", "groot", "hydra",
+    "einops", "flash_attn", "ftfy", "gr00t", "groot", "hydra",
     "imageio", "instinct_pdd", "lerobot", "libero", "modules", "msgpack",
     "numpy", "omegaconf", "openpi_client", "rerun", "safetensors", "scipy",
     "torch", "torchvision", "transformers", "triton", "utils", "websockets",

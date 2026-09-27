@@ -13,8 +13,7 @@ Existing cross-framework timings do not isolate this mechanism's speedup.
 This helper changes no algorithm. Runtime now supports step_cache="dynamic" with
 native or explicitly selected FP8 precision; both require tier_ceiling="behavioral".
 The option changes computation and has SCREEN evidence, not a quality certificate.
-See INSTALL.rst for the API and
-eval/dynamic_step_cache_integration_2026-09-14/audit.json for the bounded
+See INSTALL.rst for the API and docs/dynamic-step-cache.md for the bounded
 CPU/GPU integration evidence; no task-quality certificate.
 """
 

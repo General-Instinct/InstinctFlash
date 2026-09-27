@@ -32,7 +32,7 @@ MAIN_ARMS = ("eager_native", "runtime_default", "runtime_selected")
 ADAPTERS = {"pi05": "pi05_iwm", "vla4": "lingbot_vla_iwm", "vla2": "lingbot_vla_v2_iwm",
             "groot": "groot_n17_iwm", "edge": "cosmos3_iwm", "nano": "cosmos3_iwm",
             "dreamzero": "dreamzero_iwm"}
-OWNED_PACKAGES = frozenset(("instinctflash", "flash_rt", "benchmarks", *ADAPTERS.values()))
+OWNED_PACKAGES = frozenset(("instinctflash", "benchmarks", *ADAPTERS.values()))
 
 
 class InvalidProvenance(ValueError):

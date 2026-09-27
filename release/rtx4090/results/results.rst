@@ -1,41 +1,128 @@
-RTX 4090 measured results
-=========================
+RTX 4090 clean-install qualification
+====================================
 
-Complete requested scope; full-eight qualification remains incomplete.
+Recorded 2026-09-27 (UTC) on one NVIDIA GeForce RTX 4090 (24564 MiB, driver 610.43.02; container memory limit 143 GB) from source commit ``218c193`` (the internal commit the runs cloned; this release carries the same package, adapter, benchmark and script code). Prediction p50 in milliseconds; each run compares the checkpoint's eager native reference, the default Runtime and the selected execution mode with the same inputs, warmups and measurement counts. Task quality is not certified.
 
-Each model run used one NVIDIA GeForce RTX 4090. Latencies are median public Runtime prediction time in milliseconds; the main table selects the fastest audited runtime at the original checkpoint schedule. History models use steady history predictions; setup and WebSocket round trips are outside these medians.
+.. list-table::
+   :header-rows: 1
 
-Measurements span separate host/environment cohorts. Each speedup compares paired runs within its own cohort; this table is not a comparison between hosts. The cohort column and environment records below identify the driver, allocation and measured Torch builds.
+   * - Model
+     - Cell
+     - Precision
+     - p50 (ms)
+   * - pi05
+     - pi05-eager_native (fp8 run)
+     - native
+     - 325.2
+   * - pi05
+     - pi05-runtime_default (fp8 run)
+     - native
+     - 108.2
+   * - pi05
+     - pi05-runtime_selected (fp8 run)
+     - fp8
+     - 113.7
+   * - vla4
+     - vla4-eager_native (fp8 run)
+     - native
+     - 867.8
+   * - vla4
+     - vla4-runtime_default (fp8 run)
+     - native
+     - 206.0
+   * - vla4
+     - vla4-runtime_selected (fp8 run)
+     - fp8
+     - 248.9
+   * - vla2
+     - vla2-eager_native (fp8 run)
+     - native
+     - 1070.8
+   * - vla2
+     - vla2-runtime_default (fp8 run)
+     - native
+     - 1037.2
+   * - vla2
+     - vla2-runtime_selected (fp8 run)
+     - fp8
+     - 172.7
+   * - vla2
+     - vla2-eager_native (numeric run)
+     - native
+     - 1053.7
+   * - vla2
+     - vla2-runtime_default (numeric run)
+     - native
+     - 1041.4
+   * - vla2
+     - vla2-runtime_selected (numeric run)
+     - native
+     - 170.1
+   * - groot
+     - groot-eager_native (fp8 run)
+     - native
+     - 190.8
+   * - groot
+     - groot-runtime_default (fp8 run)
+     - native
+     - 84.7
+   * - groot
+     - groot-runtime_selected (fp8 run)
+     - fp8
+     - 96.0
+   * - va
+     - va-eager_native (fp8 run)
+     - native
+     - 9346.3
+   * - va
+     - va-runtime_default (fp8 run)
+     - native
+     - 3607.9
+   * - va
+     - va-runtime_selected (fp8 run)
+     - fp8
+     - 5835.2
+   * - va
+     - va-2v4a-fp8 (fp8 run)
+     - fp8
+     - 708.3
+   * - edge
+     - edge-eager_native (fp8 run)
+     - native
+     - 1236.4
+   * - edge
+     - edge-runtime_default (fp8 run)
+     - native
+     - 1303.0
+   * - edge
+     - edge-runtime_selected (fp8 run)
+     - fp8
+     - 1208.7
+   * - edge
+     - edge-eager_native (numeric run)
+     - native
+     - 1176.9
+   * - edge
+     - edge-runtime_default (numeric run)
+     - native
+     - 1238.2
+   * - edge
+     - edge-runtime_selected (numeric run)
+     - native
+     - 1196.8
+   * - nano
+     - nano-eager_native (numeric run)
+     - native
+     - 12801.6
+   * - nano
+     - nano-runtime_default (numeric run)
+     - native
+     - 13577.6
+   * - nano
+     - nano-runtime_selected (numeric run)
+     - native
+     - 13733.3
 
-.. csv-table::
-   :header: "Model", "Cohort", "PyTorch p50 (ms)", "InstinctFlash p50 (ms)"
+Not tested on this node:
 
-   LingBot-VA,old_4x4090_cu130,8139.07,3411.92 (2.39×; native)
-   LingBot-VLA-4B,old_4x4090_cu130,808.11,203.10 (3.98×; native)
-   LingBot-VLA-V2-6B,old_4x4090_cu130,959.83,174.32 (5.51×; fp8)
-   pi05,old_4x4090_cu130,308.72,109.77 (2.81×; native)
-   GR00T N1.7,old_4x4090_cu130,162.69,83.86 (1.94×; native)
-   Cosmos3 Edge DROID,replacement_1x4090_cu130,1276.81,1305.00 (0.98×; native)
-   Cosmos3 Nano DROID,—,—,Not measured: capacity excluded
-   DreamZero DROID,old_4x4090_cu130,113018.28,96925.01 (1.17×; fp8)
-
-Cosmos3 Nano was not tested on the capacity-assessed node (driver 580.159.04): its cgroup host-memory limit was 31.00 GB. The current FP8 loading path requires at least 41.79 GB of original and packed CPU weights. Native CPU weights require 29.10 GB; the remaining margin was not validated. The family was excluded without an OOM trial under the requested scope. This is not an observed OOM or an unsupported-GPU result; no excluded mode counts as tested or passed. The exact hardware, original checkpoint, static tensor evidence and scope instruction are bound in results.json.
-
-Changed computation
--------------------
-
-These modes do not replace the main checkpoint-schedule measurements. VA 2V/4A uses its measured PyTorch 2V/4A baseline. Dynamic-cache comparisons are labeled when their PyTorch baseline uses the checkpoint cache schedule. Equal declared adaptive policy can produce different actual compute/reuse decisions; these are whole-runtime comparisons. Original per-call traces remain in the raw receipts. Native precision alone does not establish byte equality.
-
-.. csv-table::
-   :header: "Mode", "Cohort", "PyTorch p50 (ms)", "InstinctFlash p50 (ms)", "Comparison"
-
-   LingBot-VA / 2v4a-fp8,old_4x4090_cu130,1147.51,627.33 (1.83×),same declared sampling policy
-   LingBot-VA / 2v4a-native,old_4x4090_cu130,1147.51,452.64 (2.54×),same declared sampling policy
-   DreamZero DROID / dynamic-fp8,old_4x4090_cu130,113018.28,53556.88 (2.11×),checkpoint baseline; changed computation
-   DreamZero DROID / dynamic-native,old_4x4090_cu130,113018.28,66026.97 (1.71×),checkpoint baseline; changed computation
-
-Cohort ``old_4x4090_cu130``: dreamzero, groot, pi05, va, vla2, vla4. Tested PyTorch builds: 2.11.0+cu130. Host inventory: 4 GPUs; each model used one. GPU memory from the host inventory: 24564 MiB; driver 580.82.09; PCIe maximum Gen4 x16; power limit 425 W. Effective cgroup RAM allocation: 367123234816 bytes (341.91 GiB); physical host RAM: 503.68 GiB. CPU quota: 92.16; logical CPUs: 192. This records this cohort's tested allocation; minimum and peak host RAM were not measured.
-
-Cohort ``replacement_1x4090_cu130``: edge. Tested PyTorch builds: 2.10.0+cu130. Host inventory: 1 GPU; each model used one. GPU memory from the host inventory: 24564 MiB; driver 580.159.04; PCIe maximum Gen4 x16; power limit 450 W. Effective cgroup RAM allocation: 30999998464 bytes (28.87 GiB); physical host RAM: 251.53 GiB. CPU quota: 10.2; logical CPUs: 96. This records this cohort's tested allocation; minimum and peak host RAM were not measured.
-
-Action differences are empirical comparisons on the recorded inputs. These results do not validate robot task quality. ``results.json`` records every admitted cell, exact schedule, loaded-source hashes, raw receipt/action member hashes and archive hashes. The adjacent ``evidence/`` directory contains the original, unmodified bytes.
+* dreamzero: The pinned model files (81.45 GB) exceed this node's 71.0 GB /dev/shm, and its 32.2 GB root filesystem also holds the environment; DreamZero was not installed or run on this node. This is a capacity limit of this node, not an observed failure.

@@ -1,25 +1,26 @@
-"""EngineBackend — execute a checkpoint through the fused serving engine in `serving/`.
+"""EngineBackend — execute a checkpoint through an InstinctFlash FP8 engine.
 
 An ExecutionBackend, deliberately NOT an adapter: the adapter says WHAT the model is (that does
 not change with hardware), the planner says what is valid, and this class is only a different
 answer to WHERE/HOW the same checkpoint runs. The current route requires an
-explicit FP8 request and SM110. Performance must be measured at a matched action
-horizon and input/output boundary; older pi05 timing ratios mixed horizons.
+explicit FP8 request and SM110 (the InstinctFlash engines in instinctflash/engines,
+Triton kernels plus torch._scaled_mm FP8 GEMMs), SM89/SM120 (the RTX 4090/5090
+PyTorch FP8 executors) or SM90 (the H100 PyTorch FP8 executor). Performance must be
+measured at a matched action horizon and input/output boundary.
 
-Accuracy stance: FP8 W+A changes numerics. Historical dedicated-server quality
-results do not certify the generic Runtime's current state, camera and action
-buffering contract. See eval/fp8_comparison_2026-09-09/README.md for the audit.
+Accuracy stance: FP8 W+A changes numerics. Dedicated-server quality results do not
+certify the generic Runtime's current state, camera and action buffering contract.
 """
 
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
 
-#: Backbones the engine ships a frontend for AND this repo has driven end-to-end. Widening this
-#: list is T2 work: a new frontend plus its own parity gates, never just a name added here.
+#: Backbones EngineBackend serves at precision='fp8' (a GI engine in ``instinctflash/engines``, an
+#: adapter's ``build_fp8`` or the SM90 PyTorch FP8 executor) AND this repo has driven end-to-end.
+#: Widening this list is T2 work: a new engine plus its own parity gates, never just a name added here.
 ENGINE_BACKBONES = ("pi05", "lingbot_vla", "lingbot_vla_v2", "groot_n17", "wan_va", "cosmos3_policy", "dreamzero")
 
 # Legacy standalone defaults; Runtime uses checkpoint geometry and native decoding.
@@ -27,17 +28,15 @@ PI05_ENGINE_ACTION_DIM = 7
 PI05_ENGINE_ACTION_CHUNK = 10
 PI05_ENGINE_MAX_ACTION_DIM = 32
 
-#: The engine's pi05 frontend DENOISE SCHEDULE as built. Not a default the frontend reads at
-#: infer time — a number baked at weight load: ``action_out_proj`` is pre-scaled by ``-1/steps``
-#: (pi05_thor.py ``steps = 10`` at weight load), the per-step AdaRMSNorm time tables are sized
-#: and filled for exactly ``steps`` values of t (``steps = 10`` in ``set_prompt``), and every
-#: captured decoder graph and calibration pass receives ``'steps': 10`` in its dims dict (six
-#: sites). ``Runtime.from_pretrained(..., nfe={"action": 1}, placement="engine")`` therefore
-#: used to ACCEPT the request and run 11 forwards: the plan said ``action=1``, ``explain()``
-#: said 2 forwards, the engine ran the 10-step graph and returned the nfe10 digest (Thor probe
-#: 2026-09-02, iwm_distill/fewstep/cert_pi05_nfe1_thor.md §2). That is the geometry gate's
-#: failure class on a different axis — a declared operating point silently not honored — and
-#: it is closed the same way: the engine tier serves its baked operating point or DECLINES.
+#: Backbones served by the engines in ``instinctflash/engines``.
+GI_ENGINE_BACKBONES = ("pi05", "lingbot_vla", "lingbot_vla_v2", "groot_n17", "wan_va")
+
+#: The pi05 engine's DENOISE SCHEDULE as built. Not a default the engine reads at infer time —
+#: a number baked at weight load: ``dt = -1/steps`` is folded into ``action_out_proj`` and the
+#: per-step AdaRMSNorm time tables are sized for exactly ``steps`` values of t. A request for
+#: another count must therefore be declined, never served as the baked one (the geometry
+#: gate's failure class on a different axis): the engine tier serves its baked operating point
+#: or DECLINES.
 PI05_ENGINE_ACTION_STEPS = 10
 
 
@@ -53,27 +52,20 @@ class EngineBakedOperatingPoint:
     other point is declined at plan time (``passes/generic/engine_offload.py``) and refused at
     build time (``EngineBackend``), never served as something else.
 
-    ``steps_parameterized`` is False for every frontend in ``serving/`` today, and it may only
-    become True together with a test that PROVES the frontend serves the requested count
-    (digest differs from the baked count's, per-step tables rebuilt, graphs recaptured) — never
-    because a constructor grew a parameter. The experimental step-parameterized pi05 scratch
-    build on Thor (``patch_pi05_thor_steps.py``, 30.6 ms at nfe1) is exactly that unproven
-    case and stays outside this table until it lands in ``serving/`` with a certificate.
+    ``steps_parameterized`` is False for every engine today, and it may only become True
+    together with a test that PROVES the engine serves the requested count (digest differs from
+    the baked count's, per-step tables rebuilt, graphs recaptured) — never because a
+    constructor grew a parameter.
     """
 
-    #: the backbone id a checkpoint declares; None for a frontend this repo ships no adapter for
+    #: the backbone id a checkpoint declares
     backbone: "str | None"
-    #: the frontend module under serving/, so the mirror test can read the source it mirrors
+    #: the engine module that bakes the point
     frontend: str
     #: per denoise stream (the adapter's PhaseSpec name), the step count the build bakes
     steps: Mapping[str, int]
-    #: per stream, the (mode, scale) the build SERVES — as built by EngineBackend, not what the
-    #: frontend could be switched to (pi05_thor has an RL-mode CFG pipeline behind
-    #: ``set_rl_mode``; EngineBackend never enables it, so the served point is no CFG)
+    #: per stream, the (mode, scale) the build SERVES — as built by EngineBackend
     guidance: Mapping[str, tuple[str, float]]
-    #: regexes with ONE capture group each; applied to the frontend source, the set of captured
-    #: integers must equal {steps} — the CI mirror check and the build-time live check
-    source_patterns: tuple[str, ...]
     #: where in the frontend the count is baked, in words a decline reason can quote
     evidence: str
     steps_parameterized: bool = False
@@ -87,86 +79,65 @@ class EngineBakedOperatingPoint:
 ENGINE_BAKED_OPERATING_POINTS: "tuple[EngineBakedOperatingPoint, ...]" = (
     EngineBakedOperatingPoint(
         backbone="pi05",
-        frontend="serving/flash_rt/frontends/torch/pi05_thor.py",
+        frontend="instinctflash/engines/pi05/engine.py",
         steps={"action": PI05_ENGINE_ACTION_STEPS},
         guidance={"action": ("none", 1.0)},
-        source_patterns=(r"(?m)^\s*steps\s*=\s*(\d+)\b", r"['\"]steps['\"]\s*:\s*(\d+)\b"),
-        evidence=("action_out_proj is pre-scaled by -1/10 at weight load, the per-step "
-                  "AdaRMSNorm time tables are sized and filled for 10 values of t, and every "
-                  "captured decoder graph carries 'steps': 10"),
+        evidence=("the GI pi05 engine folds dt = -1/10 into action_out_proj and builds its "
+                  "AdaRMS time tables for the checkpoint's 10-step schedule; other counts are "
+                  "not yet certified on it"),
     ),
     EngineBakedOperatingPoint(
         backbone="lingbot_vla",
-        frontend="serving/flash_rt/frontends/torch/vla4b_thor.py",
+        frontend="instinctflash/engines/vla4/engine.py",
         steps={"action": 10},
         guidance={"action": ("none", 1.0)},
-        source_patterns=(r"(?m)^STEPS\s*=\s*(\d+)\b",),
-        evidence=("the module constant STEPS = 10 sizes the AdaRMS step tables "
-                  "(build_step_tables(steps=STEPS)) and rides in the pipeline dims dict"),
+        evidence=("the GI VLA4 engine builds its AdaRMS tables and upstream BF16 time grid for "
+                  "the checkpoint's 10-step schedule; other counts are not yet certified on it"),
     ),
     EngineBakedOperatingPoint(
         backbone="lingbot_vla_v2",
-        frontend="serving/flash_rt/frontends/torch/vla2_thor.py",
+        frontend="instinctflash/engines/vla2/engine.py",
         steps={"action": 10},
         guidance={"action": ("none", 1.0)},
-        source_patterns=(r"(?m)^STEPS\s*=\s*(\d+)\b",),
-        evidence=("the module constant STEPS = 10 sizes the AdaRMS step tables "
-                  "(build_step_tables(steps=STEPS)) and rides in the pipeline dims dict"),
+        evidence=("the GI VLA2 engine builds its AdaRMS tables and upstream BF16 time grid for "
+                  "the checkpoint's 10-step schedule; other counts are not yet certified on it"),
     ),
     EngineBakedOperatingPoint(
         backbone="groot_n17",
-        frontend="serving/flash_rt/frontends/torch/groot_n17_thor.py",
+        frontend="instinctflash/engines/groot_n17/engine.py",
         steps={"action": 4},
         guidance={"action": ("none", 1.0)},
-        source_patterns=(r"num_inference_timesteps:\s*int\s*=\s*(\d+)\b",),
-        evidence=("infer(num_inference_timesteps=4) is a parameter in name only on the served "
-                  "path: set_prompt's warmup captures one DiT graph per step at the default 4 "
-                  "and the per-step AdaLN modulators are computed once; any other count drops "
-                  "to the uncaptured eager loop, which nothing certifies"),
-    ),
-    EngineBakedOperatingPoint(
-        backbone=None,   # GROOT N1.6: a frontend ships, no adapter in this repo declares it
-        frontend="serving/flash_rt/frontends/torch/groot_thor.py",
-        steps={"action": 4},
-        guidance={"action": ("none", 1.0)},
-        source_patterns=(r"self\.num_steps\s*=\s*(\d+)\b",),
-        evidence=("self.num_steps = 4 sizes the precomputed timestep embeddings and the whole "
-                  "4-step DiT loop is captured in one CUDA graph"),
+        evidence=("the GI GR00T engine precomputes its timestep, AdaLN and output modulations "
+                  "for the four upstream flow steps (t_disc 0/250/500/750) and captures them"),
     ),
 )
 
 
 #: Backbones whose engine declares its operating point PER BUILD rather than as a source
-#: literal. The wan_va (LingBot-VA) Thor engine is constructed FOR a ``WanVaOperatingPoint``
-#: (serving/flash_rt/models/wan_va/operating_point.py): the build sizes its AdaLN step tables
-#: from the declared grids, allocates a 1- or 2-stream KV slab from the declared guidance and
-#: runs (V+1)+(A+1)+2 DiT forwards per cycle — so there is no literal in the frontend source to
-#: mirror, and an UNBUILT wan_va engine has no point at all. A built instance publishes
-#: ``declaration()``; ``wan_va_baked_operating_point`` turns it into the same
+#: literal. The wan_va (LingBot-VA) engine loop is constructed FOR a (video, action) step count
+#: and guidance: it sizes its timestep tables from the declared schedule and allocates one KV
+#: pool slot set per guidance branch, so an UNBUILT wan_va engine has no point at all. A built
+#: instance publishes ``declaration()``; ``wan_va_baked_operating_point`` turns it into the same
 #: ``EngineBakedOperatingPoint`` record every other engine has, with ``steps_parameterized``
-#: False — the INSTANCE bakes its point exactly like pi05_thor bakes 10 (the build-time
-#: parameter is not a serve-time switch). Proven by tests/test_wan_va_engine_operating_point.py
-#: (tables/forward counts differ per point; the serving-side mismatch rule and this one agree on
-#: every request) and by the Thor M1 record (distinct action digests per point).
+#: False — the INSTANCE bakes its point (the build-time parameter is not a serve-time switch).
 BUILD_DECLARED_BACKBONES = ("wan_va", "cosmos3_policy", "dreamzero")
 
 
 def wan_va_baked_operating_point(declaration: Mapping) -> EngineBakedOperatingPoint:
-    """The record for ONE built wan_va engine, from ``WanVaTorchFrontendThor.declaration()``
-    (or ``WanVaOperatingPoint.declaration()``). No source pattern: the count is not a literal."""
+    """The record for ONE built wan_va engine, from its loop's ``declaration()``."""
     steps = {str(k): int(v) for k, v in dict(declaration["steps"]).items()}
     guidance = {str(k): (str(m), float(w)) for k, (m, w) in dict(declaration["guidance"]).items()}
     return EngineBakedOperatingPoint(
         backbone="wan_va",
-        frontend=str(declaration.get("frontend", "serving/flash_rt/frontends/torch/wan_va_thor.py")),
-        steps=steps, guidance=guidance, source_patterns=(),
+        frontend=str(declaration.get("frontend", "instinctflash/engines/wan_va/engine.py")),
+        steps=steps, guidance=guidance,
         evidence=str(declaration.get("evidence", "declared by the build")),
         steps_parameterized=False)
 
 
 def engine_baked_operating_point(backbone, build=None) -> "EngineBakedOperatingPoint | None":
     """The engine build's declared operating point for this backbone, or None when no
-    frontend in ``serving/`` is declared for it (choose_backend never builds the engine then).
+    engine is declared for it (choose_backend never builds the engine then).
 
     ``build`` — for a build-declared backbone (``BUILD_DECLARED_BACKBONES``), the built
     engine's ``declaration()`` dict; without it such a backbone has NO point (nothing is built,
@@ -180,22 +151,11 @@ def engine_baked_operating_point(backbone, build=None) -> "EngineBakedOperatingP
             return EngineBakedOperatingPoint(
                 backbone=backbone, frontend=str(build["frontend"]),
                 steps=dict(build["steps"]), guidance=dict(build["guidance"]),
-                source_patterns=(), evidence=str(build["evidence"]))
+                evidence=str(build["evidence"]))
     for cap in ENGINE_BAKED_OPERATING_POINTS:
         if cap.backbone is not None and cap.backbone == backbone:
             return cap
     return None
-
-
-def baked_step_literals(source: str, patterns) -> "set[int]":
-    """Every step-count literal the patterns find in a frontend's source. The mirror is honest
-    only while this set is exactly {the declared count}: an empty set means the literal moved
-    (or became a parameter), two values mean the build is not one operating point."""
-    import re
-    found: set[int] = set()
-    for pat in patterns:
-        found.update(int(m) for m in re.findall(pat, source))
-    return found
 
 
 def _served_guidance(mode: str, scale) -> "tuple[bool, float]":
@@ -358,27 +318,22 @@ def engine_available(backbone=None) -> "tuple[bool, str]":
     if cap == (9, 0):
         return (hasattr(torch, "_scaled_mm"), "H100 PyTorch E4M3 projection executor requires torch._scaled_mm")
     if cap != (11, 0):
-        return False, (f"device is SM{cap[0]}{cap[1]}, engine kernels ship for SM110 "
-                       f"(thor); the torch chain is also the measured winner off-Thor")
+        return False, (f"device is SM{cap[0]}{cap[1]}; FP8 execution is implemented only for SM110 (Thor: "
+                       f"InstinctFlash engines), SM89/SM120 (RTX 4090/5090 PyTorch FP8 executors) and SM90 "
+                       f"(H100 PyTorch FP8 executor)")
     if backbone in ("cosmos3_policy", "dreamzero"):
         if not hasattr(torch, "_scaled_mm"):
             return False, f"{backbone} FP8 requires torch._scaled_mm"
         return True, "SM110 + PyTorch FP8 projections; native policy processing"
-    try:
-        import flash_rt  # noqa: F401
-    except ImportError as e:
-        return False, f"flash_rt not importable here ({e}); build serving/ on this device first"
-    try:
-        from importlib import import_module
-        kernels = import_module("flash_rt.flash_rt_kernels")
-    except (ImportError, OSError) as e:
-        return False, (f"flash_rt compiled kernels cannot load ({e}); build serving/ "
-                       "for this Thor interpreter and its CUDA environment")
-    missing = [name for name in ("GemmRunner", "FvkContext")
-               if not callable(getattr(kernels, name, None))]
-    if missing:
-        return False, f"flash_rt compiled kernels lack required exports {missing}; rebuild serving/"
-    return True, "SM110 + engine kernels present"
+    if backbone in GI_ENGINE_BACKBONES:
+        try:
+            import triton  # noqa: F401
+        except ImportError as e:
+            return False, f"the GI {backbone} engine requires Triton ({e})"
+        if not hasattr(torch, "_scaled_mm"):
+            return False, f"the GI {backbone} engine requires torch._scaled_mm"
+        return True, "SM110 + GI engine kernels (Triton, torch._scaled_mm FP8)"
+    return False, f"no SM110 engine is registered for backbone {backbone!r}"
 
 
 class EngineBackend:
@@ -446,7 +401,7 @@ class EngineBackend:
             self._loop, self._checkpoint = loop, checkpoint
             return
         if backbone == "wan_va":
-            ok, why = engine_available()
+            ok, why = engine_available(backbone)
             if not ok:
                 raise RuntimeError(f"engine backend unavailable: {why}")
             from instinctflash.runtime.wan_va_engine_build import build_wan_va_engine_loop
@@ -495,38 +450,12 @@ class EngineBackend:
                 f"engine placement refused: {problem} Serve the torch chain instead "
                 f"(placement='in_process' or 'auto'), which honors nfe= and the declared "
                 f"guidance; the engine's certificates cover its baked point only.")
-        ok, why = engine_available()
+        ok, why = engine_available(backbone)
         if not ok:
             raise RuntimeError(f"engine backend unavailable: {why}")
 
         if torch.cuda.get_device_capability(device) != (11, 0):
-            raise RuntimeError("engine backend unavailable: Thor fused frontend requires SM110; use an H100 FP8 plan on SM90")
-
-        if backbone == "lingbot_vla":
-            from flash_rt.frontends.torch.vla4b_thor import Vla4bTorchFrontendThor
-            frontend = Vla4bTorchFrontendThor
-        elif backbone == "lingbot_vla_v2":
-            from flash_rt.frontends.torch.vla2_thor import Vla2TorchFrontendThor
-            frontend = Vla2TorchFrontendThor
-        elif backbone == "groot_n17":
-            from flash_rt.frontends.torch.groot_n17_thor import GrootN17TorchFrontendThor
-            frontend = GrootN17TorchFrontendThor
-        else:
-            from flash_rt.frontends.torch.pi05_thor import Pi05TorchFrontendThor
-            frontend = Pi05TorchFrontendThor
-            if getattr(frontend, "MODEL_ACTION_DIM", None) != PI05_ENGINE_MAX_ACTION_DIM:
-                raise RuntimeError("installed pi05 engine does not expose the required normalized action geometry")
-        import inspect
-        import sys
-        try:
-            live_src = inspect.getsource(sys.modules[frontend.__module__])
-        except (OSError, TypeError, KeyError) as e:
-            raise RuntimeError(f"engine schedule mirror cannot be verified for {backbone}: {e}") from e
-        live_steps = baked_step_literals(live_src, baked.source_patterns)
-        if live_steps != set(baked.steps.values()):
-            raise RuntimeError(
-                f"engine schedule mirror is stale: live {backbone} literals {sorted(live_steps)} "
-                f"disagree with the declared {sorted(set(baked.steps.values()))}")
+            raise RuntimeError("engine backend unavailable: the GI engines require SM110; use an H100 FP8 plan on SM90")
 
         ckpt_dir = Path(checkpoint.path)
         # V2 and GR00T resolve/validate their sharded checkpoints in the family
@@ -544,8 +473,8 @@ class EngineBackend:
             from instinctflash.runtime.groot_engine import build_groot_engine_loop
             self._loop = build_groot_engine_loop(checkpoint, device=device, action_steps=steps["action"])
         else:
-            from instinctflash.runtime.pi05_engine import Pi05EngineLoop
-            self._loop = Pi05EngineLoop.from_checkpoint(checkpoint, device=device, action_steps=steps["action"])
+            from instinctflash.engines.pi05 import build_pi05_engine_loop
+            self._loop = build_pi05_engine_loop(checkpoint, device=device, action_steps=steps["action"])
             if self._loop._action_dim != dim:
                 self._loop.close()
                 raise RuntimeError("pi05 declaration action dimension disagrees with checkpoint config")
@@ -569,11 +498,13 @@ class EngineBackend:
 
 
 def _map_observation(observation: Mapping[str, Any]) -> dict:
-    """Accept both the engine's native keys and lerobot-style keys.
+    """Accept both engine-style image keys and lerobot-style keys.
 
-    Engine wants {'image', 'wrist_image'[, 'wrist_image_right']} as (224,224,3) uint8/fp16.
-    lerobot pi05 observations carry 'observation.images.<cam>'. The base camera maps to
-    'image'; wrist cameras in declaration order fill the rest.
+    Engine-style keys are {'image', 'wrist_image'[, 'wrist_image_right']} as (224,224,3)
+    uint8/fp16. lerobot pi05 observations carry 'observation.images.<cam>'. The base camera
+    maps to 'image'; wrist cameras in declaration order fill the rest. Only offline audit
+    tooling calls this; the InstinctFlash pi05 loop (``engines/pi05/loop.py``) uses the
+    checkpoint's own LeRobot processors.
     """
     if "image" in observation or "images" in observation:
         return dict(observation)
@@ -602,7 +533,7 @@ def _hwc(img):
         a = a[0]
     if a.ndim == 3 and a.shape[0] in (1, 3) and a.shape[-1] not in (1, 3):
         a = a.transpose(1, 2, 0)                                  # CHW -> HWC
-    # The frontend accepts exactly two encodings: uint8 [0,255], or fp16 already normalized to
+    # That engine accepted exactly two encodings: uint8 [0,255], or fp16 already normalized to
     # [-1,1]. Non-negative floats are pixel data ([0,1] or [0,255]) and become uint8; a float
     # with negative values is already [-1,1]-normalized and must pass through as fp16 --
     # clipping it into [0,255] would silently destroy the signal, not convert it.

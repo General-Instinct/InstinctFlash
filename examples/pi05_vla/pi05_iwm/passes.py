@@ -76,7 +76,7 @@ class Pi05TF32Numeric:
             # H100's FP32-reference margin onto Thor or onto a native-BF16 reference.
             evidence = {
                 "max_abs_action_delta": None,
-                "evidence": "eval/numeric_extension_2026-09-10/README.md",
+                "evidence": "Thor TF32 execution-support measurement, 2026-09-10; no target-device action or task qualification",
                 "reason": "Thor execution support; target-device action/task quality unqualified; exact graph replay self-check remains required",
                 "expected_win": "Measure the complete configuration against native upstream on Thor; no H100 speed or margin is transferred",
             }

@@ -13,7 +13,7 @@ What is covered here, and what is not:
     until the A/B is recorded (PROVEN_BITEXACT).
 
 The allocator-level proof through the ring wrap is tests/test_ring_allocator.py::test_elision_bookkeeping;
-the GPU tier decision is eval/lingbot_va_robotwin/probe_action_terminal_elision.py.
+the GPU tier decision comes from an on-device ON-vs-ELIDED A/B (ABBA order, run past the ring wrap).
 
 Run:  python tests/test_action_terminal_elision.py
 """

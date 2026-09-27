@@ -22,6 +22,8 @@ deliberately absent from them.
     planners/      which passes are legal + profitable (declarations only, no GPU)
     executors/     apply a plan to a live server       (the only layer that touches the model)
     backends/      kernels                             (triton / torch, chosen by measurement)
+    engines/       InstinctFlash FP8 engines           (precision='fp8' on Thor)
+    kernels/       Triton kernels for the engines      (plus the Cosmos Edge BF16 GEMM + ReLU²)
     runtime/       load, install, serve
     train/         Layer 1 -- recipes that MAKE checkpoints, not part of serving
 
@@ -50,8 +52,9 @@ def _bootstrap_submodules() -> None:
     pinned at is the kind of thing that makes a bug report unreproducible.
 
     The alternative was `pip install -e ./instinct-pdd`, which is cleaner in principle but mutates a
-    deliberately pinned environment; see eval/lingbot_va_robotwin/env.sh on why that environment is
-    left alone. The alternative to THAT was a sys.path insert in every entry point, which is worse.
+    deliberately pinned environment (the LingBot-VA server and the RoboTwin client need
+    dependency-incompatible torch stacks, so each environment is kept exactly as locked). The
+    alternative to THAT was a sys.path insert in every entry point, which is worse.
     """
     try:
         import instinct_pdd  # noqa: F401

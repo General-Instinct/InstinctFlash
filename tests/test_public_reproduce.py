@@ -142,17 +142,15 @@ def test_unknown_model_or_implicit_mode_is_rejected(model, mode):
         reproduce.make_plan(model, mode)
 
 
-def test_only_explicit_required_library_option_is_bound(tmp_path):
-    library = tmp_path / "kernels.so"
-    library.write_bytes(b"metadata-only synthetic library")
-    plan = reproduce.make_plan("edge", "numeric", libraries={"IFL_BF16_KERNEL_LIBRARY": library})
+def test_edge_numeric_binds_no_external_library(tmp_path):
+    # Edge's NUMERIC fused linear is an in-package Triton kernel: no native requirement,
+    # no library binding and no library path in the optimizer environment.
+    plan = reproduce.make_plan("edge", "numeric")
+    assert plan["native_requirements"] == [] and plan["library_bindings"] == {}
     assert plan["unresolved_library_options"] == []
-    assert plan["library_bindings"]["IFL_BF16_KERNEL_LIBRARY"]["sha256"] == reproduce.sha(library)
-    assert plan["matrix"]["cells"][2]["expected_optimizer_environment"]["IFL_BF16_KERNEL_LIBRARY"] == str(library)
-    with pytest.raises(ValueError, match="not required"):
-        reproduce.make_plan("nano", "native", libraries={"IFL_BF16_KERNEL_LIBRARY": library})
-    with pytest.raises(ValueError, match="unique"):
-        reproduce.libraries_from_args(["X=a", "X=b"])
+    assert plan["matrix"]["cells"][2]["expected_optimizer_environment"] == {
+        "IFL_COSMOS3_GEN_REGIONS": "1", "IFL_COSMOS3_TIMESTEP_CACHE": "1", "IFL_COSMOS3_SPLIT_PREFILL": "1",
+        "IFL_COSMOS3_CONTIGUOUS_KV": "0", "IFL_BF16_LINEAR_RELU2": "1"}
 
 
 @pytest.fixture
@@ -237,7 +235,7 @@ def test_changed_prepared_matrix_or_fixture_is_rejected(prepared):
 def test_all_inherited_optimizer_options_are_cleared(prepared):
     root, _ = prepared
     plan, receipt = reproduce.validate_bundle(root)
-    inherited = {"PATH": "/bin", "NANO_ROOT": "/vendor", "IFL_SECRET": "1", "IFL_BF16_KERNEL_LIBRARY": "/stale",
+    inherited = {"PATH": "/bin", "NANO_ROOT": "/vendor", "IFL_SECRET": "1", "IFL_SM120_KERNEL_LIBRARY": "/stale",
                  "PYTHONPATH": "/checkout", "PYTHONHOME": "/wrong", "HF_HUB_OFFLINE": "0",
                  "DYNAMIC_CACHE_SCHEDULE": "1", "NUM_DIT_STEPS": "2", "LOAD_TRT_ENGINE": "1", "ENABLE_TENSORRT": "1"}
     for cell in plan["matrix"]["cells"]:
@@ -286,20 +284,3 @@ def test_missing_receipts_are_incomplete_in_strict_existing_report(prepared, tmp
     assert (tmp_path / "report/report.csv").is_file()
     with pytest.raises(ValueError, match="already exists"):
         reproduce.report(root, tmp_path / "report")
-
-
-def test_cpu_report_does_not_require_original_accelerator_file(tmp_path, monkeypatch):
-    library = tmp_path / "kernels.so"
-    library.write_bytes(b"synthetic file to bind only")
-    def download(**kwargs):
-        path = tmp_path / "snapshots" / kwargs["revision"]
-        path.mkdir(parents=True)
-        return str(path)
-    monkeypatch.setitem(sys.modules, "huggingface_hub", SimpleNamespace(snapshot_download=download))
-    root = tmp_path / "prepared"
-    reproduce.prepare("edge", "numeric", root, libraries={"IFL_BF16_KERNEL_LIBRARY": library})
-    library.unlink()
-    result = reproduce.report(root, tmp_path / "report")
-    assert result["status"] == "incomplete"
-    with pytest.raises(FileNotFoundError):
-        reproduce.validate_bundle(root)

@@ -10,8 +10,8 @@ __all__ = ["GR00TN17Adapter"]
 
 
 def __getattr__(name):
-    # Importing ``groot_n17_iwm.static_capture`` from FlashRT must not pull the Runtime/core
-    # package into a serving-only environment. The adapter entry point imports its module
+    # Importing ``groot_n17_iwm.static_capture`` from a serving-only environment must not pull
+    # the Runtime/core package. The adapter entry point imports its module
     # directly, so a lazy convenience export keeps both packages independent.
     if name == "GR00TN17Adapter":
         from .adapter import GR00TN17Adapter

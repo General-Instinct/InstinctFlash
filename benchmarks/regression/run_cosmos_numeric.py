@@ -93,6 +93,8 @@ def main():
     parser.add_argument('--compare-only', action='store_true')
     parser.add_argument('--min-speedup', type=float, default=1.1)
     parser.add_argument('--max-abs-action-delta', type=float)
+    parser.add_argument('--fixture', type=Path,
+                        help='recorded DROID observation archive passed to every arm (required unless --compare-only)')
 
     args = parser.parse_args()
     if not np.isfinite(args.min_speedup) or args.min_speedup <= 0:
@@ -119,7 +121,8 @@ def main():
                     with output.with_suffix('.log').open('x') as log:
                         subprocess.run([sys.executable, '-m', 'benchmarks.regression.cosmos_numeric',
                                         family, 'current', str(output), '--iterations', '10',
-                                        '--tier-ceiling', arm], env=env, cwd=ROOT, stdout=log,
+                                        '--tier-ceiling', arm, '--fixture', str(args.fixture.resolve())],
+                                       env=env, cwd=ROOT, stdout=log,
                                        stderr=subprocess.STDOUT, check=True, timeout=2400)
             result = compare(args.output, family, min_speedup=args.min_speedup,
                              max_abs_action_delta=args.max_abs_action_delta)

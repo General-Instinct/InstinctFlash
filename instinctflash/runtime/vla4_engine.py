@@ -1,4 +1,4 @@
-"""Thor VLA4 engine with the upstream server's robot processing contract.
+"""Thor VLA4 GI engine with the upstream server's robot processing contract.
 
 The upstream server owns resize, FeatureTransform, normalization, reset and
 controller slicing. Only its normalized action generator is replaced. Importing
@@ -90,7 +90,7 @@ class NativeVla4Vision:
 
 
 def build_vla4_engine_loop(checkpoint, *, device=None, action_steps=10):
-    """Build native processors and an FP8 generator without a second full model."""
+    """Build native processors and the GI FP8 generator without a second full model."""
     import torch
     import yaml
     from lingbot_vla_iwm.adapter import (
@@ -114,7 +114,7 @@ def build_vla4_engine_loop(checkpoint, *, device=None, action_steps=10):
         LingbotVLAServer, PolicyPreprocessMixin, PreTrainedConfig,
         AutoConfig, merge_qwen_config, build_processor,
     )
-    from flash_rt.frontends.torch.vla4b_thor import Vla4bTorchFrontendThor
+    from instinctflash.engines.vla4.frontend import GiVla4Frontend
 
     class EnginePolicy(PolicyPreprocessMixin, torch.nn.Module):
         def __init__(self, generator):
@@ -147,7 +147,7 @@ def build_vla4_engine_loop(checkpoint, *, device=None, action_steps=10):
                          'tokenizer_max_length'):
                 setattr(data_config, name, getattr(config, name))
             self.data_config, self.config = data_config, config
-            frontend = Vla4bTorchFrontendThor(path_to_pi_model)
+            frontend = GiVla4Frontend(path_to_pi_model, dev, steps=action_steps)
             vision = NativeVla4Vision(config.vision_config, path_to_pi_model, dev)
             return EnginePolicy(Vla4ActionGenerator(frontend, vision))
 
@@ -155,8 +155,9 @@ def build_vla4_engine_loop(checkpoint, *, device=None, action_steps=10):
         server = EngineServer(str(model_path),
             use_length=int(extra.get('use_length') or 25), robot_norm_path=str(norm_path),
             num_denoising_step=action_steps, use_compile=False)
-    # Reuse the native byte-checked image path independently of FP8 arithmetic.
-    # A matched FP8 pair preserves action bytes and reduces Thor latency by ~4%.
+    # Reuse the native byte-checked image path independently of FP8 arithmetic. Measured on
+    # Thor with the earlier engines: action bytes preserved, latency ~4% lower; not re-measured
+    # separately with the current InstinctFlash engine.
     gpu_preprocess = None
     if os.environ.get("IFL_VLA4B_GPU_PREPROCESS", "1").lower() in {"1", "true", "yes", "on"}:
         from lingbot_vla_iwm.image_preprocess import install_gpu_image_preprocess

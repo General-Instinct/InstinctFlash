@@ -4,8 +4,8 @@ __all__ = ["LingBotVLAV2Adapter"]
 
 
 def __getattr__(name):
-    # Importing e.g. ``lingbot_vla_v2_iwm.static_capture`` from FlashRT must not pull the
-    # Runtime/core package into a serving-only environment. The adapter entry point imports
+    # Importing e.g. ``lingbot_vla_v2_iwm.static_capture`` from a serving-only environment must
+    # not pull the Runtime/core package. The adapter entry point imports
     # its module directly, so a lazy convenience export keeps both packages independent.
     if name == "LingBotVLAV2Adapter":
         from .adapter import LingBotVLAV2Adapter

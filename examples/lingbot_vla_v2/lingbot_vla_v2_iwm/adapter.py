@@ -74,8 +74,9 @@ class LingBotVLAV2Adapter:
                 "family": "vla",
                 # "backbone" identifies this spec to backbone-keyed planner checks (the engine
                 # operating-point gate in passes/generic/engine_offload.py keys on it: the
-                # vla2_thor frontend bakes a 10-step schedule, and a plan at any other nfe
-                # must decline the engine rather than print one schedule and run another).
+                # GI VLA2 engine (instinctflash/engines/vla2) bakes a 10-step schedule, and a
+                # plan at any other nfe must decline the engine rather than print one schedule
+                # and run another).
                 "backbone": BACKBONE,
                 "chunk_size": "50",
                 "numeric_tier": "NUMERIC (upstream fused-MoE is nondeterministic)",
@@ -464,20 +465,22 @@ def _configure_thor_ptxas(capability):
 
 
 def _triton_kernels_allowed(flag_name: str) -> bool:
-    """Refuse the Triton kernels on Thor (SM110) — measured dead, and worse than dead.
+    """Refuse the experimental LingBot Triton kernels on Thor (SM110), where they are unqualified.
 
-    Triton codegen fails on sm_110a with a PTXAS internal error (thor_column/vla2.json), and the
-    vendor's MoE except-handler references an undefined ``logger``, so the failure surfaces as a
-    NameError instead of a fallback; the RMSNorm patch has no try/except at all and dies at the
-    first 768-wide norm. Refusing here is the only honest behaviour on that device.
+    Triton codegen for sm_110a failed with a PTXAS internal error in the 2026-08 Thor measurement
+    (upstream MoE kernels), and these kernels have not been qualified on Thor since. The vendor's
+    MoE except-handler references an undefined ``logger``, so the failure surfaces as a NameError
+    instead of a fallback; the RMSNorm patch has no try/except at all and dies at the first
+    768-wide norm. Refusing here is the only honest behaviour on that device.
     """
     import torch
 
     if torch.cuda.is_available() and torch.cuda.get_device_capability() == (11, 0):
         raise RuntimeError(
-            f"{flag_name} requests a Triton kernel on SM110 (Thor), where Triton codegen is "
-            f"measured-dead (PTXAS internal error) and the vendor fallback path crashes. Use the "
-            f"Thor engine arm (config 'lingbot_vla_v2', arch 'thor') instead.")
+            f"{flag_name} requests an experimental Triton kernel on SM110 (Thor), where it is "
+            f"unqualified (PTXAS internal error in the 2026-08 measurement) and the vendor "
+            f"fallback path crashes. Unset it for the native Thor route, or select "
+            f"precision='fp8' for the InstinctFlash engine (instinctflash/engines/vla2).")
     return True
 
 

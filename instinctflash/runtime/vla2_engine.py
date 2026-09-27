@@ -1,6 +1,6 @@
-"""VLA2 native BF16 vision and checkpoint-derived FP8 expert integration.
+"""VLA2 native BF16 vision and the GI FP8 prefix/MoE expert engine.
 
-This staged component is not yet registered as a public Runtime backend.
+``EngineBackend`` builds this loop for ``lingbot_vla_v2`` at precision='fp8' on SM110.
 """
 from contextlib import ExitStack
 import json
@@ -66,146 +66,6 @@ class NativeVla2Vision:
         if not torch.cuda.is_current_stream_capturing() and not all(bool(torch.isfinite(v).all()) for v in features):
             raise RuntimeError('VLA2 native vision returned nonfinite features')
         return merged, deepstack
-
-
-class ExpertScaleAccumulator:
-    """Retain each layer's maximum scale over every calibration denoise step."""
-
-    def __init__(self, expert_scales, moe_scales, steps=10):
-        import torch
-        self.expert = expert_scales.reshape(-1,4)
-        self.moe = moe_scales.reshape(-1)
-        if len(self.expert) != len(self.moe):
-            raise ValueError('expert and routed MoE layer counts differ')
-        self.expert_max = torch.zeros_like(self.expert)
-        self.moe_max = torch.zeros_like(self.moe)
-        self.seen = [set() for _ in range(len(self.moe))]
-        self.steps = steps
-
-    def __call__(self, layer, step):
-        import torch
-        if step not in range(self.steps) or step in self.seen[layer]:
-            raise ValueError('invalid or repeated calibration step')
-        torch.maximum(self.expert_max[layer], self.expert[layer], out=self.expert_max[layer])
-        torch.maximum(self.moe_max[layer], self.moe[layer], out=self.moe_max[layer])
-        self.seen[layer].add(step)
-
-    def commit(self):
-        import torch
-        if any(s != set(range(self.steps)) for s in self.seen):
-            raise RuntimeError('incomplete expert calibration')
-        for scales in (self.expert_max,self.moe_max):
-            if not bool((torch.isfinite(scales) & (scales > 0)).all()):
-                raise RuntimeError('invalid expert calibration scales')
-        self.expert.copy_(self.expert_max)
-        self.moe.copy_(self.moe_max)
-
-
-class Vla2StagedEngine:
-    """Live native vision plus FP16 prefill and real FP8 action/MoE kernels.
-
-    Calibrate on the first observation for each token sequence. Scales aggregate
-    all ten denoise steps; no historical calibration artifact is imported.
-    """
-
-    def __init__(self, frontend, moe, vision, use_cuda_graph=True):
-        if frontend.use_cuda_graph:
-            raise ValueError('construct frontend with use_cuda_graph=False; this route owns capture')
-        if frontend.lm_prefill_precision != 'fp16':
-            raise ValueError('native-vision V2 recipe requires the checkpoint FP16 prefill stack')
-        self.frontend, self.moe, self.vision = frontend, moe, vision
-        self.use_cuda_graph = use_cuda_graph
-        self._tokens = None
-        self._calibrated = False
-        self._graph = None
-        self.replays = 0
-        self.graph_captures = 0
-        self.prompt_graph_reuses = 0
-        self.calibrations = 0
-        frontend._routed_moe_fn = moe.routed_moe_fn
-        frontend._ffn_xn_fp16 = True
-
-    def set_prompt(self, token_ids):
-        ids = tuple(int(i) for i in token_ids)
-        if not ids:
-            raise ValueError('VLA2 requires active language tokens')
-        if ids == self._tokens:
-            return
-        self._calibrated = False
-        try:
-            self.frontend.set_prompt(list(ids))
-            if not self.frontend._prompt_buffers_reused:
-                self._graph = None
-            self.moe.bind_router_fp16(self.frontend._s_xn.data_ptr())
-            self.moe.bind_ffn_slots(self.frontend._exp_act_scales.data_ptr()+8,16)
-        except Exception:
-            # A partial rebuild or binding failure must not replay an old
-            # graph against partially updated storage on a later call.
-            self._graph = None
-            self._tokens = None
-            self.frontend.graph_captured = False
-            raise
-        self.frontend.graph_captured = self._graph is not None
-        if self._graph is not None:
-            self.prompt_graph_reuses += 1
-        self._tokens = ids
-
-    def infer_staged(self, patches, state, noise):
-        import time
-        import torch
-        if self._tokens is None:
-            raise RuntimeError('set_prompt must precede inference')
-        fr = self.frontend
-        t0 = time.perf_counter()
-        # The low-level calibration kernels use stream zero. Keep every copy,
-        # native vision call and scale observation ordered on that same stream.
-        with torch.no_grad(), torch.cuda.stream(torch.cuda.default_stream(fr._x_t.device)):
-            merged, deepstack = self.vision(patches)
-            fr._vis_emb.copy_(merged)
-            for target, source in zip(fr._ds_out,deepstack):
-                target.copy_(source)
-            fr.stage_inputs(patches,state,noise)
-            if not self._calibrated:
-                fr._run_lm_prefill_only(0)
-                accumulator = ExpertScaleAccumulator(fr._exp_act_scales,self.moe.dn_act)
-                self.moe.calibrate = True
-                try:
-                    fr._run_expert_only(0,calibrate=True,calibration_observer=accumulator)
-                    accumulator.commit()
-                finally:
-                    self.moe.calibrate = False
-                self._calibrated = True
-                self.calibrations += 1
-                fr._x_t.copy_(fr._noise_host)
-                if self.use_cuda_graph and self._graph is None:
-                    # Warmup and capture each mutate x_t; restore the caller's
-                    # actual noise before the first serving replay below.
-                    fr._run_lm_prefill_only(0)
-                    fr._run_expert_only(0)
-                    torch.cuda.synchronize()
-                    stream = torch.cuda.Stream(device=fr._x_t.device)
-                    graph = torch.cuda.CUDAGraph()
-                    with torch.cuda.stream(stream), torch.cuda.graph(graph,stream=stream):
-                        fr._run_lm_prefill_only(stream.cuda_stream)
-                        fr._run_expert_only(stream.cuda_stream)
-                    torch.cuda.synchronize()
-                    self._graph = graph
-                    self.graph_captures += 1
-                    fr.graph_captured = True
-            fr._x_t.copy_(fr._noise_host)
-            if self._graph is not None:
-                self._graph.replay()
-                self.replays += 1
-            else:
-                fr._run_lm_prefill_only(0)
-                fr._run_expert_only(0)
-            torch.cuda.synchronize()
-            if not bool(torch.isfinite(fr._x_t).all()):
-                raise RuntimeError('VLA2 FP8 action expert returned nonfinite actions')
-            actions = fr._x_t.float().cpu().numpy().copy()
-        elapsed = (time.perf_counter()-t0)*1000
-        fr.latency_records.append(elapsed)
-        return dict(actions=actions,latency_ms=elapsed)
 
 
 class Vla2ActionGenerator:
@@ -275,9 +135,7 @@ def build_vla2_engine_loop(checkpoint, *, device=None, action_steps=10):
         LingbotVLAv2Server, PolicyPreprocessMixin, LingbotVLAV2Config,
         AutoConfig, build_processor,
     )
-    from flash_rt.frontends.torch.vla2_thor import Vla2TorchFrontendThor
-    from flash_rt.models.vla2.moe_engine import Vla2MoeEngine
-    import flash_rt.flash_rt_kernels as fvk
+    from instinctflash.engines.vla2.frontend import GiVla2Staged
 
     class EnginePolicy(PolicyPreprocessMixin, torch.nn.Module):
         def __init__(self, generator):
@@ -311,13 +169,7 @@ def build_vla2_engine_loop(checkpoint, *, device=None, action_steps=10):
             if self.robot_norm_path is None:
                 self.robot_norm_path = self.data_config.norm_stats_file
             vision = NativeVla2Vision(config.vision_config,path_to_pi_model,dev)
-            moe = Vla2MoeEngine.from_checkpoint(fvk,path_to_pi_model,mode='batched',
-                                               schedule='batched',router_source='fp16')
-            frontend = Vla2TorchFrontendThor(path_to_pi_model,use_cuda_graph=False,
-                                             routed_moe_fn=moe.routed_moe_fn)
-            frontend.load_lm_fp16_stack(path_to_pi_model)
-            frontend.lm_prefill_precision = 'fp16'
-            generator = Vla2ActionGenerator(Vla2StagedEngine(frontend,moe,vision),config)
+            generator = Vla2ActionGenerator(GiVla2Staged(path_to_pi_model,vision,dev,steps=action_steps),config)
             self.sample_actions_fn = generator.sample_actions
             self.vla = EnginePolicy(generator)
             return self.vla

@@ -5,8 +5,7 @@ The public selection, shared controller and native integration have CPU and
 Thor validation. A bounded matched screen measured 1.78× with native precision
 and 1.76× with FP8. Actions and retained-state hashes matched the upstream
 **same dynamic policy** in each arithmetic route. Task-quality qualification
-relative to the fixed-mask baseline remains pending. See the
-[measurements and audit](../eval/dynamic_step_cache_integration_2026-09-14/results.md).
+relative to the fixed-mask baseline remains pending.
 
 The first implementation supports only DreamZero's audited sixteen-slot,
 single-GPU native loop. Construction and loop installation verify pinned native
@@ -212,12 +211,11 @@ counters, so its historical gap cannot be wholly attributed to this cache.
 The public statistics snapshot was added after the Thor inference bundle was
 frozen on 2026-09-14. Its [CPU tests](../tests/test_runtime_telemetry.py) validate
 observation and copying behavior; it changes no inference path or frozen receipt.
-The [post-freeze source review](../eval/dynamic_step_cache_integration_2026-09-14/post_freeze_review.json)
-also records metadata-copy and failure-cleanup refinements; successful prediction
-and sampling functions are unchanged from the GPU-tested bundle.
+A post-freeze source review also recorded metadata-copy and failure-cleanup
+refinements; successful prediction and sampling functions are unchanged from the
+GPU-tested bundle.
 
-The [source audit](../eval/dynamic_step_cache_2026-09-14/source_audit.md) records
-the pinned upstream and Omni behavior. The [controller](../instinctflash/runtime/step_cache.py)
+A source audit compared the pinned upstream and Omni behavior. The [controller](../instinctflash/runtime/step_cache.py)
 and [Runtime policy](../instinctflash/runtime/step_cache_policy.py) implement the
 current DreamZero integration. Action-aware profiles and other family integrations
 remain future work.

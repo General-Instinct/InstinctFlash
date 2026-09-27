@@ -2,7 +2,7 @@
 import argparse,asyncio,importlib.metadata,os,sys
 from pathlib import Path
 import numpy as np
-from benchmarks.vla.util import ConfigurationError,sha256_file,sha256_json,write_json_atomic
+from benchmarks.vla.util import ConfigurationError,sha256_file,sha256_json,wait_for_stop_signal,write_json_atomic
 from benchmarks.vla.joint_policy_server import Policy
 from benchmarks.vla.instinctflash_driver import seed_everything,resolve_snapshot
 from benchmarks.vla.plan import pipeline_digest
@@ -44,14 +44,13 @@ class Arm:
    self.policy=Runtime.from_pretrained(str(checkpoint),precision=self.precision,placement='in_process',tier_ceiling='numeric' if self.precision=='fp8' else 'bitexact')
  def precision_receipt(self):
   if self.precision=='native':return {'precision':'native','dtype':'bfloat16'}
-  import torch
   loop=self.policy._backend._loop
-  weights=loop._frontend._vlsa_q_w
   stats=loop.backend_stats
-  if len(weights)!=4 or any(w.dtype!=torch.float8_e4m3fn for w in weights) or loop._runner.replays<1 or stats.get('precision')!='fp8':
-   raise ConfigurationError('GR00T FP8 startup did not execute the expected E4M3 VLSA path')
-  return {'precision':'fp8','dtype':'mixed','arithmetic':'FP8 VLSA, native BF16 backbone and DiT',
-          'startup_vlsa_replays':loop._runner.replays}
+  replays=int(stats.get('action_head_replays') or 0)
+  if stats.get('precision')!='fp8' or not str(stats.get('backend','')).startswith('fp8_text_gi_action_head') or replays<1:
+   raise ConfigurationError('GR00T FP8 startup did not execute the expected GI FP8 action head')
+  return {'precision':'fp8','dtype':'mixed','arithmetic':'FP8 Qwen3 text projections and GI FP8 action head, native BF16 vision',
+          'backend':stats['backend'],'startup_action_head_replays':replays}
  def new_episode(self,prompt):
   self.prompt=prompt
   if self.mode=='stock':self.policy.reset()
@@ -69,11 +68,11 @@ class Arm:
 
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--checkpoint-subdir',choices=['libero_10','libero_spatial','libero_object','libero_goal'],default='libero_10');p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--mode',choices=MODES,required=True);p.add_argument('--port',type=int,required=True);p.add_argument('--receipt',type=Path,required=True)
- p.add_argument('--startup-observation',type=Path,help='NPZ of native flat video/state observations; required for FP8 calibration')
+ p.add_argument('--startup-observation',type=Path,help='NPZ of native flat video/state observations; required for the FP8 startup probe')
  p.add_argument('--startup-prompt',default='startup shape probe')
  a=p.parse_args()
  if a.receipt.exists():raise ConfigurationError('refusing to overwrite an endpoint receipt')
- if a.mode=='runtime_fp8' and a.startup_observation is None:p.error('runtime_fp8 requires --startup-observation; implicit all-zero calibration is not allowed')
+ if a.mode=='runtime_fp8' and a.startup_observation is None:p.error('runtime_fp8 requires --startup-observation; an implicit all-zero startup input is not allowed')
  obs=startup_observation(a.startup_observation)
  source=Path(os.environ['GR00T_ROOT']).resolve();sys.path.insert(0,str(source))
  files={f.name:sha256_file(f) for f in sorted(a.checkpoint.iterdir()) if f.suffix in {'.json','.safetensors'} and f.name!='instinctflash.json'}
@@ -108,7 +107,7 @@ def main():
     except Exception:pass
    finally:policy.ready=False;busy=False
   async with serve(handle,'127.0.0.1',a.port,compression=None,max_size=None,ping_interval=None):
-   write_json_atomic(a.receipt,identity);print('ready',flush=True);await asyncio.Future()
+   write_json_atomic(a.receipt,identity);print('ready',flush=True);await wait_for_stop_signal()
  try:asyncio.run(run())
  finally:arm.close()
 if __name__=='__main__':main()

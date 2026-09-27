@@ -46,8 +46,8 @@ RTX 4090
 
 The pinned ``cu130`` environments require a CUDA 13-compatible NVIDIA driver
 (`R580 or newer <https://docs.nvidia.com/deploy/cuda-compatibility/minor-version-compatibility.html>`_).
-The recorded environments use driver 580.82.09 with ``ptxas`` 12.8.93, or
-driver 580.159.04 with ``ptxas`` 13.0.88. The ``--ptxas`` option selects the
+The recorded RTX 4090 qualification used driver 610.43.02 with the CUDA 12.8
+``ptxas``. The ``--ptxas`` option selects the
 kernel assembler separately from PyTorch's CUDA runtime.
 
 For RTX 4090, select the separate Linux/x86-64 profile explicitly::
@@ -72,16 +72,15 @@ DreamZero also transports complete per-layer KV caches. Native arithmetic,
 checkpoint processors and history lengths remain intact. Transfers during
 prediction are included in its latency; VA's text-encoder staging occurs during
 reset, outside the prediction timer. Backend statistics report actual residency.
-The explicit SM89 FP8 path uses PyTorch/Triton projections; it does not load a
-Thor-only native library. FP8 remains a separate numerical choice.
+The explicit SM89 FP8 path uses PyTorch/Triton projections. FP8 remains a
+separate numerical choice.
 
-Host RAM also matters. DreamZero's tested processes reached 98.38–98.80 GiB
-``VmHWM``; this records observed process peaks, not a certified minimum.
-Nano was excluded from the replacement node with a 31 GB container limit:
-its FP8 conversion alone needs at least 41.79 GB of simultaneous original and
-packed weights, before temporary buffers and process overhead. Its native
-cold load was not tested at that memory limit. These capacity exclusions do
-not establish that a model is unsupported on RTX 4090 with more host memory.
+The current source was qualified on one RTX 4090 node (a 24 GiB card, a 143 GB container
+memory limit and 71 GB of ``/dev/shm``) from clean installs; the
+`RTX 4090 results <release/rtx4090/results/results.rst>`_ list each family's recorded
+modes. DreamZero's pinned model files (81 GB) exceed that node's model storage, so
+DreamZero was not tested there. A capacity limit of one node does not establish that a
+model is unsupported on RTX 4090 with more storage or host memory.
 
 RTX 5090
 --------
@@ -96,8 +95,8 @@ Select the separate Linux/x86-64 SM120 profile::
     python scripts/public_deploy.py doctor pi05 --target rtx5090
 
 Point ``--ptxas`` at an assembler supporting ``sm_120`` and PTX 8.7; the path
-above is a typical toolkit location. The tested assembler is Triton 3.6's
-``ptxas-blackwell`` 12.9. Its version is independent of the pinned PyTorch
+above is a typical toolkit location; Triton 3.6's bundled ``ptxas-blackwell``
+12.9 is one such assembler. Its version is independent of the pinned PyTorch
 ``cu130`` runtime, which requires a CUDA 13-compatible NVIDIA driver. Activation
 sets both Triton assembler overrides. Thor and SM89 compiler settings are separate.
 
@@ -107,17 +106,9 @@ Torch 2.11. Keep the profile's original dependency pins. Native precision and
 FP8 remain separate choices; FP8 does not imply faster inference or task-quality
 equivalence. Large checkpoints may also require substantial host RAM.
 
-The recorded 5090 node has a 54 GB host-memory limit. DreamZero was excluded by
-its loading-memory assessment. Nano's original BF16 comparison requires layer
-streaming with the existing memory reserve, so its paired benchmark was also
-skipped. Neither exclusion is an observed OOM or a claim that FP8 is unsupported.
-Historical VA measurements include reset-time text-encoder staging; these are
-retained in the raw records. New benchmarks exclude CPU-offloaded inference.
-The README presents Thor results only.
-
-Profiles live in ``release/rtx5090/deployment_profiles.json``. The
-`RTX 5090 results <release/rtx5090/results/results.rst>`_ list measured model
-coverage, execution modes and capacity exclusions. Continue with the
+RTX 5090 profiles are pending re-qualification of the current source on an RTX 5090;
+``release/rtx5090/deployment_profiles.json`` records no current GPU measurement. The
+README presents Thor results only. Continue with the
 `RTX 5090 reproduction workflow <REPRODUCE.rst#rtx-5090>`_ for original assets,
 paired predictions and WebSocket checks.
 
@@ -176,8 +167,8 @@ asset activation alongside the vendor activation for subsequent sessions.
 For RTX 4090 or RTX 5090, also pass ``--target rtx4090`` or ``--target rtx5090``
 to the doctor command; asset preparation uses the same original checkpoints.
 
-For Thor, install the published native libraries or build them using
-`the backend guide <serving/README.rst>`_. The CPU core
+The Thor FP8 engines and Edge's fused BF16 linear are Python code and Triton
+kernels compiled on first use; no native library is built or installed. The CPU core
 environment above does not become a model environment by installing an adapter.
 Use one environment per incompatible vendor stack; Edge and Nano can share the
 Cosmos stack. All model adapters register automatically when installed.
@@ -185,7 +176,7 @@ Cosmos stack. All model adapters register automatically when installed.
 For an already prepared, compatible vendor environment, you can install the
 core and adapter directly, for example::
 
-    /path/to/dreamzero-env/bin/python -m pip install '.[serve]' ./examples/dreamzero ./serving
+    /path/to/dreamzero-env/bin/python -m pip install '.[serve]' ./examples/dreamzero
     export DREAMZERO_ROOT=/path/to/dreamzero-repo
 
 .. list-table:: Family installation requirements
@@ -351,8 +342,8 @@ Construction can download checkpoint weights. Native in-process loading is
 normally deferred until reset or predict; an FP8 engine can load during
 construction. Use ``revision=<commit>`` for reproducible Hub selection.
 Keep the loaded Runtime for repeated calls. The first prediction can include
-calibration or graph capture; warm it with representative inputs before timing
-control cycles, then reset before the real episode.
+kernel compilation or graph capture; warm it with representative inputs before
+timing control cycles, then reset before the real episode.
 
 Native precision with a bitexact optimization ceiling is the default.
 ``precision="fp8"`` is an explicit request
@@ -434,29 +425,21 @@ Do not send this field for DreamZero. All connections to one server share its
 single runtime episode; use one active robot observation stream per server.
 Adjust the receive timeout for the selected model's startup and prediction time.
 
-Thor native engine assets
--------------------------
+Engine and model assets
+-----------------------
 
-For Thor, the repository includes the CUDA source and build tools for FlashRT,
-FA2, FMHA and shared BF16 fusion. Follow the complete
-`Thor source build <serving/README.rst#jetson-thor-build>`_: first build FA2,
-then build the remaining kernels against the pinned CUTLASS revision and
-install the resulting platform wheel into the model environment::
-
-    python -m pip install --force-reinstall --no-deps /path/to/native-output/wheels/flash_rt-*.whl
-    python -m pip check
-
-The build records source hashes, compiler commands, target architecture and
-library hashes. A pure Python FlashRT wheel does not contain the compiled
-accelerator. Build once for each compatible target/Python ABI; the Thor
-``cp312`` wheel is for Python 3.12 on aarch64 and cannot be installed in Cosmos's
-Python 3.13 environment. On Thor, Cosmos Edge's NUMERIC recipe uses the separate
-``native/libinstinctflash_bf16.so`` output through
-``IFL_BF16_KERNEL_LIBRARY``. That library has a C interface and no CPython ABI.
-
-The explicit reinstall replaces the bootstrap's source-only wheel even when
-both carry the same package version. ``--no-deps`` preserves the family's
-already checked dependency versions; the following ``pip check`` must pass.
+The Thor FP8 engines (``instinctflash/engines``) need only the model
+environment's PyTorch (with ``torch._scaled_mm`` for their FP8 GEMMs) and
+Triton. Activation scales are computed per token as the data flows, so there is
+no calibration step. Their Triton kernels are compiled for the device on first
+use and cached by Triton; the first call of a new geometry therefore includes
+compilation and CUDA graph capture. On Thor, the attention launches that opt
+in (pi05 vision/prefix, LingBot-VLA prefix, GR00T VLSA, LingBot-VA self/cross)
+and Edge's fused BF16 linear are compiled for ``sm100`` so their ``tl.dot`` uses
+tcgen05; the other kernels use the default SM110 target, and the FP8 GEMMs are
+``torch._scaled_mm``. Set ``TRITON_PTXAS_PATH`` (and
+``TRITON_PTXAS_BLACKWELL_PATH``) to the CUDA 13 ``ptxas`` as the bootstrap's
+``--ptxas`` option does.
 
 Install the original checkpoint and auxiliary tokenizer/processor assets before
 offline inference. Access to gated upstream assets requires accepting their
@@ -494,8 +477,11 @@ Read the measured operating point
 
 The `public reproduction guide <REPRODUCE.rst>`_ records how to prepare exact
 checkpoint revisions, Runtime arguments and optimizer environment options.
-The `current results <eval/public_release_2026-09-15/results.rst>`_ report the
-measured comparisons and their installed environments.
+The `README results <README.md#results>`_ were measured on September 15, 2026.
+Their LingBot-VA, LingBot-VLA and pi05 FP8 cells and Edge's NUMERIC cell used
+the earlier Thor engines, which InstinctFlash's own engines and Triton kernels
+have since replaced; those cells have not been re-measured with the current
+source.
 Some selected options are experimental; neither FP8 nor a numeric/behavioral
 ceiling is a guarantee of faster execution or task quality.
 
@@ -517,10 +503,9 @@ optimizations; they do not guarantee action equality against a separate referenc
 implementation. The Thor DreamZero native reference retains vendor encoder
 compilation and uses an eager DiT. Set ``TORCHINDUCTOR_COMPILE_THREADS=1`` for its
 Thor reproduction to limit compiler memory use. The
-4090 reference uses eager components with declared CPU weight/KV residency. The
-`earlier comparison <eval/user_e2e_2026-09-14/dreamzero_default_difference.json>`_
-used a different compilation setup and retains its original action differences.
+4090 reference uses eager components with declared CPU weight/KV residency. An
+earlier DreamZero comparison used a different compilation setup and retains its
+original action differences.
 
-`release_selection.json <eval/user_e2e_2026-09-14/release_selection.json>`_
-identifies the retained historical source and full-action evidence. Those
-screens and the current API study do not measure robot task success.
+Neither the earlier action screens nor the current API study measures robot task
+success.

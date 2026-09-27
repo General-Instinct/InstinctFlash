@@ -2,8 +2,7 @@
 
 These three are the least glamorous passes in the framework and, so far, the most valuable:
 together they were measured at **1.92x, bit-exact** on LingBot-VA (8881 -> 4624 ms per control
-cycle; `max|delta action| = 0.000e+00` over 6 paired seeded cycles). See
-`eval/lingbot_va_robotwin/RESULTS.md` section 4.
+cycle; `max|delta action| = 0.000e+00` over 6 paired seeded cycles).
 
 They belong in the framework rather than in a per-model patch file because none of them is
 about LingBot-VA. Each fires on a *situation* that any single-GPU batch-1 closed loop can be in,

@@ -42,10 +42,9 @@ def test_built_schedule_precision_and_cleanup(steps, commit, cfg, packed, precis
         loop.close.assert_called_once()
 
 
-def test_pytorch_projection_route_does_not_require_flash_rt():
+def test_sm110_route_uses_pytorch_fp8_projections():
     with patch('torch.cuda.is_available', return_value=True), \
-         patch('torch.cuda.get_device_capability', return_value=(11, 0)), \
-         patch.dict('sys.modules', {'flash_rt': None}):
+         patch('torch.cuda.get_device_capability', return_value=(11, 0)):
         assert engine_available('dreamzero')[0]
 
 

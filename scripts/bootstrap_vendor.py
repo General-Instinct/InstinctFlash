@@ -753,7 +753,7 @@ class Bootstrap:
                 if catalog.get("target") != deployment_target:
                     raise ValueError("supplied-wheel catalog does not match the deployment target")
                 row = next(m for m in catalog["models"] if m["id"] == self.profile["family"])
-                distributions = {"instinctflash", "flash-rt", row["adapter"]["distribution"]}
+                distributions = {"instinctflash", row["adapter"]["distribution"]}
                 supplied = []
                 for distribution in sorted(distributions):
                     candidates = list(self.args.package_wheel_dir.glob(distribution.replace("-", "_") + "-*.whl"))
@@ -763,7 +763,7 @@ class Bootstrap:
                 for p in supplied:
                     shutil.copyfile(p, wheel_dir / p.name)
             else:
-                projects += [self.args.checkout, self.args.checkout / "serving"]
+                projects.append(self.args.checkout)
                 adapter = self.profile["adapter_directory"]
                 if adapter:
                     projects.append(self.args.checkout / adapter)

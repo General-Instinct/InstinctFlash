@@ -28,7 +28,6 @@ CELLS = {
     "nano-eager_native": 56,
     "nano-runtime_selected": 62,
 }
-STUDY = Path("eval/cosmos3_task_quality_2026-09-14/timed_screen_v1")
 
 
 def require(value, message):
@@ -66,7 +65,7 @@ def contained(root, name):
     return path
 
 
-def matrix_cell(cell_id, library=None):
+def matrix_cell(cell_id):
     require(cell_id in CELLS, "unknown fixed SCREEN cell")
     family, arm = cell_id.split("-", 1)
     selected = arm == "runtime_selected"
@@ -81,14 +80,6 @@ def matrix_cell(cell_id, library=None):
             "IFL_BF16_LINEAR_RELU2": "1" if family == "edge" else "0",
         }
     )
-    if selected and family == "edge":
-        require(
-            library is not None and Path(library).is_file(),
-            "Edge NUMERIC requires --bf16-library",
-        )
-        environment["IFL_BF16_KERNEL_LIBRARY"] = str(Path(library).resolve())
-    else:
-        require(library is None, "this cell does not use a supplied BF16 library")
     model, revision = CHECKPOINTS[family]
     return {
         "id": cell_id,
@@ -252,7 +243,11 @@ def export_fixture(study, latency, output):
             arrays = {key: [] for key in ("images", "joints", "grippers", "actions")}
             rows = []
             for binding in cell["requests"]:
-                relative = Path(binding["path"]).relative_to(STUDY)
+                # The pinned aggregate records request paths under the recording
+                # checkout's study prefix; from "batches" on they are study-relative.
+                recorded = Path(binding["path"]).parts
+                require("batches" in recorded, "request outside the recorded study")
+                relative = Path(*recorded[recorded.index("batches"):])
                 receipt_path = contained(study, relative)
                 require(
                     sha(receipt_path) == binding["sha256"],
@@ -361,16 +356,15 @@ def export_fixture(study, latency, output):
         raise
 
 
-def plan(fixture, expected, cell_id, library=None):
+def plan(fixture, expected, cell_id):
     catalog = fixture_catalog(fixture, expected)
-    cell = matrix_cell(cell_id, library)
+    cell = matrix_cell(cell_id)
     return {
         "schema": SCHEMA,
         "fixture": str(Path(fixture).resolve()),
         "fixture_sha256": expected,
         "cell": cell,
         "request_count": len(catalog["cells"][cell_id]["requests"]),
-        "library_sha256": sha(library) if library else None,
         "task_quality_certified": False,
         "historical_outcomes_replayed": False,
         "scope": "Fixed recorded trajectory; cold-inclusive seeded_predict host timer, no network/rendering.",
@@ -378,8 +372,8 @@ def plan(fixture, expected, cell_id, library=None):
     }
 
 
-def prepare(fixture, expected, cell_id, output, library=None, cache_dir=None):
-    value = plan(fixture, expected, cell_id, library)
+def prepare(fixture, expected, cell_id, output, cache_dir=None):
+    value = plan(fixture, expected, cell_id)
     entry = fixture_catalog(fixture, expected)["cells"][cell_id]
     verify_inputs(load_arrays(fixture, entry), entry)
     output = Path(output).absolute()
@@ -425,14 +419,8 @@ def loaded_plan(prepared):
         "prepared plan changed",
     )
     value = json.loads((prepared / "plan.json").read_text())
-    library = value["cell"]["expected_optimizer_environment"].get(
-        "IFL_BF16_KERNEL_LIBRARY"
-    )
     require(
-        value
-        == plan(
-            value["fixture"], value["fixture_sha256"], value["cell"]["id"], library
-        ),
+        value == plan(value["fixture"], value["fixture_sha256"], value["cell"]["id"]),
         "plan/options changed",
     )
     require(
@@ -689,7 +677,6 @@ def main(argv=None):
         p.add_argument("--fixture", type=Path, required=True)
         p.add_argument("--fixture-sha256", required=True)
         p.add_argument("--cell", choices=CELLS, required=True)
-        p.add_argument("--bf16-library", type=Path)
         if command == "prepare":
             p.add_argument("--output", type=Path, required=True)
             p.add_argument("--cache-dir")
@@ -712,21 +699,13 @@ def main(argv=None):
         )
     elif args.command in ("plan", "prepare"):
         if args.command == "plan":
-            print(
-                json.dumps(
-                    plan(
-                        args.fixture, args.fixture_sha256, args.cell, args.bf16_library
-                    ),
-                    indent=2,
-                )
-            )
+            print(json.dumps(plan(args.fixture, args.fixture_sha256, args.cell), indent=2))
         else:
             prepare(
                 args.fixture,
                 args.fixture_sha256,
                 args.cell,
                 args.output,
-                args.bf16_library,
                 args.cache_dir,
             )
     elif args.command == "run":

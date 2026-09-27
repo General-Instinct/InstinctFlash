@@ -16,6 +16,11 @@ from instinctflash.descriptors.checkpoint import ExecutionDeclaration
 from instinctflash.descriptors.package import Checkpoint
 
 
+VA_NATIVE_RECORDS = Path(__file__).resolve().parents[1] / "eval/va_native_2v4a_2026-09-15"
+requires_va_native_records = pytest.mark.skipif(
+    not VA_NATIVE_RECORDS.is_dir(), reason="requires the internal evaluation records")
+
+
 def checkpoint():
     return Checkpoint(
         path="/unchanged/pinned/checkpoint",
@@ -179,9 +184,9 @@ def test_capture_rejects_wrong_backend_or_frozen_schedule(update):
         user_e2e.native_schedule_override({**cell(), **update})
 
 
+@requires_va_native_records
 def test_new_single_cell_recipe_preserves_public_history_protocol():
-    root = Path(__file__).resolve().parents[1]
-    matrix = json.loads((root / "eval/va_native_2v4a_2026-09-15/matrix_v1.json").read_text())
+    matrix = json.loads((VA_NATIVE_RECORDS / "matrix_v1.json").read_text())
     value, = matrix["cells"]
     assert value["native_nfe"] == user_e2e.native_schedule_override(value) == {"video": 2, "action": 4}
     assert value["expected_runtime_kwargs"] == value["expected_optimizer_environment"] == {}
@@ -198,7 +203,7 @@ def synthetic_validation_capture(tmp_path):
         pytest.skip("NumPy is required for synthetic validation captures")
     import numpy as np
 
-    parent = Path(__file__).resolve().parents[1] / "eval/va_native_2v4a_2026-09-15"
+    parent = VA_NATIVE_RECORDS
     spec = importlib.util.spec_from_file_location("native_va_validator_test", parent / "validate_native_v1.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -231,6 +236,7 @@ def synthetic_validation_capture(tmp_path):
     return module, tmp_path, matrix_path, recipe_path, receipt_path
 
 
+@requires_va_native_records
 def test_single_cell_validator_keeps_default_and_effective_separate(synthetic_validation_capture):
     module, root, matrix, recipe, _ = synthetic_validation_capture
     result = module.validate(root, matrix, recipe)
@@ -240,6 +246,7 @@ def test_single_cell_validator_keeps_default_and_effective_separate(synthetic_va
     assert result["quality_certified"] is False
 
 
+@requires_va_native_records
 @pytest.mark.parametrize("field,value", [
     ("default_schedule", {"video": 2, "action": 4}),
     ("native_nfe_override", {"video": 25, "action": 50}),

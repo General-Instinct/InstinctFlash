@@ -297,13 +297,14 @@ def test_interpreter_mismatch_fails_before_fetch_or_install_and_preserves_receip
     assert not b.env_dir.exists()
 
 
+UPSTREAM_PACKAGING = ROOT / "eval/public_release_2026-09-15/vendor_provenance_sources/upstream_packaging_v1.json"
+
+
+@pytest.mark.skipif(not UPSTREAM_PACKAGING.is_file(), reason="requires the internal evaluation records")
 def test_exact_commit_and_both_patch_results_on_cpu_git_fixture(tmp_path):
     # Uses actual public patch files against their captured original metadata,
     # and git's parser, rather than mocking patch application.
-    data = ROOT / "eval/public_release_2026-09-15/vendor_provenance_sources/upstream_packaging_v1.json"
-    if not data.is_file():
-        pytest.skip("local immutable upstream packaging capture is not part of public release")
-    captured = json.loads(data.read_text())
+    captured = json.loads(UPSTREAM_PACKAGING.read_text())
     for family in ["va", "vla4", "vla2", "groot", "dreamzero", "edge"]:
         p = bootstrap.load_profile(family)
         root = tmp_path / family

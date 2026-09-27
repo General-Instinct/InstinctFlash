@@ -472,7 +472,7 @@ def doctor(profile: dict, execution: str = "native", *, timeout: float = 45,
         "adapter_entry_point": profile["adapter"]["entry_point"],
         "native_requirements": mode["native_requirements"],
         "distributions": list(dict.fromkeys(["instinctflash", profile["adapter"]["distribution"],
-                                            "torch", "transformers", "lerobot", "flash-rt"])),
+                                            "torch", "triton", "transformers", "lerobot"])),
     }, timeout)
     checks.extend(probe["checks"])
     passed = all(check["status"] == "passed" for check in checks)

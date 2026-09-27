@@ -140,18 +140,18 @@ def connect_started_process(process, port, timeout):
 
 
 def stop_owned_process(process):
-    """Gracefully stop only the server process group we just created."""
+    """Gracefully stop only the server process group we just created.
+
+    SIGTERM is the server's graceful stop signal; SIGINT may be inherited as ignored when the
+    smoke itself was started in the background.
+    """
     if process.poll() is None:
-        os.killpg(process.pid, signal.SIGINT)
+        os.killpg(process.pid, signal.SIGTERM)
         try:
             process.wait(timeout=30)
         except subprocess.TimeoutExpired:
-            os.killpg(process.pid, signal.SIGTERM)
-            try:
-                process.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGKILL)
-                process.wait(timeout=10)
+            os.killpg(process.pid, signal.SIGKILL)
+            process.wait(timeout=10)
     return process.returncode
 
 
@@ -163,7 +163,6 @@ def run(prepared, output, *, cell_id=None, startup_timeout=1200, request_timeout
     plan, preparation = validate_bundle(prepared)
     target = bound_target(plan.get("target"))
     cell = selected_cell(plan, cell_id)
-    require(not plan["unresolved_library_options"], "required native library options are unresolved")
     # This is a transport/episode check, not a paired RNG experiment. Native
     # serving accepts a constructor seed; the FP8 engine explicitly rejects it.
     fp8 = cell["expected_runtime_kwargs"].get("precision", "native") == "fp8"

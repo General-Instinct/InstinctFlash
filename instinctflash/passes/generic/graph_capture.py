@@ -71,22 +71,21 @@ class GraphCaptureApplicable:
             if backbone in {"pi05", "lingbot_vla"} and spec.phase("action").nfe == 10:
                 device_evidence = (
                     f"{backbone} native NFE=10 on Thor: the 2026-09-09 matched study "
-                    "measured capture gains with byte-equal actions on its inputs; "
-                    "see eval/fp8_comparison_2026-09-09. The family startup exact "
-                    "self-check still decides admission for this checkpoint and process.")
+                    "measured capture gains with byte-equal actions on its inputs. "
+                    "The family startup exact self-check still decides admission for "
+                    "this checkpoint and process.")
             elif backbone == "lingbot_vla_v2" and spec.phase("action").nfe == 10:
                 device_evidence = (
-                    "LingBot-VLA-V2 native NFE=10 on Thor: capture measured separately; "
-                    "see eval/edge_defaults_2026-09-06. Performance evidence is scoped to "
-                    "the recorded checkpoint, inputs and stack, not a quality certificate.")
+                    "LingBot-VLA-V2 native NFE=10 on Thor: capture measured separately "
+                    "(2026-09-06). Performance evidence is scoped to the recorded "
+                    "checkpoint, inputs and stack, not a quality certificate.")
             elif backbone == "groot_n17" and spec.phase("action").nfe == 4:
                 device_evidence = (
                     "GR00T N1.7 native NFE=4 on Thor: paired and repeated 2026-09-11 "
                     "DiT graph measurements preserved finite action bytes on the tested "
-                    "checkpoint and inputs, with modest latency gains; see "
-                    "eval/groot_native_graphs_2026-09-11. Only the existing DiT graph "
-                    "is admitted here, not experimental text-block fusions. The family "
-                    "startup exact self-check still decides admission for this process.")
+                    "checkpoint and inputs, with modest latency gains. Only the existing "
+                    "DiT graph is admitted here, not experimental text-block fusions. The "
+                    "family startup exact self-check still decides admission for this process.")
             else:
                 return PassResult(
                     self.name, False, tier,

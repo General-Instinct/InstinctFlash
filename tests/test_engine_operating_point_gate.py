@@ -4,9 +4,12 @@ THE REPORTED DEFECT (Thor probe, 2026-09-02, iwm_distill/fewstep/cert_pi05_nfe1_
 ``Runtime.from_pretrained(v044, nfe={"action": 1}, placement="engine")`` accepted the request
 and served the 10-step graph — same digest, same 49.5 ms as nfe10 — while the plan printed
 ``schedule {prefix=1 + action=1}`` and ``explain()`` promised 2 forwards. ``EngineBackend``
-took ``nfe`` and never read it; the pi05 frontend bakes ``steps = 10`` into ``action_out_proj``
-(pre-scaled by −1/steps at weight load), the per-step time tables and six ``'steps': 10`` dims
-dicts. The T3 certificate covers that engine at 10 steps only.
+took ``nfe`` and never read it; the pi05 frontend of the previous engine backend (since removed)
+baked ``steps = 10`` into ``action_out_proj`` (pre-scaled by −1/steps at weight load), the
+per-step time tables and six ``'steps': 10`` dims dicts. The T3 certificate covers that engine at
+10 steps only. The GI pi05 engine bakes its schedule the same way:
+``instinctflash/engines/pi05/engine.py`` folds ``dt = -1/steps`` into ``action_out_proj`` and
+``weights.py`` sizes the per-step AdaRMSNorm time tables for exactly ``steps`` values of t.
 
 THE RULE, one fact with two enforcement surfaces (the geometry gate's shape, other axis):
   * ``ENGINE_BAKED_OPERATING_POINTS`` declares, per engine build, the schedule it bakes and
@@ -16,7 +19,7 @@ THE RULE, one fact with two enforcement surfaces (the geometry gate's shape, oth
     declared point on the torch chain and the placement line quotes the reason;
   * build time — ``EngineBackend.__init__`` refuses the same mismatch from the checkpoint's
     declaration plus the ``nfe=`` override, which is what guards explicit ``placement='engine'``.
-No frontend in serving/ is step-parameterized; none may be declared so without a proving test.
+No engine is step-parameterized; none may be declared so without a proving test.
 
 No GPU, no torch: declaration checks by construction; the engine seam is stubbed exactly like
 tests/test_engine_geometry_gate.py does.
@@ -49,7 +52,6 @@ from instinctflash.runtime.engine_backend import (  # noqa: E402
     ENGINE_BAKED_OPERATING_POINTS,
     PI05_ENGINE_ACTION_STEPS,
     EngineBackend,
-    baked_step_literals,
     engine_baked_operating_point,
     engine_operating_point_problem,
     requested_operating_point,
@@ -101,8 +103,8 @@ def _evaluate(spec, deployment=None):
 def test_every_engine_frontend_declares_its_baked_point_and_none_claims_any_nfe():
     frontends = {cap.frontend for cap in ENGINE_BAKED_OPERATING_POINTS}
     # the frontends this repo's runtime or adapters name — each must have a declared point
-    for expected in ("pi05_thor.py", "vla4b_thor.py", "vla2_thor.py",
-                     "groot_n17_thor.py", "groot_thor.py"):
+    for expected in ("engines/pi05/engine.py", "engines/vla4/engine.py", "engines/vla2/engine.py",
+                     "engines/groot_n17/engine.py"):
         assert any(f.endswith(expected) for f in frontends), f"{expected} declares no baked point"
     for cap in ENGINE_BAKED_OPERATING_POINTS:
         assert (ROOT / cap.frontend).is_file(), cap.frontend
@@ -111,7 +113,8 @@ def test_every_engine_frontend_declares_its_baked_point_and_none_claims_any_nfe(
         assert cap.steps_parameterized is False, (
             f"{cap.frontend} claims to serve any nfe; that claim needs a test proving it "
             f"(digest differs from the baked count's) before it is declared")
-    # the one backbone the runtime wires must be declared; the pi05 mirror is the report's 10
+    # every backbone the runtime wires must be declared (build-declared ones by their built
+    # instance); the pi05 mirror is the report's 10
     for backbone in ENGINE_BACKBONES:
         if backbone in ("wan_va", "cosmos3_policy", "dreamzero"):
             assert engine_baked_operating_point(backbone) is None  # Requires a built instance.
@@ -120,26 +123,7 @@ def test_every_engine_frontend_declares_its_baked_point_and_none_claims_any_nfe(
     assert engine_baked_operating_point("pi05").steps == {"action": PI05_ENGINE_ACTION_STEPS}
     assert PI05_ENGINE_ACTION_STEPS == 10
     assert engine_baked_operating_point("wam") is None
-    assert engine_baked_operating_point(None) is None, "a frontend without a backbone is unreachable"
-
-
-def test_the_mirrors_match_the_engine_sources():
-    # The runtime cross-checks the LIVE frontend at build time (Thor); this is the torch-less
-    # equivalent for CI — every declared count must be exactly the literal set in serving/.
-    for cap in ENGINE_BAKED_OPERATING_POINTS:
-        src = (ROOT / cap.frontend).read_text()
-        found = baked_step_literals(src, cap.source_patterns)
-        assert found == set(cap.steps.values()), (
-            f"{cap.frontend}: source bakes {sorted(found)}, the mirror says "
-            f"{sorted(set(cap.steps.values()))} — update ENGINE_BAKED_OPERATING_POINTS")
-    # the pi05 report named the sites: two `steps = 10` and six `'steps': 10`
-    import re
-    pi05_src = (ROOT / "serving/flash_rt/frontends/torch/pi05_thor.py").read_text()
-    assert len(re.findall(r"(?m)^\s*steps\s*=\s*(\d+)\b", pi05_src)) == 2
-    assert len(re.findall(r"['\"]steps['\"]\s*:\s*(\d+)\b", pi05_src)) == 6
-    # a parameterized literal (the Thor scratch build's shape) is caught, not accepted
-    assert baked_step_literals("steps = int(os.environ.get('STEPS', 10))",
-                               engine_baked_operating_point("pi05").source_patterns) == set()
+    assert engine_baked_operating_point(None) is None
 
 
 # ── plan time: engine_offload declines a plan priced at any other point ─────────────────────
@@ -171,7 +155,7 @@ def test_pi05_engine_accepts_the_baked_nfe10_and_names_the_served_point():
 
 
 def test_pi05_engine_declines_a_cfg_operating_point_but_not_cfg_at_scale_1():
-    # the frontend HAS an RL-mode CFG pipeline; EngineBackend never enables it, so w>1 declines
+    # the GI pi05 engine computes no negative branch (no CFG pipeline), so w>1 declines
     r = _evaluate(_pi05_spec(guidance={"action": {"mode": "cfg", "scale": 1.5}}))
     assert not r.applies and "backend" not in r.params
     assert "guidance none@1" in r.reason and "requests action=cfg@1.5" in r.reason
@@ -291,7 +275,7 @@ class _Adapter:
 @contextmanager
 def _engine_looks_available():
     orig = eb.engine_available
-    eb.engine_available = lambda: (True, "test stub: pretend SM110 + engine kernels")
+    eb.engine_available = lambda backbone=None: (True, "test stub: pretend SM110 + engine kernels")
     try:
         yield
     finally:
@@ -398,9 +382,9 @@ def test_the_other_engine_families_decline_any_nfe_but_their_baked_one():
     from lingbot_vla_v2_iwm.adapter import LingBotVLAV2Adapter
 
     for adapter, backbone, frontend in (
-        (LingBotVLA4BAdapter(), "lingbot_vla", "vla4b_thor.py"),
-        (LingBotVLAV2Adapter(), "lingbot_vla_v2", "vla2_thor.py"),
-        (GR00TN17Adapter(), "groot_n17", "groot_n17_thor.py"),
+        (LingBotVLA4BAdapter(), "lingbot_vla", "engines/vla4/engine.py"),
+        (LingBotVLAV2Adapter(), "lingbot_vla_v2", "engines/vla2/engine.py"),
+        (GR00TN17Adapter(), "groot_n17", "engines/groot_n17/engine.py"),
     ):
         spec = adapter.spec()
         assert spec.notes["backbone"] == backbone, "the pass keys on notes['backbone']"
@@ -420,7 +404,7 @@ def test_the_other_engine_families_decline_any_nfe_but_their_baked_one():
             assert not r.applies and "backend" not in r.params, (backbone, other, r.reason)
             assert f"engine {backbone} frontend bakes a {n}-step action schedule" in r.reason
             assert f"requests action={other}" in r.reason
-        # VLA4 and V2 have native-processor/FP8 Runtime bridges. The same
+        # VLA4, V2 and GR00T N1.7 have native-processor/FP8 Runtime bridges. The same
         # schedule gate remains mandatory when a family becomes executable.
         if backbone in {"lingbot_vla", "lingbot_vla_v2", "groot_n17"}:
             assert backbone in ENGINE_BACKBONES

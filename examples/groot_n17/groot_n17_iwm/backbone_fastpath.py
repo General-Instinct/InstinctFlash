@@ -8,8 +8,10 @@ logits are dead work (the same dead-lm_head structure our pi05 study found).
 
 DEPLOYMENT LIMIT -- keep this OFF any engine-side CUDA-graph capture path: the content
 signatures do a GPU->CPU sync (.detach().cpu()) inside every backbone forward, which is a
-whole-backbone capture blocker on its own, beyond FA2 varlen. The engine's prompt-scope
-backbone cache subsumes this cache. This is a torch-chain optimization.
+whole-backbone capture blocker on its own, beyond FA2 varlen. The Thor FP8 route
+(instinctflash/runtime/groot_engine.py) reuses the native loop, including this cache when it
+is enabled; its CUDA graphs cover only Qwen3 text MLPs, individual text attention projections
+and the action head, never the whole backbone forward.
 """
 
 from __future__ import annotations

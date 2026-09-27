@@ -40,23 +40,31 @@ def resolve_native_config(adapter, checkpoint, server_module, *, nfe=None):
     return cfg
 
 
+def _token_geometry(cfg):
+    """Tokens per chunk exactly as the native server's reset computes them."""
+    height, width = cfg.height, cfg.width
+    if cfg.env_type == "robotwin_tshape":
+        lh, lw = ((height // 16) * 3) // 2, width // 16
+    else:
+        lh, lw = height // 16, width // 16 * len(cfg.obs_cam_keys)
+    p = cfg.patch_size
+    video = (cfg.frame_chunk_size * lh * lw) // (p[0] * p[1] * p[2])
+    action = cfg.frame_chunk_size * cfg.action_per_frame
+    return video, action
+
+
 def build_wan_va_engine_loop(adapter, checkpoint, *, device=None, nfe=None):
     import torch
-    from flash_rt.frontends.torch.wan_va_thor import WanVaTorchFrontendThor
-    from flash_rt.models.wan_va.geometry import WanVaGeometry
-    from flash_rt.models.wan_va.operating_point import WanVaOperatingPoint
+    from instinctflash.engines.wan_va.engine import GiWanTransformer
+    from instinctflash.engines.wan_va.weights import load_wan_weights
     from instinctflash.runtime.lingbot_install import import_lingbot_server
-    from instinctflash.runtime.wan_va_engine import (
-        WanVaEngineLoop, WanVaEngineServer, build_native_conditioning,
-    )
+    from instinctflash.runtime.wan_va_engine import WanVaEngineLoop, build_native_conditioning, served_declaration
 
     dev = torch.device(device or "cuda")
     if dev.type != "cuda" or torch.cuda.get_device_capability(dev) != (11, 0):
         raise ValueError("VA FP8 requires a Thor SM110 CUDA device")
     source = import_lingbot_server(adapter.lingbot_root)
     cfg = resolve_native_config(adapter, checkpoint, source, nfe=nfe)
-    geometry = WanVaGeometry.from_job_config(cfg)
-    point = WanVaOperatingPoint.from_job_config(cfg)
     if cfg.video_exec_step != -1 or cfg.action_guidance_scale > 1:
         raise ValueError("VA FP8 requires a complete video schedule and positive-only action guidance")
     if cfg.param_dtype != torch.bfloat16:
@@ -66,13 +74,14 @@ def build_wan_va_engine_loop(adapter, checkpoint, *, device=None, nfe=None):
     cfg.world_size = 1
     cfg.enable_offload = False
     cfg.save_root = os.environ.get("IFL_SAVE_ROOT", "/tmp/iwm_runtime")
+    video_tokens, action_tokens = _token_geometry(cfg)
+    slots = (cfg.attn_window // 2) * (video_tokens + action_tokens)
+    use_cfg = cfg.guidance_scale > 1 or cfg.action_guidance_scale > 1
     with torch.cuda.device(dev):
         native = build_native_conditioning(source, cfg)
-        frontend = WanVaTorchFrontendThor(
-            Path(cfg.wan22_pretrained_model_name_or_path) / "transformer",
-            point=point, geometry=geometry, device=str(native.device),
-            pool_slots=geometry.pool_slots(cfg.attn_window),
-            used_action_channels=cfg.used_action_channel_ids,
-            precision="fp8", use_cuda_graph=True,
-        )
-        return WanVaEngineLoop(WanVaEngineServer(native, frontend))
+        transformer = GiWanTransformer(
+            load_wan_weights(Path(cfg.wan22_pretrained_model_name_or_path) / "transformer", native.device),
+            native.device, pool_slots=slots, max_tokens=max(video_tokens, action_tokens),
+            max_batch=2 if use_cfg else 1)
+        native.transformer = transformer
+        return WanVaEngineLoop(native, transformer, served_declaration(cfg))
