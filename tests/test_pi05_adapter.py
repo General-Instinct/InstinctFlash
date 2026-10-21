@@ -53,6 +53,10 @@ def test_example_surface_stays_product_shaped():
         "tf32_static_h100_results.json",
         "tf32_v044_static_h100_results.json",
         "verify_tf32_operating_point.py",
+        "reproduce_if_fixed_obs_libero.py",
+        "reproduce_if_fixed_obs_libero.sh",
+        "reproduce_sample_actions.py",
+        "reproduce_sample_actions.sh",
     }, root_files
     assert os.access(PLUGIN_ROOT / "reproduce_h100.sh", os.X_OK)
 
