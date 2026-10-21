@@ -121,6 +121,92 @@ absolute action error against the native FP32 reference was 0.0199 in the
 checkpoint's normalized action space (native BF16: 0.0046). These small samples
 do not establish no loss, and do not certify BASE task quality.
 
+## LIBERO latency benchmarks
+
+Two standalone examples compare stock pi0.5 eager inference with InstinctFlash's
+loop-constant hoists and static-KV CUDA graphs using real LIBERO observations.
+Both default to `lerobot/pi05_libero_finetuned_v044` and use one GPU.
+
+Use an environment with working LeRobot pi0.5 and LIBERO installations, the
+patched transformers required above, CUDA-enabled PyTorch, and InstinctFlash
+with this example package installed. LIBERO assets and checkpoint/tokenizer
+access must also be available. Run the commands below from the repository root
+with that environment activated. The wrappers require `CUDA_VISIBLE_DEVICES`;
+choose one idle GPU. Set `IFL_PI05_PY=/path/to/python` to select another interpreter.
+
+### Fixed real observation
+
+```bash
+CUDA_VISIBLE_DEVICES=0 examples/pi05_vla/reproduce_if_fixed_obs_libero.sh
+```
+
+This resets LIBERO object task 0 once and prepares its camera, task, and state
+inputs through LeRobot's processors. The simulator is then closed. Both arms
+reuse that observation and the same seeded noise for repeated chunk predictions.
+Each arm reports the median of 15 timed chunks after two unmeasured chunks;
+InstinctFlash also completes graph-capture warmup before its measurements.
+
+Each timed chunk includes prefix embedding/prefill, seeded noise creation and
+transfer, and ten denoising steps. Environment creation and observation
+preprocessing are excluded. Results and a same-input action-equality check are
+printed to the terminal; this script does not save a report or evaluate task
+success. Set `IFL_PI05_CKPT` to override its checkpoint.
+
+### Live episodes
+
+```bash
+CUDA_VISIBLE_DEVICES=0 examples/pi05_vla/reproduce_sample_actions.sh \
+  --output-dir ./outputs/pi05-live-libero
+```
+
+The output directory must not already exist. Omit `--output-dir` for terminal-only
+results. Additional options are available with:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 examples/pi05_vla/reproduce_sample_actions.sh --help
+```
+
+Defaults are LIBERO object task 0, batch size one, five measured episodes per arm,
+and episode seeds starting at 1000. Stock runs first, then InstinctFlash, with the
+same episode seeds and initial-state sequence. Each episode advances the real
+simulator using postprocessed predicted actions until termination, truncation,
+or the environment's step limit. The checkpoint determines the action chunk,
+execution horizon, and denoising-step count; for the default checkpoint these
+are 50, 50, and 10 respectively.
+
+The timer surrounds `model.sample_actions(...)`, with CUDA synchronization
+before and after. It includes noise generation, prefix embedding/prefill, and
+denoising integration. Observation preparation, action postprocessing, queued
+action execution, simulator stepping, and logging are excluded. Stock uses two
+unmeasured chunk predictions and InstinctFlash uses three, without simulator
+steps; these are warmup **chunks**. Capture must pass its
+exactness check and replay before IF measurements are accepted.
+
+Both arms disable `compile_model`. The live script enables
+`torch.backends.cuda.matmul.allow_tf32` and `torch.backends.cudnn.benchmark` for
+both arms. These settings are not explicitly configured by the fixed-observation
+script, which follows the original `reproduce_h100.py` setup.
+
+The terminal shows warmup progress, episode summaries, and final metrics. With
+`--output-dir`, `results.json` also contains arguments, per-call latencies,
+episode outcomes, capture evidence, and aggregate statistics. It is updated after
+each completed episode; failures during evaluation are recorded when possible.
+The reported median pools all measured fresh chunk predictions, rather than
+averaging episode medians. Speedup is stock median divided by IF median.
+Matching episode starts and success counts do not establish per-call bit-exact
+outputs across separate live rollouts.
+
+For example, one RTX A6000 run of the default live setup measured 163.6 → 114.7
+ms (1.43×), with 18 predictions per arm. This is an
+illustrative measurement, not a performance or task-quality guarantee.
+
+CPU-only helper tests require pytest and can be run without model weights or a
+LIBERO simulator:
+
+```bash
+python -m pytest tests/test_pi05_libero_latency.py -q
+```
+
 ## Attribution
 
 `lerobot/pi05_base` and LeRobot are Apache-2.0, © The HuggingFace Inc. team. Nothing is copied here —
