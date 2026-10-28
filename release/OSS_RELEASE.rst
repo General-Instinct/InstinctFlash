@@ -19,8 +19,9 @@ own action and task evaluation.
 Source, binaries and model assets
 --------------------------------
 
-The root package and adapters retain the root AGPL license. Bundled
-third-party code and vendor patches carry their own notices. Upstream model
+The root package, adapters and example packages are licensed under Apache-2.0
+(the root ``LICENSE``). Bundled third-party code and vendor patches carry their
+own notices. Upstream model
 checkpoints, tokenizers and experimental student overlays retain their original
 access conditions and licenses. Checkpoint weights are obtained separately
 from source installation.

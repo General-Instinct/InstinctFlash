@@ -4,7 +4,7 @@
 
 **A high-performance serving framework for robotics models.**
 
-[![License](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Website](https://img.shields.io/badge/Website-general--instinct.com-000000.svg)](https://general-instinct.com/)
 [![YC](https://img.shields.io/badge/Y%20Combinator-P26-orange.svg)](https://www.ycombinator.com/companies/general-instinct)
 
@@ -284,3 +284,16 @@ and ideas that InstinctFlash builds on:
 
 Third-party code and model assets remain subject to their respective licenses.
 See the license and attribution notices accompanying each component.
+
+## Citation
+
+If you use InstinctFlash in your research, please cite:
+
+```bibtex
+@software{instinctflash2026,
+  title  = {InstinctFlash: A High-Performance Serving Framework for Robotics Models},
+  author = {{General Instinct}},
+  year   = {2026},
+  url    = {https://github.com/General-Instinct/InstinctFlash}
+}
+```

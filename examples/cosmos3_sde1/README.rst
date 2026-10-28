@@ -11,7 +11,7 @@ UniPC4/CFG3; task-quality evidence is reported separately.
 Install this package into the separately bootstrapped Cosmos environment
 after installing InstinctFlash and cosmos3-iwm. It contains eight exact
 InstinctCompress helper files under their existing package names, licensed
-AGPL-3.0-or-later; do not co-install a different package owning those same
+Apache-2.0; do not co-install a different package owning those same
 ``instinct_compress`` files. Model materials use their separate OpenMDW1.1
 terms and retain the NVIDIA model card and notices in the overlay release.
 
